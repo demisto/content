@@ -344,12 +344,25 @@ def _run_one_variant(
     log.info("Variant %s INTEGRATION-side captured %d keys.", variant.id, len(integration_raw))
 
     # ── CONNECTOR-side capture (new UCP flow) — only this variant's caps ──
+    # Multi-profile (XOR) connectors: the variant pins exactly ONE auth profile via
+    # ``variant.active_profile_id`` (set by the resolver's per-profile variant
+    # expansion). Emit ONLY that profile so the runtime activates it and we capture
+    # its auth secret; the OTHER profiles' secrets are scoped out by the diff
+    # (out_of_variant_scope) in this variant and verified in their OWN variant.
+    # When ``active_profile_id`` is None (single / no-profile connector) we pass
+    # None → all profiles emitted (unchanged behaviour).
+    active_profiles = None
+    if getattr(variant, "active_profile_id", None):
+        active_profiles = [
+            p for p in parity_inputs.profiles if p.id == variant.active_profile_id
+        ]
     try:
         connector_raw, connector_payload = capture_ucp_params(
             xsoar_client=xsoar_client,
             xsoar_brand_name=integration_brand,
             parity_inputs=parity_inputs,
             capabilities=variant.capabilities,
+            active_profiles=active_profiles,
             instance_values=connector_instance_values,
             connector_id=connector_id,
         )
@@ -391,6 +404,16 @@ def _run_one_variant(
         in_scope_fields=variant.in_scope_fields,
         field_owning_subcapabilities=parity_inputs.field_owning_subcapabilities,
         enabled_ownership_units=variant.enabled_ownership_units,
+        # serialized_from/to annotation must reflect ONLY this integration's
+        # handler serializer. For a grouped connector (e.g. aws) the diff's own
+        # connector-wide rglob would mis-attribute a shared xsoar param name
+        # (e.g. incidentType / first_fetch) to a SIBLING handler's connector
+        # field id; the resolver already parsed this handler's serializer.yaml
+        # into these scoped maps, so pass them through.
+        serializer_by_xsoar=getattr(parity_inputs, "serializer_by_xsoar", None),
+        serializer_by_connector=getattr(
+            parity_inputs, "serializer_by_connector", None
+        ),
         allow_missing=args.allow_missing,
         allow_extra=args.allow_extra,
         allow_mismatch=args.allow_mismatch,
@@ -400,6 +423,11 @@ def _run_one_variant(
     variant_envelope["variant_id"] = variant.id
     variant_envelope["enabled_capabilities"] = variant.enabled_capability_ids
     variant_envelope["fetch_flags"] = dict(variant.fetch_flags)
+    # The pinned auth profile for this variant (multi-profile / XOR connectors).
+    # None for single / no-profile connectors.
+    variant_envelope["active_profile_id"] = getattr(
+        variant, "active_profile_id", None
+    )
     variant_envelope["captures"] = {
         "integration": integration_raw,
         "connector": connector_raw,
@@ -653,6 +681,7 @@ def main(argv: list[str] | None = None) -> int:
                     "id": v.id,
                     "enabled_capabilities": v.enabled_capability_ids,
                     "fetch_flags": dict(v.fetch_flags),
+                    "active_profile_id": getattr(v, "active_profile_id", None),
                 }
                 for v in variants
             ],

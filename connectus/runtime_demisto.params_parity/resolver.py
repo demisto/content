@@ -290,6 +290,16 @@ class CapabilityVariant:
     #: sub-capability as ``MISSING_IN_CONNECTOR``. Populated in :func:`resolve`
     #: (see :func:`build_field_ownership` / :func:`in_scope_fields_for_variant`).
     in_scope_fields: frozenset[str] = field(default_factory=frozenset)
+    #: The auth profile id ACTIVE in this variant, or ``None`` when the connector
+    #: has 0–1 auth-bearing profiles (single-profile / no-profile connectors —
+    #: behaviour unchanged). When a connector declares ≥2 MUTUALLY-EXCLUSIVE (XOR)
+    #: auth profiles, the variant matrix is crossed with the profile groups so each
+    #: profile is tested in its OWN instance (with only that profile emitted into
+    #: the creation payload, so the runtime activates exactly it). The NON-active
+    #: profiles' auth params are then scoped OUT of this variant (OK_IGNORED /
+    #: out_of_variant_scope) instead of falsely flagged MISSING_IN_CONNECTOR. See
+    #: ``plans/param-parity-per-profile-variant-matrix.md``.
+    active_profile_id: Optional[str] = None
 
     @property
     def enabled_capability_ids(self) -> list[str]:
@@ -1002,6 +1012,88 @@ def _expand_variants(capabilities: list[CapabilitySpec]) -> list[CapabilityVaria
     return variants
 
 
+#: Prefix for the synthetic AUTH-PROFILE ownership unit used to scope out the auth
+#: secret of a non-active alternative XOR profile. Kept in sync with
+#: diff._PROFILE_OWNERSHIP_PREFIX (the diff specialises the OK_IGNORED reason when
+#: an out-of-scope field's owners are ALL of this kind).
+_PROFILE_OWNERSHIP_PREFIX = "__profile__:"
+
+
+def _profile_ownership_unit(profile_id: str) -> str:
+    """Synthetic ownership-unit id for an auth profile.
+
+    Auth params of a multi-profile (XOR) connection are attributed to a per-profile
+    ownership unit so the diff's EXISTING out-of-variant-scope gate (which already
+    scopes out fields whose owning unit is disabled in a variant) can scope out the
+    auth secret of a NON-active alternative profile — without any new diff state.
+    Prefixed to avoid colliding with a real (sub-)capability id.
+    """
+    return _PROFILE_OWNERSHIP_PREFIX + profile_id
+
+
+def _auth_bearing_profiles(profiles: list["ProfileSpec"]) -> list["ProfileSpec"]:
+    """The profiles that carry ≥1 XSOAR auth secret (derived, not hardcoded).
+
+    A profile is *auth-bearing* iff its :meth:`ProfileSpec.connector_field_to_xsoar_param`
+    yields a non-empty set of top-level XSOAR auth params (i.e. it has an
+    ``interpolation_mapping`` binding at least one auth field to an xsoar param).
+    These are the profiles whose secrets the parity diff can compare. A connector
+    with ≥2 of them is a MULTI-PROFILE (XOR) connection — the user picks one at
+    runtime — so each must be tested in its own instance for full coverage.
+
+    Non-interpolated / dummy-auth profiles (empty set) carry nothing comparable
+    and are NOT counted here.
+    """
+    return [p for p in profiles if p.connector_field_to_xsoar_param()]
+
+
+def profile_auth_params(prof: "ProfileSpec") -> frozenset[str]:
+    """The set of top-level XSOAR auth param names a profile carries.
+
+    Derived ENTIRELY from the profile's own interpolation mapping + field roles
+    (``connector_field_to_xsoar_param``) — never a connector-specific list. For
+    FortiGate: ``api_key.fortigate`` → ``{"api_key"}``, ``plain.fortigate`` →
+    ``{"credentials"}``.
+    """
+    return frozenset(prof.connector_field_to_xsoar_param().values())
+
+
+def _expand_profile_variants(
+    variants: list[CapabilityVariant], profiles: list["ProfileSpec"]
+) -> list[CapabilityVariant]:
+    """Cross capability variants with the connector's auth-profile groups.
+
+    When the connector has ≥2 auth-bearing (XOR) profiles, the runtime activates
+    exactly ONE per instance, so testing one instance with all profiles emitted
+    leaves the non-active profiles' auth params unverified (and falsely flags them
+    MISSING_IN_CONNECTOR). To get FULL coverage we test each auth-bearing profile
+    in its OWN instance: every existing capability variant is duplicated once per
+    auth-bearing profile, carrying that profile id in :attr:`active_profile_id`.
+
+    Back-compat: 0 or 1 auth-bearing profile → the matrix is returned UNCHANGED
+    (``active_profile_id`` stays ``None``), so every single-profile / no-profile
+    integration produces exactly the variants it did before this change.
+    """
+    auth_profiles = _auth_bearing_profiles(profiles)
+    if len(auth_profiles) < 2:
+        # Single / no auth-bearing profile → nothing to cross; leave as-is so the
+        # sole profile's secret stays always-in-scope and a genuine miss still fails.
+        return variants
+
+    crossed: list[CapabilityVariant] = []
+    for variant in variants:
+        for prof in auth_profiles:
+            crossed.append(
+                CapabilityVariant(
+                    id="{}@{}".format(variant.id, prof.id),
+                    capabilities=list(variant.capabilities),
+                    fetch_flags=dict(variant.fetch_flags),
+                    active_profile_id=prof.id,
+                )
+            )
+    return crossed
+
+
 # ============================================================================
 # Profiles
 # ============================================================================
@@ -1177,6 +1269,16 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
 
     profiles = _profiles_from_connection(connection_doc, profile_ids)
 
+    # ── Per-AUTH-PROFILE variant expansion (XOR auth) ──
+    # When the connector declares ≥2 auth-bearing (mutually-exclusive) profiles,
+    # the runtime activates exactly ONE per instance. Cross every capability
+    # variant with each auth-bearing profile so each profile is tested in its OWN
+    # instance (only that profile is emitted into the creation payload below, via
+    # ``variant.active_profile_id`` threaded through the capture). For 0–1
+    # auth-bearing profiles this is a no-op (matrix unchanged). See
+    # ``plans/param-parity-per-profile-variant-matrix.md``.
+    variants = _expand_profile_variants(variants, profiles)
+
     # Serializer maps (this handler).
     by_xsoar, by_connector = _load_serializer_maps(handler_dir)
 
@@ -1213,9 +1315,38 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
     # Profile (auth/connection) xsoar param names are ALWAYS legitimately present
     # regardless of which fetch sub-capability is enabled, so fold them into every
     # variant's in-scope set so we never scope out a real auth field.
-    profile_xsoar_params: set[str] = set()
+    #
+    # MULTI-PROFILE (XOR) refinement: when ≥2 auth-bearing profiles exist, a given
+    # instance activates exactly ONE, so ONLY the ACTIVE profile's auth params are
+    # legitimately present in that variant — the OTHER (alternative) profiles' auth
+    # secrets are absent BY DESIGN and must be scoped OUT (OK_IGNORED /
+    # out_of_variant_scope), NOT flagged MISSING_IN_CONNECTOR. We therefore compute
+    # the always-in-scope auth params PER ACTIVE PROFILE below (see the variant
+    # loop). The auth params of the NON-active alternative profile(s) are added to
+    # ``field_ownership`` keyed by a synthetic profile ownership unit so the diff's
+    # existing out-of-variant-scope gate reclassifies them — no new diff state.
+    auth_profiles = _auth_bearing_profiles(profiles)
+    multi_profile = len(auth_profiles) >= 2
+    # Auth params carried by EVERY auth-bearing profile (used for single-profile and
+    # for non-auth profile params that should stay always-in-scope).
+    all_profile_auth_params: set[str] = set()
     for prof in profiles:
-        profile_xsoar_params.update(prof.connector_field_to_xsoar_param().values())
+        all_profile_auth_params.update(prof.connector_field_to_xsoar_param().values())
+
+    # For a multi-profile connection, attribute each auth-bearing profile's auth
+    # params to a synthetic ownership unit (the profile id) so the diff can scope
+    # out a param whose owning profile is not the variant's active one. We use a
+    # MUTABLE copy because field_ownership is consumed below.
+    if multi_profile:
+        profile_owned: dict[str, set[str]] = {}
+        for prof in auth_profiles:
+            unit = _profile_ownership_unit(prof.id)
+            for xsoar_param in profile_auth_params(prof):
+                profile_owned.setdefault(xsoar_param, set()).add(unit)
+        merged_ownership = {k: set(v) for k, v in field_ownership.items()}
+        for xsoar_param, units in profile_owned.items():
+            merged_ownership.setdefault(xsoar_param, set()).update(units)
+        field_ownership = {k: frozenset(v) for k, v in merged_ownership.items()}
 
     # BE-synthesized params (isFetch/eventFetchInterval/feed*/…) are injected by
     # the platform at runtime. They are treated as always in-scope so they are
@@ -1231,13 +1362,41 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
     be_synth_always_in_scope = frozenset(BE_SYNTHESIZED_PARAM_NAMES) - frozenset(
         field_ownership
     )
-    always_in_scope = frozenset(profile_xsoar_params) | be_synth_always_in_scope
+
+    # For a SINGLE/NO auth-bearing-profile connector, ALL profile auth params are
+    # always-in-scope (legacy behaviour): the sole profile is always active, so its
+    # secret must never be scoped out — a genuine miss STILL fails (no
+    # over-suppression). For a MULTI-PROFILE (XOR) connector, only the variant's
+    # ACTIVE profile's auth params are folded in (below, per variant); the
+    # alternative profiles' params are scoped out via their profile ownership unit.
+    base_always_in_scope = be_synth_always_in_scope
+    if not multi_profile:
+        base_always_in_scope = frozenset(all_profile_auth_params) | base_always_in_scope
+
+    # Profile id → its OWN auth params (for the multi-profile active-profile fold-in).
+    auth_params_by_profile: dict[str, frozenset[str]] = {
+        prof.id: profile_auth_params(prof) for prof in auth_profiles
+    }
+
     for variant in variants:
+        # The active profile's auth params are legitimately present in THIS variant;
+        # fold them into its in-scope set so they are compared (not scoped out). For
+        # a single/no-profile connector this set is empty (already covered by
+        # base_always_in_scope above). The enabled ownership units include the
+        # active profile's synthetic unit so the alternative profiles' params (owned
+        # by OTHER profile units, not enabled here) are scoped out by the diff.
+        active_auth_params = (
+            auth_params_by_profile.get(variant.active_profile_id, frozenset())
+            if variant.active_profile_id
+            else frozenset()
+        )
+        enabled_units = set(variant.enabled_ownership_units)
+        if variant.active_profile_id:
+            enabled_units.add(_profile_ownership_unit(variant.active_profile_id))
         variant.in_scope_fields = (
-            in_scope_fields_for_variant(
-                field_ownership, variant.enabled_ownership_units
-            )
-            | always_in_scope
+            in_scope_fields_for_variant(field_ownership, enabled_units)
+            | base_always_in_scope
+            | active_auth_params
         )
 
     # Connector field id → declared type metadata (for type-correct dummy values
