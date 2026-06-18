@@ -1540,3 +1540,6 @@ fromversion: 5.0.0
 deprecated: true
 tests:
 - No test
+supportedModules:
+- agentix
+- xsiam

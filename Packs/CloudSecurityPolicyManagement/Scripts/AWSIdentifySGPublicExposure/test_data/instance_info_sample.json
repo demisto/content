@@ -1,0 +1,51 @@
+[
+    {
+        "Type": 1,
+        "Metadata": {
+            "instance": "AWS"
+        },
+        "Contents": {
+            "Reservations": [
+                {
+                    "Instances": [
+                        {
+                            "PublicIpAddress": "1.1.1.1",
+                            "PrivateIpAddress": "10.0.0.1",
+                            "SecurityGroups": [
+                                {
+                                    "GroupName": "sg-name1",
+                                    "GroupId": "sg-00000000000000000"
+                                }
+                            ],
+                            "NetworkInterfaces": [
+                                {
+                                    "NetworkInterfaceId": "eni-00000000000000000",
+                                    "Groups": [
+                                        {
+                                            "GroupId": "sg-00000000000000000",
+                                            "GroupName": "sg-name1"
+                                        }
+                                    ],
+                                    "Association": {
+                                        "PublicIp": "1.1.1.1",
+                                        "PublicDnsName": "ec2-1-1-1-1.compute-1.amazonaws.com",
+                                        "IpOwnerId": "amazon"
+                                    }
+                                },
+                                {
+                                    "NetworkInterfaceId": "eni-00000000000000001",
+                                    "Groups": [
+                                        {
+                                            "GroupName": "sg-name2",
+                                            "GroupId": "sg-00000000000000001"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]
