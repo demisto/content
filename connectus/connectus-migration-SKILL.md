@@ -1956,14 +1956,28 @@ Step 13 in the batch sees `--check` → exit `0` and continues unattended.
 
 #### Step 13.1 — Run the self-executing markpass gate
 
-This is a **self-executing gate** (no bypass) — mirrors the Step 10
-`make validate` gate and the auth-parity gate inside `set-auth`. Calling
-`markpass` for this checkpoint RUNS the param-parity verification itself
+This is a **self-executing gate** — mirrors the Step 10 `make validate`
+gate and the auth-parity gate inside `set-auth`. Calling `markpass` for
+this checkpoint RUNS the param-parity verification itself
 (`deploy_and_test.py` under the hood) and only writes the ✅ marker if it
-exits `0`. There is NO `--no-gate`, NO force/skip env var, and NO
-confidence-based or manual markpass: **the AI MUST NOT (and CANNOT) mark this
-step pass without the verification running and succeeding.** `markpass` IS the
-verification.
+exits `0`. There is NO `--no-gate` and NO confidence-based or manual
+markpass: **the AI MUST NOT (and CANNOT) mark this step pass without the
+verification running and succeeding.** `markpass` IS the verification.
+
+> **The pass/fail VERDICT is never bypassable.** The only operator lever
+> is `CONNECTUS_PARITY_SKIP_DEPLOY=1`, which makes the gate append
+> `--skip-deploy` to `deploy_and_test.py` so the connector manifest is
+> **not re-deployed** before the test — the gate goes straight to the real
+> param-parity check against an **already-deployed** connector. Use this
+> when the connectors are already deployed to the tenant out-of-band (e.g.
+> a batch where deploy was done once up front). The param-parity test
+> still runs and the ✅ is recorded **only on exit `0`**; this skips the
+> redundant deploy phase, NOT the verdict. Example:
+>
+> ```bash
+> CONNECTUS_PARITY_SKIP_DEPLOY=1 \
+>   python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
+> ```
 
 > **Prerequisite — `Connector Folder Path` must be set.** The param-parity
 > resolver looks up the connector tree from the pipeline CSV's
@@ -1985,14 +1999,17 @@ python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param p
 
 Under the hood this runs
 `python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"`
+(plus `--skip-deploy` when `CONNECTUS_PARITY_SKIP_DEPLOY=1`)
 — it assumes the live session (auto-reviving a dead port-forward), acquires the
-per-tenant lock, deploys the whole manifest to the `.env` tenant, runs the
-param-parity test, and releases the lock (always, via `try/finally`). The ✅
-marker is written ONLY on exit `0`; any non-zero exit REJECTS the markpass,
-surfaces the wrapper's output tail, and leaves the CSV cell empty.
+per-tenant lock, deploys the whole manifest to the `.env` tenant (UNLESS
+skip-deploy is set), runs the param-parity test, and releases the lock (always,
+via `try/finally`). The ✅ marker is written ONLY on exit `0`; any non-zero exit
+REJECTS the markpass, surfaces the wrapper's output tail, and leaves the CSV
+cell empty.
 
-The ONLY operator lever is the generic `markpass --timeout=N` (it bounds how
-long the gate waits — it never bypasses the pass/fail verdict).
+Operator levers: the generic `markpass --timeout=N` (bounds how long the gate
+waits) and `CONNECTUS_PARITY_SKIP_DEPLOY=1` (skips the connector re-deploy, see
+the note above). Neither bypasses the pass/fail verdict.
 
 #### Step 13.2 — Failure handling (read the exit code + triage)
 
