@@ -2002,8 +2002,12 @@ def get_fields_query_part(
 def get_finding_field_and_value(
     raw_field: str, finding_data: dict[str, Any], raw: dict[str, Any] | None = None
 ) -> tuple[str, Any]:
-    """Gets the value by the name of the raw_field. We don't search for equivalence because raw field
-    can be "threat_match_field|s" while the field is "threat_match_field".
+    """Gets the value by the name of the raw_field. The raw field may contain a Splunk
+    formatting suffix (e.g. "threat_match_field|s") while the actual field is "threat_match_field",
+    so we compare against the base field name (the part before the first "|").
+
+    We must NOT use a loose substring match here, because that causes field-name collisions
+    (e.g. the field "src" would wrongly match the raw field "src_ip").
 
     Args:
         raw_field (str): The raw field
@@ -2015,12 +2019,11 @@ def get_finding_field_and_value(
     """
     if not raw:
         raw = raw_to_dict(finding_data.get("_raw", ""))
-    for field_name in finding_data:
-        if field_name in raw_field:
-            return field_name, finding_data[field_name]
-    for field_name in raw:
-        if field_name in raw_field:
-            return field_name, raw[field_name]
+    base_field = raw_field.split("|")[0].strip()
+    if base_field in finding_data:
+        return base_field, finding_data[base_field]
+    if base_field in raw:
+        return base_field, raw[base_field]
     demisto.error(f"Field {raw_field} was not found in the finding.")
     return "", ""
 
@@ -2133,6 +2136,34 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search: str) -> str:
     return drilldown_search
 
 
+def escape_backslashes_in_field_filters(search: str) -> str:
+    """Re-escapes backslashes inside the value of `field="value"` filters in an SPL search.
+
+    When a drilldown search arrives as a JSON string, ``json.loads`` decodes ``\\\\`` to a single
+    backslash. Splunk SPL, however, requires backslashes inside a double-quoted filter value to be
+    escaped (doubled) in order to match.
+
+    To stay safe, this only touches values that directly follow ``=`` (i.e. ``field="value"`` filters)
+    and leaves free-text / ``rex`` regex quoted strings untouched. It is idempotent - values that are
+    already correctly escaped (``\\\\``) are left unchanged.
+
+    Args:
+        search (str): The decoded SPL drilldown search.
+
+    Returns:
+        str: The SPL search with backslashes escaped inside field filter values.
+    """
+
+    def _escape(match: re.Match) -> str:
+        prefix = match.group(1)  # the '=' and any following whitespace
+        value = match.group(2)  # the value between the double quotes
+        normalized = value.replace("\\\\", "\\")  # normalize already-doubled backslashes
+        escaped = normalized.replace("\\", "\\\\")  # then double every backslash (idempotent)
+        return f'{prefix}"{escaped}"'
+
+    return re.sub(r'(=\s*)"([^"]*)"', _escape, search)
+
+
 def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, Any]]:
     """Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -2143,7 +2174,13 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
         list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
-    searches = []
+    searches: list[dict] = []
+
+    def _fix_search_backslashes(search_obj: dict[str, Any]) -> dict[str, Any]:
+        # Re-escape backslashes in the SPL search after json.loads collapsed them (XSUP-70829)
+        if isinstance(search_obj, dict) and isinstance(search_obj.get("search"), str):
+            search_obj["search"] = escape_backslashes_in_field_filters(search_obj["search"])
+        return search_obj
 
     for drilldown_search in drilldown_searches:
         try:
@@ -2151,9 +2188,9 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
             drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
-                searches.extend(search)
+                searches.extend(_fix_search_backslashes(s) for s in search)
             else:
-                searches.append(search)
+                searches.append(_fix_search_backslashes(search))
         except json.JSONDecodeError as e:
             demisto.error(
                 f"Caught an exception while parsing a drilldown search object."
