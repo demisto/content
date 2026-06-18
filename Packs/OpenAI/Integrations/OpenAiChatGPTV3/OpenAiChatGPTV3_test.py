@@ -2541,20 +2541,8 @@ def test_build_responses_api_body_no_none_values():
     for key, value in body.items():
         assert value is not None, f"Key '{key}' has None value in body"
 
-    # Verify only model, input, store are present (no optional params)
-    assert body == {"model": "gpt-4", "input": "Hello", "store": False}
-
-
-def test_build_responses_api_body_store_none_omitted():
-    """When store=None, the 'store' key should be omitted from the body."""
-    body = _build_responses_api_body(
-        args={},
-        params={},
-        model="gpt-4",
-        prompt="Hello",
-        store=None,
-    )
-    assert "store" not in body
+    # Verify only model and input are present (no optional params)
+    assert body == {"model": "gpt-4", "input": "Hello"}
 
 
 def test_build_responses_api_body_args_override_params():

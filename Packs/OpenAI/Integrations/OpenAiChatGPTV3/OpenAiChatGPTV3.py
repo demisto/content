@@ -605,8 +605,6 @@ def _build_responses_api_body(
     params: dict[str, Any],
     model: str,
     prompt: str,
-    *,
-    store: bool | None = False,
 ) -> dict[str, Any]:
     """Build a Responses API request body from command args and instance params.
 
@@ -620,8 +618,6 @@ def _build_responses_api_body(
         params: Instance parameters from ``demisto.params()``.
         model: The resolved model name (use ``_resolve_model`` first).
         prompt: The input text / prompt to send.
-        store: Whether the API should persist the response.  ``False`` by default;
-            pass ``None`` to omit the key entirely (lets the API use its own default).
 
     Returns:
         A dict ready to be passed to ``client.create_response(body)``.
@@ -630,8 +626,6 @@ def _build_responses_api_body(
         "model": model,
         "input": prompt,
     }
-    if store is not None:
-        body["store"] = store
 
     # max_output_tokens: command arg takes precedence, then instance param
     max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS)
@@ -1004,7 +998,7 @@ def analyze_email_header_command(client: OpenAiClient, args: dict[str, Any], par
 
     This is the Responses-API counterpart of ``gpt-check-email-header`` (which uses
     Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
-    template, and sends it via ``POST /v1/responses`` with ``store: false``.
+    template, and sends it via ``POST /v1/responses``.
 
     Two war-room entries are produced (matching the ``gpt-check-email-header`` UX):
       1. A table of the parsed email headers.
@@ -1079,7 +1073,7 @@ def analyze_email_body_command(client: OpenAiClient, args: dict[str, Any], param
 
     This is the Responses-API counterpart of ``gpt-check-email-body`` (which uses
     Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
-    template, and sends it via ``POST /v1/responses`` with ``store: false``.
+    template, and sends it via ``POST /v1/responses``.
 
     Two war-room entries are produced (matching the ``gpt-check-email-body`` UX):
       1. A table of the parsed email body (text and HTML).
@@ -1414,7 +1408,7 @@ def create_response_command(args: dict[str, Any], client: OpenAiClient, params: 
 
     # Resolve model & build the base Responses API request body
     model = _resolve_model(args, client)
-    body = _build_responses_api_body(args, params, model, message, store=None)
+    body = _build_responses_api_body(args, params, model, message)
 
     # Conversation continuity via previous_response_id.
     # The Responses API keeps the full conversation server-side; we only need to
