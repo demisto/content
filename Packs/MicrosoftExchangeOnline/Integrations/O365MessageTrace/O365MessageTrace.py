@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
+import time
 import traceback
 from datetime import datetime, timedelta, UTC
 from typing import Any
@@ -35,9 +36,9 @@ class Config:
     # across many runs instead of re-downloading days of events on every run.
     FETCH_WINDOW_MINUTES = 5
 
-    # Upper bound on how many times ``fetch_events_sequential`` is called within a
-    # single fetch cycle, so a far-behind integration cannot loop indefinitely.
-    MAX_FETCH_ITERATIONS = 50
+    # Fixed backoff schedule (in seconds) applied between retries when the Graph
+    # API responds with HTTP 429 (Too Many Requests).
+    RATE_LIMIT_BACKOFFS = (30, 60, 90)
 
 
 # ============================================================================
@@ -100,6 +101,33 @@ class Client:
     # ------------------------------------------------------------------
     # API calls
     # ------------------------------------------------------------------
+    def _request_with_backoff(self, **http_kwargs) -> dict[str, Any]:
+        """Call Graph, retrying a 429 with fixed backoff (30s, 60s, 90s).
+
+        The shared MicrosoftApiModule hardcodes its retry list to [503] and its
+        rate-limit retry to a single 60s reschedule, so 429 backoff is implemented
+        here. ``overwrite_rate_limit_retry=True`` disables the module reschedule so
+        only this loop governs 429 behavior.
+        """
+        last_exc: Exception | None = None
+        # len(backoffs) retries + 1 initial attempt.
+        for attempt, wait_seconds in enumerate((0, *Config.RATE_LIMIT_BACKOFFS)):
+            if wait_seconds:
+                demisto.debug(f"[RateLimit] 429 received; sleeping {wait_seconds}s before retry {attempt}.")
+                time.sleep(wait_seconds)
+            try:
+                return self.ms_client.http_request(
+                    ok_codes=[200],
+                    **http_kwargs,
+                )
+            except Exception as e:
+                if "429" not in str(e):
+                    raise  # not a rate-limit error → propagate immediately
+                last_exc = e
+                demisto.debug(f"[RateLimit] attempt {attempt} hit 429.")
+        # Exhausted all backoffs.
+        raise last_exc  # type: ignore[misc]
+
     def get_message_traces_page(
         self,
         start_date: str | None = None,
@@ -115,14 +143,14 @@ class Client:
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
+            return self._request_with_backoff(method="GET", full_url=next_link, url_suffix="")
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
+        return self._request_with_backoff(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params)
 
 
 # ============================================================================
@@ -474,20 +502,22 @@ def fetch_events(client: Client, max_events: int) -> None:
     else:
         window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
         all_events: list[dict] = []
-        iterations = 0
 
         # Walk fixed-size windows until we either catch up to ``now``, collect enough
         # events, or hit the safety cap on how many times ``fetch_events_sequential``
         # may be called in a single run.
-        while start_dt < now and len(all_events) < max_events and iterations < Config.MAX_FETCH_ITERATIONS:
-            iterations += 1
-
-            demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
-
-            # Fetch all events in the window sequentially
-            events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+        while start_dt < now and len(all_events) < max_events:
+            window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+            try:
+                events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+            except Exception as e:
+                demisto.error(f"[Fetch] Error fetching events for window {start_dt} -> {window_end_dt}: {e}")
+                break
             all_events.extend(events)
-
+            # Guard: the window cursor MUST advance, or stop (mirrors the pagination guard).
+            if window_end_dt <= start_dt:
+                demisto.error(f"[Fetch] Window did not advance ({start_dt} -> {window_end_dt}); stopping.")
+                break
             start_dt = window_end_dt
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
 

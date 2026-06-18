@@ -1186,3 +1186,142 @@ class TestFetchEventsInRunLoop:
         # Four events were collected across both windows but only three may be published.
         sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
         assert len(sent_events) == 3
+
+    def test_429_on_second_window_keeps_first_window_events_and_advances_last_run(self, mock_client, mocker):
+        """A 429 (rate-limit) error on the second window's API request must NOT lose
+        the first window's events.
+
+        Window 1 returns events successfully (they must be sent to XSIAM and
+        ``last_run`` advanced to their high-water mark). Window 2's request raises a
+        429-style exception which, with no events collected for that window, is
+        re-raised by ``fetch_events_sequential`` and caught by the in-run loop's
+        try/except: the error is logged and the loop breaks while still persisting
+        and publishing what window 1 produced.
+        """
+        # last_fetch=09:00, now=09:10 -> 2 windows: [09:00,09:05], [09:05,09:10].
+        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        window1 = {
+            "value": [
+                {"id": "w1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
+            ]
+        }
+        # Window 2's first (and only) request fails with a 429 rate-limit error.
+        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        error_mock = mocker.patch.object(O365MessageTrace.demisto, "error")
+        # First call (window 1) succeeds, second call (window 2) raises 429.
+        mock_client.ms_client.http_request.side_effect = [window1, rate_limit_error]
+
+        fetch_events(mock_client, max_events=100)
+
+        # Window 1's events must still be published to XSIAM.
+        sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
+        assert [e["id"] for e in sent_events] == ["w1"]
+
+        # last_run must be persisted once and advanced to window 1's high-water mark.
+        set_last_run.assert_called_once()
+        new_state = set_last_run.call_args.args[0]
+        assert new_state["last_fetch"] == "2025-01-01T09:01:00Z"
+        assert new_state["seen_ids"] == ["w1|bob@contoso.com"]
+
+        # The in-run loop's error for the failing window must be logged. The message
+        # uses the datetime window bounds (09:05 -> 09:10) and the exception text.
+        window_error_calls = [call.args[0] for call in error_mock.call_args_list if call.args and "[F" in call.args[0]]
+        assert len(window_error_calls) == 1
+        message = window_error_calls[0]
+        assert "2025-01-01 09:05:00+00:00 -> 2025-01-01 09:10:00+00:00" in message
+        assert "429" in message
+
+
+# ============================================================================
+# Rate-limit backoff tests
+# ============================================================================
+class TestRequestWithBackoff:
+    """``Client._request_with_backoff`` retries a 429 with the fixed backoff
+    schedule defined by ``Config.RATE_LIMIT_BACKOFFS`` and disables the shared
+    module's own rate-limit reschedule via ``overwrite_rate_limit_retry=True``.
+    """
+
+    def test_returns_response_on_first_success_without_sleeping(self, mock_client, mocker):
+        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
+        mock_client.ms_client.http_request.return_value = {"value": ["ok"]}
+
+        result = mock_client._request_with_backoff(method="GET", url_suffix="x")
+
+        assert result == {"value": ["ok"]}
+        mock_client.ms_client.http_request.assert_called_once()
+        sleep_mock.assert_not_called()
+
+    def test_passes_overwrite_rate_limit_retry_and_ok_codes(self, mock_client, mocker):
+        mocker.patch.object(O365MessageTrace.time, "sleep")
+        mock_client.ms_client.http_request.return_value = {}
+
+        mock_client._request_with_backoff(method="GET", full_url="full-url-placeholder", url_suffix="")
+
+        call_kwargs = mock_client.ms_client.http_request.call_args.kwargs
+        assert call_kwargs["overwrite_rate_limit_retry"] is True
+        assert call_kwargs["ok_codes"] == [200]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["full_url"] == "full-url-placeholder"
+
+    def test_retries_429_then_succeeds(self, mock_client, mocker):
+        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
+        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
+        mock_client.ms_client.http_request.side_effect = [rate_limit_error, {"value": ["ok"]}]
+
+        result = mock_client._request_with_backoff(method="GET", url_suffix="x")
+
+        assert result == {"value": ["ok"]}
+        assert mock_client.ms_client.http_request.call_count == 2
+        # First backoff value is used before the retry.
+        sleep_mock.assert_called_once_with(Config.RATE_LIMIT_BACKOFFS[0])
+
+    def test_exhausts_all_backoffs_then_raises(self, mock_client, mocker):
+        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
+        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
+        # Always 429: initial attempt + len(backoffs) retries all fail.
+        mock_client.ms_client.http_request.side_effect = rate_limit_error
+
+        with pytest.raises(Exception, match="429"):
+            mock_client._request_with_backoff(method="GET", url_suffix="x")
+
+        # initial attempt + one retry per backoff value.
+        assert mock_client.ms_client.http_request.call_count == 1 + len(Config.RATE_LIMIT_BACKOFFS)
+        assert [c.args[0] for c in sleep_mock.call_args_list] == list(Config.RATE_LIMIT_BACKOFFS)
+
+    def test_non_429_error_propagates_immediately_without_retry(self, mock_client, mocker):
+        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
+        other_error = Exception("Error in API call [500] - Internal Server Error")
+        mock_client.ms_client.http_request.side_effect = other_error
+
+        with pytest.raises(Exception, match="500"):
+            mock_client._request_with_backoff(method="GET", url_suffix="x")
+
+        mock_client.ms_client.http_request.assert_called_once()
+        sleep_mock.assert_not_called()
+
+
+class TestGetMessageTracesPageUsesBackoff:
+    """``get_message_traces_page`` must route both the first-page and
+    next-link requests through ``_request_with_backoff``.
+    """
+
+    def test_first_page_uses_backoff(self, mock_client, mocker):
+        backoff_mock = mocker.patch.object(mock_client, "_request_with_backoff", return_value={"value": []})
+
+        mock_client.get_message_traces_page(start_date="2025-01-01T00:00:00Z", end_date="2025-01-01T01:00:00Z")
+
+        backoff_mock.assert_called_once()
+        assert backoff_mock.call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
+
+    def test_next_link_uses_backoff(self, mock_client, mocker):
+        backoff_mock = mocker.patch.object(mock_client, "_request_with_backoff", return_value={"value": []})
+
+        mock_client.get_message_traces_page(next_link="next-link-placeholder")
+
+        backoff_mock.assert_called_once()
+        assert backoff_mock.call_args.kwargs["full_url"] == "next-link-placeholder"
