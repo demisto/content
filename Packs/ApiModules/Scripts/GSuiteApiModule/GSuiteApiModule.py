@@ -8,7 +8,6 @@ from typing import Any
 
 import httplib2
 from google.auth import exceptions
-from google.oauth2 import credentials as oauth2_credentials
 from google.oauth2 import service_account
 from google_auth_httplib2 import AuthorizedHttp
 
@@ -41,36 +40,9 @@ class GSuiteClient:
     Client to use in integration with powerful http_request.
     """
 
-    @staticmethod
-    def get_ucp_access_token(subject: str | None = None) -> tuple[str, str]:
-        """Fetch the OAuth2 access token for the active UCP connection profile.
-
-        :param subject: The user to impersonate. When provided, it is sent to the
-            UCP service as ``{"extra": {"subject": subject}}`` so the issued token
-            impersonates that user (Google Workspace domain-wide delegation).
-
-        :return: Tuple of ``(method_unique_id, access_token)``.
-        :rtype: ``tuple``
-        :raises UcpException: If no access token is present.
-        """
-        demisto.debug("calling access token from ucp service")
-        method_id = get_ucp_method_unique_id(resolve_ucp_capability())
-
-        body = {"extra": {"subject": subject}} if subject else None
-        credentials = get_ucp_credentials(method_id, body=body)
-
-        cred_type = credentials.get("type")
-        token_data = credentials.get(cred_type, credentials) if cred_type else credentials
-        access_token = token_data.get("access_token") if isinstance(token_data, dict) else None
-        if not access_token:
-            demisto.error("[UCP][GSuiteApiModule.py] access token is empty.")
-            raise UcpException()
-        demisto.debug("Recieved access token from UCP Service")
-        return method_id, access_token
-
     def __init__(
         self,
-        service_account_dict: dict[str, str] | None,
+        service_account_dict: dict[str, str],
         proxy: bool,
         verify: bool,
         base_url: str = "",
@@ -78,31 +50,15 @@ class GSuiteClient:
         user_id: str = "",
     ):
         self.headers = headers
+        try:
+            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
+        except Exception:
+            raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
         self.proxy = proxy
         self.verify = verify
         self.authorized_http: Any = None
         self.base_url = base_url
         self.user_id = user_id
-
-        # The method id is kept so the cached credentials can be invalidated and refreshed
-        # after an auth error. TODO fix this later
-        self._ucp_method_id: str | None = None
-        # ``_ucp_token`` is set only in UCP mode; its presence flags that the
-        # credentials are token-based (no scopes/subject impersonation needed).
-        self._ucp_token: str | None = None
-        if not service_account_dict and should_use_ucp_auth():
-            # The subject (user to impersonate) is resolved once by the caller
-            # (args override falling back to the instance param) and passed in as
-            # ``user_id``. It is forwarded to UCP so the issued token impersonates
-            # that user.
-            self._ucp_method_id, self._ucp_token = self.get_ucp_access_token(subject=user_id or None)
-            self.credentials = oauth2_credentials.Credentials(token=self._ucp_token)
-            return
-
-        try:
-            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
-        except Exception:
-            raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
 
     def set_authorized_http(self, scopes: list[str], subject: str | None = None, timeout: int = 60) -> None:
         """
@@ -114,13 +70,9 @@ class GSuiteClient:
 
         :return: None.
         """
-        # In UCP token mode the access token is already scoped and impersonates
-        # the configured subject, so scopes/subject must not be re-applied
-        # (OAuth2 token credentials do not support ``with_subject``).
-        if not self._ucp_token:
-            self.credentials = self.credentials.with_scopes(scopes)
-            if subject:
-                self.credentials = self.credentials.with_subject(subject)
+        self.credentials = self.credentials.with_scopes(scopes)
+        if subject:
+            self.credentials = self.credentials.with_subject(subject)
         authorized_http = AuthorizedHttp(
             credentials=self.credentials, http=GSuiteClient.get_http_client(self.proxy, self.verify, timeout=timeout)
         )
@@ -159,27 +111,7 @@ class GSuiteClient:
 
         with GSuiteClient.http_exception_handler():
             response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
-            self._maybe_invalidate_ucp_credentials(response)
             return GSuiteClient.validate_and_extract_response(response)
-
-    def _maybe_invalidate_ucp_credentials(self, response: tuple) -> None:
-        """Invalidate cached UCP credentials when the response is an auth error.
-
-        In UCP mode an expired/rotated credential is signalled by a 401/403.
-        Dropping the cache entry forces the next request to fetch fresh
-        credentials from the connection profile.
-
-        :param response: Tuple of ``(httplib2.Response, content)``.
-        :return: None
-        """
-        if not self._ucp_method_id:
-            return
-        try:
-            status = response[0].status
-        except (IndexError, AttributeError):
-            return
-        if status in (401, 403):
-            invalidate_ucp_credentials(self._ucp_method_id)
 
     @staticmethod
     def handle_http_error(error: httplib2.socks.HTTPError) -> None:
