@@ -62,6 +62,8 @@ from workflow_state.state_machine import (
 from workflow_state.csv_io import (
     BASE_DIR,
     CSV_PATH,
+    PIPELINE_CSV_ENV_VAR,
+    _resolve_pipeline_csv,
     find_row,
     load_csv,
     os,  # re-exported for tests that monkey-patch ``workflow_state.os.replace``
@@ -203,6 +205,7 @@ __all__ = [
     # CSV I/O
     "BASE_DIR",
     "CSV_PATH",
+    "PIPELINE_CSV_ENV_VAR",
     "find_row",
     "load_csv",
     "save_csv",
