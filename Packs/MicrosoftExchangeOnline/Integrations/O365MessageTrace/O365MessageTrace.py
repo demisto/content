@@ -118,6 +118,7 @@ class Client:
             try:
                 return self.ms_client.http_request(
                     ok_codes=[200],
+                    overwrite_rate_limit_retry=True,
                     **http_kwargs,
                 )
             except Exception as e:

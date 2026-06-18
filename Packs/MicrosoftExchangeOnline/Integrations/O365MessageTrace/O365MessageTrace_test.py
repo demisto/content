@@ -225,6 +225,7 @@ class TestGetMessageTracesPage:
             full_url="https://graph.microsoft.com/next-page",
             url_suffix="",
             ok_codes=[200],
+            overwrite_rate_limit_retry=True,
         )
 
     def test_uses_filter_when_no_next_link(self, mock_client):
@@ -1124,20 +1125,15 @@ class TestFetchEventsInRunLoop:
 
         set_last_run.assert_called_once()
 
-    def test_catch_up_stops_at_max_fetch_iterations(self, mock_client, mocker):
-        """A backlog larger than ``MAX_FETCH_ITERATIONS`` windows must stop after the
-        cap (a single-run safety bound) rather than walking all the way to ``now``.
-
-        ``MAX_FETCH_ITERATIONS`` is patched to a small value so the cap is reached
-        before the backlog (which spans more windows) is drained. The loop must make
-        exactly ``MAX_FETCH_ITERATIONS`` requests and leave ``last_fetch`` at the
-        capped window end - well short of ``now``.
+    def test_catch_up_walks_all_windows_until_now(self, mock_client, mocker):
+        """A backlog spanning several windows must be drained within a single run,
+        walking each ``FETCH_WINDOW_MINUTES`` slice until caught up to ``now`` and
+        advancing ``last_fetch`` all the way to ``now``.
         """
-        # last_fetch=09:00, now=09:30 -> 6 windows of 5 min, but the cap is 3.
+        # last_fetch=09:00, now=09:30 -> 6 windows of 5 min each.
         now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
         last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.Config, "MAX_FETCH_ITERATIONS", 3)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -1145,13 +1141,11 @@ class TestFetchEventsInRunLoop:
 
         fetch_events(mock_client, max_events=100)
 
-        # Exactly MAX_FETCH_ITERATIONS windows requested (one empty page each).
-        assert mock_client.ms_client.http_request.call_count == 3
-        # last_fetch advanced to the window end reached after the cap (09:20), well
-        # short of ``now`` (09:30): the safety bound stops the catch-up early.
+        # One first-page request per window (six empty windows) until caught up.
+        assert mock_client.ms_client.http_request.call_count == 6
+        # last_fetch advanced all the way to ``now`` (09:30): the backlog is drained.
         new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:20:00Z"
-        assert new_state["last_fetch"] != "2025-01-01T09:30:00Z"
+        assert new_state["last_fetch"] == "2025-01-01T09:30:00Z"
 
     def test_catch_up_truncates_total_to_max_events(self, mock_client, mocker):
         """Events accumulated across multiple windows must be truncated to
@@ -1206,15 +1200,22 @@ class TestFetchEventsInRunLoop:
                 {"id": "w1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
             ]
         }
-        # Window 2's first (and only) request fails with a 429 rate-limit error.
+        # Window 2's request fails with a 429 rate-limit error on every attempt.
         rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        # Mock the backoff sleep so the custom 429 retry loop does not actually wait.
+        mocker.patch.object(O365MessageTrace.time, "sleep")
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         error_mock = mocker.patch.object(O365MessageTrace.demisto, "error")
-        # First call (window 1) succeeds, second call (window 2) raises 429.
-        mock_client.ms_client.http_request.side_effect = [window1, rate_limit_error]
+        # Window 1 succeeds; window 2 raises 429 on the initial attempt and on every
+        # backoff retry (1 initial + len(RATE_LIMIT_BACKOFFS) retries), so the
+        # custom backoff loop exhausts and re-raises the 429 to the in-run loop.
+        mock_client.ms_client.http_request.side_effect = [
+            window1,
+            *([rate_limit_error] * (1 + len(O365MessageTrace.Config.RATE_LIMIT_BACKOFFS))),
+        ]
 
         fetch_events(mock_client, max_events=100)
 
@@ -1230,10 +1231,11 @@ class TestFetchEventsInRunLoop:
 
         # The in-run loop's error for the failing window must be logged. The message
         # uses the datetime window bounds (09:05 -> 09:10) and the exception text.
-        window_error_calls = [call.args[0] for call in error_mock.call_args_list if call.args and "[F" in call.args[0]]
+        window_bounds = "2025-01-01 09:05:00+00:00 -> 2025-01-01 09:10:00+00:00"
+        window_error_calls = [call.args[0] for call in error_mock.call_args_list if call.args and window_bounds in call.args[0]]
         assert len(window_error_calls) == 1
         message = window_error_calls[0]
-        assert "2025-01-01 09:05:00+00:00 -> 2025-01-01 09:10:00+00:00" in message
+        assert window_bounds in message
         assert "429" in message
 
 
