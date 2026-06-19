@@ -85,8 +85,10 @@ from Vega import (
     _fetch_modified_entity_ids,
     _fetch_modified_alert_ids,
     _extract_outgoing_delta_value,
+    _collect_outgoing_entry_comments,
     VEGA_NEW_COMMENT_FIELD,
     VEGA_MIRROR_TAG_FROM_VEGA,
+    VEGA_MIRROR_TAG_TO_VEGA,
     RATE_LIMIT_INITIAL_WAIT_SECONDS,
     validate_backfill_days,
     filter_alert_severities,
@@ -1909,8 +1911,47 @@ def test_update_detections_command_requires_detection_id(mocker):
 def test_update_detections_command_requires_update_fields(mocker):
     mock_client = mocker.Mock(spec=Client)
 
-    with pytest.raises(DemistoException, match="At least one of severity or status"):
+    with pytest.raises(DemistoException, match="At least one of severity, status, state, or tags"):
         update_detections_command(mock_client, {"detection_id": "det-1"})
+
+
+def test_update_detections_command_with_state_and_tags(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_detections.return_value = {
+        "results": [
+            {
+                "status": "VALID",
+                "name": "Detection 1",
+                "detection": {
+                    "id": "det-1",
+                    "name": "Detection 1",
+                    "severity": "HIGH",
+                    "status": "VISIBLE",
+                    "state": "ENABLED",
+                    "tags": ["tag-a", "tag-b"],
+                },
+            }
+        ],
+        "summary": {"requested": 1, "valid": 1, "invalid": 0, "committed": True},
+    }
+
+    result = update_detections_command(
+        mock_client,
+        {"detection_id": "det-1", "state": "enabled", "tags": ["tag-a", "tag-b"]},
+    )
+
+    mock_client.update_detections.assert_called_once_with(
+        [{"detectionId": "det-1", "state": "ENABLED", "tags": ["tag-a", "tag-b"]}]
+    )
+    assert result.outputs["State"] == "ENABLED"
+    assert result.outputs["Tags"] == ["tag-a", "tag-b"]
+
+
+def test_update_detections_command_invalid_state(mocker):
+    mock_client = mocker.Mock(spec=Client)
+
+    with pytest.raises(DemistoException, match="state must be one of"):
+        update_detections_command(mock_client, {"detection_id": "det-1", "state": "INVALID"})
 
 
 def test_update_detections_command_raises_on_api_errors(mocker):
@@ -2575,7 +2616,7 @@ def test_resolve_mirror_updated_from_for_alerts_uses_wider_lookback():
     assert alert_parsed <= incident_parsed
 
 
-def test_fetch_modified_alert_ids_polls_without_updated_to_and_origin_types(mocker):
+def test_fetch_modified_alert_ids_polls_without_updated_to(mocker):
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alerts.return_value = {
@@ -2586,10 +2627,11 @@ def test_fetch_modified_alert_ids_polls_without_updated_to_and_origin_types(mock
     result = _fetch_modified_alert_ids(mock_client, "2026-06-15T11:00:00Z")
 
     assert result == ["alert:alert-1"]
-    assert mock_client.get_alerts.call_count == 3
-    for call in mock_client.get_alerts.call_args_list:
-        assert call.kwargs["updated_from"] == "2026-06-15T11:00:00Z"
-        assert "updated_to" not in call.kwargs
+    mock_client.get_alerts.assert_called_once_with(
+        updated_from="2026-06-15T11:00:00Z",
+        limit=100,
+        offset=0,
+    )
 
 
 def test_fetch_modified_entity_ids_passes_updated_to_and_returns_all_api_results(mocker):
@@ -2751,7 +2793,7 @@ def test_get_mirroring_fields_autoclosure_disabled(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "false"},
+        return_value={"autoclosure": "false", "mirror_direction": "Incoming And Outgoing"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
@@ -2761,8 +2803,50 @@ def test_get_mirroring_fields_autoclosure_disabled(mocker):
     assert fields["mirror_instance"] == "Vega_instance_1"
 
 
+def test_get_mirroring_fields_respects_mirror_direction_incoming(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"autoclosure": "true", "mirror_direction": "Incoming"},
+    )
+    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
+
+    fields = _get_mirroring_fields()
+
+    assert fields["mirror_direction"] == "In"
+    assert fields["mirror_instance"] == "Vega_instance_1"
+
+
+def test_get_mirroring_fields_respects_mirror_direction_none(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"autoclosure": "true", "mirror_direction": "None"},
+    )
+    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
+
+    fields = _get_mirroring_fields()
+
+    assert "mirror_direction" not in fields
+    assert fields["mirror_instance"] == "Vega_instance_1"
+
+
+def test_is_xsoar_to_vega_mirroring_disabled_when_mirror_direction_incoming():
+    assert _is_xsoar_to_vega_mirroring_enabled({"autoclosure": "true", "mirror_direction": "Incoming"}) is False
+
+
 def test_is_xsoar_to_vega_mirroring_enabled_defaults_true():
     assert _is_xsoar_to_vega_mirroring_enabled({}) is True
+
+
+def test_collect_outgoing_entry_comments_skips_mirror_tagged_notes():
+    entries = [
+        {"Type": EntryType.NOTE, "Contents": "Analyst note", "Tags": []},
+        {"Type": EntryType.NOTE, "Contents": "From Vega comment", "Tags": [VEGA_MIRROR_TAG_FROM_VEGA]},
+        {"Type": EntryType.NOTE, "Contents": "To Vega comment", "Tags": [VEGA_MIRROR_TAG_TO_VEGA]},
+    ]
+
+    assert _collect_outgoing_entry_comments(entries) == ["Analyst note"]
 
 
 def test_collect_mirror_remote_ids_returns_prefixed_id_only():
@@ -2836,7 +2920,7 @@ def test_get_modified_remote_data_command_respects_entity_filter(mocker):
         {"lastUpdate": "2026-06-01T00:00:00Z"},
     )
 
-    assert mock_client.get_alerts.call_count == 3
+    mock_client.get_alerts.assert_called_once()
     assert mock_client.get_alerts.call_args.kwargs["updated_from"] is not None
     assert "updated_to" not in mock_client.get_alerts.call_args.kwargs
     mock_client.get_incidents.assert_not_called()
@@ -3173,6 +3257,28 @@ def test_update_remote_system_command_disabled(mocker):
     )
 
     assert remote_id == "alert-1"
+    mock_client.update_alerts.assert_not_called()
+
+
+def test_update_remote_system_command_disabled_when_mirror_direction_incoming(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"autoclosure": "true", "mirror_direction": "Incoming"},
+    )
+    mock_client = mocker.Mock(spec=Client)
+
+    remote_id = update_remote_system_command(
+        mock_client,
+        {
+            "remoteId": "alert:alert-1",
+            "incidentChanged": "true",
+            "delta": {"vegastatus": "RESOLVED"},
+            "data": {"vegastatus": "RESOLVED"},
+        },
+    )
+
+    assert remote_id == "alert:alert-1"
     mock_client.update_alerts.assert_not_called()
 
 

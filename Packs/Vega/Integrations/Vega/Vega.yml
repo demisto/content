@@ -73,8 +73,8 @@ configuration:
   - display: Enable XSOAR to Vega mirroring
     additionalinfo: >-
       When enabled, changes made in Cortex XSOAR investigations are mirrored to Vega for status, verdict,
-      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this instance.
-      Vega to XSOAR mirroring is always enabled.
+      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this instance and
+      Incident Mirroring Direction set to Incoming And Outgoing. Vega to XSOAR mirroring is always enabled.
     name: autoclosure
     type: 8
     section: Autoclosure
@@ -183,7 +183,7 @@ configuration:
     options:
       - "Yes"
       - "No"
-    defaultvalue: "Yes,No"
+    defaultvalue: "Yes"
   - display: Incident type
     name: incidentType
     type: 13
@@ -288,8 +288,18 @@ script:
             - MEDIUM
             - HIGH
             - CRITICAL
+        - name: state
+          description: Target Vega detection state.
+          auto: PREDEFINED
+          predefined:
+            - ENABLED
+            - DISABLED
+            - TEST_MODE
+        - name: tags
+          description: Tags to apply to the Vega detection.
+          isArray: true
       description: >-
-        Update severity and/or status for one or more Vega detections using the updateDetections GraphQL mutation.
+        Update severity, status, state, and/or tags for one or more Vega detections using the updateDetections GraphQL mutation.
       outputs:
         - contextPath: Vega.Detection.ID
           description: Updated Vega detection ID.
@@ -302,6 +312,12 @@ script:
           type: String
         - contextPath: Vega.Detection.Status
           description: Updated Vega detection status.
+          type: String
+        - contextPath: Vega.Detection.State
+          description: Updated Vega detection state.
+          type: String
+        - contextPath: Vega.Detection.Tags
+          description: Updated Vega detection tags.
           type: String
         - contextPath: Vega.Detection.ValidationStatus
           description: Vega validation status for the detection update.

@@ -107,7 +107,7 @@ UPDATE_DETECTIONS_MUTATION = (
     "  results { "
     "   name status "
     "   errors { code message field } "
-    "   detection { id name severity status } "
+    "   detection { id name severity status state tags } "
     "  } "
     "  summary { requested valid invalid committed } "
     " } }"
@@ -1403,6 +1403,8 @@ def _build_detection_update_payload(
     detection_id: str,
     severity: str | None = None,
     status: str | None = None,
+    state: str | None = None,
+    tags: list[str] | None = None,
 ) -> dict[str, Any]:
     """Build a single detection update payload for updateDetections."""
     payload: dict[str, Any] = {"detectionId": detection_id}
@@ -1410,6 +1412,10 @@ def _build_detection_update_payload(
         payload["severity"] = severity
     if status is not None:
         payload["status"] = status
+    if state is not None:
+        payload["state"] = state
+    if tags is not None:
+        payload["tags"] = tags
     return payload
 
 
@@ -1449,31 +1455,40 @@ def _format_update_detection_output(result_item: dict[str, Any]) -> dict[str, An
         "Name": detection.get("name") or result_item.get("name"),
         "Severity": detection.get("severity"),
         "Status": detection.get("status"),
+        "State": detection.get("state"),
+        "Tags": detection.get("tags"),
         "ValidationStatus": result_item.get("status"),
     }
 
 
 def update_detections_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Update severity and/or status for one or more Vega detections."""
+    """Update severity, status, state, and/or tags for one or more Vega detections."""
     detection_ids = [item.strip() for item in argToList(args.get("detection_id")) if str(item).strip()]
     if not detection_ids:
         raise DemistoException(
             "detection_id is required and must contain at least one detection ID. "
-            "Example: !vega-update-detections detection_id=det-1 severity=HIGH status=VISIBLE"
+            "Example: !vega-update-detections detection_id=det-1 severity=HIGH state=ENABLED"
         )
 
     severity_arg = args.get("severity")
     status_arg = args.get("status")
+    state_arg = args.get("state")
+    tags_arg = args.get("tags")
     severity = _normalize_detection_severity(severity_arg) if severity_arg not in (None, "") else None
     status = _normalize_detection_status(status_arg) if status_arg not in (None, "") else None
+    state = str(state_arg).strip().upper() if state_arg not in (None, "") else None
+    tags = [item.strip() for item in argToList(tags_arg) if str(item).strip()] or None
 
-    if severity is None and status is None:
-        raise DemistoException("At least one of severity or status must be provided.")
+    if severity is None and status is None and state is None and tags is None:
+        raise DemistoException("At least one of severity, status, state, or tags must be provided.")
 
     if severity is not None and severity not in VALID_DETECTION_SEVERITIES:
         raise DemistoException(f"severity must be one of: {', '.join(sorted(VALID_DETECTION_SEVERITIES))}")
 
-    detections = [_build_detection_update_payload(detection_id, severity, status) for detection_id in detection_ids]
+    if state is not None and state not in VALID_DETECTION_STATES:
+        raise DemistoException(f"state must be one of: {', '.join(sorted(VALID_DETECTION_STATES))}")
+
+    detections = [_build_detection_update_payload(detection_id, severity, status, state, tags) for detection_id in detection_ids]
     result = client.update_detections(detections)
     _raise_update_detections_errors(result)
 
@@ -1482,7 +1497,7 @@ def update_detections_command(client: Client, args: dict[str, Any]) -> CommandRe
     readable = tableToMarkdown(
         "Updated Vega Detections",
         outputs,
-        headers=["ID", "Name", "Severity", "Status", "ValidationStatus"],
+        headers=["ID", "Name", "Severity", "Status", "State", "Tags", "ValidationStatus"],
         removeNull=True,
     )
     if summary:
@@ -3343,10 +3358,20 @@ def _resolve_mirror_updated_to() -> str:
     return _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
 
 
+def _get_configured_mirror_direction_label(params: dict[str, Any]) -> str:
+    """Return the Incident Mirroring Direction label from integration params."""
+    value = params.get("mirror_direction")
+    if value is None or str(value).strip() == "":
+        return "Incoming And Outgoing"
+    return str(value).strip()
+
+
 def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
-    """Return True when outgoing XSOAR to Vega mirroring is enabled via autoclosure."""
+    """Return True when outgoing XSOAR to Vega mirroring is enabled."""
     params = params or demisto.params()
-    return argToBoolean(params.get("autoclosure", True))
+    if not argToBoolean(params.get("autoclosure", True)):
+        return False
+    return _get_configured_mirror_direction_label(params) == "Incoming And Outgoing"
 
 
 def _get_mirror_integration_instance(mirror_context: dict[str, Any] | None = None) -> str:
@@ -3384,7 +3409,9 @@ def _get_mirroring_fields(
 ) -> dict[str, str]:
     """Build mirror metadata embedded in fetched incidents for incoming mirroring."""
     params = params or demisto.params()
-    direction_label = "Incoming And Outgoing" if _is_xsoar_to_vega_mirroring_enabled(params) else "Incoming"
+    direction_label = _get_configured_mirror_direction_label(params)
+    if direction_label == "Incoming And Outgoing" and not _is_xsoar_to_vega_mirroring_enabled(params):
+        direction_label = "Incoming"
     mirror_direction = MIRROR_DIRECTION.get(direction_label)
     mirror_instance = _get_mirror_integration_instance(mirror_context)
     fields: dict[str, str] = {}
@@ -3523,6 +3550,7 @@ def _resolve_preferred_entity_type_from_args(args: dict[str, Any]) -> str | None
 
 def _merge_incident_mirror_fields(base: dict[str, Any], details: dict[str, Any]) -> dict[str, Any]:
     """Merge incident detail fields needed for incoming mirroring into a list payload."""
+    demisto.debug(f"Vega merge incident mirror fields: base={base}, details={details}")
     if not details:
         return _normalize_incident_api_entity(base)
 
@@ -3549,6 +3577,7 @@ def _enrich_incident_entity_for_mirror(client: Client, entity: dict[str, Any]) -
         return _normalize_incident_api_entity(entity)
 
     details = client.get_incident_by_id(entity_id)
+    demisto.debug(f"Vega enrich incident entity for mirror: details={details}")
     if not isinstance(details, dict) or not details:
         return _normalize_incident_api_entity(entity)
 

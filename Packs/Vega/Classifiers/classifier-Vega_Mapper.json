@@ -66,9 +66,6 @@
                 "Vega Comments": {
                     "simple": "vegaComments"
                 },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
                 "dbotMirrorId": {
                     "simple": "mirror_id"
                 },
