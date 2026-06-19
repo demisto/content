@@ -21,11 +21,11 @@ GET_ALERTS_QUERY = (
     "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
     "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
     "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
-    "$updatedFrom: Time, $updatedTo: Time, $originType: AlertOriginType, $limit: Int, $offset: Int) { "
+    "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
     " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
     "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
     "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
-    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, originType: $originType, limit: $limit, offset: $offset) { "
+    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
@@ -137,7 +137,6 @@ MIRROR_POLL_LOOKBACK = timedelta(minutes=1)
 MIRROR_ALERT_POLL_LOOKBACK = timedelta(minutes=5)
 MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=2)
 MIRROR_UPDATED_TO_BUFFER = timedelta(minutes=1)
-MIRROR_ALERT_ORIGIN_TYPES: tuple[str | None, ...] = (None, "PRODUCTION", "TEST")
 VEGA_NUMERIC_SEVERITY_TO_API: dict[int, str] = {
     1: "LOW",
     2: "MEDIUM",
@@ -735,7 +734,6 @@ class Client(BaseClient):
         updated_from: str | None = None,
         updated_to: str | None = None,
         alert_ids: list[str] | None = None,
-        origin_type: str | None = None,
         limit: int | None = None,
         offset: int = 0,
     ) -> dict:
@@ -777,20 +775,17 @@ class Client(BaseClient):
             variables["updatedTo"] = updated_to
         if alert_ids:
             variables["alertIds"] = alert_ids
-        if origin_type:
-            variables["originType"] = origin_type
 
         response = self._graphql_request(GET_ALERTS_QUERY, variables)
         data = response.get("data", {})
         return data.get("getAlerts", {})
 
     def get_alert_by_id(self, alert_id: str) -> dict:
-        """Fetch a single Vega alert by ID, trying all supported origin types."""
-        for origin_type in MIRROR_ALERT_ORIGIN_TYPES:
-            response = self.get_alerts(alert_ids=[alert_id], limit=1, origin_type=origin_type)
-            alerts = response.get("alerts") or []
-            if alerts:
-                return _normalize_alert_api_entity(alerts[0])
+        """Fetch a single Vega alert by ID, trying production supported origin types."""
+        response = self.get_alerts(alert_ids=[alert_id], limit=1)
+        alerts = response.get("alerts") or []
+        if alerts:
+            return _normalize_alert_api_entity(alerts[0])
         return {}
 
     def get_incidents(
@@ -4014,39 +4009,34 @@ def _fetch_modified_alert_ids(client: Client, updated_from: str) -> list[str]:
     collected_ids: list[str] = []
     seen_ids: set[str] = set()
 
-    for origin_type in MIRROR_ALERT_ORIGIN_TYPES:
-        offset = 0
-        while True:
-            response = client.get_alerts(
-                updated_from=updated_from,
-                origin_type=origin_type,
-                limit=GET_MODIFIED_REMOTE_DATA_LIMIT,
-                offset=offset,
-            )
-            api_error = response.get("error")
-            if isinstance(api_error, dict) and api_error.get("message"):
-                demisto.debug(f"Vega mirror alerts poll originType={origin_type!r} error: {api_error.get('message')}")
+    offset = 0
+    while True:
+        response = client.get_alerts(
+            updated_from=updated_from,
+            limit=GET_MODIFIED_REMOTE_DATA_LIMIT,
+            offset=offset,
+        )
+        api_error = response.get("error")
+        if isinstance(api_error, dict) and api_error.get("message"):
+            demisto.debug(f"Vega mirror alerts poll error: {api_error.get('message')}")
 
-            entities = response.get("alerts") or []
-            demisto.debug(
-                f"Vega mirror alerts poll originType={origin_type!r} offset={offset} "
-                f"returned={len(entities)} total={response.get('total')}"
-            )
-            for entity in entities:
-                normalized_entity = _normalize_mirror_poll_entity(entity, MIRROR_ENTITY_SUFFIX_ALERT)
-                for mirror_id in _collect_mirror_remote_ids(normalized_entity, MIRROR_ENTITY_SUFFIX_ALERT):
-                    if mirror_id not in seen_ids:
-                        seen_ids.add(mirror_id)
-                        collected_ids.append(mirror_id)
+        entities = response.get("alerts") or []
+        demisto.debug(f"Vega mirror alerts poll offset={offset} " f"returned={len(entities)} total={response.get('total')}")
+        for entity in entities:
+            normalized_entity = _normalize_mirror_poll_entity(entity, MIRROR_ENTITY_SUFFIX_ALERT)
+            for mirror_id in _collect_mirror_remote_ids(normalized_entity, MIRROR_ENTITY_SUFFIX_ALERT):
+                if mirror_id not in seen_ids:
+                    seen_ids.add(mirror_id)
+                    collected_ids.append(mirror_id)
 
-            total = response.get("total")
-            if not entities:
-                break
-            if total is not None and offset + len(entities) >= int(total):
-                break
-            if len(entities) < GET_MODIFIED_REMOTE_DATA_LIMIT:
-                break
-            offset += len(entities)
+        total = response.get("total")
+        if not entities:
+            break
+        if total is not None and offset + len(entities) >= int(total):
+            break
+        if len(entities) < GET_MODIFIED_REMOTE_DATA_LIMIT:
+            break
+        offset += len(entities)
 
     return collected_ids
 
