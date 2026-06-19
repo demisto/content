@@ -1,0 +1,30 @@
+{
+  "indicator_type": "ipv4",
+  "indicator_value": "1.1.1.1",
+  "activity": "CnC Server",
+  "confidence": 90,
+  "severity": 4,
+  "malicious": "yes",
+  "first_seen": "2025-01-01T12:00:00Z",
+  "last_seen": "2025-01-06T12:49:40Z",
+  "valid_until": "2025-07-06T13:00:00Z",
+  "kill_chain_stage": "command-and-control",
+  "malware_types": ["Trojan", "Ransomware"],
+  "malware_family": "LockBit",
+  "origin_countries": ["RU"],
+  "targeted_countries": ["US", "GB"],
+  "targeted_sectors": ["Finance", "Healthcare"],
+  "targeted_brands": [],
+  "threat_actors": ["APT28"],
+  "campaigns": ["Campaign-2025-Q1"],
+  "cves": ["CVE-2024-1234"],
+  "ttps": [
+    {"mitre_id": "T1071", "title": "Application Layer Protocol", "extra_data": {}},
+    {"mitre_id": "T1059", "title": "Command and Scripting Interpreter", "extra_data": {}}
+  ],
+  "tags": ["apt", "critical"],
+  "enrichment": {
+    "geo": {"country": "Russia", "city": "Moscow"},
+    "asn": {"number": 12345, "organization": "Example ISP"}
+  }
+}
