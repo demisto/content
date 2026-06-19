@@ -1,0 +1,517 @@
+import pytest
+from unittest.mock import Mock, patch
+from PaloAltoNetworks_Prisma_AIRs import (
+    Client,
+    test_module,
+    runtime_scan_command,
+    runtime_api_keys_list_command,
+    runtime_profiles_list_command,
+    runtime_customer_apps_list_command,
+    runtime_deployment_profiles_list_command,
+    runtime_dlp_profiles_list_command,
+    model_security_scans_list_command,
+    model_security_groups_list_command,
+    model_security_rules_list_command,
+)
+
+
+@pytest.fixture
+def mock_client() -> Client:
+    """Create a mock Prisma AIRs client for testing.
+
+    Returns:
+        Client: Mock client instance.
+    """
+    return Client(
+        base_url="https://api.sase.paloaltonetworks.com",
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        tsg_id="1234567890",
+        runtime_api_key="test_runtime_api_key_12345",
+        tenant_region="US",
+        verify=False,
+        proxy=False,
+        headers={}
+    )
+
+
+class TestClient:
+    """Test cases for Client class."""
+
+    def test_client_initialization(self, mock_client: Client) -> None:
+        """Test that Client initializes correctly.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        assert mock_client.client_id == "test_client_id"
+        assert mock_client.client_secret == "test_client_secret"
+        assert mock_client.tsg_id == "1234567890"
+        assert mock_client.runtime_api_key == "test_runtime_api_key_12345"
+        assert mock_client.tenant_region == "US"
+        assert mock_client.scanner_base_url == "https://service.api.aisecurity.paloaltonetworks.com"
+        assert mock_client._access_token is None
+
+    def test_client_regional_endpoints(self) -> None:
+        """Test that regional endpoints are correctly set.
+
+        Tests all supported regions (US, EU, IN, SG).
+        """
+        regions_and_urls = {
+            "US": "https://service.api.aisecurity.paloaltonetworks.com",
+            "EU": "https://service-de.api.aisecurity.paloaltonetworks.com",
+            "IN": "https://service-in.api.aisecurity.paloaltonetworks.com",
+            "SG": "https://service-sg.api.aisecurity.paloaltonetworks.com"
+        }
+
+        for region, expected_url in regions_and_urls.items():
+            client = Client(
+                base_url="https://api.sase.paloaltonetworks.com",
+                client_id="test_client_id",
+                client_secret="test_client_secret",
+                tsg_id="1234567890",
+                runtime_api_key="test_runtime_api_key",
+                tenant_region=region,
+                verify=False,
+                proxy=False,
+                headers={}
+            )
+            assert client.scanner_base_url == expected_url, f"Region {region} should use {expected_url}"
+
+    @patch.object(Client, '_http_request')
+    def test_get_access_token_success(self, mock_http_request: Mock, mock_client: Client) -> None:
+        """Test successful OAuth2 token retrieval.
+
+        Args:
+            mock_http_request: Mocked HTTP request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http_request.return_value = {
+            "access_token": "test_access_token_12345",
+            "token_type": "Bearer",
+            "expires_in": 3600
+        }
+
+        token = mock_client.get_access_token()
+
+        assert token == "test_access_token_12345"
+        assert mock_client._access_token == "test_access_token_12345"
+        mock_http_request.assert_called_once()
+
+    @patch.object(Client, '_http_request')
+    def test_get_access_token_cached(self, mock_http_request: Mock, mock_client: Client) -> None:
+        """Test that access token is cached and not re-requested.
+
+        Args:
+            mock_http_request: Mocked HTTP request method.
+            mock_client: Mock client fixture.
+        """
+        mock_client._access_token = "cached_token"
+
+        token = mock_client.get_access_token()
+
+        assert token == "cached_token"
+        mock_http_request.assert_not_called()
+
+
+class TestCommands:
+    """Test cases for integration commands."""
+
+    @patch.object(Client, 'get_access_token')
+    def test_test_module_success(self, mock_get_token: Mock, mock_client: Client) -> None:
+        """Test that test-module returns ok on successful connection.
+
+        Args:
+            mock_get_token: Mocked get_access_token method.
+            mock_client: Mock client fixture.
+        """
+        mock_get_token.return_value = "test_token"
+
+        result = test_module(mock_client)
+
+        assert result == "ok"
+        mock_get_token.assert_called_once()
+
+    @patch.object(Client, 'get_access_token')
+    def test_test_module_failure(self, mock_get_token: Mock, mock_client: Client) -> None:
+        """Test that test-module returns error message on failure.
+
+        Args:
+            mock_get_token: Mocked get_access_token method.
+            mock_client: Mock client fixture.
+        """
+        mock_get_token.side_effect = Exception("Authentication failed")
+
+        result = test_module(mock_client)
+
+        assert "Test failed" in result
+        assert "Authentication failed" in result
+
+    @patch.object(Client, 'scanner_request')
+    def test_runtime_scan_command_basic(self, mock_scanner: Mock, mock_client: Client) -> None:
+        """Test runtime scan command with basic arguments.
+
+        Args:
+            mock_scanner: Mocked scanner_request method.
+            mock_client: Mock client fixture.
+        """
+        # Mock scanner API response
+        mock_scanner.return_value = {
+            "scan_id": "scan-123",
+            "report_id": "report-123",
+            "action": "allow",
+            "category": "benign",
+            "prompt_detected": {
+                "topic_violation": False,
+                "injection": False,
+                "toxic_content": False,
+                "dlp": False,
+                "url_cats": False,
+                "malicious_code": False
+            }
+        }
+
+        args = {
+            "profile_name": "test-profile",
+            "prompt": "What is the weather today?"
+        }
+
+        result = runtime_scan_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RuntimeScan"
+        assert result.outputs["prompt"] == "What is the weather today?"
+        assert result.outputs["scan_id"] == "scan-123"
+        assert result.outputs["action"] == "allow"
+        assert result.outputs["detected"] is False
+
+    @patch.object(Client, 'scanner_request')
+    def test_runtime_scan_command_with_detection(self, mock_scanner: Mock, mock_client: Client) -> None:
+        """Test runtime scan command with threat detection.
+
+        Args:
+            mock_scanner: Mocked scanner_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_scanner.return_value = {
+            "scan_id": "scan-456",
+            "report_id": "report-456",
+            "action": "block",
+            "category": "malicious",
+            "prompt_detected": {
+                "topic_violation": False,
+                "injection": True,
+                "toxic_content": True,
+                "dlp": False,
+                "url_cats": False,
+                "malicious_code": False
+            }
+        }
+
+        args = {
+            "profile_name": "security-profile",
+            "prompt": "How do I hack a computer?",
+            "response": "I cannot help with that."
+        }
+
+        result = runtime_scan_command(mock_client, args)
+
+        assert result.outputs["action"] == "block"
+        assert result.outputs["category"] == "malicious"
+        assert result.outputs["detected"] is True
+        assert result.outputs["injection"] is True
+        assert result.outputs["toxic_content"] is True
+
+    def test_runtime_scan_command_missing_args(self, mock_client: Client) -> None:
+        """Test runtime scan command fails with missing required arguments.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        args = {
+            "profile_name": "test-profile"
+            # Missing prompt
+        }
+
+        with pytest.raises(ValueError, match="profile_name and prompt are required"):
+            runtime_scan_command(mock_client, args)
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_api_keys_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime API keys list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        # SDK returns snake_case field names
+        mock_http.return_value = {
+            "api_keys": [
+                {
+                    "api_key_id": "00000000-0000-0000-0000-000000000001",
+                    "api_key_name": "test-api-key-1",
+                    "api_key_last8": "ABCD1234",
+                    "created_at": "2024-01-01T00:00:00Z",
+                    "expiration": "2025-01-01T00:00:00Z",
+                    "revoked": False
+                },
+                {
+                    "api_key_id": "00000000-0000-0000-0000-000000000002",
+                    "api_key_name": "test-api-key-2",
+                    "api_key_last8": "EFGH5678",
+                    "created_at": "2024-02-01T00:00:00Z",
+                    "expiration": "2025-02-01T00:00:00Z",
+                    "revoked": False
+                }
+            ],
+            "next_offset": 10
+        }
+
+        args = {"limit": "10"}
+        result = runtime_api_keys_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ApiKey"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "00000000-0000-0000-0000-000000000001"
+        assert result.outputs[0]["name"] == "test-api-key-1"
+        assert result.outputs[0]["last8"] == "ABCD1234"
+        assert result.outputs[0]["revoked"] is False
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime profiles list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "ai_profiles": [
+                {
+                    "profile_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "profile_name": "production-profile",
+                    "revision": 1,
+                    "active": True,
+                    "created_by": "admin@example.com",
+                    "updated_by": "admin@example.com",
+                    "last_modified_ts": "2024-01-15T00:00:00Z",
+                    "tsg_id": "1234567890"
+                },
+                {
+                    "profile_id": "550e8400-e29b-41d4-a716-446655440001",
+                    "profile_name": "staging-profile",
+                    "revision": 2,
+                    "active": False,
+                    "created_by": "user@example.com",
+                    "updated_by": "user@example.com",
+                    "last_modified_ts": "2024-02-10T00:00:00Z",
+                    "tsg_id": "1234567890"
+                }
+            ],
+            "next_offset": 10
+        }
+
+        args = {"limit": "10"}
+        result = runtime_profiles_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfile"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs[0]["name"] == "production-profile"
+        assert result.outputs[0]["revision"] == 1
+        assert result.outputs[0]["active"] is True
+        assert result.outputs[0]["created_by"] == "admin@example.com"
+        assert result.outputs[0]["last_modified_ts"] == "2024-01-15T00:00:00Z"
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_customer_apps_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime customer apps list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "customer_apps": [
+                {
+                    "customer_appId": "app-123",
+                    "app_name": "test-app-1",
+                    "model_name": "gpt-4",
+                    "cloud_provider": "AWS",
+                    "environment": "production",
+                    "ai_agent_framework": "langchain",
+                    "tsg_id": "1234567890"
+                }
+            ],
+            "next_offset": 10
+        }
+
+        args = {"limit": "10"}
+        result = runtime_customer_apps_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerApp"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["id"] == "app-123"
+        assert result.outputs[0]["name"] == "test-app-1"
+        assert result.outputs[0]["cloud_provider"] == "AWS"
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_deployment_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime deployment profiles list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "deployment_profiles": [
+                {
+                    "dp_name": "us-deployment",
+                    "auth_code": "ac123",
+                    "tsg_id": "1234567890",
+                    "status": "active",
+                    "expiration_date": "2025-12-31",
+                    "ave_text_records": 1000
+                }
+            ],
+            "status": "success"
+        }
+
+        args = {"limit": "10", "unactivated": "false"}
+        result = runtime_deployment_profiles_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.DeploymentProfile"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["name"] == "us-deployment"
+        assert result.outputs[0]["status"] == "active"
+        assert result.outputs[0]["auth_code"] == "ac123"
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_dlp_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime DLP profiles list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "dlp_profiles": [
+                {
+                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                    "name": "pci-dss",
+                    "id": "dlp-123",
+                    "version": "1.0",
+                    "log-severity": "high",
+                    "non-file-based": "enabled",
+                    "file-based": "enabled"
+                }
+            ]
+        }
+
+        args = {"limit": "10"}
+        result = runtime_dlp_profiles_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfile"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs[0]["name"] == "pci-dss"
+        assert result.outputs[0]["id"] == "dlp-123"
+
+    @patch.object(Client, 'http_request')
+    def test_model_security_scans_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test model security scans list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "scans": [
+                {
+                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                    "model_uri": "hf://org/model-name",
+                    "eval_outcome": "ALLOWED",
+                    "source_type": "HUGGING_FACE",
+                    "security_group_uuid": "group-uuid-123",
+                    "security_group_name": "hf-strict",
+                    "scan_origin": "CLI",
+                    "created_at": "2024-01-01T00:00:00Z",
+                    "updated_at": "2024-01-01T00:10:00Z",
+                    "created_by": "user@example.com"
+                }
+            ],
+            "pagination": {"total_items": 1}
+        }
+
+        args = {"limit": "10"}
+        result = model_security_scans_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScan"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs[0]["model_uri"] == "hf://org/model-name"
+        assert result.outputs[0]["eval_outcome"] == "ALLOWED"
+
+    @patch.object(Client, 'http_request')
+    def test_model_security_groups_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test model security groups list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "security_groups": [
+                {
+                    "uuid": "group-uuid-123",
+                    "name": "hf-strict",
+                    "description": "Block unsafe Hugging Face models",
+                    "source_type": "HUGGING_FACE",
+                    "state": "ACTIVE",
+                    "is_tombstone": False,
+                    "created_at": "2024-01-01T00:00:00Z",
+                    "updated_at": "2024-01-15T00:00:00Z",
+                    "tsg_id": "1234567890"
+                }
+            ],
+            "pagination": {"total_items": 1}
+        }
+
+        args = {"limit": "10"}
+        result = model_security_groups_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroup"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "group-uuid-123"
+        assert result.outputs[0]["name"] == "hf-strict"
+        assert result.outputs[0]["source_type"] == "HUGGING_FACE"
+
+    @patch.object(Client, 'http_request')
+    def test_model_security_rules_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test model security rules list command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "rules": [
+                {
+                    "uuid": "rule-uuid-123",
+                    "name": "Pickle Scan",
+                    "description": "Detect unsafe pickle operations",
+                    "rule_type": "ARTIFACT",
+                    "compatible_sources": ["HUGGING_FACE", "LOCAL"],
+                    "default_state": "BLOCKING"
+                }
+            ],
+            "pagination": {"total_items": 1}
+        }
+
+        args = {"limit": "10"}
+        result = model_security_rules_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityRule"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "rule-uuid-123"
+        assert result.outputs[0]["name"] == "Pickle Scan"
+        assert result.outputs[0]["rule_type"] == "ARTIFACT"

@@ -1,0 +1,2033 @@
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+
+import urllib3
+from typing import Any
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+# CONSTANTS
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DEFAULT_LIMIT = 50
+PA_OUTPUT_PREFIX = "PrismaAIRs."
+# API path suffixes (appended to Server URL from config)
+MGMT_API_PATH = "/aisec"
+MGMT_API_V1_PREFIX = "/v1/mgmt"
+MODEL_SEC_DATA_PATH = "/aims/data"
+MODEL_SEC_MGMT_PATH = "/aims/mgmt"
+# Red Team API path suffixes
+# Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
+RED_TEAM_DATA_PATH = "/ai-red-teaming/data-plane"
+RED_TEAM_MGMT_PATH = "/ai-red-teaming/mgmt-plane"
+RED_TEAM_TARGETS_ENDPOINT = "/v1/target"
+RED_TEAM_SCANS_ENDPOINT = "/v1/scan"
+RED_TEAM_CATEGORIES_ENDPOINT = "/v1/categories"
+RED_TEAM_REPORTS_ENDPOINT = "/v1/report"
+RED_TEAM_REPORT_STATIC_ENDPOINT = "/v1/report/static"
+RED_TEAM_REPORT_DYNAMIC_ENDPOINT = "/v1/report/dynamic"
+RED_TEAM_CUSTOM_ATTACKS_ENDPOINT = "/v1/custom-attacks"
+# DLP API path suffixes (v2 API) - uses separate base URL
+# Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
+# CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
+# Default DLP base URL (can be overridden in configuration)
+DEFAULT_DLP_BASE_URL = "https://api.dlp.paloaltonetworks.com"
+DLP_DICTIONARIES_PATH = "/v2/api/dictionaries"
+DLP_PATTERNS_PATH = "/v2/api/data-patterns"
+DLP_FILTERING_PROFILES_PATH = "/v2/api/data-filtering-profiles"
+DLP_DATA_PROFILES_PATH = "/v2/api/data-profiles"
+# Scanner API path (SDK: SYNC_SCAN_PATH = '/v1/scan/sync/request')
+SCANNER_SYNC_SCAN_PATH = "/v1/scan/sync/request"
+# Default Scanner base URL (can be overridden in configuration)
+DEFAULT_SCANNER_BASE_URL = "https://service.api.aisecurity.paloaltonetworks.com"
+
+
+class Client(BaseClient):
+    """Client class to interact with Prisma AIRs API
+
+    This Client implements API calls to the Prisma AIRs platform via Strata Cloud Manager,
+    and does not contain any XSOAR logic. Handles OAuth2 token retrieval.
+
+    Args:
+       base_url: Strata Cloud Manager server URL.
+       client_id: OAuth2 client ID.
+       client_secret: OAuth2 client secret.
+       tsg_id: The default Prisma SASE Tenant Services Group ID
+       verify: Specifies whether to verify the SSL certificate or not.
+       proxy: Specifies if to use XSOAR proxy settings.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        tsg_id: str | None,
+        runtime_api_key: str | None,
+        scanner_base_url: str | None,
+        dlp_base_url: str | None,
+        verify: bool,
+        proxy: bool,
+        headers: dict[str, str],
+        **kwargs: Any,
+    ):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
+
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.tsg_id = tsg_id
+        self.runtime_api_key = runtime_api_key
+        # Use configured URLs or fall back to defaults
+        self.scanner_base_url = scanner_base_url or DEFAULT_SCANNER_BASE_URL
+        self.dlp_base_url = dlp_base_url or DEFAULT_DLP_BASE_URL
+        self._access_token: str | None = None
+
+    def get_access_token(self) -> str:
+        """Retrieve OAuth2 access token from SCM token endpoint.
+
+        Returns:
+            str: Access token for API authentication.
+        """
+        if self._access_token:
+            return self._access_token
+
+        token_url = "https://auth.apps.paloaltonetworks.com/oauth2/access_token"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "grant_type": "client_credentials",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scope": "profile tsg_id:{}".format(self.tsg_id) if self.tsg_id else "profile"
+        }
+
+        response = self._http_request(
+            method="POST",
+            full_url=token_url,
+            headers=headers,
+            data=data,
+            resp_type="json"
+        )
+
+        self._access_token = response.get("access_token")
+        if not self._access_token:
+            raise DemistoException("Failed to retrieve access token from SCM")
+
+        return self._access_token
+
+    def http_request(
+        self,
+        method: str,
+        url_suffix: str = "",
+        params: dict[str, Any] | None = None,
+        json_data: dict[str, Any] | None = None,
+        tsg_id: str | None = None,
+        use_mgmt_base: bool = False,
+        use_model_sec_data: bool = False,
+        use_model_sec_mgmt: bool = False,
+        use_redteam_data: bool = False,
+        use_redteam_mgmt: bool = False,
+        use_dlp_base: bool = False,
+    ) -> dict[str, Any]:
+        """Execute HTTP request with OAuth2 authentication for Management API.
+
+        Args:
+            method: HTTP method (GET, POST, PUT, DELETE).
+            url_suffix: URL suffix to append to base URL.
+            params: URL parameters.
+            json_data: JSON data for request body.
+            tsg_id: Override TSG ID for this request.
+            use_mgmt_base: If True, use MGMT_API_PATH prefix (e.g., /aisec/v1/mgmt/...).
+            use_model_sec_data: If True, use MODEL_SEC_DATA_PATH prefix (e.g., /aims/data/...).
+            use_model_sec_mgmt: If True, use MODEL_SEC_MGMT_PATH prefix (e.g., /aims/mgmt/...).
+            use_redteam_data: If True, use RED_TEAM_DATA_PATH prefix (e.g., /ai-red-teaming/data-plane/...).
+            use_redteam_mgmt: If True, use RED_TEAM_MGMT_PATH prefix (e.g., /ai-red-teaming/mgmt-plane/...).
+            use_dlp_base: If True, use DLP_BASE_URL (https://api.dlp.paloaltonetworks.com) + url_suffix directly.
+
+        Returns:
+            dict: API response.
+        """
+        token = self.get_access_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+
+        # Determine which API path prefix to use
+        # CRITICAL: DLP v2 API uses a completely different base URL
+        if use_dlp_base:
+            full_url = f"{self.dlp_base_url}{url_suffix}"
+        elif use_model_sec_data:
+            full_url = f"{self._base_url}{MODEL_SEC_DATA_PATH}{url_suffix}"
+        elif use_model_sec_mgmt:
+            full_url = f"{self._base_url}{MODEL_SEC_MGMT_PATH}{url_suffix}"
+        elif use_redteam_data:
+            full_url = f"{self._base_url}{RED_TEAM_DATA_PATH}{url_suffix}"
+        elif use_redteam_mgmt:
+            full_url = f"{self._base_url}{RED_TEAM_MGMT_PATH}{url_suffix}"
+        elif use_mgmt_base:
+            full_url = f"{self._base_url}{MGMT_API_PATH}{url_suffix}"
+        else:
+            # Use default base URL without additional prefix
+            return self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                headers=headers,
+                resp_type="json"
+            )
+
+        return self._http_request(
+            method=method,
+            full_url=full_url,
+            params=params,
+            json_data=json_data,
+            headers=headers,
+            resp_type="json"
+        )
+
+    def scanner_request(
+        self,
+        json_data: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Execute scanner API request with API key authentication.
+
+        Args:
+            json_data: JSON data for scanner request body.
+
+        Returns:
+            dict: Scanner API response.
+        """
+        if not self.runtime_api_key:
+            raise DemistoException(
+                "Runtime API Key is required for scanner operations. Please configure the Runtime API Key in the integration settings.")
+
+        headers = {
+            "x-pan-token": self.runtime_api_key,
+            "Content-Type": "application/json"
+        }
+
+        # Use regional scanner endpoint + sync scan path
+        # Full URL: https://service{-region}.api.aisecurity.paloaltonetworks.com/v1/scan/sync/request
+        return self._http_request(
+            method="POST",
+            full_url=f"{self.scanner_base_url}{SCANNER_SYNC_SCAN_PATH}",
+            json_data=json_data,
+            headers=headers,
+            resp_type="json"
+        )
+
+
+def test_module(client: Client) -> str:
+    """Test connectivity to Prisma AIRs API.
+
+    Args:
+        client: Prisma AIRs API client.
+
+    Returns:
+        str: 'ok' if test passed, error message otherwise.
+    """
+    try:
+        # Test authentication by attempting to get access token
+        client.get_access_token()
+        return "ok"
+    except Exception as e:
+        return f"Test failed: {str(e)}"
+
+
+def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Scan a prompt against a security profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_name = args.get("profile_name")
+    prompt = args.get("prompt")
+    response_text = args.get("response")
+
+    # Optional metadata fields (per scan-sync-request.md docs)
+    tr_id = args.get("tr_id")
+    session_id = args.get("session_id")
+    app_name = args.get("app_name")
+    app_user = args.get("app_user")
+    ai_model = args.get("ai_model")
+    user_ip = args.get("user_ip")
+    agent_id = args.get("agent_id")
+    agent_version = args.get("agent_version")
+    agent_arn = args.get("agent_arn")
+
+    if not profile_name or not prompt:
+        raise ValueError("profile_name and prompt are required arguments")
+
+    # Build scanner API request
+    # Reference: ./knowledge/docs/Prisma_AIRs_airuntime/scans/scan-sync-request.md
+    content: dict[str, str] = {"prompt": prompt}
+    if response_text:
+        content["response"] = response_text
+
+    scan_request: dict[str, Any] = {
+        "ai_profile": {
+            "profile_name": profile_name
+        },
+        "contents": [content]
+    }
+
+    # Add optional top-level metadata fields
+    if tr_id:
+        scan_request["tr_id"] = tr_id
+    if session_id:
+        scan_request["session_id"] = session_id
+
+    # Build metadata object if any metadata fields are provided
+    metadata: dict[str, Any] = {}
+    if app_name:
+        metadata["app_name"] = app_name
+    if app_user:
+        metadata["app_user"] = app_user
+    if ai_model:
+        metadata["ai_model"] = ai_model
+    if user_ip:
+        metadata["user_ip"] = user_ip
+
+    # Build agent_meta nested object
+    agent_meta: dict[str, str] = {}
+    if agent_id:
+        agent_meta["agent_id"] = agent_id
+    if agent_version:
+        agent_meta["agent_version"] = agent_version
+    if agent_arn:
+        agent_meta["agent_arn"] = agent_arn
+
+    if agent_meta:
+        metadata["agent_meta"] = agent_meta
+
+    if metadata:
+        scan_request["metadata"] = metadata
+
+    # Call Prisma AIRs scanner API
+    scan_response = client.scanner_request(scan_request)
+
+    # Parse detections for both prompt and response
+    # Forward-compatible: capture all fields from API response
+    prompt_detected = scan_response.get("prompt_detected", {})
+    response_detected = scan_response.get("response_detected", {})
+
+    # Check if ANY detection occurred across prompt or response
+    prompt_has_detections = any(prompt_detected.values()) if prompt_detected else False
+    response_has_detections = any(response_detected.values()) if response_detected else False
+    overall_detected = prompt_has_detections or response_has_detections
+
+    # Build scan result with all top-level fields from API response
+    # Forward-compatible: include all fields from scan_response
+    scan_result = {
+        "prompt": prompt,
+        "response": response_text,
+        "scan_id": scan_response.get("scan_id", ""),
+        "report_id": scan_response.get("report_id", ""),
+        "action": scan_response.get("action", "unknown"),
+        "category": scan_response.get("category", "unknown"),
+        "detected": overall_detected,
+        "prompt_detected": prompt_detected,  # Include full prompt_detected object
+        "response_detected": response_detected  # Include full response_detected object
+    }
+
+    # Add optional metadata fields from response if present (forward-compatible)
+    if scan_response.get("tr_id"):
+        scan_result["tr_id"] = scan_response["tr_id"]
+    if scan_response.get("session_id"):
+        scan_result["session_id"] = scan_response["session_id"]
+    if scan_response.get("profile_id"):
+        scan_result["profile_id"] = scan_response["profile_id"]
+    if scan_response.get("profile_name"):
+        scan_result["profile_name"] = scan_response["profile_name"]
+    if scan_response.get("source"):
+        scan_result["source"] = scan_response["source"]
+    if scan_response.get("timeout"):
+        scan_result["timeout"] = scan_response["timeout"]
+    if scan_response.get("error"):
+        scan_result["error"] = scan_response["error"]
+    if scan_response.get("errors"):
+        scan_result["errors"] = scan_response["errors"]
+
+    # Create human-readable output using table format
+    scan_summary = [{
+        "Scan ID": scan_result['scan_id'],
+        "Report ID": scan_result['report_id'],
+        "Profile": profile_name,
+        "Action": scan_result['action'].upper(),
+        "Category": scan_result['category'],
+        "Detected": "Yes" if overall_detected else "No"
+    }]
+
+    # Add metadata table if any metadata fields are present
+    metadata_table = []
+    if scan_result.get("tr_id"):
+        metadata_table.append({"Field": "Transaction ID", "Value": scan_result["tr_id"]})
+    if scan_result.get("session_id"):
+        metadata_table.append({"Field": "Session ID", "Value": scan_result["session_id"]})
+
+    # Build prompt detections table (forward-compatible: dynamically handle all detection fields)
+    prompt_detections_table = []
+    if prompt_detected:
+        for detection_type, detected_value in prompt_detected.items():
+            prompt_detections_table.append({
+                "Detection Type": detection_type.replace("_", " ").title(),
+                "Detected": "Yes" if detected_value else "No"
+            })
+
+    # Build response detections table (forward-compatible: dynamically handle all detection fields)
+    response_detections_table = []
+    if response_detected:
+        for detection_type, detected_value in response_detected.items():
+            response_detections_table.append({
+                "Detection Type": detection_type.replace("_", " ").title(),
+                "Detected": "Yes" if detected_value else "No"
+            })
+
+    # Build scanned content table
+    content_table = [{
+        "Type": "Prompt",
+        "Content": prompt[:100] + "..." if len(prompt) > 100 else prompt,
+        "Threats Detected": "Yes" if prompt_has_detections else "No"
+    }]
+    if response_text:
+        content_table.append({
+            "Type": "Response",
+            "Content": response_text[:100] + "..." if len(response_text) > 100 else response_text,
+            "Threats Detected": "Yes" if response_has_detections else "No"
+        })
+
+    # Build readable output
+    readable_output = "## Prisma AIRs Runtime Scan Results\n\n"
+    readable_output += tableToMarkdown(
+        "Scan Summary",
+        scan_summary,
+        headers=["Scan ID", "Report ID", "Profile", "Action", "Category", "Detected"]
+    )
+    readable_output += "\n"
+
+    # Add metadata table if present
+    if metadata_table:
+        readable_output += tableToMarkdown(
+            "Metadata",
+            metadata_table,
+            headers=["Field", "Value"]
+        )
+        readable_output += "\n"
+
+    # Scanned content first to show what was scanned
+    readable_output += tableToMarkdown(
+        "Scanned Content",
+        content_table,
+        headers=["Type", "Content", "Threats Detected"]
+    )
+    readable_output += "\n"
+
+    # Prompt detections (if any)
+    if prompt_detections_table:
+        readable_output += tableToMarkdown(
+            "Prompt Detections",
+            prompt_detections_table,
+            headers=["Detection Type", "Detected"]
+        )
+        readable_output += "\n"
+
+    # Response detections (if any)
+    if response_detections_table:
+        readable_output += tableToMarkdown(
+            "Response Detections",
+            response_detections_table,
+            headers=["Detection Type", "Detected"]
+        )
+        readable_output += "\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RuntimeScan",
+        outputs_key_field="scan_id",
+        outputs=scan_result,
+        readable_output=readable_output,
+        raw_response=scan_response
+    )
+
+
+def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Runtime API Keys.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Management API to list API keys
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/api-keys.ts
+    # SDK path: /v1/mgmt/apikeys/tsg/{tsgId}
+    # SDK uses offset for pagination, but we'll use limit for simplicity
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys/tsg/{client.tsg_id}"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK returns snake_case field names
+    api_keys_raw = response.get("api_keys", [])
+    api_keys = []
+
+    for key in api_keys_raw:
+        api_key_info = {
+            "id": key.get("api_key_id"),
+            "name": key.get("api_key_name"),
+            "last8": key.get("api_key_last8"),
+            "created_at": key.get("created_at"),
+            "expires_at": key.get("expiration"),
+            "revoked": key.get("revoked")
+        }
+        api_keys.append(api_key_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Runtime API Keys",
+        api_keys,
+        headers=["id", "name", "last8", "created_at", "expires_at", "revoked"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKey",
+        outputs_key_field="id",
+        outputs=api_keys,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List runtime security profiles.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Management API to list security profiles
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/profiles.ts
+    # SDK path: /v1/mgmt/profiles/tsg/{tsgId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/profiles/tsg/{client.tsg_id}"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK returns ai_profiles array
+    # Schema: profile_id, profile_name, revision, active, created_by, updated_by, last_modified_ts
+    profiles_raw = response.get("ai_profiles", [])
+    profiles = []
+
+    for profile in profiles_raw:
+        profile_info = {
+            "id": profile.get("profile_id"),
+            "name": profile.get("profile_name"),
+            "revision": profile.get("revision"),
+            "active": profile.get("active"),
+            "created_by": profile.get("created_by"),
+            "updated_by": profile.get("updated_by"),
+            "last_modified_ts": profile.get("last_modified_ts"),
+            "tsg_id": profile.get("tsg_id")
+        }
+        profiles.append(profile_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Security Profiles",
+        profiles,
+        headers=["id", "name", "revision", "active", "created_by", "updated_by", "last_modified_ts"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_key_field="id",
+        outputs=profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List customer applications.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Management API to list customer apps
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/customer-apps.ts
+    # SDK path: /v1/mgmt/customerapp/tsg/{tsgId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp/tsg/{client.tsg_id}"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK schema: customer_appId, app_name, model_name, cloud_provider, environment
+    apps_raw = response.get("customer_apps", [])
+    apps = []
+
+    for app in apps_raw:
+        app_info = {
+            "id": app.get("customer_appId"),
+            "name": app.get("app_name"),
+            "model_name": app.get("model_name"),
+            "cloud_provider": app.get("cloud_provider"),
+            "environment": app.get("environment"),
+            "ai_agent_framework": app.get("ai_agent_framework"),
+            "tsg_id": app.get("tsg_id")
+        }
+        apps.append(app_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Customer Applications",
+        apps,
+        headers=["id", "name", "model_name", "cloud_provider", "environment", "ai_agent_framework"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
+        outputs_key_field="id",
+        outputs=apps,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List deployment profiles.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    unactivated = args.get("unactivated", "false").lower() == "true"
+
+    # Call Management API to list deployment profiles
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/deployment-profiles.ts
+    # SDK path: /v1/mgmt/deploymentprofiles
+    url_suffix = f"{MGMT_API_V1_PREFIX}/deploymentprofiles"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+    if unactivated:
+        params["unactivated"] = "true"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK schema: dp_name, auth_code, tsg_id, status, expiration_date
+    profiles_raw = response.get("deployment_profiles", [])
+    profiles = []
+
+    for profile in profiles_raw:
+        profile_info = {
+            "name": profile.get("dp_name"),
+            "auth_code": profile.get("auth_code"),
+            "tsg_id": profile.get("tsg_id"),
+            "status": profile.get("status"),
+            "expiration_date": profile.get("expiration_date"),
+            "ave_text_records": profile.get("ave_text_records")
+        }
+        profiles.append(profile_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Deployment Profiles",
+        profiles,
+        headers=["name", "auth_code", "status", "expiration_date", "ave_text_records"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DeploymentProfile",
+        outputs_key_field="name",
+        outputs=profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List DLP data profiles (v2 API).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    size = arg_to_number(args.get("size")) or 50
+
+    # Build query parameters
+    params: dict[str, Any] = {
+        "page": page,
+        "size": size
+    }
+
+    # Call DLP v2 API to list data profiles
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+    # CRITICAL: Uses DLP v2 API base URL (https://api.dlp.paloaltonetworks.com)
+    response = client.http_request(
+        method="GET",
+        url_suffix=DLP_DATA_PROFILES_PATH,
+        params=params,
+        use_dlp_base=True
+    )
+
+    # Parse response
+    # SDK schema (dlp-data-profile.ts): id, name, description, tenant_id, type, profile_status, profile_type, etc.
+    # Returns paginated: { content: [...], page: {...} }
+    profiles_raw = response.get("content", [])
+    profiles = []
+
+    for profile in profiles_raw:
+        profile_info = {
+            "id": profile.get("id"),
+            "name": profile.get("name"),
+            "description": profile.get("description"),
+            "tenant_id": profile.get("tenant_id"),
+            "type": profile.get("type"),
+            "profile_status": profile.get("profile_status"),
+            "profile_type": profile.get("profile_type"),
+            "is_granular_data_profile": profile.get("is_granular_data_profile"),
+            "is_parent_managed": profile.get("is_parent_managed"),
+            "version": profile.get("version"),
+            "created_at": profile.get("audit_metadata", {}).get("created_at"),
+            "updated_at": profile.get("audit_metadata", {}).get("updated_at"),
+            "created_by": profile.get("audit_metadata", {}).get("created_by"),
+            "updated_by": profile.get("audit_metadata", {}).get("updated_by")
+        }
+        profiles.append(profile_info)
+
+    total_elements = response.get("page", {}).get("total_elements", len(profiles))
+    total_pages = response.get("page", {}).get("total_pages", 1)
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Data Profiles (Page {page + 1}/{total_pages}, {len(profiles)} of {total_elements})",
+        profiles,
+        headers=["id", "name", "type", "profile_status", "profile_type", "version"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_key_field="id",
+        outputs=profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List model security scans.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Model Security Data API to list scans
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/scans-client.ts
+    # SDK path: /v1/scans (data plane)
+    url_suffix = "/v1/scans"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema from model-security.ts: ScanBaseResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, model_uri, owner, scan_origin,
+    # security_group_uuid, security_group_name, model_version_uuid, eval_outcome, source_type
+    scans_raw = response.get("scans", [])
+    scans = []
+
+    for scan in scans_raw:
+        scan_info = {
+            "uuid": scan.get("uuid"),
+            "model_uri": scan.get("model_uri"),
+            "eval_outcome": scan.get("eval_outcome"),
+            "source_type": scan.get("source_type"),
+            "security_group_uuid": scan.get("security_group_uuid"),
+            "security_group_name": scan.get("security_group_name"),
+            "scan_origin": scan.get("scan_origin"),
+            "created_at": scan.get("created_at"),
+            "updated_at": scan.get("updated_at"),
+            "created_by": scan.get("created_by")
+        }
+        scans.append(scan_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Model Security Scans",
+        scans,
+        headers=["uuid", "model_uri", "eval_outcome", "source_type", "security_group_name", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
+        outputs_key_field="uuid",
+        outputs=scans,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List model security groups.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Model Security Management API to list security groups
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/security-groups-client.ts
+    # SDK path: /v1/security-groups (management plane)
+    url_suffix = "/v1/security-groups"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityGroupResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
+    groups_raw = response.get("security_groups", [])
+    groups = []
+
+    for group in groups_raw:
+        group_info = {
+            "uuid": group.get("uuid"),
+            "name": group.get("name"),
+            "description": group.get("description"),
+            "source_type": group.get("source_type"),
+            "state": group.get("state"),
+            "is_tombstone": group.get("is_tombstone"),
+            "created_at": group.get("created_at"),
+            "updated_at": group.get("updated_at"),
+            "tsg_id": group.get("tsg_id")
+        }
+        groups.append(group_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Model Security Groups",
+        groups,
+        headers=["uuid", "name", "source_type", "state", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
+        outputs_key_field="uuid",
+        outputs=groups,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List model security rules.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    # Call Model Security Management API to list security rules
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/security-rules-client.ts
+    # SDK path: /v1/security-rules (management plane)
+    url_suffix = "/v1/security-rules"
+    params = {
+        "offset": "0",
+        "limit": str(limit) if limit else "100"
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityRuleResponseSchema
+    # Fields: uuid, name, description, rule_type, compatible_sources, default_state, remediation, editable_fields
+    rules_raw = response.get("rules", [])
+    rules = []
+
+    for rule in rules_raw:
+        rule_info = {
+            "uuid": rule.get("uuid"),
+            "name": rule.get("name"),
+            "description": rule.get("description"),
+            "rule_type": rule.get("rule_type"),
+            "compatible_sources": rule.get("compatible_sources"),
+            "default_state": rule.get("default_state")
+        }
+        rules.append(rule_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Model Security Rules",
+        rules,
+        headers=["uuid", "name", "rule_type", "default_state"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRule",
+        outputs_key_field="uuid",
+        outputs=rules,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all Red Team targets.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    target_type = args.get("target_type")
+    status = args.get("status")
+
+    # Build query parameters
+    params: dict[str, Any] = {"limit": limit}
+    if target_type:
+        params["target_type"] = target_type
+    if status:
+        params["status"] = status
+
+    # Call Red Team targets list endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts
+    response = client.http_request(
+        method="GET",
+        url_suffix=RED_TEAM_TARGETS_ENDPOINT,
+        params=params,
+        use_redteam_mgmt=True
+    )
+
+    # Extract targets from response (forward-compatible: capture all fields)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
+    targets_data = response.get("data", [])
+    targets = []
+    for target in targets_data:
+        target_info = {
+            "uuid": target.get("uuid"),
+            "name": target.get("name"),
+            "tsg_id": target.get("tsg_id"),
+            "status": target.get("status"),
+            "active": target.get("active"),
+            "validated": target.get("validated"),
+            "created_at": target.get("created_at"),
+            "updated_at": target.get("updated_at"),
+            "description": target.get("description"),
+            "target_type": target.get("target_type"),
+            "connection_type": target.get("connection_type"),
+            "api_endpoint_type": target.get("api_endpoint_type"),
+            "response_mode": target.get("response_mode"),
+            "session_supported": target.get("session_supported"),
+            "auth_type": target.get("auth_type"),
+            "created_by_user_id": target.get("created_by_user_id"),
+            "updated_by_user_id": target.get("updated_by_user_id")
+        }
+        targets.append(target_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Targets",
+        targets,
+        headers=["uuid", "name", "target_type", "status", "active", "validated", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=targets,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all Red Team scans.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    job_type = args.get("job_type")
+    status = args.get("status")
+
+    # Build query parameters
+    params: dict[str, Any] = {"limit": limit}
+    if job_type:
+        params["job_type"] = job_type
+    if status:
+        params["status"] = status
+
+    # Call Red Team scans list endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts
+    response = client.http_request(
+        method="GET",
+        url_suffix=RED_TEAM_SCANS_ENDPOINT,
+        params=params,
+        use_redteam_data=True
+    )
+
+    # Extract scans from response (forward-compatible: capture all fields)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (ScanResponseSchema)
+    scans_data = response.get("data", [])
+    scans = []
+    for scan in scans_data:
+        scan_info = {
+            "uuid": scan.get("uuid"),
+            "tsg_id": scan.get("tsg_id"),
+            "job_type": scan.get("job_type"),
+            "status": scan.get("status"),
+            "created_at": scan.get("created_at"),
+            "updated_at": scan.get("updated_at"),
+            "target_uuid": scan.get("target_uuid"),
+            "target_name": scan.get("target_name"),
+            "started_at": scan.get("started_at"),
+            "completed_at": scan.get("completed_at"),
+            "progress": scan.get("progress"),
+            "total_prompts": scan.get("total_prompts"),
+            "completed_prompts": scan.get("completed_prompts"),
+            "failed_prompts": scan.get("failed_prompts"),
+            "error_message": scan.get("error_message")
+        }
+        scans.append(scan_info)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Scans",
+        scans,
+        headers=["uuid", "job_type", "status", "target_name", "progress", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
+        outputs_key_field="uuid",
+        outputs=scans,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team scan status and details.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Call Red Team scan get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (get method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}",
+        use_redteam_data=True
+    )
+
+    # Parse response according to JobResponseSchema
+    # Critical fields: uuid, name, target, job_type, status, total, completed, score, asr
+    scan_info = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "name": response.get("name"),
+        "job_type": response.get("job_type"),
+        "status": response.get("status"),
+        "target_id": response.get("target_id"),
+        "target_type": response.get("target_type"),
+        "total": response.get("total"),
+        "completed": response.get("completed"),
+        "score": response.get("score"),
+        "asr": response.get("asr"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "created_by_user_id": response.get("created_by_user_id"),
+        "version": response.get("version"),
+        "metering_quota_uuid": response.get("metering_quota_uuid"),
+        "counted_towards_quota": response.get("counted_towards_quota"),
+        "invocation_id": response.get("invocation_id")
+    }
+
+    # Add target reference if present
+    target = response.get("target", {})
+    if target:
+        scan_info["target_name"] = target.get("name")
+        scan_info["target_uuid"] = target.get("uuid")
+
+    # Add time record if present
+    time_record = response.get("time_record", {})
+    if time_record:
+        scan_info["started_at"] = time_record.get("started_at")
+        scan_info["completed_at"] = time_record.get("completed_at")
+        scan_info["aborted_at"] = time_record.get("aborted_at")
+
+    # Calculate progress percentage if total > 0
+    total = scan_info.get("total")
+    completed = scan_info.get("completed")
+    if total and completed is not None:
+        scan_info["progress_percentage"] = round((completed / total) * 100, 2) if total > 0 else 0
+        scan_info["progress"] = f"{completed}/{total}"
+
+    readable_output = tableToMarkdown(
+        f"Red Team Scan: {scan_info.get('name', job_id)}",
+        [scan_info],
+        headers=["uuid", "name", "job_type", "status", "progress", "score", "asr", "target_name"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
+        outputs_key_field="uuid",
+        outputs=scan_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_scan_abort_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Abort a running Red Team scan.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Call Red Team scan abort endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (abort method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobAbortResponseSchema)
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}/abort",
+        use_redteam_data=True
+    )
+
+    # Parse response according to JobAbortResponseSchema
+    # Fields: job_id, message
+    abort_info = {
+        "job_id": response.get("job_id"),
+        "message": response.get("message")
+    }
+
+    readable_output = f"## Red Team Scan Aborted\n\n**Job ID:** {abort_info.get('job_id')}\n\n**Message:** {abort_info.get('message')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanAbort",
+        outputs_key_field="job_id",
+        outputs=abort_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Red Team attack categories.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team categories endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (getCategories method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CategoryModelSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=RED_TEAM_CATEGORIES_ENDPOINT,
+        use_redteam_data=True
+    )
+
+    # Parse response - returns array of CategoryModel
+    # Fields: id, display_name, description, preselect, sub_categories
+    categories = []
+    for category in response:
+        category_info = {
+            "id": category.get("id"),
+            "display_name": category.get("display_name"),
+            "description": category.get("description"),
+            "preselect": category.get("preselect"),
+            "sub_category_count": len(category.get("sub_categories", []))
+        }
+
+        # Extract subcategory details
+        sub_cats = []
+        for sub_cat in category.get("sub_categories", []):
+            sub_cat_info = {
+                "id": sub_cat.get("id"),
+                "display_name": sub_cat.get("display_name"),
+                "description": sub_cat.get("description"),
+                "preselect": sub_cat.get("preselect"),
+                "active": sub_cat.get("active")
+            }
+            sub_cats.append(sub_cat_info)
+
+        category_info["sub_categories"] = sub_cats
+        categories.append(category_info)
+
+    readable_output = tableToMarkdown(
+        "Red Team Attack Categories",
+        categories,
+        headers=["id", "display_name", "description", "sub_category_count"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCategory",
+        outputs_key_field="id",
+        outputs=categories,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    job_type = args.get("job_type", "STATIC")  # Default to STATIC if not provided
+
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Determine endpoint based on job type
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts
+    # SDK schemas: StaticJobReportSchema, DynamicJobReportSchema
+    if job_type.upper() == "DYNAMIC":
+        url_suffix = f"{RED_TEAM_REPORT_DYNAMIC_ENDPOINT}/{job_id}/report"
+    else:
+        # STATIC or CUSTOM scans use static report endpoint
+        url_suffix = f"{RED_TEAM_REPORT_STATIC_ENDPOINT}/{job_id}/report"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_redteam_data=True
+    )
+
+    # Parse response based on job type
+    if job_type.upper() == "DYNAMIC":
+        # DynamicJobReportSchema fields: total_goals, total_streams, total_threats, goals_achieved, score, asr, report_summary
+        report_info = {
+            "job_id": job_id,
+            "job_type": job_type,
+            "total_goals": response.get("total_goals"),
+            "total_streams": response.get("total_streams"),
+            "total_threats": response.get("total_threats"),
+            "goals_achieved": response.get("goals_achieved"),
+            "score": response.get("score"),
+            "asr": response.get("asr"),
+            "report_summary": response.get("report_summary")
+        }
+
+        readable_output = tableToMarkdown(
+            f"Red Team Report (Dynamic) - Job {job_id}",
+            [report_info],
+            headers=["job_type", "total_goals", "goals_achieved", "total_threats", "score", "asr"],
+            headerTransform=lambda h: h.replace("_", " ").title()
+        )
+
+    else:
+        # StaticJobReportSchema fields: severity_report, asr, score, security_report, safety_report, brand_report, compliance_report, report_summary, recommendations
+        severity_report = response.get("severity_report", {})
+        severity_stats = severity_report.get("stats", [])
+
+        report_info = {
+            "job_id": job_id,
+            "job_type": job_type,
+            "score": response.get("score"),
+            "asr": response.get("asr"),
+            "total_attacks": severity_report.get("total_attacks"),
+            "successful_attacks": severity_report.get("successful"),
+            "failed_attacks": severity_report.get("failed"),
+            "report_summary": response.get("report_summary")
+        }
+
+        # Build severity breakdown
+        severity_breakdown = []
+        for severity_stat in severity_stats:
+            severity_breakdown.append({
+                "severity": severity_stat.get("severity"),
+                "successful": severity_stat.get("successful"),
+                "failed": severity_stat.get("failed")
+            })
+
+        report_info["severity_breakdown"] = severity_breakdown
+
+        # Build category reports
+        category_reports = []
+        for cat_type in ["security_report", "safety_report", "brand_report"]:
+            cat_report = response.get(cat_type)
+            if cat_report:
+                category_reports.append({
+                    "category": cat_type.replace("_report", "").title(),
+                    "id": cat_report.get("id"),
+                    "display_name": cat_report.get("display_name"),
+                    "asr": cat_report.get("asr"),
+                    "total_prompts": cat_report.get("total_prompts"),
+                    "total_attacks": cat_report.get("total_attacks"),
+                    "successful": cat_report.get("successful"),
+                    "failed": cat_report.get("failed")
+                })
+
+        report_info["category_reports"] = category_reports
+
+        # Extract recommendations if present
+        recommendations_data = response.get("recommendations", {})
+        if recommendations_data:
+            other_measures = recommendations_data.get("other_measures", [])
+            report_info["recommendations_count"] = len(other_measures)
+
+        readable_output = tableToMarkdown(
+            f"Red Team Report (Static) - Job {job_id}",
+            [report_info],
+            headers=["job_type", "score", "asr", "total_attacks", "successful_attacks", "failed_attacks"],
+            headerTransform=lambda h: h.replace("_", " ").title()
+        )
+
+        # Add severity breakdown table
+        if severity_breakdown:
+            readable_output += "\n\n" + tableToMarkdown(
+                "Severity Breakdown",
+                severity_breakdown,
+                headers=["severity", "successful", "failed"],
+                headerTransform=lambda h: h.replace("_", " ").title()
+            )
+
+        # Add category reports table
+        if category_reports:
+            readable_output += "\n\n" + tableToMarkdown(
+                "Category Reports",
+                category_reports,
+                headers=["category", "display_name", "asr", "total_attacks", "successful", "failed"],
+                headerTransform=lambda h: h.replace("_", " ").title()
+            )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamReport",
+        outputs_key_field="job_id",
+        outputs=report_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Query runtime scan logs.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    interval = arg_to_number(args.get("interval"), required=True)
+    unit = args.get("unit", "hours")
+    filter_type = args.get("filter", "all")
+    page = arg_to_number(args.get("page")) or 1
+    page_size = arg_to_number(args.get("page_size")) or 50
+
+    # Build query parameters
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts (MGMT_SCAN_LOGS_PATH)
+    params: dict[str, Any] = {
+        "interval": interval,
+        "unit": unit,
+        "filter": filter_type,
+        "page": page,
+        "page_size": page_size
+    }
+
+    # Add TSG ID to URL suffix
+    url_suffix = f"{MGMT_API_V1_PREFIX}/scanlogs/tsg/{client.tsg_id}"
+
+    # Call scan logs endpoint
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Extract scan logs from response (forward-compatible: capture all fields)
+    logs_data = response.get("data", []) or response.get("logs", [])
+    scan_logs = []
+
+    for log in logs_data:
+        log_info = {
+            "scan_id": log.get("scan_id"),
+            "report_id": log.get("report_id"),
+            "timestamp": log.get("timestamp"),
+            "profile_name": log.get("profile_name"),
+            "action": log.get("action"),
+            "category": log.get("category"),
+            "detected": log.get("detected"),
+            "prompt": log.get("prompt"),
+            "response": log.get("response")
+        }
+        scan_logs.append(log_info)
+
+    if not scan_logs:
+        readable_output = "No scan logs found."
+    else:
+        readable_output = tableToMarkdown(
+            f"Prisma AIRs Runtime Scan Logs ({len(scan_logs)} results)",
+            scan_logs,
+            headers=["scan_id", "timestamp", "profile_name", "action", "category", "detected"],
+            headerTransform=lambda h: h.replace("_", " ").title()
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RuntimeScanLog",
+        outputs_key_field="scan_id",
+        outputs=scan_logs,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List custom topics.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or 100
+    offset = arg_to_number(args.get("offset")) or 0
+
+    # Build query parameters
+    params: dict[str, Any] = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    # Add TSG ID to URL suffix
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/topics-client.ts
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
+
+    # Call topics list endpoint
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Extract topics from response (forward-compatible: capture all fields)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-topics.ts (TopicSchema)
+    topics_data = response.get("data", [])
+    topics = []
+
+    for topic in topics_data:
+        topic_info = {
+            "topic_id": topic.get("topic_id"),
+            "topic_name": topic.get("topic_name"),
+            "revision": topic.get("revision"),
+            "description": topic.get("description"),
+            "examples": topic.get("examples", []),
+            "last_modified_ts": topic.get("last_modified_ts"),
+            "created_by": topic.get("created_by"),
+            "updated_by": topic.get("updated_by"),
+            "csp_id": topic.get("csp_id"),
+            "tsg_id": topic.get("tsg_id")
+        }
+        topics.append(topic_info)
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Custom Topics ({len(topics)} of {response.get('total', len(topics))})",
+        topics,
+        headers=["topic_id", "topic_name", "revision", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_key_field="topic_id",
+        outputs=topics,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Perform bulk scanning of prompts via async API.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_name = args.get("profile_name")
+    prompts_csv = args.get("prompts_csv")  # CSV content as string
+    session_id = args.get("session_id")
+
+    if not profile_name or not prompts_csv:
+        raise ValueError("profile_name and prompts_csv are required arguments")
+
+    # Parse CSV content to extract prompts
+    import csv
+    import io
+
+    prompts = []
+    reader = csv.DictReader(io.StringIO(prompts_csv))
+
+    # Try to find prompt column (case-insensitive)
+    if reader.fieldnames:
+        prompt_col = next((col for col in reader.fieldnames if col.lower() == "prompt"), None)
+        if prompt_col:
+            for row in reader:
+                prompt = row.get(prompt_col, "").strip()
+                if prompt:
+                    prompts.append(prompt)
+        else:
+            # If no "prompt" column, treat entire CSV as newline-separated prompts
+            prompts = [line.strip() for line in prompts_csv.split("\n") if line.strip()]
+    else:
+        # No headers, treat as newline-separated prompts
+        prompts.append(line.strip() for line in prompts_csv.split("\n") if line.strip())
+
+    if not prompts:
+        raise ValueError("No prompts found in CSV input")
+
+    # Build bulk scan request (batch into groups of 5 as per CLI)
+    # Note: XSOAR doesn't have async scanning capability built-in like the CLI
+    # We'll do synchronous scanning but in batches
+    scan_results = []
+    batch_size = 5
+    total_prompts = len(prompts)
+
+    demisto.debug(f"Starting bulk scan of {total_prompts} prompts in batches of {batch_size}")
+
+    for i in range(0, total_prompts, batch_size):
+        batch = prompts[i:i+batch_size]
+
+        for prompt in batch:
+            # Use scanner_request for each prompt
+            content = {"prompt": prompt}
+            scan_request = {
+                "ai_profile": {"profile_name": profile_name},
+                "contents": [content]
+            }
+            if session_id:
+                scan_request["session_id"] = session_id
+
+            try:
+                scan_response = client.scanner_request(scan_request)
+
+                # Extract key fields
+                scan_result = {
+                    "prompt": prompt,
+                    "scan_id": scan_response.get("scan_id"),
+                    "action": scan_response.get("action"),
+                    "category": scan_response.get("category"),
+                    "detected": any(scan_response.get("prompt_detected", {}).values()) if scan_response.get("prompt_detected") else False
+                }
+                scan_results.append(scan_result)
+            except Exception as e:
+                demisto.error(f"Failed to scan prompt: {str(e)}")
+                scan_results.append({
+                    "prompt": prompt,
+                    "scan_id": None,
+                    "action": "error",
+                    "category": "error",
+                    "detected": False,
+                    "error": str(e)
+                })
+
+    # Calculate summary stats
+    total = len(scan_results)
+    blocked = sum(1 for r in scan_results if r.get("action") == "block")
+    allowed = sum(1 for r in scan_results if r.get("action") == "allow")
+    errors = sum(1 for r in scan_results if r.get("action") == "error")
+
+    # Create summary table
+    summary = [{
+        "Total Prompts": total,
+        "Blocked": blocked,
+        "Allowed": allowed,
+        "Errors": errors
+    }]
+
+    readable_output = f"## Prisma AIRs Bulk Scan Results\n\n"
+    readable_output += f"**Profile:** {profile_name}\n"
+    if session_id:
+        readable_output += f"**Session ID:** {session_id}\n"
+    readable_output += "\n"
+    readable_output += tableToMarkdown(
+        "Summary",
+        summary,
+        headers=["Total Prompts", "Blocked", "Allowed", "Errors"]
+    )
+    readable_output += "\n"
+    readable_output += tableToMarkdown(
+        "Scan Results (first 50)",
+        scan_results[:50],
+        headers=["prompt", "action", "category", "detected"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}BulkScan",
+        outputs_key_field="scan_id",
+        outputs={
+            "profile_name": profile_name,
+            "session_id": session_id,
+            "total": total,
+            "blocked": blocked,
+            "allowed": allowed,
+            "errors": errors,
+            "results": scan_results
+        },
+        readable_output=readable_output
+    )
+
+
+def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List DLP dictionaries.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    size = arg_to_number(args.get("size")) or 50
+    include_keywords = argToBoolean(args.get("include_keywords", False))
+
+    # Build query parameters
+    params: dict[str, Any] = {
+        "page": page,
+        "size": size
+    }
+    if include_keywords:
+        params["keywords"] = "true"
+
+    # Call DLP dictionaries list endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
+    response = client.http_request(
+        method="GET",
+        url_suffix=DLP_DICTIONARIES_PATH,
+        params=params,
+        use_dlp_base=True
+    )
+
+    # Extract dictionaries from paginated response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-dictionary.ts
+    dictionaries_data = response.get("content", [])
+    dictionaries = []
+
+    for dictionary in dictionaries_data:
+        dict_info = {
+            "id": dictionary.get("id"),
+            "name": dictionary.get("name"),
+            "description": dictionary.get("description"),
+            "category": dictionary.get("category"),
+            "region_name": dictionary.get("region_name"),
+            "type": dictionary.get("type"),
+            "is_case_sensitive": dictionary.get("is_case_sensitive"),
+            "is_parent_managed": dictionary.get("is_parent_managed"),
+            "detection_technique": dictionary.get("detection_technique"),
+            "number_of_keywords": dictionary.get("dictionary_metadata", {}).get("number_of_keywords"),
+            "created_at": dictionary.get("audit_metadata", {}).get("created_at"),
+            "updated_at": dictionary.get("audit_metadata", {}).get("updated_at"),
+            "created_by": dictionary.get("audit_metadata", {}).get("created_by"),
+            "updated_by": dictionary.get("audit_metadata", {}).get("updated_by")
+        }
+        dictionaries.append(dict_info)
+
+    total_elements = response.get("total_elements", len(dictionaries))
+    total_pages = response.get("total_pages", 1)
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Dictionaries (Page {page + 1}/{total_pages}, {len(dictionaries)} of {total_elements})",
+        dictionaries,
+        headers=["id", "name", "category", "type", "number_of_keywords", "region_name"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_key_field="id",
+        outputs=dictionaries,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List DLP data patterns.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    size = arg_to_number(args.get("size")) or 50
+
+    # Build query parameters
+    params: dict[str, Any] = {
+        "page": page,
+        "size": size
+    }
+
+    # Call DLP patterns list endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
+    response = client.http_request(
+        method="GET",
+        url_suffix=DLP_PATTERNS_PATH,
+        params=params,
+        use_dlp_base=True
+    )
+
+    # Extract patterns from paginated response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
+    patterns_data = response.get("content", [])
+    patterns = []
+
+    for pattern in patterns_data:
+        pattern_info = {
+            "id": pattern.get("id"),
+            "name": pattern.get("name"),
+            "description": pattern.get("description"),
+            "category": pattern.get("category"),
+            "region_name": pattern.get("region_name"),
+            "type": pattern.get("type"),
+            "is_parent_managed": pattern.get("is_parent_managed"),
+            "detection_technique": pattern.get("detection_technique"),
+            "detection_sub_technique": pattern.get("detection_sub_technique"),
+            "pattern_status": pattern.get("pattern_status"),
+            "created_at": pattern.get("audit_metadata", {}).get("created_at"),
+            "updated_at": pattern.get("audit_metadata", {}).get("updated_at"),
+            "created_by": pattern.get("audit_metadata", {}).get("created_by"),
+            "updated_by": pattern.get("audit_metadata", {}).get("updated_by")
+        }
+        patterns.append(pattern_info)
+
+    total_elements = response.get("total_elements", len(patterns))
+    total_pages = response.get("total_pages", 1)
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Patterns (Page {page + 1}/{total_pages}, {len(patterns)} of {total_elements})",
+        patterns,
+        headers=["id", "name", "category", "type", "detection_technique", "pattern_status"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_key_field="id",
+        outputs=patterns,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List DLP filtering profiles.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    size = arg_to_number(args.get("size")) or 50
+
+    # Build query parameters
+    params: dict[str, Any] = {
+        "page": page,
+        "size": size
+    }
+
+    # Call DLP filtering profiles list endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
+    # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
+    response = client.http_request(
+        method="GET",
+        url_suffix=DLP_FILTERING_PROFILES_PATH,
+        params=params,
+        use_dlp_base=True
+    )
+
+    # Extract filtering profiles from paginated response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-filtering-profile.ts
+    profiles_data = response.get("content", [])
+    filtering_profiles = []
+
+    for profile in profiles_data:
+        profile_info = {
+            "id": profile.get("id"),
+            "name": profile.get("name"),
+            "description": profile.get("description"),
+            "type": profile.get("type"),
+            "default_action": profile.get("default_action"),
+            "is_parent_managed": profile.get("is_parent_managed"),
+            "created_at": profile.get("audit_metadata", {}).get("created_at"),
+            "updated_at": profile.get("audit_metadata", {}).get("updated_at"),
+            "created_by": profile.get("audit_metadata", {}).get("created_by"),
+            "updated_by": profile.get("audit_metadata", {}).get("updated_by")
+        }
+        filtering_profiles.append(profile_info)
+
+    total_elements = response.get("total_elements", len(filtering_profiles))
+    total_pages = response.get("total_pages", 1)
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Filtering Profiles (Page {page + 1}/{total_pages}, {len(filtering_profiles)} of {total_elements})",
+        filtering_profiles,
+        headers=["id", "name", "type", "default_action", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfile",
+        outputs_key_field="id",
+        outputs=filtering_profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def main() -> None:
+    """Main function for Prisma AIRs integration."""
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    demisto.debug(f"Command being called is {command}")
+
+    try:
+        # Client configuration
+        base_url = params.get("url", "https://api.sase.paloaltonetworks.com")
+        credentials = params.get("credentials", {})
+        client_id = credentials.get("identifier", "")
+        client_secret = credentials.get("password", "")
+        tsg_id = params.get("tsg_id")
+        runtime_api_key = params.get("runtime_api_key", {}).get("password", "") or params.get("runtime_api_key", "")
+        scanner_base_url = params.get("scanner_base_url")
+        dlp_base_url = params.get("dlp_base_url")
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
+
+        headers: dict[str, str] = {}
+
+        client = Client(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            tsg_id=tsg_id,
+            runtime_api_key=runtime_api_key,
+            scanner_base_url=scanner_base_url,
+            dlp_base_url=dlp_base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            headers=headers
+        )
+
+        if command == "test-module":
+            result = test_module(client)
+            return_results(result)
+
+        elif command == "prisma-airs-runtime-scan":
+            return_results(runtime_scan_command(client, args))
+
+        elif command == "prisma-airs-runtime-api-keys-list":
+            return_results(runtime_api_keys_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-profiles-list":
+            return_results(runtime_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-customer-apps-list":
+            return_results(runtime_customer_apps_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-deployment-profiles-list":
+            return_results(runtime_deployment_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-profiles-list":
+            return_results(runtime_dlp_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-list":
+            return_results(runtime_dlp_dictionaries_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-patterns-list":
+            return_results(runtime_dlp_patterns_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-filtering-profiles-list":
+            return_results(runtime_dlp_filtering_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-scan-logs":
+            return_results(runtime_scan_logs_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-list":
+            return_results(runtime_topics_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-bulk-scan":
+            return_results(runtime_bulk_scan_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-list":
+            return_results(model_security_scans_list_command(client, args))
+
+        elif command == "prisma-airs-model-security-groups-list":
+            return_results(model_security_groups_list_command(client, args))
+
+        elif command == "prisma-airs-model-security-rules-list":
+            return_results(model_security_rules_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-list":
+            return_results(redteam_targets_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-scans-list":
+            return_results(redteam_scans_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-scan-get":
+            return_results(redteam_scan_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-scan-abort":
+            return_results(redteam_scan_abort_command(client, args))
+
+        elif command == "prisma-airs-redteam-categories-list":
+            return_results(redteam_categories_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-get":
+            return_results(redteam_report_get_command(client, args))
+
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
+
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

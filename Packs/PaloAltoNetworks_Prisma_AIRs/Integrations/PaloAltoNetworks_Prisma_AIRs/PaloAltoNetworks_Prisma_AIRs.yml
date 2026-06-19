@@ -1,0 +1,944 @@
+category: Network Security
+commonfields:
+  id: Palo Alto Networks - Prisma AIRs AI Security
+  version: -1
+configuration:
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Client ID
+  section: Connect
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Client Secret
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+  section: Connect
+- display: Runtime API Key
+  section: Connect
+  name: runtime_api_key
+  required: true
+  type: 9
+  additionalinfo: 'Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations.'
+  hiddenusername: true
+  displaypassword: Runtime API Key
+- display: Scanner API Base URL
+  section: Connect
+  name: scanner_base_url
+  required: false
+  type: 0
+  defaultvalue: 'https://service.api.aisecurity.paloaltonetworks.com'
+  additionalinfo: 'Scanner API base URL for runtime scanning operations. Default is US region. For other regions: EU: https://service-de.api.aisecurity.paloaltonetworks.com, IN: https://service-in.api.aisecurity.paloaltonetworks.com, SG: https://service-sg.api.aisecurity.paloaltonetworks.com. This must match the region selected during deployment profile creation.'
+  advanced: true
+- display: DLP API Base URL
+  section: Connect
+  name: dlp_base_url
+  required: false
+  type: 0
+  defaultvalue: 'https://api.dlp.paloaltonetworks.com'
+  additionalinfo: 'DLP API base URL for DLP management operations (dictionaries, patterns, filtering profiles). Default is the global DLP endpoint. Change only if using a regional or custom DLP endpoint.'
+  advanced: true
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, model security, and DLP configuration.
+display: Palo Alto Networks - Prisma AIRs AI Security
+name: Palo Alto Networks - Prisma AIRs AI Security
+script:
+  commands:
+  - name: prisma-airs-runtime-scan
+    description: Scan a single prompt against a security profile for AI security threats.
+    arguments:
+    - name: profile_name
+      required: true
+      description: The name of the security profile to use for scanning.
+    - name: prompt
+      required: true
+      description: The prompt text to scan.
+    - name: response
+      required: false
+      description: Optional response text to scan alongside the prompt.
+    - name: tr_id
+      required: false
+      description: Unique identifier string for correlating the prompt and response transactions. Returned in the scan response.
+    - name: session_id
+      required: false
+      description: Unique identifier string for tracking sessions. Returned in the scan response.
+    - name: app_name
+      required: false
+      description: AI application requesting the content scan.
+    - name: app_user
+      required: false
+      description: End user using the AI application.
+    - name: ai_model
+      required: false
+      description: AI model serving the AI application.
+    - name: user_ip
+      required: false
+      description: End user IP address using the AI application.
+    - name: agent_id
+      required: false
+      description: Agent identifier for metadata tracking.
+    - name: agent_version
+      required: false
+      description: Agent version for metadata tracking.
+    - name: agent_arn
+      required: false
+      description: Agent ARN for metadata tracking.
+    outputs:
+    - contextPath: PrismaAIRs.RuntimeScan.scan_id
+      description: Unique scan identifier.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.report_id
+      description: Report identifier for this scan.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.tr_id
+      description: Transaction ID passed in the request and returned in the response.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.session_id
+      description: Session ID passed in the request and returned in the response.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.prompt
+      description: The scanned prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.response
+      description: The scanned response text.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.action
+      description: Action taken (allow or block).
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.category
+      description: Threat category (benign, malicious, etc.).
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.detected
+      description: Whether any threat was detected across prompt or response.
+      type: Boolean
+    - contextPath: PrismaAIRs.RuntimeScan.prompt_detected
+      description: Object containing all detection types for the prompt (e.g., injection, dlp, toxic_content, topic_violation, url_cats, malicious_code, agent).
+      type: Unknown
+    - contextPath: PrismaAIRs.RuntimeScan.response_detected
+      description: Object containing all detection types for the response (e.g., dlp, toxic_content, topic_violation, url_cats, malicious_code, agent, db_security, ungrounded).
+      type: Unknown
+    - contextPath: PrismaAIRs.RuntimeScan.profile_id
+      description: Profile ID used for scanning.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.profile_name
+      description: Profile name used for scanning.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.source
+      description: Source of the scan request.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScan.timeout
+      description: Whether any detection service timed out.
+      type: Boolean
+    - contextPath: PrismaAIRs.RuntimeScan.error
+      description: Whether any detection service encountered an error.
+      type: Boolean
+    - contextPath: PrismaAIRs.RuntimeScan.errors
+      description: List of detection service errors or timeouts.
+      type: Unknown
+  - name: prisma-airs-runtime-api-keys-list
+    description: List all Runtime API Keys configured in Prisma AIRs.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of API keys to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ApiKey.id
+      description: API Key ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.name
+      description: API Key name.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.last8
+      description: Last 8 characters of the API key (for identification).
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.created_at
+      description: API Key creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.expires_at
+      description: API Key expiration timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.revoked
+      description: Whether the API key has been revoked.
+      type: Boolean
+  - name: prisma-airs-runtime-profiles-list
+    description: List all runtime security profiles.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of profiles to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.SecurityProfile.id
+      description: Profile ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.name
+      description: Profile name.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.revision
+      description: Profile revision number.
+      type: Number
+    - contextPath: PrismaAIRs.SecurityProfile.active
+      description: Whether the profile is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.SecurityProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.SecurityProfile.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-runtime-customer-apps-list
+    description: List all customer applications.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of customer apps to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.CustomerApp.id
+      description: Customer App ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.name
+      description: Customer App name.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.model_name
+      description: Model name used by the app.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.cloud_provider
+      description: Cloud provider.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.environment
+      description: Environment (prod, staging, dev).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.ai_agent_framework
+      description: AI agent framework used.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-runtime-deployment-profiles-list
+    description: List all deployment profiles.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of deployment profiles to return.
+      defaultValue: '50'
+    - name: unactivated
+      required: false
+      description: Filter to show only unactivated profiles.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DeploymentProfile.name
+      description: Deployment Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DeploymentProfile.auth_code
+      description: Authentication code.
+      type: String
+    - contextPath: PrismaAIRs.DeploymentProfile.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.DeploymentProfile.status
+      description: Profile status.
+      type: String
+    - contextPath: PrismaAIRs.DeploymentProfile.expiration_date
+      description: Expiration date.
+      type: Date
+    - contextPath: PrismaAIRs.DeploymentProfile.ave_text_records
+      description: Average text records.
+      type: Number
+  - name: prisma-airs-runtime-dlp-profiles-list
+    description: List all DLP data profiles (v2 API).
+    arguments:
+    - name: page
+      required: false
+      description: Page number for pagination.
+      defaultValue: '0'
+    - name: size
+      required: false
+      description: Number of results per page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfile.id
+      description: DLP Profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.name
+      description: DLP Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.description
+      description: DLP Profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.tenant_id
+      description: Tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.type
+      description: Profile type (custom or predefined).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_status
+      description: Profile status (active, disabled, deleted).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_type
+      description: Profile type (basic or advanced).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.is_granular_data_profile
+      description: Whether this is a granular data profile.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfile.is_parent_managed
+      description: Whether the profile is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfile.version
+      description: DLP Profile version.
+      type: Number
+    - contextPath: PrismaAIRs.DlpProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+  - name: prisma-airs-runtime-dlp-dictionaries-list
+    description: List DLP dictionaries.
+    arguments:
+    - name: page
+      required: false
+      description: Page number for pagination.
+      defaultValue: '0'
+    - name: size
+      required: false
+      description: Number of results per page.
+      defaultValue: '50'
+    - name: include_keywords
+      required: false
+      description: Include keyword list in response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpDictionary.id
+      description: Dictionary ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.name
+      description: Dictionary name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.description
+      description: Dictionary description.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.category
+      description: Dictionary category.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.type
+      description: Dictionary type (predefined or custom).
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.is_case_sensitive
+      description: Whether the dictionary is case sensitive.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.detection_technique
+      description: Detection technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.number_of_keywords
+      description: Number of keywords in the dictionary.
+      type: Number
+    - contextPath: PrismaAIRs.DlpDictionary.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-runtime-dlp-patterns-list
+    description: List DLP data patterns.
+    arguments:
+    - name: page
+      required: false
+      description: Page number for pagination.
+      defaultValue: '0'
+    - name: size
+      required: false
+      description: Number of results per page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.DlpPattern.id
+      description: Pattern ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.name
+      description: Pattern name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.description
+      description: Pattern description.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.category
+      description: Pattern category.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.type
+      description: Pattern type (predefined or custom).
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.detection_technique
+      description: Detection technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.detection_sub_technique
+      description: Detection sub-technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.pattern_status
+      description: Pattern status.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-runtime-dlp-filtering-profiles-list
+    description: List DLP filtering profiles.
+    arguments:
+    - name: page
+      required: false
+      description: Page number for pagination.
+      defaultValue: '0'
+    - name: size
+      required: false
+      description: Number of results per page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.DlpFilteringProfile.id
+      description: Filtering profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.name
+      description: Filtering profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.description
+      description: Filtering profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.default_action
+      description: Default action for the profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_parent_managed
+      description: Whether the profile is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpFilteringProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-runtime-scan-logs
+    description: Query runtime scan logs for a specified time period.
+    arguments:
+    - name: interval
+      required: true
+      description: Time interval (e.g., 1, 24, 7, 30).
+    - name: unit
+      required: true
+      description: Time unit (hours or days).
+      defaultValue: 'hours'
+    - name: filter
+      required: false
+      description: Filter logs by type (all, benign, threat).
+      defaultValue: 'all'
+    - name: page
+      required: false
+      description: Page number for pagination.
+      defaultValue: '1'
+    - name: page_size
+      required: false
+      description: Number of results per page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.RuntimeScanLog.scan_id
+      description: Scan ID.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.report_id
+      description: Report ID.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.timestamp
+      description: Scan timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RuntimeScanLog.profile_name
+      description: Security profile name used.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.action
+      description: Action taken (allow or block).
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.category
+      description: Threat category.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.detected
+      description: Whether threats were detected.
+      type: Boolean
+    - contextPath: PrismaAIRs.RuntimeScanLog.prompt
+      description: Scanned prompt.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.response
+      description: Scanned response.
+      type: String
+  - name: prisma-airs-runtime-topics-list
+    description: List custom topic guardrails.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of topics to return.
+      defaultValue: '100'
+    - name: offset
+      required: false
+      description: Starting offset for pagination.
+      defaultValue: '0'
+    outputs:
+    - contextPath: PrismaAIRs.Topic.topic_id
+      description: Topic UUID.
+      type: String
+    - contextPath: PrismaAIRs.Topic.topic_name
+      description: Topic name.
+      type: String
+    - contextPath: PrismaAIRs.Topic.revision
+      description: Topic revision number.
+      type: Number
+    - contextPath: PrismaAIRs.Topic.description
+      description: Topic description.
+      type: String
+    - contextPath: PrismaAIRs.Topic.examples
+      description: Example prompts for the topic.
+      type: Unknown
+    - contextPath: PrismaAIRs.Topic.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.Topic.created_by
+      description: User who created the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.updated_by
+      description: User who last updated the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.csp_id
+      description: CSP ID.
+      type: String
+    - contextPath: PrismaAIRs.Topic.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-runtime-bulk-scan
+    description: Perform bulk scanning of multiple prompts.
+    arguments:
+    - name: profile_name
+      required: true
+      description: Security profile name to use for scanning.
+    - name: prompts_csv
+      required: true
+      description: CSV content with prompts to scan (must include 'prompt' column header, or use newline-separated format).
+    - name: session_id
+      required: false
+      description: Optional session ID for grouping scans in AIRS dashboard.
+    outputs:
+    - contextPath: PrismaAIRs.BulkScan.profile_name
+      description: Security profile used.
+      type: String
+    - contextPath: PrismaAIRs.BulkScan.session_id
+      description: Session ID.
+      type: String
+    - contextPath: PrismaAIRs.BulkScan.total
+      description: Total prompts scanned.
+      type: Number
+    - contextPath: PrismaAIRs.BulkScan.blocked
+      description: Number of prompts blocked.
+      type: Number
+    - contextPath: PrismaAIRs.BulkScan.allowed
+      description: Number of prompts allowed.
+      type: Number
+    - contextPath: PrismaAIRs.BulkScan.errors
+      description: Number of scan errors.
+      type: Number
+    - contextPath: PrismaAIRs.BulkScan.results
+      description: Array of individual scan results.
+      type: Unknown
+  - name: prisma-airs-model-security-scans-list
+    description: List all model security scans.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of scans to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityScan.uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.model_uri
+      description: Model URI that was scanned.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.eval_outcome
+      description: Evaluation outcome (ALLOWED, BLOCKED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.source_type
+      description: Source type (HUGGING_FACE, LOCAL, etc.).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.security_group_uuid
+      description: Security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.security_group_name
+      description: Security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.scan_origin
+      description: Scan origin.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScan.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScan.created_by
+      description: User who created the scan.
+      type: String
+  - name: prisma-airs-model-security-groups-list
+    description: List all model security groups.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of security groups to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
+      description: Security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.name
+      description: Security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.description
+      description: Security group description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+      description: Source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.state
+      description: Group state (ACTIVE, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-rules-list
+    description: List all model security rules.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of security rules to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRule.uuid
+      description: Security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.rule_type
+      description: Rule type (ARTIFACT, METADATA).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.compatible_sources
+      description: Compatible source types for this rule.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRule.default_state
+      description: Default state (DISABLED, ALLOWING, BLOCKING).
+      type: String
+  - name: prisma-airs-redteam-targets-list
+    description: List all Red Team targets.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of targets to return.
+      defaultValue: '50'
+    - name: target_type
+      required: false
+      description: Filter by target type (e.g., API, UI, MOBILE).
+    - name: status
+      required: false
+      description: Filter by target status (e.g., READY, VALIDATING, FAILED).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTarget.description
+      description: Target description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.target_type
+      description: Target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.connection_type
+      description: Connection type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.auth_type
+      description: Authentication type.
+      type: String
+  - name: prisma-airs-redteam-scans-list
+    description: List all Red Team scans.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of scans to return.
+      defaultValue: '50'
+    - name: job_type
+      required: false
+      description: Filter by job type (e.g., STATIC, DYNAMIC, CUSTOM).
+    - name: status
+      required: false
+      description: Filter by scan status (e.g., COMPLETED, RUNNING, FAILED).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScan.uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.job_type
+      description: Job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.status
+      description: Scan status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.target_uuid
+      description: Target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_name
+      description: Target name being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.started_at
+      description: Scan start timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.completed_at
+      description: Scan completion timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.progress
+      description: Scan progress percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.total_prompts
+      description: Total number of prompts in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.completed_prompts
+      description: Number of completed prompts.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.failed_prompts
+      description: Number of failed prompts.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.error_message
+      description: Error message if scan failed.
+      type: String
+  - name: prisma-airs-redteam-scan-get
+    description: Get Red Team scan status and details by job ID.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScan.uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.name
+      description: Scan name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.job_type
+      description: Job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.status
+      description: Scan status (QUEUED, RUNNING, COMPLETED, FAILED, ABORTED).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_id
+      description: Target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_name
+      description: Target name being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.total
+      description: Total number of attacks in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.completed
+      description: Number of completed attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.score
+      description: Risk score (0-100).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.asr
+      description: Attack Success Rate (ASR) percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.progress
+      description: Progress string (e.g., "150/200").
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.progress_percentage
+      description: Progress percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.started_at
+      description: Start timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.completed_at
+      description: Completion timestamp.
+      type: Date
+  - name: prisma-airs-redteam-scan-abort
+    description: Abort a running Red Team scan.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID to abort.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanAbort.job_id
+      description: The aborted job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanAbort.message
+      description: Abort confirmation message.
+      type: String
+  - name: prisma-airs-redteam-categories-list
+    description: List all Red Team attack categories and subcategories.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCategory.id
+      description: Category ID (e.g., SECURITY, SAFETY, COMPLIANCE, BRAND).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.display_name
+      description: Category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.description
+      description: Category description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.preselect
+      description: Whether this category is preselected by default.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCategory.sub_category_count
+      description: Number of subcategories.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCategory.sub_categories
+      description: Array of subcategory objects.
+      type: Unknown
+  - name: prisma-airs-redteam-report-get
+    description: Get Red Team scan report with attack results and recommendations.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM). Defaults to STATIC.
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamReport.job_id
+      description: Scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.job_type
+      description: Job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.score
+      description: Risk score (0-100).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.asr
+      description: Attack Success Rate (ASR) percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.total_attacks
+      description: Total number of attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.successful_attacks
+      description: Number of successful attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.failed_attacks
+      description: Number of failed attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.severity_breakdown
+      description: Array of severity statistics.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamReport.category_reports
+      description: Array of category-level reports.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamReport.report_summary
+      description: Executive summary of findings.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.total_goals
+      description: Total goals (Dynamic scans only).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.goals_achieved
+      description: Goals achieved (Dynamic scans only).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.total_threats
+      description: Total threats detected (Dynamic scans only).
+      type: Number
+  dockerimage: demisto/python3:3.10.14.95956
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
