@@ -3850,6 +3850,11 @@ script:
       description: The SSDeep hash of the file.
       type: string
   - arguments:
+    - description: Panorama only. Limits the commit scope to the specified device group(s), so only pending changes for those device groups are committed. If omitted, all pending changes are committed.
+      name: device-group
+    - description: Panorama only. Limits the commit scope to the specified template(s), so only pending changes for those templates are committed. If omitted, all pending changes are committed.
+      name: template
+      isArray: True
     - description: The commit description.
       name: description
     - description: The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request.
@@ -3903,6 +3908,12 @@ script:
       type: String
     - contextPath: Panorama.Commit.Description
       description: The commit description from the the command input.
+      type: String
+    - contextPath: Panorama.Commit.Scope
+      description: Whether the commit is partial.
+      type: String
+    - contextPath: Panorama.Commit.Details
+      description: The summary of the targeted device group and templates.
       type: String
   - arguments:
     - default: true
@@ -10503,6 +10514,12 @@ script:
       - 'false'
     - description: Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS).
       name: no_new_hits_since
+    - description: The pre-rule or post-rule (Panorama instances only). When set, only rules pushed from Panorama at the specified position are returned.
+      name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
     description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
     name: pan-os-get-rule-hitcounts
     outputs:
