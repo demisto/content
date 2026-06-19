@@ -48,8 +48,17 @@ class Client(BaseClient):
     def _http_request(self, **kwargs):  # type: ignore[override]
         try:
             params = kwargs.get("params", {})
+            headers = kwargs.get("headers")
+
+            if headers is None:
+                headers = dict(self._headers) if self._headers else {}
+            else:
+                headers = dict(headers)
+
+            headers.setdefault("User-Agent", "/")
 
             kwargs["params"] = params
+            kwargs["headers"] = headers
 
             return super()._http_request(**kwargs)
         except DemistoException as error:
@@ -63,6 +72,23 @@ class Client(BaseClient):
                 new_message = (
                     error_message[:ind] + "\nValidate your TSG ID or Whether Client ID or Client Secret has required permissions"
                 )
+                raise DemistoException(new_message)
+            elif "[401]" in error_message:
+                ind = error_message.find("Unauthorized")
+                new_message = (
+                    error_message[:ind]
+                    + "\nUnauthorized request. Validate Client ID and Client Secret, and ensure the generated token is valid."
+                )
+                raise DemistoException(new_message)
+            elif "[429]" in error_message:
+                ind = error_message.find("Too Many Requests")
+                new_message = (
+                    error_message[:ind] + "\nRate limit exceeded. Retry the request later or lower the request frequency."
+                )
+                raise DemistoException(new_message)
+            elif "[500]" in error_message:
+                ind = error_message.find("Internal Server Error")
+                new_message = error_message[:ind] + "\nService temporary error. Retry the request in a few minutes."
                 raise DemistoException(new_message)
             else:
                 raise error
@@ -216,16 +242,8 @@ def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verif
         integration_context = get_integration_context()
         access_token = integration_context.get("scm_access_token")
         expires_on = integration_context.get("scm_expires_on")
-        scope = integration_context.get("scm_scope", [])
 
-        if (
-            integration_context.get("scm_client_id") == client_id
-            and integration_context.get("scm_client_secret") == client_secret
-            and integration_context.get("scm_tsg_id") == tsg_id
-            and access_token
-            and expires_on
-            and datetime.fromisoformat(expires_on) > datetime.now()
-        ):
+        if access_token and expires_on and datetime.fromisoformat(expires_on) > datetime.now():
             return access_token
 
         auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
@@ -248,16 +266,11 @@ def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verif
 
         access_token = token_data.get("access_token")
         expires_in = token_data.get("expires_in", 0)
-        scope = token_data.get("scope")
 
         set_integration_context(
             {
                 "scm_access_token": access_token,
                 "scm_expires_on": str(datetime.now() + timedelta(seconds=int(expires_in))),
-                "scm_client_id": client_id,
-                "scm_client_secret": client_secret,
-                "scm_tsg_id": tsg_id,
-                "scm_scope": scope,
             }
         )
 
@@ -445,7 +458,7 @@ def device_security_resolve_alert(client, args):
         None in CommandResults
     """
     alert_id = args.get("id")
-    reason = args.get("reason", "resolved by XSOAR")
+    reason = args.get("reason", "Resolved by XSOAR")
     reason_type = args.get("reason_type", "No Action Needed")
 
     client.resolve_alert(alert_id, reason, reason_type)
@@ -466,11 +479,120 @@ def device_security_resolve_vuln(client, args):
     """
     vuln_id = args.get("id")
     full_name = args.get("full_name")
-    reason = args.get("reason", "resolved by XSOAR")
+    reason = args.get("reason", "Resolved by XSOAR")
 
     client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(readable_output=f"Vulnerability {vuln_id} was resolved successfully")
+
+
+def normalize_detected_date(detected_date):
+    if detected_date and isinstance(detected_date, list):
+        return detected_date[0]
+    return detected_date
+
+
+def fetch_alert_incidents(client, last_alerts_fetch, max_fetch):
+    stime = client.first_fetch
+    if last_alerts_fetch is not None:
+        # need to add 1ms for the stime
+        stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
+
+    alerts = client.list_alerts(stime, pagelength=max_fetch)
+    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- alerts before filtering: {len(alerts)}")
+
+    # special handling for the case of having more than the pagelength
+    if len(alerts) == max_fetch:
+        # get the last date
+        last_date = alerts[-1]["date"]
+        offset = 0
+        done = False
+        while not done:
+            offset += max_fetch
+            others = client.list_alerts(stime, offset, pagelength=max_fetch)
+            for alert in others:
+                if alert["date"] == last_date:
+                    alerts.append(alert)
+                else:
+                    done = True
+                    break
+            if len(others) != max_fetch:
+                break
+
+    incidents = []
+    for alert in alerts:
+        alert_date_epoch = datetime.strptime(alert["date"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
+        alert_id = alert["zb_ticketid"].replace("alert-", "")
+        device_security_incident_url = get_scm_alert_url(alert_id)
+
+        incident = {
+            "name": alert["name"],
+            "type": "Device Security Alert",
+            "occurred": alert["date"],
+            "rawJSON": json.dumps(alert),
+            "details": alert.get("description", ""),
+            "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
+        }
+        incidents.append(incident)
+
+        # Update last run and add incident if the incident is newer than last fetch
+        if last_alerts_fetch is None or alert_date_epoch > last_alerts_fetch:
+            last_alerts_fetch = alert_date_epoch
+
+    return incidents, last_alerts_fetch
+
+
+def fetch_vulnerability_incidents(client, last_vulns_fetch, max_fetch):
+    stime = client.first_fetch
+    if last_vulns_fetch is not None:
+        # need to add 1ms for the stime
+        stime = datetime.utcfromtimestamp(last_vulns_fetch + 0.001).isoformat() + "Z"
+
+    vulns = client.list_vulns(stime, pagelength=max_fetch)
+
+    # special handling for the case of having more than the pagelength
+    if len(vulns) == max_fetch:
+        # get the last date
+        last_date = normalize_detected_date(vulns[-1]["detected_date"])
+
+        offset = 0
+        done = False
+        while not done:
+            offset += max_fetch
+            others = client.list_vulns(stime, offset, pagelength=max_fetch)
+            for vuln in others:
+                detected_date = normalize_detected_date(vuln["detected_date"])
+
+                if detected_date == last_date:
+                    vulns.append(vuln)
+                else:
+                    done = True
+                    break
+            if len(others) != max_fetch:
+                break
+    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- vulnerability before filtering: {len(vulns)}")
+
+    incidents = []
+    for vuln in vulns:
+        detected_date = normalize_detected_date(vuln["detected_date"])
+
+        vuln_date_epoch = datetime.strptime(detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
+        device_security_incident_url = get_scm_vuln_url(vuln)
+
+        incident = {
+            "name": vuln["name"],
+            "type": "Device Security Vulnerability",
+            "occurred": detected_date,
+            "rawJSON": json.dumps(vuln),
+            "details": f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
+            "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
+        }
+        incidents.append(incident)
+
+        if last_vulns_fetch is None or vuln_date_epoch > last_vulns_fetch:
+            last_vulns_fetch = vuln_date_epoch
+
+    return incidents, last_vulns_fetch
 
 
 def fetch_incidents(client, last_run, is_test=False):
@@ -495,104 +617,12 @@ def fetch_incidents(client, last_run, is_test=False):
     incidents = []
 
     if demisto.params().get("fetch_alerts", True):
-        stime = client.first_fetch
-        if last_alerts_fetch is not None:
-            # need to add 1ms for the stime
-            stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
-
-        alerts = client.list_alerts(stime, pagelength=max_fetch)
-        demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- alerts before filtering: {len(alerts)}")
-
-        # special handling for the case of having more than the pagelength
-        if len(alerts) == max_fetch:
-            # get the last date
-            last_date = alerts[-1]["date"]
-            offset = 0
-            done = False
-            while not done:
-                offset += max_fetch
-                others = client.list_alerts(stime, offset, pagelength=max_fetch)
-                for alert in others:
-                    if alert["date"] == last_date:
-                        alerts.append(alert)
-                    else:
-                        done = True
-                        break
-                if len(others) != max_fetch:
-                    break
-
-        for alert in alerts:
-            alert_date_epoch = datetime.strptime(alert["date"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
-            alert_id = alert["zb_ticketid"].replace("alert-", "")
-            device_security_incident_url = get_scm_alert_url(alert_id)
-
-            incident = {
-                "name": alert["name"],
-                "type": "Device Security Alert",
-                "occurred": alert["date"],
-                "rawJSON": json.dumps(alert),
-                "details": alert.get("description", ""),
-                "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
-            }
-            incidents.append(incident)
-
-            # Update last run and add incident if the incident is newer than last fetch
-            if last_alerts_fetch is None or alert_date_epoch > last_alerts_fetch:
-                last_alerts_fetch = alert_date_epoch
+        alert_incidents, last_alerts_fetch = fetch_alert_incidents(client, last_alerts_fetch, max_fetch)
+        incidents.extend(alert_incidents)
 
     if demisto.params().get("fetch_vulns", True):
-        stime = client.first_fetch
-        if last_vulns_fetch is not None:
-            # need to add 1ms for the stime
-            stime = datetime.utcfromtimestamp(last_vulns_fetch + 0.001).isoformat() + "Z"
-
-        vulns = client.list_vulns(stime, pagelength=max_fetch)
-
-        # special handling for the case of having more than the pagelength
-        if len(vulns) == max_fetch:
-            # get the last date
-            last_date = vulns[-1]["detected_date"]
-            if last_date and isinstance(last_date, list):
-                last_date = last_date[0]
-
-            offset = 0
-            done = False
-            while not done:
-                offset += max_fetch
-                others = client.list_vulns(stime, offset, pagelength=max_fetch)
-                for vuln in others:
-                    detected_date = vuln["detected_date"]
-                    if detected_date and isinstance(detected_date, list):
-                        detected_date = detected_date[0]
-
-                    if detected_date == last_date:
-                        vulns.append(vuln)
-                    else:
-                        done = True
-                        break
-                if len(others) != max_fetch:
-                    break
-        demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- vulnerability before filtering: {len(vulns)}")
-        for vuln in vulns:
-            detected_date = vuln["detected_date"]
-            if detected_date and isinstance(detected_date, list):
-                detected_date = detected_date[0]
-
-            vuln_date_epoch = datetime.strptime(detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
-            device_security_incident_url = get_scm_vuln_url(vuln)
-
-            incident = {
-                "name": vuln["name"],
-                "type": "Device Security Vulnerability",
-                "occurred": detected_date,
-                "rawJSON": json.dumps(vuln),
-                "details": f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
-                "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
-            }
-            incidents.append(incident)
-
-            if last_vulns_fetch is None or vuln_date_epoch > last_vulns_fetch:
-                last_vulns_fetch = vuln_date_epoch
+        vuln_incidents, last_vulns_fetch = fetch_vulnerability_incidents(client, last_vulns_fetch, max_fetch)
+        incidents.extend(vuln_incidents)
 
     next_run = {"last_alerts_fetch": last_alerts_fetch, "last_vulns_fetch": last_vulns_fetch}
     demisto.debug(
