@@ -1,5 +1,5 @@
-Manage and secure Google Cloud Platform resources. On Cortex Platform, authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID.
-This integration was integrated and tested with version v1 (Compute, Storage, Container), v3 (Resource Manager).
+Manage and secure Google Cloud Platform resources. On Cortex XSIAM (version >= 3.0) and Cortex Cloud, authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID.
+This integration was integrated and tested with version v1 (Compute, Storage, Container), v3 (Resource Manager), v2 (BigQuery).
 
 ## Configure Google Cloud Platform in Cortex
 

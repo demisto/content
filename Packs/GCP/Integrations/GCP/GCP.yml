@@ -2621,7 +2621,7 @@ script:
       name: project_id
       required: false
       required:platform: true
-    description: Returns the specified Region resource.
+    description: "Returns a specific region resource. Required permission: compute.regions.get."
     name: gcp-compute-region-get
     outputs:
     - contextPath: GCP.Compute.Regions.id
@@ -2752,7 +2752,7 @@ script:
       name: project_id
       required: false
       required:platform: true
-    description: Returns the specified Zone resource.
+    description: "Returns a specific zone resource. Required permission: compute.zones.get."
     name: gcp-compute-zone-get
     outputs:
     - contextPath: GCP.Compute.Zones.id

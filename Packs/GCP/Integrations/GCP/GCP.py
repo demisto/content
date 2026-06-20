@@ -2434,7 +2434,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
     project_id = (params.get("project_id") or "").strip()
     if not project_id:
         raise DemistoException(
-            "Missing required parameter 'project_id'. " "Please set the 'GCP Project ID' field in the integration configuration."
+            "Missing required parameter 'project_id'. Please set the 'GCP Project ID' field in the integration configuration."
         )
 
     try:
