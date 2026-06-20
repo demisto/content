@@ -1034,6 +1034,414 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
     )
 
 
+def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team target.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Required fields
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required")
+
+    # Build request body according to TargetCreateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetRequestBaseFields)
+    request_body: dict[str, Any] = {
+        "name": name
+    }
+
+    # Optional fields
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+    if args.get("target_type"):
+        request_body["target_type"] = args.get("target_type")
+    if args.get("connection_type"):
+        request_body["connection_type"] = args.get("connection_type")
+    if args.get("api_endpoint_type"):
+        request_body["api_endpoint_type"] = args.get("api_endpoint_type")
+    if args.get("response_mode"):
+        request_body["response_mode"] = args.get("response_mode")
+    if args.get("session_supported") is not None:
+        request_body["session_supported"] = argToBoolean(args.get("session_supported"))
+
+    # Connection params (JSON)
+    if args.get("connection_params"):
+        import json
+        request_body["connection_params"] = json.loads(args.get("connection_params"))
+
+    # Optional validation parameter
+    validate = argToBoolean(args.get("validate", False))
+    params = {"validate": str(validate).lower()} if validate is not None else None
+
+    # Call Red Team target create endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (create method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
+    response = client.http_request(
+        method="POST",
+        url_suffix=RED_TEAM_TARGETS_ENDPOINT,
+        json_data=request_body,
+        params=params,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetResponseSchema
+    target_info = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "name": response.get("name"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "validated": response.get("validated"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "description": response.get("description"),
+        "target_type": response.get("target_type"),
+        "connection_type": response.get("connection_type"),
+        "api_endpoint_type": response.get("api_endpoint_type"),
+        "response_mode": response.get("response_mode"),
+        "session_supported": response.get("session_supported"),
+        "auth_type": response.get("auth_type"),
+        "version": response.get("version"),
+        "created_by_user_id": response.get("created_by_user_id")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Target Created: {name}",
+        [target_info],
+        headers=["uuid", "name", "target_type", "status", "active", "validated"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team target details by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Red Team target get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (get method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetResponseSchema
+    target_info = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "name": response.get("name"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "validated": response.get("validated"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "description": response.get("description"),
+        "target_type": response.get("target_type"),
+        "connection_type": response.get("connection_type"),
+        "api_endpoint_type": response.get("api_endpoint_type"),
+        "response_mode": response.get("response_mode"),
+        "session_supported": response.get("session_supported"),
+        "auth_type": response.get("auth_type"),
+        "version": response.get("version"),
+        "secret_version": response.get("secret_version"),
+        "created_by_user_id": response.get("created_by_user_id"),
+        "updated_by_user_id": response.get("updated_by_user_id"),
+        "profiling_status": response.get("profiling_status")
+    }
+
+    # Include metadata if present
+    target_metadata = response.get("target_metadata")
+    if target_metadata:
+        target_info["target_metadata"] = target_metadata
+
+    target_background = response.get("target_background")
+    if target_background:
+        target_info["target_background"] = target_background
+
+    additional_context = response.get("additional_context")
+    if additional_context:
+        target_info["additional_context"] = additional_context
+
+    readable_output = tableToMarkdown(
+        f"Red Team Target: {target_info.get('name', uuid)}",
+        [target_info],
+        headers=["uuid", "name", "target_type", "status", "active", "validated", "connection_type"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing Red Team target.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Build request body according to TargetUpdateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetRequestBaseFields)
+    # Note: At least one field must be provided for update
+    request_body: dict[str, Any] = {}
+
+    # Name is required in the schema, but for update we might want to keep the existing name
+    # Check if name is provided, otherwise we need to get the current target first
+    if args.get("name"):
+        request_body["name"] = args.get("name")
+
+    # Optional fields
+    if args.get("description") is not None:
+        request_body["description"] = args.get("description")
+    if args.get("target_type"):
+        request_body["target_type"] = args.get("target_type")
+    if args.get("connection_type"):
+        request_body["connection_type"] = args.get("connection_type")
+    if args.get("api_endpoint_type"):
+        request_body["api_endpoint_type"] = args.get("api_endpoint_type")
+    if args.get("response_mode"):
+        request_body["response_mode"] = args.get("response_mode")
+    if args.get("session_supported") is not None:
+        request_body["session_supported"] = argToBoolean(args.get("session_supported"))
+
+    # Connection params (JSON)
+    if args.get("connection_params"):
+        import json
+        request_body["connection_params"] = json.loads(args.get("connection_params"))
+
+    # If no fields provided, error
+    if not request_body:
+        raise ValueError("At least one field must be provided for update (name, description, target_type, etc.)")
+
+    # If name not provided but other fields are, we need to preserve the existing name
+    # by fetching the current target first
+    if "name" not in request_body:
+        current_target = client.http_request(
+            method="GET",
+            url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
+            use_redteam_mgmt=True
+        )
+        request_body["name"] = current_target.get("name")
+
+    # Optional validation parameter
+    validate = args.get("validate")
+    params = {"validate": str(argToBoolean(validate)).lower()} if validate is not None else None
+
+    # Call Red Team target update endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (update method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
+        json_data=request_body,
+        params=params,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetResponseSchema
+    target_info = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "name": response.get("name"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "validated": response.get("validated"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "description": response.get("description"),
+        "target_type": response.get("target_type"),
+        "connection_type": response.get("connection_type"),
+        "updated_by_user_id": response.get("updated_by_user_id")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Target Updated: {target_info.get('name', uuid)}",
+        [target_info],
+        headers=["uuid", "name", "target_type", "status", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a Red Team target.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Red Team target delete endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (delete method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (BaseResponseSchema)
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to BaseResponseSchema (optional - may be empty)
+    # Fields: message, status
+    delete_info = {
+        "uuid": uuid,
+        "message": response.get("message", "Target deleted successfully"),
+        "status": response.get("status", 200)
+    }
+
+    readable_output = f"## Red Team Target Deleted\n\n**UUID:** {uuid}\n\n**Status:** {delete_info.get('status')}\n\n**Message:** {delete_info.get('message')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetDelete",
+        outputs_key_field="uuid",
+        outputs=delete_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Probe a Red Team target to validate connectivity and profiling.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Required fields for probe
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required for target probe")
+
+    # Build request body according to TargetProbeRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetProbeRequestSchema)
+    request_body: dict[str, Any] = {
+        "name": name
+    }
+
+    # Optional UUID (for probing existing target)
+    if args.get("uuid"):
+        request_body["uuid"] = args.get("uuid")
+
+    # Optional fields (same as create)
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+    if args.get("target_type"):
+        request_body["target_type"] = args.get("target_type")
+    if args.get("connection_type"):
+        request_body["connection_type"] = args.get("connection_type")
+    if args.get("api_endpoint_type"):
+        request_body["api_endpoint_type"] = args.get("api_endpoint_type")
+    if args.get("response_mode"):
+        request_body["response_mode"] = args.get("response_mode")
+
+    # Connection params (JSON)
+    if args.get("connection_params"):
+        import json
+        request_body["connection_params"] = json.loads(args.get("connection_params"))
+
+    # Probe fields - array of fields to probe (e.g., ["multi_turn", "rate_limit"])
+    if args.get("probe_fields"):
+        probe_fields_str = args.get("probe_fields")
+        request_body["probe_fields"] = [field.strip() for field in probe_fields_str.split(",")]
+
+    # Call Red Team target probe endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (probe method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/probe",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetResponseSchema
+    target_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "validated": response.get("validated"),
+        "profiling_status": response.get("profiling_status"),
+        "target_type": response.get("target_type"),
+        "connection_type": response.get("connection_type")
+    }
+
+    # Include target_metadata if present (contains probe results)
+    target_metadata = response.get("target_metadata")
+    if target_metadata:
+        target_info["target_metadata"] = target_metadata
+        # Extract specific probe results for display
+        target_info["multi_turn_supported"] = target_metadata.get("multi_turn")
+        target_info["rate_limit_enabled"] = target_metadata.get("rate_limit_enabled")
+        target_info["content_filter_enabled"] = target_metadata.get("content_filter_enabled")
+
+    readable_output = tableToMarkdown(
+        f"Red Team Target Probe Results: {name}",
+        [target_info],
+        headers=["uuid", "name", "status", "validated", "profiling_status", "multi_turn_supported"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all Red Team scans.
 
@@ -1620,7 +2028,7 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     demisto.debug(f"Starting bulk scan of {total_prompts} prompts in batches of {batch_size}")
 
     for i in range(0, total_prompts, batch_size):
-        batch = prompts[i:i+batch_size]
+        batch = prompts[i:i + batch_size]
 
         for prompt in batch:
             # Use scanner_request for each prompt
@@ -2005,6 +2413,21 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-list":
             return_results(redteam_targets_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-create":
+            return_results(redteam_targets_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-get":
+            return_results(redteam_targets_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-update":
+            return_results(redteam_targets_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-delete":
+            return_results(redteam_targets_delete_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-probe":
+            return_results(redteam_targets_probe_command(client, args))
 
         elif command == "prisma-airs-redteam-scans-list":
             return_results(redteam_scans_list_command(client, args))

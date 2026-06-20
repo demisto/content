@@ -739,6 +739,204 @@ script:
     - contextPath: PrismaAIRs.RedTeamTarget.auth_type
       description: Authentication type.
       type: String
+  - name: prisma-airs-redteam-targets-create
+    description: Create a new Red Team target.
+    arguments:
+    - name: name
+      required: true
+      description: Target name.
+    - name: description
+      required: false
+      description: Target description.
+    - name: target_type
+      required: false
+      description: Target type (e.g., APPLICATION, AGENT, MODEL).
+    - name: connection_type
+      required: false
+      description: Connection type (e.g., REST, STREAMING, WEBSOCKET).
+    - name: api_endpoint_type
+      required: false
+      description: API endpoint accessibility (PUBLIC, PRIVATE, NETWORK_BROKER).
+    - name: response_mode
+      required: false
+      description: Response mode (REST, STREAMING).
+    - name: session_supported
+      required: false
+      description: Whether the target supports sessions (true/false).
+    - name: connection_params
+      required: false
+      description: Connection parameters as JSON string.
+    - name: validate
+      required: false
+      description: Validate target connectivity before creating (true/false).
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.created_at
+      description: Creation timestamp.
+      type: Date
+  - name: prisma-airs-redteam-targets-get
+    description: Get Red Team target details by UUID.
+    arguments:
+    - name: uuid
+      required: true
+      description: Target UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.target_type
+      description: Target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.connection_type
+      description: Connection type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.profiling_status
+      description: Profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
+      description: Target metadata object with probe results.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTarget.target_background
+      description: Target background context.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTarget.additional_context
+      description: Additional target context.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-update
+    description: Update an existing Red Team target.
+    arguments:
+    - name: uuid
+      required: true
+      description: Target UUID.
+    - name: name
+      required: false
+      description: New target name.
+    - name: description
+      required: false
+      description: New target description.
+    - name: target_type
+      required: false
+      description: New target type.
+    - name: connection_type
+      required: false
+      description: New connection type.
+    - name: connection_params
+      required: false
+      description: New connection parameters as JSON string.
+    - name: validate
+      required: false
+      description: Validate target connectivity after update (true/false).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-redteam-targets-delete
+    description: Delete a Red Team target.
+    arguments:
+    - name: uuid
+      required: true
+      description: Target UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.uuid
+      description: Deleted target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.message
+      description: Deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.status
+      description: HTTP status code.
+      type: Number
+  - name: prisma-airs-redteam-targets-probe
+    description: Probe a Red Team target to validate connectivity and gather profiling data.
+    arguments:
+    - name: name
+      required: true
+      description: Target name.
+    - name: uuid
+      required: false
+      description: Existing target UUID (optional, for probing existing targets).
+    - name: description
+      required: false
+      description: Target description.
+    - name: target_type
+      required: false
+      description: Target type.
+    - name: connection_type
+      required: false
+      description: Connection type.
+    - name: connection_params
+      required: false
+      description: Connection parameters as JSON string.
+    - name: probe_fields
+      required: false
+      description: Comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter").
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status after probing.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target was validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.profiling_status
+      description: Profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.multi_turn_supported
+      description: Whether multi-turn conversation is supported.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.rate_limit_enabled
+      description: Whether rate limiting is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.content_filter_enabled
+      description: Whether content filtering is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
+      description: Full probe results metadata.
+      type: Unknown
   - name: prisma-airs-redteam-scans-list
     description: List all Red Team scans.
     arguments:
