@@ -180,8 +180,8 @@ VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
 MIRROR_POLL_LOOKBACK = timedelta(minutes=1)
-MIRROR_ALERT_POLL_LOOKBACK = timedelta(minutes=5)
-MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=2)
+MIRROR_ALERT_POLL_LOOKBACK = timedelta(minutes=1)
+MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=1)
 MIRROR_UPDATED_TO_BUFFER = timedelta(minutes=1)
 MIRROR_LOG_PREFIX = "Vega mirror"
 
@@ -3094,7 +3094,9 @@ def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
     }
     mirror_id = raw.get("mirror_id")
     if mirror_id:
-        xsoar_incident["dbotMirrorId"] = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_ALERT, mirror_id)
+        xsoar_incident["dbotMirrorId"] = str(mirror_id).strip()
+    elif raw.get("id"):
+        xsoar_incident["dbotMirrorId"] = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_ALERT, str(raw["id"]).strip())
     _apply_xsoar_mirror_metadata(xsoar_incident)
     custom_fields = _build_vega_alert_custom_fields(raw)
     if custom_fields:
@@ -3139,7 +3141,9 @@ def incident_to_xsoar_incident(
     }
     mirror_id = raw.get("mirror_id")
     if mirror_id:
-        xsoar_incident["dbotMirrorId"] = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_INCIDENT, mirror_id)
+        xsoar_incident["dbotMirrorId"] = str(mirror_id).strip()
+    elif raw.get("id"):
+        xsoar_incident["dbotMirrorId"] = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_INCIDENT, str(raw["id"]).strip())
     _apply_xsoar_mirror_metadata(xsoar_incident)
     custom_fields = _build_vega_incident_custom_fields(raw)
     if custom_fields:
@@ -3151,7 +3155,7 @@ def _apply_mirror_metadata(raw: dict[str, Any], entity_type_suffix: str) -> None
     """Attach mirror_id used by incoming mappers and mirroring commands."""
     entity_id = _normalize_entity_id(raw)
     if entity_id:
-        raw["mirror_id"] = str(entity_id).strip()
+        raw["mirror_id"] = _format_dbot_mirror_id(entity_type_suffix, str(entity_id).strip())
 
 
 def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
@@ -3505,6 +3509,51 @@ def _resolve_mirror_updated_to() -> str:
     return resolved
 
 
+def _poll_entity_is_alert(entity: dict[str, Any]) -> bool:
+    """Return True when a polled Vega entity is an alert (has vegaAlertId)."""
+    vega_alert_id = entity.get("vegaAlertId")
+    return vega_alert_id is not None and str(vega_alert_id).strip() != ""
+
+
+def _mirror_entity_suffix_from_poll_entity(entity: dict[str, Any], *, poll_source: str | None = None) -> str:
+    """Classify a polled entity as alert or incident using vegaAlertId when present."""
+    if _poll_entity_is_alert(entity):
+        return MIRROR_ENTITY_SUFFIX_ALERT
+    if poll_source == MIRROR_ENTITY_SUFFIX_ALERT:
+        return MIRROR_ENTITY_SUFFIX_ALERT
+    if poll_source == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        return MIRROR_ENTITY_SUFFIX_INCIDENT
+    return MIRROR_ENTITY_SUFFIX_INCIDENT
+
+
+def _append_modified_remote_entity_id(
+    modified_ids: list[str],
+    entity: dict[str, Any],
+    *,
+    poll_source: str,
+) -> str | None:
+    """Append prefixed (and legacy bare) mirror IDs for a polled alert or incident entity."""
+    normalized = (
+        _normalize_alert_api_entity(entity)
+        if poll_source == MIRROR_ENTITY_SUFFIX_ALERT
+        else _normalize_incident_api_entity(entity)
+    )
+    entity_id = _normalize_entity_id(normalized)
+    if not entity_id:
+        return None
+
+    entity_suffix = _mirror_entity_suffix_from_poll_entity(normalized, poll_source=poll_source)
+    prefixed_id = _format_dbot_mirror_id(entity_suffix, entity_id)
+    if prefixed_id and prefixed_id not in modified_ids:
+        modified_ids.append(prefixed_id)
+    return entity_id
+
+
+def _resolve_mirror_entity_lookup_filters() -> dict[str, str]:
+    """Build a wide ``from`` filter for direct mirror entity ID lookups during get-remote-data."""
+    return {"from_time": parse_backfill_days(demisto.params().get("backfill_days"))}
+
+
 def _resolve_mirror_incident_lookup_filters(last_update: str | None) -> dict[str, str]:
     """Build getIncidents `from` filter for incident ID lookups during mirroring."""
     return {"from_time": _resolve_mirror_updated_from(last_update)}
@@ -3615,10 +3664,10 @@ def _entity_type_from_field_keys(data: dict[str, Any]) -> str | None:
     incident_keys = ("vegaincidentid", "vegaincidentstatus", "vegaseverity")
     alert_keys = ("alertid", "vegaalertid", "vegastatus", "vegaalertseverity")
 
-    if any(custom_fields.get(key) for key in alert_keys) or any(data.get(key) for key in alert_keys):
-        return "Vega Alert"
     if any(custom_fields.get(key) for key in incident_keys) or any(data.get(key) for key in incident_keys):
         return "Vega Incident"
+    if any(custom_fields.get(key) for key in alert_keys) or any(data.get(key) for key in alert_keys):
+        return "Vega Alert"
     return None
 
 
@@ -3626,6 +3675,18 @@ def _entity_type_from_mirror_payload(data: dict[str, Any]) -> str | None:
     """Resolve Vega Alert vs Vega Incident from a mirror payload or investigation dict."""
     if not data:
         return None
+
+    custom_fields = _mirror_custom_fields(data)
+    vega_incident_id = str(custom_fields.get("vegaincidentid") or "").strip()
+    alert_id = str(custom_fields.get("alertid") or "").strip()
+    if vega_incident_id and not alert_id:
+        return "Vega Incident"
+    if alert_id and not vega_incident_id:
+        return "Vega Alert"
+
+    entity_type_from_fields = _entity_type_from_field_keys(data)
+    if entity_type_from_fields:
+        return entity_type_from_fields
 
     incident_type = str(
         data.get("type") or data.get("Type") or data.get("incident_type") or data.get("incidentType") or ""
@@ -3636,10 +3697,6 @@ def _entity_type_from_mirror_payload(data: dict[str, Any]) -> str | None:
     vega_entity_type = str(data.get("vegaEntityType") or "").strip()
     if vega_entity_type in ("Vega Alert", "Vega Incident"):
         return vega_entity_type
-
-    entity_type_from_fields = _entity_type_from_field_keys(data)
-    if entity_type_from_fields:
-        return entity_type_from_fields
 
     raw_json = data.get("rawJSON") or data.get("rawJson")
     if raw_json:
@@ -3677,6 +3734,24 @@ def _mirror_entity_type_from_args(
     for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident"), args.get("delta")):
         entity_type = _entity_type_from_mirror_payload(_mirror_dict(raw_payload))
         if entity_type:
+            _mirror_log(
+                "resolve-entity",
+                "Resolved entity type from mirror args payload",
+                remote_id=remote_id,
+                entity_type=entity_type,
+            )
+            return entity_type
+
+    if use_investigation_context:
+        incident = load_current_incident()
+        entity_type = _entity_type_from_mirror_payload(incident)
+        if entity_type:
+            _mirror_log(
+                "resolve-entity",
+                "Resolved entity type from investigation context",
+                remote_id=remote_id,
+                entity_type=entity_type,
+            )
             return entity_type
 
     entity_type = _entity_type_from_mirror_payload(
@@ -3687,22 +3762,45 @@ def _mirror_entity_type_from_args(
     if entity_type:
         return entity_type
 
-    if not use_investigation_context:
-        return None
-
-    # XSOAR get-remote-data usually passes only id + lastUpdate; read type from the investigation context.
-    incident = load_current_incident()
-    entity_type = _entity_type_from_mirror_payload(incident)
-    if entity_type:
-        _mirror_log(
-            "resolve-entity",
-            "Resolved entity type from investigation context",
-            remote_id=remote_id,
-            entity_type=entity_type,
-        )
-        return entity_type
-
     return None
+
+
+def _fetch_alert_for_mirror_lookup(
+    client: Client,
+    vega_id: str,
+    *,
+    lookup_filters: dict[str, str],
+    require_vega_alert_id: bool = False,
+) -> dict[str, Any]:
+    """Fetch and normalize an alert for mirror resolution."""
+    alert = client.get_alert_for_mirror(vega_id, **lookup_filters)
+    if not alert:
+        _mirror_log("resolve-entity", "Lightweight alert lookup empty; trying get_alert_by_id", vega_id=vega_id)
+        alert = client.get_alert_by_id(vega_id, **lookup_filters)
+    normalized = _normalize_alert_api_entity(alert) if alert else {}
+    if not normalized or not _entity_matches_remote_id(normalized, vega_id):
+        return {}
+    if require_vega_alert_id and not _poll_entity_is_alert(normalized):
+        _mirror_log("resolve-entity", "Alert payload missing vegaAlertId; treating as non-alert", vega_id=vega_id)
+        return {}
+    return normalized
+
+
+def _fetch_incident_for_mirror_lookup(
+    client: Client,
+    vega_id: str,
+    *,
+    lookup_filters: dict[str, str],
+) -> dict[str, Any]:
+    """Fetch and normalize an incident for mirror resolution."""
+    incident = client.get_incident_for_mirror(vega_id, **lookup_filters)
+    if not incident:
+        _mirror_log("resolve-entity", "Lightweight incident lookup empty; trying get_incident_by_id", vega_id=vega_id)
+        incident = client.get_incident_by_id(vega_id, **lookup_filters)
+    normalized = _normalize_incident_api_entity(incident) if incident else {}
+    if normalized and _entity_matches_remote_id(normalized, vega_id):
+        return normalized
+    return {}
 
 
 def _resolve_remote_entity(
@@ -3714,8 +3812,7 @@ def _resolve_remote_entity(
 ) -> tuple[dict[str, Any], str]:
     """Resolve a mirrored remote ID to a Vega alert or incident."""
     vega_id, hinted_suffix = _parse_mirror_id(str(remote_id).strip())
-    incident_lookup_filters = _resolve_mirror_incident_lookup_filters(mirror_last_update)
-    alert_lookup_filters = _resolve_mirror_alert_lookup_filters(mirror_last_update)
+    entity_lookup_filters = _resolve_mirror_entity_lookup_filters()
     if hinted_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
         preferred_entity_type = "Vega Alert"
     elif hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
@@ -3730,49 +3827,39 @@ def _resolve_remote_entity(
     )
 
     if preferred_entity_type == "Vega Alert":
-        alert = client.get_alert_for_mirror(vega_id, **alert_lookup_filters)
-        if not alert:
-            _mirror_log("resolve-entity", "Lightweight alert lookup empty; trying get_alert_by_id", vega_id=vega_id)
-            alert = client.get_alert_by_id(vega_id, **alert_lookup_filters)
-        normalized = _normalize_alert_api_entity(alert) if alert else {}
-        if normalized and _entity_matches_remote_id(normalized, vega_id):
+        normalized = _fetch_alert_for_mirror_lookup(client, vega_id, lookup_filters=entity_lookup_filters)
+        if normalized:
             _mirror_log("resolve-entity", "Resolved as alert", remote_id=remote_id)
             return normalized, MIRROR_ENTITY_SUFFIX_ALERT
         _mirror_log("resolve-entity", "Alert not found", remote_id=remote_id)
         return {}, ""
 
     if preferred_entity_type == "Vega Incident":
-        incident = client.get_incident_for_mirror(vega_id, **incident_lookup_filters)
-        if not incident:
-            _mirror_log("resolve-entity", "Lightweight incident lookup empty; trying get_incident_by_id", vega_id=vega_id)
-            incident = client.get_incident_by_id(vega_id, **incident_lookup_filters)
-        normalized = _normalize_incident_api_entity(incident) if incident else {}
-        if normalized and _entity_matches_remote_id(normalized, vega_id):
+        normalized = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=entity_lookup_filters)
+        if normalized:
             _mirror_log("resolve-entity", "Resolved as incident", remote_id=remote_id)
             return normalized, MIRROR_ENTITY_SUFFIX_INCIDENT
         _mirror_log("resolve-entity", "Incident not found", remote_id=remote_id)
         return {}, ""
 
-    alert = client.get_alert_for_mirror(vega_id, **alert_lookup_filters)
-    if not alert:
-        _mirror_log("resolve-entity", "Lightweight alert lookup empty; trying get_alert_by_id", vega_id=vega_id)
-        alert = client.get_alert_by_id(vega_id, **alert_lookup_filters)
-    normalized_alert = _normalize_alert_api_entity(alert) if alert else {}
-    if normalized_alert and _entity_matches_remote_id(normalized_alert, vega_id):
-        _mirror_log("resolve-entity", "Resolved as alert (fallback)", remote_id=remote_id)
+    normalized_alert = _fetch_alert_for_mirror_lookup(
+        client,
+        vega_id,
+        lookup_filters=entity_lookup_filters,
+        require_vega_alert_id=True,
+    )
+    if normalized_alert:
+        _mirror_log("resolve-entity", "Resolved as alert via vegaAlertId", remote_id=remote_id)
         return normalized_alert, MIRROR_ENTITY_SUFFIX_ALERT
 
     _mirror_log(
         "resolve-entity",
-        "Alert not found and entity type unknown; trying incident lookup as last resort",
+        "Alert not found or missing vegaAlertId; trying incident lookup",
         remote_id=remote_id,
         vega_id=vega_id,
     )
-    incident = client.get_incident_for_mirror(vega_id, **incident_lookup_filters)
-    if not incident:
-        incident = client.get_incident_by_id(vega_id, **incident_lookup_filters)
-    normalized_incident = _normalize_incident_api_entity(incident) if incident else {}
-    if normalized_incident and _entity_matches_remote_id(normalized_incident, vega_id):
+    normalized_incident = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=entity_lookup_filters)
+    if normalized_incident:
         _mirror_log("resolve-entity", "Resolved as incident (fallback)", remote_id=remote_id)
         return normalized_incident, MIRROR_ENTITY_SUFFIX_INCIDENT
 
@@ -3801,13 +3888,9 @@ def _build_mirror_sync_object(
     entity_id = _normalize_entity_id(entity)
     vega_entity_type = "Vega Alert" if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else "Vega Incident"
     bare_entity_id = str(entity_id).strip() if entity_id else ""
-    prefixed_mirror_id = _format_dbot_mirror_id(entity_type_suffix, bare_entity_id) if bare_entity_id else ""
     parsed_remote_id = str(remote_id).strip() if remote_id else ""
-    if parsed_remote_id:
-        _, hinted_suffix = _parse_mirror_id(parsed_remote_id)
-        effective_remote_id = parsed_remote_id if hinted_suffix else (prefixed_mirror_id or parsed_remote_id)
-    else:
-        effective_remote_id = prefixed_mirror_id
+    vega_id, _ = _parse_mirror_id(parsed_remote_id) if parsed_remote_id else ("", None)
+    effective_remote_id = vega_id or bare_entity_id
 
     raw = dict(entity)
     raw["vegaEntityType"] = vega_entity_type
@@ -3842,11 +3925,11 @@ def _build_mirror_sync_object(
     if reasoning and reasoning != VEGA_EMPTY_FIELD_DISPLAY:
         custom_fields[VEGA_VERDICT_REASONING_FIELD] = reasoning
 
+    prefixed_mirror_id = _format_dbot_mirror_id(entity_type_suffix, bare_entity_id) if bare_entity_id else ""
     sync_object: dict[str, Any] = {
-        "id": effective_remote_id or prefixed_mirror_id,
-        "type": vega_entity_type,
-        "vegaEntityType": vega_entity_type,
+        "id": bare_entity_id or effective_remote_id,
         "mirror_id": prefixed_mirror_id or bare_entity_id,
+        "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
     for key in ("status", "severity", "verdict", "verdictReasoning", "mirror_direction", "mirror_instance"):
@@ -3858,7 +3941,7 @@ def _build_mirror_sync_object(
         "build-sync-object",
         "Built mirrored sync object",
         entity_type=entity_type_suffix,
-        remote_id=effective_remote_id or prefixed_mirror_id,
+        remote_id=effective_remote_id,
     )
     return sync_object
 
@@ -3957,6 +4040,8 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     )
 
     modified_ids: list[str] = []
+    alert_bare_ids: set[str] = set()
+    incident_bare_ids: set[str] = set()
 
     if fetch_alerts:
         updated_from = _resolve_mirror_updated_from_for_alerts(remote_args.last_update)
@@ -3981,10 +4066,13 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
 
                 entities = response.get("alerts") or []
                 for entity in entities:
-                    entity_id = _normalize_entity_id(_normalize_alert_api_entity(entity))
-                    prefixed_id = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_ALERT, entity_id)
-                    if prefixed_id and prefixed_id not in modified_ids:
-                        modified_ids.append(prefixed_id)
+                    bare_id = _append_modified_remote_entity_id(
+                        modified_ids,
+                        entity,
+                        poll_source=MIRROR_ENTITY_SUFFIX_ALERT,
+                    )
+                    if bare_id:
+                        alert_bare_ids.add(bare_id)
 
                 total = response.get("total")
                 if not entities:
@@ -3995,7 +4083,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
                     break
                 offset += len(entities)
 
-            _mirror_log("get-modified-remote-data", "Alert poll complete", alert_count=len(modified_ids))
+            _mirror_log("get-modified-remote-data", "Alert poll complete", alert_count=len(alert_bare_ids))
         except Exception as exc:
             _mirror_log_error("get-modified-remote-data", "Alert poll failed", error=str(exc))
 
@@ -4017,10 +4105,13 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
                 )
                 entities = response.get("incidents") or []
                 for entity in entities:
-                    entity_id = _normalize_entity_id(_normalize_incident_api_entity(entity))
-                    prefixed_id = _format_dbot_mirror_id(MIRROR_ENTITY_SUFFIX_INCIDENT, entity_id)
-                    if prefixed_id and prefixed_id not in modified_ids:
-                        modified_ids.append(prefixed_id)
+                    bare_id = _append_modified_remote_entity_id(
+                        modified_ids,
+                        entity,
+                        poll_source=MIRROR_ENTITY_SUFFIX_INCIDENT,
+                    )
+                    if bare_id:
+                        incident_bare_ids.add(bare_id)
                         incident_count += 1
 
                 total = response.get("total")
@@ -4035,6 +4126,18 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
             _mirror_log("get-modified-remote-data", "Incident poll complete", incident_count=incident_count)
         except Exception as exc:
             _mirror_log_error("get-modified-remote-data", "Incident poll failed", error=str(exc))
+
+    shared_bare_ids = alert_bare_ids & incident_bare_ids
+    for bare_id in sorted(alert_bare_ids | incident_bare_ids):
+        if bare_id in shared_bare_ids:
+            _mirror_log(
+                "get-modified-remote-data",
+                "Skipping ambiguous bare mirror id shared by alert and incident",
+                remote_id=bare_id,
+            )
+            continue
+        if bare_id not in modified_ids:
+            modified_ids.append(bare_id)
 
     _mirror_log(
         "get-modified-remote-data",
@@ -4065,6 +4168,29 @@ def get_remote_data_command(
             preferred_entity_type,
             mirror_last_update=remote_args.last_update,
         )
+
+        investigation_context = load_current_incident()
+        context_entity_type = _entity_type_from_mirror_payload(investigation_context)
+        if context_entity_type:
+            context_suffix = (
+                MIRROR_ENTITY_SUFFIX_INCIDENT if context_entity_type == "Vega Incident" else MIRROR_ENTITY_SUFFIX_ALERT
+            )
+            if entity_type_suffix != context_suffix:
+                _mirror_log(
+                    "get-remote-data",
+                    "Enforcing investigation entity type over mismatched remote resolution",
+                    remote_id=remote_id,
+                    investigation_type=context_entity_type,
+                    resolved_as=entity_type_suffix or "none",
+                )
+                preferred_entity_type = context_entity_type
+                entity, entity_type_suffix = _resolve_remote_entity(
+                    client,
+                    remote_id,
+                    preferred_entity_type,
+                    mirror_last_update=remote_args.last_update,
+                )
+
         if (preferred_entity_type == "Vega Incident" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT) or (
             preferred_entity_type == "Vega Alert" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
         ):
@@ -4083,16 +4209,25 @@ def get_remote_data_command(
             )
         if not entity:
             _mirror_log("get-remote-data", "Remote entity not found", remote_id=remote_id)
-            vega_id, _ = _parse_mirror_id(remote_id)
+            vega_id, hinted_suffix = _parse_mirror_id(remote_id)
+            mirror_key = vega_id or remote_id
+            effective_entity_type = preferred_entity_type or context_entity_type
+            prefixed_mirror_id = mirror_key
+            if effective_entity_type and mirror_key:
+                mirror_suffix = (
+                    MIRROR_ENTITY_SUFFIX_INCIDENT if effective_entity_type == "Vega Incident" else MIRROR_ENTITY_SUFFIX_ALERT
+                )
+                prefixed_mirror_id = _format_dbot_mirror_id(mirror_suffix, mirror_key)
+            elif hinted_suffix and mirror_key:
+                prefixed_mirror_id = _format_dbot_mirror_id(hinted_suffix, mirror_key)
             not_found: dict[str, Any] = {
-                "id": remote_id,
-                "dbotMirrorId": remote_id,
-                "mirror_id": vega_id or remote_id,
+                "id": mirror_key,
+                "dbotMirrorId": prefixed_mirror_id,
+                "mirror_id": prefixed_mirror_id,
             }
-            if preferred_entity_type:
-                not_found["type"] = preferred_entity_type
-                not_found["vegaEntityType"] = preferred_entity_type
-            not_found.update(_get_mirroring_fields())
+            if effective_entity_type:
+                not_found["vegaEntityType"] = effective_entity_type
+                not_found.update(_get_mirroring_fields())
             return GetRemoteDataResponse(mirrored_object=not_found, entries=[])
 
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
@@ -4149,12 +4284,16 @@ def get_remote_data_command(
     except Exception as exc:
         _mirror_log_error("get-remote-data", "Command failed", remote_id=remote_id, error=str(exc))
         vega_id, _ = _parse_mirror_id(remote_id)
+        mirror_key = vega_id or remote_id
+        preferred_entity_type = _mirror_entity_type_from_args(args, remote_id)
         error_object: dict[str, Any] = {
-            "id": remote_id,
-            "dbotMirrorId": remote_id,
-            "mirror_id": vega_id or remote_id,
+            "id": mirror_key,
+            "dbotMirrorId": mirror_key,
+            "mirror_id": mirror_key,
             "in_mirror_error": str(exc),
         }
+        if preferred_entity_type:
+            error_object["vegaEntityType"] = preferred_entity_type
         error_object.update(_get_mirroring_fields())
         return GetRemoteDataResponse(mirrored_object=error_object, entries=[])
 

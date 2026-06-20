@@ -69,7 +69,7 @@ configuration:
     type: 1
     section: Vega Entities
     required: true
-    defaultvalue: "90"
+    defaultvalue: "30"
   - display: Enable XSOAR to Vega mirroring
     additionalinfo: >-
       When enabled, changes made in Cortex XSOAR investigations are mirrored to Vega for status, verdict,
@@ -183,7 +183,7 @@ configuration:
     options:
       - "Yes"
       - "No"
-    defaultvalue: "Yes"
+    defaultvalue: "Yes,No"
   - display: Incident type
     name: incidentType
     type: 13
