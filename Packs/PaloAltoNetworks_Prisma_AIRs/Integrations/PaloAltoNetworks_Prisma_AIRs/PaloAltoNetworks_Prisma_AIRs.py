@@ -28,6 +28,7 @@ RED_TEAM_REPORTS_ENDPOINT = "/v1/report"
 RED_TEAM_REPORT_STATIC_ENDPOINT = "/v1/report/static"
 RED_TEAM_REPORT_DYNAMIC_ENDPOINT = "/v1/report/dynamic"
 RED_TEAM_CUSTOM_ATTACKS_ENDPOINT = "/v1/custom-attacks"
+RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 # DLP API path suffixes (v2 API) - uses separate base URL
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
 # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
@@ -1835,6 +1836,163 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
+def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team EULA acceptance status.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team EULA status endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (getStatus method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/status",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to EulaResponseSchema
+    # Fields: uuid, is_accepted, accepted_at, accepted_by_user_id
+    eula_info = {
+        "uuid": response.get("uuid"),
+        "is_accepted": response.get("is_accepted"),
+        "accepted_at": response.get("accepted_at"),
+        "accepted_by_user_id": response.get("accepted_by_user_id")
+    }
+
+    # Create human-readable output
+    status_text = "Accepted" if eula_info.get("is_accepted") else "Not Accepted"
+    readable_output = f"## Red Team EULA Status\n\n**Status:** {status_text}\n\n"
+
+    if eula_info.get("is_accepted"):
+        readable_output += f"**Accepted At:** {eula_info.get('accepted_at', 'N/A')}\n\n"
+        readable_output += f"**Accepted By:** {eula_info.get('accepted_by_user_id', 'N/A')}"
+    else:
+        readable_output += "**Note:** The EULA must be accepted before running Red Team scans."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamEula",
+        outputs_key_field="uuid",
+        outputs=eula_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team EULA content (full text).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team EULA content endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (getContent method)
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaContentResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to EulaContentResponseSchema
+    # Fields: content (string - full EULA text)
+    eula_content = response.get("content", "")
+
+    eula_info = {
+        "content": eula_content,
+        "content_length": len(eula_content)
+    }
+
+    # Truncate content for display (show first 1000 chars)
+    display_content = eula_content[:1000]
+    if len(eula_content) > 1000:
+        display_content += f"\n\n... (truncated, {len(eula_content) - 1000} more characters)\n\nFull content available in context output."
+
+    readable_output = f"## Red Team EULA Content\n\n**Length:** {len(eula_content)} characters\n\n**Content Preview:**\n\n```\n{display_content}\n```"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamEula",
+        outputs_key_field="content_length",
+        outputs=eula_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Accept the Red Team EULA.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Get EULA content first (required for accept request)
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (accept method example)
+    content_response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content",
+        use_redteam_mgmt=True
+    )
+
+    eula_content = content_response.get("content", "")
+    if not eula_content:
+        raise ValueError("Failed to retrieve EULA content")
+
+    # Build request body according to EulaAcceptRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaAcceptRequestSchema)
+    # Fields: eula_content (required), accepted_at (optional)
+    request_body = {
+        "eula_content": eula_content
+    }
+
+    # Optional accepted_at timestamp (will use server time if not provided)
+    if args.get("accepted_at"):
+        request_body["accepted_at"] = args.get("accepted_at")
+
+    # Call Red Team EULA accept endpoint
+    # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaResponseSchema)
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/accept",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to EulaResponseSchema
+    # Fields: uuid, is_accepted, accepted_at, accepted_by_user_id
+    eula_info = {
+        "uuid": response.get("uuid"),
+        "is_accepted": response.get("is_accepted"),
+        "accepted_at": response.get("accepted_at"),
+        "accepted_by_user_id": response.get("accepted_by_user_id")
+    }
+
+    # Create success message
+    readable_output = f"## Red Team EULA Accepted\n\n**Status:** {'Accepted' if eula_info.get('is_accepted') else 'Failed'}\n\n"
+    readable_output += f"**Accepted At:** {eula_info.get('accepted_at', 'N/A')}\n\n"
+    readable_output += f"**Accepted By:** {eula_info.get('accepted_by_user_id', 'N/A')}\n\n"
+    readable_output += "You can now create and run Red Team scans."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamEula",
+        outputs_key_field="uuid",
+        outputs=eula_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Query runtime scan logs.
 
@@ -2443,6 +2601,15 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-report-get":
             return_results(redteam_report_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-eula-status":
+            return_results(redteam_eula_status_command(client, args))
+
+        elif command == "prisma-airs-redteam-eula-content":
+            return_results(redteam_eula_content_command(client, args))
+
+        elif command == "prisma-airs-redteam-eula-accept":
+            return_results(redteam_eula_accept_command(client, args))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

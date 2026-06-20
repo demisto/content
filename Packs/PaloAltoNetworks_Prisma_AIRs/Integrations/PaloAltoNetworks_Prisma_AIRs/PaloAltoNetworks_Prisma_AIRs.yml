@@ -1132,6 +1132,49 @@ script:
     - contextPath: PrismaAIRs.RedTeamReport.total_threats
       description: Total threats detected (Dynamic scans only).
       type: Number
+  - name: prisma-airs-redteam-eula-status
+    description: Get Red Team EULA acceptance status.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEula.uuid
+      description: EULA record UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEula.is_accepted
+      description: Whether the EULA is accepted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_at
+      description: Timestamp when EULA was accepted.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
+      description: User ID who accepted the EULA.
+      type: String
+  - name: prisma-airs-redteam-eula-content
+    description: Get Red Team EULA content (full legal text).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEula.content
+      description: Full EULA text content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEula.content_length
+      description: Length of EULA content in characters.
+      type: Number
+  - name: prisma-airs-redteam-eula-accept
+    description: Accept the Red Team EULA (required before running scans).
+    arguments:
+    - name: accepted_at
+      required: false
+      description: Optional timestamp for acceptance (ISO 8601 format). If not provided, server time is used.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEula.uuid
+      description: EULA record UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEula.is_accepted
+      description: Whether the EULA is accepted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_at
+      description: Timestamp when EULA was accepted.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
+      description: User ID who accepted the EULA.
+      type: String
   dockerimage: demisto/python3:3.10.14.95956
   runonce: false
   script: '-'
