@@ -23,7 +23,7 @@ class Config:
 
     MESSAGE_TRACES_PATH = "v1.0/admin/exchange/tracing/messageTraces"
 
-    DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%SZ"
+    DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%S.%fZ"
     DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     DEFAULT_MAX_EVENTS = 50000
@@ -114,7 +114,7 @@ class Client:
         for attempt, wait_seconds in enumerate((0, *Config.RATE_LIMIT_BACKOFFS)):
             if wait_seconds:
                 demisto.debug(f"[RateLimit] 429 received; sleeping {wait_seconds}s before retry {attempt}.")
-                time.sleep(wait_seconds)
+                time.sleep(wait_seconds)  # pylint: disable=E9003
             try:
                 return self.ms_client.http_request(
                     ok_codes=[200],
