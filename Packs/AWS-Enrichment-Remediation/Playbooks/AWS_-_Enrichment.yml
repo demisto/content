@@ -1,4 +1,4 @@
-issilent: true
+# issilent: true
 id: AWS - Enrichment
 version: -1
 name: AWS - Enrichment
