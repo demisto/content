@@ -11,6 +11,6 @@
 !azure-sql-subscriptions-list
 !azure-sql-resource-group-list tag="Name:name"
 !azure-sql-firewall-rule-list server_name=sqlintegration
-!azure-sql-firewall-rule-create-update server_name=sqlintegration firewall_rule_name=test-rule start_ip_address=0.0.0.0 end_ip_address=0.0.0.0
+!azure-sql-firewall-rule-create-update server_name=sqlintegration firewall_rule_name=test-rule start_ip_address=192.0.2.0 end_ip_address=192.0.2.255
 !azure-sql-firewall-rule-delete server_name=sqlintegration firewall_rule_name=test-rule
-!azure-sql-firewall-rule-replace server_name=sqlintegration firewall_rule_name=test-rule start_ip_address=0.0.0.0 end_ip_address=0.0.0.0
+!azure-sql-firewall-rule-replace server_name=sqlintegration firewall_rule_name=test-rule start_ip_address=192.0.2.0 end_ip_address=192.0.2.255

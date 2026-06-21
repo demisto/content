@@ -301,7 +301,7 @@ class Client:
             if properties:
                 rule["properties"] = properties
             request_body = {"values": [rule]}
-        url_suffix = f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/" f"{server_name}/firewallRules"
+        url_suffix = f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/{server_name}/firewallRules"
         return self.http_request("PUT", url_suffix, params={"api-version": FIREWALL_API_VERSION}, data=request_body)
 
     def subscriptions_list_request(self):
