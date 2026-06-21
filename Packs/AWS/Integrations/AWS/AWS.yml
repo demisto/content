@@ -19669,6 +19669,94 @@ script:
       description: Additional options governing how Network Firewall handles stateful rules.
       type: Unknown
 
+  - name: aws-network-firewall-rule-groups-list
+    description: "Retrieves the metadata for the rule groups that you have defined. Depending on your setting for max results and the number of rule groups, a single call might not return the full list. Required permissions: network-firewall:ListRuleGroups."
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: limit
+        description: The maximum number of objects that you want Network Firewall to return for this request. Default value is 50.
+      - name: next_token
+        description: The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken.
+      - name: scope
+        description: The scope of the request. The default setting of ACCOUNT or a setting of NULL returns all of the rule groups in your account. A setting of MANAGED returns all available managed rule groups.
+        auto: PREDEFINED
+        predefined:
+          - MANAGED
+          - ACCOUNT
+      - name: managed_type
+        description: Indicates the general category of the Amazon Web Services managed rule group.
+        auto: PREDEFINED
+        predefined:
+          - AWS_MANAGED_THREAT_SIGNATURES
+          - AWS_MANAGED_DOMAIN_LISTS
+          - ACTIVE_THREAT_DEFENSE
+          - PARTNER_MANAGED
+      - name: type
+        description: Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules.
+        auto: PREDEFINED
+        predefined:
+          - STATELESS
+          - STATEFUL
+          - STATEFUL_DOMAIN
+      - name: subscription_status
+        description: Indicates the selected option for managed rule group subscription status.
+        auto: PREDEFINED
+        predefined:
+          - SUBSCRIBED
+          - NOT_SUBSCRIBED
+    outputs:
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupName
+      description: The descriptive name of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupArn
+      description: The Amazon Resource Name (ARN) of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.VendorName
+      description: The name of the Amazon Web Services Marketplace seller that provides this rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroupsNextToken
+      description: The token used to request the next page of results when a limit is set. Provided in the response of a previous request when the number of remaining objects exceeds the maximum limit specified.
+      type: String
+
   isfetch: false
   runonce: false
   script: '-'

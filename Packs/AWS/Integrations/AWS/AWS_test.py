@@ -19820,9 +19820,7 @@ def test_describe_rule_group_command_with_analyze_rule_group(mocker):
     NetworkFirewall.describe_rule_group_command(client, args)
 
     # Then
-    client.describe_rule_group.assert_called_once_with(
-        RuleGroupName="test-rg", Type="STATELESS", AnalyzeRuleGroup=True
-    )
+    client.describe_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATELESS", AnalyzeRuleGroup=True)
 
 
 def test_describe_rule_group_command_missing_arguments(mocker):
@@ -19873,6 +19871,181 @@ def test_describe_rule_group_command_api_error(mocker):
 
     # When
     NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_list_rule_groups_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a list of rule groups and a NextToken.
+        - No pagination arguments (defaults applied).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The rule group keys are remapped (Name -> RuleGroupName, Arn -> RuleGroupArn).
+        - The outputs contain the remapped rule groups and the NextToken.
+        - The client is called once with the default MaxResults.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "token123",
+        "RuleGroups": [
+            {
+                "Name": "test-rg-1",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-1",
+                "VendorName": "VendorNameString",
+            }
+        ],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.RuleGroups(val.RuleGroupArn == obj.RuleGroupArn)"] == [
+        {
+            "RuleGroupName": "test-rg-1",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-1",
+            "VendorName": "VendorNameString",
+        }
+    ]
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] == "token123"
+    assert "test-rg-1" in result.readable_output
+    client.list_rule_groups.assert_called_once_with(MaxResults=50)
+
+
+def test_list_rule_groups_command_no_rule_groups(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning an empty rule group list and no NextToken.
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The outputs contain an empty list and a None NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroups": [],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.RuleGroups(val.RuleGroupArn == obj.RuleGroupArn)"] == []
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] is None
+    client.list_rule_groups.assert_called_once_with(MaxResults=50)
+
+
+def test_list_rule_groups_command_with_pagination(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group list.
+        - Pagination arguments (limit and next_token).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The client is called once with the provided MaxResults and NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "next-token-456",
+        "RuleGroups": [
+            {
+                "Name": "test-rg-2",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-2",
+                "VendorName": "VendorNameString",
+            }
+        ],
+    }
+    args = {"limit": "1", "next_token": "token000"}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] == "next-token-456"
+    client.list_rule_groups.assert_called_once_with(MaxResults=1, NextToken="token000")
+
+
+def test_list_rule_groups_command_with_filters(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group list.
+        - Filter arguments (scope, managed_type, type, subscription_status).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The client is called once with the provided Scope, ManagedType, Type, and SubscriptionStatus.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroups": [],
+    }
+    args = {
+        "scope": "MANAGED",
+        "managed_type": "AWS_MANAGED_THREAT_SIGNATURES",
+        "type": "STATEFUL",
+        "subscription_status": "SUBSCRIBED",
+    }
+
+    # When
+    NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    client.list_rule_groups.assert_called_once_with(
+        Scope="MANAGED",
+        ManagedType="AWS_MANAGED_THREAT_SIGNATURES",
+        Type="STATEFUL",
+        SubscriptionStatus="SUBSCRIBED",
+        MaxResults=50,
+    )
+
+
+def test_list_rule_groups_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client that returns a non-OK status code.
+    When:
+        - list_rule_groups_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+        "RuleGroups": [],
+    }
+    client.list_rule_groups.return_value = mock_response
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.list_rule_groups_command(client, args)
 
     # Then
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")

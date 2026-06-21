@@ -10479,7 +10479,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def describe_rule_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_rule_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns the data objects for the specified rule group.
 
@@ -10523,6 +10523,68 @@ class NetworkFirewall:
                 headerTransform=pascalToSpace,
             ),
             raw_response=raw_response,
+        )
+
+    @staticmethod
+    def list_rule_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the metadata for the rule groups that you have defined.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing:
+                - limit: The maximum number of objects that you want Network Firewall to return for this request.
+                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are
+                    still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value
+                    in the response.
+                - scope: The scope of the request. Valid settings are MANAGED and ACCOUNT.
+                - managed_type: Indicates the general category of the Amazon Web Services managed rule group.
+                - type: Indicates whether the rule group is stateless or stateful.
+                - subscription_status: Indicates the selected option for managed rule group subscription status.
+
+        Returns:
+            CommandResults: Formatted results with rule groups information
+        """
+        kwargs = {
+            "Scope": args.get("scope"),
+            "ManagedType": args.get("managed_type"),
+            "Type": args.get("type"),
+            "SubscriptionStatus": args.get("subscription_status"),
+        }
+        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing rule groups with parameters: {kwargs}")
+        response = client.list_rule_groups(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        rule_groups = response.get("RuleGroups", [])
+
+        updated_rule_groups = [
+            {
+                "RuleGroupName": rule_group.get("Name"),
+                "RuleGroupArn": rule_group.get("Arn"),
+                "VendorName": rule_group.get("VendorName"),
+            }
+            for rule_group in rule_groups
+        ]
+
+        outputs = {
+            "AWS.NetworkFirewall.RuleGroups(val.RuleGroupArn == obj.RuleGroupArn)": updated_rule_groups,
+            "AWS.NetworkFirewall(true)": {"RuleGroupsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Rule Groups",
+                updated_rule_groups,
+                headers=["RuleGroupName", "RuleGroupArn", "VendorName"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
         )
 
 
@@ -10749,6 +10811,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-rule-group-create": NetworkFirewall.create_rule_group_command,
     "aws-network-firewall-rule-group-delete": NetworkFirewall.delete_rule_group_command,
     "aws-network-firewall-rule-group-describe": NetworkFirewall.describe_rule_group_command,
+    "aws-network-firewall-rule-groups-list": NetworkFirewall.list_rule_groups_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10943,6 +11006,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:CreateRuleGroup",
     "network-firewall:DeleteRuleGroup",
     "network-firewall:DescribeRuleGroup",
+    "network-firewall:ListRuleGroups",
 ]
 
 COMMAND_SERVICE_MAP = {
