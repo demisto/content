@@ -307,6 +307,34 @@ def test_type9_without_hiddenusername_still_yields_identifier():
 
 
 # ---------------------------------------------------------------------------
+# type-9 auth dummy: hiddenpassword suppression (BitSight API-key credentials)
+# ---------------------------------------------------------------------------
+def test_type9_hiddenpassword_param_yields_no_password():
+    """For a hiddenpassword:true type-9 field (e.g. BitSight's API-key
+    credentials widget) the dummy MUST carry an identifier but MUST NOT inject a
+    populated password — otherwise it re-introduces a spurious mismatch after the
+    normalizer reduction (the connector legitimately delivers no password)."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials", "type": 9, "hiddenpassword": True}
+    )
+    assert isinstance(value, dict)
+    assert value.get("identifier")  # identifier is present and non-empty
+    # password absent or empty (never a populated dummy password).
+    assert not value.get("password")
+
+
+def test_type9_without_hiddenpassword_still_yields_password():
+    """Contrast: a NORMAL type-9 field (no hiddenpassword) still injects a
+    populated dummy password so a real password participates in the comparison."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials", "type": 9}
+    )
+    assert isinstance(value, dict)
+    assert value.get("identifier")
+    assert value.get("password")  # populated dummy password retained
+
+
+# ---------------------------------------------------------------------------
 # fetch_flags-driven BE-synthesized injection (Issue 1 + Issue 3).
 # ---------------------------------------------------------------------------
 def _stub_capture_recording_extra_fields(monkeypatch, *, yml_script):
@@ -347,15 +375,21 @@ def _stub_capture_recording_extra_fields(monkeypatch, *, yml_script):
 
 
 def test_fetch_flags_inject_incident_fetch_interval_into_integration_payload(monkeypatch):
-    """fetch_flags={"isFetch": True} → incidentFetchInterval is added to the
-    INTEGRATION-side payload with the shared STRING value "111", EVEN THOUGH the
-    YML script does NOT statically declare isfetch (fetch is variant-driven).
+    """fetch_flags={"isFetch": True} AND the YML declares ``script.isfetch: true``
+    → incidentFetchInterval is added to the INTEGRATION-side payload with the
+    shared STRING value "111".
 
-    This is the Issue 1 + Issue 3 fix: the harness KNOWS to populate the field
-    because the fetch-issues/isFetch variant flag is on, instead of letting it
-    fall back to the YML default (which mismatched the connector side).
+    This is the Issue 1 + Issue 3 fix, NOW GATED on the YML declaration: the
+    harness populates the field because the isFetch variant flag is on AND the
+    integration actually uses the isfetch mechanism, instead of letting it fall
+    back to the YML default (which mismatched the connector side). The gate (see
+    compute_be_synthesized_params) requires the YML ``script`` to declare the
+    mechanism so a non-isfetch integration mapped to the capability is NOT given a
+    field XSOAR never exposes for it.
     """
-    sent = _stub_capture_recording_extra_fields(monkeypatch, yml_script={})
+    sent = _stub_capture_recording_extra_fields(
+        monkeypatch, yml_script={"isfetch": True}
+    )
 
     capture_xsoar_params(
         integration_yml_path="/tmp/fake.yml",

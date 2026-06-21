@@ -162,19 +162,29 @@ def _is_type9_credentials(value: Any) -> bool:
 def _reduce_type9_credentials(value: dict) -> dict:
     """Reduce a type-9 credentials value to its comparable leaves.
 
-    Always keeps ``password``. Keeps ``identifier`` ONLY when it is non-empty
-    on this side — this is ``hiddenusername``-aware: for ``hiddenusername:
-    true`` fields (e.g. Akamai) the connector legitimately has no username, and
-    the harness (see xsoar_capture.generate_dummy_value_for_param) no longer
-    injects a dummy identifier, so both sides reduce to ``{"password": ...}``.
-    For NORMAL type-9 fields that DO carry a real username, the identifier is
-    retained on both sides and a genuinely differing/missing username still
-    surfaces as a mismatch (no false-OK).
+    Keeps ``identifier`` and ``password`` ONLY when each is non-empty on this
+    side. This is symmetric leaf-suppression, aware of BOTH ``hiddenusername``
+    and ``hiddenpassword``:
+
+    * ``hiddenusername: true`` (e.g. Akamai's ``credentials_*``): the connector
+      legitimately has no username, and the harness (see
+      ``xsoar_capture.generate_dummy_value_for_param``) no longer injects a
+      dummy identifier, so both sides reduce to ``{"password": ...}``.
+    * ``hiddenpassword: true`` (e.g. BitSight's API-key credentials widget): the
+      connector legitimately has no password, and the harness no longer injects
+      a dummy password, so both sides reduce to ``{"identifier": ...}``.
+
+    For NORMAL type-9 fields that carry a real username and/or password, those
+    leaves are retained on both sides, so a genuinely differing/missing
+    username or password still surfaces as a mismatch (no false-OK).
     """
-    reduced: dict[str, Any] = {"password": value.get("password", "")}
+    reduced: dict[str, Any] = {}
     ident = value.get("identifier")
     if ident:  # non-empty only; absent/"" for hiddenusername:true
         reduced["identifier"] = ident
+    password = value.get("password")
+    if password:  # non-empty only; absent/"" for hiddenpassword:true
+        reduced["password"] = password
     return reduced
 
 

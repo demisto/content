@@ -335,12 +335,32 @@ def compute_be_synthesized_params(
     script = script or {}
 
     if fetch_flags is not None:
-        # Variant-driven: the fetch decision comes ENTIRELY from the variant.
-        # Keys are the XSOAR toggle names (resolver.CAPABILITY_FETCH_FLAG values).
-        is_fetch = bool(fetch_flags.get("isFetch", False))
-        is_feed = bool(fetch_flags.get("feed", False))
-        is_fetch_events = bool(fetch_flags.get("isFetchEvents", False))
-        is_fetch_assets = bool(fetch_flags.get("isFetchAssets", False))
+        # Variant-driven, but GATED on the integration YML actually declaring the
+        # matching ``script.*`` fetch mechanism. The variant flag comes from the
+        # connector capability mapping (resolver.CAPABILITY_FETCH_FLAG), e.g.
+        # ``log-collection -> isFetchEvents``. But a capability can be satisfied by
+        # an integration that does NOT use that XSOAR fetch mechanism — e.g. a
+        # long-running log collector (``script.longRunning: true``) with NO
+        # ``script.isfetchevents``. For such an integration XSOAR never exposes
+        # ``isFetchEvents``/``eventFetchInterval``, so synthesizing them would
+        # inject a field the connector legitimately never delivers (a spurious
+        # MISSING_IN_CONNECTOR). Therefore a flag is synthesized only when BOTH the
+        # variant has it ON AND the YML ``script`` declares the mechanism.
+        #
+        # ``isFetchCredentials`` has no YML script flag and stays capability-only
+        # (handled below, ungated).
+        is_fetch = bool(fetch_flags.get("isFetch", False)) and _flag_is_true(
+            script, "isfetch", "isFetch"
+        )
+        is_feed = bool(fetch_flags.get("feed", False)) and _flag_is_true(
+            script, "feed", "Feed"
+        )
+        is_fetch_events = bool(fetch_flags.get("isFetchEvents", False)) and _flag_is_true(
+            script, "isfetchevents", "isFetchEvents", "isfetchEvents"
+        )
+        is_fetch_assets = bool(fetch_flags.get("isFetchAssets", False)) and _flag_is_true(
+            script, "isfetchassets", "isFetchAssets", "isfetchAssets"
+        )
     else:
         is_fetch = _flag_is_true(script, "isfetch", "isFetch")
         is_feed = _flag_is_true(script, "feed", "Feed")

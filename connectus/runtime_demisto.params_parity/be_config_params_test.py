@@ -34,6 +34,29 @@ def _flags(active: str | None) -> dict[str, bool]:
     return {n: (n == active) for n in names}
 
 
+# Maps each variant fetch-flag (XSOAR toggle name) to the YML ``script.*`` key
+# that DECLARES the corresponding fetch mechanism. The variant-branch gate in
+# ``compute_be_synthesized_params`` synthesizes a flag's fields only when the YML
+# script also declares it, so tests that exercise a flag must pass a script that
+# declares it. ``isFetchCredentials`` has no YML script flag (capability-only).
+_FLAG_TO_SCRIPT_KEY: dict[str, str] = {
+    "isFetch": "isfetch",
+    "isFetchEvents": "isfetchevents",
+    "isFetchAssets": "isfetchassets",
+    "feed": "feed",
+}
+
+
+def _script_for(*active: str) -> dict[str, bool]:
+    """Build a YML ``script`` dict declaring the mechanism for each active flag,
+    so the variant-branch gate opens for those flags."""
+    return {
+        _FLAG_TO_SCRIPT_KEY[a]: True
+        for a in active
+        if a in _FLAG_TO_SCRIPT_KEY
+    }
+
+
 def test_variant_fetch_issues_overrides_script():
     """fetch-issues variant → isFetch params added, NO event params."""
     added, stripped = compute_be_synthesized_params(
@@ -136,7 +159,9 @@ def _multi_flags(*active: str) -> dict[str, bool]:
 def test_isfetchevents_injects_interval_into_both_payloads_with_types():
     """isFetchEvents=True → eventFetchInterval present on BOTH sides, non-default
     "111" string on the integration side, int 111 on the connector side."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchEvents"))
+    out = apply_be_config_transform(
+        {}, _script_for("isFetchEvents"), fetch_flags=_flags("isFetchEvents")
+    )
     assert out["eventFetchInterval"] == "111"          # integration side: string
     assert isinstance(out["eventFetchInterval"], str)
     # connector side: same field coerced to int via the registry.
@@ -159,7 +184,9 @@ def test_isfetchevents_absent_when_flag_off():
 def test_isfetchassets_injects_interval_into_both_payloads_with_types():
     """isFetchAssets=True → assetsFetchInterval present on BOTH sides with the
     correct string/int contract; off-flag fields absent."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchAssets"))
+    out = apply_be_config_transform(
+        {}, _script_for("isFetchAssets"), fetch_flags=_flags("isFetchAssets")
+    )
     assert out["assetsFetchInterval"] == "111"
     assert isinstance(out["assetsFetchInterval"], str)
     assert connector_value_for("assetsFetchInterval", out["assetsFetchInterval"]) == 111
@@ -178,7 +205,9 @@ def test_isfetchassets_absent_when_flag_off():
 def test_feed_injects_full_field_set_into_both_payloads_with_types():
     """feed=True → the whole feed framework field set on BOTH sides; the two feed
     interval/duration fields carry the int/str contract; off-flag fields absent."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("feed"))
+    out = apply_be_config_transform(
+        {}, _script_for("feed"), fetch_flags=_flags("feed")
+    )
     for fld in (
         "feed",
         "feedReputation",
@@ -212,7 +241,9 @@ def test_combined_multi_flag_variant_injects_the_union():
     True injects the UNION of every flag's fields (each interval at the non-default
     minutes value), proving the table-driven loop is additive across flags."""
     out = apply_be_config_transform(
-        {}, {}, fetch_flags=_multi_flags("isFetch", "isFetchEvents", "isFetchAssets", "feed")
+        {},
+        _script_for("isFetch", "isFetchEvents", "isFetchAssets", "feed"),
+        fetch_flags=_multi_flags("isFetch", "isFetchEvents", "isFetchAssets", "feed"),
     )
     for fld in (
         "isFetch", "incidentFetchInterval",
@@ -233,7 +264,9 @@ def test_isfetch_only_variant_does_not_leak_event_assets_feed_fields():
     """GUARD (CiscoSMA/CiscoESA shape): a variant with ONLY isFetch True must get
     its own fetch fields but NONE of the event/assets/feed synthesized fields in
     EITHER payload — this is the exact mismatch the generalization must not cause."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    out = apply_be_config_transform(
+        {}, _script_for("isFetch"), fetch_flags=_flags("isFetch")
+    )
     # isFetch fields ARE present.
     assert out["isFetch"]
     assert out["incidentFetchInterval"] == "111"
@@ -253,7 +286,9 @@ def test_isfetch_only_variant_does_not_leak_event_assets_feed_fields():
 # ---------------------------------------------------------------------------
 def test_isfetch_adds_isfetch_incidentfetchinterval_incidenttype():
     """IsFetch → isFetch, incidentFetchInterval, incidentType (not feed/events)."""
-    added, stripped = compute_be_synthesized_params({}, fetch_flags=_flags("isFetch"))
+    added, stripped = compute_be_synthesized_params(
+        _script_for("isFetch"), fetch_flags=_flags("isFetch")
+    )
     assert set(added) == {"isFetch", "incidentFetchInterval", "incidentType"}
     assert "alertType" not in added         # never auto-added
     assert stripped == []
@@ -261,7 +296,9 @@ def test_isfetch_adds_isfetch_incidentfetchinterval_incidenttype():
 
 def test_feed_adds_full_feed_field_set():
     """Feed → feed + the six feed* config params; incidentType is SKIPPED."""
-    added, _ = compute_be_synthesized_params({}, fetch_flags=_flags("feed"))
+    added, _ = compute_be_synthesized_params(
+        _script_for("feed"), fetch_flags=_flags("feed")
+    )
     assert set(added) == {
         "feed",
         "feedReputation",
@@ -276,7 +313,9 @@ def test_feed_adds_full_feed_field_set():
 
 def test_isfetchevents_adds_isfetchevents_and_interval():
     """IsFetchEvents → isFetchEvents, eventFetchInterval; incidentType SKIPPED."""
-    added, _ = compute_be_synthesized_params({}, fetch_flags=_flags("isFetchEvents"))
+    added, _ = compute_be_synthesized_params(
+        _script_for("isFetchEvents"), fetch_flags=_flags("isFetchEvents")
+    )
     assert set(added) == {"isFetchEvents", "eventFetchInterval"}
     assert "incidentType" not in added
 
@@ -284,7 +323,7 @@ def test_isfetchevents_adds_isfetchevents_and_interval():
 def test_isfetchassets_adds_isfetchassets_and_interval():
     """IsFetchAssets → isFetchAssets, assetsFetchInterval."""
     added, stripped = compute_be_synthesized_params(
-        {}, fetch_flags=_flags("isFetchAssets")
+        _script_for("isFetchAssets"), fetch_flags=_flags("isFetchAssets")
     )
     assert set(added) == {"isFetchAssets", "assetsFetchInterval"}
     assert stripped == []                    # assets counts as a fetch
@@ -305,7 +344,8 @@ def test_longrunning_adds_longrunning_and_incidenttype_not_alerttype():
 def test_longrunning_incidenttype_skipped_when_events_active():
     """LongRunning + IsFetchEvents → incidentType is SKIPPED (events active)."""
     added, _ = compute_be_synthesized_params(
-        {"longRunning": True}, fetch_flags=_flags("isFetchEvents")
+        {"longRunning": True, "isfetchevents": True},
+        fetch_flags=_flags("isFetchEvents"),
     )
     assert "longRunning" in added
     assert "incidentType" not in added
@@ -356,11 +396,94 @@ def test_interval_fields_get_minutes_dummy():
     ``"111"`` to the INTEGRATION side (string). The CONNECTOR side coerces this
     to int 111 — see test_connector_value_for_coerces_registry_field_to_int.
     """
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    out = apply_be_config_transform(
+        {}, _script_for("isFetch"), fetch_flags=_flags("isFetch")
+    )
     assert out["incidentFetchInterval"] == "111"
-    out_feed = apply_be_config_transform({}, {}, fetch_flags=_flags("feed"))
+    out_feed = apply_be_config_transform(
+        {}, _script_for("feed"), fetch_flags=_flags("feed")
+    )
     assert out_feed["feedFetchInterval"] == "111"
     assert out_feed["feedExpirationInterval"] == "111"
+
+
+# ---------------------------------------------------------------------------
+# YML-script gate (Lookout): a variant fetch flag is synthesized ONLY when the
+# integration YML `script` also declares the matching mechanism. A capability can
+# be satisfied by an integration that does NOT use that XSOAR fetch mechanism
+# (e.g. a long-running log collector with NO `script.isfetchevents`), and for
+# such an integration the synthesized fields must NOT be injected.
+# ---------------------------------------------------------------------------
+def test_log_collection_variant_no_isfetchevents_yml_does_not_synthesize():
+    """Lookout shape: log-collection capability → isFetchEvents variant flag, but
+    the YML declares only `script.longRunning` (NO isfetchevents). The gate is
+    CLOSED → neither isFetchEvents nor eventFetchInterval is synthesized."""
+    added, _ = compute_be_synthesized_params(
+        {"longRunning": True}, fetch_flags=_flags("isFetchEvents")
+    )
+    assert "isFetchEvents" not in added
+    assert "eventFetchInterval" not in added
+
+
+def test_log_collection_variant_with_isfetchevents_yml_still_synthesizes():
+    """CiscoAMP shape: log-collection capability + the YML DECLARES
+    `script.isfetchevents: true`. The gate is OPEN → both fields are synthesized
+    (round-4 behavior preserved)."""
+    added, _ = compute_be_synthesized_params(
+        {"isfetchevents": True}, fetch_flags=_flags("isFetchEvents")
+    )
+    assert "isFetchEvents" in added
+    assert "eventFetchInterval" in added
+
+
+def test_isfetch_variant_gated_on_yml_isfetch():
+    """isFetch variant: synthesized only when the YML declares `script.isfetch`."""
+    # gate CLOSED (no YML isfetch) → not synthesized.
+    added_closed, _ = compute_be_synthesized_params({}, fetch_flags=_flags("isFetch"))
+    assert "isFetch" not in added_closed
+    assert "incidentFetchInterval" not in added_closed
+    # gate OPEN (YML declares isfetch) → synthesized.
+    added_open, _ = compute_be_synthesized_params(
+        {"isfetch": True}, fetch_flags=_flags("isFetch")
+    )
+    assert "isFetch" in added_open
+    assert "incidentFetchInterval" in added_open
+
+
+def test_feed_variant_gated_on_yml_feed():
+    """feed variant: synthesized only when the YML declares `script.feed`."""
+    added_closed, _ = compute_be_synthesized_params({}, fetch_flags=_flags("feed"))
+    assert "feed" not in added_closed
+    assert "feedFetchInterval" not in added_closed
+    added_open, _ = compute_be_synthesized_params(
+        {"feed": True}, fetch_flags=_flags("feed")
+    )
+    assert "feed" in added_open
+    assert "feedFetchInterval" in added_open
+
+
+def test_assets_variant_gated_on_yml_isfetchassets():
+    """isFetchAssets variant: synthesized only when YML declares
+    `script.isfetchassets`."""
+    added_closed, _ = compute_be_synthesized_params(
+        {}, fetch_flags=_flags("isFetchAssets")
+    )
+    assert "isFetchAssets" not in added_closed
+    assert "assetsFetchInterval" not in added_closed
+    added_open, _ = compute_be_synthesized_params(
+        {"isfetchassets": True}, fetch_flags=_flags("isFetchAssets")
+    )
+    assert "isFetchAssets" in added_open
+    assert "assetsFetchInterval" in added_open
+
+
+def test_isfetchcredentials_variant_not_gated_on_yml():
+    """isFetchCredentials has NO YML script flag — it is capability-only and is
+    NOT gated on the YML. The toggle is added whenever the variant flag is on."""
+    added, _ = compute_be_synthesized_params(
+        {}, fetch_flags=_flags("isFetchCredentials")
+    )
+    assert "isFetchCredentials" in added
 
 
 # ---------------------------------------------------------------------------
