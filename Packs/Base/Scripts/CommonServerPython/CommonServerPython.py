@@ -8856,13 +8856,17 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
-            content_error_type = get_error_code(res)
-            if not content_error_type:
-                content_error_type = _classify_error_message(error_message)
-            if content_error_type:
+            # Reuse the standardized error code from the failing sub-command's
+            # ExtendedPayload when present, otherwise classify from the message.
+            error_code = get_error_code(res)
+            if not error_code:
+                error_code = _classify_error_message(error_message)
+            if error_code:
                 raise CortexExecutionError(
-                    'Failed to execute {}. Error details:\n{}'.format(command, error_message),
-                    error_code=content_error_type,
+                    # Original message kept for backward compatibility; the
+                    # error_code carries the standardized classification.
+                    override_message='Failed to execute {}. Error details:\n{}'.format(command, error_message),
+                    error_code=error_code,
                     details={"command": command, "raw_error": error_message},
                 )
             raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
