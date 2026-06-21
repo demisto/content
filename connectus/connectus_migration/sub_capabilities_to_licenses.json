@@ -1165,7 +1165,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_mail-sender-(new)": [
+  "automation-and-remediation_mail-sender-new": [
     "cloud_posture",
     "cloud",
     "cloud_runtime_security",
@@ -1896,12 +1896,12 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_tenable.io": [
+  "automation-and-remediation_tenable-io": [
     "xsiam",
     "exposure_management",
     "agentix"
   ],
-  "automation-and-remediation_tenable.sc": [
+  "automation-and-remediation_tenable-sc": [
     "xsiam",
     "exposure_management",
     "agentix"
@@ -2026,7 +2026,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_vmware-workspace-one-uem-(airwatch-mdm)": [
+  "automation-and-remediation_vmware-workspace-one-uem-airwatch-mdm": [
     "xsiam",
     "agentix"
   ],
@@ -2143,12 +2143,12 @@
     "exposure_management",
     "agentix"
   ],
-  "fetch-assets-and-vulnerabilities_tenable.io": [
+  "fetch-assets-and-vulnerabilities_tenable-io": [
     "xsiam",
     "exposure_management",
     "agentix"
   ],
-  "fetch-assets-and-vulnerabilities_tenable.sc": [
+  "fetch-assets-and-vulnerabilities_tenable-sc": [
     "xsiam",
     "exposure_management",
     "agentix"
@@ -2737,7 +2737,7 @@
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_tenable.sc": [
+  "fetch-issues_tenable-sc": [
     "xsiam",
     "exposure_management",
     "agentix"
@@ -3245,7 +3245,7 @@
     "xsiam",
     "agentix"
   ],
-  "log-collection_tenable.io": [
+  "log-collection_tenable-io": [
     "xsiam",
     "exposure_management",
     "agentix"

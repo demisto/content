@@ -152,12 +152,18 @@ def _derive_handler_id(integration_id: str) -> str:
     """Derive the connector handler folder name from an integration id.
 
     Mirrors ``connectus_migration.manifest_generator.derive_handler_id``
-    (guide §3.8): ``"xsoar-" + integration_id`` lowercased with internal
-    whitespace runs collapsed to single dashes. Inlined here (3 lines) to
-    keep this dependency-light module free of a heavy manifest_generator
-    import.
+    EXACTLY: ``"xsoar-" + integration_id`` lowercased with internal
+    whitespace runs collapsed to single dashes, then any punctuation other
+    than word chars / dashes stripped to dashes and collapsed. This keeps
+    the on-disk handler folder slug in lockstep with what the generator
+    writes (e.g. ``Tenable.io`` -> ``xsoar-tenable-io``,
+    ``Mail Sender (New)`` -> ``xsoar-mail-sender-new``). Underscores are
+    intentionally PRESERVED (license-map / sub-capability id lockstep, e.g.
+    ``netskope_api_v2``).
     """
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 
