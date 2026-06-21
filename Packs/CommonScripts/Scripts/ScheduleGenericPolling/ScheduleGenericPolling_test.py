@@ -240,6 +240,7 @@ def test_get_command_string_with_extract_mode():
     assert "extractMode=none" in command_string
 
 
+@freeze_time("2023-04-01 00:00:00")
 def test_main_pass(mocker):
     """
     Given
@@ -278,6 +279,7 @@ def test_main_pass(mocker):
         '"issueId" playbookId="pi"               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"'
         ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"'
         '               additionalPollingCommandArgValues="my_arg_value"'
+        ' endTime="2023-04-01 00:05:00"'
     )
 
     assert command == expected_command
@@ -405,6 +407,7 @@ def test_main_non_guid_embeds_absolute_end_time(mocker):
     assert "val.Status !== 'Completed'" in schedule_args["command"]
 
 
+@freeze_time("2023-04-01 00:00:00")
 def test_main_pass_no_playbook_id(mocker):
     """
     Given
@@ -442,6 +445,7 @@ def test_main_pass_no_playbook_id(mocker):
         '"issueId"               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"'
         ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"'
         '               additionalPollingCommandArgValues="my_arg_value"'
+        ' endTime="2023-04-01 00:05:00"'
     )
 
     assert command == expected_command
