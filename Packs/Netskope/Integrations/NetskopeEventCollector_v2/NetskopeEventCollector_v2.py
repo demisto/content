@@ -503,8 +503,7 @@ async def fetch_and_send_events_async(
                 f"Going to fetch {min(total_events, limit)} events from {init_offset=} by chunks of {request_limit} ..."
             )
             tasks = [
-                _handle_page(request_params | {"offset": offset})
-                for offset in range(init_offset, max_offset, request_limit)
+                _handle_page(request_params | {"offset": offset}) for offset in range(init_offset, max_offset, request_limit)
             ]
             results = await asyncio.gather(*tasks, return_exceptions=True)
             return results
