@@ -28,13 +28,6 @@ BASE_BACKOFF_SECONDS = 2
 EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-# - PING_INTERVAL: how often keep-alive pings are sent.
-# - PING_TIMEOUT:  None disables pong-reply enforcement (prevents 1011 "keepalive ping timeout"
-#                  closures while a large >1MB message is being received/processed).
-# - OPEN_TIMEOUT / CLOSE_TIMEOUT: handshake timeouts.
-# - MAX_MESSAGE_SIZE: None disables the websockets library default 1 MiB cap so Proofpoint
-#                     payloads larger than 1MB (which previously caused the connection to be
-#                     torn down by the server with code 1011) are accepted normally.
 PING_INTERVAL = 60  # Interval between keepalive pings in seconds
 PING_TIMEOUT: float | None = None  # Disable pong-reply timeout to tolerate large/slow messages
 OPEN_TIMEOUT = 10  # Timeout for opening the WebSocket connection in seconds
