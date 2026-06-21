@@ -24,14 +24,6 @@
             "type": "string",
             "is_array": false
         },
-        "api_key_created": {
-            "type": "string",
-            "is_array": false
-        },
-        "organization_updated": {
-            "type": "string",
-            "is_array": false
-        },
         "login": {
             "type": "string",
             "is_array": false

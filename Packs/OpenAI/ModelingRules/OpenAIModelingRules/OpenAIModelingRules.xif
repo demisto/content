@@ -50,14 +50,9 @@ alter
     xdm.observer.sub_type = "Audit Logs",
     xdm.target.resource.id = if(type ~= "^login\.", null,
         coalesce(
-            json_extract_scalar(api_key_created, "$.id"),
-            json_extract_scalar(organization_updated, "$.id"))),
-    xdm.target.resource.name = if(type ~= "^login\.", "OpenAI API Platform",
-        coalesce(
-            json_extract_scalar(api_key_created, "$.data.name"),
-            json_extract_scalar(api_key_created, "$.name"),
-            json_extract_scalar(organization_updated, "$.data.name"),
-            json_extract_scalar(organization_updated, "$.name")));
+            json_extract_scalar(_raw_log, "['api_key.created']['id']"),
+            json_extract_scalar(_raw_log, "['organization.updated']['id']"))),
+    xdm.target.resource.name = "OpenAI API Platform";
 
 [MODEL: dataset="openai_chatgpt_compliance_raw"]
 // OpenAI ChatGPT Enterprise Compliance API Logs -> XDM
@@ -102,7 +97,7 @@ alter
     xdm.source.location.region    = json_extract_scalar(request_metadata, "$.client_ip_details.region"),
     xdm.source.location.latitude  = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.latitude")),
     xdm.source.location.longitude = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.longitude")),
-    xdm.observer.type    = "openai",
+    xdm.observer.type    = "OpenAI API Platform",
     xdm.target.resource.id   = workspace_id,
     xdm.target.resource.name = json_extract_scalar(request_metadata, "$.destination_hostname"),
     xdm.network.session_id   = conversation_id;
