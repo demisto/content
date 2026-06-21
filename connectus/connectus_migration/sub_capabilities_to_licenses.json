@@ -1301,7 +1301,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_microsoft-management-activity-api-(o365-azure-events)": [
+  "automation-and-remediation_microsoft-management-activity-api-o365-azure-events": [
     "cloud_posture",
     "xsiam",
     "agentix"
@@ -2479,7 +2479,7 @@
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_microsoft-management-activity-api-(o365-azure-events)": [
+  "fetch-issues_microsoft-management-activity-api-o365-azure-events": [
     "cloud_posture",
     "xsiam",
     "agentix"
@@ -3436,7 +3436,7 @@
     "xsiam",
     "agentix"
   ],
-  "threat-intelligence-and-enrichment_opencti-feed-4.x": [
+  "threat-intelligence-and-enrichment_opencti-feed-4-x": [
     "xsiam",
     "agentix"
   ],
