@@ -9,6 +9,7 @@ configuration:
   required: true
   type: 9
   section: Connect
+  hiddenpassword: true
 - display: Authentication file contents
   name: auth_json
   type: 4
