@@ -2232,6 +2232,36 @@ def test_return_error_extended_payload_includes_retryable_true(mocker):
     assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
 
 
+def test_return_error_extended_payload_includes_original_api_error(mocker):
+    """
+    Given
+    - A CortexExternalApiError carrying the original API response body
+    When
+    - return_error is called with that error
+    Then
+    - The error entry's Contents shows the unified message, while the original
+      API error body is preserved in the ExtendedPayload (response_body).
+    """
+    from CommonServerPython import (
+        return_error, CortexExternalApiError,
+        EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY,
+    )
+    mocker.patch.object(demisto, 'results')
+    original_api_error = '{"error": {"message": "boom from the API"}}'
+    with pytest.raises(SystemExit):
+        return_error(
+            'A unified, human-readable message',
+            error=CortexExternalApiError(
+                'A unified, human-readable message',
+                status_code=500,
+                response_body=original_api_error,
+            ),
+        )
+    error_entry = demisto.results.call_args[0][0]
+    extended_payload = error_entry['ExtendedPayload']
+    assert extended_payload[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY] == original_api_error
+
+
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given

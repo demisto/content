@@ -8346,11 +8346,16 @@ def return_error(message, error='', outputs=None):
         extended_payload = {}
         if _error_type:
             extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] = _error_type
-        # Expose only the boolean retryable flag (true/false), taken from the
-        # CortexError details.
-        if _cortex_error is not None and EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
-            extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
-                _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
+        if _cortex_error is not None:
+            # Expose only the boolean retryable flag (true/false).
+            if EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
+                extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
+                    _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
+            # Preserve the original API error body (when present) so it is not
+            # lost behind the unified, human-readable message.
+            if _cortex_error.details.get(EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY):
+                extended_payload[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY] = \
+                    _cortex_error.details[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY]
         if extended_payload:
             error_entry['ExtendedPayload'] = extended_payload
 
@@ -11282,6 +11287,12 @@ class RetryGuidance(object):
 EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY = 'retry_guidance'
 EXTENDED_PAYLOAD_RETRYABLE_KEY = 'retryable'
 
+# Key used inside ``details`` to carry the raw/original error body returned by
+# the external API (set by :class:`CortexExternalApiError` via ``response_body``).
+# This is also surfaced in the error entry's ``ExtendedPayload`` so the original
+# API error is preserved alongside the unified, human-readable message.
+EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY = 'response_body'
+
 
 class CortexError(DemistoException):
     """Base exception for all content standardized errors.
@@ -11686,7 +11697,10 @@ class CortexExternalApiError(CortexError):
         it becomes the error's ``error_code`` directly.
 
     :type response_body: ``str``
-    :param response_body: Truncated response body (max 500 chars).
+    :param response_body: Truncated response body (max 500 chars). The original
+        API error body is preserved and surfaced in the error entry's
+        ``ExtendedPayload`` (under ``response_body``) so it is not lost behind
+        the unified, human-readable message.
     """
 
     error_code = CortexErrorCode.API_ERROR
@@ -11703,6 +11717,10 @@ class CortexExternalApiError(CortexError):
         if status_code:
             details["status_code"] = status_code
         if response_body:
+            # Decode bytes cleanly so the original API error is stored as text
+            # (avoids leaking a b'...' repr into details/ExtendedPayload).
+            if isinstance(response_body, bytes):
+                response_body = response_body.decode("utf-8", errors="replace")
             details["response_body"] = str(response_body)[:500]
 
         # When the caller passes an explicit api_error_type (a CortexErrorCode
