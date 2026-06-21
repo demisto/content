@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | True |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &lt; 3.0\). On Cortex XSIAM \(version &gt;= 3.0\) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | False |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |

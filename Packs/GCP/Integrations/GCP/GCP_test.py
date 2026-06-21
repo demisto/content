@@ -5426,11 +5426,12 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
     """
     Given:
         - Integration params with no credentials (empty password) and no project_id in args.
-        - No connector ID in context (not Cortex Cloud).
+        - No connector ID in context (marketplace deployment, not Cortex Platform).
     When:
         - get_credentials is called.
     Then:
-        - DemistoException is raised indicating project_id is missing.
+        - DemistoException is raised indicating the Service Account Private Key (JSON) is missing,
+          and the CTS path is NOT attempted.
     """
     from GCP import get_credentials
     from CommonServerPython import DemistoException
@@ -5438,11 +5439,13 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
     params: dict = {}
     args: dict = {}
 
-    # Simulate CTS call failing (no connector context)
-    mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("no connector"))
+    # Marketplace deployment: no cloud connector.
+    mocker.patch("GCP.get_connector_id", return_value=None)
+    cts = mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("should not be called"))
 
-    with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
+    with pytest.raises(DemistoException, match="Missing required parameter 'Service Account Private Key"):
         get_credentials(args, params)
+    cts.assert_not_called()
 
 
 def test_get_credentials_none_password_does_not_raise_attributeerror(mocker):
@@ -5462,6 +5465,7 @@ def test_get_credentials_none_password_does_not_raise_attributeerror(mocker):
     params: dict = {"credentials": {"password": None}}
     args = {"project_id": "dummy-project-id"}
 
+    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # Cortex Platform path
     mocker.patch("GCP.get_cloud_credentials", return_value={"access_token": "dummy-access-token"})
 
     result = get_credentials(args, params)
@@ -5488,6 +5492,7 @@ def test_get_credentials_cortex_cloud_token_path(mocker):
     params: dict = {}
     args = {"project_id": "dummy-project-id"}
 
+    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # Cortex Platform path
     mock_creds_data = {"access_token": "dummy-access-token"}
     mocker.patch("GCP.get_cloud_credentials", return_value=mock_creds_data)
 
@@ -6081,6 +6086,7 @@ def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
     params: dict = {}
     args = {"project_id": "dummy-project-id"}
 
+    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # Cortex Platform path
     mocker.patch("GCP.get_cloud_credentials", return_value={})
 
     with pytest.raises(DemistoException, match="token is missing from CTS credentials"):
@@ -6104,6 +6110,7 @@ def test_get_credentials_cortex_cloud_cts_call_failure_wrapped(mocker):
     params: dict = {}
     args = {"project_id": "dummy-project-id"}
 
+    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # Cortex Platform path
     mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("network down"))
 
     with pytest.raises(DemistoException, match="Failed to authenticate with GCP via CTS"):
