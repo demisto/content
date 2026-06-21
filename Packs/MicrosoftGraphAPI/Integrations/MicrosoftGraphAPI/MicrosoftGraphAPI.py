@@ -9,6 +9,7 @@ from CommonServerUserPython import *
 
 urllib3.disable_warnings()
 
+
 class MsGraphClient:
     def __init__(
         self,
