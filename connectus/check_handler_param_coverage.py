@@ -140,6 +140,7 @@ INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "incidentFetchInterval"
 IGNORED_PARAMS = {
     "is_mirroring",
+    "close_alert",
     "mirroring",
     "close_ticket",
     "resolve_finding",
@@ -259,19 +260,26 @@ def resolve_connector_root(handler_dir: Path) -> Path:
 def _is_hidden(param: dict) -> bool:
     """Return True when a YML configuration param is hidden on the Platform.
 
-    Hidden means any of:
-      * ``hidden: true`` (boolean True).
-      * ``hidden: platform`` (string).
-      * ``hidden: [..]`` — a non-empty list (per-marketplace form, e.g.
-        ``[platform]`` / ``[marketplacev2, platform]``).
-    Anything else (missing / ``false`` / empty list) is NOT hidden.
+    Per skill §1.3, a param is excluded from migration tooling ONLY when it is
+    hidden on the *platform* target. Hidden means any of:
+      * ``hidden: true`` (boolean True — hidden everywhere).
+      * ``hidden: platform`` (the string form, single platform target).
+      * ``hidden: [.., platform, ..]`` — a list that CONTAINS ``platform``
+        (per-marketplace form, e.g. ``[platform]`` / ``[marketplacev2, platform]``).
+
+    A ``hidden:`` list that does NOT contain ``platform`` (e.g. ``[xsoar]``,
+    ``[xsoar_on_prem]``, ``[marketplacev2]``) is NOT excluded — the param is
+    still visible on the platform target and must be carried through. Anything
+    else (missing / ``false`` / empty list) is NOT hidden.
     """
     hidden = param.get("hidden")
     if hidden is True:
         return True
-    if isinstance(hidden, str) and hidden:
-        return True
-    return isinstance(hidden, list) and len(hidden) > 0
+    if isinstance(hidden, str):
+        return hidden == "platform"
+    if isinstance(hidden, list):
+        return "platform" in hidden
+    return False
 
 
 def collect_yml_params(integration_yml: dict) -> set[str]:
