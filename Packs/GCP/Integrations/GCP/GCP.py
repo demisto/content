@@ -2600,15 +2600,6 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
         return creds
 
-    # No service account key provided. On a marketplace deployment (no cloud connector) this
-    # is a misconfiguration, since authentication there relies on the Service Account JSON.
-    if not get_connector_id():
-        raise DemistoException(
-            "Missing required parameter 'Service Account Private Key (JSON)'. On Cortex XSOAR and "
-            "Cortex XSIAM (version < 3.0), paste the contents of a GCP Service Account private key "
-            "JSON in the integration configuration."
-        )
-
     # --- Cortex Platform path: CTS token-based authentication ---
     project_id = args.get("project_id")
     if not project_id:

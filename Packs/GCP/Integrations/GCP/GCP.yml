@@ -10,6 +10,7 @@ configuration:
 - displaypassword: Service Account Private Key (JSON)
   name: credentials
   required: false
+  required:xsoar: true
   type: 9
   hiddenusername: true
   section: Connect
