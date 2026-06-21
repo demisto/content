@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../schema/capabilities.schema.json
+metadata:
+  title: Capabilities
+  description: Configure the capabilities for this instance
+general_configurations:
+  description: General configurations for all capabilities
+  configurations:
+  - fields:
+    - id: instance_name
+      title: Instance name
+      field_type: input
+      metadata:
+        connector:
+          parameter: instance_name
+      validations:
+      - trigger: change
+        rules:
+        - type: pattern
+          value: ^[a-zA-Z0-9 _-]+$
+          message: Only alphanumeric characters, spaces, underscores, and hyphens
+            are allowed.
+        - type: async
+          validation_type: uniqueness
+      options:
+        placeholder: Enter a unique name for this instance
+        create_modifiers:
+          required: true
+          read_only: false
+          hidden: false
+        edit_modifiers:
+          required: true
+          read_only: false
+          hidden: false
+capabilities: []

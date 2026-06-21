@@ -1,0 +1,196 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: remoteaccess-v2
+  label: RemoteAccess v2
+  help_text: Connection settings for RemoteAccess v2.
+profiles:
+- id: passthrough.remoteaccess_v2
+  type: passthrough
+  view_group: remoteaccess-v2
+  title: SSH (Username & Password)
+  description: Authentication profile for RemoteAccess (passthrough).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: additional_password:additional_password.password,username:credentials.identifier,password:credentials.password
+  configurations:
+  - fields:
+    - id: additional_password
+      title: Additional Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: additional_password
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: credentials_username
+      title: User
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: hostname
+      field_type: input
+      title: Default Hostname or IP Address
+      options:
+        description: If not provided, "host" or "system" should be provided in the
+          command's arguments.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: ciphers
+      field_type: input
+      title: Ciphers
+      options:
+        description: A comma-separated list of ciphers to use. If none of the specified
+          ciphers are agreed to by the server, an error message specifying the supported
+          ciphers is returned.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: key_algorithms
+      field_type: input
+      title: Key Algorithms
+      options:
+        description: A comma-separated list of key algorithms to use. If none of the
+          specified key algorithms are agreed to by the server, an error message specifying
+          the supported key algorithms is returned.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: RemoteAccess v2
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: RemoteAccess v2
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

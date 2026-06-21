@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: sentinelone
+enabled: true
+metadata:
+  title: SentinelOne
+  description: integrate with SentinelOne products.
+  version: 1.0.0
+  categories: []
+  tags: []
+  vendor: SentinelOne
+  publisher: Palo Alto Networks
+  author_image: sentinelone.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true

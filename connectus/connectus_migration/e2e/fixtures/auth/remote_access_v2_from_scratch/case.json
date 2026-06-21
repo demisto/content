@@ -1,0 +1,24 @@
+{
+  "description": "RemoteAccess v2 (from scratch): a single Passthrough profile with a visible-user type-9 credentials param (username+password) plus a hiddenusername type-9 additional_password. Authored input-only as a TDD red target; expected/ to be added later.",
+  "connector_title": "RemoteAccess",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "SSH (Username & Password)",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password",
+          "additional_password.password": "additional_password"
+        }
+      }
+    ],
+    "other_connection": [
+      "hostname",
+      "ciphers",
+      "key_algorithms"
+    ]
+  }
+}

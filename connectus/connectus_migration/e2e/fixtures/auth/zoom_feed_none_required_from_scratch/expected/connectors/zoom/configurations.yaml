@@ -132,7 +132,7 @@ configurations:
           label: Malicious
         searchable: true
         clearable: true
-        default_value: Good
+        default_value: Benign
         create_modifiers:
           required: false
           hidden: false

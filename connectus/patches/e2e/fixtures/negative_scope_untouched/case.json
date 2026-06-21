@@ -1,0 +1,6 @@
+{
+  "description": "Scope guard: a connector whose profiles are all NON-passthrough (a plain type-9 username/password, an api_key type-9 token, and an api_key profile that sets vault_support: true). The patch must touch NONE of them — no vault_mappings injected, the vault_support boolean left as-is. AFTER == BEFORE.",
+  "connector": "negcase",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": false
+}

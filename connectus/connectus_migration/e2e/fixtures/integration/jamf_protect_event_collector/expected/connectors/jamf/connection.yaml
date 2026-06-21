@@ -25,12 +25,12 @@ profiles:
         auth:
           parameter: client
       options:
-        mask: true
+        mask: false
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
     - id: credentials_password
@@ -42,10 +42,10 @@ profiles:
       options:
         mask: true
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
     - id: base_url

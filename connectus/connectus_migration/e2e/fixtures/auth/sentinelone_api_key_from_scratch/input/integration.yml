@@ -1,0 +1,39 @@
+category: Endpoint
+provider: SentinelOne
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: SentinelOne V2
+  version: -1
+configuration:
+- name: url
+  display: Server URL (e.g., https://usea1.sentinelone.net)
+  required: true
+  type: 0
+  section: Connect
+- name: credentials
+  display: ""
+  type: 9
+  section: Connect
+  displaypassword: API Token
+  hiddenusername: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+description: Use the SentinelOne integration to connect to and manage your SentinelOne endpoints.
+display: SentinelOne v2
+name: SentinelOne V2
+script:
+  script: ''
+  type: python
+  commands: []
+fromversion: 5.0.0

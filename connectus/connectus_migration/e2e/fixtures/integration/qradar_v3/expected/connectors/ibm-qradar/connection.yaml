@@ -25,7 +25,7 @@ profiles:
         auth:
           parameter: credentials
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false
@@ -34,7 +34,7 @@ profiles:
           hidden: false
   - fields:
     - id: credentials_password
-      title: Username
+      title: Password
       field_type: input
       metadata:
         auth:
