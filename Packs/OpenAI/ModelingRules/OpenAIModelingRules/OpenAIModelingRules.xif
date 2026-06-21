@@ -10,10 +10,28 @@ alter
         type ~= "\.succeeded$", XDM_CONST.OUTCOME_SUCCESS,
         type ~= "\.failed$",    XDM_CONST.OUTCOME_FAILED,
         XDM_CONST.OUTCOME_SUCCESS),
-    xdm.event.outcome_reason = if(type ~= "\.failed$", "failed_login", "NOT_SPECIFIED"),
+    xdm.event.outcome_reason = if(
+        type in ("login.succeeded", "logout.succeeded"), null,
+        coalesce(
+            json_extract_scalar(login, "$.failed.error_code"),
+            json_extract_scalar(logout, "$.failed.error_code"))),
     xdm.source.user.upn        = json_extract_scalar(actor, "$.session.user.email"),
-    xdm.source.user.identifier = json_extract_scalar(actor, "$.session.user.id"),
-    xdm.source.user.username   = json_extract_scalar(actor, "$.session.user.email"),
+    xdm.source.user.identifier = if(type ~= "^login\.",
+        json_extract_scalar(actor, "$.session.user.id"),
+        coalesce(
+            json_extract_scalar(actor, "$.session.user.id"),
+            json_extract_scalar(actor, "$.api_key.user.id"),
+            json_extract_scalar(actor, "$.api_key.service_account.id"))),
+    xdm.source.user.username   = if(type ~= "^login\.",
+        json_extract_scalar(actor, "$.session.user.email"),
+        coalesce(
+            json_extract_scalar(actor, "$.session.user.email"),
+            json_extract_scalar(actor, "$.api_key.user.email"))),
+    xdm.source.user.identity_type = if(type ~= "^login\.", null,
+        if(json_extract_scalar(actor, "$.type") = "session"
+                or (json_extract_scalar(actor, "$.type") = "api_key" and json_extract_scalar(actor, "$.api_key.type") = "user"),
+            XDM_CONST.IDENTITY_TYPE_USER,
+            XDM_CONST.IDENTITY_TYPE_SERVICE_ACCOUNT)),
     xdm.source.ipv4         = json_extract_scalar(actor, "$.session.ip_address"),
     xdm.source.user_agent   = json_extract_scalar(actor, "$.session.user_agent"),
     xdm.source.port         = to_integer(0),
@@ -21,15 +39,25 @@ alter
     xdm.target.port         = to_integer(0),
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
     xdm.event.operation = if(type ~= "^login\.", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
-    xdm.auth.service    = if(type ~= "^login\.", "IDP", null),
+    xdm.auth.service    = "SP",
     xdm.event.tags      = if(type ~= "^login\.", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
     xdm.source.location.country   = json_extract_scalar(actor, "$.session.ip_address_details.country"),
     xdm.source.location.city      = json_extract_scalar(actor, "$.session.ip_address_details.city"),
     xdm.source.location.region    = json_extract_scalar(actor, "$.session.ip_address_details.region"),
     xdm.source.location.latitude  = to_float(json_extract_scalar(actor, "$.session.ip_address_details.latitude")),
     xdm.source.location.longitude = to_float(json_extract_scalar(actor, "$.session.ip_address_details.longitude")),
-    xdm.observer.type    = "openai",
-    xdm.target.resource.name = object;
+    xdm.observer.type    = "OpenAI API Platform",
+    xdm.observer.sub_type = "Audit Logs",
+    xdm.target.resource.id = if(type ~= "^login\.", null,
+        coalesce(
+            json_extract_scalar(api_key_created, "$.id"),
+            json_extract_scalar(organization_updated, "$.id"))),
+    xdm.target.resource.name = if(type ~= "^login\.", "OpenAI API Platform",
+        coalesce(
+            json_extract_scalar(api_key_created, "$.data.name"),
+            json_extract_scalar(api_key_created, "$.name"),
+            json_extract_scalar(organization_updated, "$.data.name"),
+            json_extract_scalar(organization_updated, "$.name")));
 
 [MODEL: dataset="openai_chatgpt_compliance_raw"]
 // OpenAI ChatGPT Enterprise Compliance API Logs -> XDM
@@ -67,7 +95,7 @@ alter
     xdm.target.port         = to_integer(0),
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
     xdm.event.operation = if(action = "INVITE_ACCEPT", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
-    xdm.auth.service    = if(action = "INVITE_ACCEPT", "IDP", null),
+    xdm.auth.service    = "SP",
     xdm.event.tags      = if(action = "INVITE_ACCEPT", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
     xdm.source.location.country   = json_extract_scalar(request_metadata, "$.client_ip_details.country"),
     xdm.source.location.city      = json_extract_scalar(request_metadata, "$.client_ip_details.city"),

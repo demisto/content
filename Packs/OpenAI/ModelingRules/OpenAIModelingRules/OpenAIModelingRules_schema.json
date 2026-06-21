@@ -31,6 +31,14 @@
         "organization_updated": {
             "type": "string",
             "is_array": false
+        },
+        "login": {
+            "type": "string",
+            "is_array": false
+        },
+        "logout": {
+            "type": "string",
+            "is_array": false
         }
     },
     "openai_chatgpt_compliance_raw": {
