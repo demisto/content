@@ -826,3 +826,490 @@ def test_check_coverage_type9_uncovered_fails(tmp_path: Path) -> None:
     passed, missing = mod.check_coverage(handler_dir, yml)
     assert passed is False
     assert missing == {"creds"}
+
+
+# ===========================================================================
+# Interpolation-published params (the new "what the handler should receive"
+# source). A connection profile's `metadata.xsoar.interpolation_mapping` is a
+# CSV of `FIELD_ID:dotted.dest` pairs. At runtime the platform places each
+# credential under `params[dotted.dest]`, so the integration sees the dotted
+# path. The TOP-LEVEL TOKEN of the dotted destination IS the integration-side
+# param name (matches the YML `name:` of a type:9 credentials widget, or a
+# plain `name:` for a simple param). These tokens MUST contribute to the
+# expected-param set, and MUST NOT pass through serializer.field_mappings
+# (interpolation already does the renaming).
+#
+# Reference: connectus/interpolated-param-schemas-and-fix.md:13-181.
+# ===========================================================================
+def _interp_profile(
+    profile_id: str,
+    *,
+    interpolation_mapping: str | None = None,
+    fields: list[dict] | None = None,
+    extra_metadata: dict | None = None,
+) -> dict:
+    """Build a connection profile dict with optional interpolation_mapping.
+
+    ``interpolation_mapping`` is the raw CSV string the platform stores under
+    ``metadata.xsoar.interpolation_mapping``. ``fields`` populates a single
+    ``configurations[].fields`` group. ``extra_metadata`` is merged INTO
+    ``metadata`` (NOT into ``metadata.xsoar``), useful for negative-case
+    fixtures that need to populate other metadata branches.
+    """
+    metadata: dict = {}
+    if interpolation_mapping is not None:
+        metadata["xsoar"] = {
+            "interpolated": True,
+            "interpolation_mapping": interpolation_mapping,
+        }
+    if extra_metadata:
+        # Shallow merge — caller's extra keys live alongside xsoar.
+        for key, value in extra_metadata.items():
+            metadata[key] = value
+    profile: dict = {"id": profile_id}
+    if metadata:
+        profile["metadata"] = metadata
+    if fields is not None:
+        profile["configurations"] = [{"fields": fields}]
+    return profile
+
+
+class TestCollectInterpolationPublished:
+    """Cycle 1 RED: 10 unit tests for the not-yet-implemented helper
+    ``collect_interpolation_published_params(connection_doc, auth_profile_ids)``.
+
+    Contract:
+      * Walks every ``profiles[]`` whose ``id`` is in ``auth_profile_ids``.
+      * Reads ``profile.metadata.xsoar.interpolation_mapping`` (CSV string).
+      * For each ``FIELD_ID:dotted.dest`` entry, yields the substring of
+        ``dotted.dest`` before the first ``.`` (the top-level token that
+        becomes a key in ``demisto.params()``).
+      * Returns a deduped, order-stable list (or set — implementation TBD;
+        tests assert on set form via ``set(...)``).
+      * Missing metadata, malformed entries, and unreferenced profiles are
+        handled gracefully without raising.
+    """
+
+    def test__single_entry__yields_top_token(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x",
+                    interpolation_mapping="api_key:credentials.password",
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"credentials"}
+
+    def test__multiple_entries__dedup_by_top_token(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x",
+                    interpolation_mapping=(
+                        "u:credentials.identifier,p:credentials.password"
+                    ),
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"credentials"}
+
+    def test__deep_path__only_top_token(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x",
+                    interpolation_mapping="k:creds.auth.identifier",
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"creds"}
+
+    def test__no_dot__entire_rhs_is_the_token(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x", interpolation_mapping="api_key:apikey"
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"apikey"}
+
+    def test__profile_not_referenced_by_handler__skipped(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.referenced",
+                    interpolation_mapping="api_key:credentials.password",
+                ),
+                _interp_profile(
+                    "passthrough.unused",
+                    interpolation_mapping="api_key:should_not_appear",
+                ),
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.referenced"}
+        )
+        assert set(result) == {"credentials"}
+
+    def test__missing_metadata__returns_empty(self) -> None:
+        # Profile is referenced but carries no metadata.xsoar.interpolation_mapping.
+        connection = {
+            "profiles": [
+                {"id": "passthrough.x", "configurations": [{"fields": []}]}
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == set()
+
+    def test__malformed_entry_missing_colon__skipped_without_error(self) -> None:
+        # `bad_entry_no_colon` has no `:`; the good entry should still produce
+        # its top token. The helper must NOT raise.
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x",
+                    interpolation_mapping=(
+                        "bad_entry_no_colon,api_key:credentials.password"
+                    ),
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"credentials"}
+
+    def test__whitespace_around_entries__trimmed(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.x",
+                    interpolation_mapping=(
+                        "  u : credentials.identifier , p : credentials.password "
+                    ),
+                )
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == {"credentials"}
+
+    def test__empty_string__returns_empty(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile("passthrough.x", interpolation_mapping="")
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.x"}
+        )
+        assert set(result) == set()
+
+    def test__multiple_profiles__union_of_top_tokens(self) -> None:
+        connection = {
+            "profiles": [
+                _interp_profile(
+                    "passthrough.a",
+                    interpolation_mapping="u:credentials.identifier",
+                ),
+                _interp_profile(
+                    "passthrough.b",
+                    interpolation_mapping="api_key:apikey",
+                ),
+                _interp_profile(
+                    "passthrough.c",  # NOT in auth_profile_ids → excluded.
+                    interpolation_mapping="k:should_not_appear",
+                ),
+            ]
+        }
+        result = mod.collect_interpolation_published_params(
+            connection, {"passthrough.a", "passthrough.b"}
+        )
+        assert set(result) == {"credentials", "apikey"}
+
+
+# ===========================================================================
+# HashiCorp Vault — golden / regression test.
+#
+# Pin the real ``Packs/HashiCorp-Vault/Integrations/HashiCorpVault/
+# HashiCorpVault.yml`` non-hidden parameter list against a synthetic-but-
+# representative connector fixture that exercises every coverage path the
+# unified-connectors platform supports:
+#
+#   * Capability-config fields (plain config params via the ``automation``
+#     capability).
+#   * Auth-profile fields with ``metadata.event.publish: true`` (the
+#     namespace + connect-section fields that ride the lifecycle event into
+#     ``demisto.params()``).
+#   * Interpolation-published params (``credentials.identifier`` /
+#     ``credentials.password`` produced from a ``plain.*`` profile, so the
+#     compound ``type:9 credentials`` widget is covered via the
+#     ``interpolation_mapping`` top-token rule).
+#   * ``type:9`` leaf coverage for the password-only ``credentials_token``
+#     widget (``hiddenusername: true``): an ``api_key.*`` profile whose
+#     password field uses the bare ``credentials_token`` id satisfies the
+#     ``_type9_leaf_covered`` rule.
+#
+# The first test asserts FULL coverage with no missing params. The second
+# test removes a single field from the fixture and asserts the framework
+# correctly reports the gap (proves the test discriminates — a vacuous PASS
+# is impossible).
+#
+# When real connector migration lands in ``unified-connectors-content/
+# connectors/hashicorp-vault/``, this fixture can be replaced with a
+# filesystem-based golden test (TestGoldenHashicorpVault) reading the real
+# manifests, but the YML side of the assertion stays identical.
+# ===========================================================================
+HASHICORP_VAULT_YML = (
+    Path(__file__).resolve().parents[1]
+    / "Packs"
+    / "HashiCorp-Vault"
+    / "Integrations"
+    / "HashiCorpVault"
+    / "HashiCorpVault.yml"
+)
+
+# The set of non-hidden YML params the HashiCorp Vault integration declares
+# today. Pinned here so a future YML edit (add/remove a non-hidden param)
+# trips the test and forces an explicit decision.
+HASHICORP_VAULT_EXPECTED_NON_HIDDEN_PARAMS = {
+    "server",
+    "use_approle",
+    "credentials",        # type:9 compound, both halves visible
+    "cache_token",
+    "credentials_token",  # type:9 password-only (hiddenusername: true)
+    "namespace",
+    "unsecure",
+    "proxy",
+    "isFetchCredentials",
+    "engines",
+    "concat_username_to_cred_name",
+}
+
+
+def _make_field(
+    field_id: str,
+    *,
+    auth_parameter: str | None = None,
+    event_publish: bool = False,
+) -> dict:
+    """Build a connection profile field, optionally with auth/event metadata."""
+    field: dict = {"id": field_id, "field_type": "input"}
+    metadata: dict = {}
+    if auth_parameter is not None:
+        metadata["auth"] = {"parameter": auth_parameter}
+    if event_publish:
+        metadata["event"] = {"publish": True}
+    if metadata:
+        field["metadata"] = metadata
+    return field
+
+
+def _build_hashicorp_vault_connector(
+    tmp_path: Path,
+    *,
+    omit_config_field_id: str | None = None,
+    omit_profile_field_id: str | None = None,
+) -> tuple[Path, Path]:
+    """Build a synthetic HashiCorp Vault connector that covers every
+    non-hidden integration YML param.
+
+    Two optional knobs let the discrimination test exercise gap reporting:
+
+    * ``omit_config_field_id`` — drop one capability-config field id from the
+      connector before writing it. Use to prove a gap in
+      capability/general-config space surfaces as a missing param.
+    * ``omit_profile_field_id`` — drop one connection-profile field id.
+      Same purpose, profile-side.
+    """
+    handler = {
+        "id": "xsoar-hashicorp-vault",
+        "capabilities": [
+            {
+                "id": "automation",
+                "auth_options": [
+                    {"id": "plain.hashicorp_vault"},
+                    {"id": "api_key.hashicorp_vault_token"},
+                ],
+            },
+            {
+                "id": "collect-credentials",
+                "auth_options": [
+                    {"id": "plain.hashicorp_vault"},
+                    {"id": "api_key.hashicorp_vault_token"},
+                ],
+            },
+        ],
+    }
+    capabilities = {
+        "capabilities": [
+            {"id": "automation"},
+            {"id": "collect-credentials"},
+        ]
+    }
+
+    # Capability-config fields — plain config params declared on the
+    # respective capabilities. Each id matches its YML param name 1:1, so
+    # no serializer mapping is required.
+    automation_fields = [
+        {"id": "server"},
+        {"id": "use_approle"},
+        {"id": "cache_token"},
+        {"id": "namespace"},
+        {"id": "unsecure"},
+        {"id": "proxy"},
+    ]
+    collect_fields = [
+        {"id": "isFetchCredentials"},
+        {"id": "engines"},
+        {"id": "concat_username_to_cred_name"},
+    ]
+    if omit_config_field_id is not None:
+        automation_fields = [
+            f for f in automation_fields if f["id"] != omit_config_field_id
+        ]
+        collect_fields = [
+            f for f in collect_fields if f["id"] != omit_config_field_id
+        ]
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation",
+                "view_group": "xsoar-hashicorp-vault",
+                "configurations": [{"fields": automation_fields}],
+            },
+            {
+                "id": "collect-credentials",
+                "view_group": "xsoar-hashicorp-vault",
+                "configurations": [{"fields": collect_fields}],
+            },
+        ]
+    }
+
+    # Plain profile — username/password interpolated back into the integration
+    # YML's compound ``credentials`` (type:9) widget. The
+    # ``interpolation_mapping`` RHS top-token ``credentials`` covers it
+    # without going through ``serializer.field_mappings``.
+    plain_profile = _interp_profile(
+        "plain.hashicorp_vault",
+        interpolation_mapping=(
+            "username:credentials.identifier,password:credentials.password"
+        ),
+        fields=[
+            _make_field("username", auth_parameter="username"),
+            _make_field("password", auth_parameter="password"),
+        ],
+    )
+
+    # API-key profile — bare ``credentials_token`` field covers the
+    # password-only ``type:9`` widget via the ``_type9_leaf_covered`` rule
+    # (``hiddenusername: true`` → emit bare ``<name>`` or ``<name>_password``).
+    api_key_fields = [_make_field("credentials_token", auth_parameter="token")]
+    if omit_profile_field_id is not None:
+        api_key_fields = [
+            f for f in api_key_fields if f["id"] != omit_profile_field_id
+        ]
+    api_key_profile = {
+        "id": "api_key.hashicorp_vault_token",
+        "configurations": [{"fields": api_key_fields}],
+    }
+
+    connection = {"profiles": [plain_profile, api_key_profile]}
+    return _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities=capabilities,
+        configurations=configurations,
+        connection=connection,
+    )
+
+
+@pytest.mark.skipif(
+    not HASHICORP_VAULT_YML.is_file(),
+    reason="HashiCorp Vault integration YML not present",
+)
+class TestHashiCorpVault:
+    """Golden coverage test for the HashiCorp Vault integration.
+
+    Fails loudly when the connector fixture stops covering every non-hidden
+    YML param — the exact gate the unified-connectors migration must pass.
+    """
+
+    def test__yml_non_hidden_param_set_matches_pinned_snapshot(self) -> None:
+        """Sanity-check the YML hasn't drifted from the pinned snapshot.
+
+        If this fails, the YML added or removed a non-hidden param; update
+        ``HASHICORP_VAULT_EXPECTED_NON_HIDDEN_PARAMS`` AND extend / shrink
+        the connector fixture in the same edit.
+        """
+        yml = mod.load_yaml(HASHICORP_VAULT_YML)
+        assert (
+            mod.collect_yml_params(yml)
+            == HASHICORP_VAULT_EXPECTED_NON_HIDDEN_PARAMS
+        )
+
+    def test__full_connector_fixture_covers_every_non_hidden_yml_param(
+        self, tmp_path: Path
+    ) -> None:
+        """STRICT: every non-hidden YML param must be covered. No exceptions.
+
+        This is the gate. If the framework fails to recognise an interpolated
+        ``credentials`` compound, a published config field, or a ``type:9``
+        leaf, ``missing`` is non-empty and the test fails with the exact list
+        of uncovered params.
+        """
+        _, handler_dir = _build_hashicorp_vault_connector(tmp_path)
+        passed, missing = mod.check_coverage(handler_dir, HASHICORP_VAULT_YML)
+        assert missing == set(), (
+            f"HashiCorp Vault connector fixture failed to cover: {sorted(missing)}"
+        )
+        assert passed is True
+
+    def test__omitting_a_config_field_surfaces_as_missing(
+        self, tmp_path: Path
+    ) -> None:
+        """Discrimination test: prove a vacuous PASS is impossible.
+
+        Drop ``namespace`` from the connector fixture and assert that the
+        framework reports it as missing. If this test passes (i.e. ``missing``
+        contains ``namespace``), the strict coverage test above is meaningful.
+        """
+        _, handler_dir = _build_hashicorp_vault_connector(
+            tmp_path, omit_config_field_id="namespace"
+        )
+        passed, missing = mod.check_coverage(handler_dir, HASHICORP_VAULT_YML)
+        assert passed is False
+        assert "namespace" in missing
+
+    def test__omitting_the_token_field_surfaces_credentials_token_as_missing(
+        self, tmp_path: Path
+    ) -> None:
+        """Discrimination test for the ``type:9`` leaf rule.
+
+        Drop the bare ``credentials_token`` field from the api_key profile.
+        With no surviving leaf, the password-only widget can no longer be
+        covered, and ``credentials_token`` must show up in ``missing``.
+        """
+        _, handler_dir = _build_hashicorp_vault_connector(
+            tmp_path, omit_profile_field_id="credentials_token"
+        )
+        passed, missing = mod.check_coverage(handler_dir, HASHICORP_VAULT_YML)
+        assert passed is False
+        assert "credentials_token" in missing

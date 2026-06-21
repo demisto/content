@@ -595,6 +595,75 @@ def collect_auth_profile_field_ids(
 
 
 # ---------------------------------------------------------------------------
+# Step 9b: interpolation-published params collector
+# ---------------------------------------------------------------------------
+def collect_interpolation_published_params(
+    connection_doc: dict, auth_profile_ids: set[str]
+) -> list[str]:
+    """Collect the top-level integration-side param names produced by each
+    referenced profile's ``metadata.xsoar.interpolation_mapping``.
+
+    At runtime the platform parses ``interpolation_mapping`` — a CSV of
+    ``FIELD_ID:dotted.dest`` pairs — and places each credential value under
+    ``params[dotted.dest]`` (folding shared prefixes into nested dicts). The
+    TOP-LEVEL TOKEN of ``dotted.dest`` (the substring before the first ``.``)
+    is therefore the key the integration sees in ``demisto.params()`` — which
+    is also the name a ``type:9`` credentials widget (or simple param)
+    declares in the integration YML.
+
+    These top tokens MUST contribute to the expected-param set so that
+    interpolated profiles do not produce false-positive coverage misses for
+    compound params like ``credentials``.
+
+    Behaviour:
+      * Only profiles whose ``id`` is in ``auth_profile_ids`` are considered.
+      * Missing ``metadata.xsoar.interpolation_mapping`` is treated as no
+        published params (returns nothing for that profile).
+      * Empty / whitespace-only mapping strings yield nothing.
+      * Malformed entries (no ``:`` separator) are silently skipped.
+      * Whitespace around entries and around the ``:`` is trimmed.
+      * Duplicates across entries and profiles are NOT deduped here — the
+        caller folds them into a set when building the final connector-param
+        list. Returning a list (not a set) preserves source order so
+        downstream callers can do their own logging / debugging.
+
+    These tokens MUST NOT be passed through serializer ``field_mappings`` —
+    interpolation already renames them to the integration-side name. The
+    caller is expected to add them to the final resolved set directly.
+
+    Reference: ``connectus/interpolated-param-schemas-and-fix.md:13-181``.
+    """
+    top_tokens: list[str] = []
+    for profile in connection_doc.get("profiles", []) or []:
+        if not isinstance(profile, dict):
+            continue
+        if profile.get("id") not in auth_profile_ids:
+            continue
+        metadata = profile.get("metadata")
+        if not isinstance(metadata, dict):
+            continue
+        xsoar_meta = metadata.get("xsoar")
+        if not isinstance(xsoar_meta, dict):
+            continue
+        mapping = xsoar_meta.get("interpolation_mapping")
+        if not isinstance(mapping, str):
+            continue
+        for raw_entry in mapping.split(","):
+            entry = raw_entry.strip()
+            if not entry or ":" not in entry:
+                continue
+            _, _, rhs = entry.partition(":")
+            rhs = rhs.strip()
+            if not rhs:
+                continue
+            top_token, _, _ = rhs.partition(".")
+            top_token = top_token.strip()
+            if top_token:
+                top_tokens.append(top_token)
+    return top_tokens
+
+
+# ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 def collect_connector_raw_field_ids(
@@ -655,7 +724,14 @@ def collect_connector_params(
     Field ids from capabilities, view-group general configs, auth profiles, and
     serializer ``computed_fields[].output[].id`` are unioned and each resolved
     through the serializer into its original integration param name.
+
+    Interpolation-published params (the top-level token of each
+    ``profiles[].metadata.xsoar.interpolation_mapping`` RHS) are added to the
+    set directly — they MUST NOT pass through ``serializer.field_mappings``
+    because the runtime interpolation already renames them to the
+    integration-side ``demisto.params()`` key.
     """
+    _, _, auth_profile_ids = parse_handler(handler_yaml)
     serializer_mappings = load_serializer_mappings(handler_dir)
     raw_field_ids = collect_connector_raw_field_ids(
         handler_dir,
@@ -664,7 +740,12 @@ def collect_connector_params(
         connection_doc,
         handler_yaml,
     )
-    return {resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids}
+    resolved = {resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids}
+    interpolation_tokens = collect_interpolation_published_params(
+        connection_doc, auth_profile_ids
+    )
+    resolved.update(interpolation_tokens)
+    return resolved
 
 
 def _raw_id_matches_leaf(leaf_id: str, raw_field_ids: list[str]) -> bool:
@@ -801,10 +882,18 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
         connection_doc,
         handler_yaml,
     )
-    serializer_mappings = load_serializer_mappings(handler_dir)
-    connector_params = {
-        resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids
-    }
+    # Use collect_connector_params (single source of truth) so the
+    # interpolation-published RHS top-tokens contribute alongside the raw
+    # field ids. Raw ids are still kept for the type:9 leaf reconciliation
+    # and the alert-suffix match below — both of which match against raw
+    # connector ids, not the resolved param names.
+    connector_params = collect_connector_params(
+        handler_dir,
+        capabilities_doc,
+        configurations_doc,
+        connection_doc,
+        handler_yaml,
+    )
     print(f"Got the following integration params: {yml_params=}")
     print(f"Got the following handler params: {connector_params=}")
     missing = yml_params - connector_params
