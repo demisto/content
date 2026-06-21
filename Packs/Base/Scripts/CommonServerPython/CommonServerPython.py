@@ -12905,10 +12905,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param client_class: The client class to use for the request.
 
     :type use_streaming_send: ``bool``
-    :param use_streaming_send: Feature flag (default False). When True, serializes+gzips the events one at a time
-        (streaming, free-as-you-go) instead of building intermediate full copies of the batch, drastically lowering
-        peak memory for large batches. The bytes sent to XSIAM are identical. Opt-in per integration during rollout
-        (CIAC-16981). Falls back to the legacy path when multiple_threads=True.
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -13095,11 +13094,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :param client_class: The client class to use for the request.
 
     :type use_streaming_send: ``bool``
-    :param use_streaming_send: Feature flag (default False). When True, the data is serialized and gzipped one item at a
-        time (streaming, free-as-you-go) instead of materializing intermediate full copies of the whole batch (a list of
-        JSON strings, then one big joined string). This keeps peak memory ~flat regardless of batch size; the gzipped
-        bytes sent to XSIAM are equivalent to the legacy path. Opt-in per integration during the CIAC-16981 rollout.
-        Ignored (legacy path used) when multiple_threads=True or when data is already a raw string.
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -13125,12 +13122,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
-    # Feature flag (CIAC-16981): stream-serialize the batch one item at a time instead of building
-    # intermediate full copies (a list of JSON strings + one giant joined string). Only applies to the
-    # list-of-items, single-thread path; the bytes sent to XSIAM are equivalent to the legacy path.
+    # Feature flag (CIAC-16981): stream-serialize one item at a time (list-of-items, single-thread path only).
     streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
-    # Decide JSON-encoding once based on the first item, exactly like the legacy list path, so the streaming
-    # payload is identical (the legacy path json.dumps every item iff data[0] is a dict).
+    # Decide JSON-encoding once on the first item, like the legacy list path, so the payload is identical.
     streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
     if streaming_items_are_json:
         data_format = 'json'
@@ -13138,7 +13132,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if streaming_send:
-        # Keep `data` as the list; it will be serialized+gzipped item-by-item below (no full-batch copies).
         demisto.debug("Sending {size} {data_type} to XSIAM (streaming send)".format(size=len(data), data_type=data_type))
     elif isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
@@ -13211,11 +13204,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
 
     if streaming_send:
-        # Streaming path (CIAC-16981, "Method F"): serialize each event and write it straight into the gzip stream
-        # one at a time, freeing the source item immediately. Unlike the legacy path this never materializes a second
-        # full list of JSON strings nor one giant joined string - at any moment only a single event is uncompressed
-        # (plus the growing compressed buffer), so peak memory stays ~flat regardless of batch size. When a chunk
-        # reaches the target size we close the stream, POST it, and start a fresh one; the wire payload is equivalent.
+        # Streaming path (CIAC-16981, "Method F"): serialize+gzip one event at a time, freeing each as we go, so peak
+        # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
         demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
