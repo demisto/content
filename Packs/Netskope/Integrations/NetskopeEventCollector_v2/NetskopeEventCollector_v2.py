@@ -43,110 +43,6 @@ DEFAULT_EVENT_TYPE_CONFIG = {
 }
 
 
-# ============================================================================
-# MEMORY DIAGNOSTICS — CIAC-16981 (REMOVE AFTER OOM INVESTIGATION IS COMPLETE)
-# Temporary, behavior-neutral instrumentation to measure where memory is spent
-# inside the fetch-events cycle under the 1 GB worker-runner cgroup.
-# Modeled on the FAKE-menlo-for-testing branch ([ARCH:*] probes).
-# All output goes through demisto.info() with the [MEM] prefix so it can be
-# filtered in the engine logs (jsonPayload.sourceBrand="NetskopeEventCollector_v2").
-# ============================================================================
-import threading  # noqa: E402  # MEM DIAG (REMOVE — CIAC-16981)
-
-
-def _mem_rss() -> float:  # MEM DIAG (REMOVE — CIAC-16981)
-    """Process RSS in MB (our own code: events, copies, gzip buffers)."""
-    try:
-        with open("/proc/self/statm") as f:
-            return int(f.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 1024 / 1024
-    except Exception:
-        return -1.0
-
-
-def _mem_cgroup() -> tuple[float, float]:  # MEM DIAG (REMOVE — CIAC-16981)
-    """Whole-cgroup memory (current_mb, peak_mb) — what the OOM-killer watches. cgroup v2 then v1; -1 if unreadable."""
-
-    def _read(path: str) -> float:
-        try:
-            with open(path) as f:
-                v = f.read().strip()
-            return int(v) / 1024 / 1024 if v.isdigit() else -1.0
-        except Exception:
-            return -1.0
-
-    cur = _read("/sys/fs/cgroup/memory.current")
-    if cur >= 0:
-        return cur, _read("/sys/fs/cgroup/memory.peak")
-    return _read("/sys/fs/cgroup/memory/memory.usage_in_bytes"), _read("/sys/fs/cgroup/memory/memory.max_usage_in_bytes")
-
-
-def _mem_log(label: str, t0: float, peak: float = -1.0, extra: str = "") -> None:  # MEM DIAG (REMOVE — CIAC-16981)
-    """Log a single memory checkpoint: process RSS, the run's RSS peak, and the whole-cgroup current/peak."""
-    cg_cur, cg_peak = _mem_cgroup()
-    demisto.info(
-        f"[MEM] {label} rss={_mem_rss():.1f}MB rss_peak={peak:.1f}MB "
-        f"cgroup_cur={cg_cur:.1f}MB cgroup_peak={cg_peak:.1f}MB t=+{time.time() - t0:.2f}s {extra}"
-    )
-
-
-class _MemPeakSampler:  # MEM DIAG (REMOVE — CIAC-16981)
-    """Background RSS peak sampler — runs for the ENTIRE cycle so transient spikes
-    inside the (copy-heavy) CSP send are not missed by discrete checkpoints.
-
-    Usage:
-        sampler = _MemPeakSampler(start_peak=_mem_rss())
-        with sampler:
-            ... whole fetch cycle ...
-        peak = sampler.peak
-    """
-
-    def __init__(self, start_peak: float = 0.0, interval: float = 0.1) -> None:
-        self.peak = start_peak
-        self._interval = interval
-        self._stop = False
-        self._thread: threading.Thread | None = None
-
-    def _run(self) -> None:
-        while not self._stop:
-            self.peak = max(self.peak, _mem_rss())
-            time.sleep(self._interval)
-
-    def __enter__(self) -> "_MemPeakSampler":
-        self._thread = threading.Thread(target=self._run, name="mem-peak-sampler", daemon=True)
-        self._thread.start()
-        return self
-
-    def __exit__(self, *_exc) -> None:
-        self._stop = True
-        if self._thread:
-            self._thread.join(timeout=2)
-        self.peak = max(self.peak, _mem_rss())
-
-
-# Module-level handle so probes deep in the async stack can update the run's RSS peak.
-_MEM_SAMPLER: "_MemPeakSampler | None" = None  # MEM DIAG (REMOVE — CIAC-16981)
-_MEM_T0: float = 0.0  # MEM DIAG (REMOVE — CIAC-16981): cycle start time, set in main() for relative timestamps
-
-# Unique stamp printed at the start of every cycle so we can confirm in the engine logs that THIS
-# instrumented build is the one actually running on the tenant (not a cached/older upload).
-# v2 = measurement probes + the memory FIX (send-and-flush + local streaming sender + XSIAM_SEM=5).
-# v1 was measurement-only. Bumping this lets us confirm in the engine logs that the FIXED build is live.
-# v5: removed the now-redundant XSIAM_SEM (page_semaphore already bounds the whole fetch->send
-# lifecycle, so the send can never exceed NETSKOPE_SEMAPHORE_COUNT concurrent anyway).
-# v4: bound page lifecycle with client.page_semaphore; removed useless del buf/del zipped + sender probes.
-_MEM_BUILD_STAMP = "CIAC-16981-fix-v5"  # MEM DIAG (REMOVE — CIAC-16981)
-
-
-def _mem_peak() -> float:  # MEM DIAG (REMOVE — CIAC-16981)
-    """Current run's RSS peak (from the background sampler), or live RSS if no sampler is active."""
-    return _MEM_SAMPLER.peak if _MEM_SAMPLER is not None else _mem_rss()
-
-
-# ============================================================================
-# END MEMORY DIAGNOSTICS — CIAC-16981
-# ============================================================================
-
-
 def get_event_type_config(event_type: str) -> dict:
     """Get configuration for a specific event type.
 
@@ -576,9 +472,6 @@ async def fetch_and_send_events_async(
             # client.page_semaphore (see _handle_page), and (b) use_streaming_send=True makes
             # send_events_to_xsiam serialize+gzip one event at a time instead of copying the batch (CIAC-16981).
             demisto.debug(f"send {len(events)} events to xsiam")
-            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the streaming send
-                f"send_page.BEFORE type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
-            )
             await asyncio.to_thread(
                 send_events_to_xsiam,
                 events=events,
@@ -586,9 +479,6 @@ async def fetch_and_send_events_async(
                 product=PRODUCT,
                 chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
                 use_streaming_send=True,
-            )
-            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM right after the send returns
-                f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra="page_freed"
             )
 
         # Bound the WHOLE page lifecycle (fetch -> prepare -> send -> free) with the client's
@@ -602,9 +492,6 @@ async def fetch_and_send_events_async(
                 events = res.get("result", [])
                 events = prepare_events(events, type)
                 page_count = len(events)
-                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after a page is fetched+prepared (held in memory)
-                    f"page_ready type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={page_count}"
-                )
                 if send_to_xsiam:
                     # stream-send then DROP the page: return only the count so nothing accumulates upstream
                     await _send_page_to_xsiam(events)
@@ -632,18 +519,10 @@ async def fetch_and_send_events_async(
                 f"Going to fetch {min(total_events, limit)} events from {init_offset=} by chunks of {request_limit} ..."
             )
             tasks = [
-                # asyncio.create_task(_handle_page(request_params | {'offset': offset}))
                 _handle_page(request_params | {"offset": offset})
                 for offset in range(init_offset, max_offset, request_limit)
             ]
-            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): how many pages run concurrently for this type
-                f"pages_fanout type={type}", _MEM_T0, _mem_peak(),
-                extra=f"concurrent_pages={len(tasks)} total_events={total_events} page_size={request_limit}",
-            )
             results = await asyncio.gather(*tasks, return_exceptions=True)
-            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after all pages of this type gathered (still held)
-                f"pages_gathered type={type}", _MEM_T0, _mem_peak(), extra=f"pages={len(results)}"
-            )
             return results
         except Exception as e:
             raise DemistoException(message=str(e), exception=e, res=request_params)
@@ -721,14 +600,7 @@ async def handle_fetch_and_send_all_events(
     demisto.debug(
         f"[{coord_id}] Starting asyncio.gather for {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks"
     )
-    _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM before launching all event-type fetches concurrently
-        "all_types.BEFORE_gather", _MEM_T0, _mem_peak(),
-        extra=f"retry_tasks={len(prev_fetch_failure_tasks)} new_tasks={len(new_tasks)}",
-    )
     results = await asyncio.gather(*prev_fetch_failure_tasks, *new_tasks, return_exceptions=True)
-    _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after ALL types/pages gathered (everything held in memory)
-        "all_types.AFTER_gather", _MEM_T0, _mem_peak(), extra=f"task_results={len(results)}"
-    )
     success_tasks = list(filter(lambda res: not isinstance(res, BaseException), results))
     failures_tasks = list(filter(lambda res: isinstance(res, BaseException), results))
     demisto.debug(f"[{coord_id}] Async gather completed - success: {len(success_tasks)}, failures: {len(failures_tasks)}")
@@ -762,10 +634,6 @@ async def handle_fetch_and_send_all_events(
             new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
 
     demisto.debug(f"Handled {total_events_count} total events in {time.time() - start:.2f} seconds")
-    _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after accumulation step (events list is empty on fetch path)
-        "all_types.AFTER_accumulate", _MEM_T0, _mem_peak(),
-        extra=f"events_held={len(all_events)} total_count={total_events_count} cycle_time={time.time() - start:.2f}s",
-    )
 
     return all_events, total_events_count, new_last_run
 
@@ -844,29 +712,14 @@ async def main() -> None:  # pragma: no cover
 
             elif command_name == "fetch-events":
                 demisto.debug(f"Starting fetch with last run {last_run}")
-                # ===== MEM DIAG (REMOVE — CIAC-16981): measure the whole fetch cycle =====
-                global _MEM_SAMPLER, _MEM_T0  # noqa: PLW0603
-                _MEM_T0 = time.time()
-                _MEM_SAMPLER = _MemPeakSampler(start_peak=_mem_rss())
-                _mem_log(  # build stamp + start-of-cycle baseline (the floor before any data)
-                    f"CYCLE_START build={_MEM_BUILD_STAMP}", _MEM_T0, _mem_peak(),
-                    extra=f"max_fetch={max_fetch} types={event_types_to_fetch}",
+                # send-and-flush: events are sent per page and freed; we only get the total count back
+                _all_events, total_events_count, new_last_run = await handle_fetch_and_send_all_events(
+                    client=client, last_run=last_run, limit=max_fetch, send_to_xsiam=True
                 )
-                with _MEM_SAMPLER:
-                    # send-and-flush: events are sent per page and freed; we only get the total count back
-                    _all_events, total_events_count, new_last_run = await handle_fetch_and_send_all_events(
-                        client=client, last_run=last_run, limit=max_fetch, send_to_xsiam=True
-                    )
-                    demisto.debug(f"Fetched {total_events_count} total events.")
-                    next_trigger_time(total_events_count, max_fetch, new_last_run)
-                    demisto.debug(f"Setting the last_run to: {new_last_run}")
-                    demisto.setLastRun(new_last_run)
-                _mem_log(  # end-of-cycle summary: this rss_peak is the headline number to compare before/after
-                    f"CYCLE_END build={_MEM_BUILD_STAMP}", _MEM_T0, _mem_peak(),
-                    extra=f"total_events={total_events_count}",
-                )
-                _MEM_SAMPLER = None
-                # ===== END MEM DIAG (CIAC-16981) =====
+                demisto.debug(f"Fetched {total_events_count} total events.")
+                next_trigger_time(total_events_count, max_fetch, new_last_run)
+                demisto.debug(f"Setting the last_run to: {new_last_run}")
+                demisto.setLastRun(new_last_run)
 
     except Exception as e:
         # Log the specific exception type and full traceback for better debugging
