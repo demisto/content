@@ -74,10 +74,8 @@ class Client:
         self.event_types_to_fetch: list[str] = event_types_to_fetch
         # Bounds concurrent HTTP requests to Netskope (used inside get_events_data_async).
         self.netskope_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
-        # Bounds the whole page lifecycle (fetch -> prepare -> send -> free). Separate object from
-        # netskope_semaphore (which get_events_data_async already takes) to avoid a re-entrant
-        # deadlock, but the SAME count: at most NETSKOPE_SEMAPHORE_COUNT pages are held in memory at
-        # once across all event types, so peak memory is bounded regardless of total volume (CIAC-16981).
+        # Bounds the whole page lifecycle (fetch -> send -> free). Separate object from
+        # netskope_semaphore to avoid a re-entrant deadlock, so peak memory stays bounded by volume.
         self.page_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
         self._headers = {"Netskope-Api-Token": f"{token}", "Accept": "application/json"}
         self._base_url = base_url
@@ -387,18 +385,15 @@ async def handle_event_type_async(
         raise DemistoException(msg, exception=failures[0])
     failures_data = handle_errors(failures)
 
-    # success_res items are EITHER ints (per-page counts, send-and-flush fetch path) OR lists of
-    # event dicts (get-events/test path). Build the events list only when we actually have objects.
+    # success_res items are ints (per-page counts, fetch path) or event lists (get-events/test path).
     if success_res and isinstance(success_res[0], int):
-        # fetch-events path: pages were already sent & freed; we only have counts.
-        events = []  # nothing accumulated - this is the memory win (CIAC-16981)
+        # fetch path: pages were already sent & freed, so we only have counts.
+        events = []
         events_count = sum(success_res)
     else:
         events = list(chain.from_iterable(success_res))
         events_count = len(events)
 
-    # `events_count` is always the real number fetched (even on the send-and-flush path where
-    # `events` is empty); callers use it for next_trigger and "Fetched N" logging without holding data.
     res_dict = {"events": events, "events_count": events_count, "failures": failures_data}
     demisto.debug(f"[{coord_id}] Fetched {events_count} {event_type} events")
     if not is_re_fetch_failed_fetch:
@@ -430,16 +425,11 @@ async def fetch_and_send_events_async(
 ) -> tuple[list, list]:
     """Fetch all pages for a single event type.
 
-    Memory model (CIAC-16981 "send-and-flush"): when ``send_to_xsiam`` is True (the fetch-events
-    path), each page is streamed to XSIAM and **freed immediately** - ``_handle_page`` returns only
-    the page's event **count** (an int), never the event objects. This keeps peak memory bounded to
-    ~one page in flight regardless of total volume. When ``send_to_xsiam`` is False (the
-    netskope-get-events / test path), the actual events are returned so the command can display them.
+    When ``send_to_xsiam`` is True (fetch-events), each page is sent and freed, returning only the
+    page count (send-and-flush). When False (get-events/test), the events are returned for display.
 
     Returns:
-        tuple(success, failures): ``success`` is a list whose items are either ints (per-page counts,
-        when sending to XSIAM) or lists of event dicts (when not sending); ``failures`` is a list of
-        exceptions raised while handling pages.
+        tuple(success, failures): ``success`` items are ints (counts) when sending, else event lists.
     """
 
     async def _handle_page(params):
@@ -467,10 +457,7 @@ async def fetch_and_send_events_async(
             return {}
 
         async def _send_page_to_xsiam(events):
-            # Send-and-flush: stream this page to XSIAM and free it. `events` is consumed by the
-            # streaming sender. Memory stays bounded because (a) the whole page lifecycle is gated by
-            # client.page_semaphore (see _handle_page), and (b) use_streaming_send=True makes
-            # send_events_to_xsiam serialize+gzip one event at a time instead of copying the batch (CIAC-16981).
+            # use_streaming_send=True streams+gzips one event at a time (consumes `events`), keeping memory flat.
             demisto.debug(f"send {len(events)} events to xsiam")
             await asyncio.to_thread(
                 send_events_to_xsiam,
@@ -481,11 +468,8 @@ async def fetch_and_send_events_async(
                 use_streaming_send=True,
             )
 
-        # Bound the WHOLE page lifecycle (fetch -> prepare -> send -> free) with the client's
-        # page semaphore (NETSKOPE_SEMAPHORE_COUNT). This caps how many fetched pages are alive in
-        # memory at once across ALL event types, making peak memory independent of total volume
-        # (true send-and-flush). Without this, every page task fetches its page up front and holds it
-        # in RAM while merely waiting for the send slot -> peak grew with volume (CIAC-16981).
+        # Bound the whole page lifecycle (fetch -> send -> free) so at most NETSKOPE_SEMAPHORE_COUNT
+        # pages are in memory at once across all types, keeping peak memory independent of volume.
         async with client.page_semaphore:
             try:
                 res = await _fetch_page()
@@ -558,8 +542,8 @@ async def handle_fetch_and_send_all_events(
         send_to_xsiam(bool): Whether to send the fetched events to XSIAM or not.
 
     Returns:
-        list: The accumulated list of all events (empty on the send-and-flush fetch path - CIAC-16981).
-        int: The total number of events fetched (valid even when the events list is not held).
+        list: The accumulated events (empty on the fetch path, where events are sent and freed).
+        int: The total number of events fetched.
         dict: The updated last_run object.
     """
     start = time.time()
@@ -569,7 +553,7 @@ async def handle_fetch_and_send_all_events(
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
 
     all_events = []
-    total_events_count = 0  # real count fetched across all types (independent of whether we hold events)
+    total_events_count = 0
     epoch_current_time = str(int(arg_to_datetime("now").timestamp()))  # type: ignore[union-attr]
     epoch_last_day = str(int(arg_to_datetime("1 day").timestamp()))  # type: ignore[union-attr]
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
