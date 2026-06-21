@@ -3,12 +3,12 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-
 | alter tmp_json_payload = arrayindex(regextract(_raw_log, "({.+})"), 0)
 | alter tmp_timestamp = coalesce(
     tmp_json_payload -> time,
-    tmp_json_payload -> Data.Client.CurrentDateTime,
+    tmp_json_payload -> Data.Client.CurrentDateTime, 
     arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z))"), 0))
 | alter
-    tmp_date = arrayindex(regextract(tmp_timestamp, "(\d{4}\-\d{2}\-\d{2})"), 0),
-    tmp_time = arrayindex(regextract(tmp_timestamp, "(\d{2}:\d{2}:\d{2}(?:\.\d+)?)"), 0),
-    tmp_timezone_offset = arrayindex(regextract(tmp_timestamp, "((?:[+-]\d{2}:?\d{2}|Z$))"), 0)
+    tmp_date = arrayindex(regextract(tmp_timestamp, "(\d{4}\-\d{2}\-\d{2})"), 0), 
+    tmp_time = arrayindex(regextract(tmp_timestamp, "(\d{2}:\d{2}:\d{2}(?:\.\d+)?)"), 0), 
+    tmp_timezone_offset = arrayindex(regextract(tmp_timestamp, "((?:[+-]\d{2}:?\d{2}|Z$))"), 0) 
 | alter tmp_formatted_timestamp = format_string("%sT%s%s", tmp_date, tmp_time, tmp_timezone_offset)
 | alter _time = if(
     tmp_timezone_offset = "Z", parse_timestamp("%FT%H:%M:%E*SZ", tmp_formatted_timestamp),
@@ -17,19 +17,18 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-
 | fields - tmp*;
 
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]{3}" and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
-| alter tmp_timestamp_without_offset = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"), 0)
-| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez", concat(tmp_timestamp_without_offset, "-00:00"))
-| fields - tmp*;
+| alter 
+    tmp_timestamp_without_offset = arrayindex(regextract(_raw_log ,"\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"),0) 
+| alter 
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez",concat(tmp_timestamp_without_offset,"-00:00"))
+| fields -tmp*;
 
-filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+"
+filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+"
 | alter
     tmp_current_year = format_timestamp("%Y", _insert_time),
-    tmp_rfc_3164_month = arrayindex(regextract(_raw_log, "(\w{3})\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}"), 1),
-    tmp_rfc_3164_day = arrayindex(regextract(_raw_log, "\w{3}\s+(\d{1,2})\s+\d{2}:\d{2}:\d{2}"), 1),
-    tmp_rfc_3164_time = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s+(\d{2}:\d{2}:\d{2})"), 1)
-| alter tmp_rfc_3164_normalized = format_string("%s %s %s", tmp_rfc_3164_month, tmp_rfc_3164_day, tmp_rfc_3164_time)
-| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_normalized), "UTC")
+    tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
+| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp), "UTC") 
 | alter _time = if(
     timestamp_diff(tmp_current_year_timestamp, current_time(), "MILLISECOND") <= 0, tmp_current_year_timestamp,
-    parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_normalized), "UTC"))
+    parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp), "UTC"))
 | fields - tmp*;
