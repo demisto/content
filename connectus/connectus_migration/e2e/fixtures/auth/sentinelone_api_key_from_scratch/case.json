@@ -1,0 +1,21 @@
+{
+  "description": "SentinelOne v2 (from scratch) — single hiddenusername type-9 token mapped as an APIKey profile (token-only, no username). Replaces the Okta api_key case. Input-only TDD target.",
+  "connector_title": "SentinelOne",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "APIKey",
+        "name": "API Token",
+        "xsoar_param_map": {
+          "credentials.password": "api_key"
+        }
+      }
+    ],
+    "other_connection": [
+      "url",
+      "insecure",
+      "proxy"
+    ]
+  }
+}

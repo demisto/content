@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: microsoft-active-directory
+enabled: true
+metadata:
+  title: Microsoft Active Directory
+  description: integrate with Microsoft products.
+  version: 1.0.0
+  categories: []
+  tags: []
+  vendor: Microsoft
+  publisher: Palo Alto Networks
+  author_image: microsoft-active-directory.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true

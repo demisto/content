@@ -12,6 +12,11 @@ profiles:
   view_group: github
   title: passthrough_primary
   description: Authentication profile for GitHub (passthrough).
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
   metadata:
     xsoar:
       interpolated: true
@@ -25,7 +30,7 @@ profiles:
         auth:
           parameter: client_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false
@@ -34,7 +39,7 @@ profiles:
           hidden: false
   - fields:
     - id: credentials_password
-      title: Username / Password
+      title: Password
       field_type: input
       metadata:
         auth:
@@ -197,13 +202,13 @@ profiles:
       options:
         mask: true
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_secondary_url
+    - id: passthrough_github_passthrough_secondary_url
       field_type: input
       title: Server URL
       options:
@@ -218,7 +223,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: passthrough.github_passthrough_secondary_proxy
+    - id: passthrough_github_passthrough_secondary_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -236,7 +241,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: passthrough.github_passthrough_secondary_insecure
+    - id: passthrough_github_passthrough_secondary_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -254,7 +259,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: passthrough.github_passthrough_secondary_engine_mode
+    - id: passthrough_github_passthrough_secondary_engine_mode
       title: Engine
       field_type: radio
       options:
@@ -275,7 +280,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_secondary_engine
+    - id: passthrough_github_passthrough_secondary_engine
       title: Engine
       field_type: select
       metadata:
@@ -304,7 +309,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_secondary_engine_group
+    - id: passthrough_github_passthrough_secondary_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -350,15 +355,15 @@ profiles:
         auth:
           parameter: tenant_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_tenant_url
+    - id: passthrough_github_passthrough_tenant_url
       field_type: input
       title: Server URL
       options:
@@ -373,7 +378,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: passthrough.github_passthrough_tenant_proxy
+    - id: passthrough_github_passthrough_tenant_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -391,7 +396,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: passthrough.github_passthrough_tenant_insecure
+    - id: passthrough_github_passthrough_tenant_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -409,7 +414,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: passthrough.github_passthrough_tenant_engine_mode
+    - id: passthrough_github_passthrough_tenant_engine_mode
       title: Engine
       field_type: radio
       options:
@@ -430,7 +435,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_tenant_engine
+    - id: passthrough_github_passthrough_tenant_engine
       title: Engine
       field_type: select
       metadata:
@@ -459,7 +464,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: passthrough.github_passthrough_tenant_engine_group
+    - id: passthrough_github_passthrough_tenant_engine_group
       title: Engine Group
       field_type: select
       metadata:

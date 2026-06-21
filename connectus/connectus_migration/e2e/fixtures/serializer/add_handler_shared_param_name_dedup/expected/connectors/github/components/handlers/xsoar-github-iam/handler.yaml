@@ -18,10 +18,15 @@ triggering:
   args: {}
 capabilities:
 - id: automation-and-remediation_github-iam
-  auth: none
-  workloads:
-  - xsoar-pod
+  auth_options:
+  - id: passthrough.github_iam
+    workloads:
+    - xsoar-pod
 test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
   type: service
   service: xsoar
   endpoint: /settings/integration/connector/verification

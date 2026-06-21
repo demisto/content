@@ -1,0 +1,6 @@
+{
+  "description": "RemoteAccess v2 passthrough profile is back-filled with a schema-valid vault_mappings block (without regenerating from the XSOAR YML). AFTER == the existing remote_access_v2_from_scratch golden; BEFORE == that golden with the vault_mappings block removed.",
+  "connector": "remoteaccess",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

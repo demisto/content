@@ -258,6 +258,121 @@ def test_build_connection_profile_dotted_type9_still_nests():
 
 
 # ---------------------------------------------------------------------------
+# Part A (vault_mappings) — passthrough profiles with type-9 (dotted) creds
+# emit a profile-level ``vault_mappings`` array. Non-passthrough / non-type-9
+# profiles must NOT emit the key.
+# ---------------------------------------------------------------------------
+def test_build_connection_profile_passthrough_vault_mappings_user_password():
+    # A type-9 Credentials param with both an .identifier and a .password leaf
+    # collapses into ONE vault_mappings entry mapping user->identifier-role and
+    # password->password-role.
+    entry = {
+        "type": "Passthrough",
+        "name": "creds",
+        "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    assert prof["vault_mappings"] == [
+        {"id": "credentials", "map": {"user": "username", "password": "password"}}
+    ]
+
+
+def test_build_connection_profile_passthrough_vault_mappings_password_only():
+    # A hiddenusername-style type-9 param (only a .password leaf) yields a
+    # single entry with just ``password``.
+    entry = {
+        "type": "Passthrough",
+        "name": "extra",
+        "xsoar_param_map": {
+            "additional_password.password": "additional_password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    assert prof["vault_mappings"] == [
+        {"id": "additional_password", "map": {"password": "additional_password"}}
+    ]
+
+
+def test_build_connection_profile_passthrough_vault_mappings_insertion_order():
+    # vault_mappings entries follow the FIRST-APPEARANCE order of each param in
+    # the raw xsoar_param_map (insertion order), NOT sorted order. Here the raw
+    # order puts ``credentials`` first then ``additional_password``.
+    entry = {
+        "type": "Passthrough",
+        "name": "ssh",
+        "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+            "additional_password.password": "additional_password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    assert prof["vault_mappings"] == [
+        {"id": "credentials", "map": {"user": "username", "password": "password"}},
+        {"id": "additional_password", "map": {"password": "additional_password"}},
+    ]
+
+
+def test_build_connection_profile_plain_omits_vault_mappings():
+    # The SAME type-9 map on a PLAIN profile must NOT emit vault_mappings.
+    entry = {
+        "type": "Plain",
+        "name": "credentials",
+        "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    assert "vault_mappings" not in prof
+
+
+def test_build_connection_profile_api_key_omits_vault_mappings():
+    # api_key profiles (flat secret, no dotted type-9 cred) never emit the key.
+    entry = {
+        "type": "APIKey",
+        "name": "api_key",
+        "xsoar_param_map": {"api_key": "key"},
+    }
+    prof = cb.build_connection_profile(entry, "Okta", connector_title="Okta")
+    assert "vault_mappings" not in prof
+
+
+def test_build_connection_profile_passthrough_flat_only_omits_vault_mappings():
+    # A passthrough profile with ONLY flat (non-dotted) keys has no type-9 creds
+    # and must omit vault_mappings entirely (not emit an empty list).
+    entry = {
+        "type": "Passthrough",
+        "name": "bag",
+        "xsoar_param_map": {
+            "creds_auth_id": "creds_auth_id",
+            "managed_identities_client_id": "managed_identities_client_id",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    assert "vault_mappings" not in prof
+
+
+def test_build_connection_profile_vault_mappings_placement_after_description():
+    # vault_mappings must sit AFTER description and BEFORE metadata in key order.
+    entry = {
+        "type": "Passthrough",
+        "name": "creds",
+        "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    keys = list(prof.keys())
+    assert keys.index("description") < keys.index("vault_mappings")
+    assert keys.index("vault_mappings") < keys.index("metadata")
+
+
+# ---------------------------------------------------------------------------
 # Part A (interpolation) — build_interpolation_mapping pure helper
 # ---------------------------------------------------------------------------
 def _parse_param_map_like_runtime(param_map: str) -> list[tuple[str, str]]:

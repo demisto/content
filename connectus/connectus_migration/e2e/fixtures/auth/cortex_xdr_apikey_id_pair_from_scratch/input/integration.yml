@@ -1,0 +1,46 @@
+category: Endpoint
+provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Cortex XDR - IR
+  version: -1
+configuration:
+- name: url
+  type: 0
+  display: 'Server URL (copy URL from XDR)'
+  section: Connect
+  required: true
+- displaypassword: API Key ID
+  name: apikey_id_creds
+  type: 9
+  hiddenusername: true
+  display: ''
+  section: Connect
+  required: false
+- display: ''
+  name: apikey_creds
+  type: 9
+  section: Connect
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data.
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
+script:
+  script: ''
+  type: python
+  commands: []
+fromversion: 5.0.0

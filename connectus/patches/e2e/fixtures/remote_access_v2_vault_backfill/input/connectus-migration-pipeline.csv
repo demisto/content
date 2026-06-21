@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+RemoteAccess v2,Packs/RemoteAccess/Integrations/RemoteAccessv2/RemoteAccessv2.yml,RemoteAccess,connectors/remoteaccess,xsoar,"{""auth_types"":[{""type"":""Passthrough"",""name"":""SSH""}]}"

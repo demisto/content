@@ -6677,6 +6677,70 @@ def _flatten_non_type9_param_map(
     return flattened
 
 
+# Map a type-9 credential leaf name -> the vault_mappings ``map`` slot it fills.
+# Only ``identifier`` (the username leaf) and ``password`` (the secret leaf) are
+# in scope for the current fixtures; any other leaf (e.g. sshkey) is ignored.
+_VAULT_MAP_SLOT_FOR_LEAF: dict[str, str] = {
+    "identifier": "user",
+    "password": "password",
+}
+
+
+def _build_vault_mappings(
+    profile_type: str, raw_param_map: dict[str, str]
+) -> list[dict] | None:
+    """Derive the profile-level ``vault_mappings`` for a PASSTHROUGH profile.
+
+    Returns a list of ``{"id": <param>, "map": {...}}`` entries, one per distinct
+    XSOAR type-9 credential param, or ``None`` when nothing should be emitted.
+
+    Rules (see connectus vault_mappings design):
+    - Only PASSTHROUGH profiles emit ``vault_mappings``; every other profile type
+      (plain / api_key / external_auth / oauth2*) returns ``None``.
+    - A type-9 credential is a DOTTED ``<param>.<leaf>`` key in the raw
+      ``xsoar_param_map``. Flat (non-dotted) keys are NOT type-9 creds and never
+      produce an entry.
+    - Entries are ordered by each param's FIRST appearance when iterating the raw
+      map in INSERTION order (matches the goldens, which preserve YML param order;
+      this is intentionally NOT the sorted order the field loop uses).
+    - For each param, leaves map onto vault slots: ``.identifier`` -> ``user`` and
+      ``.password`` -> ``password``, valued by that leaf's role (verbatim for
+      passthrough). ``map`` always has >=1 key (schema minProperties>=1) because a
+      qualifying type-9 param always has at least one of identifier/password.
+    - When a passthrough profile has zero dotted type-9 creds, returns ``None`` so
+      the caller OMITS the key entirely rather than emitting an empty list.
+    """
+    if profile_type != "passthrough":
+        return None
+
+    # Preserve first-appearance (insertion) order of each param; collect its
+    # vault map slots from the dotted leaves.
+    ordered_params: list[str] = []
+    maps_by_param: dict[str, dict[str, str]] = {}
+    for map_key, role in raw_param_map.items():
+        if "." not in map_key:
+            # Flat key: not a type-9 credential, skip.
+            continue
+        param, _, leaf = map_key.partition(".")
+        slot = _VAULT_MAP_SLOT_FOR_LEAF.get(leaf)
+        if slot is None:
+            # Out-of-scope leaf (e.g. sshkey); do not invent a slot for it.
+            continue
+        if param not in maps_by_param:
+            maps_by_param[param] = {}
+            ordered_params.append(param)
+        maps_by_param[param][slot] = role
+
+    # Drop any param whose only leaves were out-of-scope (empty map): the schema
+    # requires minProperties>=1, and an entry with no slots carries no meaning.
+    entries = [
+        {"id": param, "map": maps_by_param[param]}
+        for param in ordered_params
+        if maps_by_param[param]
+    ]
+    return entries or None
+
+
 def build_connection_profile(
     auth_type_entry: dict,
     integration_id: str,
@@ -6791,6 +6855,13 @@ def build_connection_profile(
     if interpolation_mapping:
         xsoar_metadata["interpolation_mapping"] = interpolation_mapping
 
+    # vault_mappings: PASSTHROUGH profiles with at least one type-9 (dotted)
+    # credential param emit a profile-level vault_mappings array. Derived from
+    # the RAW (pre-flatten) param map so entry order follows the YML param order
+    # (insertion order), matching the goldens. Returns None for non-passthrough
+    # profiles or when there are no type-9 creds, in which case the key is omitted.
+    vault_mappings = _build_vault_mappings(profile_type, raw_param_map)
+
     profile = {
         "id": profile_id,
         "type": profile_type,
@@ -6809,11 +6880,25 @@ def build_connection_profile(
             f"Authentication profile for "
             f"{connector_title or integration_id} ({profile_type})."
         ),
+        # vault_mappings (when present) sits AFTER description and BEFORE metadata
+        # to match the golden key order. Inserted conditionally below so the key
+        # is omitted entirely for non-qualifying profiles.
         # ``metadata`` precedes ``configurations`` to match the real connector
         # manifest key order (MS365 profiles put metadata above configurations).
         "metadata": {"xsoar": xsoar_metadata},
         "configurations": [{"fields": fields}],
     }
+
+    # Insert vault_mappings after ``description`` (before ``metadata``) only when
+    # the profile qualifies (passthrough + >=1 type-9 cred). Rebuild the dict to
+    # control key ordering; Python preserves insertion order.
+    if vault_mappings is not None:
+        ordered: dict = {}
+        for key, value in profile.items():
+            ordered[key] = value
+            if key == "description":
+                ordered["vault_mappings"] = vault_mappings
+        profile = ordered
 
     # Plan B hard gate: refuse to emit a silently-broken interpolation mapping.
     _validate_interpolation_invariants(profile, integration_id)
