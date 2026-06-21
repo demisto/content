@@ -686,9 +686,9 @@ The effect is reversible (§2.10): when no collection sub-capability of the inte
 # triggers.yaml — collection sub-capability auto-enables + locks automation-and-remediation
 triggers:
   - conditions:
+      id: "fetch-issues_<i>"
       operator: "eq"
       behavior: "selected"
-      id: "fetch-issues_<i>"
       value: "true"
     effects:
       - id: "automation-and-remediation_<i>"
@@ -996,12 +996,19 @@ The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `
 
 ```yaml
 # triggers.yaml — lock proxy until an engine or engine group is chosen
-triggers:
-  - conditions: { type: condition, id: engine_mode, operator: eq, behavior: { value: no_engine } }
-    effects:
-      - id: proxy
-        action: { read_only: true }
-        message: "Use system proxy settings is enabled only when an engine or engine group are chosen."
+- conditions:
+    operator: OR
+    children:
+    - id: engine
+      behavior: value
+      operator: is_not_empty
+    - id: engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: proxy
+    action:
+      read_only: false
 ```
 
 > The trigger is reversible (§2.10): when `engine_mode` changes away from `no_engine` (to `engine` or `engine_group`), the `read_only` lock is lifted and the user can toggle `proxy`.
