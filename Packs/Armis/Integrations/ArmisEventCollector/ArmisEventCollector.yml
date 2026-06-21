@@ -24,7 +24,7 @@ configuration:
   name: max_fetch
   additionalinfo: Alerts and activity events.
   type: 0
-  defaultvalue: 100000
+  defaultvalue: 50000
   section: Collect
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
