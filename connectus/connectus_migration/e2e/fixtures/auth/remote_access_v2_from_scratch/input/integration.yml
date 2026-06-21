@@ -1,0 +1,48 @@
+category: Utilities
+provider: Axis Communications
+commonfields:
+  id: RemoteAccess v2
+  version: -1
+configuration:
+- additionalinfo: If not provided, "host" or "system" should be provided in the command's arguments.
+  display: Default Hostname or IP Address
+  name: hostname
+  type: 0
+  section: Connect
+  required: false
+- additionalinfo: For example, "root".
+  display: User
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: Requires an additional password as an argument to run any command of this module.
+  displaypassword: Additional Password
+  name: additional_password
+  hiddenusername: true
+  type: 9
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned.
+  display: Ciphers
+  name: ciphers
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned.
+  display: Key Algorithms
+  name: key_algorithms
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+description: This integration transfers files between Cortex XSOAR and a remote machine and executes commands on the remote machine.
+display: RemoteAccess v2
+name: RemoteAccess v2
+script:
+  script: ''
+  type: python
+  commands: []
+fromversion: 6.0.0

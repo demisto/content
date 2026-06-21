@@ -24,21 +24,21 @@ field_mappings:
   field_name: incomingMapperId
 - id: xsoar-github-iam_mappingId
   field_name: mappingId
-- id: passthrough.github_iam_credentials_username
+- id: passthrough_github_iam_credentials_username
   field_name: credentials_username
-- id: passthrough.github_iam_credentials_password
+- id: passthrough_github_iam_credentials_password
   field_name: credentials_password
-- id: passthrough.github_iam_url
+- id: passthrough_github_iam_url
   field_name: url
-- id: passthrough.github_iam_proxy
+- id: passthrough_github_iam_proxy
   field_name: proxy
-- id: passthrough.github_iam_insecure
+- id: passthrough_github_iam_insecure
   field_name: insecure
-- id: passthrough.github_iam_engine_mode
+- id: passthrough_github_iam_engine_mode
   field_name: engine_mode
-- id: passthrough.github_iam_engine
+- id: passthrough_github_iam_engine
   field_name: engine
-- id: passthrough.github_iam_engine_group
+- id: passthrough_github_iam_engine_group
   field_name: engineGroup
 computed_fields:
 - output:

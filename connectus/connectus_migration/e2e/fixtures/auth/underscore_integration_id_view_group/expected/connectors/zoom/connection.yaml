@@ -25,7 +25,7 @@ profiles:
         auth:
           parameter: account_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false
@@ -40,7 +40,7 @@ profiles:
         auth:
           parameter: client_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false

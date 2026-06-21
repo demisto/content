@@ -28,3 +28,7 @@ test_connection:
   type: service
   service: xsoar
   endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

@@ -460,6 +460,7 @@ configurations:
           hidden: false
   - fields:
     - id: xsoar-github-iam_feedExpirationInterval
+      title: Feed Expiration Interval
       field_type: duration
       options:
         units:
@@ -487,7 +488,7 @@ configurations:
           label: Suspicious
         - key: Malicious
           label: Malicious
-        default_value: ''
+        default_value: Unknown
         description: Indicators from this integration instance will be marked with
           this verdict
         create_modifiers:

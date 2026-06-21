@@ -144,3 +144,24 @@ source YMLs). They cover: type-14 flatten, type-9 left unchanged, mixed
 manifests, `.identifier`+`.password` pair collapse (secret wins), idempotency,
 unresolved-skip, clean-manifest no-op, dry-run-doesn't-write, and per-profile
 type scoping.
+
+## `add_vault_support.py` (planned — TDD-red)
+
+> **Not yet implemented.** A black-box E2E suite, fixtures and harness for this
+> patch already exist (authored red-first); the patch script itself is still to
+> be written.
+
+Will retrofit already-committed connectors' `connection.yaml` so each **type-9
+PASSTHROUGH** profile gains a schema-valid `vault_mappings` block — **without**
+regenerating from the XSOAR YML. Requirements: `--dry-run` (report only),
+idempotent (skip profiles that already have `vault_mappings`), and **passthrough
+only** — never `plain`, never `api_key`, never the `vault_support` boolean.
+
+The assumed CLI flag contract (kept consistent with the flags above) and the
+acceptance criteria are documented in
+[`e2e/README.md`](e2e/README.md). Run the black-box suite (currently `xfail`
+until the patch lands) with:
+
+```bash
+cd content/connectus && python3 -m pytest patches/e2e/add_vault_support_e2e_test.py -v
+```

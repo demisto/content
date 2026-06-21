@@ -25,7 +25,7 @@ profiles:
         auth:
           parameter: account_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false
@@ -40,12 +40,12 @@ profiles:
         auth:
           parameter: bot_client_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
     - id: bot_credentials_password
@@ -57,10 +57,10 @@ profiles:
       options:
         mask: true
         create_modifiers:
-          required: true
+          required: false
           hidden: false
         edit_modifiers:
-          required: true
+          required: false
           hidden: false
   - fields:
     - id: credentials_username
@@ -70,7 +70,7 @@ profiles:
         auth:
           parameter: client_id
       options:
-        mask: true
+        mask: false
         create_modifiers:
           required: true
           hidden: false
@@ -124,7 +124,7 @@ profiles:
           publish: true
   - fields:
     - id: key
-      field_type: text_area
+      field_type: input
       options:
         mask: true
         create_modifiers:

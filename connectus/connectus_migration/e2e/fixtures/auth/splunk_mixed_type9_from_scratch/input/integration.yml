@@ -1,0 +1,43 @@
+category: Analytics & SIEM
+provider: Cisco Systems
+commonfields:
+  id: SplunkPy
+  version: -1
+configuration:
+- display: Server URL
+  name: host
+  required: true
+  type: 0
+- display: Username
+  name: authentication
+  required: true
+  type: 9
+- defaultvalue: '8089'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- name: cred_hec_token
+  type: 9
+  displaypassword: HEC Token (HTTP Event Collector)
+  hiddenusername: true
+  required: false
+  display: ''
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  advanced: true
+  required: false
+- name: proxy
+  type: 8
+  advanced: true
+  display: Use system proxy settings
+  required: false
+description: Run queries on Splunk and fetch Notable Events (Splunk ES versions up to 8.2).
+display: SplunkPy
+name: SplunkPy
+script:
+  script: ''
+  type: python
+  commands: []
+fromversion: 5.0.0

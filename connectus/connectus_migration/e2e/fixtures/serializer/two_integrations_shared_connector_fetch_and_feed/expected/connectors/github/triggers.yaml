@@ -70,34 +70,34 @@ triggers:
     action:
       hidden: false
 - conditions:
-    id: passthrough.github_iam_engine_mode
+    id: passthrough_github_iam_engine_mode
     behavior: value
     operator: neq
     value: engine
   effects:
-  - id: passthrough.github_iam_engine
+  - id: passthrough_github_iam_engine
     action:
       hidden: true
 - conditions:
-    id: passthrough.github_iam_engine_mode
+    id: passthrough_github_iam_engine_mode
     behavior: value
     operator: neq
     value: engine_group
   effects:
-  - id: passthrough.github_iam_engine_group
+  - id: passthrough_github_iam_engine_group
     action:
       hidden: true
 - conditions:
     operator: OR
     children:
-    - id: passthrough.github_iam_engine
+    - id: passthrough_github_iam_engine
       behavior: value
       operator: is_not_empty
-    - id: passthrough.github_iam_engine_group
+    - id: passthrough_github_iam_engine_group
       behavior: value
       operator: is_not_empty
   effects:
-  - id: passthrough.github_iam_proxy
+  - id: passthrough_github_iam_proxy
     action:
       read_only: false
 - conditions:
