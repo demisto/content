@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: sk_export_graph
+  CURRENT_BRANCH_NAME: sk_PB131_test
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: sk_export_graph
+    ref: sk_PB131_test
     project: "${CI_PROJECT_NAMESPACE}/infra"

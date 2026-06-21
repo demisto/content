@@ -1,5 +1,5 @@
 fromversion: 8.9.0
-# issilent: true
+issilent: true
 id: silent-Dummy Sample Detection Playbook
 version: -1
 name: silent-Dummy Sample Detection Playbook
