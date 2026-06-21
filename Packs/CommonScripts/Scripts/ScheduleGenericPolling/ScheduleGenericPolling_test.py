@@ -333,8 +333,9 @@ def test_main_non_guid_schedules_recurring_entry(mocker):
             Calling main.
     Then
             The polling entry is scheduled as a recurring entry that spans the whole timeout window
-            (times == (timeout // interval) + 2) instead of a single run (times == 1), so the polling
-            task does not terminate prematurely (XSUP-58905).
+            (times == (timeout // interval) + 2) instead of a single run (times == 1), and an absolute
+            endTime is embedded in the command so the scheduled task has a reliable, run-independent
+            deadline. This is what prevents the polling task from terminating prematurely (XSUP-58905).
     """
     good_input = {
         "ids": "123",
@@ -363,6 +364,45 @@ def test_main_non_guid_schedules_recurring_entry(mocker):
     # No GUID is added in the non-GUID flow.
     assert "scheduledEntryGuid" not in schedule_args
     assert "scheduledEntryGuid" not in schedule_args["command"]
+    # An absolute endTime IS embedded in the command for the non-GUID flow (XSUP-58905), so the
+    # scheduled task can stop on a reliable deadline rather than a per-run-decremented relative timeout.
+    assert 'endTime="' in schedule_args["command"]
+
+
+@freeze_time("2023-04-01 00:00:00")
+def test_main_non_guid_embeds_absolute_end_time(mocker):
+    """
+    Given
+            Sample input values on a platform that does NOT use the GUID flow, with timeout=45.
+    When
+            Calling main.
+    Then
+            The command embeds the correct absolute endTime (now + timeout minutes), which is the
+            authoritative stop signal shared by every recurrence (XSUP-58905).
+    """
+    good_input = {
+        "ids": "729",
+        "pollingCommand": "pan-os-content-update-install-status",
+        "pollingCommandArgName": "job_id",
+        "dt": "Panorama.Content.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID",
+        "interval": "3",
+        "timeout": "45",
+        "tag": "polling",
+        "additionalPollingCommandArgNames": "target,using",
+        "additionalPollingCommandArgValues": "028001002993,Panorama_instance_102361225",
+    }
+
+    mocker.patch.object(demisto, "args", return_value=good_input)
+    mocker.patch("ScheduleGenericPolling.should_run_with_guid", return_value=False)
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value="abc")
+    main()
+
+    schedule_args = execute_command_mocker.call_args_list[0][0][1]
+    # now (frozen) + 45 minutes
+    assert 'endTime="2023-04-01 00:45:00"' in schedule_args["command"]
+    # The customer's strict-inequality (!==) DT is valid and is passed through unchanged.
+    assert "val.Status !== 'Completed'" in schedule_args["command"]
 
 
 def test_main_pass_no_playbook_id(mocker):

@@ -163,13 +163,21 @@ def main():  # pragma: no cover
     # a safety margin on top of (timeout // interval) to guarantee the entry survives until the in-task
     # stop condition (timeout reached / no pending ids) is met.
     # See XSUP-36162 (GUID flow) and XSUP-58905 (non-GUID flow) for context.
+    # Compute an absolute end time once, here, so every scheduled recurrence shares the same deadline.
+    # This is passed to GenericPollingScheduledTask as endTime and is the authoritative stop signal for
+    # BOTH flows. The non-GUID flow previously relied on a relative `timeout` that the task decremented on
+    # every self-reschedule; since the self-reschedule was removed (single recurring entry), that relative
+    # value became static and the timeout check stopped working - so we now pass an absolute endTime here
+    # too. See XSUP-58905 and XSUP-36162.
+    end_time = calculate_end_time(timeout)
+
     schedule_times = (timeout // interval) + 2
     schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": schedule_times}
     if should_run_with_guid():
         demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
-        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
+        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{end_time}"'
         schedule_command_args["command"] = command_string
         schedule_command_args["scheduledEntryGuid"] = entryGuid
         demisto.debug(
@@ -180,9 +188,15 @@ def main():  # pragma: no cover
         # times=1 and GenericPollingScheduledTask re-scheduled itself every iteration. That chain is
         # fragile - if any single re-schedule is dropped by the server, polling stops prematurely
         # (XSUP-58905). Scheduling all recurrences up front (times=schedule_times) makes the polling
-        # resilient: the single recurring entry runs until the in-task timeout check stops it, with no
-        # dependency on per-iteration re-creation.
-        demisto.debug(f"[ScheduleGenericPolling] Non-GUID flow: scheduling recurring entry with times={schedule_times}")
+        # resilient: the single recurring entry runs until the in-task endTime check stops it, with no
+        # dependency on per-iteration re-creation. We also pass an absolute endTime so the task has a
+        # reliable, run-independent deadline (the relative timeout is no longer decremented per run).
+        command_string = f'{command_string} endTime="{end_time}"'
+        schedule_command_args["command"] = command_string
+        demisto.debug(
+            f"[ScheduleGenericPolling] Non-GUID flow: scheduling recurring entry with times={schedule_times}, "
+            f"endTime={end_time}"
+        )
 
     demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
     res = demisto.executeCommand("ScheduleCommand", schedule_command_args)

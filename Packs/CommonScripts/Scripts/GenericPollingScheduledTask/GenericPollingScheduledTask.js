@@ -139,21 +139,31 @@ function shouldRunWithGuid() {
     }
 }
 
+// Returns true if the polling window has elapsed.
+// Preferred signal is the absolute endTime (passed by ScheduleGenericPolling for both the GUID and the
+// non-GUID flows). We fall back to the legacy relative args.timeout only for backward compatibility with
+// scheduled entries that were created before endTime was passed in the non-GUID flow. See XSUP-58905.
+function isPollingTimedOut() {
+    if (args.endTime) {
+        try {
+            return new Date() >= stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
+        }
+        catch (err) {
+            logError('Failed to parse endTime "' + args.endTime + '": ' + err);
+        }
+    }
+    // Legacy fallback (pre-endTime non-GUID entries). Note: with the single-recurring-entry model this
+    // value is static across runs, so it only stops polling if it was already <= 0 when scheduled.
+    return (args.timeout !== undefined) && (parseInt(args.timeout) <= 0);
+}
+
 function genericPollingScheduled(){
     try {
         shouldRunWithGuid = shouldRunWithGuid();
-        if (shouldRunWithGuid) {
-            var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
-            var currentTime = new Date();
 
-            if (currentTime >= endTime) {
-                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
-            }
-        }
-        else {
-            if (args.timeout <= 0) {
-                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
-            }
+        var timedOut = isPollingTimedOut();
+        if (timedOut) {
+            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
         // Get ids that have not finished yet
@@ -174,14 +184,25 @@ function genericPollingScheduled(){
         var pendings = dq(invContext, pendingPath);
 
         if (pendings === null) {
-            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+            // The pending-IDs path is not present in the context yet. This is NOT a reliable "all done"
+            // signal - on the first run (and until the polling command has populated the context) the
+            // path is simply not there yet. Previously we called finish() here, which made the task
+            // terminate on its very first cron run before the polling command ever ran (XSUP-58905).
+            // Instead, poll all the original ids to populate the context and let the next recurrence
+            // re-evaluate. We only stop early when the timeout window has actually elapsed (handled above).
+            logDebug('GenericPollingScheduledTask: pending path "' + pendingPath + '" not found in context yet; ' +
+                'polling all ids and continuing instead of finishing. See XSUP-58905.');
+            idsToPoll = ids;
         }
-
-        var idsStrArr = listOfStrings(ids);
-        var pendingsStrArr = listOfStrings(pendings);
-        idsToPoll = intersect(idsStrArr, pendingsStrArr);
-        if (idsToPoll.length === 0) {
-            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+        else {
+            var idsStrArr = listOfStrings(ids);
+            var pendingsStrArr = listOfStrings(pendings);
+            idsToPoll = intersect(idsStrArr, pendingsStrArr);
+            if (idsToPoll.length === 0) {
+                // The path exists and resolved to an empty set of pending ids -> all jobs reached their
+                // terminal state. This is a genuine completion.
+                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+            }
         }
 
         // Run the polling command for each id
