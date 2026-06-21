@@ -942,6 +942,7 @@ def capture_ucp_params(
     xsoar_brand_name: str,
     parity_inputs,                       # resolver.ParityInputs
     capabilities: list | None = None,    # the VARIANT's CapabilitySpec subset
+    active_profiles: list | None = None,  # the VARIANT's pinned auth-profile subset
     instance_values: dict | None = None,
     connector_id: str | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
@@ -1017,6 +1018,16 @@ def capture_ucp_params(
     if capabilities is None:
         capabilities = parity_inputs.capabilities
 
+    # The auth profiles to EMIT into the creation payload for THIS instance. When
+    # ``active_profiles`` is given (multi-profile / XOR connector — the orchestrator
+    # passes the variant's single pinned profile), ONLY those are emitted so the
+    # runtime activates exactly the pinned profile. When ``None`` (single / no
+    # profile, or legacy callers), ALL of the connector's profiles are emitted —
+    # unchanged behaviour.
+    profiles_to_emit = (
+        active_profiles if active_profiles is not None else parity_inputs.profiles
+    )
+
     if instance_values is None:
         instance_values = {}
 
@@ -1068,7 +1079,7 @@ def capture_ucp_params(
             creation_view,
             instance_name=instance_name,
             capabilities=capabilities,
-            profiles=parity_inputs.profiles,
+            profiles=profiles_to_emit,
             instance_values=instance_values,
             connector_id=connector_id,
             field_specs=getattr(parity_inputs, "field_specs", None),
@@ -1077,7 +1088,7 @@ def capture_ucp_params(
             "UCP payload built: connector=%s capabilities=%s profiles=%s, configuration fields=%d",
             connector_id,
             [c.id for c in capabilities],
-            [p.id for p in parity_inputs.profiles],
+            [p.id for p in profiles_to_emit],
             len(payload["configuration"]),
         )
         # DIAGNOSTIC: dump the EXACT capability→sub-capability enablement map this

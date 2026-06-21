@@ -87,6 +87,13 @@ STATE_ALLOW_FLAG: dict[str, str] = {
     STATE_VALUE_MISMATCH: "allow_mismatch",
 }
 
+#: Prefix the resolver uses for a synthetic AUTH-PROFILE ownership unit
+#: (``__profile__:<profile_id>``). When an out-of-variant-scope field's disabled
+#: owners are ALL of this kind, the field is the auth secret of an alternative,
+#: non-active XOR auth profile (see resolver._profile_ownership_unit). Kept in
+#: sync with resolver._PROFILE_OWNERSHIP_PREFIX.
+_PROFILE_OWNERSHIP_PREFIX = "__profile__:"
+
 #: Human-readable explanations for each ignore reason code, surfaced in the
 #: OK_IGNORED per_param entries so triage is self-explanatory.
 _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
@@ -97,6 +104,7 @@ _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
     "hard_ignore_list": "on the hard ignore-list (never appears comparably in runtime demisto.params(), e.g. brand/engine/instance_name/log-level)",
     "name_ignored": "a framework/mirroring/probe field that is not user-configurable (e.g. outgoingMapperId, apiproxy, the parity-probe key)",
     "out_of_variant_scope": "field belongs to a sub-capability not enabled in this variant; not expected in the connector instance — not compared",
+    "alternative_xor_auth_profile": "auth secret of an ALTERNATIVE (mutually-exclusive) auth profile that is NOT the one active in this connector instance; the runtime activates exactly one of the connector's XOR auth profiles, so this secret is absent BY DESIGN here and is verified in its own profile variant — not a MISSING_IN_CONNECTOR failure",
     # legacy / safety fallbacks:
     "hard_ignore": "on the hard ignore-list (never appears comparably in runtime demisto.params())",
     "profile_not_interpolated": "an auth field of a non-interpolated profile (not delivered to runtime demisto.params())",
@@ -358,6 +366,8 @@ def diff_params(
     in_scope_fields: set[str] | frozenset[str] | None = None,
     field_owning_subcapabilities: dict[str, frozenset[str]] | None = None,
     enabled_ownership_units: set[str] | frozenset[str] | None = None,
+    serializer_by_xsoar: dict[str, str] | None = None,
+    serializer_by_connector: dict[str, str] | None = None,
     allow_missing: bool = False,
     allow_extra: bool = False,
     allow_mismatch: bool = False,
@@ -392,6 +402,16 @@ def diff_params(
             ``enabled_ownership_units`` to detect out-of-variant-scope fields.
         enabled_ownership_units: Optional set of ownership-unit ids ENABLED in the
             current variant (the complement defines the disabled units).
+        serializer_by_xsoar: Optional ``{xsoar_param_name: connector_field_id}``
+            map scoped to THIS integration's handler (from the resolver). When
+            provided, it is used for the ``serialized_from`` annotation INSTEAD of
+            rglob-ing every handler's serializer.yaml under ``connector_dir`` —
+            required for grouped connectors so a shared xsoar param name is not
+            mis-attributed to a sibling handler's connector field id.
+        serializer_by_connector: Optional ``{connector_field_id: xsoar_param_name}``
+            map scoped to THIS integration's handler (from the resolver), used the
+            same way for the ``serialized_to`` annotation. When EITHER scoped map
+            is provided, the connector-wide rglob fallback is skipped entirely.
         allow_missing: When ``True``, ``MISSING_IN_CONNECTOR`` findings stop
             contributing to the failure verdict (still reported as
             ``"warn"``).
@@ -449,11 +469,29 @@ def diff_params(
     enabled_ownership_units = set(enabled_ownership_units or ())
 
     # Pre-load serializer mappings so we can annotate per-param entries with
-    # `serialized_from` / `serialized_to`. Empty dicts if the connector has no
-    # serializer.yaml files.
-    by_xsoar_serialized, by_connector_serialized = (
-        _load_serializer_mappings(connector_dir_path) if connector_dir_path else ({}, {})
-    )
+    # `serialized_from` / `serialized_to`.
+    #
+    # SCOPING (grouped connectors): when the caller supplies the maps already
+    # scoped to THIS integration's handler (``serializer_by_xsoar`` /
+    # ``serializer_by_connector`` from the resolver, parsed from the single
+    # handler dir), we use those verbatim. This is REQUIRED for grouped
+    # connectors (e.g. ``aws``), where ``_load_serializer_mappings`` would
+    # ``rglob`` EVERY handler's serializer.yaml and let the LAST-parsed mapping
+    # for a shared xsoar param name win — falsely attributing, say,
+    # ``incidentType`` on AWS-SNS-Listener to ``xsoar-aws-sqs_incidentType``
+    # (a DIFFERENT handler's field). The annotation must reflect only the
+    # handler under test. We fall back to the connector-wide rglob ONLY when no
+    # scoped maps are provided (back-compat for callers/tests that pass just
+    # ``connector_dir``).
+    if serializer_by_xsoar is not None or serializer_by_connector is not None:
+        by_xsoar_serialized = dict(serializer_by_xsoar or {})
+        by_connector_serialized = dict(serializer_by_connector or {})
+    elif connector_dir_path:
+        by_xsoar_serialized, by_connector_serialized = _load_serializer_mappings(
+            connector_dir_path
+        )
+    else:
+        by_xsoar_serialized, by_connector_serialized = {}, {}
 
     union_keys = set(integration.keys()) | set(connector.keys())
     per_param: list[dict[str, Any]] = []
@@ -538,13 +576,21 @@ def diff_params(
         disabled_owners = _out_of_variant_scope(key)
         if disabled_owners is None:
             return False
+        # When EVERY disabled owner is a synthetic AUTH-PROFILE ownership unit
+        # (prefixed ``__profile__:`` by the resolver), the key is the auth secret of
+        # an alternative, non-active XOR profile — give it the clearer, dedicated
+        # reason. Otherwise it is an ordinary sub-capability-scoped field.
+        reason_code = (
+            "alternative_xor_auth_profile"
+            if disabled_owners
+            and all(o.startswith(_PROFILE_OWNERSHIP_PREFIX) for o in disabled_owners)
+            else "out_of_variant_scope"
+        )
         entry: dict[str, Any] = {
             "name": key,
             "state": STATE_OK_IGNORED,
             "verdict": "ok",
-            "reason": "Ignored — {}".format(
-                _describe_ignore_reason("out_of_variant_scope")
-            ),
+            "reason": "Ignored — {}".format(_describe_ignore_reason(reason_code)),
             "out_of_scope_owners": sorted(disabled_owners),
         }
         if integration_value is not _UNSET:

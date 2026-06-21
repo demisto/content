@@ -772,3 +772,205 @@ def test_non_registry_number_int_vs_str_still_mismatches():
     entry = _per_param(result, "somePort")
     assert entry["state"] == diff.STATE_VALUE_MISMATCH
     assert entry["verdict"] == "fail"
+
+
+# ---------------------------------------------------------------------------
+# serialized_from / serialized_to annotation SCOPING (grouped connectors)
+#
+# For a GROUPED connector (e.g. aws), diff._load_serializer_mappings rglobs
+# EVERY handler's serializer.yaml and lets the LAST-parsed mapping for a shared
+# xsoar param name win. That mis-attributes a param to a SIBLING handler's
+# connector field id (observed: AWS-SNS-Listener's `incidentType` annotated
+# `serialized_from: xsoar-aws-sqs_incidentType`, an AWS-SQS field; AWS-SQS's
+# `first_fetch` annotated with the security-hub-event-collector field). The fix
+# threads THIS handler's scoped serializer maps (from the resolver) into
+# diff_params and uses them verbatim for the annotation.
+# ---------------------------------------------------------------------------
+def test_serialized_from_uses_scoped_handler_map_not_sibling():
+    """Grouped connector: a shared param name is annotated from THIS handler's
+    serializer map, never a sibling handler's connector field id.
+
+    Models AWS-SNS-Listener: `incidentType` exists in the integration but the
+    SNS-Listener handler serializer does NOT rename it, while a SIBLING handler
+    (aws-sqs) maps `xsoar-aws-sqs_incidentType -> incidentType`. With the
+    SNS-Listener-scoped maps (which have no incidentType entry), the param must
+    carry NO serialized_from at all — not the SQS field id."""
+    result = diff.diff_params(
+        {"incidentType": "Phishing"},
+        {},
+        yml_param_names={"incidentType"},
+        # SNS-Listener handler serializer has NO incidentType mapping.
+        serializer_by_xsoar={},
+        serializer_by_connector={},
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert "serialized_from" not in entry
+
+
+def test_serialized_from_prefers_scoped_map_over_rglob_fallback(tmp_path):
+    """When scoped maps ARE provided, the connector-wide rglob is NOT consulted
+    even though connector_dir points at a tree full of sibling serializers."""
+    # A sibling handler tree that WOULD (via rglob) map incidentType to a SQS id.
+    sib = tmp_path / "components" / "handlers" / "xsoar-aws-sqs"
+    sib.mkdir(parents=True)
+    (sib / "serializer.yaml").write_text(
+        "field_mappings:\n"
+        "- id: xsoar-aws-sqs_incidentType\n"
+        "  field_name: incidentType\n"
+    )
+    result = diff.diff_params(
+        {"first_fetch": "x"},
+        {"first_fetch": "x"},
+        yml_param_names={"first_fetch", "incidentType"},
+        connector_dir=str(tmp_path),
+        # THIS handler's scoped map: first_fetch is the only rename it declares.
+        serializer_by_xsoar={"first_fetch": "xsoar-this-handler_first_fetch"},
+        serializer_by_connector={"xsoar-this-handler_first_fetch": "first_fetch"},
+    )
+    ff = _per_param(result, "first_fetch")
+    assert ff["serialized_from"] == "xsoar-this-handler_first_fetch"
+
+
+def test_serialized_from_resolves_to_non_sub_prefixed_field_id():
+    """The scoped map may declare a connector field id that does NOT follow the
+    `xsoar-<this-sub>_<name>` shape (a cross-handler / shared serving field).
+    The annotation must use exactly what the scoped map says."""
+    result = diff.diff_params(
+        {"first_fetch": "7 days"},
+        {"first_fetch": "7 days"},
+        yml_param_names={"first_fetch"},
+        serializer_by_xsoar={"first_fetch": "shared_connector_first_fetch_field"},
+        serializer_by_connector={"shared_connector_first_fetch_field": "first_fetch"},
+    )
+    entry = _per_param(result, "first_fetch")
+    assert entry["serialized_from"] == "shared_connector_first_fetch_field"
+
+
+def test_serialized_to_uses_scoped_handler_map():
+    """A connector-only field is annotated serialized_to from THIS handler's
+    by_connector map (so EXTRA_IN_CONNECTOR triage points at the right rename)."""
+    result = diff.diff_params(
+        {},
+        {"xsoar-this-handler_domain": "v"},
+        yml_param_names=set(),
+        serializer_by_xsoar={"url": "xsoar-this-handler_domain"},
+        serializer_by_connector={"xsoar-this-handler_domain": "url"},
+    )
+    entry = _per_param(result, "xsoar-this-handler_domain")
+    assert entry["serialized_to"] == "url"
+
+
+def test_serialized_from_falls_back_to_rglob_when_no_scoped_maps(tmp_path):
+    """Back-compat: callers/tests that pass only connector_dir (no scoped maps)
+    still get rglob-derived annotations — unchanged behaviour."""
+    h = tmp_path / "components" / "handlers" / "xsoar-h"
+    h.mkdir(parents=True)
+    (h / "serializer.yaml").write_text(
+        "field_mappings:\n- id: domain\n  field_name: url\n"
+    )
+    result = diff.diff_params(
+        {"url": "v"},
+        {"url": "v"},
+        yml_param_names={"url"},
+        connector_dir=str(tmp_path),
+    )
+    entry = _per_param(result, "url")
+    assert entry["serialized_from"] == "domain"
+
+
+# ---------------------------------------------------------------------------
+# MULTI-PROFILE (XOR) auth — a non-active alternative profile's auth secret must
+# be scoped out (OK_IGNORED / alternative_xor_auth_profile), NOT MISSING; and a
+# single-profile genuine miss must STILL fail (over-suppression guard).
+#
+# These mirror what the resolver produces for a 2-profile (XOR) connector like
+# FortiGate: each auth-bearing profile's auth params are attributed to a synthetic
+# ``__profile__:<id>`` ownership unit; the variant ENABLES only its active
+# profile's unit, so the OTHER profile's secret is owned solely by a DISABLED unit
+# and flows through the existing out-of-variant-scope gate.
+# ---------------------------------------------------------------------------
+_PROF_API_KEY = diff._PROFILE_OWNERSHIP_PREFIX + "api_key.fortigate"
+_PROF_PLAIN = diff._PROFILE_OWNERSHIP_PREFIX + "plain.fortigate"
+
+
+def test_xor_auth_active_profile_secret_compared_other_scoped_out():
+    """The ``plain`` profile is active: ``credentials`` is compared (OK), while the
+    NON-active ``api_key`` profile's secret is OK_IGNORED with the dedicated
+    alternative-XOR-auth reason — NOT MISSING_IN_CONNECTOR. No failure."""
+    result = diff.diff_params(
+        # integration declares BOTH secrets (FortiGate YML has api_key + credentials)
+        {"api_key": {"password": "K"}, "credentials": {"identifier": "u", "password": "p"}},
+        # connector instance (plain active) only delivers credentials
+        {"credentials": {"identifier": "u", "password": "p"}},
+        yml_param_names={"api_key", "credentials"},
+        # ACTIVE profile = plain → credentials in scope; api_key NOT in scope.
+        in_scope_fields={"credentials"},
+        field_owning_subcapabilities={
+            "api_key": frozenset({_PROF_API_KEY}),
+            "credentials": frozenset({_PROF_PLAIN}),
+        },
+        # Only the plain profile's unit is enabled in this variant.
+        enabled_ownership_units={_PROF_PLAIN},
+    )
+    cred = _per_param(result, "credentials")
+    assert cred["state"] == diff.STATE_OK
+    api = _per_param(result, "api_key")
+    assert api["state"] == diff.STATE_OK_IGNORED
+    assert api["out_of_scope_owners"] == [_PROF_API_KEY]
+    assert "ALTERNATIVE" in api["reason"] or "alternative" in api["reason"]
+    assert result["summary"]["n_missing_in_connector"] == 0
+    assert result["summary"]["n_out_of_variant_scope"] == 1
+    assert result["status"] == "pass"
+
+
+def test_xor_auth_other_profile_active_symmetric():
+    """Symmetric pass: when the ``api_key`` profile is active, ``api_key`` is
+    compared and the ``credentials`` (plain) secret is scoped out — proving every
+    profile's secret IS verified in its OWN variant (full coverage)."""
+    result = diff.diff_params(
+        {"api_key": {"password": "K"}, "credentials": {"identifier": "u", "password": "p"}},
+        {"api_key": {"password": "K"}},  # api_key active
+        yml_param_names={"api_key", "credentials"},
+        in_scope_fields={"api_key"},
+        field_owning_subcapabilities={
+            "api_key": frozenset({_PROF_API_KEY}),
+            "credentials": frozenset({_PROF_PLAIN}),
+        },
+        enabled_ownership_units={_PROF_API_KEY},
+    )
+    assert _per_param(result, "api_key")["state"] == diff.STATE_OK
+    cred = _per_param(result, "credentials")
+    assert cred["state"] == diff.STATE_OK_IGNORED
+    assert cred["out_of_scope_owners"] == [_PROF_PLAIN]
+    assert result["summary"]["n_missing_in_connector"] == 0
+    assert result["status"] == "pass"
+
+
+def test_single_profile_genuine_missing_secret_still_fails():
+    """OVER-SUPPRESSION GUARD: a SINGLE-profile connector whose sole auth secret is
+    genuinely absent on the connector side MUST still fail MISSING_IN_CONNECTOR.
+    The sole profile is always active, so its secret is in_scope and owned by an
+    ENABLED unit — the XOR exemption must NOT fire."""
+    result = diff.diff_params(
+        {"api_key": {"password": "K"}},  # integration has it
+        {},                              # connector is genuinely missing it
+        yml_param_names={"api_key"},
+        # Single profile → its secret is in scope AND its (sole) profile unit is
+        # the enabled/active one.
+        in_scope_fields={"api_key"},
+        field_owning_subcapabilities={"api_key": frozenset({_PROF_API_KEY})},
+        enabled_ownership_units={_PROF_API_KEY},
+    )
+    entry = _per_param(result, "api_key")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert result["summary"]["n_missing_in_connector"] == 1
+    assert result["status"] == "fail"
+
+
+def test_alternative_xor_auth_reason_describes_clearly():
+    """The dedicated reason code renders an operator-clear XOR-auth explanation."""
+    msg = diff._describe_ignore_reason("alternative_xor_auth_profile")
+    assert "ALTERNATIVE" in msg
+    assert "mutually-exclusive" in msg
+    assert "active" in msg

@@ -1519,3 +1519,116 @@ def test_real_akamai_per_variant_scoping_via_resolve(monkeypatch):
     assert "incidentFetchInterval" not in logs.in_scope_fields
     for fid in log_fields:
         assert fid in logs.in_scope_fields, fid
+
+
+# ---------------------------------------------------------------------------
+# MULTI-PROFILE (XOR) auth — per-auth-profile variant matrix expansion
+# (plans/param-parity-per-profile-variant-matrix.md). The connector activates
+# exactly ONE of N mutually-exclusive auth profiles per instance, so the matrix is
+# crossed with the auth-bearing profile groups for FULL coverage.
+# ---------------------------------------------------------------------------
+
+
+def _api_key_profile():
+    """A FortiGate-like ``api_key`` profile carrying the xsoar secret ``api_key``."""
+    return ProfileSpec(
+        id="api_key.fortigate",
+        type="api_key",
+        interpolation_mapping={"api_key": "api_key.password"},
+        auth_field_to_role={"api_key": "api_key"},
+        field_ids=["api_key"],
+    )
+
+
+def _plain_profile():
+    """A FortiGate-like ``plain`` profile carrying the xsoar secret ``credentials``."""
+    return ProfileSpec(
+        id="plain.fortigate",
+        type="plain",
+        interpolation_mapping={
+            "username": "credentials.identifier",
+            "password": "credentials.password",
+        },
+        auth_field_to_role={
+            "credentials_username": "username",
+            "credentials_password": "password",
+        },
+        field_ids=["credentials_username", "credentials_password"],
+    )
+
+
+def _non_auth_profile():
+    """A non-interpolated profile carrying NO comparable xsoar auth secret."""
+    return ProfileSpec(
+        id="dummy.x",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=["some_field"],
+    )
+
+
+def test_auth_bearing_profiles_filters_by_derived_secret():
+    """``_auth_bearing_profiles`` keeps ONLY profiles that interpolate ≥1 xsoar auth
+    secret — derived from the profile itself, never a connector-specific list."""
+    profs = [_api_key_profile(), _plain_profile(), _non_auth_profile()]
+    bearing = resolver._auth_bearing_profiles(profs)
+    assert [p.id for p in bearing] == ["api_key.fortigate", "plain.fortigate"]
+    # profile_auth_params reflects each profile's OWN secret set.
+    assert resolver.profile_auth_params(profs[0]) == frozenset({"api_key"})
+    assert resolver.profile_auth_params(profs[1]) == frozenset({"credentials"})
+    assert resolver.profile_auth_params(profs[2]) == frozenset()
+
+
+def test_expand_profile_variants_crosses_two_xor_profiles():
+    """≥2 auth-bearing profiles → each capability variant is duplicated once per
+    profile, carrying that profile's id in active_profile_id."""
+    base = [
+        resolver.CapabilityVariant(
+            id="automation-and-remediation",
+            capabilities=[CapabilitySpec(id="automation-and-remediation")],
+            fetch_flags={},
+        )
+    ]
+    crossed = resolver._expand_profile_variants(
+        base, [_api_key_profile(), _plain_profile()]
+    )
+    assert len(crossed) == 2
+    ids = {v.id for v in crossed}
+    assert ids == {
+        "automation-and-remediation@api_key.fortigate",
+        "automation-and-remediation@plain.fortigate",
+    }
+    by_profile = {v.active_profile_id: v for v in crossed}
+    assert set(by_profile) == {"api_key.fortigate", "plain.fortigate"}
+
+
+def test_expand_profile_variants_single_profile_is_noop():
+    """0 or 1 auth-bearing profile → matrix UNCHANGED, active_profile_id stays None
+    (back-compat; over-suppression guard at the source)."""
+    base = [
+        resolver.CapabilityVariant(
+            id="v",
+            capabilities=[CapabilitySpec(id="v")],
+            fetch_flags={},
+        )
+    ]
+    # one auth-bearing + one non-auth → still treated as single (< 2 auth-bearing).
+    out = resolver._expand_profile_variants(base, [_api_key_profile(), _non_auth_profile()])
+    assert out is base
+    assert out[0].active_profile_id is None
+    # zero profiles → unchanged too.
+    assert resolver._expand_profile_variants(base, []) is base
+
+
+def test_profile_ownership_unit_prefix_matches_diff():
+    """The synthetic profile ownership unit prefix is shared with diff so the diff
+    can recognise an alternative-XOR-auth scope-out."""
+    import diff as diff_mod
+
+    assert (
+        resolver._PROFILE_OWNERSHIP_PREFIX == diff_mod._PROFILE_OWNERSHIP_PREFIX
+    )
+    assert resolver._profile_ownership_unit("p.x") == (
+        resolver._PROFILE_OWNERSHIP_PREFIX + "p.x"
+    )
