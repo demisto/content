@@ -2992,11 +2992,75 @@ async def test_stream_report_success(mocker):
 
     assert results == expected_results
 
-    # Verify http_request was called with the correct parameters
-    mock_client.http_request.assert_called_once_with("GET", "/api/3/reports/test-report-id/history/test-instance-id/output")
+    # Verify http_request was called with the correct parameters, including the
+    # CSV Accept header override (the default application/json would cause HTTP 406).
+    mock_client.http_request.assert_called_once_with(
+        "GET",
+        "/api/3/reports/test-report-id/history/test-instance-id/output",
+        headers={"Accept": "text/csv, */*"},
+    )
 
     # Verify the response was released
     mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_stream_report_requests_csv_accept_header(mocker):
+    """
+    Given:
+      - The report `/output` endpoint serves CSV, but the client's default
+        Accept header is "application/json", which makes the server respond
+        with HTTP 406 (Not Acceptable). This is the root cause of
+        "Failed to parse CSV header on line 1: Client API Error (406)".
+
+    When:
+      - Calling stream_report to download the report output.
+
+    Then:
+      - Ensure stream_report instructs http_request to accept CSV (i.e. passes
+        a `headers` override whose Accept is not "application/json"), so the
+        server returns the CSV body instead of a 406.
+    """
+    mock_client = mocker.AsyncMock()
+
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    class MockAsyncIterator:
+        def __init__(self, chunks):
+            self.chunks = chunks
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.chunks):
+                chunk = self.chunks[self.index]
+                self.index += 1
+                return chunk
+            raise StopAsyncIteration
+
+    mock_content = mocker.AsyncMock()
+    mock_content.iter_any = lambda: MockAsyncIterator([b"id,name\n1,server1\n"])
+    mock_response.content = mock_content
+
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    async for _ in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
+        pass
+
+    # Inspect the headers passed to http_request for the CSV download.
+    _, call_kwargs = mock_client.http_request.call_args
+    headers = call_kwargs.get("headers") or {}
+    accept = headers.get("Accept", "")
+    assert accept, "stream_report must pass an explicit Accept header for the CSV /output endpoint"
+    assert "application/json" not in accept, (
+        "stream_report must not request application/json for the CSV /output endpoint "
+        "(this causes the HTTP 406 'Failed to parse CSV header on line 1' failure)"
+    )
+    assert "csv" in accept.lower() or "*/*" in accept
 
 
 @pytest.mark.asyncio

@@ -2632,12 +2632,31 @@ class InsightVMClient:
         """Asynchronous context manager exit: closes the aiohttp session."""
         await self._session.close()
 
-    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
+    async def http_request(
+        self,
+        method: str,
+        endpoint: str,
+        payload: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> aiohttp.ClientResponse:
         """
         Executes an asynchronous HTTP request and returns the raw response object.
         Includes retry logic for server errors.
+
+        Args:
+            method (str): The HTTP method to use (e.g. "GET", "POST").
+            endpoint (str): The API endpoint (appended to the base URL).
+            payload (Optional[Dict[str, Any]]): Optional JSON body for the request.
+            headers (Optional[Dict[str, str]]): Optional per-request header overrides
+                merged on top of the client's default headers. Used, for example, to
+                request "Accept: text/csv" when downloading a CSV report output, since
+                the default "Accept: application/json" causes the report `/output`
+                endpoint to respond with HTTP 406 (Not Acceptable).
         """
         url = self._base_url + endpoint
+
+        # Merge any per-request header overrides on top of the client defaults.
+        request_headers = self._headers if not headers else {**self._headers, **headers}
 
         # Select the method function (get, post, etc.)
         request_func = getattr(self._session, method.lower())
@@ -2653,7 +2672,7 @@ class InsightVMClient:
                 await asyncio.sleep(delay)
 
             try:
-                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
+                response = await request_func(url, headers=request_headers, json=payload, ssl=False)
 
                 # 1. Handle Retryable Errors
                 if response.status in RETRYABLE_STATUSES:
@@ -6993,7 +7012,11 @@ async def stream_report(
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}/output"
     log(event_type, f"Starting report download stream from: {endpoint}")
 
-    response = await client.http_request("GET", endpoint)
+    # The report `/output` endpoint serves CSV, not JSON. The client's default
+    # "Accept: application/json" header causes the server to respond with HTTP 406
+    # (Not Acceptable), surfacing as "Failed to parse CSV header on line 1".
+    # Explicitly request CSV (falling back to any type) for this download.
+    response = await client.http_request("GET", endpoint, headers={"Accept": "text/csv, */*"})
 
     buffer = b""  # Buffer to hold partial lines across chunks
 
