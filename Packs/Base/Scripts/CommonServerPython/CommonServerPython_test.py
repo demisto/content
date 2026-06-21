@@ -9579,9 +9579,12 @@ class TestSendEventsToXSIAMTest:
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
 
-        # One oversized entry (a long string > MAX_ALLOWED_ENTRY_SIZE) surrounded by normal events.
-        oversized = 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)
-        events = [{'id': 0, 'msg': 'first'}, oversized, {'id': 1, 'msg': 'second'}]
+        # One oversized event (its serialized form exceeds MAX_ALLOWED_ENTRY_SIZE) between two normal events.
+        events = [
+            {'id': 0, 'msg': 'first'},
+            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 2, 'msg': 'second'},
+        ]
 
         legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
         send_data_to_xsiam(data=list(events), vendor='v', product='p',
@@ -9597,10 +9600,10 @@ class TestSendEventsToXSIAMTest:
         for call in streaming_mock.call_args_list:
             streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
 
-        # Both paths drop the oversized entry and keep the two normal events, identically.
+        # Both paths drop the oversized event and keep the two normal events, identically.
         assert sorted(streaming_lines) == sorted(legacy_lines)
-        assert oversized not in streaming_lines
         assert len(streaming_lines) == 2
+        assert all('blob' not in line for line in streaming_lines)
 
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
