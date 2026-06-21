@@ -1285,6 +1285,36 @@ class TestHttpRequestRateLimitRetry:
         with pytest.raises(O365MessageTrace.NotFoundError):
             http_client.http_request(method="GET", url_suffix="x")
 
+    def test_injects_bearer_token_into_request_headers(self, http_client, mocker):
+        response = MagicMock(status_code=200)
+        response.json.return_value = {"value": []}
+        base_http_request = mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+
+        http_client.http_request(method="GET", url_suffix="x")
+
+        sent_headers = base_http_request.call_args.kwargs["headers"]
+        assert sent_headers["Authorization"] == "Bearer token"
+        assert sent_headers["Content-Type"] == "application/json"
+        assert sent_headers["Accept"] == "application/json"
+
+    def test_calls_create_api_metrics_with_status_code(self, http_client, mocker):
+        response = MagicMock(status_code=200)
+        response.json.return_value = {"value": []}
+        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+
+        http_client.http_request(method="GET", url_suffix="x")
+
+        O365MessageTrace.MicrosoftClient.create_api_metrics.assert_called_once_with(200)
+
+    def test_non_json_body_raises_demisto_exception(self, http_client, mocker):
+        response = MagicMock(status_code=200)
+        response.json.side_effect = ValueError("No JSON object could be decoded")
+        response.content = b"not-json"
+        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+
+        with pytest.raises(O365MessageTrace.DemistoException, match="Failed to parse json object from response"):
+            http_client.http_request(method="GET", url_suffix="x")
+
 
 class TestGetMessageTracesPageUsesHttpRequest:
     """``get_message_traces_page`` must route both the first-page and
