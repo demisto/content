@@ -145,23 +145,123 @@ manifests, `.identifier`+`.password` pair collapse (secret wins), idempotency,
 unresolved-skip, clean-manifest no-op, dry-run-doesn't-write, and per-profile
 type scoping.
 
-## `add_vault_support.py` (planned — TDD-red)
+## `add_vault_support.py`
 
-> **Not yet implemented.** A black-box E2E suite, fixtures and harness for this
-> patch already exist (authored red-first); the patch script itself is still to
-> be written.
+### What it does
 
-Will retrofit already-committed connectors' `connection.yaml` so each **type-9
+Retrofits already-committed connectors' `connection.yaml` so each **type-9
 PASSTHROUGH** profile gains a schema-valid `vault_mappings` block — **without**
-regenerating from the XSOAR YML. Requirements: `--dry-run` (report only),
-idempotent (skip profiles that already have `vault_mappings`), and **passthrough
-only** — never `plain`, never `api_key`, never the `vault_support` boolean.
+regenerating from the XSOAR YML. It mirrors the generator's derivation
+(`connectus_migration.manifest_generator._build_vault_mappings` +
+`_VAULT_MAP_SLOT_FOR_LEAF`) but applies it to manifests already on disk.
 
-The assumed CLI flag contract (kept consistent with the flags above) and the
-acceptance criteria are documented in
-[`e2e/README.md`](e2e/README.md). Run the black-box suite (currently `xfail`
-until the patch lands) with:
+### Derivation — from `interpolation_mapping` (standalone by design)
+
+This patch is **standalone**: it does **not** import the generator. The
+generator derives `vault_mappings` from a freshly-built `raw_param_map` while
+reading the integration YML; on an **already-committed** manifest that same
+information is already encoded in each profile's
+`metadata.xsoar.interpolation_mapping`, so the patch reproduces the equivalent
+derivation **from the profile itself**. As a result the integration YML, the
+handler linkage and the pipeline CSV are **not required** to compute the result.
+
+`interpolation_mapping` is a comma-joined string of `<role>:<xsoar_path>` entries
+(the **inverse** of the generator's raw param map — role on the **left**, dotted
+path on the **right**). For each entry:
+
+- a **dotted** `xsoar_path` (`<param>.<leaf>`) is a **type-9 credential leaf**.
+  Group by `<param>`; map the leaf onto a vault slot — `identifier` → `user`,
+  `password` → `password` — valued by that entry's **role** (the left side).
+  Out-of-scope leaves (e.g. `sshkey`) are ignored (no slot invented).
+- a **flat** (non-dotted) `xsoar_path` is **not** a type-9 credential → ignored.
+
+One entry is produced per `<param>` (`{ id, map }`, `map` with ≥1 slot). For the
+RemoteAccess fixture this yields (semantically equal to the golden):
+
+```yaml
+vault_mappings:
+- id: credentials
+  map:
+    user: username
+    password: password
+- id: additional_password
+  map:
+    password: additional_password
+```
+
+> **Ordering note.** Entries are emitted in the order each `<param>` first
+> appears (left-to-right) in `interpolation_mapping`, so byte-for-byte the patch
+> may list `additional_password` before `credentials`. The E2E comparison is
+> **semantic / order-canonicalized**, so this is equivalent to the golden; the
+> within-`map` slot order is normalized to `user` then `password`.
+
+### Placement
+
+`vault_mappings` is inserted **immediately after** the profile's `description`
+key (before `metadata`) via a `ruamel.yaml` round-trip, so the rest of the file
+is preserved. If there is no `description`, it falls back to after `title`, then
+to before `metadata`, then append.
+
+### Scope guard (passthrough only)
+
+- **Only** `type: passthrough` profiles qualify. `plain`, `api_key`,
+  `external_auth`, `oauth2*` are **never** touched.
+- The `vault_support` boolean is **never** added, removed or altered.
+- A passthrough profile with no dotted type-9 cred in its `interpolation_mapping`
+  gets nothing.
+
+### Safety / idempotency / dry-run
+
+- A passthrough profile that **already** has `vault_mappings` is **skipped** — no
+  duplicate, no reorder; re-running is a **no-op**.
+- Unrelated YAML content and key order are preserved (`ruamel.yaml` round-trip;
+  PyYAML fallback only if `ruamel` is unavailable, with reduced fidelity).
+- `--dry-run` computes + **reports** intended changes and exits `0` without
+  writing.
+
+### CLI flag contract
+
+```bash
+python3 content/connectus/patches/add_vault_support.py \
+    [--connectors-dir DIR] \   # connectors root (default: $CONNECTUS_REPO_DIR/connectors,
+                               #   else <repo-root>/unified-connectors-content/connectors)
+    [--path PATH] \            # one connection.yaml or connector dir/name (default: all)
+    [--pipeline-csv CSV] \     # accepted for parity with flatten_non_type9_nesting.py;
+                               #   NOT needed (derivation is from interpolation_mapping)
+    [--dry-run]                # report only; write nothing; exit 0
+```
+
+- `--connectors-dir DIR` — connectors root to scan/patch.
+- `--path PATH` (or positional) — restrict to one `connection.yaml` or connector
+  dir/name.
+- `--pipeline-csv CSV` — accepted (so the E2E harness's invocation never errors)
+  but unused: the vault_mappings come from each profile's own
+  `interpolation_mapping`, not from the integration YML.
+- `--dry-run` — report only, never write.
+
+### Usage
+
+```bash
+# Whole-repo dry run (recommended first):
+python3 content/connectus/patches/add_vault_support.py --dry-run
+
+# Whole-repo apply in place (default):
+python3 content/connectus/patches/add_vault_support.py
+
+# Restrict to a single connector or connection.yaml:
+python3 content/connectus/patches/add_vault_support.py --path connectors/remoteaccess
+python3 content/connectus/patches/add_vault_support.py --path connectors/remoteaccess/connection.yaml
+```
+
+### Tests
 
 ```bash
 cd content/connectus && python3 -m pytest patches/e2e/add_vault_support_e2e_test.py -v
 ```
+
+The black-box E2E suite invokes the patch as a real subprocess against a
+sandboxed copy of each fixture and compares the result **semantically** to the
+golden. It covers: live back-fill matches `expected/`, `--dry-run` writes
+nothing but reports, idempotent second run, and the scope guard (plain / api_key
+/ `vault_support` profiles left untouched). Contract details are in
+[`e2e/README.md`](e2e/README.md).
