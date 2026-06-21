@@ -1,0 +1,12 @@
+[INGEST:vendor = "absolute", product = "secure_endpoint", target_dataset = "absolute_secure_endpoint_raw", no_hit = keep]
+filter objectProperties != null
+| alter
+    objectProperties_keys = arraymap(regextract(objectProperties, "PropertyName(?:\[\d+?\])?=((?:[^;]+)?)"), replex("@element", "\.", "_")),
+    objectProperties_oldvalue = arraystring(arraymap(regextract(objectProperties, "OldValue(?:\[\d+?\])?=([^\=]+)NewValue"), if("@element" ~= "^;$", replex("@element", "^;$", "None"), "@element" ~= ";$", replex("@element", ";$", ""))), "|"),
+    objectProperties_newvalue = arraystring(arraymap(regextract(objectProperties, "NewValue(?:\[\d+?\])?\=([^\=]+)(?:PropertyName\[\d+\]|;)"), replex("@element", ";$", "")), "|")
+| alter
+    objectProperties_keys = arraystring(arraymap(objectProperties_keys, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    parsed_fields_OldValue = regexcapture(objectProperties_oldvalue, objectProperties_keys),
+    parsed_fields_NewValue = regexcapture(objectProperties_newvalue, objectProperties_keys)
+| fields -objectProperties_keys, objectProperties_oldvalue, objectProperties_newvalue;
