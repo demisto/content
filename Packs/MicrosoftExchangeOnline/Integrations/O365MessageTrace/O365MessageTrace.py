@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
-import time
 import traceback
 from datetime import datetime, timedelta, UTC
 from typing import Any
@@ -39,6 +38,99 @@ class Config:
     # Fixed backoff schedule (in seconds) applied between retries when the Graph
     # API responds with HTTP 429 (Too Many Requests).
     RATE_LIMIT_BACKOFFS = (30, 60, 90)
+
+
+# ============================================================================
+# Microsoft client
+# ============================================================================
+class O365MessageTraceClient(MicrosoftClient):
+    """Thin subclass of :class:`MicrosoftClient` for the O365 Message Trace integration.
+
+    It overrides :meth:`MicrosoftClient.http_request` while keeping the exact same
+    logic as the parent implementation. All other behavior (authentication flows,
+    token retrieval, metrics and error parsing) is inherited unchanged.
+    """
+
+    def http_request(
+        self,
+        *args,
+        resp_type="json",
+        headers=None,
+        return_empty_response=False,
+        scope: str | None = None,
+        resource: str = "",
+        **kwargs,
+    ):
+        """
+        Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
+        Args:
+            resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
+            headers: Headers to add to the request.
+            return_empty_response: Return the response itself if the return_code is 206.
+            scope: A scope to request. Currently, will work only with self-deployed app.
+            resource (str): The resource identifier for which the generated token will have access to.
+        Returns:
+            Response from api according to resp_type. The default is `json` (dict or list).
+        """
+
+        token = self.get_access_token(resource=resource, scope=scope)
+        default_headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+
+        if headers:
+            default_headers |= headers
+
+        if self.timeout:
+            kwargs["timeout"] = self.timeout
+
+        kwargs["error_handler"] = self.handle_error_with_metrics
+
+        response = super()._http_request(  # type: ignore[misc]
+            *args,
+            resp_type="response",
+            headers=default_headers,
+            status_list_to_retry=[503, 429],
+            backoff_factor=30,
+            retries=3,
+            ok_codes=(200, 201, 202, 204, 206, 404),
+            **kwargs,
+        )
+
+        MicrosoftClient.create_api_metrics(response.status_code)
+        # 206 indicates Partial Content, reason will be in the warning header.
+        # In that case, logs with the warning header will be written.
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+        is_response_empty_and_successful = response.status_code == 204
+        if is_response_empty_and_successful and return_empty_response:
+            return response
+
+        # Handle 404 errors instead of raising them as exceptions:
+        if response.status_code == 404:
+            try:
+                error_message = response.json()
+            except Exception:
+                error_message = "Not Found - 404 Response"
+            raise NotFoundError(error_message)
+
+        try:
+            if resp_type == "json":
+                return response.json()
+            if resp_type == "text":
+                return response.text
+            if resp_type == "content":
+                return response.content
+            if resp_type == "xml":
+                try:
+                    import defusedxml.ElementTree as defused_ET
+
+                    defused_ET.fromstring(response.text)
+                except ImportError:
+                    demisto.debug("defused_ET is not supported, using ET instead.")
+                    ET.fromstring(response.text)
+            return response
+        except ValueError as exception:
+            raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
 
 # ============================================================================
@@ -96,39 +188,11 @@ class Client:
             "retry_on_rate_limit": True,
             "timeout": 60,
         }
-        self.ms_client = MicrosoftClient(**client_args)
+        self.ms_client = O365MessageTraceClient(**client_args)
 
     # ------------------------------------------------------------------
     # API calls
     # ------------------------------------------------------------------
-    def _request_with_backoff(self, **http_kwargs) -> dict[str, Any]:
-        """Call Graph, retrying a 429 with fixed backoff (30s, 60s, 90s).
-
-        The shared MicrosoftApiModule hardcodes its retry list to [503] and its
-        rate-limit retry to a single 60s reschedule, so 429 backoff is implemented
-        here. ``overwrite_rate_limit_retry=True`` disables the module reschedule so
-        only this loop governs 429 behavior.
-        """
-        last_exc: Exception | None = None
-        # len(backoffs) retries + 1 initial attempt.
-        for attempt, wait_seconds in enumerate((0, *Config.RATE_LIMIT_BACKOFFS)):
-            if wait_seconds:
-                demisto.debug(f"[RateLimit] 429 received; sleeping {wait_seconds}s before retry {attempt}.")
-                time.sleep(wait_seconds)  # pylint: disable=E9003
-            try:
-                return self.ms_client.http_request(
-                    ok_codes=[200],
-                    overwrite_rate_limit_retry=True,
-                    **http_kwargs,
-                )
-            except Exception as e:
-                if "429" not in str(e):
-                    raise  # not a rate-limit error → propagate immediately
-                last_exc = e
-                demisto.debug(f"[RateLimit] attempt {attempt} hit 429.")
-        # Exhausted all backoffs.
-        raise last_exc  # type: ignore[misc]
-
     def get_message_traces_page(
         self,
         start_date: str | None = None,
@@ -144,14 +208,14 @@ class Client:
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self._request_with_backoff(method="GET", full_url=next_link, url_suffix="")
+            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="")
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self._request_with_backoff(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params)
+        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params)
 
 
 # ============================================================================

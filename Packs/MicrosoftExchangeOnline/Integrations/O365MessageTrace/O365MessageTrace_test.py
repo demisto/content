@@ -93,7 +93,7 @@ class TestParseDatetime:
 class TestFormatDatetimeForFilter:
     def test_formats_in_graph_filter_format(self):
         dt = datetime(2025, 1, 1, 10, 30, 45, tzinfo=UTC)
-        assert format_datetime_for_filter(dt) == "2025-01-01T10:30:45Z"
+        assert format_datetime_for_filter(dt) == "2025-01-01T10:30:45.000000Z"
 
 
 class TestDeduplicateEvents:
@@ -224,8 +224,6 @@ class TestGetMessageTracesPage:
             method="GET",
             full_url="https://graph.microsoft.com/next-page",
             url_suffix="",
-            ok_codes=[200],
-            overwrite_rate_limit_retry=True,
         )
 
     def test_uses_filter_when_no_next_link(self, mock_client):
@@ -240,7 +238,6 @@ class TestGetMessageTracesPage:
         call_args = mock_client.ms_client.http_request.call_args
         assert call_args.kwargs["method"] == "GET"
         assert call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
-        assert call_args.kwargs["ok_codes"] == [200]
         params = call_args.kwargs["params"]
         assert params["$top"] == 500
         assert "receivedDateTime ge 2025-01-01T00:00:00Z" in params["$filter"]
@@ -792,7 +789,7 @@ class TestFetchEvents:
 
         # First http call params should contain the last_fetch start
         first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:00:00.000000Z" in first_call_params["$filter"]
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
         # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the derived
@@ -892,8 +889,8 @@ class TestFetchEvents:
 
         first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
         # Start at last_fetch, end exactly FETCH_WINDOW_MINUTES later.
-        assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
-        assert "2025-01-01T09:05:00Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:00:00.000000Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:05:00.000000Z" in first_call_params["$filter"]
 
     def test_empty_window_advances_last_fetch_to_window_end(self, mock_client, mocker):
         """An empty window must still move last_fetch forward to the window end.
@@ -919,7 +916,7 @@ class TestFetchEvents:
         fetch_events(mock_client, max_events=100)
 
         new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:05:00Z"
+        assert new_state["last_fetch"] == "2025-01-01T09:05:00.000000Z"
         # No events found, so seen_ids should be reset for the new high-water mark.
         assert new_state["seen_ids"] == []
 
@@ -943,8 +940,8 @@ class TestFetchEvents:
 
         first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
         # Window would be 09:05 but now is 09:02, so end is capped at now.
-        assert "2025-01-01T09:02:00Z" in first_call_params["$filter"]
-        assert "2025-01-01T09:05:00Z" not in first_call_params["$filter"]
+        assert "2025-01-01T09:02:00.000000Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:05:00.000000Z" not in first_call_params["$filter"]
 
     def test_seen_ids_holds_sent_ids_at_boundary_timestamp(self, mock_client, mocker):
         """seen_ids holds the IDs of events sent to XSIAM at the high-water-mark timestamp.
@@ -1019,7 +1016,7 @@ class TestFetchEventsInRunLoop:
         assert mock_client.ms_client.http_request.call_count == 3
         # last_run persisted exactly once at the end of the run.
         set_last_run.assert_called_once()
-        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:15:00Z"
+        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:15:00.000000Z"
 
     def test_first_call_starts_at_oldest_window(self, mock_client, mocker):
         """The loop must walk oldest->newest: the first request is the oldest window."""
@@ -1034,11 +1031,11 @@ class TestFetchEventsInRunLoop:
         fetch_events(mock_client, max_events=100)
 
         first_filter = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]["$filter"]
-        assert "receivedDateTime ge 2025-01-01T09:00:00Z" in first_filter
-        assert "receivedDateTime le 2025-01-01T09:05:00Z" in first_filter
+        assert "receivedDateTime ge 2025-01-01T09:00:00.000000Z" in first_filter
+        assert "receivedDateTime le 2025-01-01T09:05:00.000000Z" in first_filter
         last_filter = mock_client.ms_client.http_request.call_args_list[-1].kwargs["params"]["$filter"]
-        assert "receivedDateTime ge 2025-01-01T09:10:00Z" in last_filter
-        assert "receivedDateTime le 2025-01-01T09:15:00Z" in last_filter
+        assert "receivedDateTime ge 2025-01-01T09:10:00.000000Z" in last_filter
+        assert "receivedDateTime le 2025-01-01T09:15:00.000000Z" in last_filter
 
     def test_stops_advancing_when_max_events_reached(self, mock_client, mocker):
         """When a window fills up to ``max_events`` the loop breaks and resumes at the
@@ -1145,7 +1142,7 @@ class TestFetchEventsInRunLoop:
         assert mock_client.ms_client.http_request.call_count == 6
         # last_fetch advanced all the way to ``now`` (09:30): the backlog is drained.
         new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:30:00Z"
+        assert new_state["last_fetch"] == "2025-01-01T09:30:00.000000Z"
 
     def test_catch_up_truncates_total_to_max_events(self, mock_client, mocker):
         """Events accumulated across multiple windows must be truncated to
@@ -1240,90 +1237,72 @@ class TestFetchEventsInRunLoop:
 
 
 # ============================================================================
-# Rate-limit backoff tests
+# Rate-limit retry tests
 # ============================================================================
-class TestRequestWithBackoff:
-    """``Client._request_with_backoff`` retries a 429 with the fixed backoff
-    schedule defined by ``Config.RATE_LIMIT_BACKOFFS`` and disables the shared
-    module's own rate-limit reschedule via ``overwrite_rate_limit_retry=True``.
+@pytest.fixture
+def http_client(mocker):
+    """Return an ``O365MessageTraceClient`` whose parent ``_http_request`` is mocked.
+
+    Bypasses ``__init__`` to avoid building the real :class:`MicrosoftClient`
+    machinery (token retrieval, integration context, etc.). The overridden
+    ``http_request`` delegates retry handling to the parent ``BaseClient._http_request``
+    (via ``super()._http_request``), which is what these tests inspect.
+    """
+    client = O365MessageTrace.O365MessageTraceClient.__new__(O365MessageTrace.O365MessageTraceClient)  # bypass __init__
+    client._ok_codes = None
+    client.timeout = 60
+    client.retry_on_rate_limit = True
+    mocker.patch.object(client, "get_access_token", return_value="token")
+    mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
+    return client
+
+
+class TestHttpRequestRateLimitRetry:
+    """The overridden ``O365MessageTraceClient.http_request`` delegates 429 (and 503)
+    retries to ``BaseClient._http_request`` by passing ``status_list_to_retry``,
+    ``backoff_factor`` and ``retries``.
     """
 
-    def test_returns_response_on_first_success_without_sleeping(self, mock_client, mocker):
-        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
-        mock_client.ms_client.http_request.return_value = {"value": ["ok"]}
+    def test_passes_429_in_status_list_to_retry(self, http_client, mocker):
+        response = MagicMock(status_code=200)
+        response.json.return_value = {"value": ["ok"]}
+        # The override calls super()._http_request(...), which resolves to BaseClient._http_request.
+        base_http_request = mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
 
-        result = mock_client._request_with_backoff(method="GET", url_suffix="x")
-
-        assert result == {"value": ["ok"]}
-        mock_client.ms_client.http_request.assert_called_once()
-        sleep_mock.assert_not_called()
-
-    def test_passes_overwrite_rate_limit_retry_and_ok_codes(self, mock_client, mocker):
-        mocker.patch.object(O365MessageTrace.time, "sleep")
-        mock_client.ms_client.http_request.return_value = {}
-
-        mock_client._request_with_backoff(method="GET", full_url="full-url-placeholder", url_suffix="")
-
-        call_kwargs = mock_client.ms_client.http_request.call_args.kwargs
-        assert call_kwargs["overwrite_rate_limit_retry"] is True
-        assert call_kwargs["ok_codes"] == [200]
-        assert call_kwargs["method"] == "GET"
-        assert call_kwargs["full_url"] == "full-url-placeholder"
-
-    def test_retries_429_then_succeeds(self, mock_client, mocker):
-        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
-        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
-        mock_client.ms_client.http_request.side_effect = [rate_limit_error, {"value": ["ok"]}]
-
-        result = mock_client._request_with_backoff(method="GET", url_suffix="x")
+        result = http_client.http_request(method="GET", url_suffix="x")
 
         assert result == {"value": ["ok"]}
-        assert mock_client.ms_client.http_request.call_count == 2
-        # First backoff value is used before the retry.
-        sleep_mock.assert_called_once_with(Config.RATE_LIMIT_BACKOFFS[0])
+        call_kwargs = base_http_request.call_args.kwargs
+        assert 429 in call_kwargs["status_list_to_retry"]
+        assert 503 in call_kwargs["status_list_to_retry"]
+        assert call_kwargs["retries"] >= 1
 
-    def test_exhausts_all_backoffs_then_raises(self, mock_client, mocker):
-        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
-        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
-        # Always 429: initial attempt + len(backoffs) retries all fail.
-        mock_client.ms_client.http_request.side_effect = rate_limit_error
+    def test_404_raises_not_found_error(self, http_client, mocker):
+        response = MagicMock(status_code=404)
+        response.json.return_value = {"error": "missing"}
+        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
 
-        with pytest.raises(Exception, match="429"):
-            mock_client._request_with_backoff(method="GET", url_suffix="x")
-
-        # initial attempt + one retry per backoff value.
-        assert mock_client.ms_client.http_request.call_count == 1 + len(Config.RATE_LIMIT_BACKOFFS)
-        assert [c.args[0] for c in sleep_mock.call_args_list] == list(Config.RATE_LIMIT_BACKOFFS)
-
-    def test_non_429_error_propagates_immediately_without_retry(self, mock_client, mocker):
-        sleep_mock = mocker.patch.object(O365MessageTrace.time, "sleep")
-        other_error = Exception("Error in API call [500] - Internal Server Error")
-        mock_client.ms_client.http_request.side_effect = other_error
-
-        with pytest.raises(Exception, match="500"):
-            mock_client._request_with_backoff(method="GET", url_suffix="x")
-
-        mock_client.ms_client.http_request.assert_called_once()
-        sleep_mock.assert_not_called()
+        with pytest.raises(O365MessageTrace.NotFoundError):
+            http_client.http_request(method="GET", url_suffix="x")
 
 
-class TestGetMessageTracesPageUsesBackoff:
+class TestGetMessageTracesPageUsesHttpRequest:
     """``get_message_traces_page`` must route both the first-page and
-    next-link requests through ``_request_with_backoff``.
+    next-link requests through ``ms_client.http_request``.
     """
 
-    def test_first_page_uses_backoff(self, mock_client, mocker):
-        backoff_mock = mocker.patch.object(mock_client, "_request_with_backoff", return_value={"value": []})
+    def test_first_page_uses_http_request(self, mock_client):
+        mock_client.ms_client.http_request.return_value = {"value": []}
 
         mock_client.get_message_traces_page(start_date="2025-01-01T00:00:00Z", end_date="2025-01-01T01:00:00Z")
 
-        backoff_mock.assert_called_once()
-        assert backoff_mock.call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
+        mock_client.ms_client.http_request.assert_called_once()
+        assert mock_client.ms_client.http_request.call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
 
-    def test_next_link_uses_backoff(self, mock_client, mocker):
-        backoff_mock = mocker.patch.object(mock_client, "_request_with_backoff", return_value={"value": []})
+    def test_next_link_uses_http_request(self, mock_client):
+        mock_client.ms_client.http_request.return_value = {"value": []}
 
         mock_client.get_message_traces_page(next_link="next-link-placeholder")
 
-        backoff_mock.assert_called_once()
-        assert backoff_mock.call_args.kwargs["full_url"] == "next-link-placeholder"
+        mock_client.ms_client.http_request.assert_called_once()
+        assert mock_client.ms_client.http_request.call_args.kwargs["full_url"] == "next-link-placeholder"
