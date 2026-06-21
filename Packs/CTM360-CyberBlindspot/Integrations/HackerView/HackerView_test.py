@@ -1,16 +1,17 @@
-import pytest
 import logging
 from datetime import datetime
-from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus, IncidentSeverity
+
+import pytest
+from CommonServerPython import DemistoException, IncidentSeverity, IncidentStatus
+from dateparser import parse
 from HackerView import (
-    LOGGING_PREFIX,
-    HV_INCOMING_DATE_FORMAT,
-    HV_OUTGOING_DATE_FORMAT,
     ABSOLUTE_MAX_FETCH,
-    HV_LIGHTSCAN_FIELDS,
     HV_DEEPSCAN_FIELDS,
+    HV_INCOMING_DATE_FORMAT,
+    HV_LIGHTSCAN_FIELDS,
+    HV_OUTGOING_DATE_FORMAT,
+    LOGGING_PREFIX,
 )
 
 """CONSTANTS"""  # pylint: disable="pointless-string-statement”
@@ -231,7 +232,7 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, module):
     Then:
         - Create a new incident dictionary that is in XSOAR-appropriate structure and return it.
     """
-    from HackerView import map_and_create_incident, Instance
+    from HackerView import Instance, map_and_create_incident
 
     mock_fetched_incident = dict(load_mock_response(mock_input_file)[0])
     expected_raw = load_mock_response(mock_assert_file)
@@ -385,7 +386,7 @@ def test_get_mapping_fields_command(mock_module, module_fields):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned.
     """
-    from HackerView import get_mapping_fields_command, Instance
+    from HackerView import Instance, get_mapping_fields_command
 
     mock_instance = Instance(module=mock_module)
     with patch("HackerView.INSTANCE", new=mock_instance):
@@ -473,7 +474,7 @@ def test_fetch_incidents_command(response_files_names, mock_params, fetch_case, 
         # Case 4:
             - DemistoException is raised.
     """
-    from HackerView import fetch_incidents, Instance
+    from HackerView import Instance, fetch_incidents
 
     last_fetch_ids = fetch_case["last_fetch_ids"]
     # `main()` merges `module_type` into fetch params before calling this helper.
@@ -559,7 +560,7 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
     Then:
         - Fetch the list of incidents from the remote server.
     """
-    from HackerView import ctm360_hv_incident_list_command, Instance
+    from HackerView import Instance, ctm360_hv_incident_list_command
 
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
@@ -631,7 +632,7 @@ def test_ctm360_hv_incident_details_command(response_file_name, mock_args, mock_
     Then:
         - Ensure result is as expected.
     """
-    from HackerView import ctm360_hv_incident_details_command, Instance
+    from HackerView import Instance, ctm360_hv_incident_details_command
 
     patched_response = load_mock_response(response_file_name)[0] if response_file_name else {}
     mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
@@ -703,7 +704,12 @@ def test_get_remote_data(mock_last_seen, mock_last_updated, mock_status, mock_cl
         - Ensure result is as expected.
     """
     from copy import deepcopy
-    from HackerView import get_remote_data_command, map_and_create_incident, convert_time_string
+
+    from HackerView import (
+        convert_time_string,
+        get_remote_data_command,
+        map_and_create_incident,
+    )
 
     mock_args = {"id": "HVI-11145070", "lastUpdate": "2024-10-26T12:34:03.172707565Z"}
     mock_result = load_mock_response("incident_details_response_valid.json")[0]
@@ -781,7 +787,7 @@ def test_get_modified_remote_data(mock_input_file, module, mock_client, mocker):
     Then:
         - Ensure result is as expected
     """
-    from HackerView import get_modified_remote_data_command, Instance
+    from HackerView import Instance, get_modified_remote_data_command
 
     mock_args = {
         "date_field": "last_updated",
@@ -881,12 +887,12 @@ def test_resolve_hv_module_defaults_to_lightscan(module_to_use, expected):
 @pytest.mark.parametrize(
     "is_xsiam_platform, expected_severity",
     [
-        (True, "medium"),
+        (True, IncidentSeverity.MEDIUM),
         (False, IncidentSeverity.MEDIUM),
     ],
 )
 def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expected_severity, mocker):
-    """XSIAM keeps API severity text; XSOAR maps to numeric incident severity."""
+    """Incident fetch maps API severity to numeric Demisto severity on all platforms."""
     from HackerView import Instance, map_and_create_incident
 
     mocker.patch("HackerView.is_xsiam", return_value=is_xsiam_platform)

@@ -1,10 +1,10 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
-
-import urllib3
-from typing import Any
 
 """ IMPORTS """
 
@@ -389,14 +389,6 @@ def convert_to_demisto_severity(severity: str) -> int | float:
     }[severity.lower()]
 
 
-def use_text_severity() -> bool:
-    """Return True when incidents should keep API severity text (XSIAM/unified platform)."""
-    if is_xsiam():
-        return True
-    is_platform_fn = globals().get("is_platform")
-    return bool(callable(is_platform_fn) and is_platform_fn())
-
-
 def convert_time_string(
     time_string: str,
     input_format_string: str,
@@ -502,8 +494,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     """
     unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
-    api_severity = unmapped_incident.pop("severity", "low")
-    mapped_severity: int | float | str = api_severity if use_text_severity() else convert_to_demisto_severity(api_severity)
+    mapped_severity = convert_to_demisto_severity(unmapped_incident.pop("severity", "low"))
     mapped_incident = {
         "name": unmapped_incident.pop("remarks", ""),
         "occurred": convert_time_string(

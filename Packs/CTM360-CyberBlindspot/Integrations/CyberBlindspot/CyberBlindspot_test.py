@@ -1,23 +1,30 @@
-import pytest
 import logging
 from datetime import datetime
-from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus, IncidentSeverity, EntryType, CommandResults
+
+import pytest
+from CommonServerPython import (
+    CommandResults,
+    DemistoException,
+    EntryType,
+    IncidentSeverity,
+    IncidentStatus,
+)
 from CyberBlindspot import (
-    LOGGING_PREFIX,
-    CBS_INCOMING_DATE_FORMAT,
-    CBS_OUTGOING_DATE_FORMAT,
     ABSOLUTE_MAX_FETCH,
-    CBS_INCIDENT_FIELDS,
     CBS_CARD_FIELDS,
     CBS_CRED_FIELDS,
     CBS_DOMAIN_INFRINGE_FIELDS,
-    CBS_MALWARE_LOG_FIELDS,
-    CBS_SMF_FIELDS,
-    CBS_MM_FIELDS,
     CBS_GS_FIELDS,
+    CBS_INCIDENT_FIELDS,
+    CBS_INCOMING_DATE_FORMAT,
+    CBS_MALWARE_LOG_FIELDS,
+    CBS_MM_FIELDS,
+    CBS_OUTGOING_DATE_FORMAT,
+    CBS_SMF_FIELDS,
+    LOGGING_PREFIX,
 )
+from dateparser import parse
 
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
@@ -603,12 +610,12 @@ def test_resolve_cbs_module_defaults_to_incidents(module_to_use, expected):
 @pytest.mark.parametrize(
     "is_xsiam_platform, expected_severity",
     [
-        (True, "medium"),
+        (True, IncidentSeverity.MEDIUM),
         (False, IncidentSeverity.MEDIUM),
     ],
 )
 def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expected_severity, mocker):
-    """XSIAM keeps API severity text; XSOAR maps to numeric incident severity."""
+    """Incident fetch maps API severity to numeric Demisto severity on all platforms."""
     from CyberBlindspot import map_and_create_incident
 
     mocker.patch("CyberBlindspot.is_xsiam", return_value=is_xsiam_platform)
@@ -860,7 +867,7 @@ def test_get_mapping_fields_command(mock_module, expected_mappings):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned.
     """
-    from CyberBlindspot import get_mapping_fields_command, Instance
+    from CyberBlindspot import Instance, get_mapping_fields_command
 
     mock_instance = Instance(module=mock_module)
 
@@ -1092,7 +1099,7 @@ def test_ctm360_cbs_incident_list_command(
     Then:
         - Fetch the list of incidents from the remote server.
     """
-    from CyberBlindspot import ctm360_cbs_list_command, Instance
+    from CyberBlindspot import Instance, ctm360_cbs_list_command
 
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
@@ -1353,7 +1360,7 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
     Then:
         - Ensure result is as expected.
     """
-    from CyberBlindspot import ctm360_cbs_details_command, Instance, normalize_timestamp
+    from CyberBlindspot import Instance, ctm360_cbs_details_command, normalize_timestamp
 
     mock_instance = Instance(module=mock_module)
 
@@ -1494,7 +1501,12 @@ def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mo
         - Ensure result is as expected.
     """
     from copy import deepcopy
-    from CyberBlindspot import get_remote_data_command, map_and_create_incident, Instance
+
+    from CyberBlindspot import (
+        Instance,
+        get_remote_data_command,
+        map_and_create_incident,
+    )
 
     mock_args = {"id": "COMX165756654321", "lastUpdate": "2024-01-02T13:30:21.172707565Z"}
     mock_result = load_mock_response(mock_response)

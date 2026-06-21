@@ -277,14 +277,6 @@ def convert_to_demisto_severity(severity: str) -> int | float:
     }[severity.lower()]
 
 
-def use_text_severity() -> bool:
-    """Return True when incidents should keep API severity text (XSIAM/unified platform)."""
-    if is_xsiam():
-        return True
-    is_platform_fn = globals().get("is_platform")
-    return bool(callable(is_platform_fn) and is_platform_fn())
-
-
 def convert_time_string(
     time_string: str | int,
     input_format_string: str,
@@ -370,8 +362,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     # Remove unnecessary fields
     unmapped_incident.pop("ticket_id", "")
     unmapped_incident.pop("last_updated", "")
-    api_severity = unmapped_incident.pop("severity", "low")
-    mapped_severity: int | float | str = api_severity if use_text_severity() else convert_to_demisto_severity(api_severity)
+    mapped_severity = convert_to_demisto_severity(unmapped_incident.pop("severity", "low"))
     mapped_incident = {
         "name": unmapped_incident.pop("issue_name"),
         "occurred": convert_time_string(
