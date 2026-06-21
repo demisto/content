@@ -445,7 +445,7 @@ class TestFetchActivity:
         assert "params" in called_kwargs
         assert called_kwargs["params"].get("sysparm_limit") == 40
         assert called_kwargs["params"].get("sysparm_offset") == 5
-        assert called_kwargs["params"].get("sysparm_query") == "sys_created_on>2025-01-01 00:00:00"
+        assert called_kwargs["params"].get("sysparm_query") == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
 
     @pytest.mark.parametrize(
         "log_type, expected_default_limit",
