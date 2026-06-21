@@ -1228,7 +1228,6 @@ class TestFilePermissionMethods:
         assert call_kwargs["body"]["name"] == "Shared Drive Folder"
         assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
 
-
 def test_mask_sensitive_values():
     """
     Scenario: Mask sensitive values in a params dictionary.
@@ -1314,6 +1313,7 @@ def test_connectus_info_command_ucp_enabled(mocker, gsuite_client):
     assert result.outputs["ConnectUs"]["ucp_enabled"] is True
     assert result.outputs["ConnectUs"]["capability"] == "automation-and-remediation"
     assert result.outputs["ConnectUs"]["method_unique_id"] == "method-123"
+
     @patch(MOCKER_HTTP_METHOD)
     def test_file_delete_command_soft_delete_true(self, mocker_http_request, gsuite_client):
         """
