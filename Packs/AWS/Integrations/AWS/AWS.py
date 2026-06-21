@@ -994,10 +994,11 @@ class AWSErrorHandler:
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
         """
         try:
+            demisto.debug(f"The original error message: {err}")
             error_code = err.response.get("Error", {}).get("Code")
             error_message = err.response.get("Error", {}).get("Message")
             http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-            demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
+            demisto.debug(f"[AWSErrorHandler] Got a client error: {error_message}")
             if not error_code or not error_message or not http_status_code:
                 return_error(err)
             # Check if this is a permission-related error
@@ -10567,7 +10568,6 @@ class NetworkFirewall:
             "Scope": args.get("scope"),
             "ManagedType": args.get("managed_type"),
             "Type": args.get("type"),
-            "SubscriptionStatus": args.get("subscription_status"),
         }
         kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
         remove_nulls_from_dictionary(kwargs)
