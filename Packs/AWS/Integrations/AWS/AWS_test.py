@@ -17225,6 +17225,327 @@ def test_inventory_list_command_pagination(mocker):
     assert result.outputs["AWS.SSM(true)"]["InventoryNextToken"] == "next-inv-tok"
 
 
+def test_assume_role_credentials_returns_temp_creds(mocker):
+    """
+    Given: Integration params with role_arn, role_session_name, and valid AK/SK.
+    When: _assume_role_credentials is called.
+    Then: It calls sts.assume_role and returns the Credentials dict.
+    """
+    from AWS import _assume_role_credentials
+
+    mock_sts = mocker.Mock()
+    mock_sts.assume_role.return_value = {
+        "Credentials": {
+            "AccessKeyId": "ASIA_TMP",
+            "SecretAccessKey": "tmp-secret",
+            "SessionToken": "tmp-token",
+        }
+    }
+    mocker.patch("boto3.client", return_value=mock_sts)
+    mocker.patch.object(demisto, "debug")
+
+    params = {
+        "role_arn": "arn:aws:iam::123456789012:role/MyRole",
+        "role_session_name": "test-session",
+        "session_duration": None,
+        "sts_region": "",
+        "sts_endpoint_url": None,
+        "sts_regional_endpoint": None,
+        "insecure": False,
+    }
+    result = _assume_role_credentials(
+        params=params,
+        access_key_id="dummy_access_key",
+        secret_access_key="dummy_secret_key",
+        region="us-east-1",
+    )
+
+    mock_sts.assume_role.assert_called_once_with(
+        RoleArn="arn:aws:iam::123456789012:role/MyRole",
+        RoleSessionName="test-session",
+    )
+    assert result["AccessKeyId"] == "ASIA_TMP"
+    assert result["SessionToken"] == "tmp-token"
+
+
+def test_assume_role_credentials_with_session_duration(mocker):
+    """
+    Given: Integration params with session_duration set.
+    When: _assume_role_credentials is called.
+    Then: DurationSeconds is included in the assume_role call.
+    """
+    from AWS import _assume_role_credentials
+
+    mock_sts = mocker.Mock()
+    mock_sts.assume_role.return_value = {"Credentials": {"AccessKeyId": "A", "SecretAccessKey": "B", "SessionToken": "C"}}
+    mocker.patch("boto3.client", return_value=mock_sts)
+    mocker.patch.object(demisto, "debug")
+
+    params = {
+        "role_arn": "arn:aws:iam::123456789012:role/MyRole",
+        "role_session_name": "sess",
+        "session_duration": "3600",
+        "sts_region": "",
+        "sts_endpoint_url": None,
+        "sts_regional_endpoint": None,
+        "insecure": False,
+    }
+    _assume_role_credentials(
+        params=params,
+        access_key_id="AK",
+        secret_access_key="SK",
+        region="us-east-1",
+    )
+
+    call_kwargs = mock_sts.assume_role.call_args[1]
+    assert call_kwargs["DurationSeconds"] == 3600
+
+
+def test_get_service_client_marketplace_no_role(mocker):
+    """
+    Given: Marketplace params with AK/SK but no role_arn.
+    When: get_service_client is called.
+    Then: A boto3 Session is created with the AK/SK directly (no STS call).
+    """
+    from AWS import get_service_client
+
+    mock_session_cls = mocker.patch("AWS.Session")
+    mock_session = mocker.Mock()
+    mock_session_cls.return_value = mock_session
+    mock_client = mocker.Mock()
+    mock_session.client.return_value = mock_client
+
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch.object(demisto, "debug")
+
+    params = {
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
+        "role_arn": "",
+        "region": "us-east-1",
+        "timeout": "60,10",
+        "retries": "3",
+        "endpoint_url": None,
+        "insecure": True,
+    }
+    client, session = get_service_client(params=params, service_name="sts")
+
+    mock_session_cls.assert_called_once_with(
+        aws_access_key_id="dummy_access_key",
+        aws_secret_access_key="dummy_secret_key",
+        region_name="us-east-1",
+    )
+    assert client == mock_client
+
+
+def test_get_service_client_marketplace_with_role(mocker):
+    """
+    Given: Marketplace params with AK/SK and role_arn.
+    When: get_service_client is called.
+    Then: sts_client.assume_role is called with the configured role ARN, and the resulting
+        boto3 Session is built from the returned temporary credentials.
+    """
+    from AWS import get_service_client
+
+    # Mock the STS client created inside _assume_role_credentials via boto3.client.
+    mock_sts_client = mocker.Mock()
+    mock_sts_client.assume_role.return_value = {
+        "Credentials": {
+            "AccessKeyId": "ASIA_TMP",
+            "SecretAccessKey": "tmp-sk",
+            "SessionToken": "tmp-tok",
+        }
+    }
+    mocker.patch("boto3.client", return_value=mock_sts_client)
+
+    mock_session_cls = mocker.patch("AWS.Session")
+    mock_session = mocker.Mock()
+    mock_session_cls.return_value = mock_session
+    mock_session.client.return_value = mocker.Mock()
+
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch.object(demisto, "debug")
+
+    params = {
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
+        "role_arn": "arn:aws:iam::123456789012:role/MyRole",
+        "role_session_name": "test-session",
+        "region": "us-east-1",
+        "timeout": "60,10",
+        "retries": "3",
+        "endpoint_url": None,
+        "insecure": True,
+    }
+    get_service_client(params=params, service_name="sts")
+
+    # Verify sts_client.assume_role was called with the configured role ARN.
+    mock_sts_client.assume_role.assert_called_once_with(
+        RoleArn="arn:aws:iam::123456789012:role/MyRole",
+        RoleSessionName="test-session",
+    )
+
+    # Verify the session was built from the temporary credentials returned by STS.
+    mock_session_cls.assert_called_once_with(
+        aws_access_key_id="ASIA_TMP",
+        aws_secret_access_key="tmp-sk",
+        aws_session_token="tmp-tok",
+        region_name="us-east-1",
+    )
+
+
+def test_get_service_client_missing_credentials_raises(mocker):
+    """
+    Given: Marketplace params with empty credentials.
+    When: get_service_client is called.
+    Then: DemistoException is raised with a helpful message.
+    """
+    from AWS import get_service_client
+
+    mocker.patch("AWS.get_connector_id", return_value=None)
+
+    params = {
+        "credentials": {"identifier": "", "password": ""},
+        "role_arn": "",
+        "region": "us-east-1",
+        "timeout": "60,10",
+        "retries": "3",
+        "endpoint_url": None,
+        "insecure": True,
+    }
+    with pytest.raises(DemistoException, match="AWS credentials are not configured"):
+        get_service_client(params=params, service_name="sts")
+
+
+def test_execute_aws_command_single_account(mocker):
+    """
+    Given: No access_role_name or accounts_to_access in params.
+    When: execute_aws_command is called.
+    Then: The command is executed once via get_service_client (single-account path).
+    """
+    from AWS import execute_aws_command
+
+    mock_client = mocker.Mock()
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
+    mock_result = CommandResults(readable_output="ok")
+    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": lambda client, args: mock_result})
+    mocker.patch.object(demisto, "debug")
+
+    params = {"access_role_name": "", "accounts_to_access": ""}
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = execute_aws_command("aws-iam-roles-list", args, params)
+
+    assert result == mock_result
+
+
+def test_execute_aws_command_multi_account_fan_out(mocker):
+    """
+    Given: access_role_name and accounts_to_access are both set.
+    When: execute_aws_command is called.
+    Then: The command is executed once per account and results are tagged with AccountId.
+    """
+    from AWS import execute_aws_command
+
+    mock_client = mocker.Mock()
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    def fake_command(client, args):
+        return CommandResults(
+            readable_output="roles",
+            outputs={"RoleName": "MyRole"},
+            outputs_prefix="AWS.IAM",
+        )
+
+    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": fake_command})
+
+    params = {
+        "access_role_name": "my-cross-account-role",
+        "accounts_to_access": "111111111111,222222222222",
+        "max_workers": "2",
+    }
+    args = {"region": "us-east-1"}
+
+    results = execute_aws_command("aws-iam-roles-list", args, params)
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+    account_ids = {r.outputs.get("AccountId") for r in results}
+    assert account_ids == {"111111111111", "222222222222"}
+
+
+def test_execute_aws_command_multi_account_error_isolation(mocker):
+    """
+    Given: Multi-account fan-out where one account raises an exception.
+    When: execute_aws_command is called.
+    Then: The failing account returns an error entry; the batch is not aborted.
+    """
+    from AWS import execute_aws_command
+    from CommonServerPython import EntryType
+
+    call_count = {"n": 0}
+
+    def fake_command(client, args):
+        call_count["n"] += 1
+        if args.get("account_id") == "111111111111":
+            raise Exception("AccessDenied")
+        return CommandResults(readable_output="ok", outputs={"RoleName": "R"}, outputs_prefix="AWS.IAM")
+
+    mock_client = mocker.Mock()
+    mocker.patch("AWS.get_connector_id", return_value=None)
+    mocker.patch("AWS.get_service_client", return_value=(mock_client, None))
+    mocker.patch("AWS.COMMANDS_MAPPING", {"aws-iam-roles-list": fake_command})
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    params = {
+        "access_role_name": "my-role",
+        "accounts_to_access": "111111111111,222222222222",
+        "max_workers": "2",
+    }
+    results = execute_aws_command("aws-iam-roles-list", {"region": "us-east-1"}, params)
+
+    assert len(results) == 2
+    error_results = [r for r in results if r.entry_type == EntryType.ERROR]
+    ok_results = [r for r in results if r.entry_type != EntryType.ERROR]
+    assert len(error_results) == 1
+    assert len(ok_results) == 1
+    assert "AccessDenied" in error_results[0].readable_output
+
+
+def test_test_module_marketplace_calls_get_caller_identity(mocker):
+    """
+    Given: Marketplace params with valid AK/SK.
+    When: test_module is called.
+    Then: get_service_client is called with service_name='sts' and get_caller_identity is invoked.
+    """
+    from AWS import test_module
+
+    mock_sts_client = mocker.Mock()
+    mock_sts_client.get_caller_identity.return_value = {
+        "Account": "123456789012",
+        "Arn": "arn:aws:iam::123456789012:user/test",
+        "UserId": "dummy_id",
+    }
+    mocker.patch("AWS.get_service_client", return_value=(mock_sts_client, None))
+    mocker.patch.object(demisto, "info")
+
+    params = {
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
+        "role_arn": "",
+        "region": "us-east-1",
+        "timeout": "60,10",
+        "retries": "3",
+        "insecure": True,
+    }
+    result = test_module(params)
+
+    assert result == "ok"
+    mock_sts_client.get_caller_identity.assert_called_once()
+
+
 def test_describe_firewall_command(mocker):
     """
     Given:
