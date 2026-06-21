@@ -25,7 +25,7 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]{3
 
 filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and not _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]+"
 | alter
-    tmp_current_year = format_timestamp("%Y", _insert_time),
+    tmp_current_year = format_timestamp("%Y", _insert_time), 
     tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
 | alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp), "UTC") 
 | alter _time = if(
