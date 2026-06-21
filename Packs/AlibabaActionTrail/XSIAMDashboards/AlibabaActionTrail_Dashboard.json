@@ -547,5 +547,8 @@
             }
         }
     ],
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "xsiam"
+    ]
 }
