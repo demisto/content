@@ -962,9 +962,7 @@ def get_bot_access_token() -> str:
             set_integration_context(integration_context)
 
         error = error_parser(response, "bot")
-        raise ContentAuthError(
-            f"Failed to get bot access token [{response.status_code}] - {error}", status_code=response.status_code
-        )
+        raise ValueError(f"Failed to get bot access token [{response.status_code}] - {error}")
 
     try:
         response_json: dict = response.json()
@@ -980,7 +978,7 @@ def get_bot_access_token() -> str:
         set_integration_context(integration_context)
         return access_token
     except ValueError:
-        raise ContentAuthError("Failed to get bot access token")
+        raise ValueError("Failed to get bot access token")
 
 
 def resolve_user_id_for_proactive_message(user_identifier: str) -> str:
@@ -1188,9 +1186,7 @@ def get_graph_access_token(auth_type: str = "") -> str:
     response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES, headers=headers)
     if not response.ok:
         error = error_parser(response)
-        raise ContentAuthError(
-            f"Failed to get Graph access token [{response.status_code}] - {error}", status_code=response.status_code
-        )
+        raise ValueError(f"Failed to get Graph access token [{response.status_code}] - {error}")
     try:
         response_json: dict = response.json()
         access_token = response_json.get("access_token", "")
@@ -1212,7 +1208,7 @@ def get_graph_access_token(auth_type: str = "") -> str:
         set_integration_context(integration_context)
         return access_token
     except ValueError:
-        raise ContentAuthError("Failed to get Graph access token")
+        raise ValueError("Failed to get Graph access token")
 
 
 def http_request(
@@ -1263,10 +1259,7 @@ If the problem is not resolved, see Troubleshooting step #5 in the integration d
 
 (Error Message): {error}"""
 
-            raise ContentApiError(
-                f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}",
-                status_code=response.status_code,
-            )
+            raise ValueError(f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}")
 
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
@@ -1280,23 +1273,23 @@ If the problem is not resolved, see Troubleshooting step #5 in the integration d
         try:
             return response.json()
         except ValueError:
-            raise ContentParseError(f"Error in API call to Microsoft Teams: [{response.status_code}] - {response.text}")
+            raise ValueError(f"Error in API call to Microsoft Teams: [{response.status_code}] - {response.text}")
     except requests.exceptions.ConnectTimeout:
         error_message = (
             "Connection Timeout Error - potential reason may be that Microsoft Teams is not accessible from your host."
         )
-        raise ContentConnectionError(error_message)
+        raise ConnectionError(error_message)
     except requests.exceptions.SSLError:
         error_message = (
             "SSL Certificate Verification Failed - try selecting 'Trust any certificate' in the integration configuration."
         )
-        raise ContentApiError(error_message, api_error_type=ErrorTypes.SSL_ERROR)
+        raise ConnectionError(error_message)
     except requests.exceptions.ProxyError:
         error_message = (
             "Proxy Error - if 'Use system proxy settings' in the integration configuration has been "
             "selected, try deselecting it."
         )
-        raise ContentApiError(error_message, api_error_type=ErrorTypes.PROXY_ERROR)
+        raise ConnectionError(error_message)
 
 
 def integration_health():
@@ -2199,7 +2192,7 @@ def resolve_chat_or_channel(
     if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
         error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
 
-    raise ContentResourceNotFoundError("chat or channel", identifier=chat_or_channel, message=error_message)
+    raise DemistoException(error_message)
 
 
 def fetch_channel_messages(
@@ -2237,11 +2230,7 @@ def list_messages_command():
     else:
         entity_type, resolved_id = resolve_chat_or_channel(chat_or_channel, team_name)
         if not resolved_id:
-            raise ContentResourceNotFoundError(
-                "chat or channel",
-                identifier=chat_or_channel,
-                message=f"Could not resolve {chat_or_channel} as a valid chat or channel.",
-            )
+            raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
 
         if entity_type == "chat":
             demisto.debug(f"Fetching messages from chat {resolved_id}.")
