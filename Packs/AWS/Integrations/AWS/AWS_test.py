@@ -20327,7 +20327,6 @@ def test_list_rule_groups_command_with_filters(mocker):
         "scope": "MANAGED",
         "managed_type": "AWS_MANAGED_THREAT_SIGNATURES",
         "type": "STATEFUL",
-        "subscription_status": "SUBSCRIBED",
     }
 
     # When
@@ -20338,7 +20337,6 @@ def test_list_rule_groups_command_with_filters(mocker):
         Scope="MANAGED",
         ManagedType="AWS_MANAGED_THREAT_SIGNATURES",
         Type="STATEFUL",
-        SubscriptionStatus="SUBSCRIBED",
         MaxResults=50,
     )
 
