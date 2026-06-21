@@ -54,12 +54,15 @@ The implementation depends on these host-provided seams (named per language):
 
 ### A.2 Capability resolution
 
-Constants (Python `:13690-13694`, JS `:2125-2129`):
+Constants (Python `:13690-13697`, JS `:2125-2132`):
 
 ```
 _UCP_DEFAULT_CAPABILITY   = 'automation-and-remediation'
-_UCP_COMMAND_CAPABILITIES = { 'fetch-incidents': 'collection-and-ingestion',
-                              'fetch-assets':    'collection-and-ingestion' }
+_UCP_COMMAND_CAPABILITIES = { 'fetch-incidents':   'fetch-issues',
+                              'fetch-events':      'log-collection',
+                              'fetch-credentials': 'fetch-secrets',
+                              'fetch-indicators':  'threat-intelligence-and-enrichment',
+                              'fetch-assets':      'fetch-assets-and-vulnerabilities' }
 ```
 
 `resolve_ucp_capability(cmd=current command)` returns

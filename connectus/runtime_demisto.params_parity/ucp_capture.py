@@ -122,7 +122,9 @@ def get_creation_view(
     """
     url = f"{_ucp_base_url(port)}/gateway/connectors/{connector_id}/creation"
     resp = requests.get(url, headers={"x-tenant-id": tenant_id})
+    
     if resp.status_code != 200:
+        log.info(f"UCP creation view failed for tenant: {tenant_id} and url {url}" )
         raise RuntimeError(
             "GET {} failed with status {}: {}".format(url, resp.status_code, resp.text)
         )
@@ -807,7 +809,7 @@ def _build_instance_payload(
             # Entity-reference field — backend resolves it; a dummy/override id
             # fails as "Item not found (8)". Force None EVEN IF instance_values
             # carries an <override_…> string for it (mirrors the UI's null).
-            configuration[fid] = None
+            configuration[fid] = "Debug" if "integrationLogLevel" in fid else None
             orphan.append(fid)
         elif fid in (instance_values or {}):
             configuration[fid] = instance_values[fid]
@@ -940,6 +942,7 @@ def capture_ucp_params(
     xsoar_brand_name: str,
     parity_inputs,                       # resolver.ParityInputs
     capabilities: list | None = None,    # the VARIANT's CapabilitySpec subset
+    active_profiles: list | None = None,  # the VARIANT's pinned auth-profile subset
     instance_values: dict | None = None,
     connector_id: str | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
@@ -1015,6 +1018,16 @@ def capture_ucp_params(
     if capabilities is None:
         capabilities = parity_inputs.capabilities
 
+    # The auth profiles to EMIT into the creation payload for THIS instance. When
+    # ``active_profiles`` is given (multi-profile / XOR connector — the orchestrator
+    # passes the variant's single pinned profile), ONLY those are emitted so the
+    # runtime activates exactly the pinned profile. When ``None`` (single / no
+    # profile, or legacy callers), ALL of the connector's profiles are emitted —
+    # unchanged behaviour.
+    profiles_to_emit = (
+        active_profiles if active_profiles is not None else parity_inputs.profiles
+    )
+
     if instance_values is None:
         instance_values = {}
 
@@ -1066,7 +1079,7 @@ def capture_ucp_params(
             creation_view,
             instance_name=instance_name,
             capabilities=capabilities,
-            profiles=parity_inputs.profiles,
+            profiles=profiles_to_emit,
             instance_values=instance_values,
             connector_id=connector_id,
             field_specs=getattr(parity_inputs, "field_specs", None),
@@ -1075,7 +1088,7 @@ def capture_ucp_params(
             "UCP payload built: connector=%s capabilities=%s profiles=%s, configuration fields=%d",
             connector_id,
             [c.id for c in capabilities],
-            [p.id for p in parity_inputs.profiles],
+            [p.id for p in profiles_to_emit],
             len(payload["configuration"]),
         )
         # DIAGNOSTIC: dump the EXACT capability→sub-capability enablement map this

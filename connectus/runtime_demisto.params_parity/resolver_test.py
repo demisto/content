@@ -34,10 +34,12 @@ YML) under tmp_path so they are hermetic and don't touch the real repos.
 from __future__ import annotations
 
 import csv
+import importlib
 from pathlib import Path
 
 import pytest
 
+import env_loader
 import resolver
 from resolver import (
     HARD_IGNORE_PARAMS,
@@ -724,6 +726,154 @@ def test_missing_repo_dir_raises(env, monkeypatch):
 
 
 # ===========================================================================
+# CONNECTUS_PIPELINE_CSV override + precedence (explicit arg > env > default).
+#
+# These exercise the path-resolution helper directly (no CSV on disk needed)
+# plus the precedence inside resolve(). _resolve_pipeline_csv reads the
+# module-level _WORKSPACE_ROOT at call time, so the env fixture's monkeypatch
+# of that root is respected here too.
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    PIPELINE_CSV_ENV_VAR,
+    _DEFAULT_PIPELINE_CSV,
+    _resolve_pipeline_csv,
+)
+
+
+def test_pipeline_csv_env_unset_falls_back_to_default(monkeypatch):
+    monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+    assert _resolve_pipeline_csv() == _DEFAULT_PIPELINE_CSV
+
+
+def test_pipeline_csv_env_empty_falls_back_to_default(monkeypatch):
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "   ")
+    assert _resolve_pipeline_csv() == _DEFAULT_PIPELINE_CSV
+
+
+def test_pipeline_csv_env_absolute_passes_through(tmp_path, monkeypatch):
+    abs_path = tmp_path / "my-pipeline.csv"
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, str(abs_path))
+    assert _resolve_pipeline_csv() == abs_path
+
+
+def test_pipeline_csv_env_relative_resolved_against_workspace_root(monkeypatch):
+    workspace = Path("/tmp/some-workspace-root")
+    monkeypatch.setattr(resolver, "_WORKSPACE_ROOT", workspace)
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "custom/pipe.csv")
+    assert _resolve_pipeline_csv() == workspace / "custom/pipe.csv"
+
+
+def test_pipeline_csv_env_tilde_is_expanded(monkeypatch):
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "~/pipe.csv")
+    resolved = _resolve_pipeline_csv()
+    assert "~" not in str(resolved)
+    assert resolved == Path("~/pipe.csv").expanduser()
+
+
+def test_resolve_explicit_csv_arg_beats_env(env, monkeypatch):
+    """Precedence: an explicit ``csv_path=`` argument wins over the env var."""
+    csv_path = env(interpolation_mapping=None)
+    # Point the env var at a NON-existent file; resolve() must ignore it because
+    # an explicit csv_path is supplied (and must read the real fixture CSV).
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "/nonexistent/missing-pipeline.csv")
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    assert isinstance(out, ParityInputs)
+    assert out.connector_folder_path == _CONNECTOR_FOLDER
+
+
+# ===========================================================================
+# IMPORT-TIME wire-up (reload-based).
+#
+# The override tests above exercise ``_resolve_pipeline_csv()`` directly. They
+# do NOT prove that the FROZEN module-level ``PIPELINE_CSV`` attribute — the
+# value ``resolve()`` actually consumes as its default
+# (``csv_path = csv_path or PIPELINE_CSV``) — reflects the env var when it is set
+# BEFORE import. ``PIPELINE_CSV`` is computed exactly once, at import time
+# (``PIPELINE_CSV = _resolve_pipeline_csv()``), so a plain ``setenv`` never
+# changes it. The only way to re-run that import-time resolution is to reload
+# the module.
+#
+# These tests set the env var, ``importlib.reload(resolver)`` so the module-level
+# resolution re-runs, and assert the frozen ``PIPELINE_CSV`` reflects the
+# override (and, with the var unset, the bundled default).
+#
+# STATE-LEAKAGE NOTE: reloading mutates the ``resolver`` module object
+# PROCESS-WIDE, and — critically — ``importlib.reload`` REBINDS module-level
+# CLASS objects (e.g. ``ResolverError``) to brand-new identities. Other tests in
+# this file hold ``from resolver import ResolverError`` / ``_expand_variants``
+# references captured at import time; if teardown left a freshly-reloaded module
+# in place, ``pytest.raises(ResolverError)`` in e.g.
+# ``test_expand_variants_empty_raises`` would catch the OLD class while the
+# (also-old) imported ``_expand_variants`` raised the NEW class — a real,
+# observed cross-test failure.
+#
+# The ``reload_resolver_to_default`` fixture therefore SNAPSHOTS the original
+# ``resolver.__dict__`` up front and, in its finalizer, restores that exact dict
+# onto the SAME module object (rather than doing a fresh reload). This brings
+# back the ORIGINAL class objects, so every ``from resolver import X`` reference
+# elsewhere stays valid and identity-stable — no order-dependence / leakage.
+# ``env_loader._loaded`` is also restored in case the test touched it. We do NOT
+# use the ``env`` fixture here (it monkeypatches ``resolver._WORKSPACE_ROOT``,
+# which a reload would discard), so the reload tests stand alone with an ABSOLUTE
+# override path that is independent of ``_WORKSPACE_ROOT``.
+# ===========================================================================
+
+
+@pytest.fixture
+def reload_resolver_to_default(monkeypatch):
+    """Provide a reloader and GUARANTEE identity-stable teardown.
+
+    Yields a callable that reloads ``resolver`` against the current environment
+    (re-running ``PIPELINE_CSV = _resolve_pipeline_csv()``). The finalizer (run
+    even if the test body raises) removes the override env var and restores the
+    SNAPSHOT of the original module ``__dict__`` onto the same module object —
+    bringing back the original class objects so other tests' imported references
+    (e.g. ``ResolverError``) remain identity-stable. This avoids the
+    ``importlib.reload`` class-rebinding leak.
+    """
+    saved_loaded = env_loader._loaded
+    saved_dict = dict(resolver.__dict__)
+    try:
+        yield lambda: importlib.reload(resolver)
+    finally:
+        monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+        env_loader._loaded = saved_loaded
+        resolver.__dict__.clear()
+        resolver.__dict__.update(saved_dict)
+
+
+def test_import_time_pipeline_csv_reflects_env_override(
+    tmp_path, monkeypatch, reload_resolver_to_default
+):
+    """When ``CONNECTUS_PIPELINE_CSV`` is set BEFORE the module resolves its
+    path, the FROZEN module-level ``PIPELINE_CSV`` (the default ``resolve()``
+    consumes) reflects the override — proving the import-time wire-up, not just
+    the helper. An ABSOLUTE override is used so the assertion does not depend on
+    the reloaded module's recomputed ``_WORKSPACE_ROOT``."""
+    override = tmp_path / "override-pipeline.csv"
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, str(override))
+
+    reload_resolver_to_default()
+
+    assert resolver.PIPELINE_CSV == override
+
+
+def test_import_time_pipeline_csv_unset_yields_bundled_default(
+    monkeypatch, reload_resolver_to_default
+):
+    """Companion: with the env var UNSET, a fresh reload re-resolves the frozen
+    ``PIPELINE_CSV`` back to the bundled default (proving the import-time
+    fallback, not just the helper's). Compared against the reloaded module's own
+    ``_DEFAULT_PIPELINE_CSV`` so it is robust to where the repo is checked out."""
+    monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+
+    reload_resolver_to_default()
+
+    assert resolver.PIPELINE_CSV == resolver._DEFAULT_PIPELINE_CSV
+
+
+# ===========================================================================
 # Variant expansion (_expand_variants) — the per-capability matrix logic.
 #
 # These are PURE-LOGIC tests (no I/O): they build CapabilitySpec lists directly
@@ -934,7 +1084,7 @@ def test_collect_field_specs_from_configurations_and_connection():
             {
                 "id": "log-collection_x",
                 "configurations": [
-                    {"fields": [{"id": "alertFetchInterval", "field_type": "duration"}]},
+                    {"fields": [{"id": "incidentFetchInterval", "field_type": "duration"}]},
                     {"fields": [{"id": "defaultIgnore", "field_type": "checkbox"}]},
                     {
                         "fields": [
@@ -978,7 +1128,7 @@ def test_collect_field_specs_from_configurations_and_connection():
     # plain (non-backend) field has no config_type.
     assert specs["integrationLogLevel"]["config_type"] is None
     # per-capability fields captured with their types.
-    assert specs["alertFetchInterval"]["field_type"] == "duration"
+    assert specs["incidentFetchInterval"]["field_type"] == "duration"
     assert specs["defaultIgnore"]["field_type"] == "checkbox"
     # config_type: backend captured from xsoar.config_type (entity-reference field).
     assert specs["incidentType"]["config_type"] == "backend"
@@ -990,3 +1140,495 @@ def test_collect_field_specs_from_configurations_and_connection():
 def test_collect_field_specs_tolerates_missing_docs():
     assert _collect_field_specs(None, None) == {}
     assert _collect_field_specs({}, {}) == {}
+
+
+# ===========================================================================
+# Per-variant field SCOPING (Bucket C) — field ownership + in_scope_fields.
+#
+# PURE-LOGIC tests (no I/O): build a configurations.yaml-shaped doc directly and
+# assert (a) direct-field ownership, (b) general_configurations field assignment
+# via shared view_group, (c) a sub-capability with NO direct fields still owns
+# its view_group's general fields, (d) per-variant in_scope_fields excludes the
+# other variant's exclusive fields, and that serializer renames are applied to
+# the ownership-map keys.
+# ===========================================================================
+
+import pathlib  # noqa: E402
+
+from resolver import (  # noqa: E402
+    build_field_ownership,
+    in_scope_fields_for_variant,
+    merge_computed_field_ownership,
+)
+
+
+_SCOPE_DOC = {
+    "general_configurations": {
+        "configurations": [
+            {"view_group": "siem", "fields": [{"id": "fetchLimit"}]},
+            {"view_group": "logs", "fields": [{"id": "logHost"}]},
+        ]
+    },
+    "configurations": [
+        {
+            "id": "fetch-issues_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "incidentType"}]}],
+        },
+        {
+            "id": "log-collection_x",
+            "view_group": "logs",
+            "configurations": [
+                {"fields": [{"id": "longRunning"}]},
+                {"fields": [{"id": "should_skip_decode_events"}]},
+            ],
+        },
+        {
+            # A sub-capability with NO direct fields — still owns its view_group's
+            # general fields (it always carries id + view_group).
+            "id": "automation_x",
+            "view_group": "siem",
+        },
+    ],
+}
+
+_SCOPE_UNITS = {"fetch-issues_x", "log-collection_x", "automation_x"}
+
+
+def test_build_field_ownership_direct_fields():
+    """(a) Direct fields map to their declaring sub-capability."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+    assert owners["incidentType"] == frozenset({"fetch-issues_x"})
+    assert owners["longRunning"] == frozenset({"log-collection_x"})
+    assert owners["should_skip_decode_events"] == frozenset({"log-collection_x"})
+
+
+def test_build_field_ownership_general_via_shared_view_group():
+    """(b) A general_configurations field is owned by EVERY sub-capability
+    sharing its view_group (here both fetch_x and the no-field automation_x)."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+    assert owners["fetchLimit"] == frozenset({"fetch-issues_x", "automation_x"})
+    # The logs-view general field belongs only to the logs sub-capability.
+    assert owners["logHost"] == frozenset({"log-collection_x"})
+
+
+def test_build_field_ownership_no_direct_field_subcapability():
+    """(c) A sub-capability with NO direct fields still owns its view_group's
+    general fields (and owns nothing else)."""
+    owners = build_field_ownership(_SCOPE_DOC, {"automation_x"})
+    assert owners == {"fetchLimit": frozenset({"automation_x"})}
+
+
+def test_build_field_ownership_applies_serializer_rename():
+    """Ownership-map keys are translated to the XSOAR namespace via the
+    serializer by_connector map (connector field id -> xsoar param name)."""
+    owners = build_field_ownership(
+        _SCOPE_DOC,
+        _SCOPE_UNITS,
+        serializer_by_connector={"incidentType": "issueType"},
+    )
+    assert "issueType" in owners
+    assert "incidentType" not in owners
+    assert owners["issueType"] == frozenset({"fetch-issues_x"})
+
+
+def test_in_scope_fields_for_variant_excludes_other_variant_exclusive():
+    """(d) A variant enabling automation + fetch-issues exposes incidentType and
+    the shared general field, but NOT the log-collection-exclusive fields; the
+    log-collection variant is the mirror image."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+
+    fetch_variant_units = {"automation_x", "fetch-issues_x"}
+    fetch_scope = in_scope_fields_for_variant(owners, fetch_variant_units)
+    assert "incidentType" in fetch_scope
+    assert "fetchLimit" in fetch_scope
+    assert "longRunning" not in fetch_scope
+    assert "should_skip_decode_events" not in fetch_scope
+    assert "logHost" not in fetch_scope
+
+    logs_variant_units = {"automation_x", "log-collection_x"}
+    logs_scope = in_scope_fields_for_variant(owners, logs_variant_units)
+    assert "longRunning" in logs_scope
+    assert "should_skip_decode_events" in logs_scope
+    assert "logHost" in logs_scope
+    assert "incidentType" not in logs_scope
+    # The shared general field is in scope here too (automation_x owns it).
+    assert "fetchLimit" in logs_scope
+
+
+def test_capability_variant_enabled_ownership_units_falls_back_to_parent():
+    """A capability with sub-capabilities contributes its sub-cap ids; a
+    capability WITHOUT sub-capabilities contributes its own parent id."""
+    cap_with_sub = CapabilitySpec(
+        id="fetch-issues",
+        sub_capabilities=[SubCapabilitySpec(id="fetch-issues_x")],
+    )
+    cap_without_sub = CapabilitySpec(id="automation-and-remediation")
+    variant = CapabilityVariant(
+        id="v", capabilities=[cap_with_sub, cap_without_sub]
+    )
+    assert variant.enabled_ownership_units == {
+        "fetch-issues_x",
+        "automation-and-remediation",
+    }
+
+
+# ===========================================================================
+# Bucket C DEFECT-1 regression guard: build_field_ownership must map MULTIPLE
+# fields per sub-capability AND fields from BOTH sub-capabilities — the original
+# bug only mapped a single field (should_skip_decode_events). This fixture gives
+# each of two sub-capabilities several DIRECT fields in DIFFERENT view_groups.
+# ===========================================================================
+
+_MULTI_DOC = {
+    "general_configurations": {"configurations": []},
+    "configurations": [
+        {
+            "id": "log-collection_y",
+            "view_group": "logs",
+            "configurations": [
+                {"fields": [{"id": "longRunning"}]},
+                {"fields": [{"id": "page_size"}]},
+                {"fields": [{"id": "beta_page_size"}]},
+                {"fields": [{"id": "max_concurrent_tasks"}]},
+                {"fields": [{"id": "should_skip_decode_events"}]},
+                {"fields": [{"id": "eventFetchInterval"}]},
+            ],
+        },
+        {
+            "id": "fetch-issues_y",
+            "view_group": "siem",
+            "configurations": [
+                {"fields": [{"id": "incidentType"}]},
+                {"fields": [{"id": "incomingMapperId"}]},
+            ],
+        },
+    ],
+}
+_MULTI_UNITS = {"log-collection_y", "fetch-issues_y"}
+
+
+def test_build_field_ownership_maps_multiple_fields_per_subcapability():
+    """REGRESSION: every DIRECT field of a sub-capability is mapped (not just
+    one). Catches the original 'only should_skip_decode_events mapped' bug."""
+    owners = build_field_ownership(_MULTI_DOC, _MULTI_UNITS)
+    log_fields = {
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    }
+    for fid in log_fields:
+        assert owners.get(fid) == frozenset({"log-collection_y"}), fid
+
+
+def test_build_field_ownership_maps_fields_from_both_subcapabilities():
+    """REGRESSION: fields from BOTH sub-capabilities (in different view_groups)
+    are present in the map — not just one sub-capability's."""
+    owners = build_field_ownership(_MULTI_DOC, _MULTI_UNITS)
+    # log-collection-owned
+    assert owners["longRunning"] == frozenset({"log-collection_y"})
+    # fetch-issues-owned
+    assert owners["incidentType"] == frozenset({"fetch-issues_y"})
+    assert owners["incomingMapperId"] == frozenset({"fetch-issues_y"})
+    # Each sub-capability contributes more than one field.
+    log_owned = [f for f, u in owners.items() if u == frozenset({"log-collection_y"})]
+    fetch_owned = [f for f, u in owners.items() if u == frozenset({"fetch-issues_y"})]
+    assert len(log_owned) >= 2
+    assert len(fetch_owned) >= 2
+
+
+# ---------------------------------------------------------------------------
+# Bucket C DEFECT-3: serializer computed_fields → gating sub-capability owner.
+# ---------------------------------------------------------------------------
+
+_SERIALIZER_DOC = {
+    "computed_fields": [
+        {
+            "output": [{"id": "isFetch", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "fetch-issues_z",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        },
+        {
+            "output": [{"id": "incidentFetchInterval", "value": "1"}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "fetch-issues_z",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        },
+    ]
+}
+
+
+def test_merge_computed_field_ownership_attributes_to_gating_subcapability():
+    """A computed field is attributed to the sub-capability that gates it, so it
+    becomes scopeable like a directly-declared field."""
+    merged = merge_computed_field_ownership({}, _SERIALIZER_DOC)
+    assert merged["incidentFetchInterval"] == frozenset({"fetch-issues_z"})
+    assert merged["isFetch"] == frozenset({"fetch-issues_z"})
+
+
+def test_merge_computed_field_ownership_unions_with_existing_owners():
+    """Computed ownership is UNIONed with any pre-existing manifest ownership."""
+    base = {"incidentFetchInterval": frozenset({"some-other-unit"})}
+    merged = merge_computed_field_ownership(base, _SERIALIZER_DOC)
+    assert merged["incidentFetchInterval"] == frozenset(
+        {"some-other-unit", "fetch-issues_z"}
+    )
+
+
+def test_merge_computed_field_ownership_restricts_to_known_units():
+    """When ``known_units`` is supplied, computed ownership gated on a unit this
+    handler does NOT subscribe to is ignored (not mis-scoped)."""
+    merged = merge_computed_field_ownership(
+        {}, _SERIALIZER_DOC, known_units={"some-unrelated-unit"}
+    )
+    assert "incidentFetchInterval" not in merged
+    assert "isFetch" not in merged
+
+
+def test_merge_computed_field_ownership_no_computed_fields_is_noop():
+    base = {"x": frozenset({"u"})}
+    assert merge_computed_field_ownership(base, {}) == base
+    assert merge_computed_field_ownership(base, None) == base
+
+
+# ---------------------------------------------------------------------------
+# Bucket C DEFECT-1: end-to-end ownership against the REAL Akamai connector.
+# Reads the actual unified-connectors-content manifest. Skipped if the connector
+# dir is not present in this checkout.
+# ---------------------------------------------------------------------------
+
+def _find_akamai_dir() -> pathlib.Path | None:
+    """Locate the real Akamai connector dir by walking up to the workspace root
+    (the parent that contains ``unified-connectors-content``)."""
+    here = pathlib.Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / "unified-connectors-content" / "connectors" / "akamai"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+_AKAMAI_DIR = _find_akamai_dir()
+
+
+@pytest.mark.skipif(
+    _AKAMAI_DIR is None, reason="real Akamai connector not in this checkout"
+)
+def test_real_akamai_field_ownership_maps_all_capability_scoped_fields():
+    """REGRESSION against the real manifest: the 6 log-collection config fields
+    map to log-collection, incidentType maps to fetch-issues, and the
+    serializer computed field incidentFetchInterval is attributed to fetch-issues."""
+    from resolver import _load_yaml, _load_serializer_maps
+
+    configurations_doc = _load_yaml(_AKAMAI_DIR / "configurations.yaml")
+    handler_dir = (
+        _AKAMAI_DIR / "components" / "handlers" / "xsoar-akamai-waf-siem"
+    )
+    _by_xsoar, by_connector = _load_serializer_maps(handler_dir)
+    serializer_doc = _load_yaml(handler_dir / "serializer.yaml")
+
+    units = {
+        "automation-and-remediation_akamai-waf-siem",
+        "fetch-issues_akamai-waf-siem",
+        "log-collection_akamai-waf-siem",
+    }
+    owners = build_field_ownership(
+        configurations_doc, units, serializer_by_connector=by_connector
+    )
+    owners = merge_computed_field_ownership(
+        owners, serializer_doc, known_units=units
+    )
+
+    log_unit = "log-collection_akamai-waf-siem"
+    for fid in (
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    ):
+        assert log_unit in owners.get(fid, frozenset()), fid
+
+    assert "fetch-issues_akamai-waf-siem" in owners.get("incidentType", frozenset())
+    # Computed (serializer) field gated on fetch-issues.
+    assert "fetch-issues_akamai-waf-siem" in owners.get(
+        "incidentFetchInterval", frozenset()
+    )
+
+
+@pytest.mark.skipif(
+    _AKAMAI_DIR is None, reason="real Akamai connector not in this checkout"
+)
+def test_real_akamai_per_variant_scoping_via_resolve(monkeypatch):
+    """The fetch-issues variant scopes OUT the 6 log-collection fields +
+    incidentFetchInterval; the log-collection variant scopes OUT incidentType +
+    incidentFetchInterval. Uses the real resolve() against the live manifest."""
+    try:
+        inputs = resolve("Akamai WAF SIEM")
+    except ResolverError as exc:
+        pytest.skip(f"Akamai WAF SIEM not resolvable in this checkout: {exc}")
+    by_id = {v.id: v for v in inputs.variants}
+    fetch = next(v for k, v in by_id.items() if "fetch-issues" in k)
+    logs = next(v for k, v in by_id.items() if "log-collection" in k)
+
+    log_fields = {
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    }
+    # fetch-issues variant: the 6 log-collection fields are OUT of scope
+    # (log-collection disabled), while incidentFetchInterval (a serializer computed
+    # field GATED ON fetch-issues) and incidentType (fetch-issues-owned) are IN
+    # scope because fetch-issues is enabled here.
+    for fid in log_fields:
+        assert fid not in fetch.in_scope_fields, fid
+    assert "incidentType" in fetch.in_scope_fields
+    assert "incidentFetchInterval" in fetch.in_scope_fields
+
+    # log-collection variant (fetch-issues disabled): incidentType +
+    # incidentFetchInterval are OUT of scope, while the 6 log fields are IN scope.
+    assert "incidentType" not in logs.in_scope_fields
+    assert "incidentFetchInterval" not in logs.in_scope_fields
+    for fid in log_fields:
+        assert fid in logs.in_scope_fields, fid
+
+
+# ---------------------------------------------------------------------------
+# MULTI-PROFILE (XOR) auth — per-auth-profile variant matrix expansion
+# (plans/param-parity-per-profile-variant-matrix.md). The connector activates
+# exactly ONE of N mutually-exclusive auth profiles per instance, so the matrix is
+# crossed with the auth-bearing profile groups for FULL coverage.
+# ---------------------------------------------------------------------------
+
+
+def _api_key_profile():
+    """A FortiGate-like ``api_key`` profile carrying the xsoar secret ``api_key``."""
+    return ProfileSpec(
+        id="api_key.fortigate",
+        type="api_key",
+        interpolation_mapping={"api_key": "api_key.password"},
+        auth_field_to_role={"api_key": "api_key"},
+        field_ids=["api_key"],
+    )
+
+
+def _plain_profile():
+    """A FortiGate-like ``plain`` profile carrying the xsoar secret ``credentials``."""
+    return ProfileSpec(
+        id="plain.fortigate",
+        type="plain",
+        interpolation_mapping={
+            "username": "credentials.identifier",
+            "password": "credentials.password",
+        },
+        auth_field_to_role={
+            "credentials_username": "username",
+            "credentials_password": "password",
+        },
+        field_ids=["credentials_username", "credentials_password"],
+    )
+
+
+def _non_auth_profile():
+    """A non-interpolated profile carrying NO comparable xsoar auth secret."""
+    return ProfileSpec(
+        id="dummy.x",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=["some_field"],
+    )
+
+
+def test_auth_bearing_profiles_filters_by_derived_secret():
+    """``_auth_bearing_profiles`` keeps ONLY profiles that interpolate ≥1 xsoar auth
+    secret — derived from the profile itself, never a connector-specific list."""
+    profs = [_api_key_profile(), _plain_profile(), _non_auth_profile()]
+    bearing = resolver._auth_bearing_profiles(profs)
+    assert [p.id for p in bearing] == ["api_key.fortigate", "plain.fortigate"]
+    # profile_auth_params reflects each profile's OWN secret set.
+    assert resolver.profile_auth_params(profs[0]) == frozenset({"api_key"})
+    assert resolver.profile_auth_params(profs[1]) == frozenset({"credentials"})
+    assert resolver.profile_auth_params(profs[2]) == frozenset()
+
+
+def test_expand_profile_variants_crosses_two_xor_profiles():
+    """≥2 auth-bearing profiles → each capability variant is duplicated once per
+    profile, carrying that profile's id in active_profile_id."""
+    base = [
+        resolver.CapabilityVariant(
+            id="automation-and-remediation",
+            capabilities=[CapabilitySpec(id="automation-and-remediation")],
+            fetch_flags={},
+        )
+    ]
+    crossed = resolver._expand_profile_variants(
+        base, [_api_key_profile(), _plain_profile()]
+    )
+    assert len(crossed) == 2
+    ids = {v.id for v in crossed}
+    assert ids == {
+        "automation-and-remediation@api_key.fortigate",
+        "automation-and-remediation@plain.fortigate",
+    }
+    by_profile = {v.active_profile_id: v for v in crossed}
+    assert set(by_profile) == {"api_key.fortigate", "plain.fortigate"}
+
+
+def test_expand_profile_variants_single_profile_is_noop():
+    """0 or 1 auth-bearing profile → matrix UNCHANGED, active_profile_id stays None
+    (back-compat; over-suppression guard at the source)."""
+    base = [
+        resolver.CapabilityVariant(
+            id="v",
+            capabilities=[CapabilitySpec(id="v")],
+            fetch_flags={},
+        )
+    ]
+    # one auth-bearing + one non-auth → still treated as single (< 2 auth-bearing).
+    out = resolver._expand_profile_variants(base, [_api_key_profile(), _non_auth_profile()])
+    assert out is base
+    assert out[0].active_profile_id is None
+    # zero profiles → unchanged too.
+    assert resolver._expand_profile_variants(base, []) is base
+
+
+def test_profile_ownership_unit_prefix_matches_diff():
+    """The synthetic profile ownership unit prefix is shared with diff so the diff
+    can recognise an alternative-XOR-auth scope-out."""
+    import diff as diff_mod
+
+    assert (
+        resolver._PROFILE_OWNERSHIP_PREFIX == diff_mod._PROFILE_OWNERSHIP_PREFIX
+    )
+    assert resolver._profile_ownership_unit("p.x") == (
+        resolver._PROFILE_OWNERSHIP_PREFIX + "p.x"
+    )

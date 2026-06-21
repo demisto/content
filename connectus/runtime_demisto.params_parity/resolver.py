@@ -84,10 +84,38 @@ _yaml = YAML(typ="safe")
 #: go up THREE dirs to reach the content-repo workspace root.
 _WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 
+#: Environment variable that, when set & non-empty, overrides the bundled
+#: pipeline CSV path. The value is a full path: absolute, or relative to the
+#: workspace root (:data:`_WORKSPACE_ROOT`); ``~`` is expanded. Loaded from the
+#: unified root ``.env`` via :func:`env_loader.load_env` (already called above).
+PIPELINE_CSV_ENV_VAR = "CONNECTUS_PIPELINE_CSV"
+
+#: The bundled default pipeline CSV path (used when the env var is unset/empty).
+_DEFAULT_PIPELINE_CSV = _WORKSPACE_ROOT / "connectus" / "connectus-migration-pipeline.csv"
+
+
+def _resolve_pipeline_csv() -> Path:
+    """Resolve the pipeline CSV path, honoring ``CONNECTUS_PIPELINE_CSV``.
+
+    Returns the env override (with ``~`` expanded and relative paths resolved
+    against :data:`_WORKSPACE_ROOT`) when ``CONNECTUS_PIPELINE_CSV`` is set &
+    non-empty, else the bundled :data:`_DEFAULT_PIPELINE_CSV`.
+    """
+    raw = (os.getenv(PIPELINE_CSV_ENV_VAR) or "").strip()
+    if not raw:
+        return _DEFAULT_PIPELINE_CSV
+    expanded = Path(raw).expanduser()
+    if expanded.is_absolute():
+        return expanded
+    return _WORKSPACE_ROOT / expanded
+
+
 #: The migration pipeline CSV (source of truth for Integration File Path +
-#: Connector Folder Path). Kept relative to the workspace root so the resolver
-#: works regardless of the caller's CWD.
-PIPELINE_CSV = _WORKSPACE_ROOT / "connectus" / "connectus-migration-pipeline.csv"
+#: Connector Folder Path). Honors the ``CONNECTUS_PIPELINE_CSV`` override, else
+#: kept relative to the workspace root so the resolver works regardless of the
+#: caller's CWD. An explicit ``csv_path=`` argument to :func:`resolve` still
+#: takes precedence over both.
+PIPELINE_CSV = _resolve_pipeline_csv()
 
 
 def _repo_dir() -> Path:
@@ -254,11 +282,49 @@ class CapabilityVariant:
     #: for a fetch variant and all ``False`` for an always-on-only variant. Drives
     #: the XSOAR instance toggles + the BE-synthesized config-param transform.
     fetch_flags: dict[str, bool] = field(default_factory=dict)
+    #: The set of config field ids (in the XSOAR-facing param namespace, i.e. after
+    #: serializer renames are applied) that this variant's enabled sub-capabilities
+    #: legitimately expose on the connector instance. A connector instance only
+    #: delivers the config fields of the sub-capabilities ENABLED in that variant,
+    #: so the diff uses this to avoid flagging a field that belongs to a DISABLED
+    #: sub-capability as ``MISSING_IN_CONNECTOR``. Populated in :func:`resolve`
+    #: (see :func:`build_field_ownership` / :func:`in_scope_fields_for_variant`).
+    in_scope_fields: frozenset[str] = field(default_factory=frozenset)
+    #: The auth profile id ACTIVE in this variant, or ``None`` when the connector
+    #: has 0–1 auth-bearing profiles (single-profile / no-profile connectors —
+    #: behaviour unchanged). When a connector declares ≥2 MUTUALLY-EXCLUSIVE (XOR)
+    #: auth profiles, the variant matrix is crossed with the profile groups so each
+    #: profile is tested in its OWN instance (with only that profile emitted into
+    #: the creation payload, so the runtime activates exactly it). The NON-active
+    #: profiles' auth params are then scoped OUT of this variant (OK_IGNORED /
+    #: out_of_variant_scope) instead of falsely flagged MISSING_IN_CONNECTOR. See
+    #: ``plans/param-parity-per-profile-variant-matrix.md``.
+    active_profile_id: Optional[str] = None
 
     @property
     def enabled_capability_ids(self) -> list[str]:
         """The PARENT capability ids enabled by this variant (sorted)."""
         return sorted(c.id for c in self.capabilities)
+
+    @property
+    def enabled_ownership_units(self) -> set[str]:
+        """The ownership-unit ids this variant ENABLES.
+
+        An "ownership unit" is the id under which configurations.yaml scopes a
+        capability's fields: a sub-capability id when the capability declares
+        sub-capabilities, else the parent capability id itself (matching how
+        :func:`_capabilities_from_handler` scopes config fields to BOTH the parent
+        and sub ids). This is the per-variant subset against which
+        :func:`build_field_ownership` is intersected to compute
+        :attr:`in_scope_fields`.
+        """
+        units: set[str] = set()
+        for cap in self.capabilities:
+            if cap.sub_capabilities:
+                units.update(sc.id for sc in cap.sub_capabilities)
+            else:
+                units.add(cap.id)
+        return units
 
 
 @dataclass
@@ -377,6 +443,17 @@ class ParityInputs:
     #: int, a select needs a valid enum key). Missing/unknown fields are absent →
     #: the caller falls back to a string dummy.
     field_specs: dict[str, dict] = field(default_factory=dict)
+    #: GLOBAL field-ownership map, keyed in the XSOAR-facing param namespace (i.e.
+    #: connector field ids translated through the serializer ``by_connector`` map,
+    #: falling back to identity). Value is the set of OWNERSHIP-UNIT ids
+    #: (sub-capability id, or parent capability id when no sub-capabilities exist)
+    #: that legitimately expose that field. Used by the diff to recognise that an
+    #: integration-only field belongs to a sub-capability NOT enabled in the
+    #: current variant (so it is out-of-variant-scope, not MISSING_IN_CONNECTOR).
+    #: See :func:`build_field_ownership`.
+    field_owning_subcapabilities: dict[str, frozenset[str]] = field(
+        default_factory=dict
+    )
 
 
 # ============================================================================
@@ -509,6 +586,151 @@ def _general_config_fields_for_view_groups(doc: Any, view_groups: set[str]) -> l
             if isinstance(fld, dict) and fld.get("id"):
                 out.append(fld["id"])
     return out
+
+
+def _owned_connector_fields_for_unit(doc: Any, unit_id: str) -> set[str]:
+    """The connector field ids OWNED by a single ownership unit (sub-/capability).
+
+    An ownership unit's owned set is its **direct** configuration fields (declared
+    under its ``configurations[].fields[]`` block) UNION the
+    ``general_configurations`` fields sharing its ``view_group``. A unit that
+    declares NO direct fields still owns its view_group's general fields (a
+    sub-capability always carries at least its ``id`` + ``view_group``).
+
+    Returned ids are CONNECTOR field ids (the manifest namespace); the caller
+    translates them to the XSOAR param namespace.
+    """
+    owned: set[str] = set()
+    owned.update(_fields_from_capability_configurations(doc, unit_id))
+    owned.update(
+        _general_config_fields_for_view_groups(
+            doc, _view_groups_for_capability(doc, unit_id)
+        )
+    )
+    return owned
+
+
+def build_field_ownership(
+    configurations_doc: Any,
+    unit_ids: set[str],
+    *,
+    serializer_by_connector: Optional[dict[str, str]] = None,
+) -> dict[str, frozenset[str]]:
+    """Map every owned config field → the set of ownership units that own it.
+
+    For each unit in ``unit_ids`` (sub-capability ids, or parent capability ids
+    when a capability declares no sub-capabilities), compute its owned connector
+    field set (:func:`_owned_connector_fields_for_unit`) and invert into a
+    ``field -> {owning unit ids}`` mapping. A ``general_configurations`` field is
+    owned by EVERY unit sharing its view_group, so it maps to several units.
+
+    Keys are emitted in the XSOAR-facing param namespace: each connector field id
+    is translated through ``serializer_by_connector`` (connector field → xsoar
+    param name) when a mapping exists, else passed through unchanged. This keeps
+    the map comparable to the keys the diff iterates (XSOAR param names).
+    """
+    rename = serializer_by_connector or {}
+    out: dict[str, set[str]] = {}
+    for unit_id in unit_ids:
+        for connector_field in _owned_connector_fields_for_unit(
+            configurations_doc, unit_id
+        ):
+            key = rename.get(connector_field, connector_field)
+            out.setdefault(key, set()).add(unit_id)
+    return {field_id: frozenset(units) for field_id, units in out.items()}
+
+
+def _computed_field_owner_units(serializer_doc: Any) -> dict[str, set[str]]:
+    """Map serializer COMPUTED field ids → the sub-capability ids that gate them.
+
+    A serializer ``computed_fields[]`` entry injects one or more output fields
+    (``output[].id``, already in the XSOAR-facing param namespace) only when its
+    gating condition is satisfied. We treat a ``type: capability`` condition's
+    ``options.capability_id`` as the OWNING sub-capability of every output field
+    that entry produces — so a computed field (e.g. ``incidentFetchInterval`` gated
+    on ``fetch-issues_<sub>``) can be scoped out of variants where that
+    sub-capability is disabled, exactly like a directly-declared config field.
+
+    Only ``capability``-typed conditions contribute ownership; entries gated on
+    non-capability conditions (or with no condition at all) yield no owner and
+    are left unmapped (so they stay always-in-scope). Multiple capability
+    conditions across ``any_of`` branches all become owners of the output.
+    """
+    out: dict[str, set[str]] = {}
+    if not isinstance(serializer_doc, dict):
+        return out
+    for entry in serializer_doc.get("computed_fields") or []:
+        if not isinstance(entry, dict):
+            continue
+        output_ids = [
+            o["id"]
+            for o in entry.get("output") or []
+            if isinstance(o, dict) and o.get("id")
+        ]
+        if not output_ids:
+            continue
+        owners: set[str] = set()
+        for branch in entry.get("any_of") or []:
+            if not isinstance(branch, dict):
+                continue
+            for cond in branch.get("conditions") or []:
+                if not isinstance(cond, dict) or cond.get("type") != "capability":
+                    continue
+                cap_id = (cond.get("options") or {}).get("capability_id")
+                if cap_id:
+                    owners.add(cap_id)
+        if not owners:
+            continue
+        for fid in output_ids:
+            out.setdefault(fid, set()).update(owners)
+    return out
+
+
+def merge_computed_field_ownership(
+    field_ownership: dict[str, frozenset[str]],
+    serializer_doc: Any,
+    *,
+    known_units: Optional[set[str]] = None,
+) -> dict[str, frozenset[str]]:
+    """Fold serializer computed-field ownership into ``field_ownership``.
+
+    Returns a NEW map where every computed output field (see
+    :func:`_computed_field_owner_units`) is attributed to its gating
+    sub-capability id(s), UNIONed with any ownership it already had. When
+    ``known_units`` is given, only gating ids that the handler actually
+    subscribes to are folded in (so a computed field gated on a foreign
+    connector's sub-capability is ignored rather than mis-scoped).
+    """
+    computed = _computed_field_owner_units(serializer_doc)
+    if not computed:
+        return dict(field_ownership)
+    merged: dict[str, set[str]] = {
+        fid: set(units) for fid, units in field_ownership.items()
+    }
+    for fid, owners in computed.items():
+        if known_units is not None:
+            owners = owners & known_units
+        if not owners:
+            continue
+        merged.setdefault(fid, set()).update(owners)
+    return {fid: frozenset(units) for fid, units in merged.items()}
+
+
+def in_scope_fields_for_variant(
+    field_ownership: dict[str, frozenset[str]], enabled_units: set[str]
+) -> frozenset[str]:
+    """The XSOAR-namespace fields a variant legitimately exposes.
+
+    A field is in-scope for a variant iff at least one of its owning ownership
+    units is ENABLED in that variant. (Profile/connection fields and BE-synth
+    fields are folded in by the caller — see :func:`resolve` — so a legitimately
+    present field is never scoped out.)
+    """
+    return frozenset(
+        field_id
+        for field_id, owners in field_ownership.items()
+        if owners & enabled_units
+    )
 
 
 def _field_spec_from_field(fld: dict) -> dict:
@@ -790,6 +1012,88 @@ def _expand_variants(capabilities: list[CapabilitySpec]) -> list[CapabilityVaria
     return variants
 
 
+#: Prefix for the synthetic AUTH-PROFILE ownership unit used to scope out the auth
+#: secret of a non-active alternative XOR profile. Kept in sync with
+#: diff._PROFILE_OWNERSHIP_PREFIX (the diff specialises the OK_IGNORED reason when
+#: an out-of-scope field's owners are ALL of this kind).
+_PROFILE_OWNERSHIP_PREFIX = "__profile__:"
+
+
+def _profile_ownership_unit(profile_id: str) -> str:
+    """Synthetic ownership-unit id for an auth profile.
+
+    Auth params of a multi-profile (XOR) connection are attributed to a per-profile
+    ownership unit so the diff's EXISTING out-of-variant-scope gate (which already
+    scopes out fields whose owning unit is disabled in a variant) can scope out the
+    auth secret of a NON-active alternative profile — without any new diff state.
+    Prefixed to avoid colliding with a real (sub-)capability id.
+    """
+    return _PROFILE_OWNERSHIP_PREFIX + profile_id
+
+
+def _auth_bearing_profiles(profiles: list["ProfileSpec"]) -> list["ProfileSpec"]:
+    """The profiles that carry ≥1 XSOAR auth secret (derived, not hardcoded).
+
+    A profile is *auth-bearing* iff its :meth:`ProfileSpec.connector_field_to_xsoar_param`
+    yields a non-empty set of top-level XSOAR auth params (i.e. it has an
+    ``interpolation_mapping`` binding at least one auth field to an xsoar param).
+    These are the profiles whose secrets the parity diff can compare. A connector
+    with ≥2 of them is a MULTI-PROFILE (XOR) connection — the user picks one at
+    runtime — so each must be tested in its own instance for full coverage.
+
+    Non-interpolated / dummy-auth profiles (empty set) carry nothing comparable
+    and are NOT counted here.
+    """
+    return [p for p in profiles if p.connector_field_to_xsoar_param()]
+
+
+def profile_auth_params(prof: "ProfileSpec") -> frozenset[str]:
+    """The set of top-level XSOAR auth param names a profile carries.
+
+    Derived ENTIRELY from the profile's own interpolation mapping + field roles
+    (``connector_field_to_xsoar_param``) — never a connector-specific list. For
+    FortiGate: ``api_key.fortigate`` → ``{"api_key"}``, ``plain.fortigate`` →
+    ``{"credentials"}``.
+    """
+    return frozenset(prof.connector_field_to_xsoar_param().values())
+
+
+def _expand_profile_variants(
+    variants: list[CapabilityVariant], profiles: list["ProfileSpec"]
+) -> list[CapabilityVariant]:
+    """Cross capability variants with the connector's auth-profile groups.
+
+    When the connector has ≥2 auth-bearing (XOR) profiles, the runtime activates
+    exactly ONE per instance, so testing one instance with all profiles emitted
+    leaves the non-active profiles' auth params unverified (and falsely flags them
+    MISSING_IN_CONNECTOR). To get FULL coverage we test each auth-bearing profile
+    in its OWN instance: every existing capability variant is duplicated once per
+    auth-bearing profile, carrying that profile id in :attr:`active_profile_id`.
+
+    Back-compat: 0 or 1 auth-bearing profile → the matrix is returned UNCHANGED
+    (``active_profile_id`` stays ``None``), so every single-profile / no-profile
+    integration produces exactly the variants it did before this change.
+    """
+    auth_profiles = _auth_bearing_profiles(profiles)
+    if len(auth_profiles) < 2:
+        # Single / no auth-bearing profile → nothing to cross; leave as-is so the
+        # sole profile's secret stays always-in-scope and a genuine miss still fails.
+        return variants
+
+    crossed: list[CapabilityVariant] = []
+    for variant in variants:
+        for prof in auth_profiles:
+            crossed.append(
+                CapabilityVariant(
+                    id="{}@{}".format(variant.id, prof.id),
+                    capabilities=list(variant.capabilities),
+                    fetch_flags=dict(variant.fetch_flags),
+                    active_profile_id=prof.id,
+                )
+            )
+    return crossed
+
+
 # ============================================================================
 # Profiles
 # ============================================================================
@@ -965,8 +1269,135 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
 
     profiles = _profiles_from_connection(connection_doc, profile_ids)
 
+    # ── Per-AUTH-PROFILE variant expansion (XOR auth) ──
+    # When the connector declares ≥2 auth-bearing (mutually-exclusive) profiles,
+    # the runtime activates exactly ONE per instance. Cross every capability
+    # variant with each auth-bearing profile so each profile is tested in its OWN
+    # instance (only that profile is emitted into the creation payload below, via
+    # ``variant.active_profile_id`` threaded through the capture). For 0–1
+    # auth-bearing profiles this is a no-op (matrix unchanged). See
+    # ``plans/param-parity-per-profile-variant-matrix.md``.
+    variants = _expand_profile_variants(variants, profiles)
+
     # Serializer maps (this handler).
     by_xsoar, by_connector = _load_serializer_maps(handler_dir)
+
+    # ── Per-variant field SCOPING (Bucket C) ──
+    # A connector instance only exposes the config fields of the sub-capabilities
+    # ENABLED in its variant. Build a GLOBAL field-ownership map (field id in the
+    # XSOAR param namespace → set of owning ownership-unit ids) across EVERY
+    # ownership unit the handler subscribes to, then derive each variant's
+    # ``in_scope_fields`` (fields whose owner is enabled in that variant). The diff
+    # uses these to avoid false MISSING_IN_CONNECTOR for a field that belongs to a
+    # sub-capability disabled in the current variant.
+    all_ownership_units: set[str] = set()
+    for cap in capabilities:
+        if cap.sub_capabilities:
+            all_ownership_units.update(sc.id for sc in cap.sub_capabilities)
+        else:
+            all_ownership_units.add(cap.id)
+    field_ownership = build_field_ownership(
+        configurations_doc,
+        all_ownership_units,
+        serializer_by_connector=by_connector,
+    )
+    # Fold serializer COMPUTED-field ownership in: a computed field (e.g.
+    # ``incidentFetchInterval``) is injected by the serializer only when its gating
+    # sub-capability is enabled, so attribute it to that gating sub-capability id
+    # (restricted to units this handler actually subscribes to) so it is scoped
+    # out of variants where the gating sub-capability is disabled — exactly like a
+    # directly-declared config field.
+    serializer_doc = _load_yaml(handler_dir / "serializer.yaml")
+    field_ownership = merge_computed_field_ownership(
+        field_ownership, serializer_doc, known_units=all_ownership_units
+    )
+
+    # Profile (auth/connection) xsoar param names are ALWAYS legitimately present
+    # regardless of which fetch sub-capability is enabled, so fold them into every
+    # variant's in-scope set so we never scope out a real auth field.
+    #
+    # MULTI-PROFILE (XOR) refinement: when ≥2 auth-bearing profiles exist, a given
+    # instance activates exactly ONE, so ONLY the ACTIVE profile's auth params are
+    # legitimately present in that variant — the OTHER (alternative) profiles' auth
+    # secrets are absent BY DESIGN and must be scoped OUT (OK_IGNORED /
+    # out_of_variant_scope), NOT flagged MISSING_IN_CONNECTOR. We therefore compute
+    # the always-in-scope auth params PER ACTIVE PROFILE below (see the variant
+    # loop). The auth params of the NON-active alternative profile(s) are added to
+    # ``field_ownership`` keyed by a synthetic profile ownership unit so the diff's
+    # existing out-of-variant-scope gate reclassifies them — no new diff state.
+    auth_profiles = _auth_bearing_profiles(profiles)
+    multi_profile = len(auth_profiles) >= 2
+    # Auth params carried by EVERY auth-bearing profile (used for single-profile and
+    # for non-auth profile params that should stay always-in-scope).
+    all_profile_auth_params: set[str] = set()
+    for prof in profiles:
+        all_profile_auth_params.update(prof.connector_field_to_xsoar_param().values())
+
+    # For a multi-profile connection, attribute each auth-bearing profile's auth
+    # params to a synthetic ownership unit (the profile id) so the diff can scope
+    # out a param whose owning profile is not the variant's active one. We use a
+    # MUTABLE copy because field_ownership is consumed below.
+    if multi_profile:
+        profile_owned: dict[str, set[str]] = {}
+        for prof in auth_profiles:
+            unit = _profile_ownership_unit(prof.id)
+            for xsoar_param in profile_auth_params(prof):
+                profile_owned.setdefault(xsoar_param, set()).add(unit)
+        merged_ownership = {k: set(v) for k, v in field_ownership.items()}
+        for xsoar_param, units in profile_owned.items():
+            merged_ownership.setdefault(xsoar_param, set()).update(units)
+        field_ownership = {k: frozenset(v) for k, v in merged_ownership.items()}
+
+    # BE-synthesized params (isFetch/eventFetchInterval/feed*/…) are injected by
+    # the platform at runtime. They are treated as always in-scope so they are
+    # never reclassified as out-of-variant-scope — UNLESS the connector manifest
+    # ITSELF scopes the field to a specific sub-capability (i.e. it appears in
+    # ``field_ownership``). A field the manifest owns (e.g. Akamai's
+    # ``longRunning`` / ``eventFetchInterval`` under ``log-collection``) must obey
+    # its manifest ownership so it is correctly scoped out of variants where its
+    # owning sub-capability is disabled; manifest ownership is authoritative and
+    # wins over the blanket BE-synth protection.
+    from be_config_params import BE_SYNTHESIZED_PARAM_NAMES  # noqa: E402
+
+    be_synth_always_in_scope = frozenset(BE_SYNTHESIZED_PARAM_NAMES) - frozenset(
+        field_ownership
+    )
+
+    # For a SINGLE/NO auth-bearing-profile connector, ALL profile auth params are
+    # always-in-scope (legacy behaviour): the sole profile is always active, so its
+    # secret must never be scoped out — a genuine miss STILL fails (no
+    # over-suppression). For a MULTI-PROFILE (XOR) connector, only the variant's
+    # ACTIVE profile's auth params are folded in (below, per variant); the
+    # alternative profiles' params are scoped out via their profile ownership unit.
+    base_always_in_scope = be_synth_always_in_scope
+    if not multi_profile:
+        base_always_in_scope = frozenset(all_profile_auth_params) | base_always_in_scope
+
+    # Profile id → its OWN auth params (for the multi-profile active-profile fold-in).
+    auth_params_by_profile: dict[str, frozenset[str]] = {
+        prof.id: profile_auth_params(prof) for prof in auth_profiles
+    }
+
+    for variant in variants:
+        # The active profile's auth params are legitimately present in THIS variant;
+        # fold them into its in-scope set so they are compared (not scoped out). For
+        # a single/no-profile connector this set is empty (already covered by
+        # base_always_in_scope above). The enabled ownership units include the
+        # active profile's synthetic unit so the alternative profiles' params (owned
+        # by OTHER profile units, not enabled here) are scoped out by the diff.
+        active_auth_params = (
+            auth_params_by_profile.get(variant.active_profile_id, frozenset())
+            if variant.active_profile_id
+            else frozenset()
+        )
+        enabled_units = set(variant.enabled_ownership_units)
+        if variant.active_profile_id:
+            enabled_units.add(_profile_ownership_unit(variant.active_profile_id))
+        variant.in_scope_fields = (
+            in_scope_fields_for_variant(field_ownership, enabled_units)
+            | base_always_in_scope
+            | active_auth_params
+        )
 
     # Connector field id → declared type metadata (for type-correct dummy values
     # in the UCP creation payload). Covers configurations.yaml + connection.yaml.
@@ -990,6 +1421,7 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         serializer_by_xsoar=by_xsoar,
         serializer_by_connector=by_connector,
         field_specs=field_specs,
+        field_owning_subcapabilities=field_ownership,
     )
 
     # ── Param discovery: enumerate EVERY integration-YML config param ──

@@ -50,7 +50,11 @@ from pathlib import Path
 
 import resolver as resolver_mod
 import results_ledger
-from be_config_params import apply_be_config_transform, variant_toggle_overrides
+from be_config_params import (
+    apply_be_config_transform,
+    connector_value_for,
+    variant_toggle_overrides,
+)
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
 from resolver import ResolverError
@@ -207,6 +211,52 @@ def _force_drop_from(ignored_params: dict) -> set[str]:
     }
 
 
+def _build_connector_instance_values(shared_dummies: dict, parity_inputs) -> dict:
+    """Build the CONNECTOR-keyed copy of ``shared_dummies`` for the UCP payload.
+
+    The connector creation payload keys its ``configuration`` block by CONNECTOR
+    FIELD id, while ``shared_dummies`` is keyed by the integration (xsoar) param
+    name. This translates the shared dummy values onto the connector field ids so
+    BOTH parity sides receive the SAME value:
+
+      1. ``param_to_connector_field`` — serializer-renamed + interpolated auth
+         fields discovered from the integration YML params.
+      2. ``serializer_by_connector`` — the handler ``serializer.yaml``
+         ``field_mappings`` directly. This is what carries the BE-SYNTHESIZED
+         fetch fields (e.g. ``incidentFetchInterval``, ``eventFetchInterval``):
+         they are NOT declared in the integration YML (so step 1 misses them) but
+         ARE listed in the serializer (true runtime id == the synthesized name),
+         so the connector's serialized config field must receive the same dummy
+         the integration got. Without this the connector builder fell back to the
+         field's type default (a ``duration`` → ``0``), breaking parity with the
+         integration's ``"111"``. It fires ONLY for fields actually present in
+         ``shared_dummies`` — a synthesized field for a DISABLED fetch flag is
+         absent there and is never forced onto the connector side.
+
+    Finally the connector-int / integration-string type contract is applied via
+    :func:`connector_value_for`, resolving each connector field id back to its
+    TRUE runtime id through ``serializer_by_connector`` first (the registry is
+    keyed by the bare xsoar name, not the serializer-renamed connector id), so a
+    renamed interval field (e.g. ``xsoar-<h>_incidentFetchInterval``) is coerced
+    to the integer the connector expects (``111``) while the integration keeps the
+    string (``"111"``). The int↔string equivalence is restored at diff time by
+    :func:`be_config_params.values_match`.
+    """
+    by_connector = getattr(parity_inputs, "serializer_by_connector", None) or {}
+    param_map = getattr(parity_inputs, "param_to_connector_field", None) or {}
+    out: dict = dict(shared_dummies)
+    for xsoar_param, connector_field in param_map.items():
+        if xsoar_param in shared_dummies and connector_field != xsoar_param:
+            out[connector_field] = shared_dummies[xsoar_param]
+    for connector_field, xsoar_id in by_connector.items():
+        if xsoar_id in shared_dummies and connector_field not in out:
+            out[connector_field] = shared_dummies[xsoar_id]
+    for key in list(out.keys()):
+        true_id = by_connector.get(key, key)
+        out[key] = connector_value_for(true_id, out[key])
+    return out
+
+
 def _run_one_variant(
     *,
     variant,                       # resolver.CapabilityVariant
@@ -266,11 +316,12 @@ def _run_one_variant(
     )
 
     # CONNECTOR side keys by connector FIELD id; build a connector-keyed copy so
-    # serializer-renamed + interpolated auth fields receive the SAME value.
-    connector_instance_values: dict = dict(shared_dummies)
-    for xsoar_param, connector_field in parity_inputs.param_to_connector_field.items():
-        if xsoar_param in shared_dummies and connector_field != xsoar_param:
-            connector_instance_values[connector_field] = shared_dummies[xsoar_param]
+    # serializer-renamed + interpolated auth fields AND BE-synthesized fetch fields
+    # receive the SAME value (with the int/string type contract applied). See
+    # :func:`_build_connector_instance_values`.
+    connector_instance_values = _build_connector_instance_values(
+        shared_dummies, parity_inputs
+    )
 
     # ── INTEGRATION-side capture (legacy XSOAR flow) ──
     try:
@@ -278,6 +329,11 @@ def _run_one_variant(
             integration_yml_path=integration_yml,
             overrides=shared_dummies,
             client=xsoar_client,
+            # Drive the BE-synthesized add/strip off THIS variant's fetch flags so
+            # a variant-driven fetch (e.g. fetch-issues → isFetch) populates
+            # incidentFetchInterval on the integration side too, instead of letting
+            # it fall back to the YML default and mismatch the connector.
+            fetch_flags=variant.fetch_flags,
         )
     except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
         log.error("INTEGRATION-side capture FAILED for variant %s: %s", variant.id, e)
@@ -288,12 +344,25 @@ def _run_one_variant(
     log.info("Variant %s INTEGRATION-side captured %d keys.", variant.id, len(integration_raw))
 
     # ── CONNECTOR-side capture (new UCP flow) — only this variant's caps ──
+    # Multi-profile (XOR) connectors: the variant pins exactly ONE auth profile via
+    # ``variant.active_profile_id`` (set by the resolver's per-profile variant
+    # expansion). Emit ONLY that profile so the runtime activates it and we capture
+    # its auth secret; the OTHER profiles' secrets are scoped out by the diff
+    # (out_of_variant_scope) in this variant and verified in their OWN variant.
+    # When ``active_profile_id`` is None (single / no-profile connector) we pass
+    # None → all profiles emitted (unchanged behaviour).
+    active_profiles = None
+    if getattr(variant, "active_profile_id", None):
+        active_profiles = [
+            p for p in parity_inputs.profiles if p.id == variant.active_profile_id
+        ]
     try:
         connector_raw, connector_payload = capture_ucp_params(
             xsoar_client=xsoar_client,
             xsoar_brand_name=integration_brand,
             parity_inputs=parity_inputs,
             capabilities=variant.capabilities,
+            active_profiles=active_profiles,
             instance_values=connector_instance_values,
             connector_id=connector_id,
         )
@@ -327,6 +396,24 @@ def _run_one_variant(
         connector_raw=connector_raw,
         integration_dropped=integration_dropped,
         connector_dropped=connector_dropped,
+        # Per-variant field SCOPING (Bucket C): tell the diff which fields THIS
+        # variant's enabled sub-capabilities legitimately expose, plus the global
+        # field→owning-sub-capability map and this variant's enabled ownership
+        # units, so a field belonging to a DISABLED sub-capability is treated as
+        # out-of-variant-scope (OK_IGNORED) rather than MISSING_IN_CONNECTOR.
+        in_scope_fields=variant.in_scope_fields,
+        field_owning_subcapabilities=parity_inputs.field_owning_subcapabilities,
+        enabled_ownership_units=variant.enabled_ownership_units,
+        # serialized_from/to annotation must reflect ONLY this integration's
+        # handler serializer. For a grouped connector (e.g. aws) the diff's own
+        # connector-wide rglob would mis-attribute a shared xsoar param name
+        # (e.g. incidentType / first_fetch) to a SIBLING handler's connector
+        # field id; the resolver already parsed this handler's serializer.yaml
+        # into these scoped maps, so pass them through.
+        serializer_by_xsoar=getattr(parity_inputs, "serializer_by_xsoar", None),
+        serializer_by_connector=getattr(
+            parity_inputs, "serializer_by_connector", None
+        ),
         allow_missing=args.allow_missing,
         allow_extra=args.allow_extra,
         allow_mismatch=args.allow_mismatch,
@@ -336,6 +423,11 @@ def _run_one_variant(
     variant_envelope["variant_id"] = variant.id
     variant_envelope["enabled_capabilities"] = variant.enabled_capability_ids
     variant_envelope["fetch_flags"] = dict(variant.fetch_flags)
+    # The pinned auth profile for this variant (multi-profile / XOR connectors).
+    # None for single / no-profile connectors.
+    variant_envelope["active_profile_id"] = getattr(
+        variant, "active_profile_id", None
+    )
     variant_envelope["captures"] = {
         "integration": integration_raw,
         "connector": connector_raw,
@@ -497,10 +589,9 @@ def main(argv: list[str] | None = None) -> int:
                 overrides=shared_dummies, client=xsoar_client,
             )
         if connector_raw is None:
-            connector_instance_values = dict(shared_dummies)
-            for xp, cf in parity_inputs.param_to_connector_field.items():
-                if xp in shared_dummies and cf != xp:
-                    connector_instance_values[cf] = shared_dummies[xp]
+            connector_instance_values = _build_connector_instance_values(
+                shared_dummies, parity_inputs
+            )
             connector_raw, connector_payload = capture_ucp_params(
                 xsoar_client=xsoar_client, xsoar_brand_name=integration_brand,
                 parity_inputs=parity_inputs, capabilities=variant.capabilities,
@@ -590,6 +681,7 @@ def main(argv: list[str] | None = None) -> int:
                     "id": v.id,
                     "enabled_capabilities": v.enabled_capability_ids,
                     "fetch_flags": dict(v.fetch_flags),
+                    "active_profile_id": getattr(v, "active_profile_id", None),
                 }
                 for v in variants
             ],

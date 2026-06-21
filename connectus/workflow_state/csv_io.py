@@ -19,18 +19,57 @@ import io
 import os as _os_module
 import sys
 import tempfile
+from pathlib import Path
 from typing import Optional
+
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
 
 from workflow_state.config_loader import get_config
 from workflow_state.state_machine import _normalize_rows_with_warning
 
+
+#: Environment variable that, when set & non-empty, overrides the bundled
+#: pipeline CSV path. The value is a full path: absolute, or relative to the
+#: repo root (``BASE_DIR``); ``~`` is expanded. Loaded from the unified root
+#: ``.env`` via :func:`env_loader.load_env`.
+PIPELINE_CSV_ENV_VAR = "CONNECTUS_PIPELINE_CSV"
 
 # This file is connectus/workflow_state/csv_io.py — go up TWO dirs to
 # reach the workspace root.
 BASE_DIR = _os_module.path.dirname(
     _os_module.path.dirname(_os_module.path.dirname(_os_module.path.abspath(__file__)))
 )
-CSV_PATH = _os_module.path.join(BASE_DIR, "connectus", "connectus-migration-pipeline.csv")
+
+#: The bundled default pipeline CSV path (used when the env var is unset/empty).
+_DEFAULT_CSV_PATH = _os_module.path.join(
+    BASE_DIR, "connectus", "connectus-migration-pipeline.csv"
+)
+
+
+def _resolve_pipeline_csv() -> str:
+    """Resolve the pipeline CSV path, honoring ``CONNECTUS_PIPELINE_CSV``.
+
+    Returns the env override (with ``~`` expanded and relative paths resolved
+    against :data:`BASE_DIR`) when ``CONNECTUS_PIPELINE_CSV`` is set & non-empty,
+    else the bundled :data:`_DEFAULT_CSV_PATH`.
+    """
+    load_env()
+    raw = (_os_module.environ.get(PIPELINE_CSV_ENV_VAR) or "").strip()
+    if not raw:
+        return _DEFAULT_CSV_PATH
+    expanded = _os_module.path.expanduser(raw)
+    if _os_module.path.isabs(expanded):
+        return expanded
+    return _os_module.path.join(BASE_DIR, expanded)
+
+
+#: The active pipeline CSV path. Computed once at import time from the env
+#: override (if any) or the bundled default. Tests may monkeypatch
+#: ``workflow_state.CSV_PATH`` directly — :func:`_csv_path` reads it from the
+#: package namespace at call time, so monkeypatching still wins.
+CSV_PATH = _resolve_pipeline_csv()
 
 # Re-exposed at the package namespace so tests can monkey-patch e.g.
 # ``workflow_state.os.replace``.

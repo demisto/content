@@ -50,13 +50,48 @@ _LONGRUNNING_FIELDS = ["longRunning"]
 _LONGRUNNINGPORT_FIELDS = ["longRunningPort"]
 _ISFETCHCREDENTIALS_FIELDS = ["isFetchCredentials"]
 
+# ----------------------------------------------------------------------------
+# Table-driven flag -> BE-synthesized field-set mapping (single source of truth)
+# ----------------------------------------------------------------------------
+#
+# WHEN does each flag fire? The decision is made UPSTREAM, not here:
+#
+#   1. A connector capability maps to exactly one XSOAR fetch flag via
+#      ``resolver.CAPABILITY_FETCH_FLAG`` (fetch-issues->isFetch,
+#      log-collection->isFetchEvents, fetch-assets-and-vulnerabilities->
+#      isFetchAssets, threat-intelligence-and-enrichment->feed,
+#      fetch-secrets->isFetchCredentials).
+#   2. ``resolver._expand_variants`` emits ONE variant per fetch capability and
+#      sets EXACTLY ONE flag ``True`` in that variant's ``fetch_flags`` (the
+#      platform forbids two fetch types on one instance); every other flag is
+#      ``False``. An always-on-only variant has ALL flags ``False``.
+#   3. ``compute_be_synthesized_params`` reads those booleans and iterates THIS
+#      table, contributing a row's fields ONLY when its flag's bool is ``True``.
+#
+# So this table answers only "which fields does a flag imply", never "is the flag
+# on" — that is decided by the variant. A flag that is ``False`` (e.g. the
+# CiscoSMA isFetch-only variant's ``isFetchEvents``/``isFetchAssets``/``feed``)
+# contributes nothing, which is exactly the off-flags-don't-leak guarantee.
+#
+# The table is ORDERED so the emitted ``added`` list is deterministic. Keys are
+# the XSOAR toggle names (``resolver.CAPABILITY_FETCH_FLAG`` values) — the same
+# names used in variant ``fetch_flags`` AND in the YML script flags. longRunning/
+# longRunningPort and the conditional ``incidentType`` are NOT fetch-variant axes
+# and are handled separately in ``compute_be_synthesized_params``.
+_FETCH_FLAG_FIELDS: tuple[tuple[str, list[str]], ...] = (
+    ("isFetch", _ISFETCH_FIELDS),
+    ("feed", _FEED_FIELDS),
+    ("isFetchEvents", _ISFETCHEVENTS_FIELDS),
+    ("isFetchAssets", _ISFETCHASSETS_FIELDS),
+    ("isFetchCredentials", _ISFETCHCREDENTIALS_FIELDS),
+)
+
 # Params the BE STRIPS when NO fetch flag (IsFetch/LongRunning/Feed/IsFetchEvents/
 # IsFetchAssets) is enabled.
 _STRIP_WHEN_NO_FETCH = [
     "isFetch",
     "isFetchEvents",
     "incidentFetchInterval",
-    "alertFetchInterval",
     "eventFetchInterval",
     "incidentType",
     "alertType",
@@ -72,14 +107,99 @@ _STRIP_WHEN_NO_FETCH = [
 _INTERVAL_FIELDS = frozenset(
     {
         "incidentFetchInterval",
-        "alertFetchInterval",
         "eventFetchInterval",
         "assetsFetchInterval",
         "feedFetchInterval",
         "feedExpirationInterval",
     }
 )
-_INTERVAL_DUMMY = "1"  # valid minutes count; matches both sides' default_value
+#: A NON-DEFAULT valid-minutes test value. We deliberately do NOT use ``"0"`` or
+#: ``"1"`` — both are at/near the YML default, so they cannot prove the connector
+#: actually delivered the value (vs the backend re-injecting the default). ``111``
+#: is a recognizable, clearly-non-default minutes count exercised on BOTH sides.
+_INTERVAL_DUMMY = "111"
+
+
+# ============================================================================
+# Connector-int / Integration-string field registry (parity type contract)
+# ============================================================================
+#
+# Some BE-synthesized fields have an ASYMMETRIC type contract across the two
+# parity sides:
+#
+#   * the INTEGRATION (legacy XSOAR) side receives/returns the value as a STRING
+#     (e.g. ``demisto.params()["incidentFetchInterval"] == "111"``), because the
+#     XSOAR instance-creation API stores config params as strings; while
+#   * the CONNECTOR (UCP) side receives/returns it as an INTEGER (e.g. a
+#     ``duration`` field with ``output_format: minutes`` serializes to ``111``).
+#
+# The two representations are SEMANTICALLY EQUAL but compare unequal under ``==``
+# (``111 != "111"``), which the harness previously flagged as a spurious
+# VALUE_MISMATCH. This registry scopes the int↔string equivalence to ONLY the
+# fields that genuinely have this contract, so it is NOT a blanket "ints equal
+# strings everywhere" rule. Add more fields here as they are discovered.
+#
+# The registry is consumed in TWO places (kept in sync via this single source):
+#   1. PAYLOAD CONSTRUCTION — :func:`connector_value_for` coerces the shared
+#      string dummy to an int for the connector creation payload, while the
+#      integration side keeps the string.
+#   2. PARITY COMPARISON — :func:`values_match` treats connector ``111`` and
+#      integration ``"111"`` as equal for these fields.
+CONNECTOR_INT_INTEGRATION_STRING_FIELDS: frozenset[str] = frozenset(
+    {
+        "incidentFetchInterval",
+        "eventFetchInterval",
+        "assetsFetchInterval",
+        "feedFetchInterval",
+        "feedExpirationInterval",
+    }
+)
+
+
+def is_connector_int_integration_string_field(name: str) -> bool:
+    """True iff ``name`` has the connector-int / integration-string type contract.
+
+    See :data:`CONNECTOR_INT_INTEGRATION_STRING_FIELDS`.
+    """
+    return name in CONNECTOR_INT_INTEGRATION_STRING_FIELDS
+
+
+def connector_value_for(name: str, value):
+    """Coerce ``value`` to the CONNECTOR-side representation for ``name``.
+
+    For a registry field (:data:`CONNECTOR_INT_INTEGRATION_STRING_FIELDS`), the
+    shared string dummy (e.g. ``"111"``) is coerced to the integer the connector
+    expects (``111``). Non-registry fields and uncoercible values are returned
+    unchanged so the bidirectional push is otherwise untouched.
+    """
+    if not is_connector_int_integration_string_field(name):
+        return value
+    try:
+        return int(str(value).strip())
+    except (TypeError, ValueError):
+        # Leave non-numeric values alone — better to surface a real mismatch than
+        # to silently mangle an unexpected value.
+        return value
+
+
+def values_match(name: str, integration_value, connector_value) -> bool:
+    """True iff the two side values are at PARITY for ``name``.
+
+    Plain equality, EXCEPT for registry fields
+    (:data:`CONNECTOR_INT_INTEGRATION_STRING_FIELDS`) where the connector's
+    integer and the integration's string compare equal when their canonical
+    integer forms match (``int(connector) == int(integration)``). A genuinely
+    different value (e.g. connector ``111`` vs integration ``"222"``) still
+    fails, preserving real mismatch detection.
+    """
+    if integration_value == connector_value:
+        return True
+    if is_connector_int_integration_string_field(name):
+        try:
+            return int(str(integration_value).strip()) == int(str(connector_value).strip())
+        except (TypeError, ValueError):
+            return False
+    return False
 
 #: The COMPLETE set of XSOAR BE-synthesized CONFIG param NAMES — every param the
 #: backend (ValidateConfiguration) can auto-add for a fetch/feed/long-running
@@ -105,13 +225,32 @@ BE_SYNTHESIZED_PARAM_NAMES: frozenset[str] = frozenset(
 )
 
 
-def default_dummy_for(name: str) -> str:
+#: BE-synthesized fields that are BOOLEAN fetch TOGGLES. When a variant enables a
+#: fetch flag, the synthesized toggle must be pushed as ``True`` (the connector
+#: returns the toggle as a real boolean ``true`` at runtime), NOT as a generic
+#: string dummy — otherwise the integration side would carry a truthy string while
+#: the connector carries ``true`` and the diff would flag a spurious VALUE_MISMATCH
+#: (exactly the ``isFetchEvents`` mismatch). These are the toggle keys of
+#: :data:`_FETCH_FLAG_FIELDS` (== the active-flag names a variant can enable). A
+#: toggle is only ever synthesized when its flag is ACTIVE, so the value is always
+#: ``True`` here (inactive flags contribute no fields — see
+#: :func:`compute_be_synthesized_params`).
+_FETCH_TOGGLE_FIELDS: frozenset[str] = frozenset(flag for flag, _ in _FETCH_FLAG_FIELDS)
+
+
+def default_dummy_for(name: str):
     """Return the dummy value the harness should push for a BE-synthesized field.
 
-    Interval/duration fields require a valid minutes value (the backend coerces
-    invalid strings to the default), so they get :data:`_INTERVAL_DUMMY`. All
-    other synthesized fields take the generic ``dummy_config_<name>`` string.
+    * A boolean fetch TOGGLE (:data:`_FETCH_TOGGLE_FIELDS` — ``isFetch``,
+      ``isFetchEvents``, ``isFetchAssets``, ``feed``, ``isFetchCredentials``) is
+      synthesized ONLY when its variant flag is active, so it is pushed as the
+      boolean ``True`` to match the connector's runtime ``true``.
+    * Interval/duration fields require a valid minutes value (the backend coerces
+      invalid strings to the default), so they get :data:`_INTERVAL_DUMMY`.
+    * All other synthesized fields take the generic ``dummy_config_<name>`` string.
     """
+    if name in _FETCH_TOGGLE_FIELDS:
+        return True
     if name in _INTERVAL_FIELDS:
         return _INTERVAL_DUMMY
     return f"dummy_config_{name}"
@@ -235,17 +374,23 @@ def compute_be_synthesized_params(
         or is_long_running
     )
 
+    # Per-flag injection is table-driven (see _FETCH_FLAG_FIELDS): each ENABLED
+    # fetch flag contributes its field set, each DISABLED flag contributes
+    # nothing. This is what guarantees an isFetch-only variant (e.g. CiscoSMA)
+    # never leaks event/assets/feed fields — those flags are False, so their rows
+    # are skipped. Adding a new fetch flag means adding ONE table row, not another
+    # `if` block here.
+    flag_active: dict[str, bool] = {
+        "isFetch": is_fetch,
+        "feed": is_feed,
+        "isFetchEvents": is_fetch_events,
+        "isFetchAssets": is_fetch_assets,
+        "isFetchCredentials": is_fetch_credentials,
+    }
     added: list[str] = []
-    if is_fetch:
-        added.extend(_ISFETCH_FIELDS)
-    if is_feed:
-        added.extend(_FEED_FIELDS)
-    if is_fetch_events:
-        added.extend(_ISFETCHEVENTS_FIELDS)
-    if is_fetch_assets:
-        added.extend(_ISFETCHASSETS_FIELDS)
-    if is_fetch_credentials:
-        added.extend(_ISFETCHCREDENTIALS_FIELDS)
+    for flag, fields in _FETCH_FLAG_FIELDS:
+        if flag_active.get(flag):
+            added.extend(fields)
     if is_long_running:
         added.extend(_LONGRUNNING_FIELDS)
     if is_long_running_port:

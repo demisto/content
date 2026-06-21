@@ -800,9 +800,9 @@ def test_typed_dummy_checkbox_is_false():
 
 
 def test_typed_dummy_duration_is_int_zero():
-    specs = {"alertFetchInterval": {"field_type": "duration"}}
-    assert _typed_dummy_value("alertFetchInterval", specs) == 0
-    assert isinstance(_typed_dummy_value("alertFetchInterval", specs), int)
+    specs = {"incidentFetchInterval": {"field_type": "duration"}}
+    assert _typed_dummy_value("incidentFetchInterval", specs) == 0
+    assert isinstance(_typed_dummy_value("incidentFetchInterval", specs), int)
 
 
 def test_typed_dummy_number_is_int_zero():
@@ -1035,7 +1035,7 @@ def test_duration_orphan_config_dummy_is_int():
     the backend can cast it to int64."""
     view = _creation_view()
     caps = _capabilities()
-    caps[0].config_field_ids = {"alertFetchInterval"}
+    caps[0].config_field_ids = {"incidentFetchInterval"}
     payload = _build_instance_payload(
         view,
         instance_name="x",
@@ -1043,9 +1043,9 @@ def test_duration_orphan_config_dummy_is_int():
         profiles=[],
         instance_values={},  # no value → orphan → typed dummy
         connector_id="akamai",
-        field_specs={"alertFetchInterval": {"field_type": "duration"}},
+        field_specs={"incidentFetchInterval": {"field_type": "duration"}},
     )
-    assert payload["configuration"]["alertFetchInterval"] == 0
+    assert payload["configuration"]["incidentFetchInterval"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -1202,6 +1202,131 @@ def test_capture_ucp_params_returns_captured_and_payload_tuple(monkeypatch):
     captured, payload = result
     assert captured is captured_sentinel
     assert payload is sentinel_payload
+
+
+def test_capture_ucp_params_pins_single_active_profile(monkeypatch):
+    """MULTI-PROFILE (XOR) pinning: when ``active_profiles=[one]`` is passed, ONLY
+    that profile is forwarded to _build_instance_payload, so the created instance
+    emits exactly that profile and the runtime activates it. Proves the UCP create
+    path can pin a single profile (Option B feasibility)."""
+    import types
+
+    import ucp_capture
+
+    prof_a = ProfileSpec(id="api_key.fortigate", type="api_key", field_ids=["api_key"])
+    prof_b = ProfileSpec(id="plain.fortigate", type="plain", field_ids=["credentials_username"])
+
+    seen: dict = {}
+
+    def _capture_profiles(*a, **k):
+        seen["profiles"] = k.get("profiles")
+        return {"configuration": [], "connection": {"profiles": []}}
+
+    monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
+    monkeypatch.setattr(
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
+    )
+    monkeypatch.setattr(
+        ucp_capture, "get_creation_view",
+        lambda connector_id, tenant_id, port: {"instance_id": "view-1"},
+    )
+    monkeypatch.setattr(ucp_capture, "_build_instance_payload", _capture_profiles)
+    monkeypatch.setattr(
+        ucp_capture, "create_ucp_instance",
+        lambda payload, tenant_id, port: {"id": "ucp-1", "name": "x", "status": "ok"},
+    )
+    monkeypatch.setattr(
+        ucp_capture, "verify_ucp_instance_created",
+        lambda **k: {"exists": True, "instance_id": "ucp-1", "status": "ok", "via": "get"},
+    )
+    monkeypatch.setattr(ucp_capture, "wait_for_xsoar_mirror", lambda *a, **k: {"id": "m"})
+    monkeypatch.setattr(
+        ucp_capture, "inject_magic_key_and_persist",
+        lambda client, mirror: {"id": "m", "armed": True},
+    )
+    monkeypatch.setattr(
+        ucp_capture, "run_test_module_and_capture_params", lambda client, armed: {}
+    )
+    monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
+
+    parity_inputs = types.SimpleNamespace(
+        connector_id="fortinet-fortigate",
+        capabilities=[],
+        profiles=[prof_a, prof_b],  # connector has BOTH profiles…
+    )
+
+    ucp_capture.capture_ucp_params(
+        xsoar_client=object(),
+        xsoar_brand_name="FortiGate",
+        parity_inputs=parity_inputs,
+        active_profiles=[prof_b],  # …but we pin ONLY plain.fortigate
+        instance_values={},
+        connector_id="fortinet-fortigate",
+        tenant_id="tenant-1",
+    )
+
+    assert [p.id for p in seen["profiles"]] == ["plain.fortigate"]
+
+
+def test_capture_ucp_params_active_profiles_none_emits_all(monkeypatch):
+    """Back-compat: active_profiles=None → ALL connector profiles are emitted
+    (single / no-profile connectors, or legacy callers — unchanged behaviour)."""
+    import types
+
+    import ucp_capture
+
+    prof_a = ProfileSpec(id="p.a", type="x", field_ids=["a"])
+    prof_b = ProfileSpec(id="p.b", type="y", field_ids=["b"])
+    seen: dict = {}
+
+    def _capture_profiles(*a, **k):
+        seen["profiles"] = k.get("profiles")
+        return {"configuration": [], "connection": {"profiles": []}}
+
+    monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
+    monkeypatch.setattr(
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
+    )
+    monkeypatch.setattr(
+        ucp_capture, "get_creation_view",
+        lambda connector_id, tenant_id, port: {"instance_id": "view-1"},
+    )
+    monkeypatch.setattr(ucp_capture, "_build_instance_payload", _capture_profiles)
+    monkeypatch.setattr(
+        ucp_capture, "create_ucp_instance",
+        lambda payload, tenant_id, port: {"id": "ucp-1", "name": "x", "status": "ok"},
+    )
+    monkeypatch.setattr(
+        ucp_capture, "verify_ucp_instance_created",
+        lambda **k: {"exists": True, "instance_id": "ucp-1", "status": "ok", "via": "get"},
+    )
+    monkeypatch.setattr(ucp_capture, "wait_for_xsoar_mirror", lambda *a, **k: {"id": "m"})
+    monkeypatch.setattr(
+        ucp_capture, "inject_magic_key_and_persist",
+        lambda client, mirror: {"id": "m", "armed": True},
+    )
+    monkeypatch.setattr(
+        ucp_capture, "run_test_module_and_capture_params", lambda client, armed: {}
+    )
+    monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
+
+    parity_inputs = types.SimpleNamespace(
+        connector_id="c", capabilities=[], profiles=[prof_a, prof_b]
+    )
+
+    ucp_capture.capture_ucp_params(
+        xsoar_client=object(),
+        xsoar_brand_name="C",
+        parity_inputs=parity_inputs,
+        # active_profiles omitted → None
+        instance_values={},
+        connector_id="c",
+        tenant_id="tenant-1",
+    )
+
+    assert [p.id for p in seen["profiles"]] == ["p.a", "p.b"]
 
 
 def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):

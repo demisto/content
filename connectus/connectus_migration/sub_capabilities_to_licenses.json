@@ -1374,7 +1374,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_mitre-att&ck-v2": [
+  "automation-and-remediation_mitre-attack-v2": [
     "xsiam",
     "agentix"
   ],
@@ -3428,7 +3428,7 @@
     "xsiam",
     "agentix"
   ],
-  "threat-intelligence-and-enrichment_mitre-att&ck-v2": [
+  "threat-intelligence-and-enrichment_mitre-attack-v2": [
     "xsiam",
     "agentix"
   ],

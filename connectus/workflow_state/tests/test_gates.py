@@ -51,10 +51,11 @@ class TestRegistry:
         assert gates.is_known_gate("handler_param_coverage")
         assert "handler_param_coverage" in gates.known_gate_names()
 
-    def test_deferred_gates_not_registered(self) -> None:
-        # param_parity remains deferred (design §6.3). make_validate is now
-        # ACTIVE — it runs `make validate` in the ConnectUs repo.
-        assert not gates.is_known_gate("param_parity")
+    def test_param_parity_gate_registered(self) -> None:
+        # param_parity is now ACTIVE — it runs deploy_and_test.py (live
+        # deploy + param-parity) and is registered in the GATES registry.
+        assert gates.is_known_gate("param_parity")
+        assert "param_parity" in gates.known_gate_names()
 
     def test_no_bypass_helper_exists(self) -> None:
         # There must be no env-var bypass for checkpoint gates.
@@ -131,6 +132,162 @@ class TestRunGate:
         assert argv[argv.index("--integration-yml") + 1] == (
             "/content/Packs/P/Integrations/MyInt/MyInt.yml"
         )
+
+    def test_param_parity_argv_and_cwd(self, monkeypatch) -> None:
+        # The param_parity gate runs deploy_and_test.py with the integration
+        # id, from the content repo root. argv must be EXACTLY:
+        #   [sys.executable, _DEPLOY_AND_TEST_SCRIPT, "--integration-id", iid]
+        monkeypatch.setattr(gates, "_repo_root", lambda: "/content/repo")
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/integration/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["gate"] == "param_parity"
+        argv = m.call_args.args[0]
+        assert argv == [
+            gates.sys.executable,
+            gates._DEPLOY_AND_TEST_SCRIPT,
+            "--integration-id",
+            "MyInt",
+        ]
+        # cwd is the content repo root, not abs_dir.
+        assert m.call_args.kwargs["cwd"] == "/content/repo"
+
+    def test_param_parity_pass_on_exit_zero(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="parity ok", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["exit_code"] == 0
+        assert verdict["gate"] == "param_parity"
+
+    @pytest.mark.parametrize("exit_code", [10, 11, 20, 21, 30, 40, 7])
+    def test_param_parity_fail_on_each_nonzero_exit(self, exit_code) -> None:
+        # Every non-zero exit (parity fail 10, blocked 11, deploy 20/21, lock
+        # busy 30, preflight 40, and any other e.g. 7) rejects the markpass.
+        # The wrapper exit code propagates and the output tail is surfaced.
+        completed = subprocess.CompletedProcess(
+            args=["python3"],
+            returncode=exit_code,
+            stdout="some stdout tail",
+            stderr=f"FAILED with code {exit_code}",
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] == exit_code
+        assert f"exited {exit_code}" in verdict["reason"]
+        assert verdict["stdout_tail"] == "some stdout tail"
+        assert verdict["stderr_tail"] == f"FAILED with code {exit_code}"
+
+    def test_param_parity_no_skip_envs_plain_argv(self, monkeypatch) -> None:
+        # With BOTH deploy-scope env vars UNSET, the param_parity gate builds
+        # the plain argv with NO skip flags appended.
+        monkeypatch.delenv(gates._PARITY_SKIP_CONNECTOR_ENV, raising=False)
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert argv == [
+            gates.sys.executable,
+            gates._DEPLOY_AND_TEST_SCRIPT,
+            "--integration-id",
+            "MyInt",
+        ]
+        assert "--skip-connector-deploy" not in argv
+        assert "--skip-base-pack" not in argv
+
+    def test_param_parity_skip_connector_env_appends_flag(self, monkeypatch) -> None:
+        # CONNECTUS_PARITY_SKIP_CONNECTOR=1 appends --skip-connector-deploy
+        # ONLY (NOT --skip-base-pack).
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" in argv
+        assert "--skip-base-pack" not in argv
+        # The integration id is still present.
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_skip_base_pack_env_appends_flag(self, monkeypatch) -> None:
+        # CONNECTUS_PARITY_SKIP_BASE_PACK=1 appends --skip-base-pack ONLY
+        # (NOT --skip-connector-deploy).
+        monkeypatch.setenv(gates._PARITY_SKIP_BASE_PACK_ENV, "1")
+        monkeypatch.delenv(gates._PARITY_SKIP_CONNECTOR_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-base-pack" in argv
+        assert "--skip-connector-deploy" not in argv
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_both_skip_envs_append_both_flags(self, monkeypatch) -> None:
+        # Both env vars set → BOTH skip flags appended, still with the id.
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        monkeypatch.setenv(gates._PARITY_SKIP_BASE_PACK_ENV, "1")
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" in argv
+        assert "--skip-base-pack" in argv
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_skip_envs_do_not_change_verdict(self, monkeypatch) -> None:
+        # The deploy-scope env vars NEVER affect the pass/fail verdict. With a
+        # skip env set AND a NON-zero subprocess exit (10 = parity fail), the
+        # verdict is still allow=False; with exit 0 it is allow=True. The skip
+        # env does not turn a failure into a pass.
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        fail = subprocess.CompletedProcess(
+            args=["python3"], returncode=10, stdout="", stderr="parity mismatch"
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=fail):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] == 10
+
+        ok = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="parity ok", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=ok):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["exit_code"] == 0
+
+    def test_param_parity_falsey_skip_env_does_not_append_flag(self, monkeypatch) -> None:
+        # A falsey value (e.g. "0") does NOT append the flag — matching the
+        # coverage-force helper's truthiness semantics ({"1","true","yes"}).
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "0")
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" not in argv
+        assert "--skip-base-pack" not in argv
 
     def test_handler_param_coverage_fail_on_nonzero_exit(self, monkeypatch) -> None:
         # A non-zero exit from the coverage script (missing param / usage
@@ -243,6 +400,12 @@ class TestLoaderGateParsing:
         cfg = load_config()
         step = cfg.step_by_name["run manifest make validate"]
         assert step.gate == "make_validate"
+
+    def test_default_yaml_binds_param_parity_gate(self) -> None:
+        cfg = load_config()
+        step = cfg.step_by_name["param parity test passes"]
+        assert step.gate == "param_parity"
+        assert step.kind == "checkpoint"
 
     def test_default_yaml_binds_handler_param_coverage_gate(self) -> None:
         cfg = load_config()
@@ -365,3 +528,76 @@ class TestMarkpassGate:
         import inspect
         sig = inspect.signature(ws_api.markpass_integration_step)
         assert "skip_gate" not in sig.parameters
+
+
+_PARITY_STEP = "param parity test passes"
+
+
+def _row_at_parity_step() -> dict:
+    """A CSV row with every step before the param-parity checkpoint done."""
+    cfg = load_config()
+    row = {
+        "Integration ID": "MyInt",
+        "Integration File Path": "Packs/Fake/Integrations/Fake/Fake.yml",
+        "Connector ID": "fake",
+    }
+    for s in cfg.steps:
+        if s.name == _PARITY_STEP:
+            row[s.name] = ""  # the step under test — not yet done
+            break
+        row[s.name] = cfg.markers.check if s.kind == "checkpoint" else "x"
+    for s in cfg.steps:
+        row.setdefault(s.name, "")
+    return row
+
+
+@pytest.fixture
+def parity_csv(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
+    rows = [_row_at_parity_step()]
+    monkeypatch.setattr(ws_api, "load_csv", lambda: rows)
+    monkeypatch.setattr(ws_api, "save_csv", lambda _rows: None)
+    return rows
+
+
+def _patch_gate_via_real_run_gate(monkeypatch, completed) -> None:
+    """Route ws_api.run_checkpoint_gate through the REAL gates.run_gate.
+
+    This exercises the genuine exit-code -> verdict mapping (so the
+    subprocess return code drives the markpass), while skipping the
+    on-disk integration-directory resolution that get_integration_files
+    performs (the fake CSV row points at a non-existent path). subprocess
+    itself is mocked via ``completed`` so no live deploy runs.
+    """
+
+    def _run(iid, gate, timeout):
+        with mock.patch.object(gates.subprocess, "run", return_value=completed):
+            verdict = gates.run_gate(gate, "/abs/integration/dir", iid, timeout=timeout)
+        verdict["integration_id"] = iid
+        return verdict
+
+    monkeypatch.setattr(ws_api, "run_checkpoint_gate", _run)
+
+
+class TestParamParityMarkpassGate:
+    def test_parity_gate_pass_marks_cell(self, parity_csv, monkeypatch) -> None:
+        # Gate mocked to PASS (exit 0) via the real run_gate mapping. Cell ✅.
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="parity ok", stderr=""
+        )
+        _patch_gate_via_real_run_gate(monkeypatch, completed)
+        result = ws_api.markpass_integration_step("MyInt", _PARITY_STEP)
+        assert "error" not in result
+        assert result["completed_step"] == _PARITY_STEP
+        assert parity_csv[0][_PARITY_STEP] == load_config().markers.check
+
+    def test_parity_gate_fail_rejects_markpass(self, parity_csv, monkeypatch) -> None:
+        # Gate mocked to FAIL (exit 10, parity mismatch) via the real
+        # run_gate mapping. The markpass is rejected; the cell stays empty.
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=10, stdout="", stderr="parity mismatch"
+        )
+        _patch_gate_via_real_run_gate(monkeypatch, completed)
+        result = ws_api.markpass_integration_step("MyInt", _PARITY_STEP)
+        assert "error" in result
+        assert "gate 'param_parity' failed" in result["error"]
+        assert parity_csv[0][_PARITY_STEP] == ""

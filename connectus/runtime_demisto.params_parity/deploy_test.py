@@ -328,3 +328,55 @@ def test_assert_personal_branch_rejects_bad_names(bad):
     """Unit-level: the guard rejects shared/protected/malformed branch names."""
     with pytest.raises(SystemExit):
         deploy._assert_personal_branch(bad)
+
+
+# ---------------------------------------------------------------------------
+# --skip-pipeline: upload-only run (no GitLab pipeline trigger/poll, exit 0)
+# ---------------------------------------------------------------------------
+class _FakeArgs:
+    """A minimal argparse.Namespace stand-in for get_config()."""
+
+    def __init__(self, **overrides):
+        defaults = dict(
+            token="tok", project=None, repo_dir="/tmp/repo", branch=None,
+            tenant="123", skip_git=False, skip_pipeline=False, poll_interval=None,
+            max_wait=None, diagnose=False, ssh_key="", commit_path=None,
+            upload_packs=None, upload_insecure=False, skip_pack_upload=False,
+        )
+        defaults.update(overrides)
+        for k, v in defaults.items():
+            setattr(self, k, v)
+
+
+def test_get_config_skip_pipeline_default_false():
+    """skip_pipeline defaults to False in the config dict."""
+    config = deploy.get_config(_FakeArgs())
+    assert config["skip_pipeline"] is False
+
+
+def test_skip_pipeline_suppresses_trigger(monkeypatch):
+    """--skip-pipeline: packs still upload, but the GitLab pipeline is NEVER
+    triggered/polled, and main() exits 0 on a successful upload-only run."""
+    calls = {"upload": 0, "trigger": 0, "poll": 0}
+
+    monkeypatch.setattr(deploy, "parse_args", lambda: _FakeArgs(skip_pipeline=True))
+    monkeypatch.setattr(deploy, "validate_config", lambda config: None)
+    monkeypatch.setattr(deploy, "upload_packs",
+                        lambda config: calls.__setitem__("upload", calls["upload"] + 1))
+
+    def _trigger(config):
+        calls["trigger"] += 1
+        return 1, "url"
+
+    monkeypatch.setattr(deploy, "trigger_pipeline", _trigger)
+    monkeypatch.setattr(deploy, "poll_pipeline",
+                        lambda config, pid: calls.__setitem__("poll", calls["poll"] + 1) or ("success", 1.0))
+    # skip_git so git_operations is not invoked.
+    monkeypatch.setattr(deploy, "git_operations", lambda config: None)
+
+    with pytest.raises(SystemExit) as exc:
+        deploy.main()
+    assert exc.value.code == 0  # upload-only run succeeds
+    assert calls["upload"] == 1  # packs STILL uploaded
+    assert calls["trigger"] == 0  # pipeline NEVER triggered
+    assert calls["poll"] == 0  # pipeline NEVER polled

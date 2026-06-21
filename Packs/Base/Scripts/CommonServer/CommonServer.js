@@ -2124,8 +2124,11 @@ var _UCP_AUTH_PARAMS_INJECTED = false;
 var _UCP_REFRESH_THRESHOLD_SECONDS = 30;
 var _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation';
 var _UCP_COMMAND_CAPABILITIES = {
-    'fetch-incidents': 'collection-and-ingestion',
-    'fetch-assets': 'collection-and-ingestion'
+    'fetch-incidents': 'fetch-issues',
+    'fetch-events': 'log-collection',
+    'fetch-credentials': 'fetch-secrets',
+    'fetch-indicators': 'threat-intelligence-and-enrichment',
+    'fetch-assets': 'fetch-assets-and-vulnerabilities'
 };
 
 // Canonical credential-envelope schema per profile type.
@@ -2654,6 +2657,17 @@ function selectUcpProfiles(profiles, capability) {
     }
     logDebug('[UCP][CommonServer.js] selectUcpProfiles: found ' + matched.length
         + ' profile(s) with capability ' + capability + '.');
+    if (matched.length > 0) {
+        return matched;
+    }
+    for (var j = 0; j < profiles.length; j++) {
+        var p = profiles[j];
+        if (p && p.metadata && p.metadata.xsoar && p.metadata.xsoar.interpolation_mapping) {
+            logDebug('[UCP][CommonServer.js] selectUcpProfiles: no capability match; '
+                + 'falling back to first profile with an interpolation_mapping.');
+            return [p];
+        }
+    }
     return matched;
 }
 

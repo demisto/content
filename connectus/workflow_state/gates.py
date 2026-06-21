@@ -53,6 +53,16 @@ _HANDLER_PARAM_COVERAGE_SCRIPT = str(
     Path(__file__).resolve().parent.parent / "check_handler_param_coverage.py"
 )
 
+# Path to the atomic deploy + param-parity wrapper (lives in the
+# ``runtime_demisto.params_parity`` dir at the connectus/ package root, a
+# sibling of this package's parent dir). Run as a subprocess by the
+# ``param_parity`` gate. The wrapper acquires a per-tenant lock, deploys
+# once, runs check_param_parity.py, and always releases the lock.
+_DEPLOY_AND_TEST_SCRIPT = str(
+    Path(__file__).resolve().parent.parent
+    / "runtime_demisto.params_parity" / "deploy_and_test.py"
+)
+
 # Env var to override the auto-resolved ConnectUs repo path (e.g. when the
 # sibling layout differs, or for tests). When set, it wins over the
 # sibling-of-content-repo default.
@@ -64,11 +74,51 @@ _CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
 # explicit operator instruction — see the connectus-migration skill, Step 9.
 _HANDLER_COVERAGE_FORCE_ENV = "CONNECTUS_HANDLER_COVERAGE_FORCE"
 
+# Deploy-SCOPE overrides for the param_parity gate. When truthy, the gate
+# appends ``--skip-connector-deploy`` / ``--skip-base-pack`` to the parity
+# wrapper so batch orchestration can avoid redundantly re-deploying the
+# connector manifest / re-uploading the Base pack on iterations #2..#N (the
+# integration's OWN pack is ALWAYS still uploaded). These env vars ONLY change
+# what gets deployed — they NEVER affect the gate's pass/fail verdict (the
+# REAL parity check still runs and exit-code handling stays strict). They are
+# NOT a verdict bypass: a parity failure still rejects the markpass.
+_PARITY_SKIP_CONNECTOR_ENV = "CONNECTUS_PARITY_SKIP_CONNECTOR"
+_PARITY_SKIP_BASE_PACK_ENV = "CONNECTUS_PARITY_SKIP_BASE_PACK"
+
 
 def _coverage_force_enabled() -> bool:
     """Whether the handler-param-coverage gate should run with ``--force``."""
     load_env()
     return os.environ.get(_HANDLER_COVERAGE_FORCE_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _parity_skip_connector_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-connector-deploy``.
+
+    Deploy-scope only: skips the connector manifest deploy. Does NOT affect
+    the gate verdict — the real parity check still runs and must exit 0.
+    """
+    load_env()
+    return os.environ.get(_PARITY_SKIP_CONNECTOR_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _parity_skip_base_pack_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-base-pack``.
+
+    Deploy-scope only: skips the Base pack upload (the integration's own pack
+    is still uploaded). Does NOT affect the gate verdict — the real parity
+    check still runs and must exit 0.
+    """
+    load_env()
+    return os.environ.get(_PARITY_SKIP_BASE_PACK_ENV, "").strip().lower() in {
         "1",
         "true",
         "yes",
@@ -205,7 +255,11 @@ _OUTPUT_TAIL_BYTES = 4000
 # NOTE: there is deliberately NO bypass for checkpoint gates. Unlike the
 # auth-parity gate (which has CONNECTUS_SKIP_AUTH_PARITY), a gated
 # checkpoint MUST run its command and pass — there is no env var or flag
-# to skip it.
+# to skip it. This no-bypass policy explicitly covers ``param_parity`` too:
+# there is NO ``--no-gate`` flag and NO skip/force env var (e.g. no
+# CONNECTUS_SKIP_AUTH_PARITY analogue) for it — the parity wrapper MUST run
+# and exit 0. The only operator lever is the generic ``markpass --timeout=N``,
+# which never bypasses the pass/fail verdict.
 
 
 @dataclass(frozen=True)
@@ -233,10 +287,9 @@ class GateSpec:
 # Gate registry
 # ---------------------------------------------------------------------------
 #
-# ``precommit`` and ``make_validate`` are ACTIVE. ``param_parity`` is
-# deferred (see the design doc §6.3) and is intentionally NOT registered
-# yet — wiring it in later is purely additive (register a GateSpec here +
-# add ``gate:`` to the YAML step).
+# ``precommit``, ``make_validate``, ``handler_param_coverage``, and
+# ``param_parity`` are ACTIVE. Wiring a new gate is purely additive
+# (register a GateSpec here + add ``gate:`` to the YAML step).
 
 GATES: dict[str, GateSpec] = {
     "precommit": GateSpec(
@@ -297,6 +350,44 @@ GATES: dict[str, GateSpec] = {
         description=(
             "check_handler_param_coverage (handler covers every non-hidden "
             "integration-YML param)"
+        ),
+    ),
+    "param_parity": GateSpec(
+        name="param_parity",
+        # `python3 connectus/runtime_demisto.params_parity/deploy_and_test.py
+        # --integration-id <id>` performs the atomic live deploy + param-parity
+        # check: acquire the per-tenant lock, run deploy.py once, run
+        # check_param_parity.py, then always release the lock. It exits with a
+        # single code the gate runner branches on: 0 → pass; any non-zero
+        # (10 parity fail, 11 blocked, 20 deploy fail, 21 timeout, 30 lock busy,
+        # 40 preflight fail, or any other) → reject. There is NO VERDICT bypass:
+        # no --no-gate flag and no skip/force env var that turns a failure into
+        # a pass.
+        #
+        # Deploy-SCOPE overrides (NOT verdict bypasses): when
+        # ``CONNECTUS_PARITY_SKIP_CONNECTOR`` / ``CONNECTUS_PARITY_SKIP_BASE_PACK``
+        # are truthy, append ``--skip-connector-deploy`` / ``--skip-base-pack`` so
+        # batch orchestration can avoid redundant re-deploys on iterations
+        # #2..#N. These flags ONLY change WHAT is deployed; the integration's own
+        # pack is still uploaded, the REAL parity check still runs, and the
+        # exit-code handling in run_gate() stays strict (only exit 0 → allow).
+        # They can NEVER make the gate pass without parity succeeding.
+        build_argv=lambda abs_dir, iid: [
+            sys.executable,
+            _DEPLOY_AND_TEST_SCRIPT,
+            "--integration-id", iid,
+            *(["--skip-connector-deploy"] if _parity_skip_connector_enabled() else []),
+            *(["--skip-base-pack"] if _parity_skip_base_pack_enabled() else []),
+        ],
+        # The script path above is absolute and the wrapper re-roots its own
+        # children, so run from the content repo root (matches precommit/
+        # handler_param_coverage root cwd).
+        build_cwd=lambda abs_dir, iid: _repo_root(),
+        # Live deploy + parity over a tenant — be generous. Override per-call
+        # with the CLI --timeout= flag.
+        default_timeout=2400,
+        description=(
+            "deploy_and_test (live deploy + param-parity; exit 0 only, no bypass)"
         ),
     ),
 }
