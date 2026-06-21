@@ -28,7 +28,7 @@ subtype: python3
 dependson:
   must:
   - '|||core-api-get'
-dockerimage: demisto/python3:3.12.13.8428455
+dockerimage: demisto/python3:3.12.13.10116658
 runas: DBotWeakRole
 tests:
 - No test - unit test
