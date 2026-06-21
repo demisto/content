@@ -438,7 +438,7 @@ def test_azure_sql_firewall_rule_list_command(mocker):
     assert "### Firewall Rules" in results.readable_output
     assert len(results.outputs) == 2
     assert results.outputs[0].get("name") == "AllowAllWindowsAzureIps"
-    assert results.outputs[0].get("startIpAddress") == "0.0.0.0"
+    assert results.outputs[0].get("properties", {}).get("startIpAddress") == "0.0.0.0"
     assert results.outputs[1].get("name") == "test-rule"
 
 
@@ -461,8 +461,8 @@ def test_azure_sql_firewall_rule_list_command_single_rule(mocker):
     assert "### Firewall Rules" in results.readable_output
     assert len(results.outputs) == 1
     assert results.outputs[0].get("name") == "test-rule"
-    assert results.outputs[0].get("startIpAddress") == "0.0.0.0"
-    assert results.outputs[0].get("endIpAddress") == "0.0.0.0"
+    assert results.outputs[0].get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs[0].get("properties", {}).get("endIpAddress") == "0.0.0.0"
 
 
 def test_azure_sql_firewall_rule_list_command_with_not_found(mocker):
@@ -514,10 +514,10 @@ def test_azure_sql_firewall_rule_create_update_command(mocker):
     request_body = client.http_request.call_args.kwargs["data"]
     assert request_body["properties"]["startIpAddress"] == "0.0.0.0"
     assert request_body["properties"]["endIpAddress"] == "0.0.0.0"
-    assert "### Successfully updated the firewall rule new-rule" in results.readable_output
+    assert "Successfully updated the firewall rule new-rule" in results.readable_output
     assert results.outputs.get("name") == "new-rule"
-    assert results.outputs.get("startIpAddress") == "0.0.0.0"
-    assert results.outputs.get("endIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("endIpAddress") == "0.0.0.0"
 
 
 def test_azure_sql_firewall_rule_create_update_command_with_not_found(mocker):
@@ -606,8 +606,8 @@ def test_azure_sql_firewall_rule_replace_command(mocker):
     assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
     assert "Successfully updated the firewall rule" in results.readable_output
     assert results.outputs.get("name") == "replaced-rule"
-    assert results.outputs.get("startIpAddress") == "0.0.0.0"
-    assert results.outputs.get("endIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("endIpAddress") == "0.0.0.0"
 
 
 def test_azure_sql_firewall_rule_replace_command_with_not_found(mocker):

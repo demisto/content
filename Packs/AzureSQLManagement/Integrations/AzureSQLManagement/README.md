@@ -895,39 +895,8 @@ Gets a list of firewall rules or a specific firewall rule. Required Permissions:
 | AzureSQL.FirewallRule.id | String | Resource ID. |
 | AzureSQL.FirewallRule.name | String | Resource name. |
 | AzureSQL.FirewallRule.type | String | Resource type. |
-| AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
-| AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
-
-### azure-sql-firewall-rule-replace
-
-***
-Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write.
-
-#### Base Command
-
-`azure-sql-firewall-rule-replace`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | The name of the server. | Required |
-| firewall_rule_name | The name of the firewall rule. Required unless 'entry_id' is provided. | Optional |
-| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
-| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
-| entry_id | The entry ID of a file containing the full request JSON (in the FirewallRuleList format). If provided, the 'firewall_rule_name', 'start_ip_address', and 'end_ip_address' arguments are ignored and must not be set. | Optional |
-| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
-| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.FirewallRule.id | String | Resource ID. |
-| AzureSQL.FirewallRule.name | String | Resource name. |
-| AzureSQL.FirewallRule.type | String | Resource type. |
-| AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
-| AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
+| AzureSQL.FirewallRule.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| AzureSQL.FirewallRule.properties.endIpAddress | String | The end IP address of the firewall rule. |
 
 ### azure-sql-firewall-rule-create-update
 
@@ -944,8 +913,8 @@ Creates or updates a firewall rule. Required Permissions: Microsoft.Sql/servers/
 | --- | --- | --- |
 | server_name | The name of the server. | Required |
 | firewall_rule_name | The name of the firewall rule. | Required |
-| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. | Required |
 | start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. | Required |
+| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. | Required |
 | subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
 | resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
 
@@ -956,8 +925,8 @@ Creates or updates a firewall rule. Required Permissions: Microsoft.Sql/servers/
 | AzureSQL.FirewallRule.id | String | Resource ID. |
 | AzureSQL.FirewallRule.name | String | Resource name. |
 | AzureSQL.FirewallRule.type | String | Resource type. |
-| AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
-| AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
+| AzureSQL.FirewallRule.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| AzureSQL.FirewallRule.properties.endIpAddress | String | The end IP address of the firewall rule. |
 
 ### azure-sql-firewall-rule-delete
 
@@ -980,3 +949,34 @@ Deletes a firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRul
 #### Context Output
 
 There is no context output for this command.
+
+### azure-sql-firewall-rule-replace
+
+***
+Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sql-firewall-rule-replace`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the server. | Required |
+| firewall_rule_name | The name of the firewall rule. Required unless 'entry_id' is provided. | Optional |
+| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
+| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
+| entry_id | The entry ID of a file containing the full request JSON (in the FirewallRuleList format). If provided, the 'firewall_rule_name', 'start_ip_address', and 'end_ip_address' arguments are ignored and must not be set. | Optional |
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSQL.FirewallRule.id | String | Resource ID. |
+| AzureSQL.FirewallRule.name | String | Resource name. |
+| AzureSQL.FirewallRule.type | String | Resource type. |
+| AzureSQL.FirewallRule.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| AzureSQL.FirewallRule.properties.endIpAddress | String | The end IP address of the firewall rule. |

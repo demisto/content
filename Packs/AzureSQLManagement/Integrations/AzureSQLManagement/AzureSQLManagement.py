@@ -212,7 +212,6 @@ class Client:
             data=request_body,
         )
 
-    @logger
     def azure_sql_firewall_rule_list(self, server_name: str, resource_group_name: str, firewall_rule_name: str = None):
         """Gets a list of firewall rules or a specific firewall rule.
         Args:
@@ -222,16 +221,11 @@ class Client:
         Returns:
             The API response.
         """
+        url_suffix = f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/{server_name}/firewallRules"
         if firewall_rule_name:
-            url_suffix = (
-                f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/"
-                f"{server_name}/firewallRules/{firewall_rule_name}"
-            )
-        else:
-            url_suffix = f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/" f"{server_name}/firewallRules"
+            url_suffix += f"/{firewall_rule_name}"
         return self.http_request("GET", url_suffix, params={"api-version": FIREWALL_API_VERSION})
 
-    @logger
     def azure_sql_firewall_rule_create_update(
         self,
         server_name: str,
@@ -250,21 +244,18 @@ class Client:
         Returns:
             The API response.
         """
-        request_body = remove_empty_elements(
-            {
-                "properties": {
-                    "startIpAddress": start_ip_address,
-                    "endIpAddress": end_ip_address,
-                }
+        request_body = {
+            "properties": {
+                "startIpAddress": start_ip_address,
+                "endIpAddress": end_ip_address,
             }
-        )
+        }
         url_suffix = (
             f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/"
             f"{server_name}/firewallRules/{firewall_rule_name}"
         )
         return self.http_request("PUT", url_suffix, params={"api-version": FIREWALL_API_VERSION}, data=request_body)
 
-    @logger
     def azure_sql_firewall_rule_delete(self, server_name: str, resource_group_name: str, firewall_rule_name: str):
         """Deletes a firewall rule.
         Args:
@@ -280,7 +271,6 @@ class Client:
         )
         return self.http_request("DELETE", url_suffix, params={"api-version": FIREWALL_API_VERSION}, resp_type="response")
 
-    @logger
     def azure_sql_firewall_rule_replace(
         self,
         server_name: str,
@@ -690,7 +680,6 @@ def azure_sql_db_threat_policy_create_update_command(
     )
 
 
-@logger
 def azure_sql_firewall_rule_list_command(client: Client, args: Dict[str, str], resource_group_name: str) -> CommandResults:
     """azure-sql-firewall-rule-list command returns a list of firewall rules or a specific firewall rule.
 
@@ -706,9 +695,6 @@ def azure_sql_firewall_rule_list_command(client: Client, args: Dict[str, str], r
     firewall_rule_name = args.get("firewall_rule_name")
     offset_int = arg_to_number(args.get("offset")) or 0
     limit_int = arg_to_number(args.get("limit")) or 50
-    demisto.debug(
-        f"Listing firewall rules: {server_name=}, {resource_group_name=}, {firewall_rule_name=}, {offset_int=}, {limit_int=}"
-    )
 
     raw_response = client.azure_sql_firewall_rule_list(server_name, resource_group_name, firewall_rule_name)
 
@@ -724,16 +710,10 @@ def azure_sql_firewall_rule_list_command(client: Client, args: Dict[str, str], r
     if not rules:
         return CommandResults(readable_output="No firewall rules were found.")
 
-    outputs = copy.deepcopy(rules)
-    for rule in outputs:
-        if properties := rule.get("properties", {}):
-            rule.update(properties)
-            del rule["properties"]
-
     human_readable = tableToMarkdown(
         name="Firewall Rules",
-        t=outputs,
-        headers=["id", "name", "startIpAddress", "endIpAddress", "type"],
+        t=rules,
+        headers=["id", "name", "type"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -742,12 +722,11 @@ def azure_sql_firewall_rule_list_command(client: Client, args: Dict[str, str], r
         readable_output=human_readable,
         outputs_prefix="AzureSQL.FirewallRule",
         outputs_key_field="id",
-        outputs=outputs,
-        raw_response=raw_response,
+        outputs=rules,
+        raw_response=rules,
     )
 
 
-@logger
 def azure_sql_firewall_rule_create_update_command(
     client: Client, args: Dict[str, str], resource_group_name: str
 ) -> CommandResults:
@@ -765,9 +744,6 @@ def azure_sql_firewall_rule_create_update_command(
     firewall_rule_name = args["firewall_rule_name"]
     start_ip_address = args["start_ip_address"]
     end_ip_address = args["end_ip_address"]
-    demisto.debug(
-        f"Creating/updating firewall rule: {server_name=}, {firewall_rule_name=}, {start_ip_address=}, {end_ip_address=}"
-    )
 
     raw_response = client.azure_sql_firewall_rule_create_update(
         server_name=server_name,
@@ -780,29 +756,15 @@ def azure_sql_firewall_rule_create_update_command(
     if isinstance(raw_response, str):
         return CommandResults(readable_output=raw_response)
 
-    fixed_response = copy.deepcopy(raw_response)
-    if properties := fixed_response.get("properties", {}):
-        fixed_response.update(properties)
-        del fixed_response["properties"]
-
-    human_readable = tableToMarkdown(
-        name=f"Successfully updated the firewall rule {firewall_rule_name}",
-        t=fixed_response,
-        headers=["id", "name", "startIpAddress", "endIpAddress", "type"],
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-
     return CommandResults(
-        readable_output=human_readable,
+        readable_output=f"Successfully updated the firewall rule {firewall_rule_name}",
         outputs_prefix="AzureSQL.FirewallRule",
         outputs_key_field="id",
-        outputs=fixed_response,
+        outputs=raw_response,
         raw_response=raw_response,
     )
 
 
-@logger
 def azure_sql_firewall_rule_delete_command(client: Client, args: Dict[str, str], resource_group_name: str) -> CommandResults:
     """azure-sql-firewall-rule-delete command deletes a firewall rule.
 
@@ -816,7 +778,6 @@ def azure_sql_firewall_rule_delete_command(client: Client, args: Dict[str, str],
     """
     server_name = args["server_name"]
     firewall_rule_name = args["firewall_rule_name"]
-    demisto.debug(f"Deleting firewall rule: {server_name=}, {firewall_rule_name=}")
 
     response = client.azure_sql_firewall_rule_delete(
         server_name=server_name,
@@ -832,7 +793,6 @@ def azure_sql_firewall_rule_delete_command(client: Client, args: Dict[str, str],
     )
 
 
-@logger
 def azure_sql_firewall_rule_replace_command(client: Client, args: Dict[str, str], resource_group_name: str) -> CommandResults:
     """azure-sql-firewall-rule-replace command replaces all firewall rules on the server.
 
@@ -863,14 +823,12 @@ def azure_sql_firewall_rule_replace_command(client: Client, args: Dict[str, str]
                 request_body = json.loads(f.read())
             except json.JSONDecodeError as e:
                 raise DemistoException(f"Failed to parse the JSON file in entry_id '{entry_id}': {e}")
-        demisto.debug(f"Replacing firewall rules using request body from {entry_id=}")
     else:
         if not (firewall_rule_name and start_ip_address and end_ip_address):
             raise DemistoException(
                 "Either 'entry_id' must be provided, or all of 'firewall_rule_name', 'start_ip_address', "
                 "and 'end_ip_address' must be provided."
             )
-        demisto.debug(f"Replacing firewall rules: {server_name=}, {firewall_rule_name=}, {start_ip_address=}, {end_ip_address=}")
 
     raw_response = client.azure_sql_firewall_rule_replace(
         server_name=server_name,
@@ -884,17 +842,11 @@ def azure_sql_firewall_rule_replace_command(client: Client, args: Dict[str, str]
     if isinstance(raw_response, str):
         return CommandResults(readable_output=raw_response)
 
-    # The Replace endpoint returns the affected firewall rule object.
-    fixed_response = copy.deepcopy(raw_response)
-    if properties := fixed_response.get("properties", {}):
-        fixed_response.update(properties)
-        del fixed_response["properties"]
-
     return CommandResults(
         readable_output="Successfully updated the firewall rule",
         outputs_prefix="AzureSQL.FirewallRule",
         outputs_key_field="id",
-        outputs=fixed_response,
+        outputs=raw_response,
         raw_response=raw_response,
     )
 
@@ -1028,6 +980,20 @@ def test_module(client):
     return None
 
 
+# Maps commands that support multiple resource_group_name values to their handler functions.
+# This dict is the single source of truth: its keys drive routing in main() and its values drive dispatch here.
+COMMANDS_WITH_MULTIPLE_RESOURCE_GROUP_NAME = {
+    "azure-sql-db-audit-policy-create-update": azure_sql_db_audit_policy_create_update_command,
+    "azure-sql-servers-list": azure_sql_servers_list_command,
+    "azure-sql-db-threat-policy-create-update": azure_sql_db_threat_policy_create_update_command,
+    "azure-sql-db-audit-policy-list": azure_sql_db_audit_policy_list_command,
+    "azure-sql-firewall-rule-list": azure_sql_firewall_rule_list_command,
+    "azure-sql-firewall-rule-create-update": azure_sql_firewall_rule_create_update_command,
+    "azure-sql-firewall-rule-delete": azure_sql_firewall_rule_delete_command,
+    "azure-sql-firewall-rule-replace": azure_sql_firewall_rule_replace_command,
+}
+
+
 def command_with_multiple_resource_group_name(client: Client, args: Dict, command: str, resource_group_name: List) -> List:
     """Manage commands that can have multiple resource_group_name.
     Args:
@@ -1040,17 +1006,7 @@ def command_with_multiple_resource_group_name(client: Client, args: Dict, comman
         A list of CommandResults objects that is then passed to ``return_results``,
         that contains the results of the relevant command.
     """
-    command_map = {
-        "azure-sql-db-audit-policy-create-update": azure_sql_db_audit_policy_create_update_command,
-        "azure-sql-servers-list": azure_sql_servers_list_command,
-        "azure-sql-db-threat-policy-create-update": azure_sql_db_threat_policy_create_update_command,
-        "azure-sql-db-audit-policy-list": azure_sql_db_audit_policy_list_command,
-        "azure-sql-firewall-rule-list": azure_sql_firewall_rule_list_command,
-        "azure-sql-firewall-rule-create-update": azure_sql_firewall_rule_create_update_command,
-        "azure-sql-firewall-rule-delete": azure_sql_firewall_rule_delete_command,
-        "azure-sql-firewall-rule-replace": azure_sql_firewall_rule_replace_command,
-    }
-    command_fn = command_map[command]
+    command_fn = COMMANDS_WITH_MULTIPLE_RESOURCE_GROUP_NAME[command]
     results = []
     for name in resource_group_name:
         result = command_fn(client, args, name)
@@ -1086,21 +1042,10 @@ def main() -> None:
             or "https://login.microsoftonline.com",
             managed_identities_client_id=get_azure_managed_identities_client_id(params),
         )
-        commands_with_multiple_resource_group_name_list = [
-            "azure-sql-servers-list",
-            "azure-sql-db-audit-policy-list",
-            "azure-sql-db-audit-policy-create-update",
-            "azure-sql-db-threat-policy-create-update",
-            "azure-sql-firewall-rule-list",
-            "azure-sql-firewall-rule-create-update",
-            "azure-sql-firewall-rule-delete",
-            "azure-sql-firewall-rule-replace",
-        ]
-
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command in commands_with_multiple_resource_group_name_list:
+        elif command in COMMANDS_WITH_MULTIPLE_RESOURCE_GROUP_NAME:
             return_results(command_with_multiple_resource_group_name(client, args, command, resource_group_name))
 
         elif command == "azure-sql-db-list":
