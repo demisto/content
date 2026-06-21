@@ -12,7 +12,15 @@ import os
 
 import ServiceNowv2
 
-from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, EntryFormat
+from CommonServerPython import (
+    CommandResults,
+    DemistoException,
+    EntryType,
+    QuickActionPreview,
+    EntryFormat,
+    CortexMissingArgError,
+    CortexConflictingArgsError,
+)
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
@@ -3852,7 +3860,7 @@ def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
     args = {}  # 'id' is missing
 
     # Act & Assert
-    with pytest.raises(ValueError, match=r"ServiceNow Ticket ID \('id'\) is required for preview."):
+    with pytest.raises(CortexMissingArgError, match=r"ServiceNow Ticket ID \('id'\) is required for preview."):
         ServiceNowv2.get_remote_data_preview_command(mock_client, args)
 
 
@@ -4226,7 +4234,7 @@ class TestCredentialFlowEndToEnd:
         mocker.patch.object(demisto, "params", return_value=params)
         mocker.patch.object(demisto, "command", return_value="test-module")
 
-        with pytest.raises(ValueError, match="authentication method"):
+        with pytest.raises(CortexConflictingArgsError, match="authentication method"):
             main()
 
     def test_basic_auth_partial_credentials_triggers_fallback(self, mocker, requests_mock):
