@@ -61,10 +61,12 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
-  additionalinfo: Supported in Cortex XSOAR only.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -72,10 +74,12 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Endpoint Detections filter query
   name: fetch_query
   type: 0
@@ -106,7 +110,9 @@ configuration:
   additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: IOA filter query
   name: ioa_fetch_query
   type: 0
@@ -116,7 +122,9 @@ configuration:
   additionalinfo: "The Indicator of Attack (IOA) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language (FQL) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html."
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
@@ -181,7 +189,9 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -199,7 +209,9 @@ configuration:
   required: false
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -275,7 +287,9 @@ configuration:
   - Recon notifications
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: 'Fetch types'
   defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
@@ -333,14 +347,16 @@ configuration:
 - display: 'Incidents Fetch Interval'
   defaultvalue: '1'
   name: incidentFetchInterval
-  additionalinfo: Supported in Cortex XSOAR only.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
   type: 19
   section: Collect
   advanced: true
   required: false
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: 'Events Fetch Interval'
   defaultvalue: '1'
   name: eventFetchInterval
@@ -366,7 +382,9 @@ configuration:
   required: false
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: 'Advanced: Time in minutes to look back when fetching events and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -5320,7 +5338,7 @@ script:
   dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
   isfetch:marketplacev2: false
-  isfetch:platform: false
+  isfetch:platform: true
   isfetchevents: true
   isfetchassets: true
   ismappable: true
