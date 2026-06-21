@@ -2849,7 +2849,7 @@ def test_get_mirroring_fields_autoclosure_disabled(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "false", "mirror_direction": "Incoming And Outgoing"},
+        return_value={"autoclosure": "false"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
@@ -2859,36 +2859,8 @@ def test_get_mirroring_fields_autoclosure_disabled(mocker):
     assert fields["mirror_instance"] == "Vega_instance_1"
 
 
-def test_get_mirroring_fields_respects_mirror_direction_incoming(mocker):
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={"autoclosure": "true", "mirror_direction": "Incoming"},
-    )
-    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-
-    fields = _get_mirroring_fields()
-
-    assert fields["mirror_direction"] == "In"
-    assert fields["mirror_instance"] == "Vega_instance_1"
-
-
-def test_get_mirroring_fields_respects_mirror_direction_none(mocker):
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={"autoclosure": "true", "mirror_direction": "None"},
-    )
-    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-
-    fields = _get_mirroring_fields()
-
-    assert "mirror_direction" not in fields
-    assert fields["mirror_instance"] == "Vega_instance_1"
-
-
-def test_is_xsoar_to_vega_mirroring_disabled_when_mirror_direction_incoming():
-    assert _is_xsoar_to_vega_mirroring_enabled({"autoclosure": "true", "mirror_direction": "Incoming"}) is False
+def test_is_xsoar_to_vega_mirroring_disabled_when_autoclosure_false():
+    assert _is_xsoar_to_vega_mirroring_enabled({"autoclosure": "false"}) is False
 
 
 def test_is_xsoar_to_vega_mirroring_enabled_defaults_true():
@@ -3754,28 +3726,6 @@ def test_update_remote_system_command_disabled(mocker):
     )
 
     assert remote_id == "alert-1"
-    mock_client.update_alerts.assert_not_called()
-
-
-def test_update_remote_system_command_disabled_when_mirror_direction_incoming(mocker):
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={"autoclosure": "true", "mirror_direction": "Incoming"},
-    )
-    mock_client = mocker.Mock(spec=Client)
-
-    remote_id = update_remote_system_command(
-        mock_client,
-        {
-            "remoteId": "alert:alert-1",
-            "incidentChanged": "true",
-            "delta": {"vegastatus": "RESOLVED"},
-            "data": {"vegastatus": "RESOLVED"},
-        },
-    )
-
-    assert remote_id == "alert:alert-1"
     mock_client.update_alerts.assert_not_called()
 
 

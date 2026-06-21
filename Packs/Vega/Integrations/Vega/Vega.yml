@@ -41,16 +41,6 @@ configuration:
     defaultvalue: "5"
     required: true
     section: Collect
-  - display: Incident Mirroring Direction
-    name: mirror_direction
-    type: 15
-    section: Collect
-    required: false
-    defaultvalue: Incoming And Outgoing
-    options:
-      - None
-      - Incoming
-      - Incoming And Outgoing
   - display: Vega Entities to fetch
     additionalinfo: Select the Vega entities to fetch as XSOAR incidents.
     name: vega_entities
@@ -73,8 +63,8 @@ configuration:
   - display: Enable XSOAR to Vega mirroring
     additionalinfo: >-
       When enabled, changes made in Cortex XSOAR investigations are mirrored to Vega for status, verdict,
-      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this instance and
-      Incident Mirroring Direction set to Incoming And Outgoing. Vega to XSOAR mirroring is always enabled.
+      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this instance.
+      When disabled, Vega to XSOAR mirroring remains enabled.
     name: autoclosure
     type: 8
     section: Autoclosure

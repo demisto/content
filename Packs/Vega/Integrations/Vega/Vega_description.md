@@ -26,8 +26,8 @@ Use `vega-update-alert` and `vega-update-incident` to push status, verdict, seve
 
 ### Mirroring
 
-- **Vega to XSOAR** mirroring is enabled by default for fetched Vega alerts and incidents.
-- **XSOAR to Vega** mirroring requires **Incident Mirroring Direction** set to **Incoming And Outgoing** and **Enable XSOAR to Vega mirroring** enabled in the **Autoclosure** section (both enabled by default).
+- **Vega to XSOAR** mirroring is always enabled for fetched Vega alerts and incidents.
+- **XSOAR to Vega** mirroring is controlled by **Enable XSOAR to Vega mirroring** in the **Autoclosure** section (enabled by default).
 - Mirrored fields for alerts: status, severity, verdict, verdict reasoning, and comments.
 - Mirrored fields for incidents: severity, status, verdict, verdict reasoning, and comments.
 - Use the **Vega New Comment** field in the Comment section to add a comment from Cortex XSOAR that will be created in Vega.

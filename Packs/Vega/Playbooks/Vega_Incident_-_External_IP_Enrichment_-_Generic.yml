@@ -1,0 +1,169 @@
+id: Vega Incident - External IP Enrichment - Generic
+version: 26
+vcShouldKeepItemLegacyProdMachine: false
+name: Vega Incident - External IP Enrichment - Generic
+fromversion: 6.10.0
+description: Enriches incoming IP addresses using the 'IP Enrichment - External -
+  Generic v2' sub-playbook and automatically posts the retrieved endpoint details
+  back to the Vega incident as a comment.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 612562a0-7351-4055-8d27-82a291a2377d
+    type: start
+    task:
+      id: 612562a0-7351-4055-8d27-82a291a2377d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7ac05d91-2c4e-47fa-b3c7-236406fc5d0b
+    type: playbook
+    task:
+      id: 7ac05d91-2c4e-47fa-b3c7-236406fc5d0b
+      version: -1
+      name: IP Enrichment - External - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - IP address reputation using !ip command.
+        - Separate internal and external addresses.
+      playbookName: IP Enrichment - External - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ExecutedFromParent:
+        simple: "False"
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: lists
+          accessor: PrivateIPs
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+              unpack_matches: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      ResolveIP:
+        simple: "True"
+      UseReputationCommand:
+        simple: "False"
+      extended_data:
+        simple: "False"
+      threat_model_association:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1628d981-63c2-4d1b-b4b7-ec6f02a2af82
+    type: regular
+    task:
+      id: 1628d981-63c2-4d1b-b4b7-ec6f02a2af82
+      version: -1
+      name: vega-update-incident
+      description: Immediately update Vega incident status, verdict, verdict reasoning,
+        severity, assignee emails, and/or comment on the Vega platform and sync the
+        open XSOAR investigation when run from a Vega Incident investigation.
+      script: Vega|||vega-update-incident
+      type: regular
+      iscommand: true
+      brand: Vega
+    scriptarguments:
+      comment:
+        simple: ${Endpoint}${DBotScore}${IP}
+      incident_ids:
+        simple: ${incident.vegaincidentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 485,
+        "width": 380,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []

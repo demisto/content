@@ -163,12 +163,6 @@ UPDATE_DETECTIONS_MUTATION = (
 
 MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
-MIRROR_DIRECTION = {
-    "None": None,
-    "Incoming": "In",
-    "Outgoing": "Out",
-    "Incoming And Outgoing": "Both",
-}
 VEGA_ALERT_STATUS_FIELD = "vegastatus"
 VEGA_ALERT_SEVERITY_FIELD = "vegaalertseverity"
 VEGA_INCIDENT_STATUS_FIELD = "vegaincidentstatus"
@@ -3161,10 +3155,7 @@ def _apply_mirror_metadata(raw: dict[str, Any], entity_type_suffix: str) -> None
 def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
     """Return True when outgoing XSOAR to Vega mirroring is enabled."""
     params = params or demisto.params()
-    if not argToBoolean(params.get("autoclosure", True)):
-        return False
-    direction = str(params.get("mirror_direction") or "Incoming And Outgoing").strip()
-    return direction == "Incoming And Outgoing"
+    return argToBoolean(params.get("autoclosure", True))
 
 
 def _get_mirroring_fields(
@@ -3191,12 +3182,7 @@ def _get_mirroring_fields(
     if instance:
         fields["mirror_instance"] = instance
 
-    direction_label = str(params.get("mirror_direction") or "Incoming And Outgoing").strip()
-    if direction_label == "Incoming And Outgoing" and not _is_xsoar_to_vega_mirroring_enabled(params):
-        direction_label = "Incoming"
-    mirror_direction = MIRROR_DIRECTION.get(direction_label)
-    if mirror_direction:
-        fields["mirror_direction"] = mirror_direction
+    fields["mirror_direction"] = "Both" if _is_xsoar_to_vega_mirroring_enabled(params) else "In"
     return fields
 
 
