@@ -62,6 +62,9 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+# Max number of characters of an external API response body kept when appended
+# to a CortexExternalApiError message (avoids dumping huge payloads).
+MAX_API_RESPONSE_BODY_LENGTH = 500
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
@@ -1468,17 +1471,27 @@ def is_error(execute_command_result):
 isError = is_error
 
 
-def get_content_error_type(execute_command_result):
-    """Extract the content error type from an ``executeCommand`` result.
+def get_error_code(execute_command_result):
+    """Extract the standardized error code from an ``executeCommand`` result.
 
-    Looks inside the ``ExtendedPayload`` dict of error entries for the
-    :data:`CONTENT_ERROR_TYPE_KEY` field.
+    Reads the machine-readable error code that :func:`return_error` attaches to
+    an error entry's ``ExtendedPayload`` (under
+    :data:`EXTENDED_PAYLOAD_ERROR_CODE_KEY`). The value is a
+    :class:`CortexErrorCode` member (e.g. ``"AUTH_ERROR"``,
+    ``"MISSING_ARGUMENT"``), letting a calling script/playbook classify the
+    failure of a sub-command without parsing the human-readable ``Contents``.
+
+    Accepts either a single entry (``dict``) or a list of entries (the typical
+    shape returned by ``demisto.executeCommand()``); for a list, the first
+    error entry that carries an error code is returned.
 
     :type execute_command_result: ``dict`` or ``list``
-    :param execute_command_result: Result of ``demisto.executeCommand()``.
+    :param execute_command_result: Result of ``demisto.executeCommand()`` - a
+        single entry dict or a list of entry dicts.
 
     :rtype: ``str`` or ``None``
-    :return: The content error type string, or *None* if not present.
+    :return: The :class:`CortexErrorCode` value from ``ExtendedPayload``, or
+        ``None`` if no error code is present.
     """
     if isinstance(execute_command_result, dict):
         extended = execute_command_result.get('ExtendedPayload') or {}
@@ -1488,9 +1501,9 @@ def get_content_error_type(execute_command_result):
         for entry in execute_command_result:
             if isinstance(entry, dict) and entry.get('Type') == entryTypes['error']:
                 extended = entry.get('ExtendedPayload') or {}
-                error_type = extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
-                if error_type:
-                    return error_type
+                error_code = extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
+                if error_code:
+                    return error_code
     return None
 
 
@@ -8346,16 +8359,11 @@ def return_error(message, error='', outputs=None):
         extended_payload = {}
         if _error_type:
             extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] = _error_type
-        if _cortex_error is not None:
-            # Expose only the boolean retryable flag (true/false).
-            if EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
-                extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
-                    _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
-            # Preserve the original API error body (when present) so it is not
-            # lost behind the unified, human-readable message.
-            if _cortex_error.details.get(EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY):
-                extended_payload[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY] = \
-                    _cortex_error.details[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY]
+        # Expose only the boolean retryable flag (true/false), taken from the
+        # CortexError details.
+        if _cortex_error is not None and EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
+            extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
+                _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
         if extended_payload:
             error_entry['ExtendedPayload'] = extended_payload
 
@@ -8848,7 +8856,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
-            content_error_type = get_content_error_type(res)
+            content_error_type = get_error_code(res)
             if not content_error_type:
                 content_error_type = _classify_error_message(error_message)
             if content_error_type:
@@ -11287,12 +11295,6 @@ class RetryGuidance(object):
 EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY = 'retry_guidance'
 EXTENDED_PAYLOAD_RETRYABLE_KEY = 'retryable'
 
-# Key used inside ``details`` to carry the raw/original error body returned by
-# the external API (set by :class:`CortexExternalApiError` via ``response_body``).
-# This is also surfaced in the error entry's ``ExtendedPayload`` so the original
-# API error is preserved alongside the unified, human-readable message.
-EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY = 'response_body'
-
 
 class CortexError(DemistoException):
     """Base exception for all content standardized errors.
@@ -11310,8 +11312,17 @@ class CortexError(DemistoException):
     ║ to retry. Use the base class directly only as a last resort.         ║
     ╚══════════════════════════════════════════════════════════════════════╝
 
-    :type message: ``str``
-    :param message: Human-readable error description.
+    :type override_message: ``str``
+    :param override_message: An OPTIONAL, fully-custom message that REPLACES the
+        automatically-built message for human (non-Agentix) display. Its primary
+        purpose is **backward compatibility** - preserving an existing,
+        hand-written error string while still gaining the structured
+        ``error_code`` / ``retry_guidance`` metadata. Leave it ``None`` to use
+        the standardized auto-built message (the recommended default).
+        Note: it is ignored for Agentix callers, who always receive the
+        machine-friendly :meth:`auto_message`. The structured arguments of each
+        subclass (e.g. the argument name, status code) build the auto message
+        and populate ``details`` regardless of this value.
 
     :type error_code: ``str``
     :param error_code: Machine-readable code from :class:`CortexErrorCode`.
@@ -11332,16 +11343,17 @@ class CortexError(DemistoException):
     # "unknown" and no retry hint is added.
     retry_guidance = None  # type: Optional[str]
 
-    def __init__(self, message=None, *, error_code=None, details=None, **kwargs):
+    def __init__(self, override_message=None, *, error_code=None, details=None, **kwargs):
         # Respect an instance-level error_code already set by a subclass
         # __init__ (e.g. CortexExternalApiError status-code auto-classification) before
         # delegating here; then the explicit param; then the class default.
         self.error_code = error_code or self.__dict__.get('error_code') or self.__class__.error_code
         self.details = details or {}
-        # Stores an explicit, caller-supplied message (if any) so that
-        # ``build_message`` can fall back to it.  Subclasses that auto-generate
-        # their message pass ``message=None`` and override ``build_message``.
-        self._custom_message = message
+        # Stores the optional, caller-supplied override message (if any) so that
+        # ``build_message`` can return it instead of the auto-built message.
+        # Subclasses that rely solely on the auto-built message pass
+        # ``override_message=None``.
+        self._custom_message = override_message
         # Expose retry guidance (machine-readable) in details/ExtendedPayload.
         if self.retry_guidance is not None:
             self.details.setdefault(EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY, self.retry_guidance)
@@ -11436,8 +11448,9 @@ class CortexMissingArgError(CortexError):
     :type arg_name: ``str`` or ``list``
     :param arg_name: Name of the missing argument, or a list of argument names.
 
-    :type message: ``str``
-    :param message: Optional custom message (auto-generated if omitted).
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
 
     :type require_one: ``bool``
     :param require_one: When a list of names is provided, whether only *one* of
@@ -11448,7 +11461,7 @@ class CortexMissingArgError(CortexError):
     error_code = CortexErrorCode.MISSING_ARGUMENT
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, message=None, *, require_one=True):
+    def __init__(self, arg_name, override_message=None, *, require_one=True):
         # Normalize to a list internally while remembering whether the caller
         # passed a single name or several.
         if isinstance(arg_name, (list, tuple, set)):
@@ -11466,7 +11479,7 @@ class CortexMissingArgError(CortexError):
         else:
             details["require_one"] = require_one
 
-        super().__init__(message, details=details)
+        super().__init__(override_message, details=details)
 
     def _quoted_args(self):
         return ', '.join("'{}'".format(a) for a in self.arg_names)
@@ -11503,12 +11516,16 @@ class CortexInvalidArgError(CortexError):
 
     :type allowed_values: ``list``
     :param allowed_values: List of acceptable values, if applicable.
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
     """
 
     error_code = CortexErrorCode.INVALID_ARGUMENT
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None, message=None):
+    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None, override_message=None):
         self.arg_name = arg_name
         self.value = value
         self.reason = reason
@@ -11520,7 +11537,7 @@ class CortexInvalidArgError(CortexError):
         if allowed_values:
             details["allowed_values"] = [str(v) for v in allowed_values]
 
-        super().__init__(message, details=details)
+        super().__init__(override_message, details=details)
 
     def _base_message(self):
         parts = ["Invalid value for argument '{}'".format(self.arg_name)]
@@ -11561,8 +11578,9 @@ class CortexConflictingArgsError(CortexError):
     :type arguments: ``list``
     :param arguments: Names of the conflicting arguments that were supplied together.
 
-    :type message: ``str``
-    :param message: Optional fully-custom message (overrides auto-generation).
+    :type override_message: ``str``
+    :param override_message: Optional fully-custom message that overrides the
+        auto-built one (for backward compatibility).
 
     :type reason: ``str``
     :param reason: Optional explanation of *why* the arguments conflict.
@@ -11580,7 +11598,7 @@ class CortexConflictingArgsError(CortexError):
     error_code = CortexErrorCode.CONFLICTING_ARGUMENTS
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, message=None, *, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
+    def __init__(self, override_message=None, *, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
         self.arguments = list(arguments or [])
         self.reason = reason
         self.resolution = resolution
@@ -11594,7 +11612,7 @@ class CortexConflictingArgsError(CortexError):
         if resolution:
             details["resolution"] = resolution
 
-        super().__init__(message, details=details)
+        super().__init__(override_message, details=details)
 
     def _quoted_args(self):
         return ', '.join("'{}'".format(a) for a in self.arguments)
@@ -11641,17 +11659,18 @@ class CortexResourceNotFoundError(CortexError):
     :type identifier: ``any``
     :param identifier: The identifier that was looked up.
 
-    :type message: ``str``
-    :param message: Optional custom message (auto-generated if omitted).
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
     """
 
     error_code = CortexErrorCode.RESOURCE_NOT_FOUND
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, resource_type, identifier=None, message=None):
+    def __init__(self, resource_type, identifier=None, override_message=None):
         self.resource_type = resource_type
         self.identifier = identifier
-        super().__init__(message, details={
+        super().__init__(override_message, details={
             "resource_type": resource_type,
             "identifier": str(identifier) if identifier else None,
         })
@@ -11685,8 +11704,9 @@ class CortexExternalApiError(CortexError):
     - 429 → ``QUOTA_ERROR``
     - 5xx → ``SERVICE_ERROR``
 
-    :type message: ``str``
-    :param message: Human-readable error description.
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
 
     :type status_code: ``int``
     :param status_code: HTTP status code from the API response.
@@ -11696,11 +11716,11 @@ class CortexExternalApiError(CortexError):
         classification (e.g. ``CortexErrorCode.SERVICE_ERROR``). When provided,
         it becomes the error's ``error_code`` directly.
 
-    :type response_body: ``str``
-    :param response_body: Truncated response body (max 500 chars). The original
-        API error body is preserved and surfaced in the error entry's
-        ``ExtendedPayload`` (under ``response_body``) so it is not lost behind
-        the unified, human-readable message.
+    :type response_body: ``str`` or ``bytes``
+    :param response_body: The original API error body (truncated to 500 chars,
+        bytes are decoded). It is appended to the built/auto message
+        (``... Original API error: <body>``) so the raw API error travels
+        together with the unified, human-readable message.
     """
 
     error_code = CortexErrorCode.API_ERROR
@@ -11711,17 +11731,21 @@ class CortexExternalApiError(CortexError):
     # Default, auto-generated message used when no explicit message is supplied.
     _default_message = "An error occurred while communicating with the external API."
 
-    def __init__(self, message=None, *, status_code=None, api_error_type=None, response_body=None):
+    def __init__(self, override_message=None, *, status_code=None, api_error_type=None, response_body=None):
         self.status_code = status_code
+        # Original error body returned by the API. It is appended to the built
+        # (auto) message rather than exposed as a separate field, so the raw API
+        # error travels together with the unified, human-readable message.
+        if response_body:
+            # Decode bytes cleanly so the original API error reads as text
+            # (avoids leaking a b'...' repr into the message).
+            if isinstance(response_body, bytes):
+                response_body = response_body.decode("utf-8", errors="replace")
+            response_body = str(response_body)[:MAX_API_RESPONSE_BODY_LENGTH]
+        self.response_body = response_body
         details = {}  # type: dict
         if status_code:
             details["status_code"] = status_code
-        if response_body:
-            # Decode bytes cleanly so the original API error is stored as text
-            # (avoids leaking a b'...' repr into details/ExtendedPayload).
-            if isinstance(response_body, bytes):
-                response_body = response_body.decode("utf-8", errors="replace")
-            details["response_body"] = str(response_body)[:500]
 
         # When the caller passes an explicit api_error_type (a CortexErrorCode
         # value) it becomes the error_code directly.
@@ -11742,12 +11766,16 @@ class CortexExternalApiError(CortexError):
                 self.error_code = CortexErrorCode.SERVICE_ERROR
                 details["api_error_type"] = CortexErrorCode.SERVICE_ERROR
 
-        super().__init__(message, details=details)
+        super().__init__(override_message, details=details)
 
     def _base_message(self):
         message = self._default_message
         if self.status_code:
             message = "{} (HTTP {})".format(message, self.status_code)
+        # Append the original API error body (when available) so the raw API
+        # error is conveyed within the message itself.
+        if self.response_body:
+            message = "{} Original API error: {}".format(message, self.response_body)
         return message
 
 
@@ -11766,8 +11794,8 @@ class CortexAuthError(CortexExternalApiError):
     retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Authentication failed. Check your credentials or API key."
 
-    def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
+    def __init__(self, override_message=None, **kwargs):
+        super().__init__(override_message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
 
 
 class CortexRateLimitError(CortexExternalApiError):
@@ -11788,9 +11816,9 @@ class CortexRateLimitError(CortexExternalApiError):
     retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "API rate limit exceeded. Please retry later."
 
-    def __init__(self, message=None, *, retry_after=None, **kwargs):
+    def __init__(self, override_message=None, *, retry_after=None, **kwargs):
         self.retry_after = retry_after
-        super().__init__(message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
+        super().__init__(override_message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
         if retry_after:
             self.details["retry_after_seconds"] = retry_after
 
@@ -11814,8 +11842,8 @@ class CortexTimeoutError(CortexExternalApiError):
     retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "The request timed out. Please try again."
 
-    def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
+    def __init__(self, override_message=None, **kwargs):
+        super().__init__(override_message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
 
 
 class CortexConnectionError(CortexExternalApiError):
@@ -11835,8 +11863,8 @@ class CortexConnectionError(CortexExternalApiError):
     retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "Unable to connect to the service. Check network connectivity."
 
-    def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
+    def __init__(self, override_message=None, **kwargs):
+        super().__init__(override_message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
 
 
 class CortexParseError(CortexError):

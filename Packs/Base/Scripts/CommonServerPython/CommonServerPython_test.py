@@ -1936,7 +1936,7 @@ def test_content_error_build_message_custom_overrides_auto():
     - The custom message is returned instead of the auto-generated one
     """
     from CommonServerPython import CortexMissingArgError
-    err = CortexMissingArgError('time', message='Please provide the time argument.')
+    err = CortexMissingArgError('time', override_message='Please provide the time argument.')
     assert err.build_message() == 'Please provide the time argument.'
 
 
@@ -2120,7 +2120,7 @@ def test_return_error_agentix_ignores_custom_message_uses_auto(mocker):
     from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
     mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
     mocker.patch.object(demisto, 'results')
-    error = CortexMissingArgError('time', message='Original backward-compatible message')
+    error = CortexMissingArgError('time', override_message='Original backward-compatible message')
     # Sanity: build_message returns the custom message, auto_message ignores it
     assert error.build_message() == 'Original backward-compatible message'
     assert error.auto_message() == "Required argument 'time' was not provided. " + \
@@ -2232,34 +2232,23 @@ def test_return_error_extended_payload_includes_retryable_true(mocker):
     assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
 
 
-def test_return_error_extended_payload_includes_original_api_error(mocker):
+def test_content_error_api_error_appends_original_api_error_to_message():
     """
     Given
-    - A CortexExternalApiError carrying the original API response body
+    - A CortexExternalApiError carrying the original API response body (bytes)
     When
-    - return_error is called with that error
+    - The automatic message is built
     Then
-    - The error entry's Contents shows the unified message, while the original
-      API error body is preserved in the ExtendedPayload (response_body).
+    - The original API error body is appended (decoded cleanly) to the built
+      message rather than exposed as a separate field.
     """
-    from CommonServerPython import (
-        return_error, CortexExternalApiError,
-        EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY,
-    )
-    mocker.patch.object(demisto, 'results')
-    original_api_error = '{"error": {"message": "boom from the API"}}'
-    with pytest.raises(SystemExit):
-        return_error(
-            'A unified, human-readable message',
-            error=CortexExternalApiError(
-                'A unified, human-readable message',
-                status_code=500,
-                response_body=original_api_error,
-            ),
-        )
-    error_entry = demisto.results.call_args[0][0]
-    extended_payload = error_entry['ExtendedPayload']
-    assert extended_payload[EXTENDED_PAYLOAD_ORIGINAL_API_ERROR_KEY] == original_api_error
+    from CommonServerPython import CortexExternalApiError
+    err = CortexExternalApiError(status_code=500, response_body=b'{"error": {"message": "boom"}}')
+    auto = err.auto_message()
+    assert "(HTTP 500)" in auto
+    assert 'Original API error: {"error": {"message": "boom"}}' in auto
+    # The raw bytes repr must NOT leak into the message.
+    assert "b'" not in auto
 
 
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
