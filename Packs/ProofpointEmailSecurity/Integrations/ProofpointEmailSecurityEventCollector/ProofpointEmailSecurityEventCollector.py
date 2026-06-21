@@ -80,8 +80,6 @@ class EventConnection:
           watchdog from killing the socket while a large message is being received/decoded.
         * ``ping_interval``, ``open_timeout`` and ``close_timeout`` mirror the reference
           client defaults.
-        * ``user_agent_header`` identifies this integration in Proofpoint's server-side
-          logs, matching the reference client's behavior.
         """
         return connect(
             self.url,
