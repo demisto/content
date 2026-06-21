@@ -13129,7 +13129,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     # intermediate full copies (a list of JSON strings + one giant joined string). Only applies to the
     # list-of-items, single-thread path; the bytes sent to XSIAM are equivalent to the legacy path.
     streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
-    if streaming_send and data and isinstance(data[0], dict):
+    # Decide JSON-encoding once based on the first item, exactly like the legacy list path, so the streaming
+    # payload is identical (the legacy path json.dumps every item iff data[0] is a dict).
+    streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
+    if streaming_items_are_json:
         data_format = 'json'
 
     # only in case we have data to send to XSIAM we continue with this flow.
@@ -13208,11 +13211,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
 
     if streaming_send:
-        # Streaming path (CIAC-16981, "Method F" - streaming + free-as-you-go): serialize each item and write it
-        # STRAIGHT INTO the gzip stream one at a time, freeing the source item immediately. We never build a second
+        # Streaming path (CIAC-16981, "Method F"): serialize each event and write it straight into the gzip stream
+        # one at a time, freeing the source item immediately. Unlike the legacy path this never materializes a second
         # full list of JSON strings nor one giant joined string - at any moment only a single event is uncompressed
-        # (plus the small, growing compressed buffer). When a chunk reaches ~chunk_size (uncompressed bytes), we
-        # close that gzip stream, POST it, and open a fresh one. `data` (the source list) is drained as we go.
+        # (plus the growing compressed buffer), so peak memory stays ~flat regardless of batch size. When a chunk
+        # reaches the target size we close the stream, POST it, and start a fresh one; the wire payload is equivalent.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
         demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
@@ -13224,19 +13227,27 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         buf = _io.BytesIO()
         gz = gzip.GzipFile(fileobj=buf, mode='wb')
-        chunk_uncompressed = 0   # uncompressed bytes written into the current gzip stream
-        chunk_items = 0          # items written into the current gzip stream
-        total_items = len(data)
-        for index in range(total_items):
-            item = data[index]
-            line = (json.dumps(item) if isinstance(item, dict) else item).encode('utf-8')
-            data[index] = None  # free the source item the moment it is serialized (keeps peak ~one event)
-            # newline-separate items, matching the legacy payload ('\n'.join(...))
-            gz.write((b'\n' if chunk_items else b'') + line)
+        chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
+        chunk_items = 0         # items written into the current gzip stream
+
+        for index in range(len(data)):
+            serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
+            data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
+
+            # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
+            # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
+            entry_size = sys.getsizeof(serialized)
+            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
+                              "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
+                continue
+
+            line = serialized.encode('utf-8')
+            gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
             chunk_uncompressed += len(line) + (1 if chunk_items else 0)
             chunk_items += 1
+
             if chunk_uncompressed >= target_chunk_size:
-                # finalize this chunk, send it, and start a fresh gzip stream
                 gz.close()
                 _post_zipped(buf.getvalue())
                 data_size += chunk_items
@@ -13244,6 +13255,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                 gz = gzip.GzipFile(fileobj=buf, mode='wb')
                 chunk_uncompressed = 0
                 chunk_items = 0
+
         # flush the final (partial) chunk
         gz.close()
         if chunk_items:
