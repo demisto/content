@@ -1,5 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 provider: Infoblox
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Infoblox BloxOne Threat Defense Event Collector
   version: -1
@@ -27,10 +30,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
 display: "Infoblox BloxOne Threat Defense Event Collector"
 name: Infoblox BloxOne Threat Defense Event Collector
@@ -70,7 +75,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10325753
 supportlevelheader: xsoar
 fromversion: 6.10.0
 marketplaces:
