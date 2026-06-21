@@ -19,7 +19,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 ## Commands
 
-You can execute these commands from the CLI, as part of an automation, or in a playbook.
+You can execute these commands new test from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### absolute-custom-device-field-list

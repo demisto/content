@@ -133,7 +133,7 @@ class ClientV3(BaseClient):
         """
         Prepares the signed HTTP request data for making an API call.
         Args:
-            method (str): The HTTP method to be used for the request.
+            method (str): The HTTP method to be used for the request. test
             url_suffix (str): The endpoint URL suffix for the API call.
             query_string (str): The query string parameters for the API call.
         Returns:
