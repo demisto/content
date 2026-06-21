@@ -13,21 +13,19 @@ from googleapiclient.errors import HttpError
 urllib3.disable_warnings()
 
 
-USE_PROXY: bool = False
-VERIFY_SSL: bool = True
+def build_http_client(use_proxy: bool, verify_ssl: bool) -> httplib2.Http:
+    """Builds an httplib2.Http honoring the given proxy and SSL settings.
 
-
-def build_http_client() -> httplib2.Http:
-    """Builds an httplib2.Http honoring the module-level proxy and SSL settings.
+    Args:
+        use_proxy (bool): When True, the system proxy (from ``handle_proxy``) is applied.
+        verify_ssl (bool): When False, SSL certificate validation is disabled.
 
     Returns:
-        httplib2.Http: A configured HTTP client. When the proxy parameter is enabled
-            the system proxy (from ``handle_proxy``) is applied; SSL certificate
-            validation is disabled when ``VERIFY_SSL`` is False.
+        httplib2.Http: A configured HTTP client.
     """
     proxy_info = None
     proxies = handle_proxy()
-    if USE_PROXY:
+    if use_proxy:
         https_proxy = proxies.get("https")
         if not https_proxy:
             raise DemistoException("https proxy value is empty. Check the Cortex server configuration.")
@@ -42,13 +40,15 @@ def build_http_client() -> httplib2.Http:
             proxy_pass=parsed_proxy.password,
         )
 
+    ca_bundle = os.getenv("REQUESTS_CA_BUNDLE") or os.getenv("SSL_CERT_FILE")
+    if verify_ssl and not ca_bundle:
+        # No environment-provided bundle: httplib2 falls back to its own bundled CA certs.
+        demisto.debug("[GCP] No system CA bundle env var set; httplib2 will use its bundled CA certs.")
+
     return httplib2.Http(
         proxy_info=proxy_info,
-        disable_ssl_certificate_validation=not VERIFY_SSL,
-        # Verify against the container's system CA bundle (where a user-uploaded
-        # certificate is placed) instead of httplib2's own bundled certs, so SSL
-        # verification reflects the environment's trust store - matching boto3/AWS behavior.
-        ca_certs=os.getenv("REQUESTS_CA_BUNDLE") or os.getenv("SSL_CERT_FILE"),
+        disable_ssl_certificate_validation=not verify_ssl,
+        ca_certs=ca_bundle,
     )
 
 
@@ -127,43 +127,64 @@ class GCPServices(Enum):
         # Marketplace path (no connector ID): manage our own transport so the proxy/SSL
         # params are honored. Platform path: use the Google client's standard transport.
         if not get_connector_id() and "http" not in kwargs:
-            http = build_http_client()
+            params = demisto.params()
+            use_proxy = params.get("proxy", False)
+            verify_ssl = not argToBoolean(params.get("insecure", False))
+            http = build_http_client(use_proxy=use_proxy, verify_ssl=verify_ssl)
             kwargs["http"] = AuthorizedHttp(credentials, http=http)
             return build(self.api_name, self.version, **kwargs)
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
 
-    def test_connectivity(self, credentials, project_id: str) -> tuple[bool, str]:
-        """
-        Test connectivity to GCP services using only the permissions available to this integration.
+    def test_connectivity(self, credentials, project_id: str) -> None:
+        """Issues a lightweight, project-scoped API call to verify connectivity to this service.
+
+        Resource Manager uses ``testIamPermissions``, which succeeds for any authenticated
+        caller regardless of the roles granted (it returns the subset of granted permissions),
+        making it a permission-agnostic probe. The other services do not expose a project-level
+        ``testIamPermissions``, so a minimal ``list`` call is used instead. Each service exposes
+        the call on a different resource, so the correct shape is selected per service.
+
+        The call is allowed to raise so callers can inspect the error (e.g. distinguish a
+        disabled-API 403 from a real failure). Use ``test_all_services`` for a non-raising,
+        tuple-based summary.
 
         Args:
             credentials: Google Cloud credentials object.
             project_id: The GCP project ID to test against.
 
-        Returns:
-            tuple[bool, str]: (success, error_message). Success is True if service is accessible,
-                             error_message is empty on success.
+        Raises:
+            HttpError: If the API call fails (e.g. the service's API is disabled).
+            NotImplementedError: If the service does not have a connectivity probe defined here.
         """
-        try:
-            client = self.build(credentials)
-            if self == GCPServices.COMPUTE:
-                # Use compute.firewalls.list (from firewall-patch command)
-                client.firewalls().list(project=project_id, maxResults=1).execute()  # pylint: disable=E1101
-            elif self == GCPServices.CONTAINER:
-                # Use container.clusters.list (from cluster-security-update command)
-                client.projects().locations().clusters().list(parent=f"projects/{project_id}/locations/-").execute()  # pylint: disable=E1101
-            elif self == GCPServices.RESOURCE_MANAGER:
-                # Use resourcemanager.projects.getIamPolicy (from policy-binding-remove command)
-                client.projects().getIamPolicy(resource=f"projects/{project_id}").execute()  # pylint: disable=E1101
-            # For other services, just test client building
-            return True, ""
-        except Exception as e:
-            return False, str(e)
+        client = self.build(credentials)
+        if self == GCPServices.RESOURCE_MANAGER:
+            client.projects().testIamPermissions(  # pylint: disable=E1101
+                resource=f"projects/{project_id}", body={"permissions": ["resourcemanager.projects.get"]}
+            ).execute()
+        elif self == GCPServices.COMPUTE:
+            # Compute has no project-level testIamPermissions; a minimal firewalls list verifies connectivity.
+            client.firewalls().list(project=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        elif self == GCPServices.STORAGE:
+            # Storage has no project-level testIamPermissions; a minimal bucket list verifies connectivity.
+            client.buckets().list(project=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        elif self == GCPServices.CONTAINER:
+            # Container has no testIamPermissions; a lightweight cluster list verifies connectivity.
+            client.projects().locations().clusters().list(  # pylint: disable=E1101
+                parent=f"projects/{project_id}/locations/-"
+            ).execute()
+        elif self == GCPServices.BIGQUERY:
+            # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
+            client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        else:
+            raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
 
     @classmethod
     def test_all_services(cls, credentials, project_id: str) -> list[tuple[str, bool, str]]:
         """
         Test connectivity for all GCP services with real API calls.
+
+        Wraps the raising ``test_connectivity`` per service into a non-raising summary so the
+        health check can report per-service results.
 
         Args:
             credentials: Google Cloud credentials object.
@@ -174,8 +195,11 @@ class GCPServices(Enum):
         """
         results = []
         for service in cls:
-            success, error = service.test_connectivity(credentials, project_id)
-            results.append((service.api_name, success, error))
+            try:
+                service.test_connectivity(credentials, project_id)
+                results.append((service.api_name, True, ""))
+            except Exception as e:
+                results.append((service.api_name, False, str(e)))
         return results
 
 
@@ -478,6 +502,22 @@ def _is_ubla_error(e: HttpError) -> bool:
     except Exception:
         content_lower = ""
     return e.resp.status == 400 and "uniform bucket-level access" in content_lower
+
+
+def _is_service_disabled_error(e: HttpError) -> bool:
+    """Detects a 403 SERVICE_DISABLED error from Google API.
+
+    This is raised when the service's API has not been enabled on the project, so the
+    connectivity probe should move on to another service rather than fail the test.
+    """
+    try:
+        if isinstance(e.content, bytes | bytearray):
+            content_lower = e.content.decode("utf-8", errors="ignore").lower()
+        else:
+            content_lower = str(e.content).lower()
+    except Exception:
+        content_lower = ""
+    return e.resp.status == 403 and ("service_disabled" in content_lower or "has not been used in project" in content_lower)
 
 
 def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> None:
@@ -2418,35 +2458,92 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     return None
 
 
+def _resolve_project_id_for_test(params: dict[str, Any]) -> str:
+    """Resolves the project ID for the connectivity test.
+
+    Uses the 'GCP Project ID' parameter when set; otherwise falls back to the
+    'project_id' field of the Service Account private key JSON (mirroring the
+    resolution done in ``get_credentials``).
+
+    Args:
+        params (dict[str, Any]): Integration configuration parameters.
+
+    Returns:
+        str: The resolved project ID.
+
+    Raises:
+        DemistoException: If a project ID cannot be resolved from either source.
+    """
+    project_id = (params.get("project_id") or "").strip()
+    if project_id:
+        return project_id
+
+    password = ((params.get("credentials") or {}).get("password") or "").strip()
+    if password:
+        try:
+            service_account_info = json.loads(password)
+        except json.JSONDecodeError:
+            service_account_info = {}
+        project_id = (service_account_info.get("project_id") or "").strip()
+
+    if not project_id:
+        raise DemistoException(
+            "Missing required parameter 'project_id'. Set the 'GCP Project ID' field in the integration "
+            "configuration, or include 'project_id' in the Service Account private key JSON."
+        )
+    return project_id
+
+
 def test_module(creds: Credentials, params: dict[str, Any]) -> str:
-    """Tests connectivity to GCP using the Resource Manager API.
+    """Tests connectivity to GCP by issuing a lightweight, project-scoped probe per service.
+
+    The Resource Manager API is tried first (using its permission-free ``testIamPermissions``
+    endpoint). If its API is not enabled on the project (403 SERVICE_DISABLED), the probe falls
+    back to the other GCP services in turn, so a single disabled API does not fail the whole
+    connectivity test. The test passes as soon as any service responds successfully.
 
     Args:
         creds (Credentials): GCP credentials to test.
-        params (dict[str, Any]): Integration parameters containing 'project_id'.
+        params (dict[str, Any]): Integration parameters. The project ID is read from
+            'project_id' or, if empty, from the Service Account private key JSON.
 
     Returns:
         str: "ok" if the test is successful.
 
     Raises:
-        DemistoException: If credentials are invalid or the API call fails.
+        DemistoException: If credentials are invalid, the API call fails, or every probed
+            service has its API disabled.
     """
-    project_id = (params.get("project_id") or "").strip()
-    if not project_id:
-        raise DemistoException(
-            "Missing required parameter 'project_id'. Please set the 'GCP Project ID' field in the integration configuration."
-        )
+    project_id = _resolve_project_id_for_test(params)
 
-    try:
-        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-        resource_manager.projects().testIamPermissions(  # pylint: disable=E1101
-            resource=f"projects/{project_id}", body={"permissions": ["resourcemanager.projects.get"]}
-        ).execute()
-        demisto.debug(f"[GCP test_module] Successfully authenticated against project {project_id}")
-        return "ok"
-    except Exception as e:
-        demisto.debug(f"[GCP test_module] Test failed: {str(e)}")
-        raise DemistoException(f"Failed to connect to GCP project '{project_id}': {str(e)}")
+    services_to_try = [
+        GCPServices.RESOURCE_MANAGER,
+        GCPServices.COMPUTE,
+        GCPServices.STORAGE,
+        GCPServices.CONTAINER,
+        GCPServices.BIGQUERY,
+    ]
+
+    for service in services_to_try:
+        try:
+            service.test_connectivity(creds, project_id)
+            demisto.debug(f"[GCP test_module] Successfully authenticated against project {project_id} via {service.api_name}")
+            return "ok"
+        except Exception as e:
+            # A disabled-API 403 is not a real failure - skip this service and try the next one.
+            if isinstance(e, HttpError) and _is_service_disabled_error(e):
+                demisto.debug(
+                    f"[GCP test_module] {service.api_name} API is disabled on project {project_id}; trying next service."
+                )
+                continue
+            demisto.debug(f"[GCP test_module] Test failed on {service.api_name}: {str(e)}")
+            raise DemistoException(f"Failed to connect to GCP project '{project_id}': {str(e)}")
+
+    # Every probed service had its API disabled - none could be reached.
+    raise DemistoException(
+        f"Failed to connect to GCP project '{project_id}': all probed GCP service APIs are disabled. "
+        "Enable at least one of the required GCP APIs on the project and try again."
+    )
 
 
 def get_credentials(args: dict, params: dict) -> Credentials:
@@ -2493,6 +2590,12 @@ def get_credentials(args: dict, params: dict) -> Credentials:
                 args["project_id"] = params["project_id"]
             elif service_account_info.get("project_id"):
                 args["project_id"] = service_account_info["project_id"]
+            else:
+                raise DemistoException(
+                    "Missing required parameter 'project_id'. Provide it as a command argument, set the "
+                    "'GCP Project ID' field in the integration configuration, or include 'project_id' in the "
+                    "Service Account JSON key."
+                )
 
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
         return creds
@@ -2501,16 +2604,19 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     project_id = args.get("project_id")
     if not project_id:
         raise DemistoException("Missing required parameter 'project_id'")
+
     try:
         credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
-        token = credential_data.get("access_token")
-        if not token:
-            raise DemistoException("Failed to retrieve GCP access token — token is missing from CTS credentials")
-        creds = Credentials(token=token)
-        demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Platform path)")
-        return creds
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
+
+    token = credential_data.get("access_token")
+    if not token:
+        raise DemistoException("Failed to retrieve GCP access token - token is missing from CTS credentials")
+
+    creds = Credentials(token=token)
+    demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Platform path)")
+    return creds
 
 
 def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2856,11 +2962,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-
-    if not get_connector_id():
-        global USE_PROXY, VERIFY_SSL
-        USE_PROXY = params.get("proxy", False)
-        VERIFY_SSL = not argToBoolean(params.get("insecure", False))
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {

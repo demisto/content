@@ -2,26 +2,14 @@
 
 ### Supported Platforms
 
-| Platform                                          | Authentication | Setup |
-|---------------------------------------------------|---|---|
-| **Cortex Cloud or Cortex XSIAM (version >= 3.0)** | Automatic via cloud connector (CTS) | Data Sources page |
-| **Cortex XSOAR**                                  | Service Account private key JSON | Integration configuration |
-| **Cortex XSIAM (version < 3.0)**                  | Service Account private key JSON | Integration configuration |
+| Platform                        | Authentication | Setup |
+|---------------------------------|---|---|
+| **Cortex XSOAR**                | Service Account private key JSON | Integration configuration |
+| **Cortex XSIAM (version < 3.0)** | Service Account private key JSON | Integration configuration |
 
 ---
 
-### Cortex Cloud or Cortex XSIAM (version >= 3.0) Setup
-
-Cloud integrations are installed from the **Data Sources** page.
-
-1. Go to **Settings → Data Sources** and click **Add Data Source**.
-2. Select **GCP**, then in **Advanced Settings → Security Capabilities**, enable **Automation**.
-
-Authentication is handled automatically — no credentials are required in the integration configuration.
-
----
-
-### Cortex XSOAR / Cortex XSIAM (version < 3.0) Setup
+### Setup
 
 #### Step 1 — Enable Required GCP APIs
 

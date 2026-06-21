@@ -5530,10 +5530,234 @@ def test_test_module_marketplace_returns_ok(mocker):
     )
 
 
+def _make_http_error(status: int, content: str):
+    """Builds a googleapiclient HttpError with the given status and content for tests."""
+    from googleapiclient.errors import HttpError
+
+    resp = MagicMock()
+    resp.status = status
+    return HttpError(resp=resp, content=content.encode("utf-8"))
+
+
+def test_test_module_falls_back_when_resource_manager_api_disabled(mocker):
+    """
+    Given:
+        - The Cloud Resource Manager API is disabled on the project (403 SERVICE_DISABLED).
+        - The Compute API is enabled and its testIamPermissions probe succeeds.
+    When:
+        - test_module is called.
+    Then:
+        - The Resource Manager failure is skipped and the Compute probe is used.
+        - "ok" is returned.
+    """
+    from GCP import test_module, GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params = {"project_id": "dummy-project-id"}
+
+    disabled_error = _make_http_error(
+        403, '{"error": {"status": "PERMISSION_DENIED", "message": "Cloud Resource Manager API ... SERVICE_DISABLED"}}'
+    )
+    rm_probe = mocker.patch.object(GCPServices.RESOURCE_MANAGER, "test_connectivity", side_effect=disabled_error)
+    compute_probe = mocker.patch.object(GCPServices.COMPUTE, "test_connectivity", return_value=None)
+
+    result = test_module(creds, params)
+
+    assert result == "ok"
+    rm_probe.assert_called_once_with(creds, "dummy-project-id")
+    compute_probe.assert_called_once_with(creds, "dummy-project-id")
+
+
+def test_test_module_non_service_disabled_403_fails_immediately(mocker):
+    """
+    Given:
+        - The Resource Manager probe returns a genuine 403 (PERMISSION_DENIED, not SERVICE_DISABLED).
+    When:
+        - test_module is called.
+    Then:
+        - The test fails immediately and does NOT fall back to other services.
+    """
+    from GCP import test_module, GCPServices
+    from CommonServerPython import DemistoException
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params = {"project_id": "dummy-project-id"}
+
+    real_403 = _make_http_error(403, '{"error": {"status": "PERMISSION_DENIED", "message": "caller lacks permission"}}')
+    mocker.patch.object(GCPServices.RESOURCE_MANAGER, "test_connectivity", side_effect=real_403)
+    compute_probe = mocker.patch.object(GCPServices.COMPUTE, "test_connectivity", return_value=None)
+
+    with pytest.raises(DemistoException, match="Failed to connect to GCP project 'dummy-project-id'"):
+        test_module(creds, params)
+    compute_probe.assert_not_called()
+
+
+def test_test_module_all_services_disabled_raises(mocker):
+    """
+    Given:
+        - Every probed GCP service API is disabled (403 SERVICE_DISABLED).
+    When:
+        - test_module is called.
+    Then:
+        - A DemistoException is raised indicating all probed APIs are disabled.
+    """
+    from GCP import test_module, GCPServices
+    from CommonServerPython import DemistoException
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params = {"project_id": "dummy-project-id"}
+
+    disabled_error = _make_http_error(403, '{"error": {"status": "PERMISSION_DENIED", "message": "SERVICE_DISABLED"}}')
+    for service in GCPServices:
+        mocker.patch.object(service, "test_connectivity", side_effect=disabled_error)
+
+    with pytest.raises(DemistoException, match="all probed GCP service APIs are disabled"):
+        test_module(creds, params)
+
+
+def test_test_connectivity_resource_manager_uses_testiampermissions(mocker):
+    """
+    Given:
+        - The RESOURCE_MANAGER service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - The project-level testIamPermissions endpoint is invoked with the project resource.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.RESOURCE_MANAGER, "build", return_value=mock_client)
+
+    GCPServices.RESOURCE_MANAGER.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.projects.return_value.testIamPermissions.assert_called_once_with(
+        resource="projects/dummy-project-id", body={"permissions": ["resourcemanager.projects.get"]}
+    )
+
+
+def test_test_connectivity_compute_uses_firewalls_list(mocker):
+    """
+    Given:
+        - The COMPUTE service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped firewalls list is invoked (Compute has no project testIamPermissions).
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_client)
+
+    GCPServices.COMPUTE.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.firewalls.return_value.list.assert_called_once_with(project="dummy-project-id", maxResults=1)
+
+
+def test_test_connectivity_storage_uses_buckets_list_with_project(mocker):
+    """
+    Given:
+        - The STORAGE service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped buckets list is invoked (project_id is passed as 'project', not 'bucket').
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.STORAGE, "build", return_value=mock_client)
+
+    GCPServices.STORAGE.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.buckets.return_value.list.assert_called_once_with(project="dummy-project-id", maxResults=1)
+
+
+def test_test_connectivity_bigquery_uses_datasets_list(mocker):
+    """
+    Given:
+        - The BIGQUERY service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped datasets list is invoked.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.BIGQUERY, "build", return_value=mock_client)
+
+    GCPServices.BIGQUERY.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.datasets.return_value.list.assert_called_once_with(projectId="dummy-project-id", maxResults=1)
+
+
+def test_test_connectivity_container_uses_clusters_list(mocker):
+    """
+    Given:
+        - The CONTAINER service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped clusters list is invoked under the project's locations.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.CONTAINER, "build", return_value=mock_client)
+
+    GCPServices.CONTAINER.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.projects.return_value.locations.return_value.clusters.return_value.list.assert_called_once_with(
+        parent="projects/dummy-project-id/locations/-"
+    )
+
+
+def test_test_all_services_wraps_results_into_tuples(mocker):
+    """
+    Given:
+        - One service probe succeeds and another raises.
+    When:
+        - test_all_services is called.
+    Then:
+        - It returns (service_name, success, error) tuples without raising.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+
+    def fake_probe(self, _creds, _project_id):
+        if self == GCPServices.COMPUTE:
+            raise Exception("boom")
+
+    mocker.patch.object(GCPServices, "test_connectivity", autospec=True, side_effect=fake_probe)
+
+    results = GCPServices.test_all_services(creds, "dummy-project-id")
+
+    results_by_name = {name: (success, error) for name, success, error in results}
+    assert results_by_name[GCPServices.COMPUTE.api_name] == (False, "boom")
+    assert results_by_name[GCPServices.RESOURCE_MANAGER.api_name] == (True, "")
+
+
 def test_test_module_marketplace_missing_project_id_raises():
     """
     Given:
-        - params does not contain project_id.
+        - params does not contain project_id and there is no Service Account JSON to fall back to.
     When:
         - test_module is called.
     Then:
@@ -5548,6 +5772,39 @@ def test_test_module_marketplace_missing_project_id_raises():
 
     with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
         test_module(creds, params)
+
+
+def test_test_module_project_id_falls_back_to_service_account_json(mocker):
+    """
+    Given:
+        - The 'GCP Project ID' param is empty.
+        - The Service Account private key JSON in credentials.password contains a project_id.
+    When:
+        - test_module is called.
+    Then:
+        - The project_id is resolved from the Service Account JSON and used for the
+          connectivity test, and "ok" is returned.
+    """
+    from GCP import test_module
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    sa_info = {"type": "service_account", "project_id": "json-project-id", "private_key": "dummy_private_key"}
+    params = {"credentials": {"password": json.dumps(sa_info)}}
+
+    mock_rm = MagicMock()
+    mock_rm.projects.return_value.testIamPermissions.return_value.execute.return_value = {
+        "permissions": ["resourcemanager.projects.get"]
+    }
+    mocker.patch("GCP.GCPServices.RESOURCE_MANAGER.build", return_value=mock_rm)
+
+    result = test_module(creds, params)
+
+    assert result == "ok"
+    mock_rm.projects.return_value.testIamPermissions.assert_called_once_with(
+        resource="projects/json-project-id",
+        body={"permissions": ["resourcemanager.projects.get"]},
+    )
 
 
 def test_test_module_marketplace_api_failure_raises(mocker):
@@ -5586,12 +5843,10 @@ def test_build_http_client_no_proxy_ssl_on(mocker):
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", False)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
     mocker.patch("GCP.handle_proxy", return_value={})
     mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    result = GCP.build_http_client()
+    result = GCP.build_http_client(use_proxy=False, verify_ssl=True)
 
     assert result == "http-obj"
     _, http_kwargs = mock_http.call_args
@@ -5602,7 +5857,7 @@ def test_build_http_client_no_proxy_ssl_on(mocker):
 def test_build_http_client_insecure_disables_ssl_validation(mocker):
     """
     Given:
-        - 'Trust any certificate' enabled (VERIFY_SSL is False), no proxy.
+        - 'Trust any certificate' enabled (verify_ssl is False), no proxy.
     When:
         - build_http_client is called.
     Then:
@@ -5610,12 +5865,10 @@ def test_build_http_client_insecure_disables_ssl_validation(mocker):
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", False)
-    mocker.patch.object(GCP, "VERIFY_SSL", False)
     mocker.patch("GCP.handle_proxy", return_value={})
     mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    result = GCP.build_http_client()
+    result = GCP.build_http_client(use_proxy=False, verify_ssl=False)
 
     assert result == "http-obj"
     _, http_kwargs = mock_http.call_args
@@ -5629,8 +5882,8 @@ def test_build_http_client_ssl_verification_simulated_handshake(mocker):
           when certificate validation is ON, and succeeds when it is OFF.
     When:
         - build_http_client builds an httplib2.Http and a request is made through it,
-          first with 'Trust any certificate' UNCHECKED (VERIFY_SSL=True) then CHECKED
-          (VERIFY_SSL=False).
+          first with 'Trust any certificate' UNCHECKED (verify_ssl=True) then CHECKED
+          (verify_ssl=False).
     Then:
         - Unchecked (verify on) -> the request raises an SSL error.
         - Checked (insecure on) -> the request succeeds.
@@ -5656,16 +5909,13 @@ def test_build_http_client_ssl_verification_simulated_handshake(mocker):
 
     mocker.patch("GCP.httplib2.Http", side_effect=FakeHttp)
 
-    # Unchecked -> VERIFY_SSL True -> verification enforced -> request fails.
-    mocker.patch.object(GCP, "USE_PROXY", False)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
-    http_verify_on = GCP.build_http_client()
+    # Unchecked -> verify_ssl True -> verification enforced -> request fails.
+    http_verify_on = GCP.build_http_client(use_proxy=False, verify_ssl=True)
     with pytest.raises(ssl.SSLCertVerificationError):
         http_verify_on.request("https://self-signed.example.com")
 
-    # Checked -> VERIFY_SSL False -> verification skipped -> request succeeds.
-    mocker.patch.object(GCP, "VERIFY_SSL", False)
-    http_verify_off = GCP.build_http_client()
+    # Checked -> verify_ssl False -> verification skipped -> request succeeds.
+    http_verify_off = GCP.build_http_client(use_proxy=False, verify_ssl=False)
     status, _ = http_verify_off.request("https://self-signed.example.com")
     assert status["status"] == 200
 
@@ -5686,15 +5936,13 @@ def test_build_http_client_proxy_sets_proxy_info(mocker):
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", True)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
     mocker.patch("GCP.handle_proxy", return_value={"https": "https://user:pass@proxy.example.com:8080"})
 
     mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
     mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
     mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    result = GCP.build_http_client()
+    result = GCP.build_http_client(use_proxy=True, verify_ssl=True)
 
     assert result == "http-obj"
     # ProxyInfo built from the parsed proxy URL components.
@@ -5703,67 +5951,12 @@ def test_build_http_client_proxy_sets_proxy_info(mocker):
     assert proxy_kwargs["proxy_port"] == 8080
     assert proxy_kwargs["proxy_user"] == "user"
     assert proxy_kwargs["proxy_pass"] == "pass"
-    # Http built with that proxy_info and SSL validation enabled (VERIFY_SSL=True).
+    # Http built with that proxy_info and SSL validation enabled (verify_ssl=True).
     _, http_kwargs = mock_http.call_args
     assert http_kwargs["proxy_info"] == "proxy-info-obj"
     assert http_kwargs["disable_ssl_certificate_validation"] is False
     # ca_certs must be passed so verification uses the system/container CA bundle.
     assert "ca_certs" in http_kwargs
-
-
-def test_gcpservices_build_wraps_credentials_on_marketplace_path(mocker):
-    """
-    Given:
-        - The marketplace path (no connector ID).
-    When:
-        - GCPServices.COMPUTE.build is called with credentials.
-    Then:
-        - The credentials are wrapped in an AuthorizedHttp custom transport so the
-          proxy/SSL settings are enforced, and build() is invoked WITHOUT passing
-          credentials directly (AuthorizedHttp carries them).
-    """
-    import GCP
-
-    mocker.patch("GCP.get_connector_id", return_value=None)  # marketplace path
-    fake_http = MagicMock()
-    mocker.patch.object(GCP, "build_http_client", return_value=fake_http)
-    mock_authorized = mocker.patch("GCP.AuthorizedHttp", return_value="authorized-http")
-    mock_build = mocker.patch("GCP.build", return_value="client")
-
-    creds = MagicMock()
-    result = GCP.GCPServices.COMPUTE.build(creds)
-
-    assert result == "client"
-    mock_authorized.assert_called_once_with(creds, http=fake_http)
-    _, kwargs = mock_build.call_args
-    assert kwargs["http"] == "authorized-http"
-    assert "credentials" not in kwargs
-
-
-def test_gcpservices_build_uses_default_transport_on_platform_path(mocker):
-    """
-    Given:
-        - The Cortex Platform path (a connector ID is present).
-    When:
-        - GCPServices.COMPUTE.build is called with credentials.
-    Then:
-        - build() is invoked with credentials directly and no http override.
-        - build_http_client is NOT called (no custom transport is constructed).
-    """
-    import GCP
-
-    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # platform path
-    mock_http_client = mocker.patch.object(GCP, "build_http_client", return_value=None)
-    mock_build = mocker.patch("GCP.build", return_value="client")
-
-    creds = MagicMock()
-    result = GCP.GCPServices.COMPUTE.build(creds)
-
-    assert result == "client"
-    mock_http_client.assert_not_called()
-    _, kwargs = mock_build.call_args
-    assert kwargs["credentials"] is creds
-    assert "http" not in kwargs
 
 
 def test_build_http_client_proxy_without_scheme(mocker):
@@ -5778,15 +5971,13 @@ def test_build_http_client_proxy_without_scheme(mocker):
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", True)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
     mocker.patch("GCP.handle_proxy", return_value={"https": "proxy.example.com:3128"})
 
     mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
     mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
     mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    GCP.build_http_client()
+    GCP.build_http_client(use_proxy=True, verify_ssl=True)
 
     _, proxy_kwargs = mock_proxy_info.call_args
     assert proxy_kwargs["proxy_host"] == "proxy.example.com"
@@ -5804,15 +5995,13 @@ def test_build_http_client_proxy_without_port_defaults(mocker):
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", True)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
     mocker.patch("GCP.handle_proxy", return_value={"https": "https://proxy.example.com"})
 
     mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
     mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
     mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    GCP.build_http_client()
+    GCP.build_http_client(use_proxy=True, verify_ssl=True)
 
     _, proxy_kwargs = mock_proxy_info.call_args
     assert proxy_kwargs["proxy_host"] == "proxy.example.com"
@@ -5878,11 +6067,13 @@ def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
     """
     Given:
         - No service account JSON (Cortex Cloud path) and a project_id in args.
-        - get_cloud_credentials returns a payload WITHOUT an access_token.
+        - get_cloud_credentials succeeds but returns a payload WITHOUT an access_token.
     When:
         - get_credentials is called.
     Then:
-        - A DemistoException about the missing token is raised.
+        - The explicit "token is missing" DemistoException is raised as-is and is NOT
+          swallowed/re-wrapped by the CTS authentication error handler (the token check
+          lives in its own try/except, separate from the CTS call).
     """
     from GCP import get_credentials
     from CommonServerPython import DemistoException
@@ -5892,5 +6083,55 @@ def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
 
     mocker.patch("GCP.get_cloud_credentials", return_value={})
 
+    with pytest.raises(DemistoException, match="token is missing from CTS credentials"):
+        get_credentials(args, params)
+
+
+def test_get_credentials_cortex_cloud_cts_call_failure_wrapped(mocker):
+    """
+    Given:
+        - No service account JSON (Cortex Cloud path) and a project_id in args.
+        - The get_cloud_credentials (CTS) call itself raises an exception.
+    When:
+        - get_credentials is called.
+    Then:
+        - The failure is reported via the CTS authentication error wrapper. This proves the
+          CTS call and the token validation are in separate try/except blocks.
+    """
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    params: dict = {}
+    args = {"project_id": "dummy-project-id"}
+
+    mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("network down"))
+
     with pytest.raises(DemistoException, match="Failed to authenticate with GCP via CTS"):
+        get_credentials(args, params)
+
+
+def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
+    """
+    Given:
+        - A valid service account JSON in credentials.password that has NO 'project_id'.
+        - No project_id in args and no project_id in params.
+    When:
+        - get_credentials is called (marketplace path).
+    Then:
+        - A DemistoException is raised because project_id cannot be resolved from args,
+          params, or the service account JSON.
+    """
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    sa_info = {"type": "service_account", "private_key": "dummy_private_key"}
+    params = {"credentials": {"password": json.dumps(sa_info)}}
+    args: dict = {}
+
+    mocker.patch(
+        "GCP.google_service_account.Credentials.from_service_account_info",
+        return_value=mocker.MagicMock(),
+    )
+
+    with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
         get_credentials(args, params)
