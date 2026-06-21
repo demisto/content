@@ -156,7 +156,13 @@ IGNORED_PARAMS = {
     "close_out",
     "close_notes",
     "longRunning",
+    "close_netskope_incident",
+    "close_extra_labels",
     "longRunningPort",
+    "close_end_status_statuses",
+    "close_extra_labels",
+    "comment_tag_from_splunk",
+    "comment_tag_to_splunk"
 }
 
 ENGINE_PROXY_EXCLUDED: frozenset[str] = frozenset(
@@ -275,6 +281,17 @@ def collect_yml_params(integration_yml: dict) -> set[str]:
         if not isinstance(param, dict):
             continue
         if _is_hidden(param):
+            continue
+        # A ``type: 9`` credentials widget with BOTH leaves suppressed
+        # (``hiddenusername: true`` AND ``hiddenpassword: true``) has no live
+        # leaf — per skill §1.3 it is treated as if ``hidden: true`` at the
+        # whole-param level (a dead/legacy auth alternative). Exclude it from
+        # coverage: the connector never exposes either leaf for it.
+        if (
+            param.get("type") == YML_TYPE_CREDENTIALS
+            and bool(param.get("hiddenusername"))
+            and bool(param.get("hiddenpassword"))
+        ):
             continue
         name = param.get("name")
         if name:
