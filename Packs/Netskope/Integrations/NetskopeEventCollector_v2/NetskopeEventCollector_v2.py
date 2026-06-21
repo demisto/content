@@ -426,7 +426,7 @@ async def fetch_and_send_events_async(
     """Fetch all pages for a single event type.
 
     When ``send_to_xsiam`` is True (fetch-events), each page is sent and freed, returning only the
-    page count (send-and-flush). When False (get-events/test), the events are returned for display.
+    page count (send-and-flush). When False (get-events), the events are returned for display.
 
     Returns:
         tuple(success, failures): ``success`` items are ints (counts) when sending, else event lists.
@@ -482,7 +482,7 @@ async def fetch_and_send_events_async(
                     return page_count
             except Exception as e:
                 raise DemistoException(message=str(e), exception=e, res=params)
-            # get-events / test path: caller needs the actual events
+            # get-events path: caller needs the actual events
             return events
 
     async def _handle_all_pages():
