@@ -1743,8 +1743,9 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
 
     q = captured.get("query", "")
     assert f"type:{schema.type}" in q
+    assert "value:(" in q
     for val in data:
-        assert f'value:"{val}"' in q
+        assert f'"{val}"' in q
 
     assert iocs == expected_iocs
 
@@ -2146,7 +2147,8 @@ def test_summarize_command_results_uses_is_error_result_for_entry_type(module_fa
     When:
         - summarize_command_results is called.
     Then:
-        - The CommandResults.entry_type is ERROR iff _is_error_result returns True.
+        - A DemistoException is raised iff _is_final_result_error returns True.
+        - Otherwise a success CommandResults (non-error entry type) is returned.
     """
     mod = module_factory()
     # Don't let these mutate entry_results, we want to control it
@@ -2156,11 +2158,11 @@ def test_summarize_command_results_uses_is_error_result_for_entry_type(module_fa
     # Avoid depending on markdown formatting
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    # Case 1: _is_final_result_error -> True => EntryType.ERROR
+    # Case 1: _is_final_result_error -> True => raises DemistoException
     mocker.patch.object(mod, "_is_final_result_error", return_value=True)
     mod.entry_results = [make_entry_result("c1", "A", Status.FAILURE, "Error")]
-    res = mod.summarize_command_results(final_context={"ctx": 1})
-    assert res.entry_type == entryTypes["error"]
+    with pytest.raises(DemistoException, match=r"Error: All commands failed or no indicators found\."):
+        mod.summarize_command_results(final_context={"ctx": 1})
 
     # Case 2: _is_final_result_error -> False => success (default entry type)
     mocker.patch.object(mod, "_is_final_result_error", return_value=False)

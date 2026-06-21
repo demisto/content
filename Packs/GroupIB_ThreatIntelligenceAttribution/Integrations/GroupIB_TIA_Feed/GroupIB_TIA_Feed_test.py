@@ -1,13 +1,14 @@
 import pytest
 import os
 from json import load
+from typing import Any, cast
 from GroupIB_TIA_Feed import (
     fetch_indicators_command,
     Client,
     main,
     DateHelper,
     validate_launch_get_indicators_command,
-    collection_availability_check,
+    _validate_indicator_collections,
     get_indicators_command,
     IndicatorBuilding,
     COMMON_MAPPING,
@@ -99,6 +100,16 @@ def test_main_error():
         main()["error_command"]()  # type: ignore
 
 
+def test_common_mapping_contains_masked_card():
+    mapping = cast(dict[str, Any], COMMON_MAPPING["compromised/masked_card"])
+
+    assert mapping["types"]["cnc_domain"] == "Domain"
+    assert mapping["types"]["cnc_ipv4_ip"] == "IP"
+    assert mapping["parser_mapping"]["cnc_domain"] == "cnc.domain"
+    assert mapping["parser_mapping"]["cnc_ipv4_ip"] == "cnc.ipv4.ip"
+    assert mapping["parser_mapping"]["evaluation_tlp"] == "evaluation.tlp"
+
+
 def test_fetch_indicators_command(mocker, session_fixture):
     """
     Test for validating the functionality of fetch_indicators_command with multiple collection types.
@@ -138,7 +149,7 @@ def test_fetch_indicators_command(mocker, session_fixture):
     else:
         first_fetch_time = "15 days"
 
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset(AVALIBLE_COLLECTIONS_RAW_JSON))
     mocker.patch.object(
         client,
         "create_update_generator_proxy_functions",
@@ -167,7 +178,7 @@ def test_integration_test_module_success(mocker):
     Test for verifying successful test_module execution when collections are available.
 
     Given:
-      - A client instance with mocked get_available_collections_proxy_function that returns a non-empty list.
+      - A client instance with mocked get_available_collections_cached that returns a non-empty frozenset.
 
     When:
       - test_module() is called with the client.
@@ -181,7 +192,7 @@ def test_integration_test_module_success(mocker):
         verify=True,
         headers={"Accept": "*/*"},
     )
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=["collection1", "collection2"])
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset({"collection1", "collection2"}))
 
     result = GroupIB_TIA_Feed.test_module(client)
 
@@ -193,7 +204,7 @@ def test_integration_test_module_no_collections(mocker):
     Test for verifying test_module behavior when no collections are available.
 
     Given:
-      - A client instance with mocked get_available_collections_proxy_function that returns an empty list.
+      - A client instance with mocked get_available_collections_cached that returns an empty frozenset.
 
     When:
       - test_module() is called with the client.
@@ -207,7 +218,7 @@ def test_integration_test_module_no_collections(mocker):
         verify=True,
         headers={"Accept": "*/*"},
     )
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[])
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset())
 
     result = GroupIB_TIA_Feed.test_module(client)
 
@@ -228,7 +239,7 @@ def test_date_helper_first_time_fetch():
     Then:
       - Returns date_from as a formatted date string and seq_update as None.
     """
-    last_run = {}
+    last_run: dict[str, Any] = {}
     collection_name = "compromised/account_group"
     first_fetch_time = "2023-01-01"
 
@@ -276,7 +287,7 @@ def test_date_helper_invalid_first_fetch_time():
     Then:
       - Raises DemistoException with an appropriate error message.
     """
-    last_run = {}
+    last_run: dict[str, Any] = {}
     collection_name = "compromised/account_group"
     first_fetch_time = "invalid-date-format"
 
@@ -385,18 +396,22 @@ def test_validate_launch_get_indicators_command_invalid_collection():
         validate_launch_get_indicators_command(limit, collection_name)
 
 
-def test_collection_availability_check_success(mocker):
+def test_validate_indicator_collections_success(mocker):
     """
-    Test for verifying collection_availability_check succeeds when collection is available.
+    Test for verifying _validate_indicator_collections succeeds when every requested
+    collection is granted to the API user.
 
     Given:
-      - A client with mocked get_available_collections_proxy_function that includes the collection.
+      - A client whose `get_available_collections_cached` returns a frozenset of
+        granted collections that fully covers the requested list.
 
     When:
-      - collection_availability_check() is called with an available collection name.
+      - _validate_indicator_collections() is called with a non-empty subset of the
+        granted collections.
 
     Then:
-      - Does not raise any exception, indicating the collection is available.
+      - Does not raise any exception.
+      - Calls `get_available_collections_cached` exactly once (no extra round-trips).
     """
     client = Client(
         base_url="https://some-url.com",
@@ -404,25 +419,30 @@ def test_collection_availability_check_success(mocker):
         verify=True,
         headers={"Accept": "*/*"},
     )
-    collection_name = "compromised/account_group"
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[collection_name, "other/collection"])
+    granted = frozenset({"compromised/account_group", "attacks/ddos", "other/collection"})
+    cached_mock = mocker.patch.object(client, "get_available_collections_cached", return_value=granted)
 
-    # Should not raise any exception
-    collection_availability_check(client, collection_name)
+    _validate_indicator_collections(client, ["compromised/account_group", "attacks/ddos"])
+
+    assert cached_mock.call_count == 1
 
 
-def test_collection_availability_check_failure(mocker):
+def test_validate_indicator_collections_failure(mocker):
     """
-    Test for verifying collection_availability_check raises exception when collection is not available.
+    Test for verifying _validate_indicator_collections raises a DemistoException when
+    at least one requested collection is not granted to the API user.
 
     Given:
-      - A client with mocked get_available_collections_proxy_function that does not include the collection.
+      - A client whose `get_available_collections_cached` returns a frozenset that
+        does NOT include some of the requested collections.
 
     When:
-      - collection_availability_check() is called with an unavailable collection name.
+      - _validate_indicator_collections() is called with a list that contains an
+        unavailable collection.
 
     Then:
-      - Raises Exception with message indicating the collection is not available.
+      - Raises DemistoException whose message names the offending collection so the
+        operator can immediately fix the instance settings.
     """
     client = Client(
         base_url="https://some-url.com",
@@ -430,11 +450,43 @@ def test_collection_availability_check_failure(mocker):
         verify=True,
         headers={"Accept": "*/*"},
     )
-    collection_name = "unavailable/collection"
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=["other/collection"])
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset({"other/collection"}))
 
-    with pytest.raises(Exception, match="Collection unavailable/collection is not available"):
-        collection_availability_check(client, collection_name)
+    with pytest.raises(DemistoException, match="unavailable/collection"):
+        _validate_indicator_collections(client, ["unavailable/collection"])
+
+
+def test_validate_indicator_collections_empty_list_skips_remote_call(mocker):
+    """
+    Test for verifying _validate_indicator_collections is a no-op for an empty list.
+
+    Given:
+      - A client whose `get_available_collections_cached` is patched to fail loudly
+        if it is ever invoked.
+
+    When:
+      - _validate_indicator_collections() is called with an empty list.
+
+    Then:
+      - Returns silently, never touching the network. This protects fetch flows
+        configured with no collections from triggering an unnecessary
+        `/user/granted_collections` round-trip.
+    """
+    client = Client(
+        base_url="https://some-url.com",
+        auth=("example@group-ib.com", "exampleAPI_TOKEN"),
+        verify=True,
+        headers={"Accept": "*/*"},
+    )
+    cached_mock = mocker.patch.object(
+        client,
+        "get_available_collections_cached",
+        side_effect=AssertionError("get_available_collections_cached must not be called for empty selection"),
+    )
+
+    _validate_indicator_collections(client, [])
+
+    cached_mock.assert_not_called()
 
 
 def test_indicator_building_clean_data():
@@ -553,7 +605,7 @@ def test_fetch_indicators_command_with_last_run(mocker, session_fixture):
     last_run = {"last_fetch": {collection_name: 12345}}
     first_fetch_time = "15 days"
 
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset(AVALIBLE_COLLECTIONS_RAW_JSON))
     mock_parser = Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])
     mock_parser.sequpdate = 67890
     mocker.patch.object(
@@ -598,7 +650,7 @@ def test_fetch_indicators_command_multiple_collections(mocker):
     )
 
     collections = ["compromised/account_group", "attacks/ddos"]
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(client, "get_available_collections_cached", return_value=frozenset(AVALIBLE_COLLECTIONS_RAW_JSON))
 
     def create_mock_parser(collection_name):
         """Helper function to create a mock parser for a specific collection."""
@@ -647,7 +699,6 @@ def test_get_indicators_command_without_id(mocker, session_fixture):
     collection_name, client = session_fixture
     args = {"collection": collection_name, "limit": 10}
 
-    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
     mocker.patch.object(
         client,
         "create_update_generator_proxy_functions",
