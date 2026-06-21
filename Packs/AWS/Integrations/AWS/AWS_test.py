@@ -19703,3 +19703,176 @@ def test_delete_rule_group_command_api_error(mocker):
         NetworkFirewall.delete_rule_group_command(mock_client, args)
 
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_describe_rule_group_command_success_with_name(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_name and type argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the RuleGroupName and Type kwargs.
+        - The outputs merge RuleGroupResponse, UpdateToken, and RuleGroup.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 100,
+            "RuleGroupStatus": "ACTIVE",
+        },
+        "RuleGroup": {
+            "RulesSource": {"RulesString": "pass tcp any any -> any any (sid:1;)"},
+        },
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL"}
+
+    # When
+    result = NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupName"] == "test-rg"
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["Type"] == "STATEFUL"
+    assert result.outputs["RuleGroupStatus"] == "ACTIVE"
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    assert result.outputs["RulesSource"] == {"RulesString": "pass tcp any any -> any any (sid:1;)"}
+    client.describe_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATEFUL")
+
+
+def test_describe_rule_group_command_success_with_arn(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_arn argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the RuleGroupArn kwarg only.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-456",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+        },
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_arn": rule_group_arn}
+
+    # When
+    result = NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["UpdateToken"] == "update-token-456"
+    client.describe_rule_group.assert_called_once_with(RuleGroupArn=rule_group_arn)
+
+
+def test_describe_rule_group_command_with_analyze_rule_group(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_name, type, and analyze_rule_group argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the AnalyzeRuleGroup kwarg set to True.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-789",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/test-rg",
+        },
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_name": "test-rg", "type": "STATELESS", "analyze_rule_group": "true"}
+
+    # When
+    NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    client.describe_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg", Type="STATELESS", AnalyzeRuleGroup=True
+    )
+
+
+def test_describe_rule_group_command_missing_arguments(mocker):
+    """
+    Given:
+        - No rule_group_name or rule_group_arn arguments.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - A DemistoException is raised by the identifier validation and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    args = {}
+
+    # When / Then
+    with pytest.raises(DemistoException):
+        NetworkFirewall.describe_rule_group_command(client, args)
+
+    client.describe_rule_group.assert_not_called()
+
+
+def test_describe_rule_group_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - describe_rule_group_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "ResourceNotFoundException", "Message": "Not found"},
+        "RuleGroupResponse": {},
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL", "account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")

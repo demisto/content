@@ -19544,6 +19544,131 @@ script:
         - STATEFUL
     outputs: [ ]
 
+  - name: aws-network-firewall-rule-group-describe
+    description: "Returns the data objects for the specified rule group. Required permissions: network-firewall:DescribeRuleGroup."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: rule_group_name
+      description: The descriptive name of the rule group. You must specify the ARN or the name, and you can specify both.
+    - name: rule_group_arn
+      description: The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both.
+    - name: type
+      description: Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
+      auto: PREDEFINED
+      predefined:
+        - STATELESS
+        - STATEFUL
+        - STATEFUL_DOMAIN
+    - name: analyze_rule_group
+      description: Whether you want Network Firewall to analyze the stateless rules in the rule group for rule behavior such as asymmetric routing.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: AWS.NetworkFirewall.RuleGroups.UpdateToken
+      description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the rule group. The token marks the state of the rule group resource at the time of the request.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupName
+      description: The descriptive name of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupArn
+      description: The Amazon Resource Name (ARN) of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupId
+      description: The unique identifier for the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Description
+      description: A description of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Type
+      description: Indicates whether the rule group is stateless or stateful.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Capacity
+      description: The maximum operating resources that this rule group can use.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupStatus
+      description: Detailed information about the current status of a rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Tags
+      description: The key:value pairs to associate with the resource.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.ConsumedCapacity
+      description: The number of capacity units currently consumed by the rule group rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.NumberOfAssociations
+      description: The number of firewall policies that use this rule group.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration
+      description: The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.SourceMetadata
+      description: The metadata for the rule group that your own rule group is copied from.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.SnsTopic
+      description: The Amazon resource name (ARN) of the Amazon Simple Notification Service SNS topic that is used to record changes to the managed rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.LastModifiedTime
+      description: The last time that the rule group was changed.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.AnalysisResults
+      description: The list of analysis results for AnalyzeRuleGroup. If you set AnalyzeRuleGroup to TRUE in your request, the analysis results are returned in an AnalysisResult object alongside the rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.SummaryConfiguration
+      description: A complex type that contains the rule options that are used when summarizing the rules in the rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleVariables
+      description: Settings that are available for use in the rules in the rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.ReferenceSets
+      description: The list of a rule group's reference sets.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RulesSource
+      description: The stateful rules or stateless rules for the rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.StatefulRuleOptions
+      description: Additional options governing how Network Firewall handles stateful rules.
+      type: Unknown
+
   isfetch: false
   runonce: false
   script: '-'

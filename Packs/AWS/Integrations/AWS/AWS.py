@@ -10478,6 +10478,53 @@ class NetworkFirewall:
             raw_response=response,
         )
 
+    @staticmethod
+    def describe_rule_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns the data objects for the specified rule group.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing rule_group_name or rule_group_arn, type, and
+                optionally analyze_rule_group
+
+        Returns:
+            CommandResults: Formatted results with rule group information
+        """
+        validate_network_firewall_identifier(args, "rule_group")
+        kwargs = {
+            "RuleGroupName": args.get("rule_group_name"),
+            "RuleGroupArn": args.get("rule_group_arn"),
+            "Type": args.get("type"),
+            "AnalyzeRuleGroup": arg_to_bool_or_none(args.get("analyze_rule_group")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing rule group with parameters: {kwargs.keys()}")
+        response = client.describe_rule_group(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        raw_response = copy.deepcopy(response)
+        rule_group_response = response.get("RuleGroupResponse", {})
+        rule_group_response["UpdateToken"] = response.get("UpdateToken")
+        rule_group_response.update(response.get("RuleGroup", {}))
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.RuleGroups",
+            outputs_key_field="RuleGroupArn",
+            outputs=rule_group_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Rule Group",
+                rule_group_response,
+                headers=["RuleGroupName", "RuleGroupArn", "Type", "Capacity", "Description", "RuleGroupStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=raw_response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10701,6 +10748,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policy-change-protection-update": NetworkFirewall.update_firewall_policy_change_protection_command,  # noqa: E501
     "aws-network-firewall-rule-group-create": NetworkFirewall.create_rule_group_command,
     "aws-network-firewall-rule-group-delete": NetworkFirewall.delete_rule_group_command,
+    "aws-network-firewall-rule-group-describe": NetworkFirewall.describe_rule_group_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10894,6 +10942,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UpdateFirewallPolicyChangeProtection",
     "network-firewall:CreateRuleGroup",
     "network-firewall:DeleteRuleGroup",
+    "network-firewall:DescribeRuleGroup",
 ]
 
 COMMAND_SERVICE_MAP = {
