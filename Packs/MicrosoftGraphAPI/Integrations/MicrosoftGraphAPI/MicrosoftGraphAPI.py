@@ -9,7 +9,6 @@ from CommonServerUserPython import *
 
 urllib3.disable_warnings()
 
-
 class MsGraphClient:
     def __init__(
         self,
@@ -26,10 +25,12 @@ class MsGraphClient:
         private_key: str | None = None,
         managed_identities_client_id: str | None = None,
     ):
+        # Build the permission scope for the Microsoft Graph API based on the selected Azure cloud.
+        scope = azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/") + "/.default"
         client_args = {
             "base_url": azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"),
             "auth_id": app_id,
-            "scope": azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/") + "/.default",
+            "scope": scope,
             "enc_key": app_secret,
             "tenant_id": tenant_id,
             "verify": verify,
