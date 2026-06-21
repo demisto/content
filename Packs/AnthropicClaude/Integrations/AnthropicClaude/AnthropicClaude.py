@@ -572,9 +572,15 @@ def fetch_events_with_pagination(
     Subsequent pages within the same cycle advance using the opaque ``after_id`` cursor, until
     ``has_more`` is ``False``, the per-fetch event cap is reached, or the API-call budget is exhausted.
 
+    To guarantee no events are lost across runs, the persisted cursor (``newest_created_at`` and the
+    boundary ``last_fetched_ids``) is derived only from the events actually returned to the caller —
+    never from events that were dropped by the per-fetch cap. This keeps the cursor from advancing
+    past undelivered events.
+
     Returns the collected events and the next ``last_run`` state.
     """
     previous_newest = last_run.get("newest_created_at")
+    previous_ids = last_run.get("last_fetched_ids", [])
     if previous_newest:
         created_at_gt: str | None = previous_newest
         created_at_gte: str | None = None
@@ -586,7 +592,6 @@ def fetch_events_with_pagination(
 
     collected: list[dict[str, Any]] = []
     after_id: str | None = None
-    newest_created_at = previous_newest
 
     for call_num in range(Config.MAX_FETCH_CALLS):
         if len(collected) >= max_events:
@@ -595,6 +600,7 @@ def fetch_events_with_pagination(
         response = client.get_activities(
             limit=page_limit,
             created_at_gte=created_at_gte,
+            # Apply the time bound only on the first call; the cursor (after_id) drives the rest.
             created_at_gt=created_at_gt if call_num == 0 else None,
             after_id=after_id,
             activity_types=activity_types,
@@ -603,21 +609,28 @@ def fetch_events_with_pagination(
         demisto.debug(f"[Fetch] Call {call_num}: fetched {len(activities)} activities.")
 
         collected.extend(activities)
-        for activity in activities:
-            created_at = activity.get("created_at")
-            if created_at and (not newest_created_at or created_at > newest_created_at):
-                newest_created_at = created_at
 
         after_id = response.get("last_id")
         if not response.get("has_more") or not after_id:
             break
 
-    # Drop events already pushed in a prior run (boundary-timestamp duplicates), then cap.
-    deduped = deduplicate_events(collected, last_run.get("last_fetched_ids", []))[:max_events]
+    # Drop events already pushed in a prior run (boundary-timestamp duplicates), then cap to the budget.
+    deduped = deduplicate_events(collected, previous_ids)[:max_events]
 
-    # Persist the IDs sharing the newest timestamp so the next run can dedup boundary events.
+    # Derive the cursor from the DELIVERED events only, so capping never advances past undelivered ones.
+    newest_created_at = previous_newest
+    for event in deduped:
+        created_at = event.get("created_at")
+        if created_at and (not newest_created_at or created_at > newest_created_at):
+            newest_created_at = created_at
+
+    # Persist the IDs sharing the newest delivered timestamp so the next run can dedup boundary events.
+    # When nothing new was delivered, carry the previous boundary IDs forward to keep dedup intact.
     boundary_ids = [e["id"] for e in deduped if e.get("id") and e.get("created_at") == newest_created_at]
-    next_run = {"newest_created_at": newest_created_at, "last_fetched_ids": boundary_ids}
+    next_run = {
+        "newest_created_at": newest_created_at,
+        "last_fetched_ids": boundary_ids or previous_ids,
+    }
     return deduped, next_run
 
 
@@ -628,19 +641,38 @@ def fetch_events_command(client: ComplianceClient, params: dict[str, Any]) -> No
     activity_types = argToList(params.get("activity_types")) or None
 
     events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types)
-    add_time_to_events(events)
 
-    demisto.debug(f"[Fetch] Sending {len(events)} events to XSIAM. {next_run=}")
-    send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    if events:
+        add_time_to_events(events)
+        send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    else:
+        demisto.debug("[Fetch] No new events to send to XSIAM this cycle.")
+
+    # Persist the cursor regardless of whether events were found, so the next run advances correctly.
     demisto.setLastRun(next_run)
+    demisto.info(f"[Fetch] Completed fetch cycle: sent {len(events)} events to XSIAM. {next_run=}")
 
 
 def get_events_command(client: ComplianceClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
-    """Manually retrieve Activity Feed events for testing/troubleshooting."""
+    """Manually retrieve Activity Feed events for testing/troubleshooting.
+
+    Supports optional ``start_time``/``end_time`` arguments to bound the Activity Feed query by
+    creation time (RFC 3339, e.g. ``2025-06-07T08:09:10Z``).
+    """
     limit = arg_to_number(args.get("limit")) or Config.DEFAULT_LIST_LIMIT
     activity_types = argToList(args.get("activity_types")) or None
 
-    response = client.get_activities(limit=min(limit, Config.ACTIVITIES_PAGE_SIZE), activity_types=activity_types)
+    start_dt = arg_to_datetime(args.get("start_time"))
+    end_dt = arg_to_datetime(args.get("end_time"))
+    created_at_gte = start_dt.strftime(DATE_FORMAT) if start_dt else None
+    created_at_lt = end_dt.strftime(DATE_FORMAT) if end_dt else None
+
+    response = client.get_activities(
+        limit=min(limit, Config.ACTIVITIES_PAGE_SIZE),
+        created_at_gte=created_at_gte,
+        created_at_lt=created_at_lt,
+        activity_types=activity_types,
+    )
     events = (response.get("data", []) or [])[:limit]
     add_time_to_events(events)
 
@@ -650,7 +682,14 @@ def get_events_command(client: ComplianceClient, args: dict[str, Any]) -> tuple[
         headers=["id", "created_at", "activity_type"],
         removeNull=True,
     )
-    return events, CommandResults(readable_output=readable, raw_response=response)
+    results = CommandResults(
+        outputs_prefix="AnthropicClaude.Event",
+        outputs_key_field="id",
+        outputs=events,
+        readable_output=readable,
+        raw_response=response,
+    )
+    return events, results
 
 
 """ COMPLIANCE COMMAND FUNCTIONS """
@@ -931,7 +970,7 @@ def get_project_document_command(client: ComplianceClient, args: dict[str, Any])
     )
 
 
-def test_module_compliance(client: ComplianceClient) -> str:
+def module_test_compliance(client: ComplianceClient) -> str:
     """Validates the Compliance Access Key by hitting the Activity Feed with a minimal request."""
     try:
         client.get_activities(limit=1)
@@ -1021,13 +1060,15 @@ def main() -> None:  # pragma: no cover
                 results.append(test_module(client=llm_client, params=params))
             if compliance_api_key:
                 compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
-                results.append(test_module_compliance(client=compliance_client))
+                results.append(module_test_compliance(client=compliance_client))
             if not results:
                 raise DemistoException(
                     "No credentials configured. Set the 'API Key' for LLM commands and/or the "
                     "'Compliance Access Key' for event collection and compliance commands."
                 )
-            return_results("ok" if all(r == "ok" for r in results) else results[-1])
+            # Surface the first failing credential's message; only report "ok" when every check passed.
+            failure = next((result for result in results if result != "ok"), None)
+            return_results(failure or "ok")
 
         elif command == "fetch-events":
             require_compliance_key(compliance_api_key)
@@ -1038,8 +1079,8 @@ def main() -> None:  # pragma: no cover
             require_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             events, results_obj = get_events_command(client=compliance_client, args=args)
-            if argToBoolean(args.get("should_push_events", "false")):
-                add_time_to_events(events)
+            # get_events_command already set _time on each event, so just push when requested.
+            if events and argToBoolean(args.get("should_push_events", "false")):
                 send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
             return_results(results_obj)
 

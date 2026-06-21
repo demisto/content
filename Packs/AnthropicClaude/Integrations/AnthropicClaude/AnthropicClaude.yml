@@ -65,7 +65,7 @@ configuration:
   required: false
   type: 9
   section: Connect
-  additionalinfo: Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events and to run the claude-list-* / claude-get-* commands.
+  additionalinfo: The Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events and to run the claude-list-* / claude-get-* commands.
   displaypassword: Compliance Access Key
   hiddenusername: true
 - display: Organization UUID
@@ -85,7 +85,7 @@ configuration:
   required: false
   section: Collect
   type: 0
-- additionalinfo: The maximum number of events to fetch per cycle. Defaults to 50000 (5000 x 10 calls).
+- additionalinfo: The maximum number of events to fetch per cycle.
   advanced: true
   defaultvalue: '50000'
   display: Maximum number of events per fetch
@@ -183,11 +183,11 @@ script:
       type: Dictionary
   - arguments:
     - defaultValue: '50'
-      description: Maximum number of events to retrieve.
+      description: The maximum number of events to retrieve.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the events are pushed to XSIAM.
+      description: Whether to push the events to Cortex XSIAM.
       name: should_push_events
       predefined:
       - 'true'
@@ -195,7 +195,11 @@ script:
     - description: A comma-separated list of Activity Feed types to narrow the feed.
       isArray: true
       name: activity_types
-    description: Manually retrieve Activity Feed events from the Anthropic Compliance API for testing and troubleshooting.
+    - description: The RFC 3339 lower bound (inclusive) on event creation time (e.g., '2025-06-07T08:09:10Z').
+      name: start_time
+    - description: The RFC 3339 upper bound (exclusive) on event creation time (e.g., '2025-06-07T09:09:10Z').
+      name: end_time
+    description: Manually retrieve Activity Feed events from the Anthropic Compliance API for testing and troubleshooting. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: claude-get-events
   - arguments:
     - defaultValue: '50'
@@ -211,7 +215,7 @@ script:
       description: The organization name.
       type: String
     - contextPath: AnthropicClaude.Organization.created_at
-      description: The organization creation time.
+      description: The organization creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
@@ -237,7 +241,7 @@ script:
       description: The user's role in the organization.
       type: String
     - contextPath: AnthropicClaude.Organization.User.created_at
-      description: The user creation time.
+      description: The user creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
@@ -262,10 +266,10 @@ script:
       description: The role description.
       type: String
     - contextPath: AnthropicClaude.Organization.Role.created_at
-      description: The role creation time.
+      description: The role creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Organization.Role.updated_at
-      description: The role update time.
+      description: The role update time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
@@ -316,10 +320,10 @@ script:
       description: Array of role IDs assigned to the group.
       type: Unknown
     - contextPath: AnthropicClaude.Group.created_at
-      description: The group creation time.
+      description: The group creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Group.updated_at
-      description: The group update time.
+      description: The group update time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Group ID.
@@ -340,23 +344,23 @@ script:
       description: The member email.
       type: String
     - contextPath: AnthropicClaude.Group.Member.created_at
-      description: The membership creation time.
+      description: The membership creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Group.Member.updated_at
-      description: The membership update time.
+      description: The membership update time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
-    - description: Up to 10 user IDs. Run claude-list-organization-users first to obtain them.
+    - description: A comma-separated list of up to 10 user IDs. Run claude-list-organization-users first to obtain them.
       isArray: true
       name: user_ids
       required: true
-    - description: Filter by organization UUID(s).
+    - description: A comma-separated list of organization UUID(s) to filter by.
       isArray: true
       name: organization_ids
     - description: Filter by project ID(s).
       isArray: true
       name: project_ids
-    - description: 'RFC 3339 lower bound on creation time (example: 2025-06-07T08:09:10Z).'
+    - description: 'The RFC 3339 lower bound on creation time (example: 2025-06-07T08:09:10Z).'
       name: created_at_gte
     - description: RFC 3339 upper bound on creation time.
       name: created_at_lte
@@ -380,10 +384,10 @@ script:
       description: The chat name.
       type: String
     - contextPath: AnthropicClaude.Chat.created_at
-      description: The chat creation time.
+      description: The chat creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Chat.updated_at
-      description: The chat update time.
+      description: The chat update time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Chat.model
       description: The model used in the chat.
@@ -411,7 +415,7 @@ script:
       predefined:
       - asc
       - desc
-    - description: RFC 3339 lower bound on creation time.
+    - description: 'The RFC 3339 lower bound on creation time (example: 2025-06-07T08:09:10Z).'
       name: created_at_gte
     - description: RFC 3339 upper bound on creation time.
       name: created_at_lte
@@ -429,7 +433,7 @@ script:
       description: The message role (user or assistant).
       type: String
     - contextPath: AnthropicClaude.Chat.Message.created_at
-      description: The message creation time.
+      description: The message creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: When provided, returns that single project instead of the list.
@@ -455,10 +459,10 @@ script:
       description: The organization UUID.
       type: String
     - contextPath: AnthropicClaude.Project.created_at
-      description: The project creation time.
+      description: The project creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.Project.updated_at
-      description: The project update time.
+      description: The project update time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Project ID.
@@ -482,7 +486,7 @@ script:
       description: The attachment type (project_file or project_doc).
       type: String
     - contextPath: AnthropicClaude.Project.Attachment.created_at
-      description: The attachment creation time.
+      description: The attachment creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
   - arguments:
     - description: Project ID.
@@ -504,7 +508,7 @@ script:
       description: The document MIME type.
       type: String
     - contextPath: AnthropicClaude.ProjectDocument.created_at
-      description: The document creation time.
+      description: The document creation time (e.g., '2020-01-01T00:11:22Z').
       type: Date
     - contextPath: AnthropicClaude.ProjectDocument.content
       description: The document text content.

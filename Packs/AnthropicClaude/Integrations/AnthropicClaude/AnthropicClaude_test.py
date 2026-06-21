@@ -19,7 +19,7 @@ from AnthropicClaude import (
     list_chat_messages_command,
     list_projects_command,
     get_project_document_command,
-    test_module_compliance,
+    module_test_compliance,
     resolve_org_uuid,
     require_compliance_key,
     require_api_key,
@@ -319,7 +319,7 @@ def test_require_api_key_missing_raises():
 def test_test_module_compliance_success(mocker):
     client = build_client()
     mocker.patch.object(client, "get_activities", return_value={"data": []})
-    assert test_module_compliance(client) == "ok"
+    assert module_test_compliance(client) == "ok"
 
 
 def test_test_module_compliance_auth_failure(mocker):
@@ -327,7 +327,7 @@ def test_test_module_compliance_auth_failure(mocker):
 
     client = build_client()
     mocker.patch.object(client, "get_activities", side_effect=DemistoException("Error 401 Unauthorized"))
-    result = test_module_compliance(client)
+    result = module_test_compliance(client)
     assert "Authorization Error" in result
 
 
@@ -337,4 +337,4 @@ def test_test_module_compliance_other_error_raises(mocker):
     client = build_client()
     mocker.patch.object(client, "get_activities", side_effect=DemistoException("500 Server Error"))
     with pytest.raises(DemistoException):
-        test_module_compliance(client)
+        module_test_compliance(client)
