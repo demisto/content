@@ -622,12 +622,20 @@ async def handle_fetch_and_send_all_events(
 
 
 async def get_events_command_async(
-    client: Client, args: dict[str, Any], last_run: dict, send_to_xsiam: bool = False
+    client: Client, args: dict[str, Any], last_run: dict, should_push_events: bool = False
 ) -> CommandResults:
+    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it."""
     limit = arg_to_number(args.get("limit")) or 10
-    events, _, _ = await handle_fetch_and_send_all_events(
-        client=client, last_run=last_run, limit=limit, send_to_xsiam=send_to_xsiam
-    )
+
+    # Two distinct flows use send_to_xsiam differently:
+    #   - send_to_xsiam (the fetch flow): stream-and-flush each page, return only counts (memory-bounded).
+    #   - should_push_events (this get-events flow): we need the events to DISPLAY them, so fetch with
+    #     send_to_xsiam=False to get them back, and push separately below only if asked.
+    events, _, _ = await handle_fetch_and_send_all_events(client=client, last_run=last_run, limit=limit, send_to_xsiam=False)
+
+    # Low-volume command, so push with the plain (non-streaming) send, which keeps `events` intact for display.
+    if should_push_events:
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     for event in events:
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
@@ -652,7 +660,7 @@ async def get_events_command_async(
 
 
 async def test_module(client: Client, last_run: dict) -> str:
-    await get_events_command_async(client=client, args={"limit": 1}, last_run=last_run, send_to_xsiam=False)
+    await get_events_command_async(client=client, args={"limit": 1}, last_run=last_run, should_push_events=False)
     return "ok"
 
 
@@ -688,9 +696,9 @@ async def main() -> None:  # pragma: no cover
 
             elif command_name == "netskope-get-events":
                 args = demisto.args()
-                send_to_xsiam = argToBoolean(args.get("should_push_events", "true"))
-                demisto.debug(f"Running netskope-get-events with send_to_xsiam={send_to_xsiam}")
-                results = await get_events_command_async(client, args, last_run, send_to_xsiam)
+                should_push_events = argToBoolean(args.get("should_push_events", "true"))
+                demisto.debug(f"Running netskope-get-events with should_push_events={should_push_events}")
+                results = await get_events_command_async(client, args, last_run, should_push_events=should_push_events)
                 return_results(results)
 
             elif command_name == "fetch-events":
