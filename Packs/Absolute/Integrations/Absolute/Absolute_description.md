@@ -9,7 +9,7 @@ To configure an instance of Absolute, you need to obtain the following informati
 ## Get your Token ID and Secret Key
 
 ### Token ID
-* The token ID is a random GUIs string and is public information (like username). 
+* The token ID is a random GUIs string Test and is public information (like username). 
 * It is associated with the same role and device group as the Absolute user account.
 
 ### Secret Key
