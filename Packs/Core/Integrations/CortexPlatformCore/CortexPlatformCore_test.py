@@ -945,6 +945,113 @@ def test_search_assets_asset_type_empty():
     assert asset_type_entries == []
 
 
+def test_search_assets_page_size_zero_maps_to_max():
+    """
+    GIVEN:
+        page_size argument equal to 0.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The pagination limit sent to the API is the SEARCH_ASSETS_MAX_LIMIT
+        (preserving the legacy "0 means max" behavior on our side).
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": "0"})
+
+    request_data = _get_request_data_from_webapp_call(mock_get_webapp_data)
+    paging = request_data["filter_data"]["paging"]
+    assert paging["from"] == 0
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_exceeds_max_raises():
+    """
+    GIVEN:
+        page_size argument larger than SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        A ValueError is raised with a message mentioning the max value,
+        and no request is sent to the API.
+    """
+    import pytest
+
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data") as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+        pytest.raises(ValueError, match=str(SEARCH_ASSETS_MAX_LIMIT)),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT + 1)})
+
+    mock_get_webapp_data.assert_not_called()
+
+
+def test_search_assets_page_size_at_max_allowed():
+    """
+    GIVEN:
+        page_size argument exactly equal to SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The request is sent successfully with the max limit and no error is raised.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT)})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_none_falls_back_to_default():
+    """
+    GIVEN:
+        An empty page_size value passed via args (which causes arg_to_number
+        to return None for that field).
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        It does not raise a TypeError and falls back to SEARCH_ASSETS_DEFAULT_LIMIT.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_DEFAULT_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": ""})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_DEFAULT_LIMIT
+
+
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
     """
     Given:
@@ -9371,14 +9478,15 @@ def test_validate_custom_fields_cli_name_lookup(mocker):
     assert not error_messages
 
 
-def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+def test_validate_custom_fields_multiselect_with_string_value_auto_converts(mocker):
     """
     GIVEN:
-        A multiSelect custom field provided with a string value instead of a list.
+        A multiSelect custom field provided with a plain string value instead of a list.
     WHEN:
         validate_custom_fields is called.
     THEN:
-        The field is excluded and a clear error message instructs the user to provide a list value.
+        The string is auto-converted to a single-element list and the field is accepted.
+        No error messages are returned.
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
@@ -9402,9 +9510,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
     fields_to_validate = {"multi_field": "single_value"}
     valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
 
-    assert "multi_field" not in valid_fields
-    assert "multiSelect" in error_messages
-    assert "list" in error_messages
+    assert valid_fields == {"multi_field": ["single_value"]}
+    assert error_messages == ""
 
 
 def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
@@ -9531,6 +9638,95 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
 
     assert "my_field" in valid_fields
     assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_valid_fields",
+    [
+        # All provided values are in the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "cc"], {"testmulti": ["aa", "cc"]}),
+        # No selectValues defined (open-ended field) → accepted without enforcement
+        ([], ["any_value", "another_value"], {"testmulti": ["any_value", "another_value"]}),
+    ],
+)
+def test_validate_custom_fields_multiselect_valid_values(mocker, select_values, field_value, expected_valid_fields):
+    """
+    GIVEN:
+        A multiSelect custom field where all provided values are valid (either within the allowed set
+        or the field has no selectValues restriction).
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted and no error messages are returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert valid_fields == expected_valid_fields
+    assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_error_substrings",
+    [
+        # Some values are not in the allowed set → error lists invalid values and the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "zz", "xx"], ["zz", "xx", "aa", "Allowed values are"]),
+    ],
+)
+def test_validate_custom_fields_multiselect_invalid_values(mocker, select_values, field_value, expected_error_substrings):
+    """
+    GIVEN:
+        A multiSelect custom field where some provided values are not in the allowed set.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded from valid_fields and an error message lists the invalid values
+        and the full set of allowed values.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert "testmulti" not in valid_fields
+    for substring in expected_error_substrings:
+        assert substring in error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
@@ -12225,3 +12421,29 @@ class TestGetPlatformSpecificProfileDefaults:
         assert result["agent_settings"] == "Default"  # Still defaults
         assert result["restrictions"] == "Default"  # Still defaults
         assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults
+
+
+# ---------------------------------------------------------------------------
+# BIOC issue description rendering (render_bioc_description)
+#
+# render_bioc_description and the BIOC-only filtering live in CoreIRApiModule and
+# are exercised by CoreIRApiModule_test.py. These smoke tests confirm the symbol
+# is re-exported into CortexPlatformCore (via `from CoreIRApiModule import *`).
+# ---------------------------------------------------------------------------
+
+
+def test_render_bioc_description_simple_attribute_operator_value():
+    """
+    GIVEN: A structured BIOC indicator with a single attribute = value clause.
+    WHEN:  render_bioc_description is called.
+    THEN:  The plain text mirrors the UI ("<attr> <op> <value>").
+    """
+    from CortexPlatformCore import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    assert render_bioc_description(indicator) == "Action File Name = evil.exe"

@@ -24,7 +24,6 @@
         "platform"
     ],
     "supportedModules": [
-        "agentix",
         "xsiam"
     ]
 }
