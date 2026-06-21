@@ -20,7 +20,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 90  # Lowered from 120 to leave more margin within the 5-min Docker timeout
+MAX_PAGINATION_DURATION_SECONDS = 90  # Per-type pagination time cap; breaks early and resumes next cycle to bound cycle length
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
@@ -247,9 +247,10 @@ class Client(BaseClient):
             return False
         try:
             token_generated_at = datetime.fromisoformat(token_generated_at_str)
-            # TODO can be removed before release
-            # Handle timestamps saved by older code versions that used datetime.utcnow()
+            # Handle timestamps persisted by older code versions that used datetime.utcnow()
             # (timezone-naive). Make them aware so subtraction with datetime.now(timezone.utc) works.
+            # Kept for upgrade compatibility: instances upgrading from a prior version may still
+            # have a naive token_generated_at in their integration context.
             if token_generated_at.tzinfo is None:
                 token_generated_at = token_generated_at.replace(tzinfo=timezone.utc)
         except Exception as ex:
@@ -1206,7 +1207,7 @@ def fetch_event_type_worker(
 
 # Event types that stream-and-flush directly to XSIAM (one page at a time) instead of
 # being collected into the in-memory `events` dict. Streaming keeps peak memory bounded
-# by a single page (~10K events) rather than the full `max_fetch` (~40K+ events).
+# by a single page (MAX_PAGE_SIZE) rather than the full `max_fetch` worth of events.
 # Alerts are intentionally excluded because they must be collected first to feed bulk
 # enrichment.
 STREAMING_EVENT_TYPES = {"Activities", "Devices"}
@@ -1531,35 +1532,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
-
-    # === STRESS TEST: one-shot last_run reset (REMOVE after test) ===
-    # Marker is stored in the persistent integration context, so this overrides last_run
-    # ONLY on the first cycle after deploy. Subsequent cycles see the marker = "done"
-    # and skip the reset, letting the integration continue naturally from whatever
-    # last_fetch_time it wrote at the end of the test cycle. Self-disables after one run.
-    # Timestamp formats match exactly what the integration writes back today:
-    #   - alerts uses ISO 8601 with timezone (e.g. "2026-06-02T10:11:08+00:00")
-    #   - activities/devices use DATE_FORMAT without timezone (e.g. "2026-06-01T13:31:52")
-    # Both are accepted by arg_to_datetime so this is defensive but exact-format-match.
-    # Setting *_last_fetch_next_field=0 resets pagination cursors to start fresh.
-    _stress_test_marker = "stress_test_v2_done"
-    _stress_ctx = demisto.getIntegrationContext()
-    if _stress_ctx.get(_stress_test_marker) != "done":
-        demisto.info("=== STRESS TEST v2: overriding last_run to May 10 (heavy alert window) with 10K pages ===")
-        last_run = {
-            "alerts_last_fetch_time": "2026-05-10T00:00:00+00:00",
-            "alerts_last_fetch_ids": [],
-            "alerts_last_fetch_next_field": 0,
-            "activity_last_fetch_time": "2026-05-10T00:00:00",
-            "activity_last_fetch_ids": [],
-            "activity_last_fetch_next_field": 0,
-            "devices_last_fetch_time": "2026-05-10T00:00:00",
-            "devices_last_fetch_ids": [],
-            "devices_last_fetch_next_field": 0,
-        }
-        _stress_ctx[_stress_test_marker] = "done"
-        demisto.setIntegrationContext(_stress_ctx)
-        demisto.info("=== STRESS TEST v2: marker set, last_run overridden — subsequent cycles will run normally ===")
 
     access_token = demisto.getIntegrationContext().get("access_token")
     api_key = params.get("credentials", {}).get("password")
