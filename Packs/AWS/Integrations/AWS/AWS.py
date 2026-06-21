@@ -899,6 +899,54 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
     return firewall_policy_object
 
 
+def create_rule_group_common_kwargs(args: dict) -> dict:
+    """
+    Builds the common keyword arguments shared by the AWS Network Firewall rule group create and update API calls.
+    Parses the JSON-string arguments (IP sets, port sets, IP set references, and rules source) and assembles the
+    rule group structure, including rule variables, reference sets, encryption configuration, and source metadata.
+
+    Args:
+        args (dict): The command arguments containing the rule group configuration.
+
+    Returns:
+        dict: A dictionary of keyword arguments representing the Network Firewall rule group.
+    """
+    ip_sets_raw = args.get("ip_sets")
+    port_sets_raw = args.get("port_sets")
+    ip_sets_references_raw = args.get("ip_sets_references")
+    rules_source_raw = args.get("rules_source")
+    ip_sets = parse_json_string(ip_sets_raw) if ip_sets_raw else None
+    port_sets = parse_json_string(port_sets_raw) if port_sets_raw else None
+    ip_sets_references = parse_json_string(ip_sets_references_raw) if ip_sets_references_raw else None
+    rules_source = parse_json_string(rules_source_raw) if rules_source_raw else None
+
+    return {
+        "RuleGroupName": args.get("rule_group_name"),
+        "Type": args.get("type"),
+        "RuleGroup": {
+            "RuleVariables": {
+                "IPSets": ip_sets,
+                "PortSets": port_sets,
+            },
+            "ReferenceSets": {"IPSetReferences": ip_sets_references},
+            "RulesSource": rules_source,
+            "StatefulRuleOptions": {"RuleOrder": args.get("stateful_rule_options_rule_order")},
+        },
+        "Rules": args.get("rules"),
+        "Description": args.get("description"),
+        "EncryptionConfiguration": {
+            "KeyId": args.get("encryption_configuration_key_id"),
+            "Type": args.get("encryption_configuration_key_type"),
+        },
+        "SourceMetadata": {
+            "SourceArn": args.get("source_metadata_arn"),
+            "SourceUpdateToken": args.get("source_metadata_update_token"),
+        },
+        "AnalyzeRuleGroup": arg_to_bool_or_none(args.get("analyze_rule_group")),
+        "SummaryConfiguration": {"RuleOptions": argToList(args.get("summary_configuration_rule_options"))},
+    }
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -10387,44 +10435,10 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with rule group information
         """
-        ip_sets_raw = args.get("ip_sets")
-        port_sets_raw = args.get("port_sets")
-        ip_sets_references_raw = args.get("ip_sets_references")
-        rules_source_raw = args.get("rules_source")
-        ip_sets = parse_json_string(ip_sets_raw) if ip_sets_raw else None
-        port_sets = parse_json_string(port_sets_raw) if port_sets_raw else None
-        ip_sets_references = parse_json_string(ip_sets_references_raw) if ip_sets_references_raw else None
-        rules_source = parse_json_string(rules_source_raw) if rules_source_raw else None
-
-        kwargs = remove_empty_elements(
-            {
-                "RuleGroupName": args.get("rule_group_name"),
-                "Type": args.get("type"),
-                "Capacity": arg_to_number(args.get("capacity")),
-                "RuleGroup": {
-                    "RuleVariables": {
-                        "IPSets": ip_sets,
-                        "PortSets": port_sets,
-                    },
-                    "ReferenceSets": {"IPSetReferences": ip_sets_references},
-                    "RulesSource": rules_source,
-                    "StatefulRuleOptions": {"RuleOrder": args.get("stateful_rule_options_rule_order")},
-                },
-                "Rules": args.get("rules"),
-                "Description": args.get("description"),
-                "Tags": parse_tag_field(args.get("tags", "")),
-                "EncryptionConfiguration": {
-                    "KeyId": args.get("encryption_configuration_key_id"),
-                    "Type": args.get("encryption_configuration_key_type"),
-                },
-                "SourceMetadata": {
-                    "SourceArn": args.get("source_metadata_arn"),
-                    "SourceUpdateToken": args.get("source_metadata_update_token"),
-                },
-                "AnalyzeRuleGroup": arg_to_bool_or_none(args.get("analyze_rule_group")),
-                "SummaryConfiguration": {"RuleOptions": argToList(args.get("summary_configuration_rule_options"))},
-            }
-        )
+        kwargs = create_rule_group_common_kwargs(args)
+        kwargs["Capacity"] = arg_to_number(args.get("capacity"))
+        kwargs["Tags"] = parse_tag_field(args.get("tags", ""))
+        kwargs = remove_empty_elements(kwargs)
 
         print_debug_logs(client, f"Creating rule group with parameters: {kwargs.keys()}")
         response = client.create_rule_group(**kwargs)
@@ -10589,6 +10603,51 @@ class NetworkFirewall:
                 headerTransform=pascalToSpace,
             ),
             raw_response=response,
+        )
+
+    @staticmethod
+    def update_rule_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates the rule settings for the specified rule group. You use a rule group by reference in one or more
+        firewall policies. When you modify a rule group, you modify all firewall policies that use the rule group.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing the update token, the rule group name or ARN, type,
+                a JSON rule group object or a Suricata-compatible rules string, a description, the encryption
+                configuration, the source metadata, and an analyze rule group flag.
+
+        Returns:
+            CommandResults: Formatted results with rule group information
+        """
+        validate_network_firewall_identifier(args, "rule_group")
+        kwargs = create_rule_group_common_kwargs(args)
+        kwargs["UpdateToken"] = args.get("update_token")
+        kwargs["RuleGroupArn"] = args.get("rule_group_arn")
+        kwargs = remove_empty_elements(kwargs)
+        print_debug_logs(client, f"Updating rule group with parameters: {kwargs.keys()}")
+        response = client.update_rule_group(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        raw_response = copy.deepcopy(response)
+        rule_group_response = response.get("RuleGroupResponse", {})
+        rule_group_response["UpdateToken"] = response.get("UpdateToken")
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.RuleGroups",
+            outputs_key_field="RuleGroupArn",
+            outputs=rule_group_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Rule Group",
+                rule_group_response,
+                headers=["RuleGroupName", "RuleGroupArn", "Type", "Capacity", "Description", "RuleGroupStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=raw_response,
         )
 
 
@@ -10816,6 +10875,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-rule-group-delete": NetworkFirewall.delete_rule_group_command,
     "aws-network-firewall-rule-group-describe": NetworkFirewall.describe_rule_group_command,
     "aws-network-firewall-rule-groups-list": NetworkFirewall.list_rule_groups_command,
+    "aws-network-firewall-rule-group-update": NetworkFirewall.update_rule_group_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -11011,6 +11071,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:DeleteRuleGroup",
     "network-firewall:DescribeRuleGroup",
     "network-firewall:ListRuleGroups",
+    "network-firewall:UpdateRuleGroup",
 ]
 
 COMMAND_SERVICE_MAP = {
