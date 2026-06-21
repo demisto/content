@@ -492,6 +492,7 @@ def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragm
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
     command = demisto.command()
+    demisto.debug("ServiceNowEventCollector version 2.9.13 is running.")
     args = demisto.args()
     params = demisto.params()
     server_url = params.get("url")
