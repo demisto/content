@@ -610,37 +610,36 @@ class ErrorTypes(object):
     RETRY_ERROR = "RetryError"
 
 
-class ContentErrorCode(object):
+class CortexErrorCode(object):
     """Error codes for content standardized errors.
 
     Provides a unified taxonomy covering argument validation, resource lookup,
-    API/network issues (aligned with :class:`ErrorTypes`), data parsing,
-    permissions, and execution failures.  Used by :class:`ContentError` and
-    its subclasses so that LLM agents can programmatically distinguish error
-    categories and decide whether to retry, fix an argument, or escalate.
+    API/network issues, data parsing, permissions, and execution failures.
+    Used by :class:`CortexError` and its subclasses so that LLM agents can
+    programmatically distinguish error categories and decide whether to retry,
+    fix an argument, or escalate.
     """
 
     # ── Argument Errors ──────────────────────────────────────────────
     MISSING_ARGUMENT = "MISSING_ARGUMENT"
     INVALID_ARGUMENT = "INVALID_ARGUMENT"
-    EXTRA_ARGUMENT = "EXTRA_ARGUMENT"
     CONFLICTING_ARGUMENTS = "CONFLICTING_ARGS"
 
     # ── Resource Errors ──────────────────────────────────────────────
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
 
-    # ── API / Network Errors (aligned with existing ErrorTypes) ──────
+    # ── API / Network Errors ─────────────────────────────────────────
     API_ERROR = "API_ERROR"
-    AUTH_ERROR = ErrorTypes.AUTH_ERROR            # 'AuthError'
-    QUOTA_ERROR = ErrorTypes.QUOTA_ERROR          # 'QuotaError'
-    SERVICE_ERROR = ErrorTypes.SERVICE_ERROR      # 'ServiceError'
-    CONNECTION_ERROR = ErrorTypes.CONNECTION_ERROR  # 'ConnectionError'
-    PROXY_ERROR = ErrorTypes.PROXY_ERROR          # 'ProxyError'
-    SSL_ERROR = ErrorTypes.SSL_ERROR              # 'SSLError'
-    TIMEOUT_ERROR = ErrorTypes.TIMEOUT_ERROR      # 'TimeoutError'
+    AUTH_ERROR = "AUTH_ERROR"
+    QUOTA_ERROR = "QUOTA_ERROR"
+    SERVICE_ERROR = "SERVICE_ERROR"
+    CONNECTION_ERROR = "CONNECTION_ERROR"
+    PROXY_ERROR = "PROXY_ERROR"
+    SSL_ERROR = "SSL_ERROR"
+    TIMEOUT_ERROR = "TIMEOUT_ERROR"
 
     # ── Data Errors (failures parsing data returned by the API/service) ──
-    PARSE_ERROR = "API_PARSE_ERROR"
+    API_RESPONSE_PARSE_ERROR = "API_RESPONSE_PARSE_ERROR"
 
     # ── Permission Errors ────────────────────────────────────────────
     PERMISSION_ERROR = "PERMISSION_ERROR"
@@ -1496,7 +1495,7 @@ def get_content_error_type(execute_command_result):
 
 
 def _classify_error_message(message):
-    """Classify an error message into a :class:`ContentErrorCode` value.
+    """Classify an error message into a :class:`CortexErrorCode` value.
 
     Uses text heuristics to detect common error patterns — including
     server-generated errors (e.g. ``"Unsupported Command"``) that have
@@ -1506,31 +1505,31 @@ def _classify_error_message(message):
     :param message: The error message to classify.
 
     :rtype: ``str`` or ``None``
-    :return: A :class:`ContentErrorCode` value, or *None* if unrecognised.
+    :return: A :class:`CortexErrorCode` value, or *None* if unrecognised.
     """
     if not message:
         return None
     msg = message.lower()
     if 'unsupported command' in msg:
-        return ContentErrorCode.UNSUPPORTED_COMMAND
+        return CortexErrorCode.UNSUPPORTED_COMMAND
     if 'no integration instance' in msg or 'verify you have proper integration' in msg:
-        return ContentErrorCode.EXECUTION_ERROR
+        return CortexErrorCode.EXECUTION_ERROR
     if any(kw in msg for kw in ('unauthorized', 'authentication failed', 'invalid credentials')):
-        return ContentErrorCode.AUTH_ERROR
+        return CortexErrorCode.AUTH_ERROR
     if any(kw in msg for kw in ('rate limit', 'quota exceeded', 'too many requests')):
-        return ContentErrorCode.QUOTA_ERROR
+        return CortexErrorCode.QUOTA_ERROR
     if any(kw in msg for kw in ('timed out', 'timeout', 'request timeout')):
-        return ContentErrorCode.TIMEOUT_ERROR
+        return CortexErrorCode.TIMEOUT_ERROR
     if any(kw in msg for kw in ('connection error', 'connection refused', 'unreachable', 'connect timeout')):
-        return ContentErrorCode.CONNECTION_ERROR
+        return CortexErrorCode.CONNECTION_ERROR
     if any(kw in msg for kw in ('permission denied', 'forbidden', 'insufficient permissions')):
-        return ContentErrorCode.PERMISSION_ERROR
+        return CortexErrorCode.PERMISSION_ERROR
     if 'not found' in msg:
-        return ContentErrorCode.RESOURCE_NOT_FOUND
+        return CortexErrorCode.RESOURCE_NOT_FOUND
     if any(kw in msg for kw in ('ssl', 'certificate verify')):
-        return ContentErrorCode.SSL_ERROR
+        return CortexErrorCode.SSL_ERROR
     if 'proxy' in msg:
-        return ContentErrorCode.PROXY_ERROR
+        return CortexErrorCode.PROXY_ERROR
     return None
 
 
@@ -8205,9 +8204,12 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 def _get_auto_error_message(error):
     """Return the automatic (unified) error message for a content error, if any.
 
-    Looks for a :class:`ContentError` first in the ``error`` argument and then
-    in the currently-handled exception, and returns its unified message built
-    by :meth:`ContentError.build_message`.
+    Looks for a :class:`CortexError` first in the ``error`` argument and then
+    in the currently-handled exception, and returns its automatic, unified
+    message built by :meth:`CortexError.auto_message` - which is built purely
+    from the error's structured arguments and *always ignores* any custom
+    message supplied by the caller (so Agentix always gets the standardized
+    message).
 
     :type error: ``str`` or ``Exception``
     :param error: The ``error`` value passed to :func:`return_error`.
@@ -8216,16 +8218,16 @@ def _get_auto_error_message(error):
     :rtype: ``str`` or ``None``
     """
     content_error = None
-    if isinstance(error, ContentError):
+    if isinstance(error, CortexError):
         content_error = error
     else:
         exc = sys.exc_info()[1]
-        if isinstance(exc, ContentError):
+        if isinstance(exc, CortexError):
             content_error = exc
     if content_error is None:
         return None
     try:
-        return content_error.build_message()
+        return content_error.auto_message()
     except Exception as exc:
         demisto.debug('_get_auto_error_message failed to build message: {}'.format(exc))
         return str(content_error)
@@ -8236,7 +8238,7 @@ def _select_error_message(message, error):
 
     Selection rules:
       * **Agentix caller** → always use the automatic, unified message built
-        from the :class:`ContentError` (when one is available); otherwise fall
+        from the :class:`CortexError` (when one is available); otherwise fall
         back to the explicitly-passed ``message``.
       * **Non-Agentix caller** → prefer the explicitly-passed ``message``; if
         none was provided, fall back to the automatic message.
@@ -8268,16 +8270,16 @@ def return_error(message, error='', outputs=None):
         :param message: The message to return to the entry (required).
             Message selection: when the caller is Agentix
             (see :func:`is_caller_agentix`), the automatic, unified message
-            built from the :class:`ContentError` is used (falling back to this
+            built from the :class:`CortexError` is used (falling back to this
             ``message`` if none is available).  Otherwise this explicit
             ``message`` is used, falling back to the automatic message when it
             is empty.
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional).
-            When *error* is a :class:`ContentError`, its ``error_code`` is
+            When *error* is a :class:`CortexError`, its ``error_code`` is
             automatically attached to the error entry via ``ExtendedPayload``
-            and its :meth:`ContentError.build_message` provides the automatic,
+            and its :meth:`CortexError.build_message` provides the automatic,
             unified message used for Agentix callers.
 
         :type outputs: ``dict or None``
@@ -8292,7 +8294,7 @@ def return_error(message, error='', outputs=None):
     except Exception:
         is_server_handled = False
     # Decide which message to surface based on the caller (Agentix vs. others)
-    # and whether a ContentError with an automatic, unified message is present.
+    # and whether a CortexError with an automatic, unified message is present.
     message = _select_error_message(message, error)
     message = LOG(message)
     if error:
@@ -8325,21 +8327,32 @@ def return_error(message, error='', outputs=None):
             'EntryContext': outputs,
         }
 
-        # Attach the content error type inside ExtendedPayload so LLM
-        # agents can classify the failure without parsing the human-readable
+        # Attach the content error type (and, when available, the retryable
+        # flag) inside ExtendedPayload so LLM agents can classify the failure
+        # and decide whether to retry, without parsing the human-readable
         # Contents string.
-        # Priority: error param → current exception → text heuristic.
-        _error_type = None
-        if isinstance(error, ContentError):
-            _error_type = error.error_code
-        if not _error_type:
+        # Priority for the CortexError source: error param → current exception.
+        _cortex_error = error if isinstance(error, CortexError) else None
+        if _cortex_error is None:
             exc = sys.exc_info()[1]
-            if exc and isinstance(exc, ContentError):
-                _error_type = exc.error_code
+            if isinstance(exc, CortexError):
+                _cortex_error = exc
+
+        # Error code: CortexError first, then a text-based heuristic fallback.
+        _error_type = _cortex_error.error_code if _cortex_error else None
         if not _error_type:
             _error_type = _classify_error_message(message)
+
+        extended_payload = {}
         if _error_type:
-            error_entry['ExtendedPayload'] = {EXTENDED_PAYLOAD_ERROR_CODE_KEY: _error_type}
+            extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] = _error_type
+        # Expose only the boolean retryable flag (true/false), taken from the
+        # CortexError details.
+        if _cortex_error is not None and EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
+            extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
+                _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
+        if extended_payload:
+            error_entry['ExtendedPayload'] = extended_payload
 
         demisto.results(error_entry)
         sys.exit(0)
@@ -8834,7 +8847,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             if not content_error_type:
                 content_error_type = _classify_error_message(error_message)
             if content_error_type:
-                raise ContentExecutionError(
+                raise CortexExecutionError(
                     'Failed to execute {}. Error details:\n{}'.format(command, error_message),
                     error_code=content_error_type,
                     details={"command": command, "raw_error": error_message},
@@ -11208,93 +11221,265 @@ class UcpException(DemistoException):
 #
 # Hierarchy:
 #   DemistoException
-#     └── ContentError  (base – carries error_code + details)
-#           ├── ContentMissingArgError
-#           ├── ContentInvalidArgError
-#           ├── ContentExtraArgError
-#           ├── ContentConflictingArgsError
-#           ├── ContentResourceNotFoundError
-#           ├── ContentApiError
-#           │     ├── ContentAuthError
-#           │     ├── ContentRateLimitError
-#           │     ├── ContentTimeoutError
-#           │     └── ContentConnectionError
-#           ├── ContentParseError
-#           ├── ContentPermissionError
-#           └── ContentExecutionError
+#     └── CortexError  (base – carries error_code + details)
+#           ├── CortexMissingArgError
+#           ├── CortexInvalidArgError
+#           ├── CortexConflictingArgsError
+#           ├── CortexResourceNotFoundError
+#           ├── CortexExternalApiError
+#           │     ├── CortexAuthError
+#           │     ├── CortexRateLimitError
+#           │     ├── CortexTimeoutError
+#           │     └── CortexConnectionError
+#           ├── CortexParseError
+#           ├── CortexPermissionError
+#           └── CortexExecutionError
 
 
-class ContentError(DemistoException):
+class RetryGuidance(object):
+    """Whether (and how) an operation that failed is worth retrying.
+
+    Used by :class:`CortexError` to append an automatic retry hint to the
+    error message and to expose machine-readable guidance via
+    ``ExtendedPayload`` so that LLM agents can decide whether to retry, fix an
+    argument, or escalate.
+
+    * :data:`NOT_RETRYABLE` - retrying as-is will not help (e.g. invalid
+      credentials, missing permissions). Requires human/config intervention.
+    * :data:`RETRY_AFTER_FIX` - retrying can succeed only after the *input* is
+      corrected (e.g. a missing or invalid argument).
+    * :data:`RETRY_LATER` - the same request may succeed if retried later,
+      typically after a short wait (e.g. rate limiting, timeouts, transient
+      connection issues).
+    """
+
+    NOT_RETRYABLE = "not_retryable"
+    RETRY_AFTER_FIX = "retry_after_fix"
+    RETRY_LATER = "retry_later"
+
+    # Human-readable hint appended to the error message for each guidance value.
+    _HINTS = {
+        NOT_RETRYABLE: "Retrying will not help; this requires fixing the configuration or contacting support.",
+        RETRY_AFTER_FIX: "You can retry after correcting the input.",
+        RETRY_LATER: "This may be transient - you can retry the same request later.",
+    }
+
+    @classmethod
+    def hint(cls, guidance):
+        # type: (str) -> str
+        """Return the human-readable retry hint for a guidance value."""
+        return cls._HINTS.get(guidance, "")
+
+    @classmethod
+    def is_retryable(cls, guidance):
+        # type: (str) -> bool
+        """Return whether the given guidance value indicates a retry may help."""
+        return guidance in (cls.RETRY_AFTER_FIX, cls.RETRY_LATER)
+
+
+# Key used inside ``details`` (and thus ``ExtendedPayload``) to carry the
+# retry guidance and the boolean retryable flag.
+EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY = 'retry_guidance'
+EXTENDED_PAYLOAD_RETRYABLE_KEY = 'retryable'
+
+
+class CortexError(DemistoException):
     """Base exception for all content standardized errors.
 
-    Carries structured error information including ``error_code`` and
-    ``details`` that are attached to the error entry via ``ExtendedPayload``
-    for LLM agent consumption.
+    Carries structured error information including ``error_code``,
+    ``retry_guidance`` and ``details`` that are attached to the error entry via
+    ``ExtendedPayload`` for LLM agent consumption.
+
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ Generic fallback for an error that fits none of the specific         ║
+    ║ subclasses below. PREFER a specific subclass whenever one applies -  ║
+    ║ it sets the correct error_code and retry_guidance automatically,     ║
+    ║ letting LLM agents (Agentix) classify the failure and decide whether ║
+    ║ to retry. Use the base class directly only as a last resort.         ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 
     :type message: ``str``
     :param message: Human-readable error description.
 
     :type error_code: ``str``
-    :param error_code: Machine-readable code from :class:`ContentErrorCode`.
+    :param error_code: Machine-readable code from :class:`CortexErrorCode`.
 
     :type details: ``dict``
     :param details: Arbitrary key/value pairs providing context about the error.
     """
 
-    error_code = ContentErrorCode.INTERNAL_ERROR  # type: str
+    error_code = CortexErrorCode.INTERNAL_ERROR  # type: str
 
     # Default, auto-generated message used by ``build_message`` when no explicit
     # message is supplied.  Subclasses override this (or ``build_message``) to
     # provide a category-specific default.
     _default_message = 'An error occurred.'  # type: str
 
+    # Whether/how this error category is worth retrying.  Subclasses override
+    # this with the appropriate :class:`RetryGuidance` value.  ``None`` means
+    # "unknown" and no retry hint is added.
+    retry_guidance = None  # type: Optional[str]
+
     def __init__(self, message=None, *, error_code=None, details=None, **kwargs):
-        self.error_code = error_code or self.__class__.error_code
+        # Respect an instance-level error_code already set by a subclass
+        # __init__ (e.g. CortexExternalApiError status-code auto-classification) before
+        # delegating here; then the explicit param; then the class default.
+        self.error_code = error_code or self.__dict__.get('error_code') or self.__class__.error_code
         self.details = details or {}
         # Stores an explicit, caller-supplied message (if any) so that
         # ``build_message`` can fall back to it.  Subclasses that auto-generate
         # their message pass ``message=None`` and override ``build_message``.
         self._custom_message = message
+        # Expose retry guidance (machine-readable) in details/ExtendedPayload.
+        if self.retry_guidance is not None:
+            self.details.setdefault(EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY, self.retry_guidance)
+            self.details.setdefault(
+                EXTENDED_PAYLOAD_RETRYABLE_KEY, RetryGuidance.is_retryable(self.retry_guidance)
+            )
         super().__init__(self.build_message(), error_type=self.error_code, **kwargs)
 
-    def build_message(self):
-        """Build the unified, human-readable message for this error.
+    def _base_message(self):
+        """Return the *auto-generated* message body, ignoring any custom message.
 
-        The base implementation returns the explicit message passed to
-        ``__init__`` when one was provided, otherwise it falls back to the
-        class-level :attr:`_default_message`.  Each subclass overrides this
-        method to construct a consistent message from its own type-specific
-        arguments (e.g. the missing argument name, the resource identifier,
-        the HTTP status code).
+        Subclasses override this to build their category-specific message from
+        their own arguments (e.g. the missing argument name, the resource
+        identifier, the HTTP status code).  This method must NOT consult
+        :attr:`_custom_message` - that is handled centrally by
+        :meth:`build_message`.  The retry hint is appended by
+        :meth:`build_message` / :meth:`auto_message`.
 
-        :return: The unified error message.
+        :return: The auto-generated error message body (without retry hint).
         :rtype: ``str``
         """
-        return self._custom_message or self._default_message
+        return self._default_message
+
+    def _with_retry_hint(self, message):
+        """Append the retry hint (if any) to the given message."""
+        hint = RetryGuidance.hint(self.retry_guidance) if self.retry_guidance is not None else ""
+        if hint:
+            return "{} {}".format(message, hint)
+        return message
+
+    def auto_message(self):
+        """Build the automatic, unified message - always ignoring any custom message.
+
+        This is the machine-friendly, standardized message used for Agentix
+        callers.  It is built purely from the error's structured arguments
+        (via :meth:`_base_message`) plus the automatic retry hint, regardless of
+        whether a custom ``message`` was supplied to ``__init__``.
+
+        :return: The automatic, unified error message.
+        :rtype: ``str``
+        """
+        return self._with_retry_hint(self._base_message())
+
+    def build_message(self):
+        """Build the human-readable message to display for this error.
+
+        When an explicit ``message`` was supplied by the caller, it is returned
+        verbatim (no retry hint) so callers retain full control over the
+        wording.  Otherwise the automatic message (see :meth:`auto_message`) is
+        returned.
+
+        :return: The error message to display.
+        :rtype: ``str``
+        """
+        if self._custom_message:
+            return self._custom_message
+        return self.auto_message()
 
 
-class ContentMissingArgError(ContentError):
-    """Raised when a required argument is not provided.
+class CortexMissingArgError(CortexError):
+    """Raised when a required argument (or one of several) is not provided.
 
-    :type arg_name: ``str``
-    :param arg_name: Name of the missing argument.
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ A mandatory command/script argument was not supplied at all (missing ║
+    ║ or empty). Also for "at least one of these arguments is required".   ║
+    ║ DO NOT use for an argument that WAS provided but holds a bad value - ║
+    ║ use CortexInvalidArgError instead.                                   ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+
+    Supports three shapes, selected automatically:
+
+    * **Single required argument** - pass a single name as ``arg_name``::
+
+        CortexMissingArgError('hostname')
+        # "Required argument 'hostname' was not provided."
+
+    * **At least one of several** (``require_one=True``, the default when a
+      list/tuple of names is passed) - the user must supply at least one of
+      the listed arguments::
+
+        CortexMissingArgError(['endpoint_id', 'endpoint_ip', 'endpoint_hostname'])
+        # "At least one of the following arguments must be provided:
+        #  'endpoint_id', 'endpoint_ip', 'endpoint_hostname'."
+
+    * **All of several required** (``require_one=False``) - every listed
+      argument is mandatory::
+
+        CortexMissingArgError(['user_id', 'token'], require_one=False)
+        # "The following required arguments were not provided: 'user_id', 'token'."
+
+    :type arg_name: ``str`` or ``list``
+    :param arg_name: Name of the missing argument, or a list of argument names.
 
     :type message: ``str``
     :param message: Optional custom message (auto-generated if omitted).
+
+    :type require_one: ``bool``
+    :param require_one: When a list of names is provided, whether only *one* of
+        them is required (``True``, default) or *all* of them (``False``).
+        Ignored when a single argument name is provided.
     """
 
-    error_code = ContentErrorCode.MISSING_ARGUMENT
+    error_code = CortexErrorCode.MISSING_ARGUMENT
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, message=None):
-        self.arg_name = arg_name
-        super().__init__(message, details={"argument": arg_name})
+    def __init__(self, arg_name, message=None, *, require_one=True):
+        # Normalize to a list internally while remembering whether the caller
+        # passed a single name or several.
+        if isinstance(arg_name, (list, tuple, set)):
+            self.arg_names = [str(a) for a in arg_name]
+            self._is_multi = True
+        else:
+            self.arg_names = [str(arg_name)]
+            self._is_multi = False
+        self.arg_name = self.arg_names[0] if not self._is_multi else None
+        self.require_one = require_one
 
-    def build_message(self):
-        return self._custom_message or "Required argument '{}' was not provided.".format(self.arg_name)
+        details = {"arguments": self.arg_names}  # type: dict
+        if not self._is_multi:
+            details["argument"] = self.arg_names[0]
+        else:
+            details["require_one"] = require_one
+
+        super().__init__(message, details=details)
+
+    def _quoted_args(self):
+        return ', '.join("'{}'".format(a) for a in self.arg_names)
+
+    def _base_message(self):
+        if not self._is_multi:
+            return "Required argument '{}' was not provided.".format(self.arg_names[0])
+        if self.require_one:
+            return "At least one of the following arguments must be provided: {}.".format(self._quoted_args())
+        return "The following required arguments were not provided: {}.".format(self._quoted_args())
 
 
-class ContentInvalidArgError(ContentError):
+class CortexInvalidArgError(CortexError):
     """Raised when an argument has an invalid value.
+
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ An argument WAS provided but its value is unacceptable - wrong       ║
+    ║ format, out of range, or not an allowed value (e.g. a non-numeric    ║
+    ║ "limit", an unknown enum option, a malformed date).                  ║
+    ║ DO NOT use for: a missing argument (CortexMissingArgError),          ║
+    ║ contradicting arguments (CortexConflictingArgsError), or a parsing   ║
+    ║ failure of API response data (CortexParseError).                     ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 
     :type arg_name: ``str``
     :param arg_name: Name of the invalid argument.
@@ -11309,9 +11494,10 @@ class ContentInvalidArgError(ContentError):
     :param allowed_values: List of acceptable values, if applicable.
     """
 
-    error_code = ContentErrorCode.INVALID_ARGUMENT
+    error_code = CortexErrorCode.INVALID_ARGUMENT
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None):
+    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None, message=None):
         self.arg_name = arg_name
         self.value = value
         self.reason = reason
@@ -11323,11 +11509,9 @@ class ContentInvalidArgError(ContentError):
         if allowed_values:
             details["allowed_values"] = [str(v) for v in allowed_values]
 
-        super().__init__(None, details=details)
+        super().__init__(message, details=details)
 
-    def build_message(self):
-        if self._custom_message:
-            return self._custom_message
+    def _base_message(self):
         parts = ["Invalid value for argument '{}'".format(self.arg_name)]
         if self.value is not None:
             parts.append(": got '{}'".format(self.value))
@@ -11338,25 +11522,18 @@ class ContentInvalidArgError(ContentError):
         return "".join(parts)
 
 
-class ContentExtraArgError(ContentError):
-    """Raised when unexpected arguments are provided.
-
-    :type arg_names: ``list``
-    :param arg_names: Names of the unexpected arguments.
-    """
-
-    error_code = ContentErrorCode.EXTRA_ARGUMENT
-
-    def __init__(self, arg_names):
-        self.arg_names = list(arg_names)
-        super().__init__(None, details={"arguments": self.arg_names})
-
-    def build_message(self):
-        return self._custom_message or "Unexpected argument(s): {}".format(', '.join(self.arg_names))
-
-
-class ContentConflictingArgsError(ContentError):
+class CortexConflictingArgsError(CortexError):
     """Raised when arguments contradict each other.
+
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ Two or more individually-valid arguments cannot be used together     ║
+    ║ (mutually exclusive), or the combination is contradictory (e.g. both ║
+    ║ ip and hostname given when only one is allowed, or start_time later  ║
+    ║ than end_time).                                                      ║
+    ║ DO NOT use for: a single bad value (CortexInvalidArgError) or a      ║
+    ║ missing argument (CortexMissingArgError).                            ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 
     Builds a smart, actionable message that explains *which* arguments
     conflict, *why* they conflict, and *what* a valid combination looks like.
@@ -11389,7 +11566,8 @@ class ContentConflictingArgsError(ContentError):
         exclusive. Defaults to ``True`` when ``arguments`` are provided.
     """
 
-    error_code = ContentErrorCode.CONFLICTING_ARGUMENTS
+    error_code = CortexErrorCode.CONFLICTING_ARGUMENTS
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
     def __init__(self, message=None, *, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
         self.arguments = list(arguments or [])
@@ -11410,10 +11588,7 @@ class ContentConflictingArgsError(ContentError):
     def _quoted_args(self):
         return ', '.join("'{}'".format(a) for a in self.arguments)
 
-    def build_message(self):
-        if self._custom_message:
-            return self._custom_message
-
+    def _base_message(self):
         parts = []
         # 1. What conflicts.
         if self.arguments:
@@ -11436,8 +11611,18 @@ class ContentConflictingArgsError(ContentError):
         return ' '.join(parts)
 
 
-class ContentResourceNotFoundError(ContentError):
+class CortexResourceNotFoundError(CortexError):
     """Raised when a requested resource is not found.
+
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ A specific entity the user asked for does not exist on the remote    ║
+    ║ system (e.g. an incident/ticket/endpoint/user ID returns 404 or an   ║
+    ║ empty result). The identifier was syntactically valid - it just has  ║
+    ║ no match.                                                            ║
+    ║ DO NOT use for: a malformed identifier value (CortexInvalidArgError) ║
+    ║ or a generic non-2xx API failure (CortexExternalApiError).           ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 
     :type resource_type: ``str``
     :param resource_type: Type of resource (e.g. "endpoint", "incident").
@@ -11449,7 +11634,8 @@ class ContentResourceNotFoundError(ContentError):
     :param message: Optional custom message (auto-generated if omitted).
     """
 
-    error_code = ContentErrorCode.RESOURCE_NOT_FOUND
+    error_code = CortexErrorCode.RESOURCE_NOT_FOUND
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
     def __init__(self, resource_type, identifier=None, message=None):
         self.resource_type = resource_type
@@ -11459,18 +11645,28 @@ class ContentResourceNotFoundError(ContentError):
             "identifier": str(identifier) if identifier else None,
         })
 
-    def build_message(self):
-        if self._custom_message:
-            return self._custom_message
+    def _base_message(self):
         if self.identifier:
             return "{} '{}' not found".format(self.resource_type, self.identifier)
         return "{} not found".format(self.resource_type)
 
 
-class ContentApiError(ContentError):
+class CortexExternalApiError(CortexError):
     """Raised when an external API returns an error.
 
-    Uses :class:`ErrorTypes` values as sub-types for finer classification.
+    ╔════════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                            ║
+    ║ A request to the third-party/external service failed with a non-2xx    ║
+    ║ HTTP status (or an equivalent transport error) and no more specific    ║
+    ║ subclass applies. Pass status_code so the error is auto-classified     ║
+    ║ (auth / quota / service) and retry guidance is set correctly.          ║
+    ║ PREFER a specific subclass when it fits: CortexAuthError (401/403),    ║
+    ║ CortexRateLimitError (429), CortexTimeoutError, CortexConnectionError. ║
+    ║ DO NOT use for: a valid response whose BODY cannot be parsed           ║
+    ║ (CortexParseError) or a 404 for a specific entity                      ║
+    ║ (CortexResourceNotFoundError).                                         ║
+    ╚════════════════════════════════════════════════════════════════════════╝
+
     Automatically classifies by HTTP status code when ``api_error_type``
     is not provided:
 
@@ -11485,140 +11681,197 @@ class ContentApiError(ContentError):
     :param status_code: HTTP status code from the API response.
 
     :type api_error_type: ``str``
-    :param api_error_type: An :class:`ErrorTypes` value for explicit classification.
+    :param api_error_type: A :class:`CortexErrorCode` value for explicit
+        classification (e.g. ``CortexErrorCode.SERVICE_ERROR``). When provided,
+        it becomes the error's ``error_code`` directly.
 
     :type response_body: ``str``
     :param response_body: Truncated response body (max 500 chars).
     """
 
-    error_code = ContentErrorCode.API_ERROR
+    error_code = CortexErrorCode.API_ERROR
+    # API/network errors are commonly transient, so default to "retry later".
+    # Auth-related status codes (401/403) override this to NOT_RETRYABLE below.
+    retry_guidance = RetryGuidance.RETRY_LATER
 
     # Default, auto-generated message used when no explicit message is supplied.
     _default_message = "An error occurred while communicating with the external API."
-
-    _ERROR_TYPE_TO_CODE = {
-        ErrorTypes.AUTH_ERROR: ContentErrorCode.AUTH_ERROR,
-        ErrorTypes.QUOTA_ERROR: ContentErrorCode.QUOTA_ERROR,
-        ErrorTypes.SERVICE_ERROR: ContentErrorCode.SERVICE_ERROR,
-        ErrorTypes.CONNECTION_ERROR: ContentErrorCode.CONNECTION_ERROR,
-        ErrorTypes.PROXY_ERROR: ContentErrorCode.PROXY_ERROR,
-        ErrorTypes.SSL_ERROR: ContentErrorCode.SSL_ERROR,
-        ErrorTypes.TIMEOUT_ERROR: ContentErrorCode.TIMEOUT_ERROR,
-    }
 
     def __init__(self, message=None, *, status_code=None, api_error_type=None, response_body=None):
         self.status_code = status_code
         details = {}  # type: dict
         if status_code:
             details["status_code"] = status_code
-        if api_error_type:
-            details["api_error_type"] = api_error_type
         if response_body:
             details["response_body"] = str(response_body)[:500]
 
-        # Auto-classify based on status code if api_error_type not provided
-        if not api_error_type and status_code:
+        # When the caller passes an explicit api_error_type (a CortexErrorCode
+        # value) it becomes the error_code directly.
+        if api_error_type:
+            self.error_code = api_error_type
+            details["api_error_type"] = api_error_type
+        # Otherwise auto-classify based on the HTTP status code.
+        elif status_code:
             if status_code in (401, 403):
-                self.error_code = ContentErrorCode.AUTH_ERROR
-                details["api_error_type"] = ErrorTypes.AUTH_ERROR
+                self.error_code = CortexErrorCode.AUTH_ERROR
+                details["api_error_type"] = CortexErrorCode.AUTH_ERROR
+                # Auth failures won't be fixed by retrying as-is.
+                self.retry_guidance = RetryGuidance.NOT_RETRYABLE
             elif status_code == 429:
-                self.error_code = ContentErrorCode.QUOTA_ERROR
-                details["api_error_type"] = ErrorTypes.QUOTA_ERROR
+                self.error_code = CortexErrorCode.QUOTA_ERROR
+                details["api_error_type"] = CortexErrorCode.QUOTA_ERROR
             elif status_code >= 500:
-                self.error_code = ContentErrorCode.SERVICE_ERROR
-                details["api_error_type"] = ErrorTypes.SERVICE_ERROR
-        elif api_error_type:
-            self.error_code = self._ERROR_TYPE_TO_CODE.get(api_error_type, ContentErrorCode.API_ERROR)
+                self.error_code = CortexErrorCode.SERVICE_ERROR
+                details["api_error_type"] = CortexErrorCode.SERVICE_ERROR
 
         super().__init__(message, details=details)
 
-    def build_message(self):
-        if self._custom_message:
-            return self._custom_message
+    def _base_message(self):
         message = self._default_message
         if self.status_code:
             message = "{} (HTTP {})".format(message, self.status_code)
         return message
 
 
-class ContentAuthError(ContentApiError):
-    """Raised when authentication fails (401/403)."""
+class CortexAuthError(CortexExternalApiError):
+    """Raised when authentication fails (401/403).
 
-    error_code = ContentErrorCode.AUTH_ERROR
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ The external service rejected the request due to authentication      ║
+    ║ problems - invalid/expired credentials, API key, or token.           ║
+    ║ Marked not-retryable (retrying as-is won't help).                    ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+    """
+
+    error_code = CortexErrorCode.AUTH_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Authentication failed. Check your credentials or API key."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=ErrorTypes.AUTH_ERROR, **kwargs)
+        super().__init__(message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
 
 
-class ContentRateLimitError(ContentApiError):
+class CortexRateLimitError(CortexExternalApiError):
     """Raised when API rate limit is exceeded (429).
+
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ The external service throttled the request (rate/quota limit).       ║
+    ║ Marked retryable-later; pass retry_after when the service indicates  ║
+    ║ how long to wait.                                                    ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 
     :type retry_after: ``int``
     :param retry_after: Seconds to wait before retrying, if known.
     """
 
-    error_code = ContentErrorCode.QUOTA_ERROR
+    error_code = CortexErrorCode.QUOTA_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "API rate limit exceeded. Please retry later."
 
     def __init__(self, message=None, *, retry_after=None, **kwargs):
         self.retry_after = retry_after
-        super().__init__(message, api_error_type=ErrorTypes.QUOTA_ERROR, **kwargs)
+        super().__init__(message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
         if retry_after:
             self.details["retry_after_seconds"] = retry_after
 
-    def build_message(self):
-        if self._custom_message:
-            return self._custom_message
+    def _base_message(self):
         if self.retry_after:
             return "{} Retry after {} seconds.".format(self._default_message, self.retry_after)
         return self._default_message
 
 
-class ContentTimeoutError(ContentApiError):
-    """Raised when an API request times out."""
+class CortexTimeoutError(CortexExternalApiError):
+    """Raised when an API request times out.
 
-    error_code = ContentErrorCode.TIMEOUT_ERROR
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ The request was sent but the external service did not respond within ║
+    ║ the allotted time (read/connect timeout). Marked retryable-later.    ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+    """
+
+    error_code = CortexErrorCode.TIMEOUT_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "The request timed out. Please try again."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=ErrorTypes.TIMEOUT_ERROR, **kwargs)
+        super().__init__(message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
 
 
-class ContentConnectionError(ContentApiError):
-    """Raised when unable to connect to the service."""
+class CortexConnectionError(CortexExternalApiError):
+    """Raised when unable to connect to the service.
 
-    error_code = ContentErrorCode.CONNECTION_ERROR
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ The connection to the external service could not be established at   ║
+    ║ all (DNS failure, connection refused/reset, network unreachable) -   ║
+    ║ i.e. there was no HTTP response. Marked retryable-later.             ║
+    ║ DO NOT use for: a connection that succeeded but returned an error    ║
+    ║ status - use CortexExternalApiError (or a more specific subclass).   ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+    """
+
+    error_code = CortexErrorCode.CONNECTION_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "Unable to connect to the service. Check network connectivity."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(message, api_error_type=ErrorTypes.CONNECTION_ERROR, **kwargs)
+        super().__init__(message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
 
 
-class ContentParseError(ContentError):
+class CortexParseError(CortexError):
     """Raised when data returned by the external API/service cannot be parsed.
 
-    Use this for failures while decoding or interpreting the *response*
-    received from the external service (e.g. invalid JSON/XML, unexpected
-    schema, missing fields) - **not** for invalid user input
-    (use :class:`ContentInvalidArgError` for that).
+    ╔═══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                           ║
+    ║ A RESPONSE received from the external service could not be decoded or ║
+    ║ interpreted (invalid JSON/XML, unexpected schema, missing fields).    ║
+    ║ The call itself succeeded - the problem is the payload.               ║
+    ║ Marked not-retryable.                                                 ║
+    ║ DO NOT use for: invalid user input (CortexInvalidArgError) or a       ║
+    ║ non-2xx API status (CortexExternalApiError).                          ║
+    ╚═══════════════════════════════════════════════════════════════════════╝
     """
 
-    error_code = ContentErrorCode.PARSE_ERROR
+    error_code = CortexErrorCode.API_RESPONSE_PARSE_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Failed to parse the response received from the API."
 
 
-class ContentPermissionError(ContentError):
-    """Raised when the user lacks required permissions."""
+class CortexPermissionError(CortexError):
+    """Raised when the user lacks required permissions.
 
-    error_code = ContentErrorCode.PERMISSION_ERROR
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                          ║
+    ║ The action is understood and authenticated, but the user/account is  ║
+    ║ not authorized to perform it (authorization, not authentication).    ║
+    ║ Marked not-retryable.                                                ║
+    ║ DO NOT use for: failed authentication/credentials (CortexAuthError). ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+    """
+
+    error_code = CortexErrorCode.PERMISSION_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Permission denied. You do not have the required permissions to perform this action."
 
 
-class ContentExecutionError(ContentError):
-    """Raised when a command or script execution fails."""
+class CortexExecutionError(CortexError):
+    """Raised when a command or script execution fails.
 
-    error_code = ContentErrorCode.EXECUTION_ERROR
+    ╔═══════════════════════════════════════════════════════════════════════╗
+    ║ WHEN TO USE                                                           ║
+    ║ A command/script failed during its own logic for a reason not covered ║
+    ║ by the other categories (e.g. a sub-command returned an error, a      ║
+    ║ business rule could not be satisfied, an internal step failed).       ║
+    ║ Retry guidance is left unset (retryability depends on the case).      ║
+    ║ DO NOT use for: input validation, external API failures, or parsing   ║
+    ║ problems - prefer the dedicated subclasses for those.                 ║
+    ╚═══════════════════════════════════════════════════════════════════════╝
+    """
+
+    error_code = CortexErrorCode.EXECUTION_ERROR
     _default_message = "The command or script execution failed."
 
 
