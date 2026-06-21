@@ -4482,7 +4482,7 @@ def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> Non
 
 def load_spotlight_state(
     context_store: ContentClientContextStore,
-) -> tuple[ContentClientState, str, int, set, set, list[str]]:
+) -> tuple[ContentClientState, str, int, set, set, list[str], list[dict]]:
     """
     Load Spotlight state from integration context.
 
@@ -4490,7 +4490,9 @@ def load_spotlight_state(
         context_store: Context store for reading integration context
 
     Returns:
-        Tuple of (state_object, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities)
+        Tuple of (state_object, snapshot_id, total_fetched, unique_aids, processed_aids,
+        completed_severities, withheld_records). ``withheld_records`` carries records withheld
+        for the seal in previous cycles (XSUP-70815) so they survive multi-cycle resume.
     """
     # Read entire integration context (preserves all existing keys)
     integration_context = context_store.read()
@@ -4510,15 +4512,27 @@ def load_spotlight_state(
         "processed_aids_count", len(spotlight_state.metadata.get("processed_aids", []))
     )
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
+    # Records withheld for the seal in previous cycles (XSUP-70815). Persisted so the seal in
+    # a later cycle still carries records withheld by severities completed in earlier cycles.
+    withheld_records = spotlight_state.metadata.get("withheld_records", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
         f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
+        f"withheld_records_count={len(withheld_records)}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids_count, processed_aids_count, completed_severities
+    return (
+        spotlight_state,
+        snapshot_id,
+        total_fetched,
+        unique_aids_count,
+        processed_aids_count,
+        completed_severities,
+        withheld_records,
+    )
 
 
 def update_spotlight_state_and_metadata(
@@ -4529,6 +4543,7 @@ def update_spotlight_state_and_metadata(
     unique_aids: set,
     processed_aids: set,
     completed_severities: list[str] | None = None,
+    withheld_records: list[dict] | None = None,
 ) -> None:
     """
     Update Spotlight state with cursor and metadata.
@@ -4542,6 +4557,10 @@ def update_spotlight_state_and_metadata(
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
         completed_severities: List of severities that have completed successfully (optional)
+        withheld_records: Records withheld for the final sealing batch (XSUP-70815). Persisted
+            so they survive multi-cycle resume and abrupt container restarts; the seal in a
+            later cycle relies on the records withheld by severities completed in earlier
+            cycles. Bounded to at most one record per severity (<= 6). (optional)
     """
     spotlight_state.cursor = cursor
 
@@ -4551,12 +4570,19 @@ def update_spotlight_state_and_metadata(
     elif completed_severities is None:
         completed_severities = []
 
+    # Preserve existing withheld_records if not explicitly provided
+    if withheld_records is None and isinstance(spotlight_state.metadata, dict):
+        withheld_records = spotlight_state.metadata.get("withheld_records", [])
+    elif withheld_records is None:
+        withheld_records = []
+
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
         "unique_aids_count": len(unique_aids),
         "processed_aids_count": len(processed_aids),
         "completed_severities": completed_severities,
+        "withheld_records": withheld_records,
     }
 
 
@@ -4628,11 +4654,18 @@ async def fetch_vulnerabilities_by_severity(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     asset_handler: AssetsDeviceHandler,
-) -> tuple[int, set, set[asyncio.Task]]:
+) -> tuple[int, set, set[asyncio.Task], list[dict]]:
     """Fetch all vulnerabilities for a single severity level with pagination.
 
     This function handles continuous pagination for one severity, avoiding cursor
     expiration by fetching all pages sequentially without delays.
+
+    The very first fetched record of the severity is *withheld* from the data
+    batches sent during the run (XSUP-70815). It is returned to the caller so the
+    orchestrator can send it in the final sealing batch, guaranteeing the seal
+    carries a real data row that lands ``_snapshot_log_count = total`` in BigQuery.
+    The withheld record is still counted in ``total_fetched`` and its AID is still
+    enriched, so counts and asset coverage stay exact (sent exactly once, no dup).
 
     Args:
         client: ContentClient instance for API calls
@@ -4643,7 +4676,7 @@ async def fetch_vulnerabilities_by_severity(
         asset_handler: AssetsDeviceHandler for AID enrichment
 
     Returns:
-        Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks)
+        Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks, withheld_records)
     """
     log_falcon_assets(f"[{severity}] Starting vulnerability fetch for severity: {severity}", "info")
 
@@ -4653,6 +4686,9 @@ async def fetch_vulnerabilities_by_severity(
     after_token: str | None = None
     batch_counter = 0
     last_saved_batch_number = 0
+    # Records withheld from the data batches to be sent in the final sealing batch (XSUP-70815).
+    # At most one record (the first fetched for this severity) is withheld.
+    withheld_records: list[dict] = []
 
     try:
         while True:
@@ -4695,16 +4731,33 @@ async def fetch_vulnerabilities_by_severity(
 
             log_falcon_assets(f"[{severity}] Fetched {len(vulnerabilities)} vulnerabilities in batch {batch_counter + 1}")
 
-            # Extract unique AIDs from this batch
+            # Extract unique AIDs from this batch (covers the withheld record too, so its
+            # host's asset enrichment is not lost - XSUP-70815).
             extract_unique_aids(vulnerabilities, unique_aids)
 
             # Send AIDs to asset handler for enrichment (async fire-and-forget)
             batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
             await asset_handler.receive_new_aids(batch_aids)
 
-            # Update counters
+            # Update counters (count every fetched record, including the withheld one, so
+            # the final total-items-count stays exact)
             total_fetched += len(vulnerabilities)
             batch_counter += 1
+
+            # XSUP-70815: withhold the very first record of this severity from the data
+            # batches. It is sent later in the final sealing batch (with the real total
+            # count) so the seal carries a real BQ row. Withholding happens at send-time
+            # only - the record is already counted and AID-enriched above, so it is sent
+            # exactly once (no duplicate, exact count).
+            records_to_send = vulnerabilities
+            if not withheld_records and vulnerabilities:
+                withheld_records.append(vulnerabilities[0])
+                records_to_send = vulnerabilities[1:]
+                log_falcon_assets(
+                    f"[{severity}] Withholding first record for the sealing batch "
+                    f"(id={vulnerabilities[0].get('id')}); sending {len(records_to_send)} records in this batch.",
+                    "info",
+                )
 
             # Get next pagination token
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
@@ -4716,9 +4769,9 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # Create task to send batch to XSIAM
+            # Create task to send batch to XSIAM (without the withheld first record)
             task = create_task_send_batch_to_xsiam_and_save_context(
-                data=vulnerabilities,
+                data=records_to_send,
                 product=SPOTLIGHT_VULN_PRODUCT,
                 snapshot_id=snapshot_id,
                 items_count=items_count,
@@ -4805,7 +4858,7 @@ async def fetch_vulnerabilities_by_severity(
         log_falcon_assets(f"[{severity}] Unexpected error during fetch: {e}", "error")
         raise
 
-    return total_fetched, unique_aids, pending_tasks
+    return total_fetched, unique_aids, pending_tasks, withheld_records
 
 
 async def await_and_aggregate_severity_results(
@@ -4814,7 +4867,8 @@ async def await_and_aggregate_severity_results(
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
     snapshot_id: str,
-) -> tuple[int, set, set[asyncio.Task], list[str]]:
+    prior_withheld_records: list[dict] | None = None,
+) -> tuple[int, set, set[asyncio.Task], list[str], list[dict]]:
     """Wait for all severity tasks and aggregate their results.
 
     Args:
@@ -4823,21 +4877,30 @@ async def await_and_aggregate_severity_results(
         context_store: Context store for state persistence
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
+        prior_withheld_records: Records withheld by severities completed in previous cycles,
+            loaded from context (XSUP-70815). New per-severity withheld records are appended to
+            these so the final seal carries records from ALL severities, even across resume
+            cycles or container restarts.
 
     Returns:
-        Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks, updated_completed_severities)
+        Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks,
+        updated_completed_severities, withheld_records). ``withheld_records`` holds the
+        records withheld across all completed severities (this cycle + prior cycles).
     """
     total_vulnerabilities = 0
     all_unique_aids: set = set()
     all_pending_tasks: set[asyncio.Task] = set()
+    # Seed with records withheld in previous cycles so the seal isn't missing earlier severities.
+    all_withheld_records: list[dict] = list(prior_withheld_records or [])
 
     for severity, task in severity_tasks:
         try:
             log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
-            severity_total, severity_aids, severity_tasks_result = await task
+            severity_total, severity_aids, severity_tasks_result, severity_withheld = await task
             total_vulnerabilities += severity_total
             all_unique_aids.update(severity_aids)
             all_pending_tasks.update(severity_tasks_result)
+            all_withheld_records.extend(severity_withheld)
             log_falcon_assets(
                 f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
             )
@@ -4847,7 +4910,12 @@ async def await_and_aggregate_severity_results(
                 current_completed_severities.append(severity)
                 log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
 
-                # Save state with updated completed severities after each severity completes
+                # Save state with updated completed severities AND the accumulated withheld
+                # records after each severity completes. Persisting the withheld records is
+                # what makes the seal crash-safe / resume-safe (XSUP-70815): a severity
+                # completed in an earlier cycle is skipped next cycle, so its withheld record
+                # would otherwise be lost and the seal would under-count, breaking exact-match
+                # snapshot validation.
                 update_spotlight_state_and_metadata(
                     spotlight_state=spotlight_state,
                     cursor=None,  # No cursor needed for severity-based fetching
@@ -4856,9 +4924,13 @@ async def await_and_aggregate_severity_results(
                     unique_aids=set(),  # Reset for next cycle
                     processed_aids=set(),  # Reset for next cycle
                     completed_severities=current_completed_severities,
+                    withheld_records=all_withheld_records,
                 )
                 save_spotlight_state(context_store, spotlight_state)
-                log_falcon_assets(f"[{severity}] Saved completion state to context", "info")
+                log_falcon_assets(
+                    f"[{severity}] Saved completion state to context " f"(withheld_records so far: {len(all_withheld_records)})",
+                    "info",
+                )
 
         except Exception as e:
             log_falcon_assets(f"[{severity}] Failed with error: {e}", "error")
@@ -4871,7 +4943,7 @@ async def await_and_aggregate_severity_results(
         "info",
     )
 
-    return total_vulnerabilities, all_unique_aids, all_pending_tasks, current_completed_severities
+    return total_vulnerabilities, all_unique_aids, all_pending_tasks, current_completed_severities, all_withheld_records
 
 
 async def finalize_severity_fetch(
@@ -4883,8 +4955,16 @@ async def finalize_severity_fetch(
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
     snapshot_id: str,
+    withheld_records: list[dict] | None = None,
 ) -> None:
     """Finalize the severity fetch by waiting for background tasks and sealing snapshot if complete.
+
+    The sealing batch carries the records withheld during fetching (XSUP-70815) together
+    with the real ``total-items-count``. This guarantees the seal contains at least one
+    real data row, so the platform records ``_snapshot_log_count = total`` on a BigQuery
+    row and ``MAX(_snapshot_log_count) OVER (PARTITION BY _snapshot_id)`` can validate the
+    snapshot. An empty seal (the previous behavior) inserted no row and left the snapshot
+    permanently invalid.
 
     Args:
         all_pending_tasks: Set of background tasks to wait for
@@ -4895,7 +4975,11 @@ async def finalize_severity_fetch(
         context_store: Context store for state persistence
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
+        withheld_records: Records withheld during fetching to send as the sealing batch.
+            Each record is sent exactly once (only here), so the count stays exact.
     """
+    withheld_records = withheld_records or []
+
     # Wait for all background vulnerability send tasks to complete
     log_falcon_assets(f"Waiting for {len(all_pending_tasks)} background vulnerability send tasks...", "info")
     await wait_for_background_tasks(all_pending_tasks, "vulnerability send")
@@ -4904,24 +4988,33 @@ async def finalize_severity_fetch(
     all_severities_completed = set(current_completed_severities) == set(SPOTLIGHT_SEVERITIES)
 
     if all_severities_completed:
-        log_falcon_assets("All severities completed successfully. Sending final sealing batch.", "info")
-
-        # Send final sealing batch with actual total count ONLY when all severities complete
-        log_falcon_assets(f"Sending final sealing batch with total count: {total_vulnerabilities}", "info")
-        final_task = create_task_send_batch_to_xsiam_and_save_context(
-            data=[],  # Empty batch for sealing
-            product=SPOTLIGHT_VULN_PRODUCT,
-            snapshot_id=snapshot_id,
-            items_count=total_vulnerabilities,  # Final total count
-            batch_number=999999,  # High number to ensure it's processed last
-            last_saved_batch_number=0,
-            context_store=context_store,
-            state=spotlight_state,
-            save_state_callback=save_spotlight_state,
-            data_type="assets",
-        )
-        await final_task
-        log_falcon_assets("Final sealing batch sent successfully", "info")
+        if not withheld_records:
+            # Grand total is zero: there is no real record to seal with. Emitting an empty
+            # request would not create a BQ row anyway (the original bug), so skip sealing.
+            # This is a legitimately empty snapshot.
+            log_falcon_assets("All severities completed but no records were fetched. Skipping seal (empty snapshot).", "info")
+        else:
+            # Send final sealing batch carrying the withheld real records and the actual
+            # total count ONLY when all severities complete (XSUP-70815).
+            log_falcon_assets(
+                f"All severities completed successfully. Sending final sealing batch with "
+                f"{len(withheld_records)} withheld record(s) and total count: {total_vulnerabilities}",
+                "info",
+            )
+            final_task = create_task_send_batch_to_xsiam_and_save_context(
+                data=withheld_records,  # Real data rows so the count lands in BigQuery
+                product=SPOTLIGHT_VULN_PRODUCT,
+                snapshot_id=snapshot_id,
+                items_count=total_vulnerabilities,  # Final total count
+                batch_number=999999,  # High number to ensure it's processed last
+                last_saved_batch_number=0,
+                context_store=context_store,
+                state=spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+            await final_task
+            log_falcon_assets("Final sealing batch sent successfully", "info")
 
         # Flush remaining AIDs and wait for all asset enrichment tasks
         total_assets_count = len(all_unique_aids)
@@ -4957,6 +5050,7 @@ async def fetch_spotlight_by_severity_parallel(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     completed_severities: list[str],
+    prior_withheld_records: list[dict] | None = None,
 ) -> tuple[int, set]:
     """Orchestrate parallel vulnerability fetching across all severity levels.
 
@@ -4970,6 +5064,9 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
         completed_severities: List of severities already completed in previous cycles
+        prior_withheld_records: Records withheld for the seal by severities completed in
+            previous cycles, loaded from context (XSUP-70815). Carried forward so the final
+            seal includes records from severities completed in earlier cycles.
 
     Returns:
         Tuple of (total_vulnerabilities, unique_aids)
@@ -5023,15 +5120,16 @@ async def fetch_spotlight_by_severity_parallel(
         all_unique_aids,
         all_pending_tasks,
         current_completed_severities,
+        withheld_records,
     ) = await await_and_aggregate_severity_results(
         severity_tasks=severity_tasks,
         current_completed_severities=current_completed_severities,
         context_store=context_store,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
+        prior_withheld_records=prior_withheld_records,
     )
 
-    # Finalize: wait for background tasks, seal snapshot if all complete, flush assets
     await finalize_severity_fetch(
         all_pending_tasks=all_pending_tasks,
         current_completed_severities=current_completed_severities,
@@ -5041,6 +5139,7 @@ async def fetch_spotlight_by_severity_parallel(
         context_store=context_store,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
+        withheld_records=withheld_records,
     )
 
     return total_vulnerabilities, all_unique_aids
@@ -5072,11 +5171,18 @@ async def fetch_spotlight_assets():
         log_falcon_assets("tracemalloc started for memory diagnostics")
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
-    spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
-        context_store
-    )
+    (
+        spotlight_state,
+        snapshot_id,
+        _total_fetched,
+        _unique_aids,
+        _processed_aids,
+        completed_severities,
+        prior_withheld_records,
+    ) = load_spotlight_state(context_store)
     # Note: total_fetched, unique_aids, processed_aids not used in severity-based approach
-    # Each severity starts fresh. Only completed_severities used to skip already-completed severities.
+    # Each severity starts fresh. Only completed_severities (skip already-completed severities)
+    # and prior_withheld_records (carry seal records across cycles - XSUP-70815) are used.
 
     client = create_spotlight_client(context_store)
 
@@ -5088,9 +5194,12 @@ async def fetch_spotlight_assets():
             spotlight_state=spotlight_state,
             snapshot_id=snapshot_id,
             completed_severities=completed_severities,
+            prior_withheld_records=prior_withheld_records,
         )
 
-        # Reset state after successful fetch (completed_severities already cleared in parallel function if all done)
+        # Reset state after successful fetch (completed_severities already cleared in parallel function if all done).
+        # Also clear the persisted withheld_records - the snapshot has been sealed, so they are no
+        # longer needed and must not leak into the next snapshot (XSUP-70815).
         log_falcon_assets("Resetting Spotlight state after successful complete fetch")
         update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
@@ -5100,6 +5209,7 @@ async def fetch_spotlight_assets():
             unique_aids=set(),
             processed_aids=set(),
             completed_severities=[],  # Ensure it's cleared
+            withheld_records=[],  # Clear persisted seal records for the next snapshot
         )
         save_spotlight_state(context_store, spotlight_state)
 
