@@ -231,6 +231,7 @@ def apply_step_action(
     new_value: str,
     *,
     verb: str,
+    gate_verified: bool = False,
 ) -> tuple[list[str], bool]:
     """Apply a step action with cascade-reset semantics.
 
@@ -247,10 +248,38 @@ def apply_step_action(
         columns) survive even a ``set-auth`` reset; only ``reset`` (the
         whole-row wipe) ignores the flag.
       - For ``flag`` steps: setting the same value is a no-op (no reset).
+
+    Gate guard (NO-BYPASS): when ``verb == "markpass"`` and ``target``
+    declares a ``gate`` (a self-executing checkpoint such as
+    ``handler param coverage`` / ``run manifest make validate`` /
+    ``param parity test passes``), the caller MUST set ``gate_verified=True``
+    — which only :func:`workflow_state.api.markpass_integration_step` does,
+    and ONLY after the gate command actually ran and exited 0. Any other
+    caller (e.g. a stray script writing the marker directly) is rejected with
+    a :class:`WorkflowError`. This makes it structurally impossible to pass a
+    gated checkpoint without the gate running and succeeding.
     """
     cfg = get_config()
     cur = current_step(row)
     cur_idx = cur.index if cur is not None else len(cfg.steps) + 1
+
+    # NO-BYPASS gate guard: a gated checkpoint can only be markpass'd through
+    # the gate-running path (markpass_integration_step), which passes
+    # gate_verified=True after a clean gate exit.
+    if (
+        verb == "markpass"
+        and getattr(target, "gate", None)
+        and new_value == cfg.markers.check
+        and not gate_verified
+    ):
+        raise WorkflowError(
+            f"Refusing to markpass gated checkpoint '{target.name}' without "
+            f"running its gate '{target.gate}'. This checkpoint is a "
+            f"self-executing gate (no bypass) — run it via "
+            f"`workflow_state.py markpass \"<id>\" \"{target.name}\"`, which "
+            f"executes the gate and only passes on a clean exit. Direct marker "
+            f"writes are not allowed."
+        )
 
     if cur is not None and target.index > cur_idx:
         raise WorkflowError(

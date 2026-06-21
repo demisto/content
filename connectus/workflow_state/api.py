@@ -598,8 +598,14 @@ def markpass_integration_step(
                 "gate": verdict,
             }
 
+    # Reaching here means EITHER the step has no gate OR its gate ran and
+    # passed. Signal that to apply_step_action so its NO-BYPASS gate guard
+    # allows the marker write (the guard rejects gated markpasses that did
+    # not come through this verified path).
     try:
-        cleared, no_op = apply_step_action(row, target, cfg.markers.check, verb="markpass")
+        cleared, no_op = apply_step_action(
+            row, target, cfg.markers.check, verb="markpass", gate_verified=True
+        )
     except WorkflowError as e:
         return {"error": e.message}
 
