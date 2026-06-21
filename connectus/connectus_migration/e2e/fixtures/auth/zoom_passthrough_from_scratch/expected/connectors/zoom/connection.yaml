@@ -12,6 +12,15 @@ profiles:
   view_group: zoom
   title: OAuth (Server-to-Server)
   description: Authentication profile for Zoom (passthrough).
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
+  - id: bot_credentials
+    map:
+      user: bot_client_id
+      password: bot_client_secret
   metadata:
     xsoar:
       interpolated: true

@@ -179,6 +179,11 @@ profiles:
   view_group: github-iam
   title: passthrough_primary
   description: Authentication profile for GitHub (passthrough).
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
   metadata:
     xsoar:
       interpolated: true

@@ -12,6 +12,11 @@ profiles:
   view_group: github
   title: passthrough_primary
   description: Authentication profile for GitHub (passthrough).
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
   metadata:
     xsoar:
       interpolated: true
