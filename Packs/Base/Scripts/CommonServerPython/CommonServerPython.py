@@ -13204,7 +13204,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
 
     if streaming_send:
-        # Streaming path (CIAC-16981, "Method F"): serialize+gzip one event at a time, freeing each as we go, so peak
+        # Streaming path: serialize+gzip one event at a time, freeing each as we go, so peak
         # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
         demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
