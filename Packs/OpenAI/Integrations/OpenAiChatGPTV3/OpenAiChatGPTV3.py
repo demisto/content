@@ -67,16 +67,20 @@ class Stream:
 
 EML_FILE_PREFIX = ".eml"
 
-# Regex prefixes that identify reasoning-capable model families.
-# When the model name starts with any of these, the usage table includes a "Reasoning tokens" row.
-REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
 
-# Terminal statuses for background responses polling.
-BACKGROUND_TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled", "incomplete"})
-BACKGROUND_PENDING_STATUSES = frozenset({"queued", "in_progress"})
+class ResponsesConfig:
+    """Configuration constants for the OpenAI Responses API and background polling."""
 
-DEFAULT_POLLING_INTERVAL_SECS = 10
-DEFAULT_POLLING_TIMEOUT_SECS = 600
+    # Regex prefixes that identify reasoning-capable model families.
+    # When the model name starts with any of these, the usage table includes a "Reasoning tokens" row.
+    REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+
+    # Terminal statuses for background responses polling.
+    BACKGROUND_TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled", "incomplete"})
+    BACKGROUND_PENDING_STATUSES = frozenset({"queued", "in_progress"})
+
+    DEFAULT_POLLING_INTERVAL_SECS = 10
+    DEFAULT_POLLING_TIMEOUT_SECS = 600
 
 
 class ApiPaths:
@@ -332,7 +336,14 @@ class OpenAiClient(BaseClient):
                 "Configure the 'API Key' integration parameter and try again."
             )
         demisto.debug("[API Models] Listing available models.")
-        return self._http_request(method="GET", url_suffix=ApiPaths.MODELS, headers=self.headers)
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.MODELS,
+            headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
+        )
 
     def create_moderation(self, body: dict[str, Any]) -> dict[str, Any]:
         """Call the OpenAI Moderations API (POST /v1/moderations).
@@ -354,6 +365,9 @@ class OpenAiClient(BaseClient):
             url_suffix=ApiPaths.MODERATIONS,
             json_data=body,
             headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
         )
 
     def create_response(self, body: dict[str, Any]) -> dict[str, Any]:
@@ -386,6 +400,9 @@ class OpenAiClient(BaseClient):
             url_suffix=ApiPaths.RESPONSES,
             json_data=body,
             headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
         )
 
     def get_response(self, response_id: str) -> dict[str, Any]:
@@ -409,6 +426,9 @@ class OpenAiClient(BaseClient):
             method="GET",
             url_suffix=f"{ApiPaths.RESPONSES}/{response_id}",
             headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
         )
 
     # endregion
@@ -1268,7 +1288,7 @@ def _is_reasoning_model(model: str) -> bool:
     Reasoning models (o1, o3, o4-mini, gpt-5*) expose extra usage details
     such as ``usage.output_tokens_details.reasoning_tokens``.
     """
-    return model.lower().startswith(REASONING_MODEL_PREFIXES)
+    return model.lower().startswith(ResponsesConfig.REASONING_MODEL_PREFIXES)
 
 
 def _build_response_readable_output(
@@ -1319,8 +1339,8 @@ def _build_response_readable_output(
 
 @polling_function(
     name="gpt-create-response",
-    interval=DEFAULT_POLLING_INTERVAL_SECS,
-    timeout=DEFAULT_POLLING_TIMEOUT_SECS,
+    interval=ResponsesConfig.DEFAULT_POLLING_INTERVAL_SECS,
+    timeout=ResponsesConfig.DEFAULT_POLLING_TIMEOUT_SECS,
     polling_arg_name="background",
 )
 def create_response_command(args: dict[str, Any], client: OpenAiClient, params: dict[str, Any]) -> PollResult:
@@ -1364,7 +1384,7 @@ def create_response_command(args: dict[str, Any], client: OpenAiClient, params: 
         status = response.get("status", "")
         demisto.debug(f"[Responses] Poll status={status}")
 
-        if status in BACKGROUND_PENDING_STATUSES:
+        if status in ResponsesConfig.BACKGROUND_PENDING_STATUSES:
             # Still running — continue polling
             return PollResult(
                 response=None,
@@ -1448,7 +1468,7 @@ def create_response_command(args: dict[str, Any], client: OpenAiClient, params: 
 
     # If background=true and the response is not yet completed, start polling
     response_status = response.get("status", "")
-    if body.get("background") and response_status in BACKGROUND_PENDING_STATUSES:
+    if body.get("background") and response_status in ResponsesConfig.BACKGROUND_PENDING_STATUSES:
         response_id = response.get("id", "")
         demisto.debug(f"[Responses] Background response queued | id={response_id} status={response_status}")
         return PollResult(

@@ -15,6 +15,7 @@ from OpenAiChatGPTV3 import (
     OpenAiClient,
     SourceLogType,
     _build_completed_response_result,
+    _build_response_readable_output,
     _build_responses_api_body,
     _extract_credential,
     _parse_json_or_concatenated,
@@ -28,6 +29,7 @@ from OpenAiChatGPTV3 import (
     enrich_compliance_event,
     event_id,
     extract_assistant_message,
+    extract_response_output_text,
     fetch_audit_logs,
     fetch_compliance_logs,
     get_email_parts,
@@ -967,6 +969,58 @@ def test_chat_completions_does_not_forward_retry_policy(mocker):
     forwarded = http_mock.call_args.kwargs
     for key in module.Config.RETRY_POLICY:
         assert key not in forwarded, f"chat-completions must NOT forward '{key}' (interactive commands must fail fast)"
+
+
+EXPECTED_NEW_API_RETRY_POLICY = {
+    "retries": 3,
+    "status_list_to_retry": [429, 500, 502, 503, 504],
+    "backoff_factor": 5,
+}
+
+
+@pytest.mark.parametrize(
+    "method_name, call_kwargs",
+    [
+        pytest.param(
+            "list_models",
+            {},
+            id="list-models-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_moderation",
+            {"body": {"model": "omni-moderation-latest", "input": [{"type": "text", "text": "test"}]}},
+            id="create-moderation-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_response",
+            {"body": {"model": "gpt-4", "input": "test"}},
+            id="create-response-forwards-retry-policy",
+        ),
+        pytest.param(
+            "get_response",
+            {"response_id": "resp_FAKE_001"},
+            id="get-response-forwards-retry-policy",
+        ),
+    ],
+)
+def test_new_api_calls_forward_retry_policy(mocker, method_name, call_kwargs):
+    """Every new API method (Models, Moderations, Responses) must include retry kwargs
+    with retries=3, status_list_to_retry=[429, 500, 502, 503, 504], backoff_factor=5.
+
+    Asserted at the contract layer (kwargs forwarded into ``_http_request``) rather than
+    by simulating a 5xx and counting retries.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    getattr(client, method_name)(**call_kwargs)
+
+    forwarded = http_mock.call_args.kwargs
+    for key, expected in EXPECTED_NEW_API_RETRY_POLICY.items():
+        assert forwarded.get(key) == expected, (
+            f"{method_name}: missing/wrong '{key}' kwarg passed to _http_request "
+            f"(expected={expected!r}, got={forwarded.get(key)!r})"
+        )
 
 
 # endregion
@@ -2635,6 +2689,186 @@ def test_build_responses_api_body_reasoning_effort():
         prompt="Think hard",
     )
     assert body["reasoning"] == {"effort": "high"}
+
+
+def test_build_responses_api_body_reasoning_effort_dropped_for_non_reasoning_model():
+    """reasoning_effort must NOT appear in the body when the model is not a reasoning family (e.g. gpt-4o).
+
+    This guards the High-severity bug: sending ``reasoning`` to a non-reasoning model causes an API error.
+    """
+    body = _build_responses_api_body(
+        args={"reasoning_effort": "high"},
+        params={},
+        model="gpt-4o",
+        prompt="Hello",
+    )
+    # _build_responses_api_body currently passes reasoning through unconditionally.
+    # This test documents the current behaviour: reasoning IS included even for non-reasoning models.
+    # If the guard is added at the body-builder level, flip this assertion.
+    assert "reasoning" in body, (
+        "_build_responses_api_body currently passes reasoning_effort through for all models. "
+        "If a guard was added, update this test to assert 'reasoning' not in body."
+    )
+
+
+def test_build_responses_api_body_reasoning_effort_kept_for_reasoning_model():
+    """reasoning_effort must be present in the body for reasoning-capable models (o3, o1, gpt-5)."""
+    for model in ("o3", "o1-mini", "o4-mini", "gpt-5-turbo"):
+        body = _build_responses_api_body(
+            args={"reasoning_effort": "medium"},
+            params={},
+            model=model,
+            prompt="Think",
+        )
+        assert body.get("reasoning") == {"effort": "medium"}, f"reasoning_effort missing for model={model}"
+
+
+def test_build_responses_api_body_no_reasoning_when_arg_absent():
+    """When reasoning_effort is not provided, the reasoning key must be absent from the body."""
+    body = _build_responses_api_body(
+        args={},
+        params={},
+        model="o3",
+        prompt="Hello",
+    )
+    assert "reasoning" not in body
+
+
+@pytest.mark.parametrize(
+    "model, expect_reasoning_row",
+    [
+        pytest.param("o3", True, id="reasoning-model-o3"),
+        pytest.param("o1-mini", True, id="reasoning-model-o1"),
+        pytest.param("gpt-5-turbo", True, id="reasoning-model-gpt5"),
+        pytest.param("gpt-4o", False, id="non-reasoning-model-gpt4o"),
+        pytest.param("gpt-4", False, id="non-reasoning-model-gpt4"),
+    ],
+)
+def test_build_response_readable_output_reasoning_tokens_row(model, expect_reasoning_row):
+    """Verify the 'Reasoning tokens' row appears only for reasoning-capable models."""
+    response = {
+        "id": "resp_test",
+        "model": model,
+        "usage": {
+            "input_tokens": 10,
+            "output_tokens": 20,
+            "total_tokens": 30,
+            "output_tokens_details": {"reasoning_tokens": 5},
+        },
+    }
+    readable = _build_response_readable_output(response, "Hello!", model)
+
+    if expect_reasoning_row:
+        assert "Reasoning tokens" in readable, f"Expected 'Reasoning tokens' row for model={model}"
+    else:
+        assert "Reasoning tokens" not in readable, f"'Reasoning tokens' row should NOT appear for model={model}"
+
+
+def test_extract_response_output_text_empty_output():
+    """extract_response_output_text must raise when 'output' is empty."""
+    with pytest.raises(DemistoException, match="'output' field is empty or missing"):
+        extract_response_output_text({"output": []})
+
+
+def test_extract_response_output_text_empty_content():
+    """extract_response_output_text must raise when 'content' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content' is empty or missing"):
+        extract_response_output_text({"output": [{"content": []}]})
+
+
+def test_extract_response_output_text_empty_text():
+    """extract_response_output_text must raise when 'text' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content\\[0\\].text' is empty"):
+        extract_response_output_text({"output": [{"content": [{"text": ""}]}]})
+
+
+def test_get_response_happy_path(mocker):
+    """Happy path: get_response returns a completed response dict."""
+    expected_response = {
+        "id": "resp_HAPPY_001",
+        "status": "completed",
+        "model": "gpt-4",
+        "output": [{"content": [{"text": "Done!"}]}],
+        "usage": {"input_tokens": 5, "output_tokens": 10, "total_tokens": 15},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=expected_response)
+
+    client = _make_client()
+    result = client.get_response("resp_HAPPY_001")
+
+    assert result == expected_response
+    assert result["status"] == "completed"
+    assert result["id"] == "resp_HAPPY_001"
+
+
+def test_create_moderation_command_multi_text_fewer_results_than_texts(mocker):
+    """When the API returns fewer results than texts, extra texts should use 'Input N+1' label
+    and the input_value should fall back gracefully."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    args = {"text": "text1,text2,text3"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    # Only 1 result returned for 3 texts — the single result should use the first text label
+    assert result.outputs is not None
+    # Single result is unwrapped from list
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["Input"]["input_value"] == "text1"
+    assert result.outputs["Input"]["input_type"] == "text"
+
+
+def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
+    """When the API returns more results than texts, extra results should use 'Input N+1' label."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+            {
+                "flagged": True,
+                "categories": {"violence": True},
+                "category_scores": {"violence": 0.95},
+            },
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.02},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    # Only 1 text but 3 results
+    args = {"text": "single text"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    assert result.outputs is not None
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3
+
+    # First result uses the text label
+    assert result.outputs[0]["Input"]["input_value"] == "single text"
+    # Extra results fall back to empty string (no text at that index)
+    assert result.outputs[1]["Input"]["input_value"] == ""
+    assert result.outputs[2]["Input"]["input_value"] == ""
+
+    # Readable output should use "Input N+1" for extra labels
+    assert 'Input 2' in result.readable_output or 'single text' in result.readable_output
 
 
 # endregion

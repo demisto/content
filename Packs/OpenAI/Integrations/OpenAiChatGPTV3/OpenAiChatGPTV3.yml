@@ -5,7 +5,7 @@ provider: OpenAI
 sectionorder:
 - Connect
 - Collect
-description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
+description: This integration assists security professionals with security investigations, threat hunting, and anomaly detection by leveraging OpenAI GPT models' natural language conversation capabilities.  
 commonfields:
   id: OpenAi ChatGPT v3
   version: -1
@@ -527,7 +527,7 @@ script:
 
     - name: reasoning_effort
       required: false
-      description: The reasoning effort level. Honored only for reasoning families (o1, o3, o4, gpt-5); silently dropped on others. Default medium.
+      description: The reasoning effort level. This parameter is applicable only to reasoning families (o1, o3, o4, gpt-5) and is ignored for other models. Can be "low", "medium", or "high". Default is "medium". 
       auto: PREDEFINED
       predefined:
       - 'none'
@@ -570,7 +570,7 @@ script:
       type: Number
 
     - name: _polling_response_id
-      description: The response ID to poll for completion. Used internally by the scheduled command for polling and should not be provided manually.
+      description: The response ID used to poll for completion. This is handled internally by the scheduled command and should not be provided manually.  
       hidden: true
       type: String
 
@@ -578,7 +578,7 @@ script:
 
     outputs:
     - contextPath: OpenAiChatGPTV3.Response
-      description: The conversation state including the response_id for multi-turn continuity.
+      description: The conversation state, which includes the response_id for multi-turn continuity.  
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Response.user
       description: The user message sent.
@@ -597,7 +597,7 @@ script:
       description: The model identifier (e.g., gpt-4, gpt-3.5-turbo).
       type: String
     - contextPath: OpenAiChatGPTV3.Model.Created
-      description: The Unix timestamp of when the model was created.
+      description: The Unix timestamp when the model was created.
       type: Number
     - contextPath: OpenAiChatGPTV3.Model.OwnedBy
       description: The organization or entity that owns the model.
@@ -611,7 +611,7 @@ script:
       isArray: true
       type: String
     - name: entry_id
-      description: The war-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
+      description: The War Room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
       required: false
       type: String
     - name: image_url
