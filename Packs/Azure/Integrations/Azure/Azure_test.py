@@ -5766,6 +5766,53 @@ def test_get_azure_client_device_code_no_secret(mocker, mock_params):
     assert kwargs["connection_type"] == "Device Code"
 
 
+def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector), Client Credentials, and a storage-container command.
+    When: get_azure_client is called.
+    Then: The AzureClient is built with the STORAGE scope and STORAGE resource (not the management
+          scope), so the storage-scoped token is requested. Regression test for the scope-override bug.
+    """
+    from Azure import STORAGE_SCOPE, STORAGE_RESOURCE
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {"password": "secret"}
+    params["auth_type"] = "Client Credentials"
+
+    get_azure_client(params, {}, "azure-storage-container-create")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["scope"] == STORAGE_SCOPE
+    assert kwargs["resource"] == STORAGE_RESOURCE
+    assert kwargs["connection_type"] == "Client Credentials"
+
+
+def test_azure_client_device_code_uses_device_scope(mocker):
+    """
+    Given: A client constructed with the Device Code flow.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the device-code scope and resource (not a per-command scope).
+    """
+    from Azure import SCOPE_BY_CONNECTION
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", scope="should-be-ignored", resource="ignored")
+
+    assert captured["scope"] == SCOPE_BY_CONNECTION["Device Code"]
+    assert captured["resource"] == "https://management.core.windows.net"  # disable-secrets-detection
+    assert captured["token_retrieval_url"] is not None
+
+
 def test_main_auth_reset(mocker):
     """
     Given: The azure-auth-reset command on the marketplace path.

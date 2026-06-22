@@ -5436,7 +5436,7 @@ script:
       description: The version of the public IP address (IPv4 or IPv6).
       type: String
     - contextPath: Azure.Network.IPConfigurations.properties.publicIPAllocationMethod
-      description: Defines how the public IP address is allocated — Static or Dynamic.
+      description: Defines how the public IP address is allocated - Static or Dynamic.
       type: String
     - contextPath: Azure.Network.IPConfigurations.properties.resourceGuid
       description: The unique Azure resource GUID for the IP configuration.
