@@ -797,7 +797,8 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
 
         send_start = time.monotonic()
-        send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
+        # fetch-events only: stream each Activities/Devices page straight to XSIAM and free it.
+        send_events_to_xsiam(new_events, vendor=VENDOR, product=product, use_streaming_send=True)
         send_secs = time.monotonic() - send_start
 
         running_state["total_shipped"] += len(new_events)
@@ -1112,7 +1113,8 @@ def _enrich_and_ship_in_chunks(client: Client, alerts: list[dict], chunk_size: i
         chunk = alerts[offset : offset + chunk_size]
         bulk_enrich_alerts(client, chunk)
         add_time_to_events(chunk, EVENT_TYPE_ALERTS)
-        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT)
+        # fetch-events only: ship each enriched alert chunk to XSIAM and free it.
+        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT, use_streaming_send=True)
         safe_debug(f"[{tname}] enrich+ship: chunk {chunk_idx}/{total_chunks} shipped {len(chunk)}")
         del chunk
         gc.collect()
@@ -1458,6 +1460,9 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
             add_time_to_events(events_list, event_type)
             demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
+            # In practice the armis-get-events push path: events are collected (no streaming), so they
+            # reach here. fetch-events streams/pops everything earlier and hits the heartbeat branch below.
+            # No streaming-send here, so the list stays intact for armis-get-events to display afterwards.
             send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
             demisto.debug(f"{len(events_list)} events of type: {event_type} were sent to XSIAM.")
     else:
@@ -1465,6 +1470,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
         # fetch loop (Activities/Devices). Send an empty heartbeat so XSIAM knows the
         # collector is alive.
         demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
+        # Empty heartbeat (mainly fetch-events): tells XSIAM the collector is alive when nothing was collected.
         send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f"setting {next_run=}")
