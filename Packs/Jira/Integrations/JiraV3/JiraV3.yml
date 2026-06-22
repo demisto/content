@@ -223,6 +223,23 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
+    - description: The search string.
+      type: String
+      name: query
+    - description: The maximum number of results to return.
+      type: Number
+      name: limit
+      defaultValue: '50'
+    description: Searches for users and groups in Jira that match the query string.
+    name: jira-user-group-search
+    outputs:
+    - contextPath: Jira.UsersAndGroups.Users
+      description: The Users that match the query string.
+      type: Object
+    - contextPath: Jira.UsersAndGroups.Groups
+      description: The Groups that match the query string.
+      type: Object
+  - arguments:
     - description: Deprecated. Please use issue_id or issue_key.
       name: issueIdOrKey
       hidden: true
