@@ -999,7 +999,7 @@ def module_test_compliance(client: ComplianceClient) -> str:
     return "ok"
 
 
-def require_compliance_key(compliance_api_key: str | None) -> None:
+def ensure_compliance_key(compliance_api_key: str | None) -> None:
     """Fail fast with a helpful error if the Compliance Access Key is not configured."""
     if not compliance_api_key:
         raise DemistoException(
@@ -1009,7 +1009,7 @@ def require_compliance_key(compliance_api_key: str | None) -> None:
         )
 
 
-def require_api_key(api_key: str | None) -> None:
+def ensure_api_key(api_key: str | None) -> None:
     """Fail fast with a helpful error if the Anthropic API Key is not configured."""
     if not api_key:
         raise DemistoException(
@@ -1089,12 +1089,12 @@ def main() -> None:  # pragma: no cover
             return_results(failure or "ok")
 
         elif command == "fetch-events":
-            require_compliance_key(compliance_api_key)
+            ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             fetch_events_command(client=compliance_client, params=params)
 
         elif command == "claude-get-events":
-            require_compliance_key(compliance_api_key)
+            ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             events, results_obj = get_events_command(client=compliance_client, args=args)
             # get_events_command already set _time on each event, so just push when requested.
@@ -1103,17 +1103,17 @@ def main() -> None:  # pragma: no cover
             return_results(results_obj)
 
         elif command in org_scoped_commands:
-            require_compliance_key(compliance_api_key)
+            ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(org_scoped_commands[command](compliance_client, args, params))
 
         elif command in compliance_commands:
-            require_compliance_key(compliance_api_key)
+            ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(compliance_commands[command](compliance_client, args))
 
         elif command in llm_commands:
-            require_api_key(api_key)
+            ensure_api_key(api_key)
             llm_args = dict(args)
             llm_args.update({key: value for key, value in params.items() if key not in llm_args and value is not None})
             llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)

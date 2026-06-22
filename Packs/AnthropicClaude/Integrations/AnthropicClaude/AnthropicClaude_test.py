@@ -26,8 +26,8 @@ from AnthropicClaude import (
     get_project_document_command,
     module_test_compliance,
     resolve_org_uuid,
-    require_compliance_key,
-    require_api_key,
+    ensure_compliance_key,
+    ensure_api_key,
 )
 
 BASE_URL = "https://api.anthropic.com/"
@@ -314,15 +314,15 @@ def test_resolve_org_uuid_missing_raises():
 
 def test_require_compliance_key_missing_raises():
     with pytest.raises(DemistoException, match="Compliance Access Key"):
-        require_compliance_key(None)
+        ensure_compliance_key(None)
     # Present key does not raise.
-    require_compliance_key("sk-ant-api01-test")
+    ensure_compliance_key("sk-ant-api01-test")
 
 
 def test_require_api_key_missing_raises():
     with pytest.raises(DemistoException, match="API Key"):
-        require_api_key(None)
-    require_api_key("some-key")
+        ensure_api_key(None)
+    ensure_api_key("some-key")
 
 
 """ TEST-MODULE TESTS """
