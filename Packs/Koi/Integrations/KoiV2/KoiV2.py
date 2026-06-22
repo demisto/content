@@ -7,8 +7,7 @@ from typing import Any
 
 import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+
 
 """ CONSTANTS """
 
@@ -21,7 +20,7 @@ DEFAULT_PAGE_SIZE = 100
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client to interact with the KOI v2 API.
 
     Extends BaseClient from CommonServerPython for HTTP handling.
@@ -82,8 +81,7 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
     """
     for event in events:
         created = event.get("created_time") or event.get("timestamp")
-        if created:
-            event["_time"] = created
+        event["_time"] = created
 
 
 """ COMMAND FUNCTIONS """
@@ -183,7 +181,7 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)} {traceback.format_exc()}")
 
 
 """ ENTRY POINT """
