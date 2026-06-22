@@ -1214,9 +1214,12 @@ def escape_backslashes_in_field_filters(search):
     backslash. Splunk SPL, however, requires backslashes inside a double-quoted filter value to be
     escaped (doubled) in order to match.
 
-    To stay safe, this only touches values that directly follow ``=`` (i.e. ``field="value"`` filters)
-    and leaves free-text / ``rex`` regex quoted strings untouched. It is idempotent - values that are
-    already correctly escaped (``\\\\``) are left unchanged.
+    To stay safe, this only touches values of genuine ``field="value"`` filters - the quoted value must
+    be directly preceded by a field-name token and ``=`` (e.g. ``TaskName="..."``). This deliberately
+    excludes regex/string literals that follow ``(`` or ``,`` inside SPL functions such as
+    ``eval x=replace(field,"(\\)","\\\\")`` and leaves free-text / ``rex`` regex quoted strings
+    untouched. It is idempotent - values that are already correctly escaped (``\\\\``) are left
+    unchanged.
 
     Args:
         search (str): The decoded SPL drilldown search.
@@ -1226,13 +1229,15 @@ def escape_backslashes_in_field_filters(search):
     """
 
     def _escape(match):
-        prefix = match.group(1)  # the '=' and any following whitespace
+        prefix = match.group(1)  # the field name, '=' and any surrounding whitespace
         value = match.group(2)  # the value between the double quotes
         normalized = value.replace("\\\\", "\\")  # normalize already-doubled backslashes
         escaped = normalized.replace("\\", "\\\\")  # then double every backslash (idempotent)
         return f'{prefix}"{escaped}"'
 
-    return re.sub(r'(=\s*)"([^"]*)"', _escape, search)
+    # Anchor on a field-name token so only real `field="value"` filters match. This avoids
+    # over-escaping regex literals inside function calls like replace(field,"(\\)","\\\\").
+    return re.sub(r'([\w.]+\s*=\s*)"([^"]*)"', _escape, search)
 
 
 def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:

@@ -1848,26 +1848,45 @@ def test_to_incident_finding_enrichments_status(enrichments, enrichment_type, ex
 @pytest.mark.parametrize(
     "spl_search, expected",
     [
-        # The exact customer case (XSUP-70829, finding f9006ee9): single backslashes must be doubled
+        # Single backslashes inside a field="value" filter must be doubled
         (
-            'EventCode IN (4698, 4699) TaskName="\\Microsoft\\Office\\Office Serviceability Manager" | head 1',
-            'EventCode IN (4698, 4699) TaskName="\\\\Microsoft\\\\Office\\\\Office Serviceability Manager" | head 1',
+            'eventcode IN (1, 2) field_a="\\foo\\bar\\baz" | head 1',
+            'eventcode IN (1, 2) field_a="\\\\foo\\\\bar\\\\baz" | head 1',
         ),
         # Already-doubled values are left unchanged (idempotent)
-        ('TaskName="\\\\Microsoft\\\\Office"', 'TaskName="\\\\Microsoft\\\\Office"'),
+        ('field_a="\\\\foo\\\\bar"', 'field_a="\\\\foo\\\\bar"'),
         # Values without backslashes are untouched
-        ('src_ip="10.0.0.1" host="abc"', 'src_ip="10.0.0.1" host="abc"'),
+        ('field_a="10.0.0.1" field_b="abc"', 'field_a="10.0.0.1" field_b="abc"'),
         # rex / free-text quoted strings (not preceded by '=') must NOT be modified
         (
-            'index=x | rex field=indicators "deviceName: (?<deviceName>.*)"',
-            'index=x | rex field=indicators "deviceName: (?<deviceName>.*)"',
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+        ),
+        # Regex literals inside SPL function calls (quote follows '(' or ',', NOT a field token)
+        # must NOT be re-escaped.
+        (
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+        ),
+        # Multiple genuine field="value" filters in one query are all doubled
+        (
+            'field_a="\\foo\\bar" field_b="\\\\baz\\\\qux"',
+            'field_a="\\\\foo\\\\bar" field_b="\\\\baz\\\\qux"',
+        ),
+        # A dotted field name is still treated as a field filter
+        (
+            'parent.child="\\foo\\bar"',
+            'parent.child="\\\\foo\\\\bar"',
         ),
     ],
     ids=[
-        "single backslashes are doubled (XSUP-70829 TaskName)",
+        "single backslashes are doubled",
         "already-doubled backslashes are unchanged",
         "no backslashes are untouched",
         "rex regex quoted string is not modified",
+        "eval/replace regex literal is not over-escaped",
+        "multiple field filters are all doubled",
+        "dotted field name is treated as a field filter",
     ],
 )
 def test_escape_backslashes_in_field_filters(spl_search, expected):
@@ -1876,17 +1895,20 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
     values are collapsed to single backslashes, which Splunk SPL cannot match. We re-escape them.
 
     Given:
-    - An SPL search with a field filter value containing single backslashes .
-    - An SPL search whose values are already correctly escaped.
+    - An SPL search with a field="value" filter value containing single backslashes.
+    - An SPL search whose field filter values are already correctly escaped.
     - An SPL search without backslashes.
     - An SPL search with a rex/free-text quoted string containing a backslash.
+    - An SPL search with a regex literal inside a function call (eval/replace).
+    - An SPL search with multiple field filters.
+    - An SPL search with a dotted field name.
 
     When:
     - escape_backslashes_in_field_filters is called.
 
     Then:
-    - Backslashes inside field="value" filters are doubled, the operation is idempotent, and
-      rex/free-text quoted strings are left untouched.
+    - Backslashes inside genuine field="value" filters are doubled, the operation is idempotent,
+      and rex/free-text quoted strings and regex literals inside function calls are left untouched.
     """
     assert splunk.escape_backslashes_in_field_filters(spl_search) == expected
 
@@ -1894,8 +1916,7 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
 def test_parse_drilldown_searches_preserves_backslashes():
     """
     Given:
-    - The exact 'drilldown_searches' JSON payload from finding f9006ee9 , where the
-      TaskName filter value contains backslashes.
+    - A 'drilldown_searches' JSON payload where a field="value" filter value contains backslashes.
 
     When:
     - Running splunk.parse_drilldown_searches.
@@ -1904,15 +1925,12 @@ def test_parse_drilldown_searches_preserves_backslashes():
     - The parsed 'search' keeps the backslashes escaped (doubled) for Splunk SPL.
     """
     searches = [
-        '[{"name":"Show contributing Events","search":"(index=windows OR index=windows_client) '
-        'EventCode IN (4698, 4699) TaskName=\\"\\\\Microsoft\\\\Office\\\\Office Serviceability Manager\\" '
+        '[{"name":"Show events","search":"(index=idx_a OR index=idx_b) '
+        'eventcode IN (1, 2) field_a=\\"\\\\foo\\\\bar\\\\baz\\" '
         '| head 1","earliest_offset":"1","latest_offset":"2","disabled":false}]'
     ]
     parsed = splunk.parse_drilldown_searches(searches)
-    assert parsed[0]["search"] == (
-        "(index=windows OR index=windows_client) EventCode IN (4698, 4699) "
-        'TaskName="\\\\Microsoft\\\\Office\\\\Office Serviceability Manager" | head 1'
-    )
+    assert parsed[0]["search"] == ("(index=idx_a OR index=idx_b) eventcode IN (1, 2) " 'field_a="\\\\foo\\\\bar\\\\baz" | head 1')
 
 
 def test_parse_drilldown_searches():
