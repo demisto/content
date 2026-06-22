@@ -14,7 +14,6 @@ To obtain the **Client ID** and **Client Secret**, please refer to the official 
 | tsg_id | TSG ID | False |
 | client_id | Client ID | False |
 | client_secret | Client Secret | False |
-| is_staging | Staging | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | first_fetch | First fetch time | False |
