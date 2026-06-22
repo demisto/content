@@ -1,6 +1,6 @@
 import json
 
-from PaloAltoNetworks_DeviceSecurity_SCM import (
+from PaloAltoNetworks_DeviceSecurity import (
     Client,
     fetch_incidents,
     device_security_get_device,

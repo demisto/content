@@ -1,6 +1,6 @@
-id: PaloAltoNetworks_DeviceSecurity_SCM-Test
+id: PaloAltoNetworks_DeviceSecurity-Test
 version: -1
-name: PaloAltoNetworks_DeviceSecurity_SCM-Test
+name: PaloAltoNetworks_DeviceSecurity-Test
 starttaskid: "0"
 tasks:
   "0":

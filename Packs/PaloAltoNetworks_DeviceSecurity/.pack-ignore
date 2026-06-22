@@ -1,4 +1,4 @@
-[file:PaloAltoNetworks_DeviceSecurity_SCM.yml]
+[file:PaloAltoNetworks_DeviceSecurity.yml]
 ignore=IN126,IN145,BA108,BA109
 
 [file:device_security_alert_post_processing.yml]
