@@ -48,11 +48,26 @@ alter
     xdm.source.location.longitude = to_float(json_extract_scalar(actor, "$.session.ip_address_details.longitude")),
     xdm.observer.type    = "OpenAI API Platform",
     xdm.observer.sub_type = "Audit Logs",
-    xdm.target.resource.id = if(type ~= "^login\.", null,
-        coalesce(
-            json_extract_scalar(_raw_log, "['api_key.created']['id']"),
-            json_extract_scalar(_raw_log, "['organization.updated']['id']"))),
-    xdm.target.resource.name = "OpenAI API Platform";
+    xdm.target.resource.id = if(
+        type in ("login.succeeded", "login.failed", "logout.succeeded", "logout.failed",
+            "resource.deleted", "tunnel.created", "tunnel.updated", "tunnel.deleted",
+            "ip_allowlist.config.activated", "ip_allowlist.config.deactivated",
+            "certificates.activated", "certificates.deactivated"), null,
+        json_extract_scalar(_raw_log, concat("$.\"", type, "\".id"))),
+    xdm.target.resource.name = if(
+        type in ("certificate.created", "certificate.updated", "certificate.deleted",
+            "ip_allowlist.created", "ip_allowlist.deleted"),
+            json_extract_scalar(_raw_log, concat("$.\"", type, "\".name")),
+        type = "role.created",    json_extract_scalar(_raw_log, "$.\"role.created\".role_name"),
+        type = "role.updated",    json_extract_scalar(_raw_log, "$.\"role.updated\".changes_requested.role_name"),
+        type = "group.created",   json_extract_scalar(_raw_log, "$.\"group.created\".data.group_name"),
+        type = "group.updated",   json_extract_scalar(_raw_log, "$.\"group.updated\".changes_requested.group_name"),
+        type = "invite.sent",     json_extract_scalar(_raw_log, "$.\"invite.sent\".data.email"),
+        type = "project.created", json_extract_scalar(_raw_log, "$.\"project.created\".data.name"),
+        type = "organization.updated", coalesce(
+            json_extract_scalar(_raw_log, "$.\"organization.updated\".changes_requested.name"),
+            json_extract_scalar(_raw_log, "$.\"organization.updated\".changes_requested.title")),
+        null);
 
 [MODEL: dataset="openai_chatgpt_compliance_raw"]
 // OpenAI ChatGPT Enterprise Compliance API Logs -> XDM
