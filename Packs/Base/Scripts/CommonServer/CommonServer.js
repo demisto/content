@@ -2124,8 +2124,32 @@ var _UCP_AUTH_PARAMS_INJECTED = false;
 var _UCP_REFRESH_THRESHOLD_SECONDS = 30;
 var _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation';
 var _UCP_COMMAND_CAPABILITIES = {
-    'fetch-incidents': 'collection-and-ingestion',
-    'fetch-assets': 'collection-and-ingestion'
+    'fetch-incidents': 'fetch-issues',
+    'fetch-events': 'log-collection',
+    'fetch-credentials': 'fetch-secrets',
+    'fetch-indicators': 'threat-intelligence-and-enrichment',
+    'fetch-assets': 'fetch-assets-and-vulnerabilities'
+};
+
+// Canonical credential-envelope schema per profile type.
+// Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+//
+// 'api_key' and 'plain' profiles have FIXED envelope schemas: the secret always
+// lives under a known key inside creds[creds.type] regardless of what
+// interpolation_mapping left-hand id (field_id) the manifest emits. The common
+// scripts therefore OWN this knowledge and resolve those values from the
+// canonical location, rather than trusting the generator-emitted field_id.
+//
+// Each entry maps the mapping's left-hand field_id (which equals the field's
+// metadata.auth.parameter) to the actual key inside the flattened envelope.
+// Note the api_key alias: auth.parameter is 'api_key' (per the connection
+// schema / OPA contract) but the runtime envelope stores the value under 'key'.
+//
+// 'passthrough' is the free-form escape hatch and intentionally has NO entry:
+// its values are looked up generically by field_id.
+var _UCP_CANONICAL_FIELD_KEYS = {
+    'api_key': {'api_key': 'key'},
+    'plain': {'username': 'username', 'password': 'password'}
 };
 
 // ── UCP TTL Cache (mirrors Python _ttl_cache) ──
@@ -2187,6 +2211,7 @@ function isUcpEnabled() {
         var info = unifiedConnectorMetadata();
         return !!(info && info.connectionProfiles && info.connectionProfiles.length > 0);
     } catch (e) {
+        logError('[UCP][CommonServer.js] isUcpEnabled: unifiedConnectorMetadata() error: ' + e);
         return false;
     }
 }
@@ -2227,17 +2252,15 @@ function resolveUcpCapability(cmd) {
  */
 function _getUcpProfiles() {
     var info = unifiedConnectorMetadata();
-    // Metadata is available via logDebug if needed for troubleshooting
-    
-    logDebug('[UCP][CommonServer.js] UCP Metadata: ' + JSON.stringify(info));
     if (!info) {
+        logError('[UCP][CommonServer.js] _getUcpProfiles: unifiedConnectorMetadata() returned empty.');
         throw '[Unified Connector] Connector metadata is not available. '
             + 'Please verify that this integration instance is configured to use a Unified Connector.';
     }
-    
+
     var profiles = info.connectionProfiles || [];
     if (profiles.length === 0) {
-        logDebug('[UCP][CommonServer.js] No connection profiles found in connector metadata.');
+        logError('[UCP][CommonServer.js] _getUcpProfiles: No connection profiles found in connector metadata.');
         throw '[Unified Connector] No authentication profiles are configured for this connector. '
             + 'Please check the connector setup in your Cortex platform and ensure at least one authentication profile is defined.';
     }
@@ -2451,4 +2474,407 @@ function getUcpCredentials(capability, subCapability) {
         throw '[UCP] Failed to retrieve authentication credentials. '
             + 'Please verify the configuration and ensure the authentication profile is valid. '
     }
+}
+
+
+// ── UCP helper: interpolate connector field values into params ──
+// 1:1 behavioral twin of the Python interpolate_ucp_params() / build_ucp_params()
+// pipeline in CommonServerPython.py. When no interpolation_mapping (param_map)
+// is present, this is a no-op and legacy behavior is preserved.
+
+/**
+ * Place a value into target at the dotted path, creating intermediate objects
+ * as needed. Mirrors Python _place_by_path.
+ *
+ * The destination string is split on '.'; each segment except the last becomes
+ * (or reuses) a nested object, and the final segment receives the value. Two
+ * paths that share a parent therefore merge into a single nested object — this
+ * is how multiple connector fields fold into one structured param (e.g.
+ * credentials.identifier + credentials.password → {credentials: {identifier, password}}).
+ *
+ * Empty segments are dropped (so 'a..b' → ['a','b'] and '' / '.' is a no-op).
+ * If an intermediate segment currently holds a non-object value, it is
+ * overwritten with a fresh object (matches Python's `not isinstance(existing, dict)`).
+ *
+ * @private
+ * @param {Object} target - The destination params object (mutated in place).
+ * @param {String} path - A dotted destination path (e.g. 'a.b.c').
+ * @param {*} value - The value to set at the leaf of path.
+ * @return {void}
+ */
+function placeByPath(target, path, value) {
+    var rawSegments = String(path).split('.');
+    var segments = [];
+    for (var i = 0; i < rawSegments.length; i++) {
+        if (rawSegments[i] !== '') {
+            segments.push(rawSegments[i]);
+        }
+    }
+    if (segments.length === 0) {
+        return;
+    }
+    var cursor = target;
+    for (var j = 0; j < segments.length - 1; j++) {
+        var segment = segments[j];
+        var existing = cursor[segment];
+        // Overwrite non-object (incl. null/array) intermediates with a fresh object.
+        if (existing === null || typeof existing !== 'object' || Object.prototype.toString.call(existing) === '[object Array]') {
+            existing = {};
+            cursor[segment] = existing;
+        }
+        cursor = existing;
+    }
+    cursor[segments[segments.length - 1]] = value;
+}
+
+
+/**
+ * Recursively merge `source` INTO `target` in place. Strict 1:1 behavioral
+ * twin of Python _deep_merge_dicts.
+ *
+ * For every key in `source`:
+ *   - If both the existing value in `target` and the incoming value in `source`
+ *     are plain objects (not null, typeof === 'object', not arrays), the two are
+ *     merged recursively (deep-merge).
+ *   - Otherwise the incoming value overwrites the existing one (this includes
+ *     the cases where types differ, e.g. an object overwrites a scalar or a
+ *     scalar overwrites an object, as well as arrays and null).
+ *
+ * Keys present only in `target` are preserved; keys present only in `source` are
+ * added. `target` is mutated in place (its object identity, and the identity of
+ * any nested objects that are recursed into, is preserved) and returned.
+ *
+ * @private
+ * @param {Object} target - The object to merge into (mutated in place).
+ * @param {Object} source - The object whose values take precedence on conflicts.
+ * @return {Object} The same `target` object, mutated in place.
+ */
+function deepMergeObjects(target, source) {
+    for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+                continue;
+            }
+            var sourceValue = source[key];
+            var targetValue = target[key];
+            var targetIsPlainObject = targetValue !== null
+                && typeof targetValue === 'object'
+                && Object.prototype.toString.call(targetValue) !== '[object Array]';
+            var sourceIsPlainObject = sourceValue !== null
+                && typeof sourceValue === 'object'
+                && Object.prototype.toString.call(sourceValue) !== '[object Array]';
+            if (targetIsPlainObject && sourceIsPlainObject) {
+                deepMergeObjects(targetValue, sourceValue);
+            } else {
+                target[key] = sourceValue;
+            }
+        }
+    }
+    return target;
+}
+
+
+/**
+ * Parse a UCP param_map into a list of [field_id, destination] pairs.
+ * Strict 1:1 behavioral twin of Python _parse_param_map.
+ *
+ * The canonical (and only reliably supported) form is a single comma-separated
+ * string of 'field_id:dotted.destination' entries, e.g.:
+ *   'username:credentials.identifier,password:credentials.password,server_url:server_url'
+ *
+ * NOTE: Like the Python version, this coerces the input via String() and splits
+ * on ',' regardless of type. An object/dict input therefore stringifies (e.g.
+ * "[object Object]") and will NOT parse into usable pairs — this intentionally
+ * matches Python's `str(param_map).split(',')` behavior (the docstring's claim
+ * of dict support is not actually implemented in Python). Empty/invalid entries
+ * are skipped. Order is preserved.
+ *
+ * @private
+ * @param {*} paramMap - The raw param_map value from the profile.
+ * @return {Array} Array of [field_id, destination] pairs.
+ */
+function parseParamMap(paramMap) {
+    var pairs = [];
+    if (!paramMap) {
+        return pairs;
+    }
+    var items = [];
+    // Mirror Python: str(param_map).split(',') on everything (no type-specific path).
+    var entries = String(paramMap).split(',');
+    for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i].trim();
+        if (!entry) {
+            continue;
+        }
+        if (entry.indexOf(':') === -1) {
+            logError("[UCP][CommonServer.js] parseParamMap: malformed entry '" + entry + "' (no ':'); skipping.");
+            continue;
+        }
+        // split(':', 1) equivalent: split on the FIRST ':' only.
+        var sep = entry.indexOf(':');
+        var fieldId = entry.substring(0, sep);
+        var destination = entry.substring(sep + 1);
+        items.push([fieldId, destination]);
+    }
+    for (var k = 0; k < items.length; k++) {
+        var fid = (items[k][0] === null || items[k][0] === undefined) ? '' : String(items[k][0]);
+        fid = fid.trim();
+        var dest = (items[k][1] === null || items[k][1] === undefined) ? '' : String(items[k][1]);
+        dest = dest.trim();
+        if (!fid || !dest) {
+            logDebug("[UCP][CommonServer.js] parseParamMap: empty field id or destination ('"
+                + fid + "' -> '" + dest + "'); skipping.");
+            continue;
+        }
+        pairs.push([fid, dest]);
+    }
+    return pairs;
+}
+
+
+/**
+ * Select ALL connection profiles in scope for the current command.
+ * Mirrors Python _select_ucp_profiles.
+ *
+ * Interpolation is metadata-first and capability-scoped: starting from the
+ * connector metadata's connectionProfiles, it keeps every profile whose
+ * capability matches `capability`. More than one profile may be active at a
+ * time, so this returns an array (not a single profile).
+ *
+ * @private
+ * @param {Array} profiles - The connectionProfiles from connector metadata.
+ * @param {String} capability - The resolved capability for the current command.
+ * @return {Array} Array of matching profile objects (possibly empty).
+ */
+function selectUcpProfiles(profiles, capability) {
+    if (!profiles || profiles.length === 0) {
+        logDebug('[UCP][CommonServer.js] selectUcpProfiles: no connectionProfiles in metadata.');
+        return [];
+    }
+    var matched = [];
+    for (var i = 0; i < profiles.length; i++) {
+        if (profiles[i].capability === capability) {
+            matched.push(profiles[i]);
+        }
+    }
+    logDebug('[UCP][CommonServer.js] selectUcpProfiles: found ' + matched.length
+        + ' profile(s) with capability ' + capability + '.');
+    if (matched.length > 0) {
+        return matched;
+    }
+    for (var j = 0; j < profiles.length; j++) {
+        var p = profiles[j];
+        if (p && p.metadata && p.metadata.xsoar && p.metadata.xsoar.interpolation_mapping) {
+            logDebug('[UCP][CommonServer.js] selectUcpProfiles: no capability match; '
+                + 'falling back to first profile with an interpolation_mapping.');
+            return [p];
+        }
+    }
+    return matched;
+}
+
+
+/**
+ * Generic flatten of a UCP credentials envelope for interpolation.
+ * Mirrors the inline flatten in Python build_ucp_params (NOT the hardcoded
+ * _flattenUcpCredentials, which drops non-fixed fields).
+ *
+ * The credentials envelope is nested under a type key, e.g.
+ *   {type: 'plain', plain: {username: '...', password: '...'}}
+ * Look up the field inside creds[creds.type], with a top-level fallback for
+ * already-flat envelopes. Some envelope types (e.g. passthrough) wrap the
+ * actual field values one level deeper under a 'parameters' sub-object:
+ *   {type: 'passthrough', passthrough: {parameters: {...}}}
+ * Descend into 'parameters' when present.
+ *
+ * @private
+ * @param {Object} credentials - Raw credentials envelope from getUCPCredentials().
+ * @return {Object} Flattened field values object (possibly empty).
+ */
+function _flattenUcpCredentialsGeneric(credentials) {
+    var credValues = {};
+    if (credentials && typeof credentials === 'object') {
+        var credType = credentials.type;
+        var typeData = credType ? credentials[credType] : null;
+        if (typeData && typeof typeData === 'object' && Object.prototype.toString.call(typeData) !== '[object Array]') {
+            credValues = typeData;
+        } else {
+            credValues = credentials;
+        }
+        var innerParams = (credValues && typeof credValues === 'object') ? credValues.parameters : null;
+        if (innerParams && typeof innerParams === 'object' && Object.prototype.toString.call(innerParams) !== '[object Array]') {
+            credValues = innerParams;
+        }
+    }
+    return credValues;
+}
+
+
+/**
+ * Build the reshaped params object from UCP connector metadata.
+ * Pure, side-effect-free core of UCP param interpolation. Mirrors Python
+ * build_ucp_params.
+ *
+ * Metadata-first: scans connectionProfiles to find every profile in scope for
+ * the current capability, then for each such profile reads its
+ * interpolation_mapping (param_map) together with the platform-supplied
+ * credential values, and interpolates them into the nested shape integrations
+ * expect — most importantly folding flat fields (e.g. username / password) into
+ * a single structured param (e.g. a credentials object, the classic XSOAR
+ * type-9 shape).
+ *
+ * Multiple profiles may be active at once. Results are merged into one params
+ * object (last-wins when two profiles target the same destination path, in
+ * connectionProfiles order).
+ *
+ * Does NOT touch any host state.
+ *
+ * @param {Object} connectorMetadata - The connector metadata.
+ * @param {String} [capability] - The resolved capability. When omitted,
+ *   resolved via resolveUcpCapability().
+ * @return {Object} A new params object with interpolated values (possibly empty).
+ */
+function buildUcpParams(connectorMetadata, capability) {
+    var result = {};
+    if (!connectorMetadata) {
+        return result;
+    }
+    if (capability === undefined || capability === null) {
+        capability = resolveUcpCapability();
+    }
+
+    var profiles = connectorMetadata.connectionProfiles || [];
+
+    var selected = selectUcpProfiles(profiles, capability);
+    logDebug('[UCP][CommonServer.js] buildUcpParams: capability=' + capability
+        + ', selected ' + selected.length + ' of ' + profiles.length + ' profile(s).');
+
+    for (var i = 0; i < selected.length; i++) {
+        var profile = selected[i];
+        var methodUniqueId = profile.method_unique_id;
+        // The interpolation mapping lives under the profile's module-namespaced
+        // metadata: profile.metadata.xsoar.interpolation_mapping.
+        var meta = profile.metadata || {};
+        var xsoar = meta.xsoar || {};
+        var interpolationMapping = xsoar.interpolation_mapping;
+
+        var pairs = parseParamMap(interpolationMapping);
+        if (pairs.length === 0) {
+            logDebug('[UCP][CommonServer.js] buildUcpParams: no interpolation pairs for profile id '
+                + methodUniqueId + '; skipping.');
+            continue;
+        }
+
+        // Fetch the RAW credentials envelope by method id (mirrors Python
+        // get_ucp_credentials) and generically flatten — do NOT reuse the
+        // hardcoded _flattenUcpCredentials, which drops mapped fields.
+        var credentials = getUCPCredentials(methodUniqueId, false);
+
+        var credValues = _flattenUcpCredentialsGeneric(credentials);
+
+        // For fixed-schema types (api_key, plain) resolve the value from the
+        // canonical envelope key, aliasing the mapping's field_id as needed
+        // (e.g. api_key -> 'key'). Free-form types (passthrough) fall back to a
+        // generic field_id lookup. Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+        var credType = (credentials && typeof credentials === 'object') ? credentials.type : null;
+        var canonicalKeys = _UCP_CANONICAL_FIELD_KEYS[credType] || {};
+        // Log field KEYS only (never values) to keep credential material out of logs.
+        logDebug('[UCP][CommonServer.js] buildUcpParams: cred_type=' + credType
+            + ', flattened cred keys=[' + Object.keys(credValues || {}).join(', ') + '].');
+
+        for (var p = 0; p < pairs.length; p++) {
+            var fieldId = pairs[p][0];
+            var destination = pairs[p][1];
+            var lookupKey = (canonicalKeys[fieldId] !== undefined) ? canonicalKeys[fieldId] : fieldId;
+            var fieldValue = (credValues && typeof credValues === 'object') ? credValues[lookupKey] : undefined;
+            // Match Python's `if field_value is None`: only skip null/undefined.
+            // Empty string, 0 and false ARE valid values and get placed.
+            if (fieldValue === null || fieldValue === undefined) {
+                logDebug('[UCP][CommonServer.js] buildUcpParams: missing value for field '
+                    + fieldId + ' for profile id ' + methodUniqueId + '.');
+                continue;
+            }
+            placeByPath(result, destination, fieldValue);
+        }
+    }
+
+    logDebug('[UCP][CommonServer.js] buildUcpParams: interpolated '
+        + Object.keys(result).length + ' top-level param(s).');
+    return result;
+}
+
+
+/**
+ * Interpolate UCP connector field values into the global params object.
+ * Thin applier around the pure buildUcpParams. Mirrors Python
+ * interpolate_ucp_params.
+ *
+ * Fetches the connector metadata (if not provided), builds the reshaped params,
+ * and merges them into the module-global `params` object so that subsequent
+ * param reads observe them (JS analog of Python's callingContext['params']).
+ * When no interpolation_mapping is present this is a no-op and legacy params are
+ * left untouched.
+ *
+ * On success the module-global _UCP_AUTH_PARAMS_INJECTED flag is set to true so
+ * that shouldUseUcpAuth() knows credentials have already been pre-injected.
+ *
+ * @param {Object} [connectorMetadata] - The connector metadata. If omitted,
+ *   fetched via unifiedConnectorMetadata().
+ * @return {Boolean} true if any params were interpolated, false otherwise.
+ */
+function interpolateUcpParams(connectorMetadata) {
+    try {
+        if (connectorMetadata === undefined || connectorMetadata === null) {
+            try {
+                connectorMetadata = unifiedConnectorMetadata();
+            } catch (e) {
+                logDebug('[UCP][CommonServer.js] interpolateUcpParams: unifiedConnectorMetadata() not available: ' + e);
+                return false;
+            }
+            if (!connectorMetadata) {
+                // We aren't in UCP land.
+                return false;
+            }
+        }
+    } catch (e) {
+        logError('[UCP][CommonServer.js] interpolateUcpParams: unifiedConnectorMetadata() error: ' + e);
+        return false;
+    }
+
+    var capability = null;
+    try {
+        capability = resolveUcpCapability();
+    } catch (e) {
+        logDebug('[UCP][CommonServer.js] interpolateUcpParams: could not resolve capability (' + e + ').');
+    }
+
+    var interpolated = buildUcpParams(connectorMetadata, capability);
+    if (!interpolated || Object.keys(interpolated).length === 0) {
+        return false;
+    }
+
+    // Deep-merge into the module-global params object (last-wins on scalar
+    // conflicts, recursive on nested objects), mirroring Python's
+    // `_deep_merge_dicts(params, interpolated)` on callingContext['params'].
+    if (typeof params !== 'object' || params === null) {
+        params = {};
+    }
+    deepMergeObjects(params, interpolated);
+    _UCP_AUTH_PARAMS_INJECTED = true;
+    logDebug('[UCP][CommonServer.js] interpolateUcpParams: interpolated '
+        + Object.keys(interpolated).length + ' top-level param(s) for capability=' + capability + '.');
+    return true;
+}
+
+
+// ── Auto-run interpolation at load time ──
+// Placed at the end of the UCP section so every UCP helper it depends on
+// (resolveUcpCapability, selectUcpProfiles, getUCPCredentials, ...) is already
+// defined. When the integration is not running under UCP, this is a cheap no-op
+// (unifiedConnectorMetadata() is empty / unavailable). Never throws.
+try {
+    interpolateUcpParams();
+} catch (e) {
+    // Load-time safety net: never let interpolation break script load.
+    logError('[UCP][CommonServer.js] load-time interpolateUcpParams() swallowed error: ' + e);
 }
