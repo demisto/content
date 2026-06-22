@@ -199,9 +199,9 @@ async def test_fetch_path_partial_failure(mocker):
     # The other types still contributed their events to the total (partial-failure accounting).
     assert total_count > 0, f"total_events_count should reflect the types that DID send, got {total_count}"
     # The failing type's cursor is not advanced, so it will be retried next cycle.
-    assert "next_fetch_start_time" not in new_last_run.get(failing_type, {}), (
-        "Failing type must NOT advance its cursor (so it retries next cycle)"
-    )
+    assert "next_fetch_start_time" not in new_last_run.get(
+        failing_type, {}
+    ), "Failing type must NOT advance its cursor (so it retries next cycle)"
 
 
 @pytest.mark.asyncio

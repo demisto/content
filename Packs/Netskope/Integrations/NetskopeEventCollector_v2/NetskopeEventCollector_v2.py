@@ -587,9 +587,7 @@ async def handle_fetch_and_send_all_events(
             handle_event_type_async(client, event_type, start_time, end_time, offset, limit, send_to_xsiam, coord_id)
         )
 
-    demisto.debug(
-        f"[Fetch][{coord_id}] Running {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks"
-    )
+    demisto.debug(f"[Fetch][{coord_id}] Running {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks")
     results = await asyncio.gather(*prev_fetch_failure_tasks, *new_tasks, return_exceptions=True)
     success_tasks = list(filter(lambda res: not isinstance(res, BaseException), results))
     failures_tasks = list(filter(lambda res: isinstance(res, BaseException), results))
@@ -623,9 +621,7 @@ async def handle_fetch_and_send_all_events(
                 )
             new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
 
-    demisto.info(
-        f"[Fetch][{coord_id}] Cycle done: handled {total_events_count} total events in {time.time() - start:.2f}s"
-    )
+    demisto.info(f"[Fetch][{coord_id}] Cycle done: handled {total_events_count} total events in {time.time() - start:.2f}s")
 
     return all_events, total_events_count, new_last_run
 
