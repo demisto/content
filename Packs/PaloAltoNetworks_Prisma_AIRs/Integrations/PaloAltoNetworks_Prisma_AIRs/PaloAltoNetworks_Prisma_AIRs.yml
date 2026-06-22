@@ -181,6 +181,126 @@ script:
     - contextPath: PrismaAIRs.ApiKey.revoked
       description: Whether the API key has been revoked.
       type: Boolean
+  - name: prisma-airs-runtime-api-keys-create
+    description: Create a new Runtime API Key. WARNING - The full API key secret is only shown once during creation. Save it securely.
+    arguments:
+    - name: api_key_name
+      required: true
+      description: Name for the new API key.
+    - name: auth_code
+      required: true
+      description: Deployment profile auth code (obtained from deployment profile).
+    - name: cust_app
+      required: true
+      description: Customer application name using this API key.
+    - name: rotation_time_interval
+      required: true
+      description: Rotation time interval (number).
+    - name: rotation_time_unit
+      required: true
+      description: Rotation time unit.
+      auto: PREDEFINED
+      predefined:
+      - 'hours'
+      - 'days'
+      - 'months'
+    - name: created_by
+      required: true
+      description: Email of the user creating the API key.
+    - name: dp_name
+      required: false
+      description: Deployment profile name (optional).
+    - name: cust_env
+      required: false
+      description: Customer environment (optional).
+    - name: cust_cloud_provider
+      required: false
+      description: Customer cloud provider (optional).
+    - name: cust_ai_agent_framework
+      required: false
+      description: Customer AI agent framework (optional).
+    outputs:
+    - contextPath: PrismaAIRs.ApiKey.id
+      description: Created API Key ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.name
+      description: API Key name.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.api_key
+      description: FULL API KEY SECRET - Only shown once! Save this securely.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.last8
+      description: Last 8 characters of the API key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.auth_code
+      description: Auth code associated with the key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.expires_at
+      description: API Key expiration timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.revoked
+      description: Whether the API key has been revoked.
+      type: Boolean
+    - contextPath: PrismaAIRs.ApiKey.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.created_by
+      description: User who created the key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.cust_app
+      description: Customer application name.
+      type: String
+  - name: prisma-airs-runtime-api-keys-regenerate
+    description: Regenerate an existing Runtime API Key. WARNING - This creates a NEW key with a NEW UUID and invalidates the old key. The new secret is only shown once.
+    arguments:
+    - name: api_key_id
+      required: true
+      description: UUID of the API key to regenerate.
+    - name: rotation_time_interval
+      required: true
+      description: New rotation time interval (number).
+    - name: rotation_time_unit
+      required: true
+      description: New rotation time unit.
+      auto: PREDEFINED
+      predefined:
+      - 'hours'
+      - 'days'
+      - 'months'
+    - name: updated_by
+      required: false
+      description: Email of the user performing regeneration (optional).
+    outputs:
+    - contextPath: PrismaAIRs.ApiKey.id
+      description: NEW API Key ID (UUID) - different from the old one.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.name
+      description: API Key name (same as before).
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.api_key
+      description: NEW FULL API KEY SECRET - Only shown once! The old key is now invalid.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.last8
+      description: Last 8 characters of the new API key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.auth_code
+      description: Auth code associated with the key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.expires_at
+      description: New expiration timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.revoked
+      description: Whether the API key has been revoked.
+      type: Boolean
+    - contextPath: PrismaAIRs.ApiKey.updated_at
+      description: Update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ApiKey.updated_by
+      description: User who regenerated the key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKey.cust_app
+      description: Customer application name.
+      type: String
   - name: prisma-airs-runtime-profiles-list
     description: List all runtime security profiles.
     arguments:
@@ -242,6 +362,254 @@ script:
     - contextPath: PrismaAIRs.CustomerApp.tsg_id
       description: Tenant Service Group ID.
       type: String
+  - name: prisma-airs-runtime-customer-apps-get
+    description: Get customer application details by name.
+    arguments:
+    - name: app_name
+      required: true
+      description: Name of the customer application to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.CustomerApp.id
+      description: Customer App ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.name
+      description: Customer App name.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.model_name
+      description: Model name used by the app.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.cloud_provider
+      description: Cloud provider (aws, azure, gcp, other).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.environment
+      description: Environment (prod, staging, dev).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.ai_agent_framework
+      description: AI agent framework used.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.status
+      description: Customer App status.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.created_by
+      description: Email of user who created the app.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.updated_by
+      description: Email of user who last updated the app.
+      type: String
+  - name: prisma-airs-runtime-customer-apps-update
+    description: Update a customer application configuration.
+    arguments:
+    - name: customer_app_id
+      required: true
+      description: UUID of the customer application to update.
+    - name: app_name
+      required: true
+      description: Application name.
+    - name: cloud_provider
+      required: true
+      description: Cloud provider.
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      - other
+    - name: environment
+      required: true
+      description: Environment.
+      auto: PREDEFINED
+      predefined:
+      - prod
+      - staging
+      - dev
+    - name: tsg_id
+      required: false
+      description: Tenant Service Group ID (defaults to configured TSG ID if not provided).
+    - name: model_name
+      required: false
+      description: Model name used by the application.
+    - name: ai_agent_framework
+      required: false
+      description: AI agent framework used by the application.
+    - name: updated_by
+      required: false
+      description: Email of user performing the update.
+    outputs:
+    - contextPath: PrismaAIRs.CustomerApp.id
+      description: Customer App ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.name
+      description: Customer App name.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.model_name
+      description: Model name used by the app.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.cloud_provider
+      description: Cloud provider (aws, azure, gcp, other).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.environment
+      description: Environment (prod, staging, dev).
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.ai_agent_framework
+      description: AI agent framework used.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.status
+      description: Customer App status.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.created_by
+      description: Email of user who created the app.
+      type: String
+    - contextPath: PrismaAIRs.CustomerApp.updated_by
+      description: Email of user who last updated the app.
+      type: String
+  - name: prisma-airs-runtime-customer-apps-consumption
+    description: Get per-application token consumption and session statistics over the requested time window.
+    arguments:
+    - name: app_id
+      required: true
+      description: Customer Application UUID (from customer-apps-list or customer-apps-get).
+    - name: app_name
+      required: true
+      description: Application display name (literal metadata.app_name value from scan payloads).
+    - name: time_interval
+      required: false
+      description: Look-back window in days (7, 30, or 60).
+      defaultValue: '30'
+      auto: PREDEFINED
+      predefined:
+      - '7'
+      - '30'
+      - '60'
+    - name: time_unit
+      required: false
+      description: Time unit (only 'days' is supported by API).
+      defaultValue: 'days'
+    outputs:
+    - contextPath: PrismaAIRs.CustomerAppConsumption.id
+      description: Customer App ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.name
+      description: Application name.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.cloud
+      description: Cloud provider.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.source
+      description: Source (api, sdk, etc.).
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.CustomerAppConsumption.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.CustomerAppConsumption.profiles
+      description: Attached security profiles.
+      type: Unknown
+    - contextPath: PrismaAIRs.CustomerAppConsumption.average_daily_tokens
+      description: Average daily token consumption.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.average_daily_tokens_scale
+      description: Scale for daily tokens (K, M, etc.).
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.monthly_total_tokens
+      description: Monthly total token consumption.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.monthly_total_tokens_scale
+      description: Scale for monthly tokens (K, M, etc.).
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.sessions_total
+      description: Total sessions in time window.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.sessions_violating
+      description: Number of violating sessions.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.last_session_id
+      description: Last session ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppConsumption.most_recent_session_time
+      description: Most recent session timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.CustomerAppConsumption.violations_critical
+      description: Critical violations count.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.violations_high
+      description: High violations count.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.violations_medium
+      description: Medium violations count.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.violations_low
+      description: Low violations count.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppConsumption.violations_total
+      description: Total violations count.
+      type: Number
+  - name: prisma-airs-runtime-customer-apps-violations
+    description: Get per-detector violation severity breakdown for an application over the requested time window.
+    arguments:
+    - name: app_id
+      required: true
+      description: Customer Application UUID (from customer-apps-list or customer-apps-get).
+    - name: app_name
+      required: true
+      description: Application display name (literal metadata.app_name value from scan payloads).
+    - name: time_interval
+      required: false
+      description: Look-back window in days (7, 30, or 60).
+      defaultValue: '30'
+      auto: PREDEFINED
+      predefined:
+      - '7'
+      - '30'
+      - '60'
+    - name: time_unit
+      required: false
+      description: Time unit (only 'days' is supported by API).
+      defaultValue: 'days'
+    outputs:
+    - contextPath: PrismaAIRs.CustomerAppViolations.app_id
+      description: Customer App ID.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppViolations.app_name
+      description: Application name.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppViolations.total_violating
+      description: Total number of violating sessions.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.time_interval
+      description: Time window in days.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.time_unit
+      description: Time unit used.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors
+      description: Per-detector violation breakdown array.
+      type: Unknown
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.detection_type
+      description: Detector type (agent_security, dbs, dlp, malicious_code, pi, source_code, tc, topic_guardrails, uf, contextual_grounding).
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.critical
+      description: Critical violations count for this detector.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.high
+      description: High violations count for this detector.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.medium
+      description: Medium violations count for this detector.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.low
+      description: Low violations count for this detector.
+      type: Number
+    - contextPath: PrismaAIRs.CustomerAppViolations.detectors.total
+      description: Total violations count for this detector.
+      type: Number
   - name: prisma-airs-runtime-deployment-profiles-list
     description: List all deployment profiles.
     arguments:
@@ -936,6 +1304,87 @@ script:
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
       description: Full probe results metadata.
+      type: Unknown
+  - name: prisma-airs-redteam-scan-create
+    description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
+    arguments:
+    - name: name
+      required: true
+      description: Scan name for identification.
+    - name: target_uuid
+      required: true
+      description: UUID of the target to scan.
+    - name: job_type
+      required: false
+      description: Scan type - STATIC (attack library), DYNAMIC (agent-driven), or CUSTOM (prompt sets).
+      defaultValue: 'STATIC'
+      auto: PREDEFINED
+      predefined:
+      - 'STATIC'
+      - 'DYNAMIC'
+      - 'CUSTOM'
+    - name: categories
+      required: false
+      description: 'JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories.'
+    - name: stream_breadth
+      required: false
+      description: Parallel agents per goal (DYNAMIC scans only). Default is 6.
+      defaultValue: '6'
+    - name: stream_depth
+      required: false
+      description: Maximum conversation turns per goal (DYNAMIC scans only). Default is 10.
+      defaultValue: '10'
+    - name: attack_goals
+      required: false
+      description: 'JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"].'
+    - name: custom_prompt_sets
+      required: false
+      description: Comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScan.uuid
+      description: Created scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.name
+      description: Scan name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.job_type
+      description: Job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.status
+      description: Initial scan status (typically QUEUED).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_id
+      description: Target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_type
+      description: Target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.total
+      description: Total number of attacks in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.completed
+      description: Number of completed attacks (initially 0).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.score
+      description: Risk score (null until scan completes).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.asr
+      description: Attack Success Rate (null until scan completes).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.version
+      description: Scan version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.job_metadata
+      description: Job metadata containing scan configuration.
       type: Unknown
   - name: prisma-airs-redteam-scans-list
     description: List all Red Team scans.

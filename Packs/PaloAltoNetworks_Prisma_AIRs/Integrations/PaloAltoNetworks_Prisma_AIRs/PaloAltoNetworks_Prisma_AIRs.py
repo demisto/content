@@ -520,6 +520,227 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
     )
 
 
+def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Runtime API Key.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR with the full API key secret.
+    """
+    # Required arguments
+    api_key_name = args.get("api_key_name")
+    auth_code = args.get("auth_code")
+    cust_app = args.get("cust_app")
+    rotation_time_interval = arg_to_number(args.get("rotation_time_interval"))
+    rotation_time_unit = args.get("rotation_time_unit")
+    created_by = args.get("created_by")
+
+    if not api_key_name:
+        raise ValueError("api_key_name is required")
+    if not auth_code:
+        raise ValueError("auth_code is required")
+    if not cust_app:
+        raise ValueError("cust_app is required")
+    if not rotation_time_interval:
+        raise ValueError("rotation_time_interval is required")
+    if not rotation_time_unit:
+        raise ValueError("rotation_time_unit is required (hours, days, or months)")
+    if not created_by:
+        raise ValueError("created_by is required")
+
+    # Validate rotation_time_unit
+    valid_units = ["hours", "days", "months"]
+    if rotation_time_unit not in valid_units:
+        raise ValueError(f"rotation_time_unit must be one of: {', '.join(valid_units)}")
+
+    # Build request body according to ApiKeyCreateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-api-key.ts
+    # Required: auth_code, cust_app, revoked, created_by, api_key_name,
+    #           rotation_time_interval, rotation_time_unit
+    # Optional: dp_name, cust_env, cust_cloud_provider, cust_ai_agent_framework
+    request_body = {
+        "api_key_name": api_key_name,
+        "auth_code": auth_code,
+        "cust_app": cust_app,
+        "created_by": created_by,
+        "revoked": False,  # Always create as not revoked
+        "rotation_time_interval": rotation_time_interval,
+        "rotation_time_unit": rotation_time_unit
+    }
+
+    # Add optional fields if provided
+    optional_fields = {
+        "dp_name": args.get("dp_name"),
+        "cust_env": args.get("cust_env"),
+        "cust_cloud_provider": args.get("cust_cloud_provider"),
+        "cust_ai_agent_framework": args.get("cust_ai_agent_framework")
+    }
+    for field, value in optional_fields.items():
+        if value:
+            request_body[field] = value
+
+    # Call Management API to create API key
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/management/api-keys.ts (create method)
+    # Endpoint: POST /v1/mgmt/apikeys
+    # Response: ApiKeySchema with full secret (only time it's shown)
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response according to ApiKeySchema
+    # Fields: api_key_id, api_key_name, api_key (full secret - only shown once!),
+    #         api_key_last8, auth_code, expiration, revoked
+    # Optional: created_at, updated_at, created_by, cust_app, etc.
+    api_key_info = {
+        "id": response.get("api_key_id"),
+        "name": response.get("api_key_name"),
+        "api_key": response.get("api_key"),  # FULL SECRET - only shown on create/regenerate
+        "last8": response.get("api_key_last8"),
+        "auth_code": response.get("auth_code"),
+        "expires_at": response.get("expiration"),
+        "revoked": response.get("revoked"),
+        "created_at": response.get("created_at"),
+        "created_by": response.get("created_by"),
+        "cust_app": response.get("cust_app")
+    }
+
+    # Add optional fields if present
+    optional_response_fields = ["updated_at", "updated_by", "cust_env", "cust_cloud_provider",
+                                "cust_ai_agent_framework", "dp_name"]
+    for field in optional_response_fields:
+        if response.get(field):
+            api_key_info[field] = response.get(field)
+
+    # Create readable output with WARNING about secret
+    readable_output = f"## ⚠️ API Key Created - Save the Secret Now!\n\n"
+    readable_output += f"**ID:** {api_key_info.get('id')}\n\n"
+    readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
+    readable_output += f"**API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
+    readable_output += f"**Last 8 Characters:** {api_key_info.get('last8')}\n\n"
+    readable_output += f"**Expires:** {api_key_info.get('expires_at', 'N/A')}\n\n"
+    readable_output += f"**Created By:** {api_key_info.get('created_by')}\n\n"
+    readable_output += "**⚠️ IMPORTANT:** This is the ONLY time the full API key secret will be shown. "
+    readable_output += "Save it securely now. Future API calls will only show the last 8 characters."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKey",
+        outputs_key_field="id",
+        outputs=api_key_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Regenerate an existing Runtime API Key.
+
+    This creates a NEW key with a NEW UUID and invalidates the old key.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR with the new API key secret.
+    """
+    # Required arguments
+    api_key_id = args.get("api_key_id")
+    rotation_time_interval = arg_to_number(args.get("rotation_time_interval"))
+    rotation_time_unit = args.get("rotation_time_unit")
+
+    if not api_key_id:
+        raise ValueError("api_key_id is required")
+    if not rotation_time_interval:
+        raise ValueError("rotation_time_interval is required")
+    if not rotation_time_unit:
+        raise ValueError("rotation_time_unit is required (hours, days, or months)")
+
+    # Validate rotation_time_unit
+    valid_units = ["hours", "days", "months"]
+    if rotation_time_unit not in valid_units:
+        raise ValueError(f"rotation_time_unit must be one of: {', '.join(valid_units)}")
+
+    # Build request body according to ApiKeyRegenerateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-api-key.ts
+    # Required: rotation_time_interval, rotation_time_unit
+    # Optional: updated_by
+    request_body = {
+        "rotation_time_interval": rotation_time_interval,
+        "rotation_time_unit": rotation_time_unit
+    }
+
+    # Add optional updated_by if provided
+    updated_by = args.get("updated_by")
+    if updated_by:
+        request_body["updated_by"] = updated_by
+
+    # Call Management API to regenerate API key
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/management/api-keys.ts (regenerate method)
+    # Endpoint: PUT /v1/mgmt/apikeys/regenerate/{apiKeyId}
+    # Response: ApiKeySchema with NEW UUID and NEW full secret
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys/regenerate/{api_key_id}"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response according to ApiKeySchema
+    # IMPORTANT: Returns NEW api_key_id and NEW api_key (full secret)
+    # The old key is invalidated
+    api_key_info = {
+        "id": response.get("api_key_id"),  # NEW UUID
+        "name": response.get("api_key_name"),
+        "api_key": response.get("api_key"),  # NEW FULL SECRET
+        "last8": response.get("api_key_last8"),
+        "auth_code": response.get("auth_code"),
+        "expires_at": response.get("expiration"),
+        "revoked": response.get("revoked"),
+        "updated_at": response.get("updated_at"),
+        "updated_by": response.get("updated_by"),
+        "cust_app": response.get("cust_app")
+    }
+
+    # Add optional fields if present
+    optional_response_fields = ["created_at", "created_by", "cust_env", "cust_cloud_provider",
+                                "cust_ai_agent_framework", "dp_name"]
+    for field in optional_response_fields:
+        if response.get(field):
+            api_key_info[field] = response.get(field)
+
+    # Create readable output with WARNING about new secret and old key invalidation
+    readable_output = f"## ⚠️ API Key Regenerated - Old Key Invalidated!\n\n"
+    readable_output += f"**New ID:** {api_key_info.get('id')}\n\n"
+    readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
+    readable_output += f"**New API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
+    readable_output += f"**Last 8 Characters:** {api_key_info.get('last8')}\n\n"
+    readable_output += f"**New Expiration:** {api_key_info.get('expires_at', 'N/A')}\n\n"
+    readable_output += f"**Updated By:** {api_key_info.get('updated_by', 'N/A')}\n\n"
+    readable_output += "**⚠️ IMPORTANT:**\n\n"
+    readable_output += "1. The OLD API key has been INVALIDATED and will no longer work\n"
+    readable_output += "2. This is the ONLY time the NEW full API key secret will be shown\n"
+    readable_output += "3. Update all applications using the old key with this new key\n"
+    readable_output += "4. The API key ID has changed - use the new ID for future operations"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKey",
+        outputs_key_field="id",
+        outputs=api_key_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List runtime security profiles.
 
@@ -637,6 +858,405 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
         outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
         outputs_key_field="id",
         outputs=apps,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get customer application details by name.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    app_name = args.get("app_name")
+    if not app_name:
+        raise ValueError("app_name is required")
+
+    # Call Management API to get customer app details
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/customer-apps.ts
+    # SDK: CustomerAppsClient.get(appName)
+    # Endpoint: GET /v1/mgmt/customerapp?app_name={appName}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
+    params = {
+        "app_name": app_name
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK schema (mgmt-customer-app.ts): CustomerAppSchema
+    # Fields: customer_appId, tsg_id, app_name, model_name, cloud_provider, environment, status, created_by, updated_by, ai_agent_framework
+    app_info = {
+        "id": response.get("customer_appId"),
+        "name": response.get("app_name"),
+        "model_name": response.get("model_name"),
+        "cloud_provider": response.get("cloud_provider"),
+        "environment": response.get("environment"),
+        "ai_agent_framework": response.get("ai_agent_framework"),
+        "tsg_id": response.get("tsg_id"),
+        "status": response.get("status"),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Customer Application: {app_name}",
+        [app_info],
+        headers=["id", "name", "model_name", "cloud_provider", "environment",
+                 "ai_agent_framework", "status", "created_by", "updated_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
+        outputs_key_field="id",
+        outputs=app_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update a customer application.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    customer_app_id = args.get("customer_app_id")
+    if not customer_app_id:
+        raise ValueError("customer_app_id is required")
+
+    # Build request body from arguments
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-customer-app.ts
+    # SDK: CustomerAppSchema - tsg_id, app_name, model_name (optional), cloud_provider, environment, ai_agent_framework (optional)
+    request_body: dict[str, Any] = {
+        "tsg_id": args.get("tsg_id", client.tsg_id),  # Default to client's TSG ID if not provided
+        "app_name": args.get("app_name"),
+        "cloud_provider": args.get("cloud_provider"),
+        "environment": args.get("environment")
+    }
+
+    # Add optional fields if provided
+    if args.get("model_name"):
+        request_body["model_name"] = args.get("model_name")
+    if args.get("ai_agent_framework"):
+        request_body["ai_agent_framework"] = args.get("ai_agent_framework")
+    if args.get("updated_by"):
+        request_body["updated_by"] = args.get("updated_by")
+
+    # Validate required fields
+    if not request_body.get("app_name"):
+        raise ValueError("app_name is required")
+    if not request_body.get("cloud_provider"):
+        raise ValueError("cloud_provider is required")
+    if not request_body.get("environment"):
+        raise ValueError("environment is required")
+
+    # Call Management API to update customer app
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/customer-apps.ts
+    # SDK: CustomerAppsClient.update(customerAppId, body)
+    # Endpoint: PUT /v1/mgmt/customerapp?customer_app_id={customerAppId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
+    params = {
+        "customer_app_id": customer_app_id
+    }
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        params=params,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response - Returns updated CustomerApp
+    app_info = {
+        "id": response.get("customer_appId"),
+        "name": response.get("app_name"),
+        "model_name": response.get("model_name"),
+        "cloud_provider": response.get("cloud_provider"),
+        "environment": response.get("environment"),
+        "ai_agent_framework": response.get("ai_agent_framework"),
+        "tsg_id": response.get("tsg_id"),
+        "status": response.get("status"),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Updated Customer Application: {app_info.get('name')}",
+        [app_info],
+        headers=["id", "name", "model_name", "cloud_provider", "environment", "ai_agent_framework", "status", "updated_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
+        outputs_key_field="id",
+        outputs=app_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_customer_apps_consumption_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get per-application token consumption and session statistics.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    app_id = args.get("app_id")
+    app_name = args.get("app_name")
+    time_interval = arg_to_number(args.get("time_interval")) or 30
+    time_unit = args.get("time_unit", "days")
+
+    if not app_id:
+        raise ValueError("app_id is required")
+    if not app_name:
+        raise ValueError("app_name is required")
+
+    # Validate time_interval - API only accepts 7, 30, or 60 days
+    if time_interval not in [7, 30, 60]:
+        raise ValueError("time_interval must be 7, 30, or 60 days")
+
+    # Call Dashboard API to get application consumption
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/dashboard.ts
+    # SDK: DashboardClient.application(query)
+    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/application?appid={appId}&appname={appName}&time_interval={interval}&time_unit={unit}
+    url_suffix = "/v1/mgmt/dashboard/v2/apps/application"
+    params = {
+        "appid": app_id,
+        "appname": app_name,
+        "time_interval": str(time_interval),
+        "time_unit": time_unit
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK schema (mgmt-dashboard.ts): DashboardApplicationSchema
+    # Fields: id, name, cloud, source, created_at, updated_at, profiles[], token_stats{}, session_stats{}
+    token_stats = response.get("token_stats") or {}
+    session_stats = response.get("session_stats") or {}
+    violation_breakdown = session_stats.get("violation_breakdown") or {}
+
+    app_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "cloud": response.get("cloud"),
+        "source": response.get("source"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "profiles": response.get("profiles"),
+        # Token consumption stats
+        "average_daily_tokens": token_stats.get("average_daily_tokens"),
+        "average_daily_tokens_scale": token_stats.get("average_daily_tokens_scale"),
+        "monthly_total_tokens": token_stats.get("monthly_total_tokens"),
+        "monthly_total_tokens_scale": token_stats.get("monthly_total_tokens_scale"),
+        # Session stats
+        "sessions_total": session_stats.get("total"),
+        "sessions_violating": session_stats.get("violating"),
+        "last_session_id": session_stats.get("last_session_id"),
+        "most_recent_session_time": session_stats.get("most_recent_session_time"),
+        # Violation severity counts
+        "violations_critical": violation_breakdown.get("critical"),
+        "violations_high": violation_breakdown.get("high"),
+        "violations_medium": violation_breakdown.get("medium"),
+        "violations_low": violation_breakdown.get("low"),
+        "violations_total": violation_breakdown.get("total")
+    }
+
+    # Format readable output using XSOAR best practice table format
+    # Create multiple tables for different data sections
+    readable_parts = []
+
+    # Application Overview Table
+    app_overview = [{
+        "App ID": app_info.get("id"),
+        "Name": app_info.get("name"),
+        "Cloud": app_info.get("cloud"),
+        "Source": app_info.get("source"),
+        "Profiles": ", ".join(app_info.get("profiles")) if app_info.get("profiles") else "None",
+        "Time Window": f"{time_interval} {time_unit}"
+    }]
+    readable_parts.append(tableToMarkdown(
+        "Application Overview",
+        app_overview,
+        headers=["App ID", "Name", "Cloud", "Source", "Profiles", "Time Window"],
+        removeNull=True
+    ))
+
+    # Token Consumption Table
+    avg_tokens = app_info.get("average_daily_tokens")
+    avg_scale = app_info.get("average_daily_tokens_scale") or ""
+    monthly_tokens = app_info.get("monthly_total_tokens")
+    monthly_scale = app_info.get("monthly_total_tokens_scale") or ""
+
+    token_consumption = [{
+        "Metric": "Daily Average",
+        "Value": f"{avg_tokens}{avg_scale}" if avg_tokens else "N/A"
+    }, {
+        "Metric": "Monthly Total",
+        "Value": f"{monthly_tokens}{monthly_scale}" if monthly_tokens else "N/A"
+    }]
+    readable_parts.append(tableToMarkdown(
+        "Token Consumption",
+        token_consumption,
+        headers=["Metric", "Value"]
+    ))
+
+    # Session Statistics Table
+    session_stats_table = [{
+        "Total Sessions": app_info.get("sessions_total") or 0,
+        "Violating Sessions": app_info.get("sessions_violating") or 0,
+        "Last Session ID": app_info.get("last_session_id") or "N/A",
+        "Most Recent Session": app_info.get("most_recent_session_time") or "N/A"
+    }]
+    readable_parts.append(tableToMarkdown(
+        "Session Statistics",
+        session_stats_table,
+        headers=["Total Sessions", "Violating Sessions", "Last Session ID", "Most Recent Session"],
+        removeNull=True
+    ))
+
+    # Violation Severity Breakdown Table
+    violations_table = [{
+        "Critical": app_info.get("violations_critical") or 0,
+        "High": app_info.get("violations_high") or 0,
+        "Medium": app_info.get("violations_medium") or 0,
+        "Low": app_info.get("violations_low") or 0,
+        "Total": app_info.get("violations_total") or 0
+    }]
+    readable_parts.append(tableToMarkdown(
+        "Violation Severity Breakdown",
+        violations_table,
+        headers=["Critical", "High", "Medium", "Low", "Total"]
+    ))
+
+    readable_output = "\n".join(readable_parts)
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppConsumption",
+        outputs_key_field="id",
+        outputs=app_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get per-detector violation severity breakdown for an application.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    app_id = args.get("app_id")
+    app_name = args.get("app_name")
+    time_interval = arg_to_number(args.get("time_interval")) or 30
+    time_unit = args.get("time_unit", "days")
+
+    if not app_id:
+        raise ValueError("app_id is required")
+    if not app_name:
+        raise ValueError("app_name is required")
+
+    # Validate time_interval - API only accepts 7, 30, or 60 days
+    if time_interval not in [7, 30, 60]:
+        raise ValueError("time_interval must be 7, 30, or 60 days")
+
+    # Call Dashboard API to get application violation breakdown
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/dashboard.ts
+    # SDK: DashboardClient.applicationViolationBreakdown(query)
+    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/applicationviolationbreakdown?appid={appId}&appname={appName}&time_interval={interval}&time_unit={unit}
+    url_suffix = "/v1/mgmt/dashboard/v2/apps/applicationviolationbreakdown"
+    params = {
+        "appid": app_id,
+        "appname": app_name,
+        "time_interval": str(time_interval),
+        "time_unit": time_unit
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK schema (mgmt-dashboard.ts): DashboardApplicationViolationBreakdownSchema
+    # Fields: detection_type_violation_breakdown[], total_violating
+    # Known detection types: agent_security, contextual_grounding, dbs, dlp, malicious_code, pi, source_code, tc, topic_guardrails, uf
+    breakdowns_raw = response.get("detection_type_violation_breakdown", [])
+    total_violating = response.get("total_violating", 0)
+
+    # Parse detector breakdowns
+    detectors = []
+    for breakdown in breakdowns_raw:
+        detection_type = breakdown.get("detection_type")
+        violation_breakdown = breakdown.get("violation_breakdown") or {}
+
+        detector_info = {
+            "detection_type": detection_type,
+            "critical": violation_breakdown.get("critical", 0),
+            "high": violation_breakdown.get("high", 0),
+            "medium": violation_breakdown.get("medium", 0),
+            "low": violation_breakdown.get("low", 0),
+            "total": violation_breakdown.get("total", 0)
+        }
+        detectors.append(detector_info)
+
+    # Sort by total violations (descending) for better readability
+    detectors.sort(key=lambda x: x.get("total", 0), reverse=True)
+
+    readable_output = tableToMarkdown(
+        f"Violation Breakdown by Detector (Total Violating: {total_violating})",
+        detectors,
+        headers=["detection_type", "critical", "high", "medium", "low", "total"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Create structured output
+    output = {
+        "app_id": app_id,
+        "app_name": app_name,
+        "total_violating": total_violating,
+        "detectors": detectors,
+        "time_interval": time_interval,
+        "time_unit": time_unit
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppViolations",
+        outputs_key_field="app_id",
+        outputs=output,
         readable_output=readable_output,
         raw_response=response
     )
@@ -1440,6 +2060,158 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
         outputs_key_field="uuid",
         outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team scan job.
+
+    This command creates a scan and returns immediately. It does NOT poll for completion.
+    Use prisma-airs-redteam-scan-get to check status, or implement polling in a playbook.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    import json
+
+    # Required arguments
+    name = args.get("name")
+    target_uuid = args.get("target_uuid")
+    job_type = args.get("job_type", "STATIC")  # Default to STATIC
+
+    if not name:
+        raise ValueError("name is required")
+    if not target_uuid:
+        raise ValueError("target_uuid is required")
+
+    # Validate job_type
+    valid_types = ["STATIC", "DYNAMIC", "CUSTOM"]
+    if job_type not in valid_types:
+        raise ValueError(f"job_type must be one of: {', '.join(valid_types)}")
+
+    # Build job_metadata based on job_type
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts
+    # - StaticJobMetadataSchema: { categories: Record<string, unknown> }
+    # - DynamicJobMetadataSchema: { stream_breadth, stream_depth, attack_goals }
+    # - CustomJobMetadataSchema: { custom_prompt_sets: Array<unknown> }
+    job_metadata: dict[str, Any] = {}
+
+    if job_type == "STATIC":
+        # STATIC scans: optional categories filter
+        categories_json = args.get("categories")
+        if categories_json:
+            try:
+                job_metadata["categories"] = json.loads(categories_json)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"categories must be valid JSON: {e}")
+        else:
+            # Empty categories object means "all categories"
+            job_metadata["categories"] = {}
+
+    elif job_type == "DYNAMIC":
+        # DYNAMIC scans: stream_breadth, stream_depth, attack_goals
+        # Defaults from CLI: breadth=6, depth=10
+        stream_breadth = arg_to_number(args.get("stream_breadth")) or 6
+        stream_depth = arg_to_number(args.get("stream_depth")) or 10
+
+        job_metadata["stream_breadth"] = stream_breadth
+        job_metadata["stream_depth"] = stream_depth
+
+        # Optional attack_goals array
+        attack_goals_json = args.get("attack_goals")
+        if attack_goals_json:
+            try:
+                attack_goals = json.loads(attack_goals_json)
+                if not isinstance(attack_goals, list):
+                    raise ValueError("attack_goals must be a JSON array")
+                job_metadata["attack_goals"] = attack_goals
+            except json.JSONDecodeError as e:
+                raise ValueError(f"attack_goals must be valid JSON: {e}")
+
+    elif job_type == "CUSTOM":
+        # CUSTOM scans: custom_prompt_sets as array of UUIDs
+        # CRITICAL: Must be array of UUID strings, NOT objects
+        # Reference: CLI redteam.ts line 352-355
+        prompt_sets_str = args.get("custom_prompt_sets")
+        if not prompt_sets_str:
+            raise ValueError("custom_prompt_sets is required for CUSTOM scans")
+
+        # Parse comma-separated UUIDs
+        custom_prompt_sets = [uuid.strip() for uuid in prompt_sets_str.split(",")]
+        job_metadata["custom_prompt_sets"] = custom_prompt_sets
+
+    # Build request body according to JobCreateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobCreateRequestSchema)
+    # Required fields: name, target (TargetJobRequestSchema), job_type, job_metadata
+    request_body = {
+        "name": name,
+        "target": {
+            "uuid": target_uuid
+        },
+        "job_type": job_type,
+        "job_metadata": job_metadata
+    }
+
+    # Call Red Team scan create endpoint
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (create method)
+    # Endpoint: POST /ai-red-teaming/data-plane/v1/scan
+    # Response: JobResponseSchema
+    response = client.http_request(
+        method="POST",
+        url_suffix=RED_TEAM_SCANS_ENDPOINT,
+        json_data=request_body,
+        use_redteam_data=True
+    )
+
+    # Parse response according to JobResponseSchema
+    # Key fields: uuid (job ID), name, status, job_type, target_id, total, completed, score, asr
+    scan_info = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "name": response.get("name"),
+        "job_type": response.get("job_type"),
+        "status": response.get("status"),
+        "target_id": response.get("target_id"),
+        "target_type": response.get("target_type"),
+        "total": response.get("total"),
+        "completed": response.get("completed"),
+        "score": response.get("score"),
+        "asr": response.get("asr"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["version", "extra_info", "job_metadata", "time_record",
+                       "created_by_user_id", "updated_by_user_id"]
+    for field in optional_fields:
+        if response.get(field):
+            scan_info[field] = response.get(field)
+
+    # Create readable output using XSOAR best practice table format
+    readable_output = tableToMarkdown(
+        "Red Team Scan Created Successfully",
+        [scan_info],
+        headers=["uuid", "name", "job_type", "status", "target_id",
+                 "target_type", "total", "completed", "score", "asr", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add helpful note below table
+    readable_output += "\n**Next Steps:** Use `!prisma-airs-redteam-scan-get uuid=\"" + \
+        str(scan_info.get('uuid')) + "\"` to check scan status and progress."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
+        outputs_key_field="uuid",
+        outputs=scan_info,
         readable_output=readable_output,
         raw_response=response
     )
@@ -3644,11 +4416,29 @@ def main() -> None:
         elif command == "prisma-airs-runtime-api-keys-list":
             return_results(runtime_api_keys_list_command(client, args))
 
+        elif command == "prisma-airs-runtime-api-keys-create":
+            return_results(runtime_api_keys_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-api-keys-regenerate":
+            return_results(runtime_api_keys_regenerate_command(client, args))
+
         elif command == "prisma-airs-runtime-profiles-list":
             return_results(runtime_profiles_list_command(client, args))
 
         elif command == "prisma-airs-runtime-customer-apps-list":
             return_results(runtime_customer_apps_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-customer-apps-get":
+            return_results(runtime_customer_apps_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-customer-apps-update":
+            return_results(runtime_customer_apps_update_command(client, args))
+
+        elif command == "prisma-airs-runtime-customer-apps-consumption":
+            return_results(runtime_customer_apps_consumption_command(client, args))
+
+        elif command == "prisma-airs-runtime-customer-apps-violations":
+            return_results(runtime_customer_apps_violations_command(client, args))
 
         elif command == "prisma-airs-runtime-deployment-profiles-list":
             return_results(runtime_deployment_profiles_list_command(client, args))
@@ -3700,6 +4490,9 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-probe":
             return_results(redteam_targets_probe_command(client, args))
+
+        elif command == "prisma-airs-redteam-scan-create":
+            return_results(redteam_scan_create_command(client, args))
 
         elif command == "prisma-airs-redteam-scans-list":
             return_results(redteam_scans_list_command(client, args))
