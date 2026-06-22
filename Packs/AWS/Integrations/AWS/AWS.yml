@@ -18685,11 +18685,13 @@ script:
     description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -18743,11 +18745,13 @@ script:
     description: "Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -18861,11 +18865,13 @@ script:
     description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the characterize firewall policy arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19000,11 +19006,13 @@ script:
     description: "Associates a FirewallPolicy to a Firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19066,11 +19074,13 @@ script:
     description: "Deletes the specified FirewallPolicy. Required permissions: network-firewall:DeleteFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19151,11 +19161,13 @@ script:
     description: "Updates the properties of the specified firewall policy. Required permissions: network-firewall:UpdateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19286,11 +19298,13 @@ script:
     description: "Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19338,19 +19352,7 @@ script:
       predefined:
         - "true"
         - "false"
-    outputs:
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
-      description: The descriptive name of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
-      description: The Amazon Resource Name (ARN) of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-      description: Whether the firewall is protected against a change to the firewall policy association. A setting of TRUE indicates that the firewall policy association is protected against change.
-      type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
-      type: String
+    outputs: []
 
   isfetch: false
   runonce: false
