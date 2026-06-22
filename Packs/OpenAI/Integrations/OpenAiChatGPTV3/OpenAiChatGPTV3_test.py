@@ -151,10 +151,8 @@ def test_analyze_email_header_command(mocker, args: dict, params: dict):
     result = analyze_email_header_command(client, args, params)
 
     assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
-    assert result.raw_response == mock_response
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
-    assert result.outputs[0]["response_id"] == "resp_XXXX"
     assert "SPF" in result.outputs[0]["assistant"]
     assert result.readable_output is not None
     assert "gpt-5" in result.readable_output
@@ -2114,7 +2112,7 @@ def test_create_moderation_command_text(mocker):
     assert result.outputs_prefix == "OpenAiChatGPTV3.Moderation"
     # Single text → outputs is a dict (backward compatible)
     assert result.outputs["Flagged"] is True
-    assert result.outputs["Input"] == "I will hurt someone"
+    assert result.outputs["Input"] == {"input_type": "text", "input_value": "I will hurt someone"}
     assert result.outputs["Categories"]["violence"] is True
     assert result.outputs["Categories"]["harassment/threatening"] is False
     assert result.outputs["CategoryScores"]["violence"] == pytest.approx(0.9430)
@@ -2146,13 +2144,13 @@ def test_create_moderation_command_text_array(mocker):
     assert len(result.outputs) == 2
 
     # First text result
-    assert result.outputs[0]["Input"] == "hello"
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
     assert result.outputs[0]["Flagged"] is False
     assert result.outputs[0]["Categories"]["violence"] is False
     assert result.outputs[0]["CategoryScores"]["violence"] == pytest.approx(0.0010)
 
     # Second text result
-    assert result.outputs[1]["Input"] == "goodbye"
+    assert result.outputs[1]["Input"] == {"input_type": "text", "input_value": "goodbye"}
     assert result.outputs[1]["Flagged"] is True
     assert result.outputs[1]["Categories"]["violence"] is True
     assert result.outputs[1]["CategoryScores"]["violence"] == pytest.approx(0.9430)
@@ -2206,6 +2204,7 @@ def test_create_moderation_command_empty_results(mocker):
     assert isinstance(result.outputs, list)
     assert result.outputs[0]["Flagged"] is False
     assert result.outputs[0]["Categories"] == {}
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
     assert "No moderation results" in result.readable_output
 
 

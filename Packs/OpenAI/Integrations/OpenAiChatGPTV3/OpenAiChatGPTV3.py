@@ -2397,25 +2397,36 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
     entry_id = args.get("entry_id")
     image_url = args.get("image_url")
 
-    # Build the ``input`` field based on which argument was supplied.
+    # Build the ``input`` field based on which argument was supplied and
+    # track the input type/value for context output.
     if text:
         moderation_input: list[Any] = text
+        input_type = "text"
     elif entry_id:
         data_url = _entry_id_to_data_url(entry_id)
         moderation_input = [{"type": "image_url", "image_url": {"url": data_url}}]
+        input_type = "image"
     else:
         # image_url
         moderation_input = [{"type": "image_url", "image_url": {"url": image_url}}]
+        input_type = "image_url"
 
     body: dict[str, Any] = {"model": model, "input": moderation_input}
     response = client.create_moderation(body)
 
     results_list: list[dict[str, Any]] = response.get("results", [])
     if not results_list:
+        input_value = text[0] if text else (entry_id or image_url or "")
         return CommandResults(
             readable_output="No moderation results returned.",
             outputs_prefix="OpenAiChatGPTV3.Moderation",
-            outputs=[{"Flagged": False, "Categories": {}, "CategoryScores": {}}],
+            outputs=[{
+                "Flagged": False,
+                "Categories": {},
+                "CategoryScores": {},
+                "Input": {"input_type": input_type, "input_value": input_value},
+            }],
+            replace_existing=True
         )
 
     # Determine labels for each result.  For text inputs the label is the text
@@ -2450,9 +2461,13 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
             )
         )
 
+        # For text input each result corresponds to a text from the list;
+        # for image/image_url there is always a single result.
+        input_value = text[idx] if text and idx < len(text) else (entry_id or image_url or "")
+
         all_outputs.append(
             {
-                "Input": label,
+                "Input": {"input_type": input_type, "input_value": input_value},
                 "Flagged": flagged,
                 "Categories": categories,
                 "CategoryScores": category_scores,
@@ -2468,6 +2483,7 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
         readable_output=readable_output,
         outputs_prefix="OpenAiChatGPTV3.Moderation",
         outputs=outputs,
+        replace_existing=True
     )
 
 

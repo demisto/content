@@ -628,6 +628,12 @@ script:
       - 'omni-moderation-2024-09-26'
       type: String
     outputs:
+    - contextPath: OpenAiChatGPTV3.Moderation.Input.input_type
+      description: The type of input that was moderated (text, image, or image_url).
+      type: String
+    - contextPath: OpenAiChatGPTV3.Moderation.Input.input_value
+      description: The value of the input that was moderated.
+      type: String
     - contextPath: OpenAiChatGPTV3.Moderation.Flagged
       description: Whether the content was flagged by the moderation model.
       type: Boolean
