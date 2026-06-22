@@ -152,27 +152,28 @@ alter
     vm_name = if(description ~= "^Creating", arrayindex(regextract(description, "^Creating ([^\s]+)"), 0), // Extract vm name from raw related to Creating activity
                  description ~= "^Guest OS", arrayindex(regextract(description, "^Guest OS (?:reboot|shut down) for ([^\s]+) on"), 0), // Extract vm name from raw related to Guest OS activity
                  description ~= "^Virtual machine ", arrayindex(regextract(description, "^Virtual machine ([^\s]+)"), 0), // Extract vm name from raw start with Virtual Machine 
-                 description ~= " cloned to", arrayindex(regextract(description, "([^\s]+) cloned to"), 0), // Extract vm name from raw related to cloned to activity
-                 description ~= "^Created virtual machine ", arrayindex(regextract(description, "^Created virtual machine ([^\s]+) on"), 0), // Extract vm name from raw related to VM created
+                 description ~= " cloned to", coalesce(arrayindex(regextract(description, "(.+?) cloned to"), 0), arrayindex(regextract(description, "([^\s]+) cloned to"), 0)), // Extract vm name from raw related to cloned to activity (space-aware extraction added, original kept as fallback)
+                 description ~= "^Created virtual machine ", coalesce(arrayindex(regextract(description, "^Created virtual machine (.+?) on"), 0), arrayindex(regextract(description, "^Created virtual machine ([^\s]+) on"), 0)), // Extract vm name from raw related to VM created (space-aware extraction added, original kept as fallback)
                  description ~= "^Template ", arrayindex(regextract(description, "^Template (.+?)\s"), 0), // Extract vm name from raw start with Template
-                 description ~= "^Removed ", arrayindex(regextract(description, "^Removed\s([^\s]+)"), 0), // Extract vm name from raw start with Removed
+                 description ~= "^Removed ", coalesce(arrayindex(regextract(description, "^Removed\s(.+?)\s+on\s"), 0), arrayindex(regextract(description, "^Removed\s([^\s]+)"), 0)), // Extract vm name from raw start with Removed (space-aware extraction added, original kept as fallback)
                  description ~= "^Registered ", arrayindex(regextract(description, "^Registered\s([^\s]+)"), 0), // Extract vm name from raw start with Registered
-                 description ~= "^Renamed ", arrayindex(regextract(description, "^Renamed\s([^\s]+)"), 0), // Extract vm name from raw start with Renamed
-                 description ~= "^Reconfigured ", arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0), // Extract vm name from raw start with Reconfigured
+                 description ~= "^Renamed ", coalesce(arrayindex(regextract(description, "^Renamed\s(.+?)\s+from\s"), 0), arrayindex(regextract(description, "^Renamed\s([^\s]+)"), 0)), // Extract vm name from raw start with Renamed (space-aware extraction added, original kept as fallback)
+                 description ~= "^Reconfigured ", coalesce(arrayindex(regextract(description, "Reconfigured (.+?) on\s"), 0), arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0)), // Extract vm name from raw start with Reconfigured (space-aware extraction added, original kept as fallback)
                  description ~= "^\S+\s+\-", arrayindex(regextract(description, "^([^\s]+) - "), 0), //Extract vm name from the start of the string (before " - ")
-                 description ~= "^\S+\s+on", arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0)), //Extract vm name from the start of the string (before " on ")
-    target_vm_name = arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0),
+                 description ~= "^\S+\s+on", coalesce(arrayindex(regextract(description, "^(.+?) on \S+\s+in "), 0), arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0))), //Extract vm name from the start of the string (before " on ") (space-aware extraction added, original kept as fallback)
+    target_vm_name = coalesce(arrayindex(regextract(description, "cloned to (.+?) on"), 0), arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0)),
     target_hostname = if(description ~= "^Removed", arrayindex(regextract(description, "Removed\s+\S+\s+on\s+([^\s]+)"), 0), // Extract target host from raw start with Removed
                          description ~= "^Guest OS", arrayindex(regextract(description, "on\s+([^\s]+)\s+in"), 0), // Extract target host from raw start with Guest OS                     
                          arrayindex(regextract(description, " to ([^\s]+),"), 0)),
-    target_datacenter = arrayindex(regextract(description, ",\s+\S+\s+in ([^\s]+)$"), 0),    
+    target_datacenter = coalesce(arrayindex(regextract(description, ",\s+\S+\s+in ([^\s]+)$"), 0), arrayindex(regextract(description, "\sin\s+(.+?)\.?$"), 0)),
     original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0),
                             description ~= "Creating ([^\s]+) on", arrayindex(regextract(description, "Creating ([^\s]+) on"), 0)),
     datastore_name =  if(description ~= "\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\S+\,\s+([^\s]+)\s+in"), 0)),
     target_datastore_name = if(description ~= "\s+to\s+\S+\,\s+\S+\s+in", arrayindex(regextract(description, "\s+to\s+\S+\,\s+([^\s]+)"), 0)),
-    old_vm_name = if(description ~= "from\s+\S+\s+to", arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0)), // Extract old vm name from event start with Renamed
+    old_vm_name = if(description ~= "from\s+\S+\s+to", coalesce(arrayindex(regextract(description, "from\s+(.+?)\s+to\s"), 0), arrayindex(regextract(description, "from\s+([^\s]+)\s+to"), 0))), // Extract old vm name from event start with Renamed (space-aware extraction added, original kept as fallback)
     new_vm_name = if(description ~= "deployed to", arrayindex(regextract(description, "deployed to ([^\s]+)"), 0), // Extract new vm name from event start with Template
-                     description ~= "from\s\S+\sto\s+\S+\s+in\s", arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0)) // Extract new vm name from event start with Renamed
+                     description ~= "from\s.+\sto\s+.+\s+in\s", arrayindex(regextract(description, "\sto\s+(.+?)\s+in\s"), 0), // Extract new vm name from Renamed event when names contain spaces (added for CRTX-243601)
+                     description ~= "from\s\S+\sto\s+\S+\s+in\s", coalesce(arrayindex(regextract(description, "\sto\s+(.+?)\s+in\s"), 0), arrayindex(regextract(description, "from\s\S+\sto\s+([^\s]+)"), 0))) // Extract new vm name from event start with Renamed (space-aware extraction added, original kept as fallback)
 | alter
     xdm.observer.name = syslog_hostname,
     xdm.event.type = "VM Operations",
@@ -196,7 +197,7 @@ alter
     xdm.source.virtualization.data_store.name = datastore_name,
     xdm.target.virtualization.data_store.name = target_datastore_name,
     xdm.source.virtualization.vm.hostname = coalesce(vm_name, old_vm_name),
-    xdm.target.virtualization.vm.hostname = coalesce(target_vm_name, new_vm_name);
+    xdm.target.virtualization.vm.hostname = coalesce(target_vm_name, new_vm_name, if(event_type_name = "vim.event.VmReconfiguredEvent", vm_name));
 
 // Virtualization Story vSphere Task Event fomrat field mapping
 // Event type = 10
