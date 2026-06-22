@@ -411,7 +411,7 @@ def kibana_find_cases(args, proxies):
     status = args.get("status")
     severity = args.get("severity")
     from_time = arg_to_datetime(args.get("from_time"))
-    from_time_str = from_time.strftime(DATE_FORMAT) if from_time else None
+    from_time_str = from_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ") if from_time else None
 
     query_params = {"status": status, "severity": severity, "from": from_time_str}
 
