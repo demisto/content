@@ -1,0 +1,27 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "00000000-0000-0000-0000-000000000001",
+            "vendor": "microsoft",
+            "product": "365_defender",
+            "dataset": "microsoft_365_defender_raw",
+            "tenant_timezone": "UTC",
+            "event_data": {
+                "id": "evt-1",
+                "incidentId": "123",
+                "title": "Test alert",
+                "severity": 99999,
+                "category": "Malware",
+                "description": "Test event for modeling rule",
+                "machineId": "machine-1",
+                "computerDnsName": "host.example.com"
+            },
+            "expected_values": {
+                "xdm.event.id": "evt-1",
+                "xdm.alert.severity": "THIS_WILL_NEVER_MATCH",
+                "xdm.alert.category": "Malware"
+            }
+        }
+    ],
+    "ignored_validations": []
+}
