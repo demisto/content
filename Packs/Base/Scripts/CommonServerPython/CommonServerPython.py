@@ -13802,8 +13802,8 @@ def _place_by_path(target, path, value):
     The destination string is split on ``.``; each segment except the last
     becomes (or reuses) a nested dict, and the final segment receives the
     value. Two paths that share a parent therefore merge into a single nested
-    dict — this is how multiple connector fields fold into one structured param
-    (e.g. ``credentials.identifier`` + ``credentials.password`` →
+    dict -- this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
     ``{"credentials": {"identifier": ..., "password": ...}}``).
 
     A single-segment path (e.g. ``"url"``) places a flat scalar.
@@ -13924,9 +13924,9 @@ def build_ucp_params(connector_metadata, capability=None):
     Pure, side-effect-free core of UCP param interpolation. It is
     **metadata-first**: it scans ``connectionProfiles`` to find every profile in
     scope for the current capability/sub_capability, then for each such profile
-    reads its ``param_map`` (a mapping of connector field id → dotted destination
+    reads its ``param_map`` (a mapping of connector field id -> dotted destination
     path) together with the platform-supplied field values, and *interpolates*
-    them into the nested shape integrations expect — most importantly folding
+    them into the nested shape integrations expect -- most importantly folding
     flat fields (e.g. ``username`` / ``password``) into a single structured param
     (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
 
