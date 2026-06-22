@@ -807,25 +807,6 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 | GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | GCP project ID. | Required |
-| bucket_name | Name of the bucket containing the object. | Required |
-| object_name | Name of the object to retrieve IAM policy from. | Required |
-| generation | Generation of the object. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
-| GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
-| GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
-
-#### Example
-
-``` !gcp-storage-bucket-object-policy-list project_id="my-project" bucket_name="my-bucket" object_name="path/to/object.txt" ```
-
 ### gcp-storage-bucket-object-policy-set
 
 ***
@@ -869,13 +850,6 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 | GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
 | GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
 | GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
-
-| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
-| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
-| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
-| source_tags | Comma-separated instance tags to match as source. | Optional |
-| target_tags | Comma-separated tags to apply this rule to. | Optional |
-| source_service_accounts | Comma-separated service accounts for source. | Optional |
 
 ### gcp-storage-bucket-object-policy-set
 
@@ -1119,28 +1093,28 @@ Adds a network tag to a VM instance (merges with existing tags). Required permis
 ### gcp-compute-image-get
 
 ***
-Returns the specified image. Gets a list of available images by making a list() request. Required Permissions: compute.images.get.
+Returns a specific image. Required permission: compute.images.get.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-image-get`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID for this request. if left empty configured project will be used. | Optional |
+| project_id | Project ID for this request. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | image | Name of the image resource to return. | Required |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Images.id | string | The unique identifier for the resource. This identifier is defined by the server. |
 | GCP.Compute.Images.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Images.name | string | Name of the resource; provided by the client when the resource is created. The name must be 1\-63 characters long, and comply with RFC1035. Specifically, the name must be 1\-63 characters long and match the regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Images.name | string | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
 | GCP.Compute.Images.description | string | An optional description of this resource. |
-| GCP.Compute.Images.sourceType | string | The type of the image used to create this disk. The default and only value is RAW |
+| GCP.Compute.Images.sourceType | string | The type of the image used to create this disk. The default and only value is RAW. |
 | GCP.Compute.Images.rawDisk | string | The parameters of the raw disk image. |
 | GCP.Compute.Images.rawDisk.source | string | The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both. |
 | GCP.Compute.Images.rawDisk.sha1Checksum | string | An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created. |
@@ -1154,24 +1128,37 @@ Returns the specified image. Gets a list of available images by making a list() 
 | GCP.Compute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. |
 | GCP.Compute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). |
 | GCP.Compute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). |
-| GCP.Compute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk |
+| GCP.Compute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk. |
 | GCP.Compute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. |
 | GCP.Compute.Images.licenses | string | Any applicable license URI. |
 | GCP.Compute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. |
-| GCP.Compute.Images.imageEncryptionKey | string | Encrypts the image using a customer\-supplied encryption key. After you encrypt an image with a customer\-supplied key, you must provide the same key if you use the image later \(e.g. to create a disk from the image\). Customer\-supplied encryption keys do not protect access to metadata of the disk. If you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later. |
-| GCP.Compute.Images.imageEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.imageEncryptionKey | string | Encrypts the image using a customer-supplied encryption key. After you encrypt an image with a customer-supplied key, you must provide the same key if you use the image later \(e.g. to create a disk from the image\). Customer-supplied encryption keys do not protect access to metadata of the disk. If you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later. |
+| GCP.Compute.Images.imageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
 | GCP.Compute.Images.imageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.imageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.sourceDiskEncryptionKey | string | The customer\-supplied encryption key of the source disk. Required if the source disk is protected by a customer\-supplied encryption key. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey | string | The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
 | GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.selfLink | string | Server\-defined URL for the resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Images.labels | string | Labels to apply to this image. These can be later modified by the setLabels method. |
-| GCP.Compute.Images.labelFingerprint | string | A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up\-to\-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet. |
+| GCP.Compute.Images.labelFingerprint | string | A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet. |
 | GCP.Compute.Images.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
 | GCP.Compute.Images.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. |
 | GCP.Compute.Images.licenseCodes | string | Integer license codes indicating which licenses are attached to this image. |
+| GCP.Compute.Images.sourceImage | string | URL of the source image used to create this image. This can be a full or valid partial URL. |
+| GCP.Compute.Images.sourceImageId | string | The ID value of the image used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given image name. |
+| GCP.Compute.Images.sourceImageEncryptionKey | string | The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceImageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | string |  The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceSnapshot | string | URL of the source snapshot used to create this image. This can be a full or valid partial URL. |
+| GCP.Compute.Images.sourceSnapshotId | string |  The ID value of the snapshot used to create this image. This value may be used to determine whether the snapshot was taken from the current or a previous instance of a given snapshot name. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey | string | The customer-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.kind | string | Type of the resource. Always compute\#image for images. |
 
 ### gcp-compute-image-get
 
@@ -1492,8 +1479,6 @@ Returns the specified network.
 | GCP.Compute.Networks.routingConfig.routingMode | string | The network-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
 
-| GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
-
 ### gcp-bq-dataset-policy-remove
 
 ***
@@ -1551,3 +1536,87 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-firewall-insert
+
+***
+Creates a new firewall rule in a specific project. Required permission: compute.firewalls.create.
+
+#### Base Command
+
+`gcp-compute-firewall-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| resource_name | Name of the firewall rule to create. | Required |
+| description | An optional description for the firewall rule. | Optional |
+| network | URL of the network, e.g., global/networks/default. | Optional |
+| priority | Priority 0-65535. Default 1000. | Optional |
+| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
+| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
+| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
+| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
+| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
+| source_tags | Comma-separated instance tags to match as source. | Optional |
+| target_tags | Comma-separated tags to apply this rule to. | Optional |
+| source_service_accounts | Comma-separated service accounts for source. | Optional |
+| target_service_accounts | Comma-separated service accounts to target. | Optional |
+| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
+| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | Current status of the operation. |
+| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
+
+### gcp-compute-firewall-list
+
+***
+Lists the firewall rules in a specific project. Required permission: compute.firewalls.list.
+
+#### Base Command
+
+`gcp-compute-firewall-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
+| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
+| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
+| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
+| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
+| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
+| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
+| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
+| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
+| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
+| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
+| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
+| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
