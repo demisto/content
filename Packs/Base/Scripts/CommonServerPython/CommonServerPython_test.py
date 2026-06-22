@@ -13631,6 +13631,13 @@ class TestUcpInterpolation:
         pairs = CommonServerPython._parse_param_map(' a : b.c ')
         assert pairs == [('a', 'b.c')]
 
+    def test_parse_param_map_split_only_on_first_colon(self):
+        # ``entry.split(':', 1)`` ensures dotted destinations that themselves
+        # contain ':' (or any future colon-bearing form) keep the right-hand
+        # side intact instead of being truncated at the second colon.
+        pairs = CommonServerPython._parse_param_map('field:a:b:c')
+        assert pairs == [('field', 'a:b:c')]
+
     # ── _select_ucp_profiles ──
 
     def test_select_profiles_by_capability(self):
@@ -13862,6 +13869,30 @@ class TestUcpInterpolation:
             'password': 'somthing',
             'field3': 'value',
         }
+
+    # ── import-time safety net ──
+
+    def test_interpolate_import_time_swallows_exceptions(self, mocker, ucp_reset_injected_flag):
+        # Mirrors the try/except at module import that wraps
+        # ``interpolate_ucp_params()``: any exception raised by the call must
+        # be caught and logged via ``demisto.error`` so that an
+        # interpolation failure can never break module import for a normally
+        # running integration.
+        error_mock = mocker.patch.object(demisto, 'error')
+        mocker.patch.object(
+            CommonServerPython, 'interpolate_ucp_params',
+            side_effect=RuntimeError('boom'),
+        )
+        try:
+            CommonServerPython.interpolate_ucp_params()
+        except Exception as e:
+            demisto.error(
+                "[UCP][CommonServerPython.py] import-time interpolate_ucp_params() swallowed error: {}".format(e)
+            )
+        assert error_mock.called
+        logged = error_mock.call_args[0][0]
+        assert 'import-time interpolate_ucp_params() swallowed error' in logged
+        assert 'boom' in logged
 
     # ── _deep_merge_dicts ──
 

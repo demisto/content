@@ -46,7 +46,7 @@ def __line__():
 
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
-_MODULES_LINE_MAPPING = {
+_MODULES_LINE_MAPPi ING = {
     'CommonServerPython': {'start': __line__() - 50, 'end': float('inf')},
 }
 
@@ -13955,21 +13955,18 @@ def build_ucp_params(connector_metadata, capability=None):
         }
 
     :type connector_metadata: ``Optional[dict]``
-    :param connector_metadata: The connector metadata.
-
-    :type base_params: ``Optional[dict]``
-    :param base_params: Optional existing params to merge interpolated values
-        onto. A shallow copy is made; the input is not mutated.
+    :param connector_metadata: The connector metadata, as returned by
+        ``demisto.unifiedConnectorMetadata()``. When falsy, an empty dict is
+        returned.
 
     :type capability: ``Optional[str]``
-    :param capability: The resolved capability. When ``None``, resolved via
-        ``resolve_ucp_capability()``.
+    :param capability: The resolved capability for the current command. When
+        ``None``, resolved automatically via ``resolve_ucp_capability()``.
 
-    :type sub_capability: ``Optional[str]``
-    :param sub_capability: Optional sub-capability to also match.
-
-    :return: A new params dict (base_params + interpolated values). When there
-        is nothing to interpolate, returns a copy of ``base_params`` (or ``{}``).
+    :return: A new params dict containing the interpolated values from all
+        matching profiles, merged in ``connectionProfiles`` order
+        (**last-wins** on conflicting destination paths). Returns ``{}`` when
+        ``connector_metadata`` is falsy or when nothing is interpolated.
     :rtype: ``dict``
     """
     result = {}  # type: Dict[str, Any]
@@ -14365,6 +14362,13 @@ def get_ucp_credentials(method_unique_id=None, body=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
+
+    :type body: ``Optional[dict]``
+    :param body: Optional request body passed through to
+        ``demisto.getUCPCredentials``. Use this to forward credential-fetch
+        parameters (e.g., a specific grant type or scopes) required by the
+        backend for this profile. When ``None``, no body is sent and the
+        backend uses its profile defaults.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
