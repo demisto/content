@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &lt; 3.0\). On Cortex XSIAM \(version &gt;= 3.0\) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | False |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). On Cortex XSIAM \(version &amp;gt;= 3.0\) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | False |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -28,7 +28,7 @@ Updates a specific firewall rule with the data included in the request. Required
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the firewall rule to update. | Required |
 | description | An optional description of this resource, which you provide when you create the resource. | Optional |
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used. | Optional |
@@ -85,7 +85,7 @@ Removes an entity from a bucket's Access Control List. Required permissions: sto
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the GCS bucket. | Required |
 | entity | Entity to remove from the Access Control List.<br/>Common entity formats are:<br/>*user:&lt;userId or email&gt;<br/>* group:&lt;groupId or email&gt;<br/>*allUsers<br/>* allAuthenticatedUsers<br/>For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource . Default is allUsers. | Optional |
 
@@ -108,7 +108,7 @@ Enables flow logs or Private Google Access on a subnet. Required permissions: co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | region | GCP region. | Required |
 | resource_name | Subnet name. | Required |
 | enable_flow_logs | Enable VPC Flow Logs. Possible values are: true, false. | Optional |
@@ -143,7 +143,7 @@ Configures security settings for GKE clusters, including access controls and vis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | region | GCP region. | Required |
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
@@ -192,7 +192,7 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the bucket. | Required |
 | enable_versioning | Enable versioning. Possible values are: true, false. | Optional |
 | enable_uniform_access | Enable uniform bucket-level access. Possible values are: true, false. | Optional |
@@ -239,7 +239,7 @@ Removes a specified IAM role binding from a GCP project. Required permissions: r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | member | Member to remove (e.g., user:test@example.com). | Required |
 | role | Role to remove (e.g., roles/viewer). | Required |
 
@@ -260,7 +260,7 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 | service_account_email | Email of the service account. | Required |
@@ -306,7 +306,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 
@@ -350,7 +350,7 @@ Starts an instance that was stopped using the instances().stop method. Required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to start. | Required |
 
@@ -394,7 +394,7 @@ Stops and cleanly shuts down a running instance, allowing you to restart the ins
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to stop. | Required |
 
@@ -438,7 +438,7 @@ Retrieves the list of instances in the specified zone. Required permission: comp
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | filters | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
 | limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -511,7 +511,7 @@ Sets labels on an instance. Required permission: compute.instances.setLabels.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance | Name of the instance resource to return. | Required |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
 | label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
@@ -556,7 +556,7 @@ Returns a specific instance resource. To get a list of available instances, make
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | instance | Name of the instance resource to return. | Required |
 
@@ -641,7 +641,7 @@ Retrieves the list of buckets in the project associated with the client. Require
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of buckets to return. | Optional |
 | prefix | Filter results to buckets whose names begin with this prefix. | Optional |
 | page_token | Token for pagination. | Optional |
@@ -681,7 +681,7 @@ Retrieves information about a specific bucket. Required permission: storage.buck
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to retrieve. | Required |
 
 #### Context Output
@@ -716,7 +716,7 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to list objects from. | Required |
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
 | delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
@@ -763,7 +763,7 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
 | requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
 
@@ -794,7 +794,7 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
 | add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false. | Optional |
@@ -857,7 +857,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to retrieve IAM policy from. | Required |
 | generation | Generation of the object. | Optional |
@@ -890,7 +890,7 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
@@ -908,7 +908,7 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
@@ -945,7 +945,7 @@ Retrieves a specific firewall rule by name. Required permission: compute.firewal
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Firewall rule name. | Required |
 
 #### Context Output
@@ -973,7 +973,7 @@ Lists snapshots in a specific project. Required permission: compute.snapshots.li
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
@@ -1019,7 +1019,7 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Snapshot name. | Required |
 
 #### Context Output
@@ -1062,7 +1062,7 @@ Returns an aggregated list of instances across all zones that can be filtered by
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -1091,7 +1091,7 @@ Adds a network tag to a VM instance (merges with existing tags). Required permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
@@ -1257,7 +1257,7 @@ Returns a specific instance group. Required permission: compute.instanceGroups.g
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance_group | The name of the instance group. | Required |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 
 #### Context Output
@@ -1294,7 +1294,7 @@ Returns a specific region resource. Required permission: compute.regions.get.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | region | Name of the region resource to return. | Required |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 
@@ -1334,7 +1334,7 @@ Returns a specific zone resource. Required permission: compute.zones.get.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | zone | Name of the zone resource to return. | Required |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 
@@ -1369,7 +1369,7 @@ Retrieves a list of networks available for the specified project. Required permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive. Default is 50. | Optional |
 | filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional |
 | order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional |
@@ -1411,7 +1411,7 @@ Creates a network in the specified project using the data included in the reques
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | name | The name of the network to create. | Required |
 | description | An optional description of this resource. | Optional |
 | auto_create_sub_networks | When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode. An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges. Possible values are: true, false. | Optional |
@@ -1467,7 +1467,7 @@ Returns the specified network.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | network | Name of the network to return. | Required |
-| project_id | GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 
