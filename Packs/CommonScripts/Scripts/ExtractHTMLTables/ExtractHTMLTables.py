@@ -9,7 +9,7 @@ def extract_html_table(html, indexes):
     for index, tab in enumerate(soup.find_all("table")):
         if len(indexes) > 0 and index not in indexes and str(index) not in indexes:
             continue
-        table = []
+        table: Union[list, dict] = []
         headers = []
         # Check if there are headers and use them
         try:
@@ -27,7 +27,7 @@ def extract_html_table(html, indexes):
                     elif len(tds) == 2 and len(headers) == 0:
                         if type(table) is list:
                             table = {}  # type: ignore
-                        table[tds[0].text] = tds[1].text
+                        table[tds[0].text] = tds[1].text  # type: ignore[call-overload]
                     else:
                         row = {}
                         if len(headers) > 0:
@@ -36,7 +36,8 @@ def extract_html_table(html, indexes):
                         else:
                             for i, td in enumerate(tds):
                                 row["cell" + str(i)] = td.text
-                        table.append(row)
+                        if isinstance(table, list):  # type: ignore[arg-type]
+                            table.append(row)
         except Exception as e:
             demisto.debug(f"Failed to extract table: {e}")
         if len(table) > 0:
