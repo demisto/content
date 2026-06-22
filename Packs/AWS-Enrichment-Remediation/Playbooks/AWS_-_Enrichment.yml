@@ -1,4 +1,3 @@
-issilent: true
 id: AWS - Enrichment
 version: -1
 name: AWS - Enrichment
@@ -18,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "100"
+      - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -55,134 +54,6 @@ tasks:
         "position": {
           "x": 210,
           "y": 2170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "100":
-    id: "100"
-    taskid: a1000000-0000-4000-8000-000000000100
-    type: regular
-    task:
-      id: a1000000-0000-4000-8000-000000000100
-      version: -1
-      name: Retrieve files (Core)
-      description: Retrieves files from selected endpoints.
-      script: '|||core-retrieve-files'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "101"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "101":
-    id: "101"
-    taskid: a1000000-0000-4000-8000-000000000101
-    type: regular
-    task:
-      id: a1000000-0000-4000-8000-000000000101
-      version: -1
-      name: Print
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "102"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "102":
-    id: "102"
-    taskid: a1000000-0000-4000-8000-000000000102
-    type: regular
-    task:
-      id: a1000000-0000-4000-8000-000000000102
-      version: -1
-      name: Read File
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "103"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "103":
-    id: "103"
-    taskid: a1000000-0000-4000-8000-000000000103
-    type: regular
-    task:
-      id: a1000000-0000-4000-8000-000000000103
-      version: -1
-      name: Set and handle empty
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -220
         }
       }
     note: false
