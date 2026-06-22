@@ -356,7 +356,7 @@ script:
       type: String
 
   - name: gpt-check-email-body
-    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    description: Checks the email body for possible security issues. Enables you to ask subsequent questions on the provided information using the 'gpt-send-message' command, and resets the conversation context by default.  
     arguments:
     - name: entry_id
       description: Entry ID of an uploaded '.eml' file.
@@ -445,7 +445,7 @@ script:
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
     - contextPath: OpenAiChatGPTV3.Conversation
-      description: Entire conversation (if not reset) between the user and the GPT model.
+      description: The entire conversation (if not reset) between the user and the GPT model.  
       type: Dictionary
   - name: gpt-draft-soc-email
     description: Drafts a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of gpt-create-soc-email-template which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding gpt-analyze-email-body call).
