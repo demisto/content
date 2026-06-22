@@ -64,11 +64,7 @@ SESSION_DIR = _SCRIPT_DIR / ".session"
 DESCRIPTOR_PATH = SESSION_DIR / "parity_session.json"
 
 DEFAULT_UCP_PORT = 8080
-# GKE zone of the tenant's cluster. Overridable via the GKE_ZONE env var because
-# clusters are not all in the same zone (e.g. some tenants live in
-# us-central1-b, others in us-central1-f). gcloud's get-credentials reports the
-# right zone in its "Did you mean ... in [<zone>]?" hint when this is wrong.
-DEFAULT_GKE_ZONE = os.getenv("GKE_ZONE", "us-central1-b")
+DEFAULT_GKE_ZONE = "us-central1-f"
 DEFAULT_K8S_NAMESPACE = "xdr-st"
 
 # Status values returned by ensure_session().
