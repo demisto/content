@@ -5813,6 +5813,38 @@ def test_azure_client_device_code_uses_device_scope(mocker):
     assert captured["token_retrieval_url"] is not None
 
 
+def test_test_connection_on_platform_raises():
+    """
+    Given: A client built for the Cortex Platform path (headers set, no MicrosoftClient).
+    When: test_connection (an auth helper command) is called.
+    Then: A clear DemistoException is raised instead of an AttributeError.
+    """
+    client = AzureClient(headers={"Authorization": "Bearer token"})
+
+    with pytest.raises(DemistoException) as excinfo:
+        Azure.test_connection(client)
+
+    assert "Cortex XSOAR and Cortex XSIAM" in str(excinfo.value)
+
+
+def test_get_azure_client_credentials_none(mocker, mock_params):
+    """
+    Given: Marketplace path, Client Credentials flow, and credentials explicitly set to None.
+    When: get_azure_client is called.
+    Then: It raises the missing-secret DemistoException without an AttributeError.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+
+    params = mock_params.copy()
+    params["credentials"] = None
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, {}, "command")
+
+    assert "Missing Client Secret" in str(excinfo.value)
+
+
 def test_main_auth_reset(mocker):
     """
     Given: The azure-auth-reset command on the marketplace path.

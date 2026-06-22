@@ -7,6 +7,7 @@ from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
 import defusedxml.ElementTree as defused_ET
+import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 from datetime import UTC
 
@@ -625,7 +626,7 @@ class AzureClient:
             ms_scope: str | None
             ms_resource: str | None
             if is_device_code:
-                token_retrieval_url = urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token")
+                token_retrieval_url = urllib.parse.urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token")
                 ms_scope = SCOPE_BY_CONNECTION["Device Code"]
                 ms_resource = "https://management.core.windows.net"  # disable-secrets-detection
             else:
@@ -5421,24 +5422,43 @@ def test_module(client: AzureClient) -> str:
     return "ok"
 
 
+def _get_ms_client(client: AzureClient) -> "MicrosoftClient":
+    """Return the MicrosoftClient used for the marketplace auth flows.
+
+    The MicrosoftClient only exists on the Cortex XSOAR / Cortex XSIAM (marketplace) path. On the
+    Cortex Platform (COOC) path authentication is handled automatically via the cloud connector, so
+    the auth helper commands are not applicable there.
+
+    Raises:
+        DemistoException: If called on the Cortex Platform path (no MicrosoftClient available).
+    """
+    ms_client = getattr(client, "ms_client", None)
+    if ms_client is None:
+        raise DemistoException(
+            "This command is supported only on Cortex XSOAR and Cortex XSIAM. On the Cortex Platform, "
+            "authentication is handled automatically and does not require these auth commands."
+        )
+    return ms_client
+
+
 def test_connection(client: AzureClient) -> str:
     """Validate the Azure connection by requesting an access token (marketplace flows).
 
     Raises an exception (from MicrosoftApiModule) if authentication fails.
     """
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule raises an error
+    _get_ms_client(client).get_access_token()  # If fails, MicrosoftApiModule raises an error
     return "✅ Success!"
 
 
 def start_auth(client: AzureClient) -> CommandResults:
     """Start the interactive (Device Code) authorization process (marketplace flows)."""
-    result = client.ms_client.start_auth("!azure-auth-complete")
+    result = _get_ms_client(client).start_auth("!azure-auth-complete")
     return CommandResults(readable_output=result)
 
 
 def complete_auth(client: AzureClient) -> str:
     """Complete the interactive (Device Code) authorization process (marketplace flows)."""
-    client.ms_client.get_access_token()
+    _get_ms_client(client).get_access_token()
     return "✅ Authorization completed successfully."
 
 
@@ -5507,7 +5527,7 @@ def get_azure_client(params: dict, args: dict, command: str):
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug("Using CTS.")
-    elif connection_type == "Client Credentials" and not params.get("credentials", {}).get("password"):
+    elif connection_type == "Client Credentials" and not (params.get("credentials") or {}).get("password"):
         # Marketplace + Client Credentials flow requires a Client Secret.
         raise DemistoException(
             "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM with the Client Credentials "
@@ -5735,7 +5755,7 @@ def main():  # pragma: no cover
         elif command == "azure-auth-test":
             return_results(test_connection(client))
         elif command == "azure-generate-login-url":
-            return_results(generate_login_url(client.ms_client))
+            return_results(generate_login_url(_get_ms_client(client)))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:
