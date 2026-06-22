@@ -79,12 +79,16 @@ configuration:
   required: false
   type: 8
   section: Collect
+  hidden:
+  - xsoar
 - additionalinfo: 'A comma-separated list of Activity Feed types to narrow the feed (e.g., user.login,chat.created). Leave empty to fetch all activity types. See the available activity types here: https://platform.claude.com/docs/en/api/compliance/activities/list.'
   display: Activity types
   name: activity_types
   required: false
   section: Collect
   type: 0
+  hidden:
+  - xsoar
 - additionalinfo: The maximum number of events to fetch per cycle.
   advanced: true
   defaultvalue: '50000'
@@ -93,6 +97,8 @@ configuration:
   required: false
   section: Collect
   type: 0
+  hidden:
+  - xsoar
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

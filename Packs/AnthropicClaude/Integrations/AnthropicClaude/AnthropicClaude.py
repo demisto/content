@@ -27,6 +27,12 @@ class Config:
     DEFAULT_MAX_EVENTS_PER_FETCH = 50000
     DEFAULT_FETCH_LOOKBACK = "1 minute"  # On the first fetch (no last_run), look back this far.
 
+    # Rate-limit / transient-error handling for the Compliance API.
+    # urllib3 retries with exponential back-off and honors the Retry-After header on 429.
+    MAX_RETRIES = 3
+    BACKOFF_FACTOR = 2  # Sleep ~ BACKOFF_FACTOR * (2 ** (retry - 1)) seconds between attempts.
+    RETRY_STATUS_CODES = (429, 500, 502, 503, 504)
+
     # Read-only compliance commands.
     DEFAULT_LIST_LIMIT = 50
 
@@ -212,8 +218,20 @@ class ComplianceClient(BaseClient):
         self.headers = {"accept": "application/json", "x-api-key": self.api_key}
 
     def http_get(self, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Performs an authenticated GET request against a Compliance API endpoint."""
-        return self._http_request(method="GET", url_suffix=url_suffix, params=params, headers=self.headers)
+        """Performs an authenticated GET request against a Compliance API endpoint.
+
+        Retries on rate-limit (429) and transient 5xx responses using exponential back-off; the
+        underlying urllib3 Retry honors the server's ``Retry-After`` header when present.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+            headers=self.headers,
+            retries=Config.MAX_RETRIES,
+            backoff_factor=Config.BACKOFF_FACTOR,
+            status_list_to_retry=list(Config.RETRY_STATUS_CODES),
+        )
 
     def get_activities(
         self,

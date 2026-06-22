@@ -1,5 +1,8 @@
 """Unit tests for the Anthropic Claude Compliance API event collection and read-only commands."""
 
+import json
+import os
+
 import pytest
 from CommonServerPython import CommandResults, DemistoException
 from AnthropicClaude import (
@@ -13,11 +16,13 @@ from AnthropicClaude import (
     list_organizations_command,
     list_organization_users_command,
     list_roles_command,
+    list_role_permissions_command,
     list_groups_command,
     list_group_members_command,
     list_chats_command,
     list_chat_messages_command,
     list_projects_command,
+    list_project_attachments_command,
     get_project_document_command,
     module_test_compliance,
     resolve_org_uuid,
@@ -26,6 +31,13 @@ from AnthropicClaude import (
 )
 
 BASE_URL = "https://api.anthropic.com/"
+
+
+def load_test_data(filename: str) -> dict:
+    """Loads a JSON fixture from the test_data directory."""
+    path = os.path.join(os.path.dirname(__file__), "test_data", filename)
+    with open(path) as fh:
+        return json.load(fh)
 
 
 def build_client() -> ComplianceClient:
@@ -338,3 +350,136 @@ def test_test_module_compliance_other_error_raises(mocker):
     mocker.patch.object(client, "get_activities", side_effect=DemistoException("500 Server Error"))
     with pytest.raises(DemistoException):
         module_test_compliance(client)
+
+
+""" ADDITIONAL EVENT COLLECTOR TESTS """
+
+
+def test_fetch_events_no_drop_across_cap_boundary_two_runs(mocker):
+    """When total events exceed max_events_per_fetch, the cap must not drop events across runs.
+
+    Run 1 collects exactly `max_events`; the persisted cursor must reflect only the delivered
+    events so run 2 resumes from the correct boundary and the remaining events are returned with
+    no gaps and no overlap.
+    """
+    client = build_client()
+    # Six unique events across two ascending pages; cap each run at 3.
+    all_events = make_activities(0, 6)
+    page_first_half = {"data": all_events[:3], "has_more": True, "last_id": "activity_0002"}
+    mocker.patch.object(client, "get_activities", return_value=page_first_half)
+
+    run1_events, run1_next = fetch_events_with_pagination(client, last_run={}, max_events=3, activity_types=None)
+    run1_ids = [e["id"] for e in run1_events]
+
+    assert run1_ids == ["activity_0000", "activity_0001", "activity_0002"]
+    # Cursor reflects the newest DELIVERED event only.
+    assert run1_next["newest_created_at"] == all_events[2]["created_at"]
+
+    # Run 2 resumes after the boundary; the API returns the remaining events.
+    page_second_half = {"data": all_events[3:], "has_more": False, "last_id": "activity_0005"}
+    mocker.patch.object(client, "get_activities", return_value=page_second_half)
+
+    run2_events, _ = fetch_events_with_pagination(client, last_run=run1_next, max_events=3, activity_types=None)
+    run2_ids = [e["id"] for e in run2_events]
+
+    # No event is dropped and none is duplicated across the cap boundary.
+    assert run2_ids == ["activity_0003", "activity_0004", "activity_0005"]
+    assert set(run1_ids).isdisjoint(run2_ids)
+    assert sorted(run1_ids + run2_ids) == [e["id"] for e in all_events]
+
+
+def test_fetch_events_descending_feed_shape(mocker):
+    """The real Activity Feed returns events newest-first; the cursor must capture the newest one."""
+    client = build_client()
+    page = load_test_data("activities_page1.json")
+    # Close out pagination so the single fixture page is the whole cycle.
+    page = {**page, "has_more": False}
+    mocker.patch.object(client, "get_activities", return_value=page)
+
+    events, next_run = fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None)
+
+    assert len(events) == 2
+    # activity_002 (07:08:59) is newer than activity_001 (07:08:58) despite appearing first.
+    assert next_run["newest_created_at"] == "2026-06-11T07:08:59Z"
+    assert next_run["last_fetched_ids"] == ["activity_002"]
+
+
+def test_get_events_command_with_time_range(mocker):
+    """start_time/end_time map to created_at.gte / created_at.lt bounds on the Activity Feed query."""
+    client = build_client()
+    response = {"data": make_activities(0, 1), "has_more": False, "last_id": "activity_0000"}
+    get_mock = mocker.patch.object(client, "get_activities", return_value=response)
+
+    get_events_command(
+        client,
+        args={"limit": "10", "start_time": "2025-06-07T08:09:10Z", "end_time": "2025-06-07T09:09:10Z"},
+    )
+
+    kwargs = get_mock.call_args.kwargs
+    assert kwargs["created_at_gte"] == "2025-06-07T08:09:10Z"
+    assert kwargs["created_at_lt"] == "2025-06-07T09:09:10Z"
+
+
+""" ADDITIONAL COMPLIANCE COMMAND TESTS """
+
+
+def test_list_role_permissions_command(mocker):
+    client = build_client()
+    response = {"data": [{"resource_type": "chats", "action": "read"}], "next_page": "tok-perm"}
+    get_mock = mocker.patch.object(client, "http_get", return_value=response)
+
+    results = list_role_permissions_command(client, args={"org_uuid": "org-1", "role_id": "role-1"}, params={})
+
+    assert results.outputs_prefix == "AnthropicClaude.Organization.Role.Permission"
+    assert results.outputs[0]["resource_type"] == "chats"
+    assert "roles/role-1/permissions" in get_mock.call_args.args[0]
+
+
+def test_list_role_permissions_missing_role_id_raises(mocker):
+    """role_id is required for the permissions endpoint; omitting it must raise."""
+    client = build_client()
+    mocker.patch.object(client, "http_get")
+    with pytest.raises(KeyError):
+        list_role_permissions_command(client, args={"org_uuid": "org-1"}, params={})
+
+
+def test_list_project_attachments_command(mocker):
+    client = build_client()
+    response = {
+        "data": [{"id": "att-1", "filename": "diagram.png", "mime_type": "image/png"}],
+        "next_page": "tok-att",
+    }
+    get_mock = mocker.patch.object(client, "http_get", return_value=response)
+
+    results = list_project_attachments_command(client, args={"project_id": "proj-1"})
+
+    # Attachments merge into the parent Project entry via DT.
+    assert results.outputs_prefix == "AnthropicClaude.Project(val.id == 'proj-1').Attachment"
+    assert results.outputs[0]["id"] == "att-1"
+    assert "projects/proj-1/attachments" in get_mock.call_args.args[0]
+    assert "tok-att" in results.readable_output
+
+
+def test_list_chats_date_range_param_mapping(mocker):
+    """created_at_gte argument maps to the created_at.gte query parameter."""
+    client = build_client()
+    response = {"data": [{"id": "chat-1", "name": "Chat"}]}
+    get_mock = mocker.patch.object(client, "http_get", return_value=response)
+
+    list_chats_command(client, args={"user_ids": "u1", "created_at_gte": "2025-06-07T08:09:10Z"})
+
+    params = get_mock.call_args.kwargs["params"]
+    assert params["created_at.gte"] == "2025-06-07T08:09:10Z"
+
+
+def test_http_get_retries_on_rate_limit(mocker):
+    """ComplianceClient.http_get enables back-off retries on 429 and transient 5xx codes."""
+    client = build_client()
+    request_mock = mocker.patch.object(client, "_http_request", return_value={"data": []})
+
+    client.http_get("v1/compliance/activities", params={"limit": 1})
+
+    kwargs = request_mock.call_args.kwargs
+    assert kwargs["retries"] == Config.MAX_RETRIES
+    assert kwargs["backoff_factor"] == Config.BACKOFF_FACTOR
+    assert 429 in kwargs["status_list_to_retry"]
