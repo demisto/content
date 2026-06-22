@@ -455,10 +455,10 @@ class TestHelperFunctions:
             "finding2": {"title": "Finding 2"},
         }
         result = _group_attack_paths_by_domain(attack_path_details, domains, attack_paths_info)
-        assert "domain1.com" in result.keys()
-        assert "domain2.com" in result.keys()
-        assert "Finding 1" in result["domain1.com"].keys()
-        assert "Finding 2" in result["domain1.com"].keys()
+        assert "domain1.com" in result
+        assert "domain2.com" in result
+        assert "Finding 1" in result["domain1.com"]
+        assert "Finding 2" in result["domain1.com"]
 
 
 class TestDomainFunctions:
