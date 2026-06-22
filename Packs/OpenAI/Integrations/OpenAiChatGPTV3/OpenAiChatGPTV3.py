@@ -2386,7 +2386,9 @@ def _entry_id_to_data_url(entry_id: str) -> str:
 def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     """Run content through the OpenAI Moderations API and return per-category results.
 
-    Supports text (array), a war-room image entry, or a public image URL.
+    Supports text (array / comma-separated), a war-room image entry, or a public image URL.
+    When multiple texts are provided the API returns one result per text; this function
+    iterates over all of them and produces a separate table and context entry for each.
     """
     validate_create_moderation_args(args)
 
@@ -2413,35 +2415,54 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
         return CommandResults(
             readable_output="No moderation results returned.",
             outputs_prefix="OpenAiChatGPTV3.Moderation",
-            outputs={"Flagged": False, "Categories": {}, "CategoryScores": {}},
+            outputs=[{"Flagged": False, "Categories": {}, "CategoryScores": {}}],
         )
 
-    first_result = results_list[0]
-    flagged: bool = first_result.get("flagged", False)
-    categories: dict[str, bool] = first_result.get("categories", {})
-    category_scores: dict[str, float] = first_result.get("category_scores", {})
+    # Determine labels for each result.  For text inputs the label is the text
+    # itself; for images we fall back to a generic "Image" label.
+    input_labels: list[str] = text if text else ["Image"] * len(results_list)
 
-    # Build human-readable table: one row per category.
-    table_rows = [
-        {
-            "Category": cat,
-            "Flagged": "✅" if categories.get(cat, False) else "❌",
-            "Score": f"{category_scores.get(cat, 0.0):.4f}",
-        }
-        for cat in categories
-    ]
+    all_outputs: list[dict[str, Any]] = []
+    readable_parts: list[str] = []
 
-    readable_output = tableToMarkdown(
-        f"Moderation Results (Flagged: {'Yes' if flagged else 'No'})",
-        table_rows,
-        headers=["Category", "Flagged", "Score"],
-    )
+    for idx, result in enumerate(results_list):
+        flagged: bool = result.get("flagged", False)
+        categories: dict[str, bool] = result.get("categories", {})
+        category_scores: dict[str, float] = result.get("category_scores", {})
 
-    outputs: dict[str, Any] = {
-        "Flagged": flagged,
-        "Categories": categories,
-        "CategoryScores": category_scores,
-    }
+        label = input_labels[idx] if idx < len(input_labels) else f"Input {idx + 1}"
+
+        # Build human-readable table: one row per category.
+        table_rows = [
+            {
+                "Category": cat,
+                "Flagged": "✅" if categories.get(cat, False) else "❌",
+                "Score": f"{category_scores.get(cat, 0.0):.4f}",
+            }
+            for cat in categories
+        ]
+
+        readable_parts.append(
+            tableToMarkdown(
+                f"Moderation Results for \"{label}\" (Flagged: {'Yes' if flagged else 'No'})",
+                table_rows,
+                headers=["Category", "Flagged", "Score"],
+            )
+        )
+
+        all_outputs.append(
+            {
+                "Input": label,
+                "Flagged": flagged,
+                "Categories": categories,
+                "CategoryScores": category_scores,
+            }
+        )
+
+    readable_output = "\n".join(readable_parts)
+
+    # When there is only a single result, unwrap the list for backward compatibility.
+    outputs: list[dict[str, Any]] | dict[str, Any] = all_outputs[0] if len(all_outputs) == 1 else all_outputs
 
     return CommandResults(
         readable_output=readable_output,

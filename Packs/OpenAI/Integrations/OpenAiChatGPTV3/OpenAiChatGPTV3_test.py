@@ -2042,6 +2042,39 @@ MOCK_MODERATION_RESPONSE: dict = {
     ],
 }
 
+MOCK_MODERATION_MULTI_RESPONSE: dict = {
+    "id": "modr-multi123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": False,
+            "categories": {
+                "violence": False,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.0010,
+                "harassment/threatening": 0.0005,
+                "self-harm": 0.0001,
+            },
+        },
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        },
+    ],
+}
+
 
 def test_validate_create_moderation_args_no_input():
     """validate_create_moderation_args raises when no input is provided."""
@@ -2079,7 +2112,9 @@ def test_create_moderation_command_text(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "OpenAiChatGPTV3.Moderation"
+    # Single text → outputs is a dict (backward compatible)
     assert result.outputs["Flagged"] is True
+    assert result.outputs["Input"] == "I will hurt someone"
     assert result.outputs["Categories"]["violence"] is True
     assert result.outputs["Categories"]["harassment/threatening"] is False
     assert result.outputs["CategoryScores"]["violence"] == pytest.approx(0.9430)
@@ -2093,9 +2128,9 @@ def test_create_moderation_command_text(mocker):
 
 
 def test_create_moderation_command_text_array(mocker):
-    """create_moderation_command with comma-separated text sends array."""
+    """create_moderation_command with comma-separated text returns per-text outputs."""
     client = _make_client()
-    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_MULTI_RESPONSE)
 
     result = create_moderation_command(
         client=client,
@@ -2105,6 +2140,26 @@ def test_create_moderation_command_text_array(mocker):
     call_body = client.create_moderation.call_args[0][0]
     assert call_body["input"] == ["hello", "goodbye"]
     assert isinstance(result, CommandResults)
+
+    # Multiple texts → outputs is a list
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+
+    # First text result
+    assert result.outputs[0]["Input"] == "hello"
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"]["violence"] is False
+    assert result.outputs[0]["CategoryScores"]["violence"] == pytest.approx(0.0010)
+
+    # Second text result
+    assert result.outputs[1]["Input"] == "goodbye"
+    assert result.outputs[1]["Flagged"] is True
+    assert result.outputs[1]["Categories"]["violence"] is True
+    assert result.outputs[1]["CategoryScores"]["violence"] == pytest.approx(0.9430)
+
+    # War room should contain separate tables for each text
+    assert '"hello"' in result.readable_output
+    assert '"goodbye"' in result.readable_output
 
 
 def test_create_moderation_command_image_url(mocker):
@@ -2148,8 +2203,9 @@ def test_create_moderation_command_empty_results(mocker):
 
     result = create_moderation_command(client=client, args={"text": "hello"})
 
-    assert result.outputs["Flagged"] is False
-    assert result.outputs["Categories"] == {}
+    assert isinstance(result.outputs, list)
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"] == {}
     assert "No moderation results" in result.readable_output
 
 
