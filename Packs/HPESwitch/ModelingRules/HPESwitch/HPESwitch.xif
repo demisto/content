@@ -3,7 +3,7 @@
     Event Log Reference:  
     https://www.arubanetworks.com/techdocs/AOS-Switch/16.10/Aruba%20Event%20Log%20Message%20Reference%20Guide%20for%20AOS-S%20Switch%2016.10.pdf 
    ------------------------------------------------------------------------------------------------------------------*/
-filter _raw_log !~= "%\S+\-\d\-\S+:" 
+filter _raw_log !~= "%\S+\-\d\-\S+:" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:Z|[\+\-]\d{2}:\d{2})" // exclude AOS-CX (ISO-8601 timestamped) logs handled in the dedicated block below
 | alter // Extract the common message parts 
     device_ip = arrayindex(regextract(_raw_log, "^.+?((?:\d{1,3}\.){3}\d{1,3})(?:\s+\d+)? \S+?: "), 0),
     event_id = to_integer(ltrim(arrayindex(regextract(_raw_log, "\s+(\d+)\s+\S+?:\s+") , 0), "0")),
@@ -377,3 +377,78 @@ filter _raw_log ~= "%\S+\-\d\-\S+:"
     xdm.target.interface = interface_port_id,
     xdm.target.ipv4 = coalesce(server_ipv4, target_ipv4),
     xdm.target.port = to_integer(target_port);
+
+
+/* -----------------------------------------------------------------------------------------------------------------------
+    HPE Aruba CX Series (AOS-CX) Event Log Format - RFC 5424 syslog with an "Event|<id>|<level>|<module>|<sub>|<message>" payload.
+    Event Log Reference: https://arubanetworking.hpe.com/techdocs/AOS-CX/10.16/HTML/elmrg/Content/fir-int.htm
+    Example: <PRI>1 <ISO-8601-timestamp> <hostname> <daemon> <procid> - - Event|<id>|<LOG_LEVEL>|<module>|<sub>|<message>
+    Separated from the AOS-S (29xx) logs by the ISO-8601 timestamp date format.
+   ----------------------------------------------------------------------------------------------------------------------*/
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:Z|[\+\-]\d{2}:\d{2})"
+| alter // Extract the RFC 5424 header fields
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"), 0)),
+    syslog_version = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>(\d+)\s"), 0),
+    device_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+Event\|"), 0),
+    application = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)\s+\S+\s+\S+\s+\S+\s+Event\|"), 0),
+    process_id = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(\S+)\s+\S+\s+\S+\s+Event\|"), 0)
+| alter // Extract the AOS-CX "Event|..." payload fields
+    event_id = to_integer(arrayindex(regextract(_raw_log, "Event\|(\d+)\|"), 0)),
+    log_level = arrayindex(regextract(_raw_log, "Event\|\d+\|(LOG_[A-Z]+)\|"), 0),
+    module = arrayindex(regextract(_raw_log, "Event\|\d+\|LOG_[A-Z]+\|([^\|]*)\|"), 0),
+    msg = arrayindex(regextract(_raw_log, "Event\|\d+\|LOG_[A-Z]+\|[^\|]*\|[^\|]*\|(.*)$"), 0)
+| alter // Derive numeric syslog facility & severity from the priority value
+    facility_num = to_integer(floor(divide(syslog_priority, 8))),
+    severity_num = to_integer(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
+| alter
+    facilities = arraycreate("kernel", "user", "mail", "daemon", "auth", "syslog", "lpr", "news", "uucp", "cron", "authpriv", "ftp", "ntp", "logaudit", "logalert", "clock", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7"),
+    severities = arraycreate("0", "1", "2", "3", "4", "5", "6", "7")
+| alter
+    facility = uppercase(to_string(arrayindex(facilities, facility_num))),
+    severity = to_string(arrayindex(severities, severity_num))
+| alter // Map the AOS-CX event-id "hundreds" prefix to its functional category
+    event_cat_num = to_integer(floor(divide(event_id, 100))),
+    event_categories = arraycreate("UNKNOWN", "LLDP", "FAN", "POWER", "INTERFACE", "LED", "PORT", "SYSTEM", "TEMPERATURE", "LOOPBACK", "sFLOW", "NTP", "SUPORTABILITY", "LACP", "LAG", "CoPP", "VLAN-INTERFACE", "L3-INTERFACE", "ECMP", "DHCP", "MSRP", "VLAN", "REDUNDANT-MGMT", "AAA", "OSPFv2", "UNKNOWN", "MGMD", "REPLD", "LOOP-PROTECT", "BGP", "HW-HEALTH-MONITOR", "MVRP", "MODULE", "DHCPv6", "DHCP-RELAY", "IRDP", "UDPFWD", "VRRP", "XCVR", "IPv6-RA", "MTM", "UDLD", "UNKNOWN", "MGMT", "UPDATE", "SELFTEST", "REST", "USER-MGMT", "MAC-MGMT", "OSPFv3", "RPVST", "PIM", "SSH-SERVER", "SFTP-CLIENT", "VRF-MGR", "NAE-POLICYD", "HTTPS-SERVER", "QOS", "QOS-ASIC", "PASSWD-RESET", "NAE-TSDBD", "NDM", "TIME-MGMT", "SYSMON", "VRF", "CRED-MGR", "PORT-STATISTICS", "MIRRORING", "CONFIG-MGMT", "NAE-AGENTS", "VSC", "SNMP", "UNKNOWN", "BFD", "IP-SLA", "CPU-RX", "VSX-SYNC", "CERT-MGMT", "EXTERNAL-STORAGE", "POE", "BLUETOOTH-MGMT", "VXLAN", "UNKNOWN", "UNKNOWN", "ND-SNOOPING", "ERPS", "MSDP", "ZTPD", "HSC-SYNCD", "CDP", "SSH-CLIENT", "INTERNAL-STORAGE", "DCBX", "PORT-ROLE", "PORT-SECURITY", "EVPN", "IP-TUNNEL", "USER-BASED-TUNNEL", "IP-SRC-LKDN", "VSF", "ACL", "POLICY", "TCAM", "RBAC", "ARP-SECURITY", "PORT-ACCESS", "L3-ENCAP", "UNKNOWN", "L3-ASIC-RESOURCE", "DPSE", "MAC-ADDR-CONFIG", "FAULT-MONITOR", "MACSEC", "SMARTLINK", "MDNS", "L3-RESMGR", "ETH-OAM-CFM", "ALARM", "CONTAINER", "DNS-CLIENT", "UFD", "PTP", "SCHEDULE", "DOT1X-SUPPLICANT", "DFP", "VXLAN-AGENT", "PORT-ACCESS-GBP", "NAE-SCRIPT-GEN", "UNKNOWN", "TELNET-SERVER", "CONSOLE", "ACCOUNTING", "HOT-PATCH", "MPLS", "CONFIG-VALIDATOR", "ISSU", "TPMD", "SCHEDULEHW-HEALTH-MONITOR", "DIST-SERV", "TRAFFIC-INSIGHT", "ARC", "INTERFACE-DIAGNOSTIC", "CLIENT-INSIGHT", "FEATURE-PACK", "DOWNLOAD", "CENTRAL-SOURCE", "PORT-ACC-ABP", "IPSEC", "LAUNCHD", "CX-LMS", "IPFM", "PACKET-CAPTURE", "PIM-BIDI", "IPFIX", "MSRP", "UNKNOWN", "FQTSS", "INJECTED-VIEWS", "MULTICAST", "SELFTEST-MONITOR", "QTP", "SYNCHE", "MOD", "IFA", "FIB")
+| alter
+    event_category = to_string(arrayindex(event_categories, event_cat_num))
+| alter // Extract dynamic entities from the free-text message body
+    username = coalesce(
+        arrayindex(regextract(msg, "User:\s*([\w\\\-]+)"), 0),
+        arrayindex(regextract(msg, "User\s+([\w\\\-]+)\s+logged"), 0),
+        arrayindex(regextract(msg, "User\s+\'([^\']+)\'"), 0)),
+    src_host = coalesce(
+        arrayindex(regextract(msg, "logged in from\s+([\w\.\-]+)"), 0),
+        arrayindex(regextract(msg, "on location\s+([\w\.\-]+)"), 0)),
+    src_ipv4 = arrayindex(regextract(msg, "from\s+(?:device\s+)?((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    vrf_name = arrayindex(regextract(msg, "on VRF\s+(\S+)"), 0),
+    subscriber = arrayindex(regextract(msg, "subscriber:\s*(\S+?)\.?$"), 0)
+| alter // post-extraction formatting
+    syslog_version = replex(syslog_version, "^0+", ""),
+    user_domain = arrayindex(regextract(username, "(.+)\\.+"), 0)
+| alter // XDM mappings
+    xdm.alert.severity = severity,
+    xdm.event.id = to_string(event_id),
+    xdm.event.description = msg,
+    xdm.event.log_level = if(
+        severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY,
+        severity = "1", XDM_CONST.LOG_LEVEL_ALERT,
+        severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL,
+        severity = "3", XDM_CONST.LOG_LEVEL_ERROR,
+        severity = "4", XDM_CONST.LOG_LEVEL_WARNING,
+        severity = "5", XDM_CONST.LOG_LEVEL_NOTICE,
+        severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity = "7", XDM_CONST.LOG_LEVEL_DEBUG),
+    xdm.event.outcome = if(
+        msg ~= "(?i)ERROR|FAIL|REJECTED|UNABLE|ABORT|INCORRECT|PROBLEM|FAULT|DENY|DENIED|MISMATCH|COLLISIONS|CANNOT|UNREACHABLE|CORRUPTED|NOT FOUND|NOT SUCCEED|UNABLE TO PERMIT|NOT APPLIED|NOT MODIFIED|NOT REACHABLE|CANCELED BECAUSE|CAN\'T REACH", XDM_CONST.OUTCOME_FAILED,
+        msg ~= "(?i)SUCCESS|SUCCEEDED|logged in|has been closed", XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.type = event_category,
+    xdm.observer.name = device_hostname,
+    xdm.observer.type = facility,
+    xdm.observer.unique_identifier = device_hostname,
+    xdm.source.host.hostname = src_host,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.process.name = application,
+    xdm.source.process.pid = to_integer(process_id),
+    xdm.source.user.domain = user_domain,
+    xdm.source.user.username = username,
+    xdm.target.user.username = subscriber;
