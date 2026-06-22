@@ -13147,9 +13147,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if not data_format:
         data_format = 'text'
 
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before getLicenseCustomField('Http_Connector.token'/'url') (RPC to server)")
     xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
     xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
     xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG resolved xsiam_url={xsiam_url} (getLicenseCustomField returned)".format(
+        xsiam_url=xsiam_url))
     headers = {
         'authorization': xsiam_api_token,
         'format': data_format,
@@ -13210,10 +13213,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
         def _post_zipped(zipped_data):
+            demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before POST to {xsiam_url}/logs/v1/xsiam (streaming)".format(
+                xsiam_url=xsiam_url))
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+            demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG POST to /logs/v1/xsiam returned (streaming)")
 
         buf = _io.BytesIO()
         gz = gzip.GzipFile(fileobj=buf, mode='wb')
@@ -13262,10 +13268,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before POST to {xsiam_url}/logs/v1/xsiam (chunk size={chunk_size})".format(
+            xsiam_url=xsiam_url, chunk_size=chunk_size))
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG POST to /logs/v1/xsiam returned (chunk)")
         return chunk_size
 
     if multiple_threads:
