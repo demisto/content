@@ -571,8 +571,8 @@ Describe "Test Select-UcpProfiles" {
             [ordered]@{ capability = 'cap-a'; method_unique_id = 'A' },
             [ordered]@{ capability = 'cap-b'; method_unique_id = 'B' }
         )
-        $result = Select-UcpProfiles -Profiles $profiles -Capability 'cap-a'
-        @($result).Count | Should -Be 1
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'cap-a')
+        $result.Count | Should -Be 1
         $result[0]['method_unique_id'] | Should -Be 'A'
     }
 
@@ -581,8 +581,8 @@ Describe "Test Select-UcpProfiles" {
             [ordered]@{ capability = 'cap-x'; method_unique_id = 'A' },
             [ordered]@{ capability = 'cap-x'; method_unique_id = 'B' }
         )
-        $result = Select-UcpProfiles -Profiles $profiles -Capability 'cap-x'
-        @($result).Count | Should -Be 2
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'cap-x')
+        $result.Count | Should -Be 2
         $result[0]['method_unique_id'] | Should -Be 'A'
         $result[1]['method_unique_id'] | Should -Be 'B'
     }
@@ -592,8 +592,8 @@ Describe "Test Select-UcpProfiles" {
             [ordered]@{ capability = 'other'; method_unique_id = 'A' },
             [ordered]@{ capability = 'other'; method_unique_id = 'B'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'u:x' } } }
         )
-        $result = Select-UcpProfiles -Profiles $profiles -Capability 'no-match'
-        @($result).Count | Should -Be 1
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'no-match')
+        $result.Count | Should -Be 1
         $result[0]['method_unique_id'] | Should -Be 'B'
     }
 
