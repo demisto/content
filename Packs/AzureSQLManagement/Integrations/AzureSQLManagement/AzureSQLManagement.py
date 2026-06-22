@@ -97,7 +97,7 @@ class Client:
         resp_type: str = "json",
     ) -> requests.Response:
         if not full_url:
-            params["api-version"] = API_VERSION
+            params["api-version"] = params.get("api-version") or API_VERSION
 
         try:
             return self.ms_client.http_request(
