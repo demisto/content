@@ -13147,11 +13147,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if not data_format:
         data_format = 'text'
 
-    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before getLicenseCustomField('Http_Connector.token'/'url') (RPC to server)")
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before getLicenseCustomField('Http_Connector.token') (RPC to server)")
     xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG got Http_Connector.token, before getLicenseCustomField('Http_Connector.url')")
     xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
     xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG resolved xsiam_url={xsiam_url} (getLicenseCustomField returned)".format(
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG resolved xsiam_url={xsiam_url} (both getLicenseCustomField calls returned)".format(
         xsiam_url=xsiam_url))
     headers = {
         'authorization': xsiam_api_token,
@@ -13260,6 +13261,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return
 
     data_chunks = split_data_to_chunks(data, chunk_size)
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG built headers + client, prepared data_chunks (before send loop)")
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
