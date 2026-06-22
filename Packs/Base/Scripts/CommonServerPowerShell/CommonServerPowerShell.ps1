@@ -1450,6 +1450,7 @@ function Build-UcpParams {
         $metaNode = Get-UcpMember -Object $profile -Key 'metadata'
         $xsoarNode = Get-UcpMember -Object $metaNode -Key 'xsoar'
         $interpolationMapping = Get-UcpMember -Object $xsoarNode -Key 'interpolation_mapping'
+        $demisto.Debug("[UCP][Build-UcpParams] profile '$methodUniqueId' interpolation_mapping=$interpolationMapping")
 
         $pairs = ConvertFrom-UcpParamMap -ParamMap $interpolationMapping
         if (@($pairs).Count -eq 0) {

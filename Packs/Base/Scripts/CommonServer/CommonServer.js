@@ -2757,6 +2757,8 @@ function buildUcpParams(connectorMetadata, capability) {
         var meta = profile.metadata || {};
         var xsoar = meta.xsoar || {};
         var interpolationMapping = xsoar.interpolation_mapping;
+        logDebug('[UCP][CommonServer.js] buildUcpParams: profile id ' + methodUniqueId
+            + ' interpolation_mapping=' + JSON.stringify(interpolationMapping));
 
         var pairs = parseParamMap(interpolationMapping);
         if (pairs.length === 0) {

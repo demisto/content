@@ -13990,6 +13990,8 @@ def build_ucp_params(connector_metadata, capability=None):
         # The interpolation mapping lives under the profile's module-namespaced
         # metadata: profile['metadata']['xsoar']['interpolation_mapping'].
         interpolation_mapping = ((profile.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping')
+        demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: profile id {} interpolation_mapping={!r}'.format(
+            method_unique_id, interpolation_mapping))
         pairs = _parse_param_map(interpolation_mapping)
         if not pairs:
             demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: no interpolation pairs for profile id {}; skipping.'.format(method_unique_id))
