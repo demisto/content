@@ -34,6 +34,7 @@ XSIAM_CONTENT = [
     "Dashboards",
     "XSIAMDashboards",
 ]
+RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
 
 
 # -----------------------------
@@ -70,14 +71,20 @@ def prepare_git(head_branch: str):
 def seperate_pr_files(pr_files: dict):
     xsoar_files = []
     xsiam_files = []
-
+    release_notes_files = []
     for file_path, file in pr_files.items():
         is_xsiam = any(item in Path(file_path).parts for item in XSIAM_CONTENT)
+        parts = Path(file_path).parts
+        if any(x in parts for x in RELEASE_NOTES_ITEMS):
+            release_notes_files.append(file)
 
         if is_xsiam:
             xsiam_files.append(file)
         else:
             xsoar_files.append(file)
+    if len(xsoar_files) == len(release_notes_files):  # we only have xsiam files
+        xsiam_files.extend(xsoar_files)
+        xsoar_files = []
 
     return xsoar_files, xsiam_files
 
@@ -232,7 +239,8 @@ def main():
 
     labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
     labels.append("ready-for-pipeline-running")
-    labels.remove(MAPPING_LABEL)
+    if MAPPING_LABEL in labels:
+        labels.remove(MAPPING_LABEL)
 
     merged_by = getattr(merged_pr.merged_by, "login", None)
     reviewers, _ = merged_pr.get_review_requests()
@@ -261,7 +269,7 @@ def main():
     elif xsiam_files and not xsoar_files:
         print(f"{t.cyan}Only XSIAM files → mapping only{t.normal}")
 
-        mapping_branch = f"{head_branch}-mapping"
+        mapping_branch = f"{head_branch}"
 
         main_branch = None
 
@@ -273,7 +281,7 @@ def main():
 
     elif xsoar_files and not xsiam_files:
         print(f"{t.cyan}Only XSOAR files → main only{t.normal}")
-        main_branch = f"{head_branch}-main"
+        main_branch = f"{head_branch}"
         mapping_branch = None
         prepare_git(head_branch)
         run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"])
