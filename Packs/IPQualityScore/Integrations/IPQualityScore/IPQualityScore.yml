@@ -949,7 +949,6 @@ script:
           name: ip
           required: true
       deprecated: true
-      deprecatedMessage: Use the ipqs-ip-reputation command instead.
       description: Deprecated. Use ipqs-ip-reputation instead.
       name: ip
       outputs:
@@ -1071,7 +1070,6 @@ script:
           name: email
           required: true
       deprecated: true
-      deprecatedMessage: Use the ipqs-email-reputation command instead.
       description: Deprecated. Use ipqs-email-reputation instead.
       name: email
       outputs:
@@ -1184,7 +1182,6 @@ script:
           name: url
           required: true
       deprecated: true
-      deprecatedMessage: Use the ipqs-url-reputation command instead.
       description: Deprecated. Use ipqs-url-reputation instead.
       name: url
       outputs:

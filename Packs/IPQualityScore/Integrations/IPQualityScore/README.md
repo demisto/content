@@ -513,6 +513,14 @@ Runs validation and reputation on phone numbers.
 | IPQualityScore.Phone.do_not_call | Boolean | Is this number on a do-not-call list? |
 | IPQualityScore.Phone.name | String | Name associated with the number. |
 | IPQualityScore.Phone.timezone | String | Timezone for the number. |
+| IPQualityScore.Phone.tcpa_blacklist | Boolean | Is the number on a TCPA blacklist? |
+| IPQualityScore.Phone.accurate_country_code | Boolean | Is the country code accurate? |
+| IPQualityScore.Phone.sms_email | String | SMS email address for the number. |
+| IPQualityScore.Phone.number_recycling.message | String | Number recycling status message. |
+| IPQualityScore.Phone.number_recycling.recently_recycled | Boolean | Was the number recently recycled? |
+| IPQualityScore.Phone.number_recycling.last_ported_date | String | Last ported date for the number. |
+| IPQualityScore.Phone.number_recycling.ported | Boolean | Was the number ported? |
+| IPQualityScore.Phone.identity_data | String | Identity data associated with the number. |
 | IPQualityScore.Phone.request_id | String | Unique request identifier. |
 | IPQualityScore.Phone.phone | String | The phone number that was queried. |
 | DBotScore.Indicator | String | The indicator that was tested. |
