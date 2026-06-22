@@ -28,7 +28,9 @@ RED_TEAM_REPORTS_ENDPOINT = "/v1/report"
 RED_TEAM_REPORT_STATIC_ENDPOINT = "/v1/report/static"
 RED_TEAM_REPORT_DYNAMIC_ENDPOINT = "/v1/report/dynamic"
 RED_TEAM_CUSTOM_ATTACKS_ENDPOINT = "/v1/custom-attacks"
+RED_TEAM_CUSTOM_ATTACK_ENDPOINT = "/v1/custom-attack"  # For prompts within prompt sets
 RED_TEAM_EULA_ENDPOINT = "/v1/eula"
+RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
 # DLP API path suffixes (v2 API) - uses separate base URL
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
 # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
@@ -1993,6 +1995,1118 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
+def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new prompt in a prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - prompt_set_uuid (required): UUID of the prompt set
+              - prompt (required): The prompt text
+              - goal (optional): Custom goal for the prompt
+              - properties (optional): JSON object with additional properties
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameters
+    prompt_set_uuid = args.get("prompt_set_uuid")
+    prompt_text = args.get("prompt")
+
+    if not prompt_set_uuid:
+        raise ValueError("prompt_set_uuid is required")
+    if not prompt_text:
+        raise ValueError("prompt is required")
+
+    # Build request body according to CustomPromptCreateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptCreateRequestSchema)
+    # Fields: prompt (required), prompt_set_id (required), goal (optional), properties (optional)
+    request_body = {
+        "prompt": prompt_text,
+        "prompt_set_id": prompt_set_uuid
+    }
+
+    # Optional fields
+    if args.get("goal"):
+        request_body["goal"] = args.get("goal")
+
+    if args.get("properties"):
+        # Parse JSON properties if provided as string
+        properties_str = args.get("properties", "")
+        try:
+            request_body["properties"] = json.loads(properties_str) if isinstance(properties_str, str) else properties_str
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON format for properties: {properties_str}")
+
+    # Call Red Team Custom Attack endpoint to create prompt
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (createPrompt method)
+    # Endpoint: POST /v1/custom-attack/custom-prompt-set/custom-prompt
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/custom-prompt",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptResponseSchema
+    # Fields: uuid, prompt, user_defined_goal, status, active, prompt_set_id, created_at, updated_at
+    #         goal (optional), properties (optional), property_assignments (optional),
+    #         detector_category (optional), severity (optional), extra_info (optional)
+    prompt_info = {
+        "uuid": response.get("uuid"),
+        "prompt": response.get("prompt"),
+        "user_defined_goal": response.get("user_defined_goal"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "prompt_set_id": response.get("prompt_set_id"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    if response.get("goal"):
+        prompt_info["goal"] = response.get("goal")
+    if response.get("properties"):
+        prompt_info["properties"] = response.get("properties")
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Created\n\n"
+    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
+    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
+    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
+    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
+    readable_output += f"**Prompt:** {prompt_info.get('prompt', 'N/A')[:200]}...\n\n"
+    readable_output += f"**Created At:** {prompt_info.get('created_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_key_field="uuid",
+        outputs=prompt_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List prompts in a prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - prompt_set_uuid (required): UUID of the prompt set
+              - limit (optional): Max records to return
+              - skip (optional): Number of records to skip
+              - search (optional): Free-text search filter
+              - status (optional): Filter by status
+              - active (optional): Filter by active status (true/false)
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameter
+    prompt_set_uuid = args.get("prompt_set_uuid")
+    if not prompt_set_uuid:
+        raise ValueError("prompt_set_uuid is required")
+
+    # Build query parameters according to PromptListOptions
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (listPrompts method)
+    # Base: skip, limit, search (from ListingOptions)
+    # Extended: status, active (from PromptListOptions)
+    params: dict[str, Any] = {}
+
+    if args.get("limit"):
+        params["limit"] = int(args.get("limit", 50))
+    if args.get("skip"):
+        params["skip"] = int(args.get("skip", 0))
+    if args.get("search"):
+        params["search"] = args.get("search")
+    if args.get("status"):
+        params["status"] = args.get("status")
+    if args.get("active"):
+        # Convert to string as SDK does: params.active = String(opts.active)
+        active_val = args.get("active", "").lower()
+        if active_val in ["true", "false"]:
+            params["active"] = active_val
+
+    # Call Red Team Custom Attack endpoint to list prompts
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (listPrompts method)
+    # Endpoint: GET /v1/custom-attack/custom-prompt-set/{promptSetUuid}/list-custom-prompts
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/list-custom-prompts",
+        params=params,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptListSchema
+    # Response structure: { pagination: RedTeamPaginationSchema, data: [CustomPromptListItemSchema] }
+    # CustomPromptListItemSchema fields: uuid, prompt, user_defined_goal, status, active,
+    #                                     created_at, updated_at, goal (optional), properties (optional)
+    prompts = response.get("data", [])
+    pagination = response.get("pagination", {})
+
+    prompts_list = []
+    for prompt in prompts:
+        prompt_info = {
+            "uuid": prompt.get("uuid"),
+            "prompt": prompt.get("prompt"),
+            "user_defined_goal": prompt.get("user_defined_goal"),
+            "status": prompt.get("status"),
+            "active": prompt.get("active"),
+            "created_at": prompt.get("created_at"),
+            "updated_at": prompt.get("updated_at")
+        }
+        # Add optional fields if present
+        if prompt.get("goal"):
+            prompt_info["goal"] = prompt.get("goal")
+        if prompt.get("properties"):
+            prompt_info["properties"] = prompt.get("properties")
+
+        prompts_list.append(prompt_info)
+
+    # Create readable output table
+    if prompts_list:
+        readable_output = f"## Red Team Prompts (Total: {pagination.get('total_items', len(prompts_list))})\n\n"
+        readable_output += "| UUID | Status | Active | User Defined Goal | Prompt |\n"
+        readable_output += "|------|--------|--------|-------------------|--------|\n"
+        for prompt in prompts_list:
+            prompt_text = prompt.get("prompt", "N/A")
+            # Truncate long prompts for table display
+            prompt_preview = prompt_text[:50] + "..." if len(prompt_text) > 50 else prompt_text
+            readable_output += f"| {prompt.get('uuid', 'N/A')} | {prompt.get('status', 'N/A')} | {prompt.get('active', 'N/A')} | {prompt.get('user_defined_goal', 'N/A')} | {prompt_preview} |\n"
+    else:
+        readable_output = "## No prompts found in this prompt set"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompts",
+        outputs_key_field="uuid",
+        outputs=prompts_list,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific prompt by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - prompt_set_uuid (required): UUID of the prompt set
+              - prompt_uuid (required): UUID of the prompt
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameters
+    prompt_set_uuid = args.get("prompt_set_uuid")
+    prompt_uuid = args.get("prompt_uuid")
+
+    if not prompt_set_uuid:
+        raise ValueError("prompt_set_uuid is required")
+    if not prompt_uuid:
+        raise ValueError("prompt_uuid is required")
+
+    # Call Red Team Custom Attack endpoint to get prompt details
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (getPrompt method)
+    # Endpoint: GET /v1/custom-attack/custom-prompt-set/{promptSetUuid}/custom-prompt/{promptUuid}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptResponseSchema
+    # Fields: uuid, prompt, user_defined_goal, status, active, prompt_set_id, created_at, updated_at
+    #         goal (optional), properties (optional), property_assignments (optional),
+    #         detector_category (optional), severity (optional), extra_info (optional)
+    prompt_info = {
+        "uuid": response.get("uuid"),
+        "prompt": response.get("prompt"),
+        "user_defined_goal": response.get("user_defined_goal"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "prompt_set_id": response.get("prompt_set_id"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["goal", "properties", "property_assignments", "detector_category", "severity", "extra_info"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_info[field] = response.get(field)
+
+    # Create detailed readable output
+    readable_output = f"## Red Team Prompt Details\n\n"
+    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
+    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
+    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
+    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
+
+    # Display full prompt text
+    readable_output += f"**Prompt:**\n```\n{prompt_info.get('prompt', 'N/A')}\n```\n\n"
+
+    # Add optional fields if present
+    if prompt_info.get("goal"):
+        readable_output += f"**Goal:** {prompt_info.get('goal')}\n\n"
+    if prompt_info.get("detector_category"):
+        readable_output += f"**Detector Category:** {prompt_info.get('detector_category')}\n\n"
+    if prompt_info.get("severity"):
+        readable_output += f"**Severity:** {prompt_info.get('severity')}\n\n"
+
+    readable_output += f"**Created At:** {prompt_info.get('created_at', 'N/A')}\n\n"
+    readable_output += f"**Updated At:** {prompt_info.get('updated_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_key_field="uuid",
+        outputs=prompt_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing prompt.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - prompt_set_uuid (required): UUID of the prompt set
+              - prompt_uuid (required): UUID of the prompt to update
+              - prompt (optional): Updated prompt text
+              - goal (optional): Updated custom goal
+              - properties (optional): Updated properties JSON object
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameters
+    prompt_set_uuid = args.get("prompt_set_uuid")
+    prompt_uuid = args.get("prompt_uuid")
+
+    if not prompt_set_uuid:
+        raise ValueError("prompt_set_uuid is required")
+    if not prompt_uuid:
+        raise ValueError("prompt_uuid is required")
+
+    # Build request body according to CustomPromptUpdateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptUpdateRequestSchema)
+    # Fields: prompt (optional), goal (optional), properties (optional)
+    # All fields are optional in update request
+    request_body: dict[str, Any] = {}
+
+    if args.get("prompt"):
+        request_body["prompt"] = args.get("prompt")
+
+    if args.get("goal"):
+        request_body["goal"] = args.get("goal")
+
+    if args.get("properties"):
+        # Parse JSON properties if provided as string
+        properties_str = args.get("properties", "")
+        try:
+            request_body["properties"] = json.loads(properties_str) if isinstance(properties_str, str) else properties_str
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON format for properties: {properties_str}")
+
+    # Ensure at least one field is provided
+    if not request_body:
+        raise ValueError("At least one field to update must be provided (prompt, goal, or properties)")
+
+    # Call Red Team Custom Attack endpoint to update prompt
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (updatePrompt method)
+    # Endpoint: PUT /v1/custom-attack/custom-prompt-set/{promptSetUuid}/custom-prompt/{promptUuid}
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptResponseSchema
+    # Fields: uuid, prompt, user_defined_goal, status, active, prompt_set_id, created_at, updated_at
+    #         goal (optional), properties (optional), property_assignments (optional),
+    #         detector_category (optional), severity (optional), extra_info (optional)
+    prompt_info = {
+        "uuid": response.get("uuid"),
+        "prompt": response.get("prompt"),
+        "user_defined_goal": response.get("user_defined_goal"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "prompt_set_id": response.get("prompt_set_id"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["goal", "properties", "property_assignments", "detector_category", "severity", "extra_info"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_info[field] = response.get(field)
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Updated\n\n"
+    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
+    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
+    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
+    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
+
+    # Show updated fields
+    if "prompt" in request_body:
+        readable_output += f"**Updated Prompt:** {prompt_info.get('prompt', 'N/A')[:200]}...\n\n"
+    if "goal" in request_body:
+        readable_output += f"**Updated Goal:** {prompt_info.get('goal', 'N/A')}\n\n"
+
+    readable_output += f"**Updated At:** {prompt_info.get('updated_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_key_field="uuid",
+        outputs=prompt_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a prompt from a prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - prompt_set_uuid (required): UUID of the prompt set
+              - prompt_uuid (required): UUID of the prompt to delete
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameters
+    prompt_set_uuid = args.get("prompt_set_uuid")
+    prompt_uuid = args.get("prompt_uuid")
+
+    if not prompt_set_uuid:
+        raise ValueError("prompt_set_uuid is required")
+    if not prompt_uuid:
+        raise ValueError("prompt_uuid is required")
+
+    # Call Red Team Custom Attack endpoint to delete prompt
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (deletePrompt method)
+    # Endpoint: DELETE /v1/custom-attack/custom-prompt-set/{promptSetUuid}/custom-prompt/{promptUuid}
+    # Response: BaseResponse (message, status) or undefined
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
+        use_redteam_mgmt=True,
+        resp_type="response"  # Allow empty response
+    )
+
+    # Parse response according to BaseResponseSchema (optional)
+    # Fields: message (optional), status (optional)
+    # SDK allows undefined response for successful deletion
+    result_info = {
+        "prompt_uuid": prompt_uuid,
+        "prompt_set_uuid": prompt_set_uuid,
+        "status": "deleted"
+    }
+
+    # Try to extract response data if present
+    if response and hasattr(response, 'json'):
+        try:
+            response_data = response.json()
+            if response_data.get("message"):
+                result_info["message"] = response_data.get("message")
+            if response_data.get("status"):
+                result_info["api_status"] = response_data.get("status")
+        except Exception:
+            # Empty or non-JSON response is valid for DELETE
+            pass
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Deleted\n\n"
+    readable_output += f"**Prompt UUID:** {prompt_uuid}\n\n"
+    readable_output += f"**Prompt Set UUID:** {prompt_set_uuid}\n\n"
+    readable_output += f"**Status:** Successfully deleted"
+
+    if result_info.get("message"):
+        readable_output += f"\n\n**Message:** {result_info.get('message')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptDeleted",
+        outputs_key_field="prompt_uuid",
+        outputs=result_info,
+        readable_output=readable_output,
+        raw_response=result_info
+    )
+
+
+def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team prompt set for custom attack scenarios.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - name (required): Name of the prompt set
+              - description (optional): Description of the prompt set
+              - property_names (optional): Comma-separated list of property names
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameter
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required")
+
+    # Build request body according to CustomPromptSetCreateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptSetCreateRequestSchema)
+    # Fields: name (required), description (optional), property_names (optional array)
+    request_body: dict[str, Any] = {
+        "name": name
+    }
+
+    # Optional fields
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    if args.get("property_names"):
+        # Parse comma-separated property names into array
+        property_names_str = args.get("property_names", "")
+        request_body["property_names"] = [name.strip() for name in property_names_str.split(",")]
+
+    # Call Red Team Custom Attack endpoint to create prompt set
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (createPromptSet method)
+    # Endpoint: POST /v1/custom-attack/custom-prompt-set
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptSetResponseSchema
+    # Fields: uuid, name, active, archive, status, created_at, updated_at
+    #         description (optional), property_names (optional), properties (optional),
+    #         stats (optional), extra_info (optional), version (optional),
+    #         created_by_user_id (optional), updated_by_user_id (optional)
+    prompt_set_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "active": response.get("active"),
+        "archive": response.get("archive"),
+        "status": response.get("status"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
+                       "version", "created_by_user_id", "updated_by_user_id"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_set_info[field] = response.get(field)
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Set Created\n\n"
+    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
+    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
+    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
+    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
+
+    if prompt_set_info.get("description"):
+        readable_output += f"**Description:** {prompt_set_info.get('description')}\n\n"
+    if prompt_set_info.get("property_names"):
+        readable_output += f"**Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
+
+    readable_output += f"**Created At:** {prompt_set_info.get('created_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_key_field="uuid",
+        outputs=prompt_set_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Red Team prompt sets for custom attack scenarios.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - limit (optional): Max records to return
+              - skip (optional): Number of records to skip
+              - search (optional): Free-text search filter
+              - status (optional): Filter by status
+              - active (optional): Filter by active status (true/false)
+              - archive (optional): Filter by archive status (true/false)
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Build query parameters according to PromptSetListOptions
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (listPromptSets method)
+    # Base: skip, limit, search (from ListingOptions)
+    # Extended: status, active, archive (from PromptSetListOptions)
+    params: dict[str, Any] = {}
+
+    if args.get("limit"):
+        params["limit"] = int(args.get("limit", 50))
+    if args.get("skip"):
+        params["skip"] = int(args.get("skip", 0))
+    if args.get("search"):
+        params["search"] = args.get("search")
+    if args.get("status"):
+        params["status"] = args.get("status")
+    if args.get("active"):
+        # Convert to string as SDK does: params.active = String(opts.active)
+        active_val = args.get("active", "").lower()
+        if active_val in ["true", "false"]:
+            params["active"] = active_val
+    if args.get("archive"):
+        # Convert to string as SDK does: params.archive = String(opts.archive)
+        archive_val = args.get("archive", "").lower()
+        if archive_val in ["true", "false"]:
+            params["archive"] = archive_val
+
+    # Call Red Team Custom Attack endpoint to list prompt sets
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (listPromptSets method)
+    # Endpoint: GET /v1/custom-attack/list-custom-prompt-sets
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/list-custom-prompt-sets",
+        params=params,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptSetListSchema
+    # Response structure: { pagination: RedTeamPaginationSchema, data: [CustomPromptSetListItemSchema] }
+    # CustomPromptSetListItemSchema fields: uuid, name, active, archive, status, created_at, updated_at
+    #                                        description (optional), property_names (optional),
+    #                                        stats (optional), created_by_user_id (optional)
+    prompt_sets = response.get("data", [])
+    pagination = response.get("pagination", {})
+
+    prompt_sets_list = []
+    for prompt_set in prompt_sets:
+        set_info = {
+            "uuid": prompt_set.get("uuid"),
+            "name": prompt_set.get("name"),
+            "active": prompt_set.get("active"),
+            "archive": prompt_set.get("archive"),
+            "status": prompt_set.get("status"),
+            "created_at": prompt_set.get("created_at"),
+            "updated_at": prompt_set.get("updated_at")
+        }
+        # Add optional fields if present
+        optional_fields = ["description", "property_names", "stats", "created_by_user_id"]
+        for field in optional_fields:
+            if prompt_set.get(field):
+                set_info[field] = prompt_set.get(field)
+
+        prompt_sets_list.append(set_info)
+
+    # Create readable output table
+    if prompt_sets_list:
+        readable_output = f"## Red Team Prompt Sets (Total: {pagination.get('total_items', len(prompt_sets_list))})\n\n"
+        readable_output += "| UUID | Name | Status | Active | Archive | Description |\n"
+        readable_output += "|------|------|--------|--------|---------|-------------|\n"
+        for ps in prompt_sets_list:
+            description = ps.get("description", "N/A")
+            # Truncate long descriptions for table display
+            desc_preview = str(description)[:30] + "..." if len(str(description)) > 30 else str(description)
+            readable_output += f"| {ps.get('uuid', 'N/A')} | {ps.get('name', 'N/A')} | {ps.get('status', 'N/A')} | {ps.get('active', 'N/A')} | {ps.get('archive', 'N/A')} | {desc_preview} |\n"
+    else:
+        readable_output = "## No prompt sets found"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSets",
+        outputs_key_field="uuid",
+        outputs=prompt_sets_list,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get details of a specific Red Team prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - uuid (required): UUID of the prompt set
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameter
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Red Team Custom Attack endpoint to get prompt set details
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (getPromptSet method)
+    # Endpoint: GET /v1/custom-attack/custom-prompt-set/{uuid}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}",
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptSetResponseSchema
+    # Fields: uuid, name, active, archive, status, created_at, updated_at
+    #         description (optional), property_names (optional), properties (optional),
+    #         stats (optional), extra_info (optional), version (optional),
+    #         created_by_user_id (optional), updated_by_user_id (optional)
+    prompt_set_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "active": response.get("active"),
+        "archive": response.get("archive"),
+        "status": response.get("status"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
+                       "version", "created_by_user_id", "updated_by_user_id"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_set_info[field] = response.get(field)
+
+    # Create detailed readable output
+    readable_output = f"## Red Team Prompt Set Details\n\n"
+    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
+    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
+    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
+    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
+
+    # Add optional fields if present
+    if prompt_set_info.get("description"):
+        readable_output += f"**Description:** {prompt_set_info.get('description')}\n\n"
+    if prompt_set_info.get("property_names"):
+        readable_output += f"**Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
+    if prompt_set_info.get("stats"):
+        readable_output += f"**Stats:** {prompt_set_info.get('stats')}\n\n"
+    if prompt_set_info.get("version"):
+        readable_output += f"**Version:** {prompt_set_info.get('version')}\n\n"
+    if prompt_set_info.get("created_by_user_id"):
+        readable_output += f"**Created By:** {prompt_set_info.get('created_by_user_id')}\n\n"
+    if prompt_set_info.get("updated_by_user_id"):
+        readable_output += f"**Updated By:** {prompt_set_info.get('updated_by_user_id')}\n\n"
+
+    readable_output += f"**Created At:** {prompt_set_info.get('created_at', 'N/A')}\n\n"
+    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_key_field="uuid",
+        outputs=prompt_set_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing Red Team prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - uuid (required): UUID of the prompt set to update
+              - name (optional): Updated name
+              - description (optional): Updated description
+              - property_names (optional): Updated comma-separated property names
+              - archive (optional): Updated archive status (true/false)
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameter
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Build request body according to CustomPromptSetUpdateRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptSetUpdateRequestSchema)
+    # Fields: name (optional), description (optional), archive (optional), property_names (optional)
+    # All fields are optional in update request
+    request_body: dict[str, Any] = {}
+
+    if args.get("name"):
+        request_body["name"] = args.get("name")
+
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    if args.get("archive"):
+        # Convert string to boolean
+        archive_val = args.get("archive", "").lower()
+        if archive_val in ["true", "false"]:
+            request_body["archive"] = archive_val == "true"
+
+    if args.get("property_names"):
+        # Parse comma-separated property names into array
+        property_names_str = args.get("property_names", "")
+        request_body["property_names"] = [name.strip() for name in property_names_str.split(",")]
+
+    # Ensure at least one field is provided
+    if not request_body:
+        raise ValueError("At least one field to update must be provided (name, description, archive, or property_names)")
+
+    # Call Red Team Custom Attack endpoint to update prompt set
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (updatePromptSet method)
+    # Endpoint: PUT /v1/custom-attack/custom-prompt-set/{uuid}
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptSetResponseSchema
+    # Fields: uuid, name, active, archive, status, created_at, updated_at
+    #         description (optional), property_names (optional), properties (optional),
+    #         stats (optional), extra_info (optional), version (optional),
+    #         created_by_user_id (optional), updated_by_user_id (optional)
+    prompt_set_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "active": response.get("active"),
+        "archive": response.get("archive"),
+        "status": response.get("status"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
+                       "version", "created_by_user_id", "updated_by_user_id"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_set_info[field] = response.get(field)
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Set Updated\n\n"
+    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
+    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
+    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
+    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
+
+    # Show updated fields
+    if "name" in request_body:
+        readable_output += f"**Updated Name:** {prompt_set_info.get('name')}\n\n"
+    if "description" in request_body:
+        readable_output += f"**Updated Description:** {prompt_set_info.get('description', 'N/A')}\n\n"
+    if "property_names" in request_body:
+        readable_output += f"**Updated Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
+
+    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_key_field="uuid",
+        outputs=prompt_set_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Archive or unarchive a Red Team prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - uuid (required): UUID of the prompt set
+              - archive (required): Archive status (true or false)
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Validate required parameters
+    uuid = args.get("uuid")
+    archive_str = args.get("archive")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+    if not archive_str:
+        raise ValueError("archive is required")
+
+    # Convert archive string to boolean
+    archive_val = archive_str.lower()
+    if archive_val not in ["true", "false"]:
+        raise ValueError("archive must be 'true' or 'false'")
+
+    archive_bool = archive_val == "true"
+
+    # Build request body according to CustomPromptSetArchiveRequestSchema
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptSetArchiveRequestSchema)
+    # Fields: archive (required boolean)
+    request_body = {
+        "archive": archive_bool
+    }
+
+    # Call Red Team Custom Attack endpoint to archive/unarchive prompt set
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (archivePromptSet method)
+    # Endpoint: PUT /v1/custom-attack/custom-prompt-set/{uuid}/archive
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}/archive",
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to CustomPromptSetResponseSchema
+    # Fields: uuid, name, active, archive, status, created_at, updated_at
+    #         description (optional), property_names (optional), properties (optional),
+    #         stats (optional), extra_info (optional), version (optional),
+    #         created_by_user_id (optional), updated_by_user_id (optional)
+    prompt_set_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "active": response.get("active"),
+        "archive": response.get("archive"),
+        "status": response.get("status"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add optional fields if present
+    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
+                       "version", "created_by_user_id", "updated_by_user_id"]
+    for field in optional_fields:
+        if response.get(field):
+            prompt_set_info[field] = response.get(field)
+
+    # Create readable output
+    action = "Archived" if archive_bool else "Unarchived"
+    readable_output = f"## Red Team Prompt Set {action}\n\n"
+    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
+    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
+    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
+    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
+    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
+    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_key_field="uuid",
+        outputs=prompt_set_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get or create Red Team registry credentials for pulling scanner images.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR (no arguments required).
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team registry credentials endpoint
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/instances-client.ts (getRegistryCredentials method)
+    # Endpoint: POST /v1/registry-credentials
+    # This is a POST request that either creates new credentials or returns existing ones
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (RegistryCredentialsSchema)
+    response = client.http_request(
+        method="POST",
+        url_suffix=RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to RegistryCredentialsSchema
+    # Fields: token (required), expiry (required)
+    credentials_info = {
+        "token": response.get("token"),
+        "expiry": response.get("expiry")
+    }
+
+    # Create readable output
+    # Truncate token for security (show only first and last 8 characters)
+    token_display = credentials_info.get("token", "")
+    if len(token_display) > 20:
+        token_truncated = f"{token_display[:8]}...{token_display[-8:]}"
+    else:
+        token_truncated = token_display
+
+    readable_output = f"## Red Team Registry Credentials\n\n"
+    readable_output += f"**Token:** {token_truncated}\n\n"
+    readable_output += f"**Expiry:** {credentials_info.get('expiry', 'N/A')}\n\n"
+    readable_output += "**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamRegistryCredentials",
+        outputs_key_field="expiry",
+        outputs=credentials_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_prompt_sets_download_command(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    """Download CSV template for a prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        File result dict for war room display.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Red Team download template endpoint
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (downloadTemplate method)
+    # Endpoint: GET /v1/custom-attack/download-template/{uuid}
+    # Returns: CSV string with header + sample row
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts:207-230
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/download-template/{uuid}",
+        use_redteam_mgmt=True,
+        resp_type="text"  # CSV response is plain text, not JSON
+    )
+
+    # Response is CSV string like:
+    # prompt,goal
+    # This is a sample prompt,Optional goal text (leave empty for AI-generated goal)
+
+    # Generate filename based on UUID
+    filename = f"prompt_set_template_{uuid}.csv"
+
+    # Return file using XSOAR fileResult() pattern
+    # Reference: CLAUDE.md section "File Handling in XSOAR"
+    from CommonServerPython import fileResult
+    return fileResult(
+        filename=filename,
+        data=response,
+        file_type=None  # Auto-detect from extension
+    )
+
+
+def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Upload CSV file with prompts to a prompt set.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    import demisto
+
+    uuid = args.get("uuid")
+    entry_id = args.get("entryID")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+    if not entry_id:
+        raise ValueError("entryID is required")
+
+    # Get file from war room using demisto.getFilePath()
+    # Reference: CLAUDE.md section "File Handling in XSOAR"
+    try:
+        file_info = demisto.getFilePath(entry_id)
+        file_path = file_info.get("path")
+        file_name = file_info.get("name")
+
+        if not file_path:
+            raise ValueError(f"Could not get file path for entry ID: {entry_id}")
+
+        # Validate file extension
+        if not file_name.lower().endswith('.csv'):
+            raise ValueError(f"File must be a CSV file. Got: {file_name}")
+
+        # Read CSV file content
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+
+    except FileNotFoundError:
+        raise ValueError(f"File not found for entry ID: {entry_id}")
+    except PermissionError:
+        raise ValueError(f"Permission denied accessing file for entry ID: {entry_id}")
+
+    # Call Red Team upload prompts CSV endpoint
+    # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (uploadPromptsCsv method)
+    # Endpoint: POST /v1/custom-attack/upload-custom-prompts-csv?prompt_set_uuid={uuid}
+    # Body: multipart/form-data with 'file' field
+    # Returns: BaseResponse { message: string, status: number }
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts:232-264
+
+    # Python requests library handles multipart/form-data with files parameter
+    # We need to override the http_request method to use files parameter
+    url_suffix = f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/upload-custom-prompts-csv"
+    params = {"prompt_set_uuid": uuid}
+
+    # Build full URL
+    full_url = f"{client.base_url_no_aisec}{url_suffix}"
+
+    # Prepare files for multipart upload
+    files = {
+        'file': (file_name, file_content, 'text/csv')
+    }
+
+    # Get OAuth token
+    token = client._get_oauth_token()
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+
+    # Make request with files (multipart/form-data)
+    response = client._http_request(
+        method='POST',
+        full_url=full_url,
+        params=params,
+        headers=headers,
+        files=files,
+        resp_type='json'
+    )
+
+    # Parse response according to BaseResponseSchema
+    # Fields: message (string), status (number)
+    message = response.get("message", "Upload completed")
+    status_code = response.get("status", 200)
+
+    upload_info = {
+        "message": message,
+        "status": status_code,
+        "prompt_set_uuid": uuid,
+        "file_name": file_name
+    }
+
+    # Create readable output
+    readable_output = f"## Red Team Prompt Set Upload\n\n"
+    readable_output += f"**Status:** {status_code}\n\n"
+    readable_output += f"**Message:** {message}\n\n"
+    readable_output += f"**Prompt Set UUID:** {uuid}\n\n"
+    readable_output += f"**File:** {file_name}\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSetUpload",
+        outputs_key_field="prompt_set_uuid",
+        outputs=upload_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Query runtime scan logs.
 
@@ -2610,6 +3724,50 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-eula-accept":
             return_results(redteam_eula_accept_command(client, args))
+
+        # Red Team Prompts Commands (5 commands)
+        elif command == "prisma-airs-redteam-prompts-create":
+            return_results(redteam_prompts_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompts-list":
+            return_results(redteam_prompts_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompts-get":
+            return_results(redteam_prompts_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompts-update":
+            return_results(redteam_prompts_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompts-delete":
+            return_results(redteam_prompts_delete_command(client, args))
+
+        # Red Team Prompt Sets Commands (5 commands)
+        elif command == "prisma-airs-redteam-prompt-sets-create":
+            return_results(redteam_prompt_sets_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompt-sets-list":
+            return_results(redteam_prompt_sets_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompt-sets-get":
+            return_results(redteam_prompt_sets_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompt-sets-update":
+            return_results(redteam_prompt_sets_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-prompt-sets-archive":
+            return_results(redteam_prompt_sets_archive_command(client, args))
+
+        # Red Team Registry Credentials Command (1 command)
+        elif command == "prisma-airs-redteam-registry-credentials-get":
+            return_results(redteam_registry_credentials_get_command(client, args))
+
+        # Red Team Prompt Sets Download Command (1 command)
+        elif command == "prisma-airs-redteam-prompt-sets-download":
+            return_results(redteam_prompt_sets_download_command(client, args))
+
+        # Red Team Prompt Sets Upload Command (1 command)
+        elif command == "prisma-airs-redteam-prompt-sets-upload":
+            return_results(redteam_prompt_sets_upload_command(client, args))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

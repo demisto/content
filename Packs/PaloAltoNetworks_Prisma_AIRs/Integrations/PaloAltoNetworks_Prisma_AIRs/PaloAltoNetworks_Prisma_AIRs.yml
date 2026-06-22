@@ -1175,6 +1175,527 @@ script:
     - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
       description: User ID who accepted the EULA.
       type: String
+  - name: prisma-airs-redteam-prompts-create
+    description: Create a new prompt in a Red Team prompt set for custom attack scenarios.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: UUID of the prompt set to add the prompt to.
+    - name: prompt
+      required: true
+      description: The prompt text to create.
+    - name: goal
+      required: false
+      description: Optional custom goal for the prompt.
+    - name: properties
+      required: false
+      description: Optional JSON object with additional properties for the prompt.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPrompt.uuid
+      description: UUID of the created prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.status
+      description: Status of the prompt (e.g., READY, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt_set_id
+      description: UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.created_at
+      description: Timestamp when the prompt was created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.updated_at
+      description: Timestamp when the prompt was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.goal
+      description: Optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.properties
+      description: Optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-list
+    description: List prompts in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: UUID of the prompt set to list prompts from.
+    - name: limit
+      required: false
+      description: Maximum number of prompts to return (default 50).
+    - name: skip
+      required: false
+      description: Number of prompts to skip for pagination.
+    - name: search
+      required: false
+      description: Free-text search filter for prompt text.
+    - name: status
+      required: false
+      description: Filter by prompt status (e.g., READY, PENDING).
+    - name: active
+      required: false
+      description: Filter by active status (true or false).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPrompts.uuid
+      description: UUID of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompts.status
+      description: Status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompts.created_at
+      description: Timestamp when the prompt was created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompts.updated_at
+      description: Timestamp when the prompt was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompts.goal
+      description: Optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompts.properties
+      description: Optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-get
+    description: Get details of a specific prompt in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: UUID of the prompt to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPrompt.uuid
+      description: UUID of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.status
+      description: Status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt_set_id
+      description: UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.created_at
+      description: Timestamp when the prompt was created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.updated_at
+      description: Timestamp when the prompt was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.goal
+      description: Optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.properties
+      description: Optional additional properties for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.property_assignments
+      description: Optional property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.detector_category
+      description: Optional detector category for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.severity
+      description: Optional severity level for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.extra_info
+      description: Optional extra information about the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-update
+    description: Update an existing prompt in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: UUID of the prompt to update.
+    - name: prompt
+      required: false
+      description: Updated prompt text.
+    - name: goal
+      required: false
+      description: Updated custom goal.
+    - name: properties
+      required: false
+      description: Updated properties JSON object.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPrompt.uuid
+      description: UUID of the updated prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt
+      description: The updated prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.status
+      description: Status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompt.prompt_set_id
+      description: UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompt.created_at
+      description: Timestamp when the prompt was created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.updated_at
+      description: Timestamp when the prompt was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompt.goal
+      description: Optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompt.properties
+      description: Optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-delete
+    description: Delete a prompt from a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: UUID of the prompt to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.prompt_uuid
+      description: UUID of the deleted prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.prompt_set_uuid
+      description: UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.status
+      description: Deletion status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.message
+      description: Optional deletion message.
+      type: String
+  - name: prisma-airs-redteam-prompt-sets-create
+    description: Create a new Red Team prompt set for organizing custom attack prompts.
+    arguments:
+    - name: name
+      required: true
+      description: Name of the prompt set.
+    - name: description
+      required: false
+      description: Description of the prompt set.
+    - name: property_names
+      required: false
+      description: Comma-separated list of custom property names for the prompt set (e.g., "category,severity").
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSet.uuid
+      description: UUID of the created prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.name
+      description: Name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.status
+      description: Status of the prompt set (e.g., READY, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_at
+      description: Timestamp when the prompt set was created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_at
+      description: Timestamp when the prompt set was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.description
+      description: Description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.property_names
+      description: Array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.properties
+      description: Array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.stats
+      description: Statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.version
+      description: Version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_by_user_id
+      description: User ID who created the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_by_user_id
+      description: User ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-list
+    description: List Red Team prompt sets for custom attack scenarios.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of prompt sets to return (default 50).
+    - name: skip
+      required: false
+      description: Number of prompt sets to skip for pagination.
+    - name: search
+      required: false
+      description: Free-text search filter for prompt set names/descriptions.
+    - name: status
+      required: false
+      description: Filter by prompt set status (e.g., READY, PENDING).
+    - name: active
+      required: false
+      description: Filter by active status (true or false).
+    - name: archive
+      required: false
+      description: Filter by archive status (true or false).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSets.uuid
+      description: UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.name
+      description: Name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSets.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSets.status
+      description: Status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.created_at
+      description: Timestamp when created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSets.updated_at
+      description: Timestamp when last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSets.description
+      description: Description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.property_names
+      description: Array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.stats
+      description: Statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.created_by_user_id
+      description: User ID who created the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-get
+    description: Get details of a specific Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the prompt set to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSet.uuid
+      description: UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.name
+      description: Name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.status
+      description: Status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_at
+      description: Timestamp when created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_at
+      description: Timestamp when last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.description
+      description: Description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.property_names
+      description: Array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.properties
+      description: Array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.stats
+      description: Statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.extra_info
+      description: Additional information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.version
+      description: Version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_by_user_id
+      description: User ID who created the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_by_user_id
+      description: User ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-update
+    description: Update an existing Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the prompt set to update.
+    - name: name
+      required: false
+      description: Updated name of the prompt set.
+    - name: description
+      required: false
+      description: Updated description.
+    - name: property_names
+      required: false
+      description: Updated comma-separated list of custom property names.
+    - name: archive
+      required: false
+      description: Updated archive status (true or false).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSet.uuid
+      description: UUID of the updated prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.name
+      description: Name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.status
+      description: Status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_at
+      description: Timestamp when created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_at
+      description: Timestamp when last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.description
+      description: Description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.property_names
+      description: Array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.properties
+      description: Array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.stats
+      description: Statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.version
+      description: Version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_by_user_id
+      description: User ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-archive
+    description: Archive or unarchive a Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the prompt set to archive/unarchive.
+    - name: archive
+      required: true
+      description: Archive status - true to archive, false to unarchive.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSet.uuid
+      description: UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.name
+      description: Name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSet.status
+      description: Status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSet.created_at
+      description: Timestamp when created.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.updated_at
+      description: Timestamp when last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSet.description
+      description: Description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.property_names
+      description: Array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.properties
+      description: Array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.stats
+      description: Statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSet.version
+      description: Version information.
+      type: Unknown
+  - name: prisma-airs-redteam-registry-credentials-get
+    description: Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRs registry.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRegistryCredentials.token
+      description: Registry access token for authenticating with the container registry.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRegistryCredentials.expiry
+      description: Token expiry timestamp (ISO 8601 format).
+      type: Date
+  - name: prisma-airs-redteam-prompt-sets-download
+    description: Download CSV template for a Red Team prompt set. The template includes header row and sample data for bulk prompt uploads.
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the prompt set to download the template for.
+  - name: prisma-airs-redteam-prompt-sets-upload
+    description: Upload CSV file with prompts to a Red Team prompt set. CSV must have 'prompt' and 'goal' columns (goal is optional).
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the prompt set to upload prompts to.
+    - name: entryID
+      required: true
+      description: Entry ID of the CSV file from the war room to upload.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.message
+      description: Response message from the upload operation.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.status
+      description: HTTP status code of the upload operation.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.prompt_set_uuid
+      description: UUID of the prompt set that was uploaded to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.file_name
+      description: Name of the uploaded CSV file.
+      type: String
   dockerimage: demisto/python3:3.10.14.95956
   runonce: false
   script: '-'

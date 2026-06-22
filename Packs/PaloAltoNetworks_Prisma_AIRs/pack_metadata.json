@@ -1,0 +1,46 @@
+{
+    "name": "Palo Alto Networks - Prisma AIRs AI Security",
+    "description": "Integrate with Palo Alto Networks Prisma AIRs for AI security: runtime scanning, red teaming, model security, and DLP configuration.",
+    "support": "xsoar",
+    "currentVersion": "0.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-06-19T00:00:00Z",
+    "categories": [
+        "Cloud Security",
+        "CI/CD"
+    ],
+    "tags": [
+        "Palo Alto Networks Products",
+        "AI Security"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Prisma",
+        "AIRS",
+        "AI",
+        "Security",
+        "DLP",
+        "Red Team",
+        "Model Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "cloud_runtime_security",
+        "xsiam",
+        "cloud"
+    ],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true
+        },
+        "CommonScripts": {
+            "mandatory": true
+        }
+    }
+}
