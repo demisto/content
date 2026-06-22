@@ -46,7 +46,7 @@ def __line__():
 
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
-_MODULES_LINE_MAPPi ING = {
+_MODULES_LINE_MAPPiING = {
     'CommonServerPython': {'start': __line__() - 50, 'end': float('inf')},
 }
 
