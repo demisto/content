@@ -1001,9 +1001,12 @@ def main() -> None:
     commands: dict[str, Callable[[], Any]] = {
         "test-module": lambda: test_module(client),
         "ipqs-ip-reputation": run_ip_command,
+        "ip": run_ip_command,  # Deprecated: use ipqs-ip-reputation
         "ipqs-email-reputation": run_email_command,
+        "email": run_email_command,  # Deprecated: use ipqs-email-reputation
         "ipqs-phone-reputation": run_phone_command,
         "ipqs-url-reputation": run_url_command,
+        "url": run_url_command,  # Deprecated: use ipqs-url-reputation
         "ipqs-username-leaked": lambda: leaked_username_command(
             client,
             args,

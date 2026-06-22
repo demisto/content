@@ -224,6 +224,21 @@ script:
         - contextPath: IPQualityScore.Phone.identity_data
           type: String
           description: Identity data array.
+        - contextPath: IPQualityScore.Phone.phone
+          type: String
+          description: The phone number that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
     - arguments:
         - default: true
           description: IP address to check.
@@ -587,6 +602,21 @@ script:
         - contextPath: IPQualityScore.Username.request_id
           type: String
           description: Unique request ID.
+        - contextPath: IPQualityScore.Username.username
+          type: String
+          description: The username that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
     - arguments:
         - default: true
           description: Password to check for leaks.
@@ -623,6 +653,21 @@ script:
         - contextPath: IPQualityScore.Password.request_id
           type: String
           description: Unique request ID.
+        - contextPath: IPQualityScore.Password.password
+          type: String
+          description: The password that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
     - arguments:
         - default: true
           description: Email to check for leaks.
@@ -662,6 +707,51 @@ script:
         - contextPath: IPQualityScore.Email.request_id
           type: String
           description: Unique request ID.
+        - contextPath: IPQualityScore.LeakedEmail.success
+          type: Boolean
+          description: Was the request successful?
+        - contextPath: IPQualityScore.LeakedEmail.message
+          type: String
+          description: Status message for the email check.
+        - contextPath: IPQualityScore.LeakedEmail.request_hash
+          type: String
+          description: Unique hash for the request.
+        - contextPath: IPQualityScore.LeakedEmail.source
+          type: String
+          description: List of sources where the email was found (can be empty).
+        - contextPath: IPQualityScore.LeakedEmail.exposed
+          type: Boolean
+          description: Whether the email was found in a leak.
+        - contextPath: IPQualityScore.LeakedEmail.first_seen.human
+          type: String
+          description: Human-readable time when first seen.
+        - contextPath: IPQualityScore.LeakedEmail.first_seen.timestamp
+          type: Number
+          description: Timestamp when first seen.
+        - contextPath: IPQualityScore.LeakedEmail.first_seen.iso
+          type: String
+          description: ISO8601 time when first seen.
+        - contextPath: IPQualityScore.LeakedEmail.plain_text_password
+          type: String
+          description: The plain text password if it was found in a leak.
+        - contextPath: IPQualityScore.LeakedEmail.request_id
+          type: String
+          description: Unique request ID.
+        - contextPath: IPQualityScore.LeakedEmail.email
+          type: String
+          description: The email address that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
     - arguments:
         - name: entry_id
           description: Entry ID of the uploaded file to scan.
@@ -852,7 +942,340 @@ script:
         - contextPath: DBotScore.Vendor
           type: String
           description: Vendor name (IPQualityScore).
-  dockerimage: demisto/python3:3.12.12.7019815
+    - arguments:
+        - default: true
+          description: IP address to check.
+          isArray: true
+          name: ip
+          required: true
+      deprecated: true
+      deprecatedMessage: Use the ipqs-ip-reputation command instead.
+      description: Deprecated. Use ipqs-ip-reputation instead.
+      name: ip
+      outputs:
+        - contextPath: IPQualityScore.IP.success
+          type: Boolean
+          description: Was the request successful?
+        - contextPath: IPQualityScore.IP.message
+          type: String
+          description: A generic status message, either success or some form of an error notice.
+        - contextPath: IPQualityScore.IP.fraud_score
+          type: Number
+          description: The overall fraud score of the user based on the IP.
+        - contextPath: IPQualityScore.IP.country_code
+          type: String
+          description: Two character country code of IP address or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.region
+          type: String
+          description: Region (state) of IP address if available or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.city
+          type: String
+          description: City of IP address if available or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.ISP
+          type: String
+          description: ISP if one is known. Otherwise "N/A".
+        - contextPath: IPQualityScore.IP.ASN
+          type: Number
+          description: Autonomous System Number if one is known. Null if nonexistent.
+        - contextPath: IPQualityScore.IP.organization
+          type: String
+          description: Organization if one is known. Otherwise "N/A".
+        - contextPath: IPQualityScore.IP.latitude
+          type: Number
+          description: Latitude of IP address if available or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.longitude
+          type: Number
+          description: Longitude of IP address if available or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.is_crawler
+          type: Boolean
+          description: Is this IP associated with being a confirmed crawler.
+        - contextPath: IPQualityScore.IP.timezone
+          type: String
+          description: Timezone of IP address if available or "N/A" if unknown.
+        - contextPath: IPQualityScore.IP.mobile
+          type: Boolean
+          description: Is this user agent a mobile browser?
+        - contextPath: IPQualityScore.IP.host
+          type: String
+          description: Hostname of the IP address if one is available.
+        - contextPath: IPQualityScore.IP.proxy
+          type: Boolean
+          description: Is this IP address suspected to be a proxy?
+        - contextPath: IPQualityScore.IP.vpn
+          type: Boolean
+          description: Is this IP suspected of being a VPN connection?
+        - contextPath: IPQualityScore.IP.tor
+          type: Boolean
+          description: Is this IP suspected of being a TOR connection?
+        - contextPath: IPQualityScore.IP.active_vpn
+          type: Boolean
+          description: Premium Account Feature - Identifies active VPN connections.
+        - contextPath: IPQualityScore.IP.active_tor
+          type: Boolean
+          description: Premium Account Feature - Identifies active TOR exits on the TOR network.
+        - contextPath: IPQualityScore.IP.recent_abuse
+          type: Boolean
+          description: This value will indicate if there has been any recently verified abuse for this IP address.
+        - contextPath: IPQualityScore.IP.bot_status
+          type: Boolean
+          description: Premium Account Feature - Indicates if bots or non-human traffic has recently used this IP address.
+        - contextPath: IPQualityScore.IP.connection_type
+          type: String
+          description: Classification of the IP address connection type.
+        - contextPath: IPQualityScore.IP.abuse_velocity
+          type: String
+          description: Premium Account Feature - How frequently the IP address is engaging in abuse.
+        - contextPath: IPQualityScore.IP.request_id
+          type: String
+          description: A unique identifier for this request.
+        - contextPath: IPQualityScore.IP.address
+          type: String
+          description: The IP address that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
+        - contextPath: IP.Address
+          type: string
+          description: The IP address.
+        - contextPath: IP.ASN
+          type: string
+          description: The autonomous system name for the IP address.
+        - contextPath: IP.Hostname
+          type: string
+          description: The hostname that is mapped to this IP address.
+        - contextPath: IP.Geo.Country
+          type: string
+          description: The country in which the IP address is located.
+        - contextPath: IP.Geo.Description
+          type: string
+          description: Additional information about the location.
+        - contextPath: IP.Malicious.Vendor
+          type: string
+          description: The vendor reporting the IP address as malicious.
+        - contextPath: IP.Malicious.Description
+          type: string
+          description: A description explaining why the IP address was reported as malicious.
+    - arguments:
+        - default: true
+          description: Email address to check.
+          isArray: true
+          name: email
+          required: true
+      deprecated: true
+      deprecatedMessage: Use the ipqs-email-reputation command instead.
+      description: Deprecated. Use ipqs-email-reputation instead.
+      name: email
+      outputs:
+        - contextPath: IPQualityScore.Email.message
+          type: String
+          description: A generic status message, either success or some form of an error notice.
+        - contextPath: IPQualityScore.Email.success
+          type: Boolean
+          description: Was the request successful?
+        - contextPath: IPQualityScore.Email.valid
+          type: Boolean
+          description: Does this email address appear valid?
+        - contextPath: IPQualityScore.Email.disposable
+          type: Boolean
+          description: Is this email suspected of belonging to a temporary or disposable mail service?
+        - contextPath: IPQualityScore.Email.smtp_score
+          type: Number
+          description: Validity score of email server's SMTP setup.
+        - contextPath: IPQualityScore.Email.overall_score
+          type: Number
+          description: Overall email validity score.
+        - contextPath: IPQualityScore.Email.first_name
+          type: String
+          description: Suspected first name based on email.
+        - contextPath: IPQualityScore.Email.generic
+          type: Boolean
+          description: Is this email suspected as being a catch all or shared email for a domain?
+        - contextPath: IPQualityScore.Email.common
+          type: Boolean
+          description: Is this email from a common email provider?
+        - contextPath: IPQualityScore.Email.dns_valid
+          type: Boolean
+          description: Does the email's hostname have valid DNS entries?
+        - contextPath: IPQualityScore.Email.honeypot
+          type: Boolean
+          description: Is this email believed to be a "honeypot" or "SPAM trap"?
+        - contextPath: IPQualityScore.Email.deliverability
+          type: String
+          description: How likely is this email to be delivered to the user and land in their mailbox.
+        - contextPath: IPQualityScore.Email.frequent_complainer
+          type: Boolean
+          description: Indicates if this email frequently unsubscribes from marketing lists or reports email as SPAM.
+        - contextPath: IPQualityScore.Email.spam_trap_score
+          type: String
+          description: Confidence level of the email address being an active SPAM trap.
+        - contextPath: IPQualityScore.Email.catch_all
+          type: Boolean
+          description: Is this email likely to be a "catch all"?
+        - contextPath: IPQualityScore.Email.timed_out
+          type: Boolean
+          description: Did the connection to the mail service provider timeout during the verification?
+        - contextPath: IPQualityScore.Email.suspect
+          type: Boolean
+          description: This value indicates if the mail server is currently replying with a temporary error.
+        - contextPath: IPQualityScore.Email.recent_abuse
+          type: Boolean
+          description: This value will indicate if there has been any recently verified abuse for this email address.
+        - contextPath: IPQualityScore.Email.fraud_score
+          type: Number
+          description: The overall Fraud Score of the user based on the email's reputation.
+        - contextPath: IPQualityScore.Email.suggested_domain
+          type: String
+          description: Indicates if this email's domain should in fact be corrected to a popular mail service.
+        - contextPath: IPQualityScore.Email.leaked
+          type: Boolean
+          description: Was this email address associated with a recent database leak from a third party?
+        - contextPath: IPQualityScore.Email.domain_age.human
+          type: Date
+          description: A human description of when this domain was registered.
+        - contextPath: IPQualityScore.Email.domain_age.timestamp
+          type: Number
+          description: The unix time since epoch when this domain was first registered.
+        - contextPath: IPQualityScore.Email.domain_age.iso
+          type: Date
+          description: The time this domain was registered in ISO8601 format.
+        - contextPath: IPQualityScore.Email.first_seen.human
+          type: Date
+          description: A human description of the email address age.
+        - contextPath: IPQualityScore.Email.first_seen.timestamp
+          type: Number
+          description: The unix time since epoch when this email was first analyzed by IPQS.
+        - contextPath: IPQualityScore.Email.first_seen.iso
+          type: Date
+          description: The time this email was first analyzed by IPQS in ISO8601 format.
+        - contextPath: IPQualityScore.Email.sanitized_email
+          type: String
+          description: Sanitized email address with all aliases and masking removed.
+        - contextPath: IPQualityScore.Email.request_id
+          type: String
+          description: A unique identifier for this request.
+        - contextPath: IPQualityScore.Email.address
+          type: String
+          description: The email address that was queried.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
+    - arguments:
+        - default: true
+          description: Url address to check.
+          isArray: true
+          name: url
+          required: true
+      deprecated: true
+      deprecatedMessage: Use the ipqs-url-reputation command instead.
+      description: Deprecated. Use ipqs-url-reputation instead.
+      name: url
+      outputs:
+        - contextPath: IPQualityScore.Url.message
+          type: String
+          description: A generic status message, either success or some form of an error notice.
+        - contextPath: IPQualityScore.Url.success
+          type: Boolean
+          description: Was the request successful?
+        - contextPath: IPQualityScore.Url.unsafe
+          type: Boolean
+          description: Is this domain suspected of being unsafe due to phishing, malware, spamming, or abusive behavior?
+        - contextPath: IPQualityScore.Url.domain
+          type: String
+          description: Domain name of the final destination URL of the scanned link, after following all redirects.
+        - contextPath: IPQualityScore.Url.ip_address
+          type: String
+          description: The IP address corresponding to the server of the domain name.
+        - contextPath: IPQualityScore.Url.server
+          type: String
+          description: The server banner of the domain's IP address.
+        - contextPath: IPQualityScore.Url.content_type
+          type: String
+          description: MIME type of URL's content.
+        - contextPath: IPQualityScore.Url.status_code
+          type: Number
+          description: HTTP Status Code of the URL's response.
+        - contextPath: IPQualityScore.Url.page_size
+          type: Number
+          description: Total number of bytes to download the URL's content.
+        - contextPath: IPQualityScore.Url.domain_rank
+          type: Number
+          description: Estimated popularity rank of website globally.
+        - contextPath: IPQualityScore.Url.dns_valid
+          type: Boolean
+          description: The domain of the URL has valid DNS records.
+        - contextPath: IPQualityScore.Url.parking
+          type: Boolean
+          description: Is the domain of this URL currently parked with a for sale notice?
+        - contextPath: IPQualityScore.Url.spamming
+          type: Boolean
+          description: Is the domain of this URL associated with email SPAM or abusive email addresses?
+        - contextPath: IPQualityScore.Url.malware
+          type: Boolean
+          description: Is this URL associated with malware or viruses?
+        - contextPath: IPQualityScore.Url.phishing
+          type: Boolean
+          description: Is this URL associated with malicious phishing behavior?
+        - contextPath: IPQualityScore.Url.suspicious
+          type: Boolean
+          description: Is this URL suspected of being malicious or used for phishing or abuse?
+        - contextPath: IPQualityScore.Url.risk_score
+          type: Number
+          description: The IPQS risk score which estimates the confidence level for malicious URL detection.
+        - contextPath: IPQualityScore.Url.request_id
+          type: String
+          description: A unique identifier for this request.
+        - contextPath: IPQualityScore.Url.url
+          type: String
+          description: The URL being queried.
+        - contextPath: IPQualityScore.Url.adult
+          type: Boolean
+          description: Is this URL or domain hosting dating or adult content?
+        - contextPath: IPQualityScore.Url.domain_age.human
+          type: Date
+          description: A human description of when this domain was registered.
+        - contextPath: IPQualityScore.Url.domain_age.timestamp
+          type: Number
+          description: The unix time since epoch when this domain was first registered.
+        - contextPath: IPQualityScore.Url.domain_age.iso
+          type: Date
+          description: The time this domain was registered in ISO8601 format.
+        - contextPath: DBotScore.Indicator
+          type: String
+          description: The indicator that was tested.
+        - contextPath: DBotScore.Score
+          type: Number
+          description: The actual score.
+        - contextPath: DBotScore.Type
+          type: String
+          description: The indicator type.
+        - contextPath: DBotScore.Vendor
+          type: String
+          description: The vendor used to calculate the score.
+        - contextPath: URL.Data
+          description: The URL.
+          type: String
+        - contextPath: URL.Malicious.Vendor
+          description: The vendor reporting the URL as malicious.
+          type: String
+  dockerimage: demisto/python3:3.12.13.10230415
   runonce: false
   script: "-"
   subtype: python3
