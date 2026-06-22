@@ -11,7 +11,6 @@ This integration was integrated and tested with version `1.0.0` of CTM360_Hacker
 | API Key | The CTM360 HackerView API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
 | Fetch incidents |  | False |
-| Fetch events |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
@@ -126,6 +125,7 @@ Fetch details of a single incident from the HackerView platform.
 | HackerView.RemoteIncident.host | unknown | host of affected asset. |
 | HackerView.RemoteIncident.asset_type | unknown | affected asset type. |
 | HackerView.RemoteIncident.asset | unknown | affected asset. |
+| HackerView.RemoteIncident.brand | unknown | The organization brand the incident belongs to. |
 | HackerView.RemoteIncident.ip | unknown | The IP address associated with the finding. |
 | HackerView.RemoteIncident.port | unknown | The network port associated with the finding. |
 | HackerView.RemoteIncident.uri | unknown | The URI path or resource related to the finding. |

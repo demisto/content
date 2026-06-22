@@ -6,7 +6,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
-| Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, Domain/Subdomain Infringements, Malware Logs, Social Media Fraud, Money Mules, or Gambling Sites. | False |
+| Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, Malware Logs, Domain/Subdomain Infringements, Social Media Fraud, Gambling Sites, or Money Mules. | False |
 | Retrieve Screenshots |  | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
@@ -235,7 +235,7 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.date_compromised | unknown | The date of the compromise. |
 | CyberBlindspot.RemoteIncident.computer_name | unknown | The name of the computer that was compromised. |
 | CyberBlindspot.RemoteIncident.operating_system | unknown | The operating system of the compromised device. |
-| CyberBlindspot.RemoteIncident.malware_path | unknown | The path of the in which the malware was installed on the compromised device. |
+| CyberBlindspot.RemoteIncident.malware_path | unknown | The path in which the malware was installed on the compromised device. |
 | CyberBlindspot.RemoteIncident.url_path | unknown | The path of the URL. |
 | CyberBlindspot.RemoteIncident.masked_password | unknown | The masked password of the compromised account. |
 | CyberBlindspot.RemoteIncident.software | unknown | The software that was compromised. |
@@ -243,11 +243,37 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.user_domain | unknown | The domain of the compromised user. |
 | CyberBlindspot.RemoteIncident.website | unknown | The website compromised. |
 | CyberBlindspot.RemoteIncident.sources | unknown | The sources reporting the compromise. |
-| CyberBlindspot.RemoteIncident.source_uri | unknown | The source URI of the compromise report. |
+| CyberBlindspot.RemoteIncident.sourcexiaomi.eu_uri | unknown | The source URI of the compromise report. |
 | CyberBlindspot.RemoteIncident.hostname | unknown | The hostname of the compromised device. |
 | CyberBlindspot.RemoteIncident.stealer_family | unknown | The family of the malware. |
 | CyberBlindspot.RemoteIncident.external_link | unknown | The external link to the remote platform. |
 | CyberBlindspot.RemoteIncident.compromise_details | unknown | The details of the compromise. |
+| CyberBlindspot.RemoteIncident.platform | unknown | Social network platform for social media fraud findings. |
+| CyberBlindspot.RemoteIncident.risk_score | unknown | Numeric risk score from CBS. |
+| CyberBlindspot.RemoteIncident.money_mule_id | unknown | CBS money mule finding ID. |
+| CyberBlindspot.RemoteIncident.account_identifier | unknown | Account identifier tied to the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_names | unknown | Names associated with the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_emails | unknown | Email addresses associated with the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_phones | unknown | Phone numbers associated with the money mule. |
+| CyberBlindspot.RemoteIncident.transfer_amount | unknown | Transfer amount when present. |
+| CyberBlindspot.RemoteIncident.transfer_currency | unknown | Currency code for the transfer. |
+| CyberBlindspot.RemoteIncident.bank_account_holder_name | unknown | Name on the bank account. |
+| CyberBlindspot.RemoteIncident.bank_name | unknown | Bank name tied to the money mule. |
+| CyberBlindspot.RemoteIncident.bank_account_country | unknown | Country of the bank account. |
+| CyberBlindspot.RemoteIncident.bic | unknown | Bank Identifier Code. |
+| CyberBlindspot.RemoteIncident.finding_id | unknown | CBS gambling-site finding ID. |
+| CyberBlindspot.RemoteIncident.url | unknown | Primary gambling site URL. |
+| CyberBlindspot.RemoteIncident.submitted_url | unknown | URL submitted to CBS for scanning. |
+| CyberBlindspot.RemoteIncident.landing_url | unknown | Landing page URL observed for the site. |
+| CyberBlindspot.RemoteIncident.title | unknown | Page title observed during scan. |
+| CyberBlindspot.RemoteIncident.resolving_ip | unknown | Resolved IP for the gambling site. |
+| CyberBlindspot.RemoteIncident.tags | unknown | Tags applied to the gambling site finding. |
+| CyberBlindspot.RemoteIncident.status_code | unknown | HTTP status code from scan. |
+| CyberBlindspot.RemoteIncident.url_status | unknown | URL reachability status. |
+| CyberBlindspot.RemoteIncident.scan_status | unknown | Scan completion status. |
+| CyberBlindspot.RemoteIncident.enrichment | unknown | DNS enrichment payload. |
+| CyberBlindspot.RemoteIncident.external_links | unknown | External links discovered on the gambling site. |
+| CyberBlindspot.RemoteIncident.internal_links | unknown | Internal links discovered on the gambling site. |
 
 ### ctm360-cbs-incident-retrieve-screenshots
 
