@@ -2868,7 +2868,7 @@ def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
     assert result.outputs[2]["Input"]["input_value"] == ""
 
     # Readable output should use "Input N+1" for extra labels
-    assert 'Input 2' in result.readable_output or 'single text' in result.readable_output
+    assert "Input 2" in result.readable_output or "single text" in result.readable_output
 
 
 # endregion

@@ -2440,13 +2440,15 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
         return CommandResults(
             readable_output="No moderation results returned.",
             outputs_prefix="OpenAiChatGPTV3.Moderation",
-            outputs=[{
-                "Flagged": False,
-                "Categories": {},
-                "CategoryScores": {},
-                "Input": {"input_type": input_type, "input_value": input_value},
-            }],
-            replace_existing=True
+            outputs=[
+                {
+                    "Flagged": False,
+                    "Categories": {},
+                    "CategoryScores": {},
+                    "Input": {"input_type": input_type, "input_value": input_value},
+                }
+            ],
+            replace_existing=True,
         )
 
     # Determine labels for each result.  For text inputs the label is the text
@@ -2500,10 +2502,7 @@ def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> Com
     outputs: list[dict[str, Any]] | dict[str, Any] = all_outputs[0] if len(all_outputs) == 1 else all_outputs
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="OpenAiChatGPTV3.Moderation",
-        outputs=outputs,
-        replace_existing=True
+        readable_output=readable_output, outputs_prefix="OpenAiChatGPTV3.Moderation", outputs=outputs, replace_existing=True
     )
 
 
