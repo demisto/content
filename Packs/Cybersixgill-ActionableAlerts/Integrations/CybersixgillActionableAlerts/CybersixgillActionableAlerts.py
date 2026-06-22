@@ -60,6 +60,7 @@ def item_to_incidents(item_info, sixgill_alerts_client):
         sub_incident = copy.deepcopy(incident)
         # add all other fields
         add_sub_alerts_fields(sub_incident, item, sixgill_alerts_client)
+        item["org_id"] = demisto.params().get("org_id", "")
         sub_incident["rawJSON"] = json.dumps(item)
         incidents.append(sub_incident)
     return incidents
@@ -75,7 +76,7 @@ def add_sub_alerts_shared_fields(incident, item_info):
         "cybersixgillthreattype": item_info.get("threats", []),
         "cybersixgillassessment": item_info.get("assessment", None),
         "cybersixgillrecommendations": "\n\n-----------\n\n".join(item_info.get("recommendations", [])),
-        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
+        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}&org={demisto.params().get('org_id', '')}",
         "cve": None,
         "cybersixgillattributes": None,
     }
