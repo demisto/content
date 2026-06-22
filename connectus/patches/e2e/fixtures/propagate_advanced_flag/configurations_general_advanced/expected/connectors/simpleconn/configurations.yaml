@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../../schema/configurations.schema.json
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings.
+view_groups:
+- id: integration
+  label: Integration
+general_configurations:
+  description: General settings for SimpleConn.
+  configurations:
+  - view_group: integration
+    fields:
+    - id: api_endpoint
+      title: API Endpoint
+      field_type: input
+      options:
+        mask: false
+        placeholder: https://api.example.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - view_group: integration
+    advanced: true
+    fields:
+    - id: scan_timeout
+      title: Scan Timeout (seconds)
+      field_type: input
+      options:
+        mask: false
+        default_value: '60'
+        placeholder: '60'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

@@ -265,3 +265,167 @@ golden. It covers: live back-fill matches `expected/`, `--dry-run` writes
 nothing but reports, idempotent second run, and the scope guard (plain / api_key
 / `vault_support` profiles left untouched). Contract details are in
 [`e2e/README.md`](e2e/README.md).
+
+## `propagate_advanced_flag.py`
+
+### What it fixes
+
+XSOAR integrations may declare `advanced: true` on individual
+`configuration[]` params (the param then surfaces under the legacy "Advanced"
+panel). The ConnectUs FieldGroup schema exposes the same boolean at the **row
+level** (`general_configurations.configurations[].advanced` and equivalents),
+but the manifest generator currently drops it. This patch **back-fills**
+`advanced: true` onto the matching FieldGroup rows of already-committed
+`configurations.yaml` and `connection.yaml` files — **without** regenerating
+from the XSOAR YML.
+
+### What it modifies
+
+Both `configurations.yaml` and `connection.yaml` per connector. Only **rows**
+are changed (either an existing row is **promoted** by getting `advanced: true`
+inserted, or a mixed row is **split** into a non-advanced + advanced sibling
+pair). Field ids, field titles, field options and any other field-level
+properties are **never** modified. No new fields are invented; no fields are
+removed.
+
+### Where it looks
+
+All **5** FieldGroup row-placement contexts the schema defines:
+
+1. `configurations.yaml` → `general_configurations.configurations[]`
+2. `configurations.yaml` → `configurations[].configurations[]` (per-capability)
+3. `connection.yaml` → `general_configurations.configurations[]`
+4. `connection.yaml` → `profiles[].configurations[]` (per-profile)
+5. `capabilities.yaml` → `general_configurations.configurations[]` (legality
+   pinned in code for completeness; contexts 1–4 are the actively-patched ones)
+
+### Per-handler scoping
+
+Each row is resolved back to its **owning** XSOAR integration(s) via the
+handler linkage (`components/handlers/<h>/handler.yaml`'s
+`triggering.labels.xsoar-integration-id`) and the pipeline CSV:
+
+- **Per-capability rows** are scoped to the handler(s) whose
+  `capabilities[].id` matches the row's enclosing capability id.
+- **Per-profile rows** are scoped to the handler(s) whose
+  `capabilities[].auth_options[].id` matches the row's enclosing profile id
+  (or whose `handler.id` derives the row's `view_group`).
+- **General_configurations rows** use the **union** of advanced sets across
+  all handlers under the connector (because a general row belongs to the
+  connector as a whole, not to any one source integration).
+
+This is the same per-handler linkage that
+`flatten_non_type9_nesting.py` uses and prevents an advanced flag from one
+handler bleeding into a sibling handler's per-capability / per-profile rows.
+
+### Mixed rows are auto-split
+
+When a single row contains **both** advanced and non-advanced fields, the
+patch splits it into two sibling rows:
+
+- The **original** row keeps the **non-advanced** fields (and stays in place,
+  preserving its key order and surrounding siblings).
+- A **new sibling** row is inserted **immediately after** with
+  `advanced: true` and the advanced fields.
+
+Field order is preserved within each resulting row (relative order of the
+non-advanced fields is unchanged; relative order of the advanced fields is
+unchanged).
+
+### Propagation rules on split
+
+When splitting a mixed row, sibling properties propagate to the new advanced
+row only where the FieldGroup schema permits them:
+
+- `view_group` propagates **only** on `general_configurations` rows **AND
+  only** when the connector is `grouped: true` (per
+  `connector.yaml settings.grouped`). Per-capability and per-profile siblings
+  inherit `view_group` from their enclosing capability / profile, so the
+  schema forbids it on the row itself.
+- `required_for_capabilities` propagates **only** on `general_configurations`
+  rows. Per-capability and per-profile rows imply their capability, so the
+  schema forbids the field there.
+- `advanced: true` is legal in every context; this is the entire reason the
+  patch exists.
+
+Per-capability and per-profile split siblings therefore carry **neither**
+`view_group` nor `required_for_capabilities` — only `fields` and `advanced`.
+
+### Safety / idempotency
+
+- `ruamel.yaml` round-trip preserves formatting, key order, quoting and
+  comments (PyYAML fallback only if `ruamel` is unavailable, with reduced
+  fidelity).
+- A row that **already** has `advanced: true` is **skipped** — a second run is
+  a **no-op**.
+- The patch never invents fields, never changes field metadata, never adds
+  `view_group` / `required_for_capabilities` where the original row didn't
+  have one.
+- When the per-row lookup returns no advanced params (handler / pipeline-CSV
+  gap), the row's fields are **reported as unmatched** and the file is left
+  untouched.
+- `--dry-run` computes and reports intended changes and exits `0` without
+  writing.
+
+### No changes to `manifest_generator.py`
+
+This is a **one-off, content-side** patch. The generator itself is **not**
+modified — fixing the generator would not retroactively update the manifests
+that were already committed by older generator versions. This patch operates
+directly on those committed files.
+
+### CLI flag contract
+
+```bash
+python3 content/connectus/patches/propagate_advanced_flag.py \
+    [--connectors-dir DIR] \   # connectors root (default: $CONNECTUS_REPO_DIR/connectors,
+                               #   else <repo-root>/unified-connectors-content/connectors)
+    [--path PATH] \            # one connector dir/name, configurations.yaml or
+                               #   connection.yaml (default: scan all connectors)
+    [--pipeline-csv CSV] \     # handler-id → source-YML map
+                               #   (default: <connectus>/connectus-migration-pipeline.csv)
+    [--dry-run]                # report only; write nothing; exit 0
+```
+
+| Flag                | Purpose                                                              |
+| ------------------- | -------------------------------------------------------------------- |
+| `--dry-run`         | Report what would change; write nothing.                             |
+| `--connectors-dir`  | Override the `unified-connectors-content/connectors` root.           |
+| `--path` (or positional) | Restrict to one connector dir/name or one of its manifests.     |
+| `--pipeline-csv`    | Override the discovery CSV used to map handler id → source YML path. |
+
+Env var: `CONNECTUS_REPO_DIR` selects the connectors repo when
+`--connectors-dir` is omitted (same convention as the other patches).
+
+### Usage
+
+```bash
+# Whole-repo dry run (recommended first):
+python3 content/connectus/patches/propagate_advanced_flag.py --dry-run
+
+# Apply to a single connector:
+python3 content/connectus/patches/propagate_advanced_flag.py --path qualys
+
+# With an explicit env var pointing at the connectors repo:
+CONNECTUS_REPO_DIR=/path/to/unified-connectors-content \
+    python3 content/connectus/patches/propagate_advanced_flag.py --dry-run --path qualys
+```
+
+### Tests
+
+```bash
+cd content/connectus && python3 -m pytest \
+    patches/propagate_advanced_flag_test.py \
+    patches/e2e/propagate_advanced_flag_e2e_test.py -v
+```
+
+- `patches/propagate_advanced_flag_test.py` — unit tests (whole-row
+  promotion, mixed-row split, idempotency, unmatched reporting, `view_group`
+  + `required_for_capabilities` propagation rules across the 5 contexts,
+  per-handler scoping, and both `configurations.yaml` + `connection.yaml`
+  row shapes).
+- `patches/e2e/propagate_advanced_flag_e2e_test.py` — black-box E2E suite
+  that invokes the patch as a subprocess against a sandboxed copy of each
+  fixture and compares semantically to the golden. Fixtures:
+  `configurations_general_advanced`, `configurations_per_capability_advanced`,
+  `connection_profile_advanced`, and `no_advanced_params_noop`.

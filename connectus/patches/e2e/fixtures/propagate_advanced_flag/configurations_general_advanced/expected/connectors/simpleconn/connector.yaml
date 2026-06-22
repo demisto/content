@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+enabled: true
+id: simpleconn
+metadata:
+  is_recommended: false
+  title: SimpleConn
+  description: Minimal grouped single-handler fixture connector for the propagate_advanced_flag e2e suite.
+  version: 1.0.0
+  categories:
+  - Utilities
+  tags:
+  - Example
+  domain: security
+  vendor: Example Vendor
+  publisher: Palo Alto Networks
+  ownership:
+    team: platform
+    maintainers:
+    - '@platform-team'
+settings:
+  grouped: true
+view_groups:
+- id: integration
+  label: Integration

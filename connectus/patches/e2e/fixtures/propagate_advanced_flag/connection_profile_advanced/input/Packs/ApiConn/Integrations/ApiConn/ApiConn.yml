@@ -1,0 +1,34 @@
+category: Utilities
+commonfields:
+  id: ApiConn
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Timeout (seconds)
+  name: timeout
+  type: 0
+  advanced: true
+  required: false
+- display: Server URL
+  name: server_url
+  type: 0
+  required: true
+- display: Debug Mode
+  name: debug_mode
+  type: 8
+  advanced: true
+  required: false
+description: Minimal mocked XSOAR integration used only as a fixture source for the propagate_advanced_flag e2e suite (connection_profile_advanced case).
+display: ApiConn
+name: ApiConn
+script:
+  commands: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.0.0
+fromversion: 6.10.0

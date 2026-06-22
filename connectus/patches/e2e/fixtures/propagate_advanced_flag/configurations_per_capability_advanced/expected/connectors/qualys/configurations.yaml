@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../schema/configurations.schema.json
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings.
+configurations:
+- id: fetch-events_qualysv2
+  configurations:
+  - fields:
+    - id: apiserver
+      title: API Server
+      field_type: input
+      options:
+        placeholder: https://...
+  - advanced: true
+    fields:
+    - id: assetsFetchInterval
+      title: Assets Fetch Interval
+      field_type: input
+      options: {}
+  - fields:
+    - id: fetch_filter
+      title: Should not be promoted here
+      field_type: input
+      options: {}
+  - advanced: true
+    fields:
+    - id: insecure
+      title: Trust any certificate
+      field_type: checkbox
+      options: {}
+    - id: eventFetchInterval
+      title: Event Fetch Interval
+      field_type: input
+      options: {}
+- id: fetch-issues_qualys_fim
+  configurations:
+  - fields:
+    - id: fimserver
+      title: FIM Server
+      field_type: input
+      options: {}
+  - advanced: true
+    fields:
+    - id: fetch_filter
+      title: Fetch Filter
+      field_type: input
+      options: {}

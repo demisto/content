@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+ApiConn,Packs/ApiConn/Integrations/ApiConn/ApiConn.yml,ApiConn,connectors/apiconn,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

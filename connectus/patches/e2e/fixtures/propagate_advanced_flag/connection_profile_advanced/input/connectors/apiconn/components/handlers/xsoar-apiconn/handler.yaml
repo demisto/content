@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-apiconn
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for ApiConn.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: ApiConn
+    xsoar-pack-id: ApiConn
+  args: {}
+capabilities:
+- auth_options:
+  - id: api_key.apiconn
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

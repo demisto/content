@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../schema/configurations.schema.json
+metadata:
+  title: Configuration
+  description: General configuration for the NoOpConn connector.
+general_configurations:
+  configurations:
+  - fields:
+    - id: server_url
+      title: Server URL
+      field_type: input
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
