@@ -7,7 +7,9 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import requests
 import json
-from datetime import datetime, UTC
+from datetime import datetime, timezone
+
+UTC = timezone.utc
 
 """Parameters"""
 PARAMS = demisto.params()
@@ -18,10 +20,9 @@ AUTH = (USERNAME, PASSWORD)
 API_KEY_ID: str = PARAMS.get("api_key_auth_credentials", {}).get("identifier")
 API_KEY_SECRET: str = PARAMS.get("api_key_auth_credentials", {}).get("password")
 API_KEY = None
-PYTHON_DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 PROXY = PARAMS.get("proxy")
-ELASTIC_SERVER = PARAMS.get("url", "").rstrip("/") + ":" + PARAMS.get("elastic_port")  ### change test func to use kibana_server
-KIBANA_SERVER = PARAMS.get("url", "").rstrip("/") + ":" + PARAMS.get("kibana_port")
+ELASTIC_SERVER = PARAMS.get("url", "").rstrip("/") + ":" + (PARAMS.get("elastic_port") or "9200")
+KIBANA_SERVER = PARAMS.get("url", "").rstrip("/") + ":" + (PARAMS.get("kibana_port") or "443")
 INSECURE = not PARAMS.get("insecure", False)
 TIMEOUT = int(PARAMS.get("timeout") or 60)
 
@@ -44,7 +45,7 @@ elif AUTH_TYPE == API_KEY_AUTH:
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
 ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
-ELASTIC_SEARCH_CLIENT = PARAMS.get("client_type")
+ELASTIC_SEARCH_CLIENT = PARAMS.get("client_type") or "Elasticsearch"
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
@@ -53,18 +54,6 @@ elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elasticsearch import Elasticsearch  # type: ignore[assignment]
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment,misc]
-
-HTTP_ERRORS = {
-    400: "400 Bad Request - Incorrect or invalid parameters",
-    401: "401 Unauthorized - Incorrect or invalid username or password",
-    403: "403 Forbidden - The account does not support performing this task",
-    404: "404 Not Found - Elasticsearch server was not found",
-    408: "408 Timeout - Check port number or Elasticsearch server credentials",
-    410: "410 Gone - Elasticsearch server no longer exists in the service",
-    500: "500 Internal Server Error - Internal error",
-    503: "503 Service Unavailable",
-}
-
 
 def get_api_key_header_val(api_key):
     """
@@ -109,7 +98,7 @@ def is_access_token_expired(expires_in: str) -> bool:
         return True
 
 
-def get_elastic_token():
+def get_elastic_token(proxies):
     """
     Authenticates and retrieves an OAuth 2.0 access token from Elasticsearch.
 
@@ -245,7 +234,7 @@ def elasticsearch_builder(proxies):
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
     elif AUTH_TYPE == BEARER_AUTH:
-        connection_args["bearer_auth"] = get_elastic_token()
+        connection_args["bearer_auth"] = get_elastic_token(proxies)
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
 
@@ -362,7 +351,7 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
 
         elif AUTH_TYPE == BEARER_AUTH:
             demisto.debug("test_connectivity_auth - Bearer auth setting authorization header and sending request")
-            headers["Authorization"] = f"Bearer {get_elastic_token()}"
+            headers["Authorization"] = f"Bearer {get_elastic_token(proxies)}"
             res = requests.get(ELASTIC_SERVER, verify=INSECURE, headers=headers, proxies=proxies)
 
         if res is not None:
@@ -421,9 +410,10 @@ def kibana_find_cases(args, proxies):
 
     status = args.get("status")
     severity = args.get("severity")
-    from_time = args.get("from_time")
+    from_time = arg_to_datetime(args.get("from_time"))
+    from_time_str = from_time.strftime(DATE_FORMAT) if from_time else None
 
-    query_params = {"status": status, "severity": severity, "from": from_time}
+    query_params = {"status": status, "severity": severity, "from": from_time_str}
 
     response = http_request(method="GET", url_suffix="/api/cases/_find", params=query_params, headers=headers, proxies=proxies)
     json_data = response["cases"]
@@ -431,7 +421,7 @@ def kibana_find_cases(args, proxies):
     # output results to markdown table
     md = tableToMarkdown("Kibana Cases", json_data, headers=[])
 
-    result = CommandResults(readable_output=md, outputs_prefix="Kibana.Cases", outputs=json_data)
+    result = CommandResults(readable_output=md, outputs_prefix="Kibana.Cases", outputs=json_data, raw_response=response)
 
     return result
 
@@ -478,7 +468,7 @@ def kibana_update_alert_status(args, proxies):
 
     http_request(method="POST", url_suffix="/api/detection_engine/signals/status", data=data, headers=headers, proxies=proxies)
 
-    return f"Updated alert ID {alert_id} to status of {status}"
+    return CommandResults(readable_output=f"Updated alert ID {alert_id} to status of {status}")
 
 
 def kibana_update_case_status(args, proxies):
@@ -557,15 +547,12 @@ def kibana_delete_case(args, proxies):
     }
 
     case_id = args.get("case_id")
-    case_id = '["' + case_id + '"]'
-    case_list = []
-    case_list.append(case_id)
 
-    params = {"ids": case_list}
+    params = {"ids": json.dumps([case_id])}
 
     http_request(method="DELETE", url_suffix="/api/cases", params=params, headers=headers, proxies=proxies)
 
-    return f"Successfully deleted case with ID of {case_id}"
+    return CommandResults(readable_output=f"Successfully deleted case with ID of {case_id}")
 
 
 def kibana_delete_rule(args, proxies):
@@ -581,7 +568,7 @@ def kibana_delete_rule(args, proxies):
 
     http_request(method="DELETE", url_suffix=f"/api/alerting/rule/{rule_id}", headers=headers, proxies=proxies)
 
-    return f"Successfully deleted rule with ID of {rule_id}"
+    return CommandResults(readable_output=f"Successfully deleted rule with ID of {rule_id}")
 
 
 def kibana_search_rule_details(args, proxies):
@@ -630,7 +617,7 @@ def kibana_add_case_comment(args, proxies):
     response = http_request(method="POST", url_suffix=f"/api/cases/{case_id}/comments", data=json_data, headers=headers, proxies=proxies)
     updated_at = response["updated_at"]
 
-    return f"Case comment updated at {updated_at}"
+    return CommandResults(readable_output=f"Case comment updated at {updated_at}")
 
 
 def kibana_get_user_list(args, proxies):
@@ -642,7 +629,9 @@ def kibana_get_user_list(args, proxies):
 
     try:
         all_users = es.security.query_user(with_profile_uid=True, size=100)
-        all_users = all_users.body["users"]
+        # The v8/v9 client wraps the response in an ObjectApiResponse exposing `.body`,
+        # while the v7 and OpenSearch clients return a plain dict.
+        all_users = getattr(all_users, "body", all_users)["users"]
 
         # output results to markdown table
         md = tableToMarkdown("Kibana User List", all_users, headers=[])
@@ -653,6 +642,7 @@ def kibana_get_user_list(args, proxies):
 
     except Exception as e:
         raise DemistoException(f"Error querying all users: {e}")
+
 
 def kibana_assign_alert_user(args, proxies):
     """
@@ -680,7 +670,7 @@ def kibana_assign_alert_user(args, proxies):
 
     http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers, proxies=proxies)
 
-    return f"Assigned user ID {user_id} to alert {alert_id}"
+    return CommandResults(readable_output=f"Assigned user ID {user_id} to alert {alert_id}")
 
 
 def kibana_list_detection_alerts(args, proxies):
@@ -756,7 +746,7 @@ def kibana_add_alert_note(args, proxies):
 
     http_request(method="PATCH", url_suffix="/api/note", data=json_data, headers=headers, proxies=proxies)
 
-    return f"Added note {note} to alert {event_id}"
+    return CommandResults(readable_output=f"Added note {note} to alert {event_id}")
 
 
 def kibana_get_alerting_health(args, proxies):
@@ -795,7 +785,7 @@ def kibana_disable_alert_rule(args, proxies):
 
     http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers, proxies=proxies)
 
-    return f"Successfully disabled rule with ID of {rule_id}"
+    return CommandResults(readable_output=f"Successfully disabled rule with ID of {rule_id}")
 
 
 def kibana_enable_alert_rule(args, proxies):
@@ -811,7 +801,7 @@ def kibana_enable_alert_rule(args, proxies):
 
     http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_enable", headers=headers, proxies=proxies)
 
-    return f"Successfully enabled rule with ID of {rule_id}"
+    return CommandResults(readable_output=f"Successfully enabled rule with ID of {rule_id}")
 
 
 def kibana_get_exception_lists(args, proxies):
@@ -857,7 +847,7 @@ def kibana_create_value_list(args, proxies):
 
     http_request(method="POST", url_suffix="/api/lists", data=json_data, headers=headers, proxies=proxies)
 
-    return f"Successfully created value list with name of {name}"
+    return CommandResults(readable_output=f"Successfully created value list with name of {name}")
 
 
 def kibana_get_value_lists(args, proxies):
@@ -900,7 +890,7 @@ def kibana_import_value_list_items(args, proxies):
 
     http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers, proxies=proxies)
 
-    return f"Successfully imported {file_content} to value list with ID of {list_id}"
+    return CommandResults(readable_output=f"Successfully imported {file_content} to value list with ID of {list_id}")
 
 
 def kibana_create_value_list_item(args, proxies):
@@ -919,7 +909,7 @@ def kibana_create_value_list_item(args, proxies):
 
     http_request(method="POST", url_suffix="/api/lists/items", data=json_data, headers=headers, proxies=proxies)
 
-    return f"Successfully added {new_item} to value list with ID of {list_id}"
+    return CommandResults(readable_output=f"Successfully added {new_item} to value list with ID of {list_id}")
 
 
 def kibana_get_value_list_items(args, proxies):
@@ -964,7 +954,7 @@ def kibana_delete_value_list_item(args, proxies):
 
     http_request(method="DELETE", url_suffix="/api/lists/items", params=json_data, headers=headers, proxies=proxies)
 
-    return f"Successfully deleted {item_id} from value list with ID of {list_id}"
+    return CommandResults(readable_output=f"Successfully deleted {item_id} from value list with ID of {list_id}")
 
 
 def kibana_delete_value_list(args, proxies):
@@ -983,7 +973,7 @@ def kibana_delete_value_list(args, proxies):
 
     http_request(method="DELETE", url_suffix="/api/lists", params=params, headers=headers, proxies=proxies)
 
-    return f"Successfully deleted value list with ID of {list_id}"
+    return CommandResults(readable_output=f"Successfully deleted value list with ID of {list_id}")
 
 
 def kibana_get_status(args, proxies):
@@ -1059,7 +1049,7 @@ def kibana_delete_case_comment(args, proxies):
 
     http_request(method="DELETE", url_suffix=f"/api/cases/{case_id}/comments/{comment_id}", headers=headers, proxies=proxies)
 
-    return f"Deleted comment with ID {comment_id} from case {case_id}"
+    return CommandResults(readable_output=f"Deleted comment with ID {comment_id} from case {case_id}")
 
 
 def kibana_add_file_to_case(args, proxies):
@@ -1204,10 +1194,13 @@ def main():  # pragma: no cover
             return_results(kibana_get_user_by_email(args, proxies))
         elif demisto.command() == "kibana-case-information-get":
             return_results(kibana_get_case_information(args, proxies))
+        else:
+            raise NotImplementedError(f"Command {demisto.command()} is not implemented.")
 
     except Exception as e:
-        error_message = traceback.format_exc()
-        logging.error("An unexpected error occurred:\n%s", error_message)
+        demisto.debug(f"An unexpected error occurred:\n{traceback.format_exc()}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e}")
+
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()

@@ -1,20 +1,22 @@
-This integration enables using Elastic Security for SIEM for security operations management and searching Elastic logs. This pack is to be used in combination with the Elasticsearch v2 integration.
+Use the Kibana integration to manage Elastic Security cases, detection alerts, rules, and value lists for security operations.
+This integration was tested with Elasticsearch versions 6.6.2, 7.3, 8.4.1, and 9.3.1.
+
 ## Configure Kibana in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | True |
-| Elastic API Port | The default port for the Elastic API is 9200. | False |
-| Kibana API Port | The default port for the Kibana API is 443. | False |
-| Authorization type | Select the authentication type and enter the appropriate credentials: <br> - Basic Auth: Enter Username and Password. <br> - Bearer Auth: Enter Username and Password. <br> - API Key Auth: Enter the API Key ID and API Key. | False |
+| Elastic API Port | The port for the Elastic API. | False |
+| Kibana API Port | The port for the Kibana API. | False |
+| Authorization type | The authentication type and credentials to use: Basic Auth \(Username and Password\), Bearer Auth \(Username and Password\), or API Key Auth \(API Key ID and API Key\). | False |
 | API key ID |  | False |
 | API Key |  | False |
-| Username | Provide Username + Password instead of API key + API ID | False |
+| Username | The username and password to use instead of API key and API ID. | False |
 | Password |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Client type | In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+| Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
 | Request timeout (in seconds). |  | False |
 
 ## Commands
@@ -25,7 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### kibana-cases-find
 
 ***
-List cases in Kibana
+Lists cases in Kibana.
 
 #### Base Command
 
@@ -37,20 +39,20 @@ List cases in Kibana
 | --- | --- | --- |
 | status | The status of the cases to retrieve. Possible values are: open, in-progress, closed. Default is open. | Optional | 
 | severity | The severity of the cases to retrieve. Possible values are: critical, high, medium, low. | Optional | 
-| from_time | Earliest time to search from (e.g. 2025-10-02T00:27:58.162Z). | Optional | 
+| from_time | The earliest time to search from (for example, 2025-10-02T00:27:58.162Z). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.Cases.Status | string | Status of the case in Kibana | 
-| Kibana.Cases.Version | string | Version number of the case in Kibana | 
-| Kibana.Cases.ID | string | ID number of the case in Kibana | 
+| Kibana.Cases.Status | unknown | The status of the case in Kibana. | 
+| Kibana.Cases.Version | unknown | The version number of the case in Kibana. | 
+| Kibana.Cases.ID | unknown | The ID number of the case in Kibana. | 
 
 ### kibana-case-alerts-find
 
 ***
-Returns information on the alerts of input case in Kibana.
+Returns information on the alerts of the input case in Kibana.
 
 #### Base Command
 
@@ -60,13 +62,13 @@ Returns information on the alerts of input case in Kibana.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | ID of case in Kibana. Locate with "kibana-find-cases". | Required | 
+| case_id | The ID of the case in Kibana. Locate it with the "kibana-cases-find" command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseAlerts.ID | string | ID of alerts tied to case in Kibana | 
+| Kibana.CaseAlerts.ID | unknown | The ID of alerts tied to the case in Kibana. | 
 
 ### kibana-alert-status-update
 
@@ -81,8 +83,8 @@ Updates the status of an input alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert ID to update. Find with "kibana-list-detection-alerts". | Required | 
-| status | Status to set the alert to. Possible values are: open, closed. | Required | 
+| alert_id | The alert ID to update. Find it with the "kibana-detection-alerts-list" command. | Required | 
+| status | The status to set the alert to. Possible values are: open, closed. | Required | 
 
 #### Context Output
 
@@ -90,7 +92,7 @@ There is no context output for this command.
 ### kibana-case-status-update
 
 ***
-Updates the status of an input case
+Updates the status of an input case.
 
 #### Base Command
 
@@ -101,8 +103,8 @@ Updates the status of an input case
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | The status of the case to update. Possible values are: open, in-progress, closed. | Required | 
-| case_id | ID of case in Kibana. Locate with "kibana-find-cases". | Required | 
-| version_id | Version ID of the case. Found with kibana-find-cases. This ID changes after each case update. | Required | 
+| case_id | The ID of the case in Kibana. Locate it with the "kibana-cases-find" command. | Required | 
+| version_id | The version ID of the case. Find it with the "kibana-cases-find" command. This ID changes after each case update. | Required | 
 
 #### Context Output
 
@@ -110,7 +112,7 @@ There is no context output for this command.
 ### kibana-user-spaces-find
 
 ***
-Get list of user spaces in Kibana
+Gets the list of user spaces in Kibana.
 
 #### Base Command
 
@@ -125,13 +127,13 @@ Get list of user spaces in Kibana
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserSpaces.description | string | Default user space description | 
-| Kibana.UserSpaces.disabledFeatures | string | List of disabled Kibana features | 
+| Kibana.UserSpaces.description | unknown | The default user space description. | 
+| Kibana.UserSpaces.disabledFeatures | unknown | The list of disabled Kibana features. | 
 
 ### kibana-case-comments-find
 
 ***
-Finds comments for an input case ID
+Finds comments for an input case ID.
 
 #### Base Command
 
@@ -141,19 +143,19 @@ Finds comments for an input case ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID to find comments for. Locate with "kibana-find-cases". | Required | 
+| case_id | The case ID to find comments for. Locate it with the "kibana-cases-find" command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseComments.version | string | Version number of the case comment in Kibana | 
-| Kibana.CaseComments.id | string | ID number of the case comment in Kibana | 
+| Kibana.CaseComments.version | unknown | The version number of the case comment in Kibana. | 
+| Kibana.CaseComments.id | unknown | The ID number of the case comment in Kibana. | 
 
 ### kibana-case-delete
 
 ***
-Deletes a case in Kibana based on case ID
+Deletes a case in Kibana based on case ID.
 
 #### Base Command
 
@@ -163,7 +165,7 @@ Deletes a case in Kibana based on case ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID to delete. Locate with "kibana-find-cases". | Required | 
+| case_id | The case ID to delete. Locate it with the "kibana-cases-find" command. | Required | 
 
 #### Context Output
 
@@ -171,7 +173,7 @@ There is no context output for this command.
 ### kibana-rule-delete
 
 ***
-Delete rule in Kibana based on input rule ID.
+Deletes a rule in Kibana based on the input rule ID.
 
 #### Base Command
 
@@ -181,7 +183,7 @@ Delete rule in Kibana based on input rule ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | Rule ID to delete. Find with "kibana-search-rule-details". | Required | 
+| rule_id | The rule ID to delete. Find it with the "kibana-rule-details-search" command. | Required | 
 
 #### Context Output
 
@@ -189,7 +191,7 @@ There is no context output for this command.
 ### kibana-rule-details-search
 
 ***
-Retrieve details about detection rule in Kibana based on input KQL filter.
+Retrieves details about a detection rule in Kibana based on the input KQL filter.
 
 #### Base Command
 
@@ -199,20 +201,20 @@ Retrieve details about detection rule in Kibana based on input KQL filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| kql_query | Example query: "alert.attributes.name: *Smith*". | Optional | 
+| kql_query | The KQL filter to search rules with. For example: "alert.attributes.name: *Smith*". | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.RuleDetails.enabled | boolean | Whether the rule is enabled in Kibana | 
-| Kibana.RuleDetails.name | string | Name of the rule in Kibana | 
-| Kibana.RuleDetails.id | string | ID of the rule in Kibana | 
+| Kibana.RuleDetails.enabled | unknown | Whether the rule is enabled in Kibana. | 
+| Kibana.RuleDetails.name | unknown | The name of the rule in Kibana. | 
+| Kibana.RuleDetails.id | unknown | The ID of the rule in Kibana. | 
 
 ### kibana-case-comment-add
 
 ***
-Adds a comment to a case in Kibana. Get case ID/owner from kibana-find-cases.
+Adds a comment to a case in Kibana. The case ID and owner can be obtained from the "kibana-cases-find" command.
 
 #### Base Command
 
@@ -222,8 +224,8 @@ Adds a comment to a case in Kibana. Get case ID/owner from kibana-find-cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID to add comment to. Locate with "kibana-find-cases". | Required | 
-| case_owner | Owner of the case listed in kibana-find-cases output. Possible values are: cases, observability, securitySolution. | Required | 
+| case_id | The case ID to add the comment to. Locate it with the "kibana-cases-find" command. | Required | 
+| case_owner | The owner of the case, as listed in the "kibana-cases-find" command output. Possible values are: cases, observability, securitySolution. | Required | 
 | comment | The comment to add to the case in Kibana. | Required | 
 
 #### Context Output
@@ -232,7 +234,7 @@ There is no context output for this command.
 ### kibana-user-list-get
 
 ***
-Search for list of users in Kibana and return user's UID.
+Searches for the list of users in Kibana and returns the users' UIDs.
 
 #### Base Command
 
@@ -247,13 +249,13 @@ Search for list of users in Kibana and return user's UID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserList.username | string | Username of the user in Kibana | 
-| Kibana.UserList.roles | string | Associated roles of the user in Kibana | 
+| Kibana.UserList.username | unknown | The username of the user in Kibana. | 
+| Kibana.UserList.roles | unknown | The associated roles of the user in Kibana. | 
 
 ### kibana-alert-assign
 
 ***
-Used to assign an alert in Kibana to a user via user ID input
+Assigns an alert in Kibana to a user via user ID input.
 
 #### Base Command
 
@@ -263,8 +265,8 @@ Used to assign an alert in Kibana to a user via user ID input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | UID of user to be assigned. Locate with 'kibana-get-user-list'. | Required | 
-| alert_id | Alert ID to assign user to. Find with "kibana-list-detection-alerts". | Required | 
+| user_id | The UID of the user to be assigned. Locate it with the "kibana-user-list-get" command. | Required | 
+| alert_id | The alert ID to assign the user to. Find it with the "kibana-detection-alerts-list" command. | Required | 
 
 #### Context Output
 
@@ -272,7 +274,7 @@ There is no context output for this command.
 ### kibana-detection-alerts-list
 
 ***
-Used to search for detection alerts in Kibana
+Searches for detection alerts in Kibana.
 
 #### Base Command
 
@@ -282,22 +284,22 @@ Used to search for detection alerts in Kibana
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_status | Status of the detection alert to search for. Possible values are: open, closed. | Required | 
+| alert_status | The status of the detection alert to search for. Possible values are: open, closed. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.DetectionAlerts.bhe.windows.security_id | string | Username associated with the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset | string | Dataset associated with the detection alert | 
-| Kibana.DetectionAlerts.message | string | Raw log message of the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.uuid | string | ID of the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.rule.name | string | Rule name associated with the detection alert | 
+| Kibana.DetectionAlerts.bhe.windows.security_id | unknown | The username associated with the detection alert. | 
+| Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset | unknown | The dataset associated with the detection alert. | 
+| Kibana.DetectionAlerts.message | unknown | The raw log message of the detection alert. | 
+| Kibana.DetectionAlerts.kibana.alert.uuid | unknown | The ID of the detection alert. | 
+| Kibana.DetectionAlerts.kibana.alert.rule.name | unknown | The rule name associated with the detection alert. | 
 
 ### kibana-alert-note-add
 
 ***
-Add note to an alert in Kibana.
+Adds a note to an alert in Kibana.
 
 #### Base Command
 
@@ -307,7 +309,7 @@ Add note to an alert in Kibana.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert ID to update the note on. Find with "kibana-list-detection-alerts". | Required | 
+| alert_id | The alert ID to update the note on. Find it with the "kibana-detection-alerts-list" command. | Required | 
 | note | The note text to add to the alert. | Required | 
 
 #### Context Output
@@ -316,7 +318,7 @@ There is no context output for this command.
 ### kibana-alerting-health-get
 
 ***
-Get the health status of Kibana alerting framework
+Retrieves the health status of the Kibana alerting framework.
 
 #### Base Command
 
@@ -331,14 +333,14 @@ Get the health status of Kibana alerting framework
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status | string | Whether Kibana can successfully decrypt encrypted alert data | 
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status | string | Identify if rules are running on time or failing | 
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status | string | Ability to successfully retrieve rule configurations from internal Kibana indices | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status | unknown | Whether Kibana can successfully decrypt encrypted alert data. | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status | unknown | Whether rules are running on time or failing. | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status | unknown | Whether rule configurations can be successfully retrieved from internal Kibana indices. | 
 
 ### kibana-alert-rule-disable
 
 ***
-Disable a detection alerting rule. Clears associated alerts from active alerts page.
+Disables a detection alerting rule. Clears associated alerts from the active alerts page.
 
 #### Base Command
 
@@ -348,7 +350,7 @@ Disable a detection alerting rule. Clears associated alerts from active alerts p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | Rule ID to disable. Find rule ID with "kibana-search-rule-details". | Required | 
+| rule_id | The rule ID to disable. Find it with the "kibana-rule-details-search" command. | Required | 
 
 #### Context Output
 
@@ -356,7 +358,7 @@ There is no context output for this command.
 ### kibana-alert-rule-enable
 
 ***
-Used to enable a rule used for detection alerting. 
+Enables a rule used for detection alerting.
 
 #### Base Command
 
@@ -366,7 +368,7 @@ Used to enable a rule used for detection alerting.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | Rule ID to enable. Find rule ID with "kibana-search-rule-details". | Required | 
+| rule_id | The rule ID to enable. Find it with the "kibana-rule-details-search" command. | Required | 
 
 #### Context Output
 
@@ -374,7 +376,7 @@ There is no context output for this command.
 ### kibana-exception-lists-get
 
 ***
-Get a list of all exception list containers.
+Retrieves a list of all exception list containers.
 
 #### Base Command
 
@@ -389,14 +391,14 @@ Get a list of all exception list containers.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ExceptionLists.name | string | The name of the exception list | 
-| Kibana.ExceptionLists.list_id | string | The list ID of the exception list | 
-| Kibana.ExceptionLists.description | string | The description of the exception list | 
+| Kibana.ExceptionLists.name | unknown | The name of the exception list. | 
+| Kibana.ExceptionLists.list_id | unknown | The list ID of the exception list. | 
+| Kibana.ExceptionLists.description | unknown | The description of the exception list. | 
 
 ### kibana-value-list-create
 
 ***
-Used to create a value list in Kibana
+Creates a value list in Kibana.
 
 #### Base Command
 
@@ -406,10 +408,10 @@ Used to create a value list in Kibana
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Describes the value list. | Required | 
-| name | Value list's name. | Required | 
-| data_type | Elasticsearch data type the list container holds. Possible values are: keyword, ip, ip_range, text. | Required | 
-| list_id | Value list's identifier. | Required | 
+| description | The description of the value list. | Required | 
+| name | The name of the value list. | Required | 
+| data_type | The Elasticsearch data type the list container holds. Possible values are: keyword, ip, ip_range, text. | Required | 
+| list_id | The identifier of the value list. | Required | 
 
 #### Context Output
 
@@ -417,7 +419,7 @@ There is no context output for this command.
 ### kibana-value-lists-get
 
 ***
-Find all value lists in Kibana Detection Rules menu.
+Finds all value lists in the Kibana Detection Rules menu.
 
 #### Base Command
 
@@ -432,14 +434,14 @@ Find all value lists in Kibana Detection Rules menu.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ValueLists.name | string | The name of the Value List | 
-| Kibana.ValueLists.id | string | The ID of the Value List | 
-| Kibana.ValueLists.description | string | The description of the Value List | 
+| Kibana.ValueLists.name | unknown | The name of the value list. | 
+| Kibana.ValueLists.id | unknown | The ID of the value list. | 
+| Kibana.ValueLists.description | unknown | The description of the value list. | 
 
 ### kibana-value-list-items-import
 
 ***
-Import value list items from a TXT or CSV file.
+Imports value list items from a TXT or CSV file.
 
 #### Base Command
 
@@ -449,8 +451,8 @@ Import value list items from a TXT or CSV file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | Value list ID to import values to. Find with "kibana-get-value-lists". | Required | 
-| file_content | Entries of the IOC file to import to Kibana in python string format. | Required | 
+| list_id | The value list ID to import values to. Find it with the "kibana-value-lists-get" command. | Required | 
+| file_content | The IOC file entries to import to Kibana in Python string format. | Required | 
 
 #### Context Output
 
@@ -458,7 +460,7 @@ There is no context output for this command.
 ### kibana-value-list-item-create
 
 ***
-Create a value list item and associate it with the specified value list.
+Creates a value list item and associates it with the specified value list.
 
 #### Base Command
 
@@ -468,8 +470,8 @@ Create a value list item and associate it with the specified value list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | Value list ID to update. Find with "kibana-get-value-lists". | Required | 
-| new_value_list_item | Item to add to the specified value list. | Required | 
+| list_id | The value list ID to update. Find it with the "kibana-value-lists-get" command. | Required | 
+| new_value_list_item | The item to add to the specified value list. | Required | 
 
 #### Context Output
 
@@ -477,7 +479,7 @@ There is no context output for this command.
 ### kibana-value-list-items-get
 
 ***
-Used to display entries in an input value list.
+Displays entries in an input value list.
 
 #### Base Command
 
@@ -487,21 +489,21 @@ Used to display entries in an input value list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | Value list ID to retrieve values for. Find with "kibana-get-value-lists". | Required | 
-| result_size | Size of results to return. Default is 100. | Optional | 
+| list_id | The value list ID to retrieve values for. Find it with the "kibana-value-lists-get" command. | Required | 
+| result_size | The size of results to return. Default is 100. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ValueListItems.value | string | The value of the value list item | 
-| Kibana.ValueListItems.id | string | The ID of the value list item | 
-| Kibana.ValueListItems.list_id | string | The list ID of the value list | 
+| Kibana.ValueListItems.value | unknown | The value of the value list item. | 
+| Kibana.ValueListItems.id | unknown | The ID of the value list item. | 
+| Kibana.ValueListItems.list_id | unknown | The list ID of the value list. | 
 
 ### kibana-value-list-item-delete
 
 ***
-Used to delete a value list item given the item ID as input.
+Deletes a value list item, given the item ID and list ID as input.
 
 #### Base Command
 
@@ -511,8 +513,8 @@ Used to delete a value list item given the item ID as input.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | Value list entry ID to delete. Find with "kibana-get-value-list-items". | Required | 
-| list_id | Value list ID to delete value from. Find with "kibana-get-value-lists". | Required | 
+| item_id | The value list entry ID to delete. Find it with the "kibana-value-list-items-get" command. | Required | 
+| list_id | The value list ID to delete the value from. Find it with the "kibana-value-lists-get" command. | Required | 
 
 #### Context Output
 
@@ -520,7 +522,7 @@ There is no context output for this command.
 ### kibana-value-list-delete
 
 ***
-Used to delete a value list given the list ID as input.
+Deletes a value list given the list ID as input.
 
 #### Base Command
 
@@ -530,7 +532,7 @@ Used to delete a value list given the list ID as input.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_id | Value list ID to delete. Find with "kibana-get-value-lists". | Required | 
+| list_id | The value list ID to delete. Find it with the "kibana-value-lists-get" command. | Required | 
 
 #### Context Output
 
@@ -538,7 +540,7 @@ There is no context output for this command.
 ### kibana-status-get
 
 ***
-Check Kibana's operational status
+Checks the Kibana operational status.
 
 #### Base Command
 
@@ -553,14 +555,14 @@ Check Kibana's operational status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.OperationalStatus.core.elasticsearch.level | string | Connection health between Kibana and Elasticsearch | 
-| Kibana.OperationalStatus.overall.level | string | Aggregated health status of the Kibana instance | 
-| Kibana.OperationalStatus.core.savedObjects.level | string | Health status of the Saved Objects repository | 
+| Kibana.OperationalStatus.core.elasticsearch.level | unknown | The connection health between Kibana and Elasticsearch. | 
+| Kibana.OperationalStatus.overall.level | unknown | The aggregated health status of the Kibana instance. | 
+| Kibana.OperationalStatus.core.savedObjects.level | unknown | The health status of the Saved Objects repository. | 
 
 ### kibana-task-manager-health-get
 
 ***
-Get the health status of the Kibana task manager.
+Retrieves the health status of the Kibana task manager.
 
 #### Base Command
 
@@ -575,15 +577,15 @@ Get the health status of the Kibana task manager.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.TaskManagerHealth.capacity_estimation.status | string | Kibana ability to handle scheduled tasks | 
-| Kibana.TaskManagerHealth.configuration.status | string | Tracks configuration status of Kibana task manager | 
-| Kibana.TaskManagerHealth.runtime.status | string | Tracks performance, drift, and load of Kibana task execution | 
-| Kibana.TaskManagerHealth.workload.status | string | Status of tasks running to identify potential overload | 
+| Kibana.TaskManagerHealth.capacity_estimation.status | unknown | The ability to handle scheduled tasks in Kibana. | 
+| Kibana.TaskManagerHealth.configuration.status | unknown | The configuration status of the Kibana task manager. | 
+| Kibana.TaskManagerHealth.runtime.status | unknown | The performance, drift, and load of Kibana task execution. | 
+| Kibana.TaskManagerHealth.workload.status | unknown | The status of tasks running, to identify potential overload. | 
 
 ### kibana-upgrade-readiness-status-get
 
 ***
-Check the status of your cluster.
+Checks the status of the cluster.
 
 #### Base Command
 
@@ -598,13 +600,13 @@ Check the status of your cluster.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UpgradeReadinessStatus.details | string | Details for what is needed prior to Kibana upgrades | 
-| Kibana.UpgradeReadinessStatus.readyForUpgrade | boolean | Whether Kibana is ready for upgrade or not | 
+| Kibana.UpgradeReadinessStatus.details | unknown | The details for what is needed prior to Kibana upgrades. | 
+| Kibana.UpgradeReadinessStatus.readyForUpgrade | unknown | Whether Kibana is ready for upgrade. | 
 
 ### kibana-case-comment-delete
 
 ***
-Delete a case comment
+Deletes a case comment.
 
 #### Base Command
 
@@ -614,8 +616,8 @@ Delete a case comment
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID to delete comment on. Retrieve case IDs with "kibana-find-cases". | Required | 
-| comment_id | Identifier for the comment. To retrieve comment IDs use kibana-find-case-comments. | Required | 
+| case_id | The case ID to delete the comment on. Retrieve case IDs with the "kibana-cases-find" command. | Required | 
+| comment_id | The identifier for the comment. Find comment IDs with the "kibana-case-comments-find" command. | Required | 
 
 #### Context Output
 
@@ -623,7 +625,7 @@ There is no context output for this command.
 ### kibana-case-file-add
 
 ***
-Attach a file to a case. 
+Attaches a file to a case.
 
 #### Base Command
 
@@ -633,8 +635,8 @@ Attach a file to a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID to attach the file to. Locate with "kibana-find-cases". | Required | 
-| file_id | File entry ID from XSOAR context data to add to the case. | Required | 
+| case_id | The case ID to attach the file to. Locate it with the "kibana-cases-find" command. | Required | 
+| file_id | The file entry ID from Cortex XSOAR context data to add to the case. | Required | 
 
 #### Context Output
 
@@ -642,7 +644,7 @@ There is no context output for this command.
 ### kibana-user-by-email-get
 
 ***
-Search for a single user's UID in Kibana by email address filter.
+Searches for a single user's UID in Kibana by email address filter.
 
 #### Base Command
 
@@ -652,19 +654,19 @@ Search for a single user's UID in Kibana by email address filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_wildcard | Full or partial email address to search for user with. (i.e. william.smith@*). | Required | 
+| email_wildcard | The full or partial email address to search for the user with (for example, william.smith@*). | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserData.profile_uid | string | User ID for tracking user activity and checking privileges | 
-| Kibana.UserData.roles | string | Roles tied to the user account | 
+| Kibana.UserData.profile_uid | unknown | The user ID for tracking user activity and checking privileges. | 
+| Kibana.UserData.roles | unknown | The roles tied to the user account. | 
 
 ### kibana-case-information-get
 
 ***
-Retrieve information for a specific case in Kibana.
+Retrieves information for a specific case in Kibana.
 
 #### Base Command
 
@@ -674,13 +676,13 @@ Retrieve information for a specific case in Kibana.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID to retrieve information for. View available case IDs with kibana-cases-find. | Required | 
+| case_id | The case ID to retrieve information for. View available case IDs with the "kibana-cases-find" command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseInfo.status | string | Whether the case is open, in-progress, or closed | 
-| Kibana.CaseInfo.owner | string | The application that created the case | 
-| Kibana.CaseInfo.version | string | When updating case settings, version is required | 
-| Kibana.CaseInfo.id | string | Unique identifier for a case | 
+| Kibana.CaseInfo.status | unknown | Whether the case is open, in-progress, or closed. | 
+| Kibana.CaseInfo.owner | unknown | The application that created the case. | 
+| Kibana.CaseInfo.version | unknown | The version of the case being updated. | 
+| Kibana.CaseInfo.id | unknown | The unique identifier for a case. | 
