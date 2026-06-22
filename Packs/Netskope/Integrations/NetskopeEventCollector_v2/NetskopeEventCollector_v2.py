@@ -24,7 +24,6 @@ RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
 RATE_LIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
 VENDOR = "netskope"
 PRODUCT = "netskope"
-XSIAM_SEM = asyncio.Semaphore(20)
 
 # Event type configuration mapping
 # Each event type can have specific endpoint, time parameters, and count field configurations
@@ -73,7 +72,11 @@ class Client:
     def __init__(self, base_url: str, token: str, proxy: bool, verify: bool, event_types_to_fetch: list[str]):
         self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
         self.event_types_to_fetch: list[str] = event_types_to_fetch
+        # Bounds concurrent HTTP requests to Netskope (used inside get_events_data_async).
         self.netskope_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
+        # Bounds the whole page lifecycle (fetch -> send -> free). Separate object from
+        # netskope_semaphore to avoid a re-entrant deadlock, so peak memory stays bounded by volume.
+        self.page_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
         self._headers = {"Netskope-Api-Token": f"{token}", "Accept": "application/json"}
         self._base_url = base_url
         self._verify = verify
@@ -335,28 +338,29 @@ async def handle_event_type_async(
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
     params = assign_params(limit=page_size, offset=offset, **get_time_window_params(event_type, start_time, end_time))
 
-    demisto.debug(f"[{coord_id}] Fetching '{event_type}' events with params: {params}")
+    demisto.debug(f"[Fetch][{coord_id}] Fetching '{event_type}' events with params: {params}")
     # If this is a retry of a previous failure, log it.
     if is_re_fetch_failed_fetch:
-        demisto.debug(f"[{coord_id}] Retrying failed fetch for type={event_type}, params={params}")
+        demisto.debug(f"[Fetch][{coord_id}] Retrying failed fetch for type={event_type}, params={params}")
 
-    demisto.debug(f"[{coord_id}] Starting fetch_and_send_events_async")
     success_res, failures = await fetch_and_send_events_async(
         client, event_type, params, limit, send_to_xsiam, is_re_fetch_failed_fetch
     )
-    demisto.debug(f"[{coord_id}] Completed fetch_and_send_events_async - success: {len(success_res)}, failures: {len(failures)}")
+    demisto.debug(
+        f"[Fetch][{coord_id}] Finished fetching type={event_type} - success pages: {len(success_res)}, failures: {len(failures)}"
+    )
 
     if is_re_fetch_failed_fetch and success_res:
-        demisto.debug(f"[{coord_id}] Retry succeeded for type={event_type}, params={params}")
+        demisto.debug(f"[Fetch][{coord_id}] Retry succeeded for type={event_type}, params={params}")
 
     if not success_res and failures and not is_re_fetch_failed_fetch:
         # if there are no success fetch/send, raise an exception and keep the previous next_fetch_start_time
         e: DemistoException = failures[0]
-        demisto.error(f"Failed to fetch events for type={event_type}, params={params}: {str(e)}")
+        demisto.error(f"[Fetch][{coord_id}] Failed to fetch events for type={event_type}, params={params}: {str(e)}")
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
-            demisto.error(f"HTTP status: {getattr(e.exception, 'status', None)}")
+            demisto.error(f"[Fetch][{coord_id}] HTTP status: {getattr(e.exception, 'status', None)}")
         if hasattr(e, "res"):
-            demisto.error(f"API response: {getattr(e, 'res', None)}")
+            demisto.error(f"[Fetch][{coord_id}] API response: {getattr(e, 'res', None)}")
         # Try to get status code first, fall back to message checking
         status_code = None
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
@@ -378,53 +382,67 @@ async def handle_event_type_async(
                 f"Fetching event_type_start_time_end_time_offset: {event_type}_{start_time}_{end_time}_{offset} "
                 f"Failed{status_info}, {str(failures[0])}"
             )
-        demisto.error(msg)
+        demisto.error(f"[Fetch][{coord_id}] {msg}")
         raise DemistoException(msg, exception=failures[0])
     failures_data = handle_errors(failures)
-    events = list(chain.from_iterable(success_res))
 
-    res_dict = {"events": events, "failures": failures_data}
-    demisto.debug(f"[{coord_id}] Fetched {len(events)} {event_type} events")
+    # success_res items are ints (per-page counts, fetch path) or event lists (get-events/test path).
+    if success_res and isinstance(success_res[0], int):
+        # fetch path: pages were already sent & freed, so we only have counts.
+        events = []
+        events_count = sum(success_res)
+    else:
+        events = list(chain.from_iterable(success_res))
+        events_count = len(events)
+
+    res_dict = {"events": events, "events_count": events_count, "failures": failures_data}
+    demisto.debug(f"[Fetch][{coord_id}] Fetched {events_count} {event_type} events ({len(failures_data)} failures)")
     if not is_re_fetch_failed_fetch:
         # if we are retrying a failed fetch (is_re_fetch_failed_fetch=True)
         # no additional info is needed, as we are only trying to fetch the same chunk again.
-        if len(events) == limit:
+        if events_count == limit:
             # meaning, there may be another events to fetch for the current time "window"
             # save the start_time and end_time and the next offset
 
             next_fetch_data = {
                 "next_fetch_start_time": start_time,
                 "next_fetch_end_time": end_time,
-                "next_fetch_offset": offset + len(events),
+                "next_fetch_offset": offset + events_count,
             }
             demisto.debug(
-                f"[{coord_id}] fetched {(len(events) == limit)=}, need to store the time window and offset "
-                f"for next fetch, {next_fetch_data=}"
+                f"[Fetch][{coord_id}] reached limit for type={event_type}, storing time window + offset "
+                f"for next fetch: {next_fetch_data=}"
             )
             res_dict |= next_fetch_data
         else:
             res_dict |= {"next_fetch_start_time": end_time}
 
-    demisto.debug(f"[{coord_id}] Completed event_type processing, returning {len(events)} events")
+    demisto.debug(f"[Fetch][{coord_id}] Completed type={event_type}, returning {events_count} events")
     return event_type, res_dict
 
 
 async def fetch_and_send_events_async(
     client: Client, type: str, request_params: dict, limit: int, send_to_xsiam: bool, is_re_fetch_failed_fetch: bool = False
 ) -> tuple[list, list]:
+    """Fetch all pages for a single event type.
+
+    When ``send_to_xsiam`` is True (fetch-events), each page is sent and freed, returning only the
+    page count (send-and-flush). When False (get-events), the events are returned for display.
+
+    Returns:
+        tuple(success, failures): ``success`` items are ints (counts) when sending, else event lists.
+    """
+
     async def _handle_page(params):
         async def _fetch_page():
             retry_count = 0
             while retry_count < MAX_RETRY:
                 try:
                     if retry_count > 0:
-                        # in retry
-                        demisto.debug(
-                            f"Rate limit (429) occurred for {type=} with {params=}, will retry as {retry_count=} < {MAX_RETRY=}"
-                        )
+                        demisto.debug(f"[Fetch] Rate limit (429) for {type=} {params=}, retry {retry_count=} < {MAX_RETRY=}")
 
                     offset = params.get("offset")
-                    demisto.debug(f"fetching {type=} events from {offset=}")
+                    demisto.debug(f"[Fetch] Fetching {type=} page from {offset=}")
                     return await client.get_events_data_async(type, params)
                 except ClientResponseError as e:
                     if e.status != 429:  # not rate limit
@@ -433,25 +451,40 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
-            demisto.debug(f"Rate limit (429) occurred and {retry_count=} reached the {MAX_RETRY=}")
+            demisto.debug(f"[Fetch] Rate limit (429) for {type=} reached {MAX_RETRY=}, giving up on this page")
             return {}
 
         async def _send_page_to_xsiam(events):
-            async with XSIAM_SEM:
-                demisto.debug(f"send {len(events)} events to xsiam")
-                await asyncio.to_thread(
-                    send_events_to_xsiam, events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
-                )
+            # use_streaming_send=True streams+gzips one event at a time (consumes `events`), keeping memory flat.
+            demisto.debug(f"[Fetch] Sending {len(events)} {type} events to XSIAM")
+            await asyncio.to_thread(
+                send_events_to_xsiam,
+                events=events,
+                vendor=VENDOR,
+                product=PRODUCT,
+                chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+                use_streaming_send=True,
+            )
 
-        try:
-            res = await _fetch_page()
-            events = res.get("result", [])
-            events = prepare_events(events, type)
-            if send_to_xsiam:
-                await _send_page_to_xsiam(events)
-        except Exception as e:
-            raise DemistoException(message=str(e), exception=e, res=params)
-        return events
+        # Bound the whole page lifecycle (fetch -> send -> free) so at most NETSKOPE_SEMAPHORE_COUNT
+        # pages are in memory at once across all types, keeping peak memory independent of volume.
+        async with client.page_semaphore:
+            try:
+                res = await _fetch_page()
+                events = res.get("result", [])
+                events = prepare_events(events, type)
+                page_count = len(events)
+                demisto.debug(f"[Fetch] Fetched {page_count} {type} events for page (offset={params.get('offset')})")
+                if send_to_xsiam:
+                    # stream-send then DROP the page: return only the count so nothing accumulates upstream
+                    await _send_page_to_xsiam(events)
+                    demisto.debug(f"[Fetch] Sent and freed {page_count} {type} events (send-and-flush)")
+                    return page_count
+            except Exception as e:
+                demisto.error(f"[Fetch] Error handling {type} page (offset={params.get('offset')}): {str(e)}")
+                raise DemistoException(message=str(e), exception=e, res=params)
+            # get-events path: caller needs the actual events
+            return events
 
     async def _handle_all_pages():
         try:
@@ -468,12 +501,11 @@ async def fetch_and_send_events_async(
 
             request_limit = request_params.get("limit", MAX_EVENTS_PAGE_SIZE)
             demisto.debug(
-                f"Going to fetch {min(total_events, limit)} events from {init_offset=} by chunks of {request_limit} ..."
+                f"[Fetch] type={type}: fetching up to {min(total_events, limit)} events from {init_offset=} "
+                f"in pages of {request_limit}"
             )
             tasks = [
-                # asyncio.create_task(_handle_page(request_params | {'offset': offset}))
-                _handle_page(request_params | {"offset": offset})
-                for offset in range(init_offset, max_offset, request_limit)
+                _handle_page(request_params | {"offset": offset}) for offset in range(init_offset, max_offset, request_limit)
             ]
             results = await asyncio.gather(*tasks, return_exceptions=True)
             return results
@@ -494,7 +526,7 @@ async def fetch_and_send_events_async(
 
 async def handle_fetch_and_send_all_events(
     client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
-) -> tuple[list[dict], dict]:
+) -> tuple[list[dict], int, dict]:
     """
     Iterates over all supported event types and call the handle event fetch logic and send the events to XSIAM.
 
@@ -511,7 +543,8 @@ async def handle_fetch_and_send_all_events(
         send_to_xsiam(bool): Whether to send the fetched events to XSIAM or not.
 
     Returns:
-        list: The accumulated list of all events.
+        list: The accumulated events (empty on the fetch path, where events are sent and freed).
+        int: The total number of events fetched.
         dict: The updated last_run object.
     """
     start = time.time()
@@ -521,13 +554,17 @@ async def handle_fetch_and_send_all_events(
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
 
     all_events = []
+    total_events_count = 0
     epoch_current_time = str(int(arg_to_datetime("now").timestamp()))  # type: ignore[union-attr]
     epoch_last_day = str(int(arg_to_datetime("1 day").timestamp()))  # type: ignore[union-attr]
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
 
     # Create main coordination ID for async logging traceability
     coord_id = f"coord_{int(time.time() * 1000) % 10000}"
-    demisto.debug(f"[{coord_id}] Starting events fetch with {page_size=}, {limit=}")
+    demisto.info(
+        f"[Fetch][{coord_id}] Starting fetch cycle for types={client.event_types_to_fetch} "
+        f"({page_size=}, {limit=}, send_to_xsiam={send_to_xsiam})"
+    )
 
     prev_fetch_failure_tasks = []
     new_tasks = []
@@ -536,29 +573,29 @@ async def handle_fetch_and_send_all_events(
         # 1. to fetch the previous failed fetches (which stored in the last run) collected in prev_fetch_failure_tasks
         # 2. fetch the new events (regular fetch) collected in the new_tasks list
 
-        demisto.debug(f"[{coord_id}] Processing event type: {event_type}")
+        demisto.debug(f"[Fetch][{coord_id}] Processing event type: {event_type}")
         # get failures from previous iteration
         prev_fetch_failure_tasks.extend(handle_prev_fetch_failures(client, last_run, event_type, send_to_xsiam, coord_id))
         last_run_current_type = last_run.get(event_type, {})
         start_time = last_run_current_type.get("next_fetch_start_time", epoch_last_day)
         end_time = last_run_current_type.get("next_fetch_end_time", epoch_current_time)
         offset = int(last_run_current_type.get("next_fetch_offset", 0))
-        demisto.debug(f"[{coord_id}] Scheduling async task for {event_type}: start={start_time}, end={end_time}, offset={offset}")
+        demisto.debug(
+            f"[Fetch][{coord_id}] Scheduling task for {event_type}: start={start_time}, end={end_time}, offset={offset}"
+        )
         new_tasks.append(
             handle_event_type_async(client, event_type, start_time, end_time, offset, limit, send_to_xsiam, coord_id)
         )
 
-    demisto.debug(
-        f"[{coord_id}] Starting asyncio.gather for {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks"
-    )
+    demisto.debug(f"[Fetch][{coord_id}] Running {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks")
     results = await asyncio.gather(*prev_fetch_failure_tasks, *new_tasks, return_exceptions=True)
     success_tasks = list(filter(lambda res: not isinstance(res, BaseException), results))
     failures_tasks = list(filter(lambda res: isinstance(res, BaseException), results))
-    demisto.debug(f"[{coord_id}] Async gather completed - success: {len(success_tasks)}, failures: {len(failures_tasks)}")
+    demisto.info(f"[Fetch][{coord_id}] Type tasks done - success: {len(success_tasks)}, failed: {len(failures_tasks)}")
 
     if failures_tasks and not success_tasks:
         # meaning, all the tasks was failed
-        demisto.debug(f"[{coord_id}] All tasks failed, raising exception")
+        demisto.error(f"[Fetch][{coord_id}] All event-type tasks failed, raising the first exception")
         raise DemistoException(failures_tasks[0])
     new_last_run: dict = {}
     for task_result in success_tasks:
@@ -566,7 +603,8 @@ async def handle_fetch_and_send_all_events(
         if isinstance(task_result, tuple):
             event_type, event_type_res = task_result
             # event_type_res is in structure of:
-            # {'events':[...], ''failures':[...], additional data like next_run_start_time, next_run_offset}
+            # {'events':[...], 'events_count': N, 'failures':[...], additional data like next_run_start_time, next_run_offset}
+            total_events_count += int(event_type_res.pop("events_count", 0))
             all_events.extend(event_type_res.pop("events", []))
             existing_failures = demisto.get(new_last_run, f"{event_type}.failures", defaultParam=[])
             existing_failures.extend(event_type_res.pop("failures", []))
@@ -578,21 +616,34 @@ async def handle_fetch_and_send_all_events(
                 new_last_run[event_type] = event_type_res
             if len(existing_failures) > MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE:
                 demisto.debug(
-                    f"Truncating failures for {event_type}: {len(existing_failures)} > {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}, "
-                    f"storing only the first {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}."
+                    f"[Fetch][{coord_id}] Truncating failures for {event_type}: "
+                    f"{len(existing_failures)} > {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}, keeping the first ones."
                 )
             new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
 
-    demisto.debug(f"Handled {len(all_events)} total events in {time.time() - start:.2f} seconds")
+    demisto.info(f"[Fetch][{coord_id}] Cycle done: handled {total_events_count} total events in {time.time() - start:.2f}s")
 
-    return all_events, new_last_run
+    return all_events, total_events_count, new_last_run
 
 
 async def get_events_command_async(
-    client: Client, args: dict[str, Any], last_run: dict, send_to_xsiam: bool = False
+    client: Client, args: dict[str, Any], last_run: dict, should_push_events: bool = False
 ) -> CommandResults:
+    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it."""
     limit = arg_to_number(args.get("limit")) or 10
-    events, _ = await handle_fetch_and_send_all_events(client=client, last_run=last_run, limit=limit, send_to_xsiam=send_to_xsiam)
+    demisto.debug(f"[Get-Events] Running netskope-get-events with {limit=}, {should_push_events=}")
+
+    # Two distinct flows use send_to_xsiam differently:
+    #   - send_to_xsiam (the fetch flow): stream-and-flush each page, return only counts (memory-bounded).
+    #   - should_push_events (this get-events flow): we need the events to DISPLAY them, so fetch with
+    #     send_to_xsiam=False to get them back, and push separately below only if asked.
+    events, _, _ = await handle_fetch_and_send_all_events(client=client, last_run=last_run, limit=limit, send_to_xsiam=False)
+    demisto.debug(f"[Get-Events] Fetched {len(events)} events for display")
+
+    # Low-volume command, so push with the plain (non-streaming) send, which keeps `events` intact for display.
+    if should_push_events:
+        demisto.debug(f"[Get-Events] Pushing {len(events)} events to XSIAM (non-streaming)")
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     for event in events:
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
@@ -617,7 +668,7 @@ async def get_events_command_async(
 
 
 async def test_module(client: Client, last_run: dict) -> str:
-    await get_events_command_async(client=client, args={"limit": 1}, last_run=last_run, send_to_xsiam=False)
+    await get_events_command_async(client=client, args={"limit": 1}, last_run=last_run, should_push_events=False)
     return "ok"
 
 
@@ -653,18 +704,19 @@ async def main() -> None:  # pragma: no cover
 
             elif command_name == "netskope-get-events":
                 args = demisto.args()
-                send_to_xsiam = argToBoolean(args.get("should_push_events", "true"))
-                demisto.debug(f"Running netskope-get-events with send_to_xsiam={send_to_xsiam}")
-                results = await get_events_command_async(client, args, last_run, send_to_xsiam)
+                should_push_events = argToBoolean(args.get("should_push_events", "true"))
+                demisto.debug(f"Running netskope-get-events with should_push_events={should_push_events}")
+                results = await get_events_command_async(client, args, last_run, should_push_events=should_push_events)
                 return_results(results)
 
             elif command_name == "fetch-events":
                 demisto.debug(f"Starting fetch with last run {last_run}")
-                all_events, new_last_run = await handle_fetch_and_send_all_events(
+                # send-and-flush: events are sent per page and freed; we only get the total count back
+                _all_events, total_events_count, new_last_run = await handle_fetch_and_send_all_events(
                     client=client, last_run=last_run, limit=max_fetch, send_to_xsiam=True
                 )
-                demisto.debug(f"Fetched {len(all_events)} total events.")
-                next_trigger_time(len(all_events), max_fetch, new_last_run)
+                demisto.debug(f"Fetched {total_events_count} total events.")
+                next_trigger_time(total_events_count, max_fetch, new_last_run)
                 demisto.debug(f"Setting the last_run to: {new_last_run}")
                 demisto.setLastRun(new_last_run)
 
