@@ -1,43 +1,43 @@
 {
   "imanage_threat_raw": {
     "id": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "task_name": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "task_id": {
-      "type": "Integer",
+      "type": "int",
       "is_array": false
     },
     "risk_score": {
-      "type": "Integer",
+      "type": "int",
       "is_array": false
     },
     "risk_level": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "user": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "email": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "location": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "action_type": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     },
     "action_state": {
-      "type": "String",
+      "type": "string",
       "is_array": false
     }
   }
