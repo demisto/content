@@ -1,7 +1,7 @@
 
 
 # [pack]
-# ignore=RN107
+# ignore=RN107, RM114
 
 [file:README.md]
 ignore=RM104,RM106,BA125
@@ -21,9 +21,3 @@ ignore=BA101
 # GR103 is temporary, see CIAC-11656
 [file:playbook-HelloWorld-Test.yml]
 ignore=GR103
-
-[file:HelloWorldV2.yml]
-ignore=BA129,IN126
-
-[file:ReleaseNotes/4_0_10.md]
-ignore=RN107
