@@ -1414,48 +1414,25 @@ class TestBulkEnrichAlerts:
 
 
 class TestWaitForEnrichment:
-    """Tests for _wait_for_enrichment."""
+    """Tests for _wait_for_enrichment (blocks until enrichment+ship completes)."""
 
     def test_none_future(self):
-        """
-        Given:
-            - future is None (no enrichment was scheduled).
-        When:
-            - Calling _wait_for_enrichment.
-        Then:
-            - Returns immediately without error.
-        """
-        _wait_for_enrichment(None, None)  # Should not raise
+        # No enrichment scheduled -> returns immediately.
+        _wait_for_enrichment(None, None)
 
     def test_successful_future(self):
-        """
-        Given:
-            - A future that completes successfully.
-        When:
-            - Calling _wait_for_enrichment.
-        Then:
-            - Joins the future and shuts down the executor.
-        """
+        # A completing future joins cleanly.
         executor = ThreadPoolExecutor(max_workers=1)
         future = executor.submit(lambda: None)
-
-        _wait_for_enrichment(future, executor)  # Should not raise
+        _wait_for_enrichment(future, executor)
 
     def test_failed_future(self, mocker):
-        """
-        Given:
-            - A future that raises an exception.
-        When:
-            - Calling _wait_for_enrichment.
-        Then:
-            - The exception is logged but NOT re-raised (graceful degradation).
-        """
+        # A failing future is logged, not re-raised.
         executor = ThreadPoolExecutor(max_workers=1)
         future = executor.submit(lambda: (_ for _ in ()).throw(RuntimeError("enrichment failed")))
-
         mock_error = mocker.patch("ArmisEventCollector.demisto.error")
 
-        _wait_for_enrichment(future, executor)  # Should not raise
+        _wait_for_enrichment(future, executor)
 
         mock_error.assert_called_once()
         assert "enrichment failed" in mock_error.call_args[0][0]

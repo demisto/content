@@ -5,7 +5,7 @@ import threading
 import time
 import traceback
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import urllib3
@@ -27,8 +27,6 @@ TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
 JSONDECODE_MAX_RETRIES = 3  # Retries on transient nginx malformed JSON (Armis-recommended)
 ALERT_ENRICHMENT_CHUNK_SIZE = 500  # Alerts per enrich+ship chunk; caps peak memory ~150MB
-# Max wait for background enrichment before shipping alerts unenriched (avoids 5-min Docker timeout).
-ENRICHMENT_WAIT_TIMEOUT_SECONDS = 180
 
 
 class EVENT_TYPE:
@@ -752,12 +750,6 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
     page is dispatched to XSIAM immediately, so peak memory stays bounded by a single
     page rather than ``max_fetch`` worth of events.
 
-    Note - two distinct "streaming" mechanisms are involved here:
-      1. Page-by-page streaming (this function): fetch one page -> ship it -> free it.
-      2. ``use_streaming_send`` (passed to ``send_events_to_xsiam`` below): within a single
-         send, serialize+gzip one event at a time instead of copying the whole batch.
-    They are complementary: (1) bounds memory to one page, (2) bounds the send to one event.
-
     Args:
         event_type (EVENT_TYPE): Event type configuration (drives dedup, _time, product).
         running_state (dict): Mutable container with at minimum:
@@ -803,8 +795,7 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
 
         send_start = time.monotonic()
-        # fetch-events only: stream each Activities/Devices page straight to XSIAM and free it.
-        send_events_to_xsiam(new_events, vendor=VENDOR, product=product, use_streaming_send=True)
+        send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
         send_secs = time.monotonic() - send_start
 
         running_state["total_shipped"] += len(new_events)
@@ -1119,41 +1110,32 @@ def _enrich_and_ship_in_chunks(client: Client, alerts: list[dict], chunk_size: i
         chunk = alerts[offset : offset + chunk_size]
         bulk_enrich_alerts(client, chunk)
         add_time_to_events(chunk, EVENT_TYPE_ALERTS)
-        # fetch-events only: ship each enriched alert chunk to XSIAM and free it.
-        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT, use_streaming_send=True)
+        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT)
         safe_debug(f"[{tname}] enrich+ship: chunk {chunk_idx}/{total_chunks} shipped {len(chunk)}")
         del chunk
         gc.collect()
 
 
-def _wait_for_enrichment(future, executor, timeout_seconds: int = ENRICHMENT_WAIT_TIMEOUT_SECONDS) -> None:
-    """Wait (bounded) for the background enrichment task and tear down its executor.
+def _wait_for_enrichment(future, executor) -> None:
+    """Block until the background alert enrichment+ship task completes, then tear down.
 
-    No-op when ``future`` is None (no Alerts were fetched this cycle).
-
-    On exception or timeout we log and ship alerts unenriched — partial data is preferred
-    over blowing the 5-minute Docker timeout and losing the entire cycle. On timeout the
-    executor is shut down with ``wait=False``; the enrichment thread is left to finish on
-    its own or be torn down with the container.
+    Waits with no timeout so the alert cursor (advanced after this returns) is never moved ahead of
+    what was shipped. If a cycle exceeds the platform's 5-min limit it is hard-killed before the
+    cursor is persisted, so the alerts are re-fetched and deduped next cycle (no data loss).
     """
     tname = threading.current_thread().name
     if future is None:
         return
     wait_start = time.monotonic()
     try:
-        future.result(timeout=timeout_seconds)
-        demisto.debug(f"[{tname}] bulk_enrich: background enrichment joined after {time.monotonic() - wait_start:.2f}s")
-    except FuturesTimeoutError:
-        demisto.error(
-            f"[{tname}] bulk_enrich: background enrichment did NOT finish within {timeout_seconds}s — "
-            f"shipping alerts without (full) enrichment to avoid the 5-min Docker timeout"
-        )
+        future.result()
+        demisto.debug(f"[{tname}] bulk_enrich: enrichment finished after {time.monotonic() - wait_start:.2f}s")
     except Exception as ex:
         demisto.error(f"[{tname}] bulk_enrich: background enrichment FAILED: {ex!r}")
     finally:
         if executor is not None:
-            # wait=False: do NOT block on outstanding enrichment threads in the timeout case.
-            executor.shutdown(wait=False)
+            # wait=True: don't return until the enrichment thread is done, so the cursor isn't advanced early.
+            executor.shutdown(wait=True)
 
 
 def fetch_event_type_worker(
@@ -1466,9 +1448,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
             add_time_to_events(events_list, event_type)
             demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
-            # In practice the armis-get-events push path: events are collected (no streaming), so they
-            # reach here. fetch-events streams/pops everything earlier and hits the heartbeat branch below.
-            # No streaming-send here, so the list stays intact for armis-get-events to display afterwards.
+            # Collected (non-streaming) path — used by armis-get-events; fetch-events streams earlier.
             send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
             demisto.debug(f"{len(events_list)} events of type: {event_type} were sent to XSIAM.")
     else:
@@ -1476,8 +1456,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
         # fetch loop (Activities/Devices). Send an empty heartbeat so XSIAM knows the
         # collector is alive.
         demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
-        # Empty heartbeat (mainly fetch-events): tells XSIAM the collector is alive when nothing was collected.
-        send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)  # heartbeat
 
     demisto.debug(f"setting {next_run=}")
     next_run["nextTrigger"] = "1"
