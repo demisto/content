@@ -2363,7 +2363,7 @@ Scope: `read:jira-work`
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The search string. | Required |
+| query | The search string to match against users and groups. For users, performs a case-insensitive substring match on display name and email address. For groups, performs a case-sensitive substring match on group name. Note: if a user has hidden their email address, an exact email match is required. | Required |
 | limit | The maximum number of results to return. | Optional |
 
 #### Context Output

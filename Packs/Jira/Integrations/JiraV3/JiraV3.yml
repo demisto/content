@@ -223,7 +223,9 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
-    - description: The search string.
+    - description: |-
+        The search string to match against users and groups. For users, performs a case-insensitive substring match on display name and email address. For groups, performs a case-sensitive substring match on group name.
+        Note: if a user has hidden their email address, an exact email match is required.
       type: String
       name: query
     - description: The maximum number of results to return.
