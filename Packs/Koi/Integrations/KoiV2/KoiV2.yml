@@ -1,0 +1,77 @@
+category: Endpoint
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: KOI v2
+  version: -1
+name: KOI v2
+display: KOI v2
+description: KOI v2 integration for testing event collection and allowlist retrieval.
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://api.prod.koi.security/
+  type: 0
+  additionalinfo: The KOI API server URL.
+  section: Connect
+- name: api_key
+  display: API Key
+  required: true
+  type: 14
+  additionalinfo: The API key for authenticating with the KOI API.
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+script:
+  commands:
+  - name: koi-v2-get-events
+    description: Retrieves events from KOI v2.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return.
+      defaultValue: '5000'
+    - name: start_time
+      description: The start time to fetch events from (e.g., "1 hour", "2024-01-01T00:00:00Z").
+      defaultValue: 1 hour
+    - name: should_push_events
+      description: If true, the retrieved events are pushed to XSIAM.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: KoiV2.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: KoiV2.Event._time
+      description: The time the event was created.
+      type: Date
+  - name: koiv2-allowlist-get
+    description: Retrieves the allowlist from KOI v2.
+    arguments:
+    - name: limit
+      description: The maximum number of allowlist items to return.
+      defaultValue: '5000'
+    outputs:
+    - contextPath: KoiV2.Allowlist.item_id
+      description: The unique identifier of the allowlist item.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.9094740
+fromversion: 8.2.0
