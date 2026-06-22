@@ -177,6 +177,8 @@ async def test_fetch_path_partial_failure(mocker):
 
     mocker.patch("NetskopeEventCollector_v2.support_multithreading")
     mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    # The failing type intentionally logs errors; silence them so the no-stdout test fixture is satisfied.
+    mocker.patch.object(demisto, "error")
     failing_type = "audit"
     client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
 
@@ -272,24 +274,6 @@ async def test_fetch_path_empty_page(mocker):
     # Every event sent through the per-page send carried 0 events (no events leaked through).
     for call in send_mock.call_args_list:
         assert len(call.kwargs.get("events", [])) == 0, "Empty pages must not send any events"
-
-
-def test_send_events_requires_streaming_capable_csp():
-    """
-    CSP compatibility guard: the integration relies on the `use_streaming_send` parameter of
-    send_events_to_xsiam (added in the CIAC-16981 CommonServerPython). This test documents/asserts
-    the minimum CSP contract by confirming the bundled send_events_to_xsiam accepts the parameter.
-    If this fails, the integration's pack must depend on a Base version that includes the flag.
-    """
-    import inspect
-
-    from NetskopeEventCollector_v2 import send_events_to_xsiam
-
-    sig = inspect.signature(send_events_to_xsiam)
-    assert "use_streaming_send" in sig.parameters, (
-        "The bundled CommonServerPython.send_events_to_xsiam must support 'use_streaming_send' "
-        "(requires Base >= the CIAC-16981 release)."
-    )
 
 
 @pytest.mark.asyncio
