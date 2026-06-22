@@ -198,7 +198,7 @@ script:
     - defaultValue: "10"
       description: The maximum number of agents to return.
       name: limit
-    - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd.
+    - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are AND'd.
       name: params
     - description: A comma-separated list of additionals fields to display.
       name: columns
