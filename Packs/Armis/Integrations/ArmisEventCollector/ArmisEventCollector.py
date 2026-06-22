@@ -752,6 +752,12 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
     page is dispatched to XSIAM immediately, so peak memory stays bounded by a single
     page rather than ``max_fetch`` worth of events.
 
+    Note - two distinct "streaming" mechanisms are involved here:
+      1. Page-by-page streaming (this function): fetch one page -> ship it -> free it.
+      2. ``use_streaming_send`` (passed to ``send_events_to_xsiam`` below): within a single
+         send, serialize+gzip one event at a time instead of copying the whole batch.
+    They are complementary: (1) bounds memory to one page, (2) bounds the send to one event.
+
     Args:
         event_type (EVENT_TYPE): Event type configuration (drives dedup, _time, product).
         running_state (dict): Mutable container with at minimum:
