@@ -82,7 +82,7 @@ def seperate_pr_files(pr_files: dict):
             xsiam_files.append(file)
         else:
             xsoar_files.append(file)
-    if len(xsoar_files) == len(release_notes_files):  # we only have xsiam files
+    if all(file in release_notes_files for file in xsoar_files):  # we only have xsiam files, and the only xsoar files are RN
         xsiam_files.extend(xsoar_files)
         xsoar_files = []
 
