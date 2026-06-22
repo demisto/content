@@ -673,7 +673,7 @@ def test_get_filtered_issues_bad_arguments(mocker, capfd):
         issue = get_filtered_issues(entity_type="", resource_id="", severity="", issue_type="", limit=500)
         assert (
             issue == "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id"
-            "\n\tseverity\n\tissue_type\n"
+            "\n\tseverity\n\tissue_type\n\tcreated_after\n\tcreated_before\n"
         )
         issue = get_filtered_issues(entity_type="virtualMachine", resource_id="", severity="BAD", issue_type="", limit=500)
         assert (
@@ -2093,6 +2093,157 @@ def test_fetch_all_issue_nodes_single_page(mock_check_api):
     assert len(result) == 1
     assert result[0]["id"] == "only-issue"
     mock_check_api.assert_called_once()
+
+
+# ===== wiz-get-issues: created_at filter + limit (WZ-114555) =====
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_max_records_truncates(mock_check_api):
+    """max_records stops pagination early and truncates the result to exactly that many nodes."""
+    from Wiz import _fetch_all_issue_nodes
+
+    page1 = {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "issue-1"}, {"id": "issue-2"}, {"id": "issue-3"}],
+                "pageInfo": {"hasNextPage": True, "endCursor": "cursor-1"},
+            }
+        }
+    }
+    mock_check_api.return_value = page1
+
+    result = _fetch_all_issue_nodes("some_query", {"first": 3}, max_records=2)
+
+    assert [n["id"] for n in result] == ["issue-1", "issue-2"]
+    # The first page already satisfied the cap, so no second (paginated) call was made.
+    mock_check_api.assert_called_once()
+
+
+@patch("Wiz.checkAPIerrors")
+def test_fetch_all_issue_nodes_max_records_none_fetches_all(mock_check_api):
+    """max_records=None preserves the fetch-everything behavior across pages."""
+    from Wiz import _fetch_all_issue_nodes
+
+    page1 = {"data": {"issues": {"nodes": [{"id": "i1"}, {"id": "i2"}], "pageInfo": {"hasNextPage": True, "endCursor": "c1"}}}}
+    page2 = {"data": {"issues": {"nodes": [{"id": "i3"}], "pageInfo": {"hasNextPage": False, "endCursor": None}}}}
+    mock_check_api.side_effect = [page1, page2]
+
+    result = _fetch_all_issue_nodes("some_query", {"first": 10}, max_records=None)
+
+    assert [n["id"] for n in result] == ["i1", "i2", "i3"]
+
+
+@patch("Wiz._fetch_all_issue_nodes", return_value=[])
+def test_get_filtered_issues_created_at_filter(mock_fetch):
+    """created_after / created_before are mapped to the Wiz createdAt filter."""
+    from Wiz import get_filtered_issues
+
+    get_filtered_issues(
+        entity_type="",
+        resource_id="",
+        severity="",
+        issue_type="TOXIC_COMBINATION",
+        limit=None,
+        created_after="2024-01-01T00:00:00Z",
+        created_before="2024-02-01T00:00:00Z",
+    )
+
+    variables = mock_fetch.call_args[0][1]
+    assert variables["filterBy"]["createdAt"] == {"after": "2024-01-01T00:00:00Z", "before": "2024-02-01T00:00:00Z"}
+    assert variables["filterBy"]["type"] == ["TOXIC_COMBINATION"]
+
+
+@patch("Wiz._fetch_all_issue_nodes", return_value=[])
+def test_get_filtered_issues_created_at_standalone(mock_fetch):
+    """A date filter alone is a valid query (no entity/severity/type required)."""
+    from Wiz import get_filtered_issues
+
+    result = get_filtered_issues(
+        entity_type="",
+        resource_id="",
+        severity="",
+        issue_type="",
+        limit=None,
+        created_after="2024-01-01T00:00:00Z",
+    )
+
+    # Not an error string -> the call proceeded to fetch.
+    assert not isinstance(result, str)
+    variables = mock_fetch.call_args[0][1]
+    assert variables["filterBy"]["createdAt"] == {"after": "2024-01-01T00:00:00Z"}
+
+
+@patch("Wiz._fetch_all_issue_nodes", return_value=[])
+def test_get_filtered_issues_limit_caps_page_and_records(mock_fetch):
+    """limit sizes the page (<= API max) and is passed through as the total record cap."""
+    from Wiz import get_filtered_issues
+
+    get_filtered_issues(
+        entity_type="VIRTUAL_MACHINE",
+        resource_id="",
+        severity="",
+        issue_type="",
+        limit=5,
+    )
+
+    args, kwargs = mock_fetch.call_args
+    variables = args[1]
+    assert variables["first"] == 5
+    assert kwargs["max_records"] == 5
+
+
+@patch("Wiz._fetch_all_issue_nodes", return_value=[])
+def test_get_filtered_issues_limit_above_api_max_clamps_page(mock_fetch):
+    """A limit larger than the API page size clamps `first` but keeps the full record cap."""
+    from Wiz import get_filtered_issues, WIZ_API_LIMIT
+
+    get_filtered_issues(
+        entity_type="VIRTUAL_MACHINE",
+        resource_id="",
+        severity="",
+        issue_type="",
+        limit=WIZ_API_LIMIT + 250,
+    )
+
+    args, kwargs = mock_fetch.call_args
+    assert args[1]["first"] == WIZ_API_LIMIT
+    assert kwargs["max_records"] == WIZ_API_LIMIT + 250
+
+
+def test_get_filtered_issues_no_params_errors(capfd):
+    """With no filter at all, the command returns the usage error (now listing the date args)."""
+    from Wiz import get_filtered_issues
+
+    with capfd.disabled():
+        result = get_filtered_issues(entity_type="", resource_id="", severity="", issue_type="", limit=None)
+
+    assert isinstance(result, str)
+    assert "created_after" in result
+    assert "created_before" in result
+
+
+@pytest.mark.parametrize("bad_limit", [0, -1, -100])
+def test_get_filtered_issues_non_positive_limit_errors(capfd, bad_limit):
+    """A non-positive limit is rejected up front (guards against nodes[:-n] silently dropping records)."""
+    from Wiz import get_filtered_issues
+
+    with capfd.disabled():
+        result = get_filtered_issues(entity_type="VIRTUAL_MACHINE", resource_id="", severity="", issue_type="", limit=bad_limit)
+
+    assert isinstance(result, str)
+    assert "limit must be a positive integer" in result
+
+
+@patch("Wiz._fetch_all_issue_nodes", return_value=[])
+def test_get_filtered_issues_orders_by_severity_on_all_branches(mock_fetch):
+    """Every filter branch sets SEVERITY DESC so a limit truncation keeps the most severe issues."""
+    from Wiz import get_filtered_issues
+
+    get_filtered_issues(entity_type="", resource_id="", severity="", issue_type="TOXIC_COMBINATION", limit=5)
+
+    variables = mock_fetch.call_args[0][1]
+    assert variables["orderBy"] == {"field": "SEVERITY", "direction": "DESC"}
 
 
 # ===== GAP #2: _mirror_status_to_wiz for in_progress and rejected =====
