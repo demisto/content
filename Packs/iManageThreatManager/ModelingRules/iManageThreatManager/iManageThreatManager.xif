@@ -22,7 +22,7 @@ alter
     xdm.source.location.city = tmp_location,
     xdm.event.id = to_string(task_id),
     xdm.event.type = if(risk_level != null, "Behavior Analytics Alert", action_type != null, "Detect and Protect Alert", "Alert"),
-    xdm.event.description = concat("Risk Score: ", to_string(risk_score), " | Task: ", to_string(task_name)),
+    xdm.event.description = to_string(task_name),
     xdm.event.outcome = if(tmp_action_state = "completed", "SUCCESS", tmp_action_state = "failed", "FAILED", tmp_action_state),
     // Observer action (D&P only)
     xdm.observer.action = if(tmp_action_type = "no_action", "ALERT", tmp_action_type = "warn_user", "ALERT", tmp_action_type = "disable_account", "BLOCK", tmp_action_type);
