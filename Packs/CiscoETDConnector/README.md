@@ -162,7 +162,7 @@ dataset = cisco_etd_raw
 | view graph type = pie xaxis = logType yaxis = log_count
 ```
 
-**Purpose**
+#### Purpose
 
 Displays the distribution of ETD log types (Message, Audit, and Connection logs).
 
@@ -183,7 +183,7 @@ dataset = cisco_etd_raw
 | view graph type = pie xaxis = category yaxis = category_count
 ```
 
-**Purpose**
+#### Purpose
 
 Provides a high-level classification of email activity into:
 
@@ -206,7 +206,7 @@ dataset = cisco_etd_raw
 | view graph type = line xaxis = logDate yaxis = event_count series = logType
 ```
 
-**Purpose**
+#### Purpose
 
 Displays ETD activity trends over time and allows users to monitor ingestion volume by log type.
 
