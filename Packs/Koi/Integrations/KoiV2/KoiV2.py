@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 from typing import Any
 
-import urllib3
+
 
 
 
@@ -167,13 +167,13 @@ def main() -> None:
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[Main] Command being called is {command}")
     try:
         client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "koi-v2-get-events":
+        elif command == "koiv2-get-events":
             return_results(get_events_command(client, args))
         elif command == "koiv2-allowlist-get":
             return_results(allowlist_get_command(client, args))
@@ -181,7 +181,8 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)} {traceback.format_exc()}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        demisto.error(str(traceback.format_exc()))
 
 
 """ ENTRY POINT """

@@ -11,30 +11,27 @@ description: KOI v2 integration for testing event collection and allowlist retri
 configuration:
 - display: Fetch something
   name: isFetch
-  type: 0
+  type: 8
   defaultvalue: 'false'
   required: false
-  section: section1
+  section: Collect
 - display: Incident type
   name: incidentType
-  type: 4
+  type: 13
   required: false
   section: Collect
 - name: url
   display: Server URL
   required: true
   defaultvalue: https://api.prod.koi.security/
-  type: 4
+  type: 0
   additionalinfo: The KOI API server URL.
   section: Connect
 - name: api_key
-  display: API Key
+  displaypassword: API Key
+  hiddenusername: true
   required: true
-  type: 14
-  additionalinfo: The API key for authenticating with the KOI API.
-  section: Connect
-  hidden:
-  - koi
+  type: 9
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
@@ -49,44 +46,45 @@ configuration:
   required: false
 - name: isFetchEvents
   display: Fetch events
-  type: 10
-  section: Connect
+  type: 8
+  section: Collect
   required: false
   hidden:
-  - xsiam
+  - marketplacev2
 script:
   commands:
-  - name: koi-v2-get-events
+  - name: koiv2-get-events
+    polling: true
     description: Retrieves events from KOI v2. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: limit
       description: The maximum number of events to return.
       defaultvalue: '5000'
+      default: true
     - name: start_time
       description: The start time to fetch events from (e.g., "1 hour", "2024-01-01T00:00:00Z").
       defaultvalue: '1 hour'
+      default: true
     - name: should_push_events
       description: Whether to push the retrieved events to Cortex XSIAM.
       auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
       defaultvalue: 'false'
     outputs:
     - contextPath: KoiV2.Event.id
       description: The unique identifier of the event.
-      type: String
+      type: str
     - contextPath: KoiV2.Event._time
       description: The time the event was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
-      type: Date
+      type: Datetime
   - name: koiv2-allowlist-get
+    deprecated: true
     description: Retrieves the allowlist from KOI v2.
     arguments:
     - name: limit
       description: The maximum number of allowlist items to return.
       defaultvalue: '5000'
     outputs:
-    - contextPath: KoiV2.Allowlist.item_id
+    - contextPath: tanium.test.ITEMID
       description: The unique identifier of the allowlist item.
       type: String
   runonce: false
@@ -96,5 +94,7 @@ script:
   dockerimage: demisto/fastapi:0.125.0.9094740
   isfetch: true
   isfetchevents: true
-  isfetchevents:xsoar: true
-fromversion: 8.2.0
+  isfetchevents:xsoar: false
+fromversion: 5.2.0
+supportedModules:
+- platform
