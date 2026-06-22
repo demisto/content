@@ -1,3 +1,5 @@
+name: KOI v2
+display: KOI v2
 category: Endpoint
 sectionorder:
 - Connect
@@ -5,8 +7,6 @@ sectionorder:
 commonfields:
   id: KOI v2
   version: -1
-name: KOI v2
-display: KOI v2
 description: KOI v2 integration for testing event collection and allowlist retrieval.
 configuration:
 - name: url
@@ -37,34 +37,34 @@ configuration:
 script:
   commands:
   - name: koi-v2-get-events
-    description: Retrieves events from KOI v2.
+    description: Retrieves events from KOI v2. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: limit
       description: The maximum number of events to return.
-      defaultValue: '5000'
+      defaultvalue: '5000'
     - name: start_time
       description: The start time to fetch events from (e.g., "1 hour", "2024-01-01T00:00:00Z").
-      defaultValue: 1 hour
+      defaultvalue: '1 hour'
     - name: should_push_events
-      description: If true, the retrieved events are pushed to XSIAM.
+      description: Whether to push the retrieved events to Cortex XSIAM.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'false'
+      defaultvalue: 'false'
     outputs:
     - contextPath: KoiV2.Event.id
       description: The unique identifier of the event.
       type: String
     - contextPath: KoiV2.Event._time
-      description: The time the event was created.
+      description: The time the event was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: koiv2-allowlist-get
     description: Retrieves the allowlist from KOI v2.
     arguments:
     - name: limit
       description: The maximum number of allowlist items to return.
-      defaultValue: '5000'
+      defaultvalue: '5000'
     outputs:
     - contextPath: KoiV2.Allowlist.item_id
       description: The unique identifier of the allowlist item.
