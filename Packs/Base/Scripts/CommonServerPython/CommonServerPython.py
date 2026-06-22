@@ -13213,13 +13213,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
         def _post_zipped(zipped_data):
-            demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before POST to {xsiam_url}/logs/v1/xsiam (streaming)".format(
-                xsiam_url=xsiam_url))
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-            demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG POST to /logs/v1/xsiam returned (streaming)")
 
         buf = _io.BytesIO()
         gz = gzip.GzipFile(fileobj=buf, mode='wb')
