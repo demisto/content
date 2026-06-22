@@ -91,6 +91,9 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+# Asset-enrichment batch size for /devices/entities/devices/v2. Smaller than the vulnerability
+# page size to bound the per-call response size and peak memory during enrichment.
+MAX_SPOTLIGHT_ASSET_ENRICHMENT_BATCH = 2000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
@@ -4003,24 +4006,48 @@ class AssetsDeviceHandler:
         log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
 
         try:
-            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting).
+            # /devices/entities/devices/v2 is a partial-success endpoint: if the batch contains
+            # one or more invalid device IDs, CrowdStrike returns HTTP 400 but the body still
+            # includes the successfully-resolved devices in "resources" and the rejected IDs in
+            # "errors". We therefore accept 400 (ok_codes) and parse the partial result instead
+            # of failing and discarding the whole batch (which previously raised a ContentClientError
+            # carrying the full multi-MB body).
             response = await self.client._request(
-                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
+                method="POST",
+                url_suffix="/devices/entities/devices/v2",
+                json_data={"ids": aid_batch},
+                ok_codes=(200, 400),
             )
 
             # Parse response
             response_data = response.json()
             devices = response_data.get("resources", [])
 
+            # Log any invalid device IDs returned in the partial-success "errors" array.
+            errors = response_data.get("errors") or []
+            if errors:
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike returned "
+                    f"{len(errors)} invalid device ID(s); skipping them. First error: {errors[0].get('message')}",
+                    "warning",
+                )
+
             if not devices:
                 log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
+                # Mark the batch processed even when nothing resolved, so permanently-invalid IDs
+                # are not retried indefinitely on every fetch.
+                self.processed_aids.update(aid_batch)
+                self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
                 return
 
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Update state and send it to XSIAM after finish
+            # 2. Update state and send it to XSIAM after finish.
+            # Mark the entire batch processed (including invalid IDs) to avoid re-sending
+            # permanently-invalid IDs to the API on subsequent fetches.
             self.processed_aids.update(aid_batch)
             self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
@@ -4997,7 +5024,7 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
         processed_aids=set(),  # Start fresh for this fetch
-        batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
+        batch_limit=MAX_SPOTLIGHT_ASSET_ENRICHMENT_BATCH,
     )
 
     # Create parallel tasks for each severity that needs fetching
