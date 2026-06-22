@@ -23,6 +23,7 @@ Make sure the toggle at the bottom is switched on.
 | Fetch incidents |  | False |
 | Maximum number of incidents per fetch | Default value is 50. | False |
 | First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
+| Fetch Lookback Window (minutes) | The number of minutes to look back during each fetch to capture late-indexed incidents. Default value is 0. | False |
 | DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |

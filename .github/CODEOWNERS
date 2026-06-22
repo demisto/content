@@ -30,7 +30,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
-/Packs/rasterize/Integrations/rasterize/* @adi88d
+/Packs/rasterize/Integrations/rasterize/* @adi88d @MosheEichler @DeanArbel
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
@@ -101,37 +101,36 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto
 
 # Platform Automation
-/Packs/AzureDevOps/ @dantavori
-/Packs/AzureSentinel/ @dantavori
-/Packs/Jira/ @dantavori
-/Packs/ServiceNow/ @dantavori
-/Packs/MicrosoftTeams/ @dantavori
-/Packs/Slack/ @dantavori
+/Packs/AzureDevOps/ @omerKarkKatz
+/Packs/Jira/ @omerKarkKatz
+/Packs/ServiceNow/ @omerKarkKatz
+/Packs/MicrosoftTeams/ @omerKarkKatz
+/Packs/Slack/ @omerKarkKatz
 
-/Packs/PingIdentity @JudahSchwartz
-/Packs/Okta @JudahSchwartz
-/Packs/Core @JudahSchwartz
-/Packs/CortexXDR @JudahSchwartz
-/Packs/SentinelOne @JudahSchwartz
-/Packs/CrowdStrikeFalcon @JudahSchwartz @talzich
-/Packs/CrowdStrikeFalconSandbox @JudahSchwartz
-/Packs/CrowdStrikeFalconStreamingV2 @JudahSchwartz
-/Packs/MicrosoftExchangeOnline @JudahSchwartz @noydavidi
-/Packs/AggregatedScripts @JudahSchwartz
-/Packs/MicrosoftExchangeOnPremise/ @JudahSchwartz @noydavidi
-/Packs/Office365AndAzureAuditLog @JudahSchwartz @noydavidi
-/Packs/MicrosoftManagementActivity @JudahSchwartz @noydavidi
-/Packs/Microsoft365Defender @JudahSchwartz @noydavidi
-/Packs/MicrosoftDefenderAdvancedThreatProtection @JudahSchwartz @noydavidi
-/Packs/MicrosoftCloudAppSecurity @JudahSchwartz @noydavidi
-/Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector @JudahSchwartz @noydavidi
-/Packs/FeedAzureADConnectHealth @JudahSchwartz @noydavidi
-/Packs/AzureRiskyUsers @JudahSchwartz @noydavidi
-/Packs/MicrosoftGraphListener @JudahSchwartz @noydavidi
-/Packs/MicrosoftGraphUser @JudahSchwartz @noydavidi
-/Packs/MicrosoftGraphMail @JudahSchwartz @noydavidi
-/Packs/MicrosoftGraphSecurity @JudahSchwartz @noydavidi
-/Packs/MicrosoftGraphFiles @JudahSchwartz @noydavidi
+/Packs/PingIdentity @Shellyber
+/Packs/Okta @Shellyber
+/Packs/Core @Shellyber
+/Packs/CortexXDR @Shellyber
+/Packs/SentinelOne @Shellyber
+/Packs/CrowdStrikeFalcon @Shellyber @talzich
+/Packs/CrowdStrikeFalconSandbox @Shellyber
+/Packs/CrowdStrikeFalconStreamingV2 @Shellyber
+/Packs/MicrosoftExchangeOnline @Shellyber @noydavidi
+/Packs/AggregatedScripts @Shellyber
+/Packs/MicrosoftExchangeOnPremise/ @Shellyber @noydavidi
+/Packs/Office365AndAzureAuditLog @Shellyber @noydavidi
+/Packs/MicrosoftManagementActivity @Shellyber @noydavidi
+/Packs/Microsoft365Defender @Shellyber @noydavidi
+/Packs/AzureSentinel/ @Shellyber
+/Packs/MicrosoftDefenderAdvancedThreatProtection @Shellyber @noydavidi
+/Packs/MicrosoftCloudAppSecurity @Shellyber @noydavidi
+/Packs/FeedAzureADConnectHealth @Shellyber @noydavidi
+/Packs/AzureRiskyUsers @Shellyber @noydavidi
+/Packs/MicrosoftGraphListener @Shellyber @noydavidi
+/Packs/MicrosoftGraphUser @Shellyber @noydavidi
+/Packs/MicrosoftGraphMail @Shellyber @noydavidi
+/Packs/MicrosoftGraphSecurity @Shellyber @noydavidi
+/Packs/MicrosoftGraphFiles @Shellyber @noydavidi
 
 
 /Packs/AWS @Moish-Gilboa
