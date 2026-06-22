@@ -20,6 +20,9 @@ from ProofpointEmailSecurityEventCollector import (
     websocket_connections,
     PING_TIMEOUT,
     CLOSE_TIMEOUT,
+    OPEN_TIMEOUT,
+    PING_INTERVAL,
+    MAX_MESSAGE_SIZE,
 )
 
 CURRENT_TIME: datetime | None = None
@@ -144,8 +147,11 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
-            ping_timeout=PING_TIMEOUT,
+            open_timeout=OPEN_TIMEOUT,
             close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
         )
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
@@ -161,8 +167,11 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
-            ping_timeout=PING_TIMEOUT,
+            open_timeout=OPEN_TIMEOUT,
             close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
         )
 
 
