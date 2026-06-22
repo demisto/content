@@ -5317,7 +5317,7 @@ script:
     description: Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
     name: cs-falcon-workflow-execution-action
     outputs: []
-  dockerimage: demisto/py3-tools:1.0.0.7436613
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
