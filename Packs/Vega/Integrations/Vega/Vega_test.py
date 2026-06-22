@@ -33,7 +33,6 @@ from Vega import (
     _build_effective_incident_update_args,
     _build_direct_alert_update_payload,
     _build_direct_incident_update_payload,
-    _get_status_from_fields,
     _resolve_incident_status_for_update,
     _normalize_vega_severity_for_display,
     MIRROR_ENTITY_SUFFIX_ALERT,
@@ -62,7 +61,6 @@ from Vega import (
     incident_to_xsoar_incident,
     parse_backfill_days,
     load_current_incident,
-    resolve_alert_api_id,
     resolve_alert_id_from_incident,
     resolve_incident_id_from_incident,
     update_alert_command,
@@ -82,7 +80,6 @@ from Vega import (
     _build_mirror_sync_object,
     _extract_vega_verdict_from_entity,
     _resolve_mirror_updated_from,
-    _resolve_mirror_updated_from_for_alerts,
     _poll_entity_is_alert,
     _mirror_entity_suffix_from_poll_entity,
     _resolve_mirror_incident_lookup_filters,
@@ -137,7 +134,7 @@ def test_test_module(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == "ok"
+    assert vega_test_module(client, backfill_days=30) == "ok"
 
 
 def test_test_module_unauthorized(requests_mock, mocker):
@@ -155,7 +152,7 @@ def test_test_module_unauthorized(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == "You do not have required access to fetch incidents."
+    assert vega_test_module(client, backfill_days=30) == "You do not have required access to fetch incidents."
 
 
 def test_test_module_incorrect_access_key_id(requests_mock, mocker):
@@ -189,7 +186,7 @@ def test_test_module_incorrect_access_key_id(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == TEST_CONNECTION_ACCESS_KEY_ID_ERROR
+    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_ACCESS_KEY_ID_ERROR
 
 
 def test_test_module_incorrect_access_key(requests_mock, mocker):
@@ -206,7 +203,7 @@ def test_test_module_incorrect_access_key(requests_mock, mocker):
         access_key="wrong-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == TEST_CONNECTION_ACCESS_KEY_ERROR
+    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_ACCESS_KEY_ERROR
 
 
 def test_test_module_connection_error(requests_mock, mocker):
@@ -226,7 +223,7 @@ def test_test_module_connection_error(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == TEST_CONNECTION_URL_ERROR
+    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_URL_ERROR
 
 
 def test_test_module_wrong_url_not_found(requests_mock, mocker):
@@ -243,7 +240,7 @@ def test_test_module_wrong_url_not_found(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == TEST_CONNECTION_BASE_URL_ERROR
+    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_BASE_URL_ERROR
 
 
 def test_test_module_whitespace_base_url(mocker):
@@ -258,28 +255,29 @@ def test_test_module_whitespace_base_url(mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client) == TEST_CONNECTION_BASE_URL_ERROR
+    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_BASE_URL_ERROR
 
 
-def test_main_invalid_entities(mocker):
+def test_main_test_module_requires_backfill_days(mocker):
     mocker.patch.object(
         demisto,
         "params",
         return_value={
             "access_key": "key",
             "access_key_id": "id",
-            "url": "url",
-            "vega_entities": "",
+            "url": "https://api.vega.com",
+            "vega_entities": ["Alerts", "Incidents"],
         },
     )
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mock_return_error = mocker.patch("Vega.return_error")
+    mock_return_results = mocker.patch("Vega.return_results")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
 
     vega_main()
 
-    mock_return_error.assert_called_once_with(
-        "Failed to execute test-module command.\nError:\nAt least one of 'Fetch Alerts' or 'Fetch Incidents' must be checked."
-    )
+    mock_return_results.assert_called_once_with("backfill_days must be an integer between 0 and 365.")
 
 
 def test_url_normalization():
@@ -1008,12 +1006,12 @@ def test_parse_backfill_days_parses_decimal_string():
     assert parse_backfill_days("30.0") == parse_backfill_days(30)
 
 
-def test_parse_backfill_days_legacy_first_fetch():
-    result = parse_backfill_days(None, legacy_first_fetch="7 days")
+def test_parse_backfill_days_defaults_when_none():
+    result = parse_backfill_days(None)
     assert result.endswith("T00:00:00Z")
     parsed = datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
     today_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
-    assert (today_start - parsed).days == 7
+    assert (today_start - parsed).days == 30
 
 
 def test_format_bullet_list():
@@ -1493,19 +1491,6 @@ def test_extract_verdict_reasoning_ignores_user_verdict_and_nested_verdict():
 def test_normalize_verdict_reasoning_from_nested_verdict_dict():
     raw = {"verdict": {"value": "SUSPICIOUS", "reasoning": "Multiple failed logins observed"}}
     assert _normalize_verdict_reasoning_for_display(raw) == "N/A"
-
-
-def test_resolve_alert_api_id_uses_get_alerts_id(mocker):
-    mock_client = mocker.Mock(spec=Client)
-    mock_client.get_alert_by_id.return_value = {
-        "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
-        "vegaAlertId": "VEGA-3409",
-    }
-
-    resolved_id = resolve_alert_api_id(mock_client, "019e1b27-513c-7dd0-a9ca-db2105bdddc4")
-
-    assert resolved_id == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
-    mock_client.get_alert_by_id.assert_called_once_with("019e1b27-513c-7dd0-a9ca-db2105bdddc4")
 
 
 def test_parse_alert_events_results_handles_json_string():
@@ -2432,14 +2417,14 @@ def test_resolve_incident_id_from_incident_uses_explicit_incident_id():
     assert resolve_incident_id_from_incident({"incident_id": "inc-legacy"}, incident) == "inc-legacy"
 
 
-def test_get_status_from_fields_uses_incident_status_field():
-    custom_fields = {VEGA_INCIDENT_STATUS_FIELD: "INVESTIGATING"}
-    assert _get_status_from_fields(custom_fields, {}, MIRROR_ENTITY_SUFFIX_INCIDENT) == "INVESTIGATING"
+def test_resolve_incident_status_for_update_uses_incident_status_field():
+    incident = {"CustomFields": {VEGA_INCIDENT_STATUS_FIELD: "INVESTIGATING"}}
+    assert _resolve_incident_status_for_update({}, incident) == "INVESTIGATING"
 
 
-def test_get_status_from_fields_falls_back_to_legacy_vegastatus_for_incidents():
-    custom_fields = {VEGA_ALERT_STATUS_FIELD: "ON HOLD"}
-    assert _get_status_from_fields(custom_fields, {}, MIRROR_ENTITY_SUFFIX_INCIDENT) == "ON HOLD"
+def test_resolve_incident_status_for_update_falls_back_to_legacy_vegastatus():
+    incident = {"CustomFields": {VEGA_ALERT_STATUS_FIELD: "ON HOLD"}}
+    assert _resolve_incident_status_for_update({}, incident) == "ON HOLD"
 
 
 def test_resolve_incident_status_for_update_prefers_vegaincidentstatus():
@@ -2719,15 +2704,6 @@ def test_get_mirroring_fields_uses_calling_context_fallback(mocker):
     assert fields["mirror_instance"] == "Vega_prod"
 
 
-def test_resolve_mirror_updated_from_for_alerts_uses_wider_lookback():
-    last_update = (datetime.now(UTC) - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    alert_updated_from = _resolve_mirror_updated_from_for_alerts(last_update)
-    incident_updated_from = _resolve_mirror_updated_from(last_update)
-    alert_parsed = datetime.strptime(alert_updated_from, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
-    incident_parsed = datetime.strptime(incident_updated_from, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
-    assert alert_parsed <= incident_parsed
-
-
 def test_build_effective_incident_update_args_field_change_updates_severity_only():
     effective_args = _build_effective_incident_update_args(
         {"old": "LOW", "new": "HIGH"},
@@ -2915,6 +2891,7 @@ def test_mirror_entity_suffix_from_poll_entity():
 
 def test_get_modified_remote_data_command_skips_ambiguous_shared_bare_id(mocker):
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"data": []}}])
     shared_id = "019e1b27-511f-7580-a3a6-03f68cfea577"
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alerts.return_value = {
@@ -2940,6 +2917,7 @@ def test_get_modified_remote_data_command_skips_ambiguous_shared_bare_id(mocker)
 def test_get_modified_remote_data_command(mocker):
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"data": []}}])
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alerts.return_value = {
         "alerts": [
@@ -2963,6 +2941,7 @@ def test_get_modified_remote_data_command(mocker):
 def test_get_modified_remote_data_command_respects_entity_filter(mocker):
     mocker.patch.object(demisto, "params", return_value={"vega_entities": ["Alerts"]})
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"data": []}}])
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alerts.return_value = {
         "alerts": [{"id": "alert-1", "vegaAlertId": "VA-1", "updatedAt": "2026-06-15T12:00:00Z"}],
@@ -3003,6 +2982,7 @@ def test_entity_updated_after_uses_incident_last_updated():
 
 def test_get_modified_remote_data_command_both_entities(mocker):
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"data": []}}])
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alerts.return_value = {
         "alerts": [

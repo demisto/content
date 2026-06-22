@@ -336,7 +336,7 @@
 					{
 						"displayType": "CARD",
 						"h": 3,
-						"hideName": true,
+						"hideName": false,
 						"i": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 						"items": [
 							{
@@ -414,10 +414,10 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 5,
-								"fieldId": "externallink",
-								"height": 53,
-								"id": "3a33a757-4cf8-4eb9-8d82-0a081faf752e",
+								"endCol": 4,
+								"fieldId": "vegaverdictreasoning",
+								"height": 106,
+								"id": "c8f4a2b1-6d3e-4f5a-9b7c-1e2d3f4a5b6c",
 								"index": 1,
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
@@ -436,11 +436,11 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 5,
-								"fieldId": "vegaverdictreasoning",
+								"endCol": 6,
+								"fieldId": "externallink",
 								"height": 53,
-								"id": "c8f4a2b1-6d3e-4f5a-9b7c-1e2d3f4a5b6c",
-								"index": 1,
+								"id": "3a33a757-4cf8-4eb9-8d82-0a081faf752e",
+								"index": 2,
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
 								"startCol": 4
@@ -449,7 +449,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "New Section",
+						"name": "Overview",
 						"static": false,
 						"w": 3,
 						"x": 0,
@@ -478,7 +478,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 3
+						"y": 4
 					},
 					{
 						"displayType": "CARD",
@@ -503,7 +503,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 2
+						"y": 3
 					},
 					{
 						"displayType": "CARD",
@@ -537,7 +537,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 5
+						"y": 6
 					},
 					{
 						"h": 6,
@@ -554,7 +554,7 @@
 						"type": "dynamic",
 						"w": 3,
 						"x": 0,
-						"y": 9
+						"y": 10
 					}
 				],
 				"type": "custom"

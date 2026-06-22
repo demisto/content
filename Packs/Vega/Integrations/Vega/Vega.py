@@ -9,8 +9,9 @@ import time
 from collections.abc import Callable
 from datetime import datetime, timedelta, UTC
 from typing import Any
+# ?-------------------------- Import --------------------------------------
 
-# requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
+# ? ---------------------------- HEADERS LOGS SUPPRESSION --------------------------------------
 
 
 def _suppress_noisy_http_integration_logs() -> None:
@@ -40,6 +41,10 @@ def _suppress_noisy_http_integration_logs() -> None:
     integration_logger._vega_http_log_filter_installed = True  # type: ignore[attr-defined]
 
 
+# ? ---------------------------- HEADERS LOGS SUPPRESSION --------------------------------------
+
+
+# ? ------------------------------------CONSTANTS --------------------------------------
 VEGA_SEVERITY_TO_XSOAR = {
     "LOW": IncidentSeverity.LOW,
     "MEDIUM": IncidentSeverity.MEDIUM,
@@ -47,119 +52,8 @@ VEGA_SEVERITY_TO_XSOAR = {
     "CRITICAL": IncidentSeverity.CRITICAL,
 }
 
-GET_ALERTS_QUERY = (
-    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
-    "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
-    "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
-    "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
-    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
-    "  alerts { id vegaAlertId detectionId name description severity status "
-    "   assignee { userId displayName email } "
-    "   assignees { userId displayName email } "
-    "   dataSources createdAt updatedAt "
-    "   mitre { mitreTactics mitreTechniques } "
-    "   relatedIncidents { incidentId name } "
-    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount "
-    "   comments { text addedBy addedAt } } "
-    "  total limit offset "
-    "  error { code message } } }"
-)
-
-GET_ALERT_MIRROR_QUERY = (
-    "query GetAlerts($alertIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
-    " getAlerts(alertIds: $alertIds, from: $from, limit: $limit, offset: $offset) { "
-    "  alerts { id vegaAlertId status severity verdict verdictReasoning updatedAt "
-    "   comments { text addedBy addedAt } } "
-    "  total limit offset "
-    "  error { code message } } }"
-)
-
-GET_INCIDENT_MIRROR_QUERY = (
-    "query GetIncidents($incidentIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
-    " getIncidents(incidentIds: $incidentIds, from: $from, limit: $limit, offset: $offset) { "
-    "  incidents { id status severity verdict verdictReasoning lastUpdated "
-    "   comments { text addedBy addedAt } } "
-    "  total limit offset "
-    "  error { code message } } }"
-)
-
-GET_INCIDENTS_QUERY = (
-    "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
-    "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
-    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
-    "statuses: $statuses, verdicts: $verdicts, from: $from, to: $to, updatedFrom: $updatedFrom, "
-    "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
-    "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
-    "   assignee { userId displayName email } "
-    "   assignees { userId displayName email } "
-    "   comments { text addedBy addedAt } "
-    "   incidentSummary incidentFindings assets observables alertsCount "
-    "   alerts { alertId name createdAt } "
-    "   recommendedActions { name description } "
-    "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
-    "   link } "
-    "  total limit offset "
-    "  error { code message } } }"
-)
-
-GET_INCIDENT_TIMELINE_QUERY = (
-    "query GetIncidentTimeline($incidentId: ID!, $limit: Int, $offset: Int) { "
-    " getIncidentTimeline(incidentId: $incidentId, limit: $limit, offset: $offset) { "
-    "  events { "
-    "   id timestamp summary dataSources assets observables "
-    "   alert { alertId name createdAt } "
-    "  } "
-    "  total limit offset "
-    "  error { code message } } }"
-)
-
-UPDATE_ALERTS_MUTATION = (
-    "mutation UpdateAlerts($input: UpdateAlertsInput!) { "
-    " updateAlerts(input: $input) { "
-    "  alerts { id vegaAlertId detectionId name description severity status "
-    "   assignee { userId displayName email } "
-    "   assignees { userId displayName email } "
-    "   dataSources createdAt updatedAt "
-    "   mitre { mitreTactics mitreTechniques } "
-    "   relatedIncidents { incidentId name } "
-    "   detectionSource detectionDescription detectionQuery eventCount isTestMode "
-    "   verdict verdictReasoning dedupCount "
-    "   comments { text addedBy addedAt } } "
-    "  error { code message } } }"
-)
-
-UPDATE_INCIDENTS_MUTATION = (
-    "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
-    " updateIncidents(input: $input) { "
-    "  incidents { incidentId incidentName status "
-    "   assignee { userId displayName email } "
-    "   assignees { userId displayName email } "
-    "   verdict verdictReasoning updatedAt } "
-    "  errors { code message } } }"
-)
-
-SET_DETECTIONS_STATE_MUTATION = (
-    "mutation SetDetectionsState($input: SetDetectionsStateInput!) { " " setDetectionsState(input: $input) { " "  ids } }"
-)
-
 VALID_DETECTION_STATES = frozenset({"ENABLED", "DISABLED", "TEST_MODE"})
 VALID_DETECTION_SEVERITIES = frozenset({"LOW", "MEDIUM", "HIGH", "CRITICAL"})
-
-UPDATE_DETECTIONS_MUTATION = (
-    "mutation UpdateDetections($input: UpdateDetectionsInput!) { "
-    " updateDetections(input: $input) { "
-    "  results { "
-    "   name status "
-    "   errors { code message field } "
-    "   detection { id name severity status state tags } "
-    "  } "
-    "  summary { requested valid invalid committed } "
-    " } }"
-)
 
 MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
@@ -174,58 +68,12 @@ VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
 MIRROR_POLL_LOOKBACK = timedelta(minutes=1)
-MIRROR_ALERT_POLL_LOOKBACK = timedelta(minutes=1)
 MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=1)
 MIRROR_UPDATED_TO_BUFFER = timedelta(minutes=1)
 MIRROR_LOG_PREFIX = "Vega mirror"
 
-
-def _mirror_log(stage: str, message: str, **context: Any) -> None:
-    """Emit a structured mirror debug log. Grep by ``Vega mirror`` or ``stage=<name>``."""
-    parts = [f"{MIRROR_LOG_PREFIX} | stage={stage} | {message}"]
-    if context:
-        context_parts = ", ".join(f"{key}={value}" for key, value in sorted(context.items()) if value is not None)
-        if context_parts:
-            parts.append(context_parts)
-    demisto.debug(" | ".join(parts))
-
-
-def _mirror_log_error(stage: str, message: str, **context: Any) -> None:
-    """Emit a structured mirror error log. Grep by ``Vega mirror`` or ``stage=<name>``."""
-    parts = [f"{MIRROR_LOG_PREFIX} | stage={stage} | {message}"]
-    if context:
-        context_parts = ", ".join(f"{key}={value}" for key, value in sorted(context.items()) if value is not None)
-        if context_parts:
-            parts.append(context_parts)
-    demisto.error(" | ".join(parts))
-
-
-def _mirror_bool(value: Any) -> bool:
-    """Parse XSOAR mirror boolean args that may be bool, int, or string."""
-    if value is None or value == "":
-        return False
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, int):
-        return value != 0
-    if isinstance(value, str):
-        return argToBoolean(value)
-    return bool(value)
-
-
-def _safe_graphql_response(response: Any) -> dict[str, Any]:
-    """Return a dict GraphQL response, treating null/invalid payloads as empty."""
-    return response if isinstance(response, dict) else {}
-
-
-def _mirror_custom_fields(source: dict[str, Any]) -> dict[str, Any]:
-    """Return CustomFields from a mirror payload, parsing JSON strings when needed."""
-    custom_fields = source.get("CustomFields")
-    if custom_fields is None:
-        custom_fields = source.get("customFields")
-    if isinstance(custom_fields, str):
-        return _mirror_dict(custom_fields)
-    return dict(custom_fields) if isinstance(custom_fields, dict) else {}
+MITRE_TACTIC_KEYS = ("mitreTactics", "mitre_tactics", "tactics")
+MITRE_TECHNIQUE_KEYS = ("mitreTechniques", "mitre_techniques", "techniques")
 
 
 VEGA_NUMERIC_SEVERITY_TO_API: dict[int, str] = {
@@ -265,20 +113,6 @@ VEGA_INCIDENT_OPEN_STATUSES = frozenset(
         "RESPONSE_REQUIRED",
         "UNDER_REVIEW",
     }
-)
-XSOAR_SEVERITY_TO_VEGA: dict[int, str] = {
-    IncidentSeverity.UNKNOWN: "LOW",
-    IncidentSeverity.LOW: "LOW",
-    IncidentSeverity.MEDIUM: "MEDIUM",
-    IncidentSeverity.HIGH: "HIGH",
-    IncidentSeverity.CRITICAL: "CRITICAL",
-}
-
-GET_ALERTS_EVENTS_QUERY = (
-    "query GetAlertsEvents($alertId: ID!, $limit: Int, $offset: Int) { "
-    " getAlertsEvents(alertId: $alertId, limit: $limit, offset: $offset) { "
-    "  total limit offset results "
-    "  error { code message } } }"
 )
 
 RATE_LIMIT_MAX_RETRIES = 10
@@ -408,64 +242,198 @@ TEST_CONNECTION_BASE_URL_ERROR = "Unable to reach the Vega API at the configured
 TEST_CONNECTION_ACCESS_KEY_ERROR = "Incorrect Access Key. Please check your credentials."
 TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check your credentials."
 
+# ? ------------------------------------CONSTANTS --------------------------------------
 
-def _parse_backfill_days(backfill_days: str | int | float | None) -> int | None:
-    """Parse a backfill day count from integration params."""
-    if backfill_days is None or str(backfill_days).strip() == "":
-        return None
+
+# ? ---------------------------- GRAPHQL QUERIES --------------------------------------
+GET_ALERTS_QUERY = (
+    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
+    "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
+    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
+    "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
+    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
+    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
+    "  alerts { id vegaAlertId detectionId name description severity status "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   dataSources createdAt updatedAt "
+    "   mitre { mitreTactics mitreTechniques } "
+    "   relatedIncidents { incidentId name } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount "
+    "   comments { text addedBy addedAt } } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_ALERT_MIRROR_QUERY = (
+    "query GetAlerts($alertIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
+    " getAlerts(alertIds: $alertIds, from: $from, limit: $limit, offset: $offset) { "
+    "  alerts { id vegaAlertId status severity verdict verdictReasoning updatedAt "
+    "   comments { text addedBy addedAt } } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_INCIDENT_MIRROR_QUERY = (
+    "query GetIncidents($incidentIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
+    " getIncidents(incidentIds: $incidentIds, from: $from, limit: $limit, offset: $offset) { "
+    "  incidents { id status severity verdict verdictReasoning lastUpdated "
+    "   comments { text addedBy addedAt } } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_INCIDENTS_QUERY = (
+    "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
+    "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
+    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
+    " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
+    "statuses: $statuses, verdicts: $verdicts, from: $from, to: $to, updatedFrom: $updatedFrom, "
+    "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
+    "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   comments { text addedBy addedAt } "
+    "   incidentSummary incidentFindings assets observables alertsCount "
+    "   alerts { alertId name createdAt } "
+    "   recommendedActions { name description } "
+    "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
+    "   link } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_INCIDENT_TIMELINE_QUERY = (
+    "query GetIncidentTimeline($incidentId: ID!, $limit: Int, $offset: Int) { "
+    " getIncidentTimeline(incidentId: $incidentId, limit: $limit, offset: $offset) { "
+    "  events { "
+    "   id timestamp summary dataSources assets observables "
+    "   alert { alertId name createdAt } "
+    "  } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+UPDATE_ALERTS_MUTATION = (
+    "mutation UpdateAlerts($input: UpdateAlertsInput!) { "
+    " updateAlerts(input: $input) { "
+    "  alerts { id vegaAlertId detectionId name description severity status "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   dataSources createdAt updatedAt "
+    "   mitre { mitreTactics mitreTechniques } "
+    "   relatedIncidents { incidentId name } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode "
+    "   verdict verdictReasoning dedupCount "
+    "   comments { text addedBy addedAt } } "
+    "  error { code message } } }"
+)
+
+UPDATE_INCIDENTS_MUTATION = (
+    "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
+    " updateIncidents(input: $input) { "
+    "  incidents { incidentId incidentName status "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   verdict verdictReasoning updatedAt } "
+    "  errors { code message } } }"
+)
+
+SET_DETECTIONS_STATE_MUTATION = (
+    "mutation SetDetectionsState($input: SetDetectionsStateInput!) { " " setDetectionsState(input: $input) { " "  ids } }"
+)
+
+UPDATE_DETECTIONS_MUTATION = (
+    "mutation UpdateDetections($input: UpdateDetectionsInput!) { "
+    " updateDetections(input: $input) { "
+    "  results { "
+    "   name status "
+    "   errors { code message field } "
+    "   detection { id name severity status state tags } "
+    "  } "
+    "  summary { requested valid invalid committed } "
+    " } }"
+)
+
+GET_ALERTS_EVENTS_QUERY = (
+    "query GetAlertsEvents($alertId: ID!, $limit: Int, $offset: Int) { "
+    " getAlertsEvents(alertId: $alertId, limit: $limit, offset: $offset) { "
+    "  total limit offset results "
+    "  error { code message } } }"
+)
+# ? ---------------------------- GRAPHQL QUERIES --------------------------------------
+
+# ? ---------------------------- HELPER FUNCTIONS --------------------------------------
+
+
+def parse_backfill_days(backfill_days: str | int | float | None) -> str:
+    """Convert backfill day count to an ISO 8601 UTC start time for the first fetch."""
+    raw = "" if backfill_days is None else str(backfill_days).strip()
     try:
-        return int(float(str(backfill_days).strip()))
+        days = int(float(raw)) if raw else DEFAULT_BACKFILL_DAYS
     except (TypeError, ValueError):
-        return None
-
-
-def _normalize_to_midnight_utc(value: datetime) -> datetime:
-    """Return the same calendar date at 00:00:00 UTC."""
-    return value.replace(hour=0, minute=0, second=0, microsecond=0)
-
-
-def parse_backfill_days(
-    backfill_days: str | int | None,
-    legacy_first_fetch: str | None = None,
-) -> str:
-    """Convert a backfill day count to an ISO 8601 UTC timestamp for the first fetch.
-
-    Args:
-        backfill_days: Days before today (0 = start of today UTC, max 365).
-        legacy_first_fetch: Deprecated relative time string from older instances (e.g. "30 days").
-
-    Returns:
-        An ISO 8601 UTC timestamp string, e.g. "2026-01-01T00:00:00Z".
-    """
-    days = _parse_backfill_days(backfill_days)
-
-    if days is None and legacy_first_fetch:
-        parsed = arg_to_datetime(legacy_first_fetch, is_utc=True)
-        if parsed:
-            start = _normalize_to_midnight_utc(parsed)  # type: ignore[arg-type]
-            return start.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    if days is None:
         days = DEFAULT_BACKFILL_DAYS
-
-    days = max(BACKFILL_DAYS_MIN, min(BACKFILL_DAYS_MAX, days))
-    today_start = _normalize_to_midnight_utc(datetime.now(UTC))
-    start = today_start - timedelta(days=days)
+    if days < BACKFILL_DAYS_MIN or days > BACKFILL_DAYS_MAX:
+        days = DEFAULT_BACKFILL_DAYS
+    start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+    demisto.info(f"Backfill days: {days}. Start time: {start}")
     return start.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _mirror_log(stage: str, message: str, **context: Any) -> None:
+    """Emit a structured mirror debug log. Grep by ``Vega mirror`` or ``stage=<name>``."""
+    parts = [f"{MIRROR_LOG_PREFIX} | stage={stage} | {message}"]
+    if context:
+        context_parts = ", ".join(f"{key}={value}" for key, value in sorted(context.items()) if value is not None)
+        if context_parts:
+            parts.append(context_parts)
+    demisto.debug(" | ".join(parts))
+
+
+def _mirror_log_error(stage: str, message: str, **context: Any) -> None:
+    """Emit a structured mirror error log. Grep by ``Vega mirror`` or ``stage=<name>``."""
+    parts = [f"{MIRROR_LOG_PREFIX} | stage={stage} | {message}"]
+    if context:
+        context_parts = ", ".join(f"{key}={value}" for key, value in sorted(context.items()) if value is not None)
+        if context_parts:
+            parts.append(context_parts)
+    demisto.error(" | ".join(parts))
+
+
+def _mirror_bool(value: Any) -> bool:
+    """Parse XSOAR mirror boolean args that may be bool, int, or string."""
+    if value is None or value == "":
+        return False
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return value != 0
+    if isinstance(value, str):
+        return argToBoolean(value)
+    return bool(value)
+
+
+def _safe_graphql_response(response: Any) -> dict[str, Any]:
+    """Return a dict GraphQL response, treating null/invalid payloads as empty."""
+    return response if isinstance(response, dict) else {}
+
+
+def _mirror_custom_fields(source: dict[str, Any]) -> dict[str, Any]:
+    """Return CustomFields from a mirror payload, parsing JSON strings when needed."""
+    custom_fields = source.get("CustomFields")
+    if custom_fields is None:
+        custom_fields = source.get("customFields")
+    if isinstance(custom_fields, str):
+        return _mirror_dict(custom_fields)
+    return dict(custom_fields) if isinstance(custom_fields, dict) else {}
+
+
 def validate_backfill_days(backfill_days: str | int | None) -> None:
-    """Validate that backfill_days is an integer between 0 and 365 inclusive.
-
-    Args:
-        backfill_days: Days before today (0 = start of today UTC, max 365).
-
-    Raises:
-        ValueError: If the value is not an integer or is outside the allowed range.
-    """
-    if backfill_days is None or str(backfill_days).strip() == "":
-        return
-
+    """Validate that backfill_days is an integer between 0 and 365 inclusive."""
+    if backfill_days is None:
+        raise ValueError("backfill_days must be an integer between 0 and 365.")
     try:
         days = int(backfill_days)
     except (TypeError, ValueError):
@@ -481,7 +449,6 @@ def _filter_fetch_values(
     display_to_api: dict[str, str] | None = None,
 ) -> list[str] | None:
     """Keep only recognized fetch filters and map UI labels to Vega API enum values.
-
     Unknown or custom multi-select values are ignored. When provided, display_to_api
     maps human-readable labels to API values; values already in valid_api_values are
     also accepted (e.g. legacy underscore-separated statuses).
@@ -621,6 +588,11 @@ def _test_connection_query_error_message(exc: Exception) -> str:
     if status_code in _AUTH_FAILURE_STATUS_CODES:
         return TEST_CONNECTION_ACCESS_KEY_ID_ERROR
     return TEST_CONNECTION_ACCESS_KEY_ID_ERROR
+
+
+# ? ---------------------------- HELPER FUNCTIONS --------------------------------------
+
+# ? ---------------------------- CLIENT CLASS --------------------------------------
 
 
 class Client(BaseClient):
@@ -1083,6 +1055,9 @@ class Client(BaseClient):
         return result if isinstance(result, dict) else {}
 
 
+# ? ---------------------------- CLIENT CLASS --------------------------------------
+
+
 def _event_has_bad_alert_events_shape(event: dict) -> bool:
     """Return True when a getAlertsEvents row is vendor raw data identified by cid/eid fields."""
     if not event:
@@ -1358,19 +1333,6 @@ def _vega_status_field_name(entity_type_suffix: str) -> str:
     return VEGA_ALERT_STATUS_FIELD
 
 
-def _get_status_from_fields(
-    custom_fields: dict[str, Any],
-    delta: dict[str, Any],
-    entity_type_suffix: str,
-) -> Any:
-    """Read Vega status from custom fields or delta, with legacy fallback for incidents."""
-    field_name = _vega_status_field_name(entity_type_suffix)
-    status = custom_fields.get(field_name) or delta.get(field_name)
-    if not status and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
-        status = custom_fields.get(VEGA_ALERT_STATUS_FIELD) or delta.get(VEGA_ALERT_STATUS_FIELD)
-    return status
-
-
 def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
     """Merge incident CustomFields with flattened custom-field keys."""
     custom_fields: dict[str, Any] = dict(incident.get("CustomFields") or incident.get("customFields") or {})
@@ -1444,18 +1406,6 @@ def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any
             pass
 
     return None
-
-
-def resolve_alert_api_id(client: Client, alert_id: str) -> str:
-    """Resolve the Vega alert UUID from getAlerts before calling getAlertsEvents."""
-    alert = client.get_alert_by_id(alert_id)
-    resolved_id = alert.get("id") if isinstance(alert, dict) else None
-    if resolved_id is not None and str(resolved_id).strip():
-        return str(resolved_id).strip()
-    raise DemistoException(
-        f"Vega alert '{alert_id}' was not found via getAlerts. "
-        "Ensure the alert UUID id from getAlerts is used for alert events."
-    )
 
 
 def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1763,10 +1713,6 @@ def _mitre_item_label(item: dict) -> str:
         if value is not None and str(value).strip():
             return str(value).strip()
     return ""
-
-
-MITRE_TACTIC_KEYS = ("mitreTactics", "mitre_tactics", "tactics")
-MITRE_TECHNIQUE_KEYS = ("mitreTechniques", "mitre_techniques", "techniques")
 
 
 def _get_first_mitre_value(mitre: dict, keys: tuple[str, ...]) -> Any:
@@ -3479,15 +3425,6 @@ def _resolve_mirror_updated_from(last_update: str | None) -> str:
     return resolved
 
 
-def _resolve_mirror_updated_from_for_alerts(last_update: str | None) -> str:
-    """Resolve updatedFrom for alert mirror polling with a wider lookback."""
-    cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
-    minimum_lookback = datetime.now(UTC) - MIRROR_ALERT_POLL_LOOKBACK
-    resolved = _format_mirror_timestamp(min(cursor_start, minimum_lookback))
-    _mirror_log("time-window", "Resolved alert poll updatedFrom", last_update=last_update, updated_from=resolved)
-    return resolved
-
-
 def _resolve_mirror_updated_to() -> str:
     """Resolve updatedTo as current time plus a small buffer."""
     resolved = _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
@@ -3543,11 +3480,6 @@ def _resolve_mirror_entity_lookup_filters() -> dict[str, str]:
 def _resolve_mirror_incident_lookup_filters(last_update: str | None) -> dict[str, str]:
     """Build getIncidents `from` filter for incident ID lookups during mirroring."""
     return {"from_time": _resolve_mirror_updated_from(last_update)}
-
-
-def _resolve_mirror_alert_lookup_filters(last_update: str | None) -> dict[str, str]:
-    """Build getAlerts `from` filter for alert ID lookups during mirroring."""
-    return {"from_time": _resolve_mirror_updated_from_for_alerts(last_update)}
 
 
 def _normalize_mirror_field_value(value: Any) -> Any:
@@ -4030,7 +3962,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     incident_bare_ids: set[str] = set()
 
     if fetch_alerts:
-        updated_from = _resolve_mirror_updated_from_for_alerts(remote_args.last_update)
+        updated_from = _resolve_mirror_updated_from(remote_args.last_update)
         offset = 0
         try:
             while True:
@@ -4659,10 +4591,6 @@ def main() -> None:
         )
         fetch_alerts = "Alerts" in vega_entities
         fetch_incidents = "Incidents" in vega_entities
-        if not fetch_alerts and not fetch_incidents:
-            raise ValueError("At least one of 'Fetch Alerts' or 'Fetch Incidents' must be checked.")
-
-        # Parse filter parameters
         alert_severities = filter_alert_severities(argToList(params.get("alert_severities")) or None)
         alert_statuses = filter_alert_statuses(argToList(params.get("alert_statuses")) or None)
         alert_verdicts = filter_alert_verdicts(argToList(params.get("alert_verdicts")) or None)
@@ -4672,10 +4600,7 @@ def main() -> None:
         incident_verdicts = filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None)
 
         backfill_days = params.get("backfill_days")
-        first_fetch_time = parse_backfill_days(
-            backfill_days,
-            legacy_first_fetch=params.get("first_fetch"),
-        )
+        first_fetch_time = parse_backfill_days(backfill_days)
 
         client = Client(
             base_url=base_url,
