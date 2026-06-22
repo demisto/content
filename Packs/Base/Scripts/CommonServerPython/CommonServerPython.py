@@ -13842,13 +13842,13 @@ def _parse_param_map(param_map):
 
         "username:credentials.identifier,password:credentials.password,server_url:server_url"
 
-    A ``dict`` form (``{field_id: destination}``) is also accepted for
-    convenience/backward-compatibility. Empty/invalid entries are skipped.
+    Empty/invalid entries are skipped.
 
     :type param_map: ``Any``
-    :param param_map: The raw ``param_map`` value from the profile (string or dict).
+    :param param_map: The raw ``param_map`` value from the profile (a
+        comma-separated string).
 
-    :return: List of ``(field_id, destination)`` tuples (order preserved for strings).
+    :return: List of ``(field_id, destination)`` tuples (order preserved).
     :rtype: ``list``
     """
     pairs = []  # type: list
