@@ -1,6 +1,4 @@
 {
-  "id": "97afabe093f07ddf12a25da7c7498601",
-  "name": "Cloud Token Theft",
   "trigger_id": "97afabe093f07ddf12a25da7c7498601",
   "playbook_id": "Cloud Token Theft Response",
   "suggestion_reason": "Recommended for Alerts involving cloud token theft",
@@ -22,12 +20,12 @@
         {
           "SEARCH_FIELD": "alert_name",
           "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "Suspicious usage of AWS Lambda’s token"
+          "SEARCH_VALUE": "Suspicious usage of AWS Lambda\u2019s token"
         },
         {
           "SEARCH_FIELD": "alert_name",
           "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "Suspicious usage of AWS Lambda’s role"
+          "SEARCH_VALUE": "Suspicious usage of AWS Lambda\u2019s role"
         },
         {
           "SEARCH_FIELD": "alert_name",

@@ -1,6 +1,4 @@
 {
-  "id": "99292dc1d4a4400a51d0eca2216e3c62",
-  "name": "Set Storage Account to HTTPS only",
   "trigger_id": "99292dc1d4a4400a51d0eca2216e3c62",
   "playbook_id": "",
   "suggestion_reason": "Recommneded for remediating Azure Storage Account without Secure transfer enabled",

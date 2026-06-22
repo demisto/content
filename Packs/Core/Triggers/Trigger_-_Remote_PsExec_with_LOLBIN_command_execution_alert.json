@@ -1,6 +1,4 @@
 {
-  "id": "155e823d9d56d1e3cec9061cd9c0523d",
-  "name": "Remote PsExec with LOLBIN command execution alert",
   "trigger_id": "155e823d9d56d1e3cec9061cd9c0523d",
   "playbook_id": "Remote PsExec with LOLBIN command execution alert",
   "suggestion_reason": "Recommended for Remote PsExec with LOLBIN command execution alerts",

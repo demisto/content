@@ -1,6 +1,4 @@
 {
-  "id": "482f4864d2b0ee27822fd51e1d910122",
-  "name": "Enable Automatic Backup for RDS dB",
   "trigger_id": "482f4864d2b0ee27822fd51e1d910122",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS RDS instance configured without Automatic Backup setting",

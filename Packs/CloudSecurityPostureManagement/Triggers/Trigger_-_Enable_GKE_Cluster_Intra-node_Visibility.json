@@ -1,6 +1,4 @@
 {
-  "id": "43fae7b767fb9d9aed62239f6b618fe3",
-  "name": "Enable GKE Cluster Intra-node Visibility",
   "trigger_id": "43fae7b767fb9d9aed62239f6b618fe3",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating GCP Kubernetes cluster with intra-node visibility disabled",

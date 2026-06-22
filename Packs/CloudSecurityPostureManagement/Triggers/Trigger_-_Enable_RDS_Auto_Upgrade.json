@@ -1,6 +1,4 @@
 {
-  "id": "2d430008f7d4494c7c247bb8768a61f6",
-  "name": "Enable RDS Auto Upgrade",
   "trigger_id": "2d430008f7d4494c7c247bb8768a61f6",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating an AWS RDS with minor upgrades not enabled",

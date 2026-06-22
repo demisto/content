@@ -1,6 +1,4 @@
 {
-  "id": "b88deee0ef3c1325b7b3f583d2550bc0",
-  "name": "XCloud Cryptojacking",
   "trigger_id": "b88deee0ef3c1325b7b3f583d2550bc0",
   "playbook_id": "XCloud Cryptomining",
   "suggestion_reason": "Recommended for Cryptojacking alerts",

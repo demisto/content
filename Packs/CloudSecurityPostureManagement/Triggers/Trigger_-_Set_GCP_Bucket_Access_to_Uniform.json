@@ -1,6 +1,4 @@
 {
-  "id": "c9e0c2f0f3c487782c0aafd4bf2591a5",
-  "name": "Set GCP Bucket Access to Uniform",
   "trigger_id": "c9e0c2f0f3c487782c0aafd4bf2591a5",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating GCP cloud storage bucket with uniform bucket-level access disabled",

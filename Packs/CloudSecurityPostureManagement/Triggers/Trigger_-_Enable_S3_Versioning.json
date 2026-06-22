@@ -1,6 +1,4 @@
 {
-  "id": "7036ccd59b357df3db2d010878237496",
-  "name": "Enable S3 Versioning",
   "trigger_id": "7036ccd59b357df3db2d010878237496",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating an AWS S3 bucket with Object Versioning is disabled",

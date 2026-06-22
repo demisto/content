@@ -1,6 +1,4 @@
 {
-  "id": "1ebe05dda9d3a24f6d66a220962482b8",
-  "name": "Enable Copy Tags on RDS Snapshot",
   "trigger_id": "1ebe05dda9d3a24f6d66a220962482b8",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS RDS instance with copy tags to snapshots disabled",

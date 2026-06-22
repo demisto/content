@@ -1,6 +1,4 @@
 {
-  "id": "069716fa89f64bc402c21469e2083297",
-  "name": "Make GCP Bucket Private",
   "trigger_id": "069716fa89f64bc402c21469e2083297",
   "playbook_id": "",
   "suggestion_reason": "Recommended for making GCP buckets private to protect sensitive data",

@@ -1,6 +1,4 @@
 {
-  "id": "c708f9add3ce2ae1e251f86d2f60aa50",
-  "name": "Set RDS Snapshot to Private",
   "trigger_id": "c708f9add3ce2ae1e251f86d2f60aa50",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS RDS snapshots accessible to public",

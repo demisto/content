@@ -1,6 +1,4 @@
 {
-  "id": "092fb9bad71860744dc6709395f3b832",
-  "name": "Enable IAM Authentication on RDS Cluster",
   "trigger_id": "092fb9bad71860744dc6709395f3b832",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS RDS cluster not configured with IAM authentication",

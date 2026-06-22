@@ -1,6 +1,4 @@
 {
-  "id": "25889dcf67314fd2c2bcde95af393dc1",
-  "name": "Remove GCP Bucket AllAuthenticatedUser Access",
   "trigger_id": "25889dcf67314fd2c2bcde95af393dc1",
   "playbook_id": "",
   "suggestion_reason": "Recommended for preventing unauthorized access to GCP Bucket",

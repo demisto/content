@@ -1,6 +1,4 @@
 {
-  "id": "b3abb5bb8c524a909c7c39fd2801e2bc",
-  "name": "Enable RDS Cluster Deletion Protection",
   "trigger_id": "b3abb5bb8c524a909c7c39fd2801e2bc",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating an AWS RDS cluster with delete protection is disabled",

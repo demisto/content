@@ -1,6 +1,4 @@
 {
-  "id": "029605643433e77fd0f5899f6d16d912",
-  "name": "Enable Deletion Protection on RDS",
   "trigger_id": "029605643433e77fd0f5899f6d16d912",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating an AWS RDS instance configured with delete protection disabled",

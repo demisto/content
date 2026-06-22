@@ -1,6 +1,4 @@
 {
-  "id": "c15609b20077311db8762f3fdede96c2",
-  "name": "Enable Master Authorized Networks on GKE",
   "trigger_id": "c15609b20077311db8762f3fdede96c2",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating GCP Kubernetes Engine Clusters with Master authorized networks disabled",

@@ -1,6 +1,4 @@
 {
-  "id": "f71cd53bb90c25ac168e2e1125fef668",
-  "name": "Set Web App Min TLS Version",
   "trigger_id": "f71cd53bb90c25ac168e2e1125fef668",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure App Service Web app that doesn't use latest TLS version",

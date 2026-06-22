@@ -1,6 +1,4 @@
 {
-  "id": "1d929877540dace32ad885c202a5c576",
-  "name": "Disable Network Access to Storage Account",
   "trigger_id": "1d929877540dace32ad885c202a5c576",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Storage Account with default network access is set to 'Allow'",

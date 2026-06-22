@@ -1,6 +1,4 @@
 {
-  "id": "290075765a5d6f3abd9aee8949f5cba2",
-  "name": "Disable Storage Account Cross Tenant Replication",
   "trigger_id": "290075765a5d6f3abd9aee8949f5cba2",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Storage account with cross tenant replication enabled",

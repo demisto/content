@@ -1,6 +1,4 @@
 {
-  "id": "e0f9dfcf16049c38e2c0be78472c8234",
-  "name": "Disable Public & Private Access to VM Disk",
   "trigger_id": "e0f9dfcf16049c38e2c0be78472c8234",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure VM disk configured with overly permissive network access",

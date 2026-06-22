@@ -1,6 +1,4 @@
 {
-  "id": "057222b805263ed8287aa8ece5d2e122",
-  "name": "Disable Public Access on RDS",
   "trigger_id": "057222b805263ed8287aa8ece5d2e122",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating a publicly accessible AWS RDS instance",
