@@ -12,7 +12,6 @@ alter
     xdm.alert.original_alert_id = to_string(id),
     xdm.alert.name = task_name,
     xdm.alert.description = task_name,
-    xdm.alert.original_threat_id = to_string(task_id),
     xdm.alert.severity = if(tmp_risk_score >= 15, "CRITICAL", tmp_risk_score >= 10, "HIGH", tmp_risk_score >= 5, "MEDIUM", tmp_risk_score >= 1, "LOW", tmp_risk_score = 0, "INFORMATIONAL",null),
     xdm.source.user.username = user,
     xdm.source.user.identifier = user,
@@ -24,5 +23,4 @@ alter
     xdm.event.type = if(risk_level != null, "Behavior Analytics Alert", action_type != null, "Detect and Protect Alert", "Alert"),
     xdm.event.description = to_string(task_name),
     xdm.event.outcome = if(tmp_action_state = "completed", "SUCCESS", tmp_action_state = "failed", "FAILED", tmp_action_state),
-    // Observer action (D&P only)
     xdm.observer.action = if(tmp_action_type = "no_action", "ALERT", tmp_action_type = "warn_user", "ALERT", tmp_action_type = "disable_account", "BLOCK", tmp_action_type);
