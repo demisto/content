@@ -71,12 +71,13 @@ def add_sub_alerts_shared_fields(incident, item_info):
     incident_date = datetime.strptime(item_info.get("date"), DATETIME_FORMAT)
     incident["occurred"] = incident_date.strftime(DEMISTO_DATETIME_FORMAT)
     incident["severity"] = THREAT_LEVEL_TO_SEVERITY[item_info.get("threat_level", "unknown")]
+    org = demisto.params().get("org_id", "")
     incident["CustomFields"] = {
         "cybersixgillthreatlevel": item_info.get("threat_level", "unknown"),
         "cybersixgillthreattype": item_info.get("threats", []),
         "cybersixgillassessment": item_info.get("assessment", None),
         "cybersixgillrecommendations": "\n\n-----------\n\n".join(item_info.get("recommendations", [])),
-        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}&org={demisto.params().get('org_id', '')}",
+        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}&org={org}",
         "cve": None,
         "cybersixgillattributes": None,
     }
