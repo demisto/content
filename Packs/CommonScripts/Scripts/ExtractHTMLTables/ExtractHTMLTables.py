@@ -21,7 +21,7 @@ def extract_html_table(html, indexes):
                 if len(tds) > 0:
                     # Single value in a table - just create an array of strings ignoring header
                     if len(tds) == 1:
-                        table.append(tds[0].text)
+                        table.append(tds[0].text)  # type: ignore[union-attr]
                     # If there are 2 columns and no headers,
                     # treat as key-value (might override values if same key in first column)
                     elif len(tds) == 2 and len(headers) == 0:
