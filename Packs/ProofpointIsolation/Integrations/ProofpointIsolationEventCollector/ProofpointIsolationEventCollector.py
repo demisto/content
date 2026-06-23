@@ -259,7 +259,7 @@ def main() -> None:  # pragma: no cover
         base_url = params.get("base_url")
         verify = not params.get("insecure", False)
         api_key = params.get("credentials").get("password")
-        fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_FETCH_LIMIT
+        fetch_limit = arg_to_number(params.get("max_events_per_fetch") or DEFAULT_FETCH_LIMIT)
 
         client = Client(base_url=base_url, verify=verify, api_key=api_key)
 

@@ -2590,7 +2590,7 @@ def main() -> None:
                 params.get("project", ""),
                 params.get("repository", ""),
                 integration_instance,
-                arg_to_number(params.get("max_fetch")) or 50,
+                arg_to_number(params.get("max_fetch")) or 50,  # noqa: ucp-param-default  (arg_to_number(None) returns None when not required; `or 50` is a safe fallback)
                 params.get("first_fetch", ""),
             )
 

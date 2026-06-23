@@ -340,8 +340,8 @@ def setup_search_events(
     ]
 
     # region request size limit
-    if "limit" in params:
-        limit = int(params["limit"])
+    if params.get("limit"):
+        limit = int(params["limit"])  # noqa: ucp-param-default  # guarded by truthy params.get("limit") above
         demisto.debug(f"Setting request size limit to: {limit}")
         if limit > MAX_INCIDENTS_TO_FETCH:
             return_error(

@@ -1595,7 +1595,7 @@ def fetch_incidents(
 
     """
     # Get the last fetch details, if exist
-    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
+    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)  # noqa: ucp-param-default  # arg_to_number(None) returns None (required=False), `or FETCH_MAX_LIMIT` guards absent param under UCP
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
@@ -1706,7 +1706,7 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
-    look_back = arg_to_number(params.get("look_back")) or 0
+    look_back = arg_to_number(params.get("look_back")) or 0  # noqa: ucp-param-default  # arg_to_number(None) returns None (required=False), `or 0` guards absent param under UCP
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")

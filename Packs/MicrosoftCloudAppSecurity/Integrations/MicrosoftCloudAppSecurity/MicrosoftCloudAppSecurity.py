@@ -973,7 +973,7 @@ def main():  # pragma: no cover
             first_fetch = params.get("first_fetch")
             max_results = params.get("max_fetch")
             severity = params.get("severity") or []
-            look_back = arg_to_number(params.get("look_back")) or 0
+            look_back = arg_to_number(params.get("look_back")) or 0  # noqa: ucp-param-default  # arg_to_number(None) returns None (required=False), `or 0` guards absent param under UCP
             resolution_status = params.get("resolution_status") or []
             if params.get("custom_filter"):
                 filters = json.loads(str(params.get("custom_filter")))
