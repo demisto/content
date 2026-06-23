@@ -60,7 +60,7 @@ configuration:
   required: false
   section: Collect
   type: 0
-- display: ''
+- display: Compliance Access Key
   name: compliance_apikey
   required: false
   type: 9
@@ -81,22 +81,22 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- additionalinfo: 'A comma-separated list of Activity Feed types to narrow the feed (e.g., user.login,chat.created). Leave empty to fetch all activity types. See the available activity types here: https://platform.claude.com/docs/en/api/compliance/activities/list.'
-  display: Activity types
+- display: Activity types
   name: activity_types
   required: false
   section: Collect
   type: 0
+  additionalinfo: 'A comma-separated list of Activity Feed types to narrow the feed (e.g., user.login,chat.created). Leave empty to fetch all activity types. See the available activity types here: https://platform.claude.com/docs/en/api/compliance/activities/list.'
   hidden:
   - xsoar
-- additionalinfo: The maximum number of events to fetch per cycle.
-  advanced: true
-  defaultvalue: '50000'
-  display: Maximum number of events per fetch
+- display: Maximum number of events per fetch
   name: max_events_per_fetch
   required: false
   section: Collect
   type: 0
+  advanced: true
+  defaultvalue: '50000'
+  additionalinfo: The maximum number of events to fetch per cycle.
   hidden:
   - xsoar
 - display: Trust any certificate (not secure)
