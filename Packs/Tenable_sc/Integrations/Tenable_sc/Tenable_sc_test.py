@@ -1447,6 +1447,9 @@ def test_parse_vulnerabilities_normal():
 
     Then:
     - Should set isTruncated to False for normal-sized entries.
+    - Should set _time from lastSeen (the most recent observation) when both
+      lastSeen and firstSeen are present, so recently observed vulnerabilities
+      keep a recent _time and are not aged out by the findings retention window.
     """
     vulns = [
         {
@@ -1467,9 +1470,9 @@ def test_parse_vulnerabilities_normal():
     result = parse_vulnerabilities(vulns)
 
     assert len(result) == 2
-    assert result[0]["_time"] == "1709568000"
+    assert result[0]["_time"] == "1709654400"
     assert result[0]["isTruncated"] is False
-    assert result[1]["_time"] == "1709568000"
+    assert result[1]["_time"] == "1709654400"
     assert result[1]["isTruncated"] is False
 
 
@@ -1495,6 +1498,34 @@ def test_parse_vulnerabilities_uses_firstseen_fallback():
     result = parse_vulnerabilities(vulns)
 
     assert result[0]["_time"] == "1709568000"
+
+
+def test_parse_vulnerabilities_prefers_lastseen_over_firstseen():
+    """
+    Given:
+    - A vulnerability whose firstSeen is older than 30 days but whose lastSeen is recent.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - _time must be taken from lastSeen (the most recent observation) and not from
+      firstSeen, so the finding is not aged out by the 30-day retention window
+      (root cause of XSUP-70558).
+    """
+    old_first_seen = "1767805244"  # 2026-01-07 (more than 30 days ago)
+    recent_last_seen = "1775059249"  # 2026-04-01 (recent observation)
+    vulns = [
+        {
+            "pluginID": "19506",
+            "name": "Nessus Scan Information",
+            "firstSeen": old_first_seen,
+            "lastSeen": recent_last_seen,
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert result[0]["_time"] == recent_last_seen
 
 
 def test_fetch_vulnerabilities_analysis_client_method(mocker):
