@@ -187,7 +187,10 @@ def test_skip_deploy_bypasses_deploy(monkeypatch, mock_lock):
     rc = dat.run(["IntA"], "T1", max_wait=0, force=False, skip_deploy=True)
     assert rc == dat.EXIT_ALL_PASS  # proceeded straight to parity → pass
     assert deployed["n"] == 0  # deploy never invoked
-    assert mock_lock["release"]  # lock still released
+    # Deploy-only lock (2026-06): --skip-deploy writes NOTHING to the tenant, so
+    # the lock is not acquired at all → nothing to release.
+    assert mock_lock["acquire"] == []
+    assert mock_lock["release"] == []
 
 
 # ---------------------------------------------------------------------------
@@ -479,6 +482,107 @@ def test_skip_connector_deploy_still_runs_parity(monkeypatch, mock_lock):
     assert rc == dat.EXIT_ALL_PASS
     assert parity_called["n"] == 1  # parity still ran
     assert mock_lock["release"]
+
+
+# ---------------------------------------------------------------------------
+# Deploy-only lock scope (2026-06): lock held ONLY around deploy, released
+# BEFORE parity; not acquired at all when the deploy writes nothing.
+# ---------------------------------------------------------------------------
+def test_lock_released_before_parity_runs(monkeypatch, mock_lock):
+    """The deploy-only lock must be released BEFORE the parity phase starts.
+
+    We record the ordering of (deploy, release, parity) and assert release
+    happens after deploy but BEFORE the first parity call.
+    """
+    order: list[str] = []
+
+    monkeypatch.setattr(
+        dat, "_run_deploy",
+        lambda tenant, commit_path=None, *a, **k: order.append("deploy") or 0,
+    )
+    monkeypatch.setattr(
+        dat, "_run_parity",
+        lambda integration_id: order.append("parity") or 0,
+    )
+    # Wrap the mocked release to record ordering too.
+    orig_release = tenant_lock.release
+    monkeypatch.setattr(
+        tenant_lock, "release",
+        lambda tenant, shell_id: order.append("release") or orig_release(tenant, shell_id),
+    )
+
+    rc = dat.run(["IntA"], "T1", max_wait=0, force=False)
+    assert rc == dat.EXIT_ALL_PASS
+    assert order == ["deploy", "release", "parity"]
+    # Released exactly once (not double-released in the finally).
+    assert mock_lock["release"] == [{"tenant": "T1", "shell_id": "shell-abc"}]
+
+
+def test_no_lock_when_deploy_writes_nothing(monkeypatch, mock_lock):
+    """--skip-all-uploads equivalent (skip connector + base + integration) writes
+    nothing to the tenant → the lock is NOT acquired, parity still runs."""
+
+    class _FakePI:
+        connector_folder_path = "connectors/amp"
+        integration_yml_path = "Packs/AMP/Integrations/AMPv2/AMPv2.yml"
+
+    monkeypatch.setattr("resolver.resolve", lambda integration_id: _FakePI())
+
+    def boom_deploy(*a, **k):
+        raise AssertionError("_run_deploy must NOT run when nothing is uploaded")
+
+    monkeypatch.setattr(dat, "_run_deploy", boom_deploy)
+    _set_parity(monkeypatch, 0)
+
+    rc = dat.run(
+        ["IntA"], "T1", max_wait=0, force=False,
+        skip_connector_deploy=True, skip_base_pack=True, skip_integration_pack=True,
+    )
+    assert rc == dat.EXIT_ALL_PASS
+    assert mock_lock["acquire"] == []  # never acquired
+    assert mock_lock["release"] == []  # nothing to release
+
+
+def test_keep_lock_through_parity_holds_lock(monkeypatch, mock_lock):
+    """--keep-lock-through-parity holds the lock across deploy AND parity:
+    release happens AFTER parity (legacy behavior)."""
+    order: list[str] = []
+
+    monkeypatch.setattr(
+        dat, "_run_deploy",
+        lambda tenant, commit_path=None, *a, **k: order.append("deploy") or 0,
+    )
+    monkeypatch.setattr(
+        dat, "_run_parity",
+        lambda integration_id: order.append("parity") or 0,
+    )
+    orig_release = tenant_lock.release
+    monkeypatch.setattr(
+        tenant_lock, "release",
+        lambda tenant, shell_id: order.append("release") or orig_release(tenant, shell_id),
+    )
+
+    rc = dat.run(
+        ["IntA"], "T1", max_wait=0, force=False, keep_lock_through_parity=True,
+    )
+    assert rc == dat.EXIT_ALL_PASS
+    assert order == ["deploy", "parity", "release"]  # released LAST
+    assert mock_lock["release"] == [{"tenant": "T1", "shell_id": "shell-abc"}]
+
+
+def test_deploy_fail_releases_lock_and_skips_parity(monkeypatch, mock_lock):
+    """A deploy failure still releases the (deploy-phase) lock via the finally and
+    never runs parity."""
+    parity_called = {"n": 0}
+    monkeypatch.setattr(dat, "_run_deploy", lambda tenant, commit_path=None, *a, **k: 1)
+    monkeypatch.setattr(
+        dat, "_run_parity",
+        lambda integration_id: parity_called.__setitem__("n", parity_called["n"] + 1) or 0,
+    )
+    rc = dat.run(["IntA"], "T1", max_wait=0, force=False)
+    assert rc == dat.EXIT_DEPLOY_FAIL
+    assert parity_called["n"] == 0  # parity never reached
+    assert mock_lock["release"] == [{"tenant": "T1", "shell_id": "shell-abc"}]  # released once
 
 
 # ---------------------------------------------------------------------------

@@ -84,6 +84,21 @@ PARAM_TYPE_SINGLE_SELECT = 15
 PARAM_TYPE_MULTI_SELECT = 16
 PARAM_TYPE_EXPIRATION = 17  # Feed Expiration Policy (select)
 
+#: Server-managed PORT field NAMES. The platform requires a VALID integer port
+#: for these and AUTO-GENERATES an unused one at save time when an invalid value
+#: is supplied — so the generic non-numeric ``<override_...>`` sentinel makes the
+#: integration side (stores the junk verbatim) and the connector side (backend
+#: assigns a real port) diverge spuriously. For these fields the dummy generator
+#: emits a fixed valid port (:data:`_DUMMY_LONG_RUNNING_PORT`) so both sides
+#: carry the identical concrete value and compare at parity. ``longRunningPort``
+#: is the "Listen Port" of long-running / EDL / TAXII-server integrations.
+_SERVER_MANAGED_PORT_FIELDS: frozenset[str] = frozenset({"longRunningPort"})
+
+#: A fixed, valid, non-default TCP port pushed (as a STRING — type-0 fields
+#: round-trip as strings) for every field in :data:`_SERVER_MANAGED_PORT_FIELDS`.
+#: Chosen in the high ephemeral range to avoid colliding with well-known ports.
+_DUMMY_LONG_RUNNING_PORT = "51111"
+
 # ============================================================================
 # Probe protocol — must stay in sync with the CommonServerPython.py probe.
 # ============================================================================
@@ -179,6 +194,20 @@ def generate_dummy_value_for_param(param: dict) -> object:
     options = param.get("options", []) or []
 
     sentinel = "<override_{}>".format(raw_name or "unknown")
+
+    # Server-managed PORT fields (e.g. ``longRunningPort`` — the "Listen Port"
+    # of long-running/EDL/TAXII-server integrations). These are special: the
+    # platform requires a VALID integer port, and when an invalid value is
+    # supplied (or none at all) the backend AUTO-GENERATES an unused port when
+    # the instance is saved. So our generic non-numeric ``<override_...>``
+    # sentinel makes the two sides diverge for reasons unrelated to migration
+    # correctness: the legacy integration stores the junk string verbatim while
+    # the connector backend discards it and assigns a real port (e.g. ``51359``)
+    # → a spurious VALUE_MISMATCH. Emit a fixed, valid, non-default port as a
+    # STRING (type-0 fields round-trip as strings) so BOTH sides carry the exact
+    # same concrete port and the field compares at parity.
+    if raw_name in _SERVER_MANAGED_PORT_FIELDS:
+        return _DUMMY_LONG_RUNNING_PORT
 
     if param_type == PARAM_TYPE_BOOLEAN:
         # Coerce the YML default to a bool and flip it. The YML expresses

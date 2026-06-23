@@ -16,6 +16,7 @@ from __future__ import annotations
 import csv
 import json
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -98,6 +99,34 @@ def test_result_filename_naive_when_treated_as_utc():
     assert name.endswith("20260607T170006Z.json")
 
 
+# ── _jerusalem_stamp (readable Asia/Jerusalem ledger timestamp) ───────────────
+
+
+def test_jerusalem_stamp_summer_is_idt():
+    # June → Israel Daylight Time (UTC+3): 17:00:06 UTC → 20:00:06 IDT
+    when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
+    assert results_ledger._jerusalem_stamp(when) == "2026-06-07 20:00:06 IDT"
+
+
+def test_jerusalem_stamp_winter_is_ist():
+    # January → Israel Standard Time (UTC+2): 17:00:06 UTC → 19:00:06 IST
+    when = datetime(2026, 1, 7, 17, 0, 6, tzinfo=timezone.utc)
+    assert results_ledger._jerusalem_stamp(when) == "2026-01-07 19:00:06 IST"
+
+
+def test_jerusalem_stamp_naive_when_treated_as_utc():
+    # naive datetime is treated as UTC, then converted to Jerusalem
+    when = datetime(2026, 6, 7, 17, 0, 6)  # naive
+    assert results_ledger._jerusalem_stamp(when) == "2026-06-07 20:00:06 IDT"
+
+
+def test_jerusalem_stamp_converts_other_aware_zone():
+    # an aware datetime in another zone is converted to Jerusalem
+    ny = ZoneInfo("America/New_York")
+    when = datetime(2026, 6, 7, 13, 0, 6, tzinfo=ny)  # 13:00 EDT = 17:00 UTC
+    assert results_ledger._jerusalem_stamp(when) == "2026-06-07 20:00:06 IDT"
+
+
 # ── write_result (persists RAW captures — scrubbing intentionally removed) ─────
 
 
@@ -156,18 +185,23 @@ def test_append_ledger_creates_header_once_then_appends(results_dir):
     when1 = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
     when2 = datetime(2026, 6, 7, 18, 30, 0, tzinfo=timezone.utc)
 
+    # Callers pass the ABSOLUTE path to the per-run JSON (see check_param_parity);
+    # the ledger stores it verbatim (resolved).
+    path1 = results_dir / "salesforce__salesforce-iam__20260607T170006Z.json"
+    path2 = results_dir / "other-connector__other-integration__20260607T183000Z.json"
+
     results_ledger.append_ledger(
         _envelope(status="fail", n_fail=2),
         integration_id="Salesforce IAM",
         connector_id="Salesforce",
-        result_file="salesforce__salesforce-iam__20260607T170006Z.json",
+        result_file=str(path1),
         when=when1,
     )
     results_ledger.append_ledger(
         _envelope(status="pass", n_fail=0),
         integration_id="Other Integration",
         connector_id="Other Connector",
-        result_file="other-connector__other-integration__20260607T183000Z.json",
+        result_file=str(path2),
         when=when2,
     )
 
@@ -187,25 +221,27 @@ def test_append_ledger_creates_header_once_then_appends(results_dir):
     # header appears exactly once
     assert sum(1 for r in rows if r[0] == "timestamp") == 1
 
-    # first data row (legacy envelope → empty variant_id)
+    # first data row (legacy envelope → empty variant_id).
+    # timestamp is readable Asia/Jerusalem local time (17:00:06 UTC → 20:00:06 IDT
+    # in June, DST), result_file is the absolute resolved path.
     assert rows[1] == [
-        "20260607T170006Z",
+        "2026-06-07 20:00:06 IDT",
         "Salesforce IAM",
         "salesforce",
         "",
         "fail",
         "2",
-        "salesforce__salesforce-iam__20260607T170006Z.json",
+        str(path1.resolve()),
     ]
     # second data row (connector slugified, status pass, n_fail 0)
     assert rows[2] == [
-        "20260607T183000Z",
+        "2026-06-07 21:30:00 IDT",
         "Other Integration",
         "other-connector",
         "",
         "pass",
         "0",
-        "other-connector__other-integration__20260607T183000Z.json",
+        str(path2.resolve()),
     ]
 
 
@@ -218,11 +254,12 @@ def test_append_ledger_one_row_per_variant(results_dir):
             ("automation-and-remediation+log-collection", "pass", 0),
         ]
     )
+    result_path = results_dir / "akamai__akamai-waf-siem__20260607T170006Z.json"
     results_ledger.append_ledger(
         env,
         integration_id="Akamai WAF SIEM",
         connector_id="akamai",
-        result_file="akamai__akamai-waf-siem__20260607T170006Z.json",
+        result_file=str(result_path),
         when=when,
     )
     ledger_path = results_dir / "ledger.csv"
@@ -235,18 +272,19 @@ def test_append_ledger_one_row_per_variant(results_dir):
     assert rows[1]["variant_id"] == "automation-and-remediation+log-collection"
     assert rows[1]["status"] == "pass"
     assert rows[1]["n_fail"] == "0"
-    # both rows share the SAME timestamp + result_file (one run).
-    assert rows[0]["timestamp"] == rows[1]["timestamp"] == "20260607T170006Z"
-    assert rows[0]["result_file"] == rows[1]["result_file"]
+    # both rows share the SAME timestamp (readable Jerusalem) + result_file (one run).
+    assert rows[0]["timestamp"] == rows[1]["timestamp"] == "2026-06-07 20:00:06 IDT"
+    assert rows[0]["result_file"] == rows[1]["result_file"] == str(result_path.resolve())
 
 
 def test_append_ledger_uses_dictreader_columns(results_dir):
     when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
+    result_path = results_dir / "f.json"
     results_ledger.append_ledger(
         _envelope(status="fail", n_fail=3),
         integration_id="Salesforce IAM",
         connector_id="Salesforce",
-        result_file="f.json",
+        result_file=str(result_path),
         when=when,
     )
     ledger_path = results_dir / "ledger.csv"
@@ -255,7 +293,8 @@ def test_append_ledger_uses_dictreader_columns(results_dir):
     assert rows[0]["status"] == "fail"
     assert rows[0]["n_fail"] == "3"
     assert rows[0]["connector_slug"] == "salesforce"
-    assert rows[0]["result_file"] == "f.json"
+    # result_file is the absolute resolved path to the JSON envelope
+    assert rows[0]["result_file"] == str(result_path.resolve())
 
 
 def test_append_ledger_quotes_values_with_commas(results_dir):

@@ -1,10 +1,29 @@
 #!/usr/bin/env python3
-"""deploy_and_test — the ONE atomic command the skill runs per integration (design §4).
+"""deploy_and_test — the ONE command the skill runs per integration (design §4).
 
-The whole critical section — acquire tenant lock → ``deploy.py`` → ``check_param_parity.py``
-(per integration id) → release — runs in a single ``try/finally`` so the per-tenant lock is
-ALWAYS released, even if the AI shell forgets, even on an exception. ``tenant_lock`` also
-registers ``atexit``/SIGINT/SIGTERM handlers as a belt-and-suspenders second line.
+LOCK SCOPE (2026-06 — deploy-only lock): the per-tenant lock is held ONLY
+around the ``deploy.py`` step (pack uploads + connector commit/push + GitLab
+pipeline) and RELEASED before ``check_param_parity.py`` runs. The param-parity
+capture phase does not mutate shared tenant state — it creates per-run
+uuid-suffixed XSOAR + UCP instances, matches the XSOAR mirror by that unique
+name, and deletes only its own instances — so multiple integrations can run
+their (slow) capture/diff phases concurrently on one tenant with NO lock.
+Serializing only the deploy keeps the lock hold-time short and unlocks
+parallelism across integrations. The lock is ALWAYS released — on the normal
+phase-1→2 boundary, in the ``finally`` on a deploy-phase failure, and via
+``tenant_lock``'s own ``atexit``/SIGINT/SIGTERM handlers as a second line.
+
+  * When the effective deploy mutates NOTHING on the tenant (``--skip-deploy``,
+    or no packs to upload AND ``--skip-connector-deploy``), the lock is NOT
+    acquired at all — the fully-parallel "everything already on the tenant"
+    path (e.g. after ``preupload_parity_packs.py`` + ``--skip-all-uploads``).
+  * ``--keep-lock-through-parity`` restores the legacy behavior (hold the lock
+    across BOTH deploy and parity — the whole critical section serialized).
+  * SAME-CONNECTOR CAVEAT: the connector manifest is shared, singular tenant
+    state; two integrations under the same connector id that BOTH deploy it can
+    still race (the deploy-only lock guards the write, not the capture's
+    read-window). Pair concurrent same-connector siblings with
+    ``--skip-connector-deploy`` so no manifest write happens during captures.
 
 Determinism over model judgment (design §0): ALL waiting / retry / stale-reclaim lives in
 ``tenant_lock.acquire`` (which blocks internally). This wrapper makes ONE deploy + N parity
@@ -95,23 +114,31 @@ def _integration_pack_dir(integration_yml_path: str) -> str | None:
 
 
 def _packs_to_upload(
-    integration_yml_path: str, skip_base_pack: bool = False
+    integration_yml_path: str,
+    skip_base_pack: bool = False,
+    skip_integration_pack: bool = False,
 ) -> list[str]:
     """Base pack + the integration's own pack, de-duped, order preserved.
 
     The patched Base pack is always first (the probe must be present before the
     integration pack so the param-parity capture works). When ``skip_base_pack``
-    is True the Base pack is omitted, but the integration's own pack is ALWAYS
-    appended (the integration-under-test pack is uploaded unconditionally).
+    is True the Base pack is omitted; when ``skip_integration_pack`` is True the
+    integration's own pack is omitted. With both False (the default) the
+    integration's own pack is appended after Base.
 
-    EDGE CASE: an integration that itself lives under ``Packs/Base`` combined
-    with ``skip_base_pack=True`` yields an EMPTY list (nothing to upload), since
-    the only pack would have been Base. This is acceptable/rare.
+    ``skip_integration_pack`` is for the "everything is already on the tenant"
+    case (e.g. after a bulk pre-upload via ``preupload_parity_packs.py``): the
+    parity capture only needs the probe + integration code to ALREADY be
+    present, not freshly re-uploaded on every run. With both skips True this
+    returns an EMPTY list (nothing to upload). An integration that itself lives
+    under ``Packs/Base`` combined with ``skip_base_pack=True`` likewise yields
+    an empty (or integration-only) list. All acceptable/rare.
     """
     packs = [] if skip_base_pack else [_BASE_PACK]
-    pack_dir = _integration_pack_dir(integration_yml_path)
-    if pack_dir and pack_dir not in packs:
-        packs.append(pack_dir)
+    if not skip_integration_pack:
+        pack_dir = _integration_pack_dir(integration_yml_path)
+        if pack_dir and pack_dir not in packs:
+            packs.append(pack_dir)
     return packs
 
 
@@ -180,6 +207,34 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Do NOT upload the Base pack, but STILL upload the integration's own "
              "pack. Unlike --skip-deploy (which skips EVERYTHING), this assumes the "
              "patched Base pack is already current on the tenant.",
+    )
+    p.add_argument(
+        "--skip-integration-pack",
+        action="store_true",
+        help="Do NOT upload the integration's own pack (assume it is already "
+             "current on the tenant, e.g. after a bulk pre-upload via "
+             "preupload_parity_packs.py). The Base pack and connector deploy "
+             "still run unless their own skip flags are also set.",
+    )
+    p.add_argument(
+        "--skip-all-uploads",
+        action="store_true",
+        help="Convenience flag: skip ALL THREE deploy uploads — Base pack, the "
+             "integration's own pack, AND the connector manifest deploy (git "
+             "commit + GitLab pipeline) — then run parity against what is "
+             "ALREADY on the tenant. Equivalent to passing --skip-base-pack "
+             "--skip-integration-pack --skip-connector-deploy together. Use "
+             "after a bulk pre-upload so each parity run does zero uploads. "
+             "When nothing is uploaded the tenant lock is not acquired at all.",
+    )
+    p.add_argument(
+        "--keep-lock-through-parity",
+        action="store_true",
+        help="Legacy behavior: hold the per-tenant lock across BOTH the deploy "
+             "AND the param-parity capture phase (the whole critical section is "
+             "serialized). By default the lock is held ONLY around the deploy "
+             "and released before parity, so concurrent runs can overlap their "
+             "capture phases. Use this for a strictly-serial run.",
     )
     return p.parse_args(argv)
 
@@ -295,15 +350,46 @@ def run(
     skip_deploy: bool = False,
     skip_connector_deploy: bool = False,
     skip_base_pack: bool = False,
+    skip_integration_pack: bool = False,
+    keep_lock_through_parity: bool = False,
 ) -> int:
-    """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally).
+    """Session-gate → preflight → [lock] deploy [unlock] → parity(per id).
+
+    LOCK SCOPE (2026-06): the per-tenant lock is held ONLY around the deploy
+    step (``deploy.py``: pack uploads + connector commit/push + GitLab
+    pipeline), then RELEASED before the param-parity capture phase runs. The
+    capture phase (``check_param_parity.py``) does not mutate shared tenant
+    state — it creates per-run uuid-suffixed XSOAR + UCP instances, matches the
+    XSOAR mirror by that unique name, and deletes only its own instances — so
+    multiple integrations can run their capture/diff concurrently on the same
+    tenant without a lock. Serializing only the deploy keeps the lock hold-time
+    short and lets parallel parity runs overlap their (slow) capture phases.
+
+    ⚠️ SAME-CONNECTOR CAVEAT: the connector MANIFEST is shared, singular tenant
+    state. Two integrations under the SAME connector id that BOTH deploy that
+    connector can still race (B's deploy of ``aws@v2`` can land while A is
+    capturing against ``aws``), because the deploy-only lock guards the WRITE,
+    not the read-window. Pair concurrent same-connector siblings with
+    ``--skip-connector-deploy`` (deploy the connector once up front, then have
+    the siblings re-upload only their own pack against the already-deployed
+    connector) so no connector-manifest write happens during their captures.
 
     ``skip_connector_deploy`` re-uploads the integration pack against an
     ALREADY-deployed connector (skips the connector commit + GitLab pipeline but
     keeps the pack upload). ``skip_base_pack`` omits the Base pack from the
-    upload but still uploads the integration's own pack. Both still upload the
-    integration-under-test pack; both are moot when ``skip_deploy`` is set
-    (which skips the ENTIRE deploy).
+    upload; ``skip_integration_pack`` omits the integration's own pack. Setting
+    all three (``skip_base_pack`` + ``skip_integration_pack`` +
+    ``skip_connector_deploy``) uploads nothing and deploys no connector — parity
+    runs entirely against what is ALREADY on the tenant (this is what the CLI's
+    ``--skip-all-uploads`` expands to). All of these are moot when
+    ``skip_deploy`` is set (which skips the ENTIRE deploy step outright). When
+    the effective deploy mutates NOTHING on the tenant (``skip_deploy``, or no
+    packs to upload AND no connector deploy), the lock is not acquired at all.
+
+    ``keep_lock_through_parity`` restores the legacy behavior: hold the lock
+    across BOTH deploy and parity (the whole critical section is serialized).
+    Use it for a strictly-serial run on a tenant where even concurrent captures
+    are undesirable.
 
     EDGE CASE: an integration that itself lives under ``Packs/Base`` combined
     with ``skip_base_pack`` produces an empty upload list (nothing uploaded).
@@ -321,7 +407,7 @@ def run(
             _summary(integration_id, "SESSION_BLOCK", EXIT_PARITY_BLOCK)
         return EXIT_PARITY_BLOCK
 
-    # ── Preflight (cheap, before paying for a deploy) ──
+    # ── Preflight (cheap, before paying for a deploy / lock) ──
     if not skip_preflight:
         if not _run_preflight(integration_ids):
             print(
@@ -333,71 +419,108 @@ def run(
                 _summary(integration_id, "PREFLIGHT_FAIL", EXIT_PREFLIGHT_FAIL)
             return EXIT_PREFLIGHT_FAIL
 
-    # ── Acquire (blocks internally; NO auto-retry here) ──
-    try:
-        shell_id = tenant_lock.acquire(
-            tenant,
-            integration_id=",".join(integration_ids),
-            max_wait=max_wait,
-            force=force,
-        )
-    except tenant_lock.TenantLockTimeout as e:
-        holder = e.holder or {}
-        print(
-            f"Tenant {tenant} is held by shell {holder.get('shell_id')} "
-            f"(integration {holder.get('integration_id')}) since "
-            f"{holder.get('acquired_at')} and did not free within {max_wait}s. "
-            f"It may be stuck. Options: (a) wait and retry later, (b) use a different "
-            f"tenant, (c) --force-unlock --tenant {tenant} if the holder is dead.",
-            file=sys.stderr,
-        )
-        for integration_id in integration_ids:
-            _summary(integration_id, "LOCK_BUSY", EXIT_LOCK_BUSY)
-        return EXIT_LOCK_BUSY
+    # ── Footgun visibility: warn loudly for each active skip so an upload-only /
+    # iterate-many run is obvious in the logs. (No lock held yet — these are pure
+    # local decisions.) ──
+    if skip_connector_deploy:
+        log.warning("--skip-connector-deploy set: NOT deploying connector "
+                    "manifest (git commit + GitLab pipeline).")
+    if skip_base_pack:
+        log.warning("--skip-base-pack set: NOT uploading Base pack.")
+    if skip_integration_pack:
+        log.warning("--skip-integration-pack set: NOT uploading the "
+                    "integration's own pack.")
+    if skip_base_pack and skip_integration_pack and skip_connector_deploy:
+        log.warning("All three deploy uploads skipped (Base + integration "
+                    "pack + connector): running parity against what is "
+                    "ALREADY on the tenant.")
+    if skip_deploy and (skip_connector_deploy or skip_base_pack
+                        or skip_integration_pack):
+        log.warning("--skip-deploy already skips the ENTIRE deploy; "
+                    "--skip-connector-deploy/--skip-base-pack/"
+                    "--skip-integration-pack are redundant here.")
 
+    # ── Resolve the connector dir + upload set for the (first) integration so
+    # deploy.py can stage+commit it before pushing. Best-effort: if resolution
+    # fails, fall back to no commit (deploy assumes content already committed).
+    # Done BEFORE acquiring the lock — it is pure local work. ──
+    import resolver as _resolver_mod
     try:
-        # ── Footgun visibility: warn loudly for each active skip so an
-        # upload-only / iterate-many run is obvious in the logs (mirrors the
-        # --skip-deploy warning below). ──
-        if skip_connector_deploy:
-            log.warning("--skip-connector-deploy set: NOT deploying connector "
-                        "manifest; uploading integration pack only.")
-        if skip_base_pack:
-            log.warning("--skip-base-pack set: NOT uploading Base pack.")
-        if skip_deploy and (skip_connector_deploy or skip_base_pack):
-            log.warning("--skip-deploy already skips the ENTIRE deploy; "
-                        "--skip-connector-deploy/--skip-base-pack are redundant here.")
+        _pi = _resolver_mod.resolve(integration_ids[0])
+        commit_path = _pi.connector_folder_path
+        # --skip-base-pack drops Base; --skip-integration-pack drops the
+        # integration's own pack (both False = upload both).
+        upload_packs = _packs_to_upload(
+            _pi.integration_yml_path,
+            skip_base_pack=skip_base_pack,
+            skip_integration_pack=skip_integration_pack,
+        )
+    except Exception:
+        commit_path = None
+        # Fall back to at least the Base pack (probe) when resolution fails;
+        # --skip-base-pack drops it (yields an empty upload list here). The
+        # integration pack can't be derived without the resolver, so
+        # --skip-integration-pack has no additional effect on this path.
+        upload_packs = [] if skip_base_pack else [_BASE_PACK]
 
-        # ── Resolve the connector dir for the (first) integration so deploy.py
-        # can stage+commit it before pushing. Best-effort: if resolution fails,
-        # fall back to no commit (deploy assumes content already committed). ──
-        import resolver as _resolver_mod
+    # Self-signed tenant cert in the chain → demisto-sdk upload needs --insecure.
+    # Off by default; opt in via DEMISTO_VERIFY_SSL=false (or UPLOAD_INSECURE=true).
+    upload_insecure = (
+        os.getenv("DEMISTO_VERIFY_SSL", "").strip().lower() in ("false", "0", "no")
+        or os.getenv("UPLOAD_INSECURE", "").strip().lower() in ("true", "1", "yes")
+    )
+
+    # ── Does the effective deploy actually mutate shared tenant state? ──
+    # It writes to the tenant when it uploads ≥1 pack OR deploys the connector
+    # manifest. When it writes nothing (--skip-deploy, or no packs AND
+    # --skip-connector-deploy), there is nothing to serialize, so we skip the
+    # lock entirely — this is the fully-parallel "everything already on the
+    # tenant" path (e.g. after a bulk preupload_parity_packs.py + --skip-all-uploads).
+    deploy_writes_tenant = (not skip_deploy) and (
+        bool(upload_packs) or (not skip_connector_deploy)
+    )
+
+    # ── Phase 1: DEPLOY under the (short-lived) tenant lock ──
+    # The lock is acquired only when the deploy writes to the tenant, and (unless
+    # keep_lock_through_parity) is released the instant the deploy finishes — so
+    # the slow parity capture phase runs UNLOCKED and concurrent runs overlap.
+    shell_id: str | None = None
+    if deploy_writes_tenant:
         try:
-            _pi = _resolver_mod.resolve(integration_ids[0])
-            commit_path = _pi.connector_folder_path
-            # Patched Base pack + the integration's own pack, derived from the
-            # resolver's integration YML path. Uploaded to the tenant by deploy.py
-            # before the connector deploy (removes the manual upload prerequisite).
-            # --skip-base-pack drops Base but keeps the integration pack.
-            upload_packs = _packs_to_upload(
-                _pi.integration_yml_path, skip_base_pack=skip_base_pack
+            shell_id = tenant_lock.acquire(
+                tenant,
+                integration_id=",".join(integration_ids),
+                max_wait=max_wait,
+                force=force,
             )
-        except Exception:
-            commit_path = None
-            # Fall back to at least the Base pack (probe) when resolution fails;
-            # --skip-base-pack drops it (yields an empty upload list here).
-            upload_packs = [] if skip_base_pack else [_BASE_PACK]
-
-        # Self-signed tenant cert in the chain → demisto-sdk upload needs --insecure.
-        # Off by default; opt in via DEMISTO_VERIFY_SSL=false (or UPLOAD_INSECURE=true).
-        upload_insecure = (
-            os.getenv("DEMISTO_VERIFY_SSL", "").strip().lower() in ("false", "0", "no")
-            or os.getenv("UPLOAD_INSECURE", "").strip().lower() in ("true", "1", "yes")
+        except tenant_lock.TenantLockTimeout as e:
+            holder = e.holder or {}
+            print(
+                f"Tenant {tenant} is held by shell {holder.get('shell_id')} "
+                f"(integration {holder.get('integration_id')}) since "
+                f"{holder.get('acquired_at')} and did not free within {max_wait}s. "
+                f"It may be stuck. Options: (a) wait and retry later, (b) use a different "
+                f"tenant, (c) --force-unlock --tenant {tenant} if the holder is dead.",
+                file=sys.stderr,
+            )
+            for integration_id in integration_ids:
+                _summary(integration_id, "LOCK_BUSY", EXIT_LOCK_BUSY)
+            return EXIT_LOCK_BUSY
+    else:
+        log.info(
+            "Deploy writes nothing to tenant %s (skip_deploy=%s, packs=%d, "
+            "skip_connector_deploy=%s) — NOT acquiring the tenant lock; parity "
+            "runs fully unlocked.",
+            tenant, skip_deploy, len(upload_packs), skip_connector_deploy,
         )
 
+    try:
         if skip_deploy:
             log.warning("--skip-deploy set: skipping deploy, running parity against the "
                         "ALREADY-deployed connector on tenant %s.", tenant)
+        elif not deploy_writes_tenant:
+            log.info("Nothing to deploy (no packs + connector deploy skipped); "
+                     "proceeding straight to parity.")
         else:
             # ── Deploy ONCE (upload packs + commit connector + ff-push + pipeline) ──
             deploy_rc = _run_deploy(
@@ -414,11 +537,22 @@ def run(
                 return EXIT_DEPLOY_TIMEOUT
             # deploy_rc == 0 → continue to parity.
 
-        # ── Param-parity per id (loop under the same lock) ──
+        # ── Phase 1→2 boundary: release the deploy lock BEFORE parity, unless
+        # the caller asked to hold it across the whole critical section. ──
+        if shell_id is not None and not keep_lock_through_parity:
+            tenant_lock.release(tenant, shell_id)
+            shell_id = None
+            log.info("Released tenant lock for %s after deploy; running parity "
+                     "phase unlocked.", tenant)
+
+        # ── Phase 2: param-parity per id (UNLOCKED unless keep_lock_through_parity) ──
         return _run_parity_for_all(integration_ids)
     finally:
-        # ── ALWAYS release the lock we hold ──
-        tenant_lock.release(tenant, shell_id)
+        # ── ALWAYS release the lock if we still hold it (deploy-phase failure
+        # before the early release, or keep_lock_through_parity). Releasing a
+        # lock we already released is avoided by the shell_id=None reset. ──
+        if shell_id is not None:
+            tenant_lock.release(tenant, shell_id)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -433,6 +567,12 @@ def main(argv: list[str] | None = None) -> int:
         "deploy_and_test: tenant=%s integrations=%s",
         tenant, ",".join(args.integration_ids),
     )
+    # --skip-all-uploads is sugar for the three granular skips: Base pack +
+    # integration pack + connector deploy. OR it in so it composes with any
+    # individually-set skip flag.
+    skip_base_pack = args.skip_base_pack or args.skip_all_uploads
+    skip_integration_pack = args.skip_integration_pack or args.skip_all_uploads
+    skip_connector_deploy = args.skip_connector_deploy or args.skip_all_uploads
     return run(
         args.integration_ids,
         tenant,
@@ -440,8 +580,10 @@ def main(argv: list[str] | None = None) -> int:
         force=args.force_unlock,
         skip_preflight=args.skip_preflight,
         skip_deploy=args.skip_deploy,
-        skip_connector_deploy=args.skip_connector_deploy,
-        skip_base_pack=args.skip_base_pack,
+        skip_connector_deploy=skip_connector_deploy,
+        skip_base_pack=skip_base_pack,
+        skip_integration_pack=skip_integration_pack,
+        keep_lock_through_parity=args.keep_lock_through_parity,
     )
 
 

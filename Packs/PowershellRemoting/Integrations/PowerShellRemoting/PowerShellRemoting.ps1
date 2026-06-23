@@ -452,23 +452,6 @@ function TestModuleCommand {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     param([RemotingClient]$client)
 
-    # Override: params parity dump for test-module
-    try {
-        $pp_payload = @{
-            '__params_parity_dump__' = $true
-            'params' = $demisto.Params()
-        }
-        $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
-        ReturnError "PARAMS_PARITY_DUMP::$pp_json"
-        return $null, $null, $null
-    }
-    catch [System.Management.Automation.MethodInvocationException] {
-        throw
-    }
-    catch {
-        # Probe must never break unrelated integrations. Swallow and continue.
-    }
-
     if ($client.ssl) {
         $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn -ErrorAction Stop
         if (-not $res) {
@@ -803,22 +786,40 @@ function Main
 {
     $command = $Demisto.GetCommand()
 
-    # Override: params parity dump for test-module (before any setup that might fail)
+    # ----------------------------------------------------------------------
+    # ConnectUs params-parity probe (test-module only).
+    #
+    # Fire on EVERY test-module (gate ONLY on command, NOT on the magic param):
+    # the harness arms the instance with the magic param so it can create the
+    # instance, but the probe must NOT depend on reading it back. Emit the full
+    # demisto.Params() as the sentinel-prefixed test-module FAILURE message and
+    # HALT before any real setup runs (which would otherwise fail on the
+    # harness's dummy credentials and mask the dump).
+    #
+    # CRITICAL: raise with `throw` (NOT `ReturnError`). `ReturnError` only writes
+    # a result entry and RETURNS — it does NOT end test-module with our message,
+    # so the harness reads a later entry (a hashtable rendered as @{...}) and
+    # never finds the sentinel. An uncaught `throw` surfaces as the test-module
+    # failure message. The probe sits BEFORE any setup so the thrown sentinel
+    # escapes Main directly.
+    # ----------------------------------------------------------------------
     if ($command -eq "test-module") {
+        $demisto.Debug("[params-parity] test-module probe reached; emitting sentinel via throw.")
         try {
             $pp_payload = @{
                 '__params_parity_dump__' = $true
-                'params' = $demisto.Params()
+                'params'                 = $demisto.Params()
             }
             $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
-            ReturnError "PARAMS_PARITY_DUMP::$pp_json"
-            return
-        }
-        catch [System.Management.Automation.MethodInvocationException] {
-            throw
+            throw "PARAMS_PARITY_DUMP::$pp_json"
         }
         catch {
-            # Probe must never break unrelated integrations. Swallow and continue.
+            # Re-throw OUR sentinel so test-module ends with the dump message.
+            # Any other error must NOT break test-module — log and fall through.
+            if ($_.Exception.Message -like 'PARAMS_PARITY_DUMP::*') {
+                throw
+            }
+            $demisto.Debug("[params-parity] probe error (non-sentinel), continuing: $($_.Exception.Message)")
         }
     }
 

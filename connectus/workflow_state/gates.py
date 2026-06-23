@@ -84,6 +84,14 @@ _HANDLER_COVERAGE_FORCE_ENV = "CONNECTUS_HANDLER_COVERAGE_FORCE"
 # NOT a verdict bypass: a parity failure still rejects the markpass.
 _PARITY_SKIP_CONNECTOR_ENV = "CONNECTUS_PARITY_SKIP_CONNECTOR"
 _PARITY_SKIP_BASE_PACK_ENV = "CONNECTUS_PARITY_SKIP_BASE_PACK"
+# Skip ONLY the integration-under-test's own pack upload (assume it is already
+# current on the tenant, e.g. after a bulk pre-upload via
+# preupload_parity_packs.py). Deploy-scope only — NOT a verdict bypass.
+_PARITY_SKIP_INTEGRATION_PACK_ENV = "CONNECTUS_PARITY_SKIP_INTEGRATION_PACK"
+# Convenience: skip ALL THREE deploy uploads (connector + Base pack +
+# integration pack) in one switch, running parity against what is already on
+# the tenant. Expands to --skip-all-uploads on the wrapper. Deploy-scope only.
+_PARITY_SKIP_ALL_UPLOADS_ENV = "CONNECTUS_PARITY_SKIP_ALL_UPLOADS"
 
 
 def _coverage_force_enabled() -> bool:
@@ -119,6 +127,36 @@ def _parity_skip_base_pack_enabled() -> bool:
     """
     load_env()
     return os.environ.get(_PARITY_SKIP_BASE_PACK_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _parity_skip_integration_pack_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-integration-pack``.
+
+    Deploy-scope only: skips the integration-under-test's OWN pack upload
+    (assume it is already current on the tenant). Does NOT affect the gate
+    verdict — the real parity check still runs and must exit 0.
+    """
+    load_env()
+    return os.environ.get(_PARITY_SKIP_INTEGRATION_PACK_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _parity_skip_all_uploads_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-all-uploads``.
+
+    Deploy-scope only: skips ALL THREE uploads (connector + Base pack +
+    integration pack). Does NOT affect the gate verdict — the real parity
+    check still runs and must exit 0.
+    """
+    load_env()
+    return os.environ.get(_PARITY_SKIP_ALL_UPLOADS_ENV, "").strip().lower() in {
         "1",
         "true",
         "yes",
@@ -370,20 +408,26 @@ GATES: dict[str, GateSpec] = {
         # no --no-gate flag and no skip/force env var that turns a failure into
         # a pass.
         #
-        # Deploy-SCOPE overrides (NOT verdict bypasses): when
-        # ``CONNECTUS_PARITY_SKIP_CONNECTOR`` / ``CONNECTUS_PARITY_SKIP_BASE_PACK``
-        # are truthy, append ``--skip-connector-deploy`` / ``--skip-base-pack`` so
-        # batch orchestration can avoid redundant re-deploys on iterations
-        # #2..#N. These flags ONLY change WHAT is deployed; the integration's own
-        # pack is still uploaded, the REAL parity check still runs, and the
-        # exit-code handling in run_gate() stays strict (only exit 0 → allow).
-        # They can NEVER make the gate pass without parity succeeding.
+        # Deploy-SCOPE overrides (NOT verdict bypasses): when the corresponding
+        # env var is truthy the gate appends a deploy-scope skip flag so batch
+        # orchestration can avoid redundant re-deploys on iterations #2..#N —
+        #   CONNECTUS_PARITY_SKIP_CONNECTOR        -> --skip-connector-deploy
+        #   CONNECTUS_PARITY_SKIP_BASE_PACK        -> --skip-base-pack
+        #   CONNECTUS_PARITY_SKIP_INTEGRATION_PACK -> --skip-integration-pack
+        #   CONNECTUS_PARITY_SKIP_ALL_UPLOADS      -> --skip-all-uploads (all 3)
+        # (typically after a bulk pre-upload via preupload_parity_packs.py).
+        # These flags ONLY change WHAT is deployed; the REAL parity check still
+        # runs and the exit-code handling in run_gate() stays strict (only exit
+        # 0 → allow). They can NEVER make the gate pass without parity
+        # succeeding.
         build_argv=lambda abs_dir, iid: [
             sys.executable,
             _DEPLOY_AND_TEST_SCRIPT,
             "--integration-id", iid,
+            *(["--skip-all-uploads"] if _parity_skip_all_uploads_enabled() else []),
             *(["--skip-connector-deploy"] if _parity_skip_connector_enabled() else []),
             *(["--skip-base-pack"] if _parity_skip_base_pack_enabled() else []),
+            *(["--skip-integration-pack"] if _parity_skip_integration_pack_enabled() else []),
         ],
         # The script path above is absolute and the wrapper re-roots its own
         # children, so run from the content repo root (matches precommit/

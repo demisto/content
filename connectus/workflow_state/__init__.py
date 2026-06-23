@@ -68,6 +68,7 @@ from workflow_state.csv_io import (
     load_csv,
     os,  # re-exported for tests that monkey-patch ``workflow_state.os.replace``
     save_csv,
+    save_row,
     wipe_workflow_data,
 )
 
@@ -209,6 +210,7 @@ __all__ = [
     "find_row",
     "load_csv",
     "save_csv",
+    "save_row",
     "wipe_workflow_data",
     # Validators
     "get_named_validator",

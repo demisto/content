@@ -33,6 +33,18 @@ def save_csv(rows):  # type: ignore[no-redef]
     """Indirect to ``workflow_state.save_csv`` so tests can monkey-patch."""
     import workflow_state as _ws
     return _ws.save_csv(rows)
+
+
+def save_row(row):  # type: ignore[no-redef]
+    """Indirect to ``workflow_state.save_row`` so tests can monkey-patch.
+
+    Concurrency-safe single-row commit (re-read + overlay this row + atomic
+    write, under the cross-process commit lock). Used by single-integration
+    checkpoint writes (markpass / fail) so parallel runs don't clobber each
+    other's rows.
+    """
+    import workflow_state as _ws
+    return _ws.save_row(row)
 from workflow_state.exceptions import WorkflowError
 from workflow_state.state_machine import (
     apply_step_action,
@@ -571,7 +583,7 @@ def markpass_integration_step(
             flag = row.get(inter.when_step, "").strip().upper()
             if flag in {v.upper() for v in inter.when_value_in}:
                 row[step_name] = inter.write_value
-                save_csv(rows)
+                save_row(row)
                 cur = current_step(row)
                 return {
                     "message": f"'{step_name}' set to {inter.write_value}.",
@@ -609,7 +621,10 @@ def markpass_integration_step(
     except WorkflowError as e:
         return {"error": e.message}
 
-    save_csv(rows)
+    # Single-row, concurrency-safe commit: re-reads disk + overlays only THIS
+    # row under the cross-process lock, so a parallel markpass on another
+    # integration can't be clobbered (lost-update race). See save_row.
+    save_row(row)
     cur = current_step(row)
     return {
         "message": (
@@ -642,7 +657,7 @@ def fail_integration_step(integration_id: str, step_name: str) -> dict:
     # tagged preserve_on_reset.
     row[target.name] = ""
     cleared, preserved = reset_after(row, target, respect_preserve=True)
-    save_csv(rows)
+    save_row(row)
     cur = current_step(row)
     msg = f"Reset '{step_name}' and subsequent non-preserved steps."
     if preserved:

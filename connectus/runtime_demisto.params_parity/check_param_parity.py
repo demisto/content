@@ -710,7 +710,7 @@ def main(argv: list[str] | None = None) -> int:
             aggregate,
             integration_id=args.integration_id,
             connector_id=connector_id,
-            result_file=result_path.name,
+            result_file=str(result_path),
         )
         log.info("Result written: %s", result_path)
     except Exception as e:  # noqa: BLE001 — persistence must never change exit code

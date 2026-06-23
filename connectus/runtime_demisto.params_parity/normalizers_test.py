@@ -182,6 +182,8 @@ def test_hard_ignore_list_membership():
         "instance_name",
         # platform/UCP-injected encrypted auth container — same treatment.
         "ucp_credentials",
+        # PowerShell handler runtime debug-output stream — never a YML param.
+        "logs",
     ]:
         assert name in HARD_IGNORE_PARAM_NAMES
 
@@ -432,3 +434,17 @@ def test_connector_only_framework_fields_dropped_on_connector_side():
     dropped_names = {d["name"] for d in dropped}
     for name in _CONNECTOR_ONLY_FRAMEWORK_FIELDS:
         assert name in dropped_names, name
+
+
+def test_powershell_logs_field_dropped_both_sides():
+    """The PowerShell `logs` runtime debug stream is dropped on BOTH sides with
+    reason `hard_ignore_list`, so the connector-vs-integration log divergence
+    (UCP interpolation logging vs UcpAuthParamsInjected=False) never surfaces as
+    a spurious VALUE_MISMATCH. Regression guard for EWS Extension Online
+    Powershell v3 (2026-06-22)."""
+    for side in ("integration", "connector"):
+        raw = {"url": "x", "logs": "[UCP][bootstrap] ... side-specific noise ..."}
+        kept, dropped = normalize_for_diff(raw, _YML, side=side)
+        assert "logs" not in kept, side
+        reasons = {d["name"]: d["reason"] for d in dropped}
+        assert reasons.get("logs") == "hard_ignore_list", (side, reasons)

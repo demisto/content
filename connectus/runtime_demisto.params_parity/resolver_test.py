@@ -269,20 +269,90 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 # ---------------------------------------------------------------------------
 
 def test_slugify():
+    # Backward-compatible cases (plain space / " - " separators).
     assert slugify("Salesforce IAM") == "salesforce-iam"
     assert slugify("  ServiceNow v2 ") == "servicenow-v2"
     assert slugify("AWS - ACM") == "aws-acm"
 
 
+# Special-character integration IDs: the slug MUST equal the handler dir name
+# actually present on disk (every non-alphanumeric run collapses to one dash).
+# Values verified against unified-connectors-content/.../components/handlers/.
+_SLUGIFY_SPECIAL_CASES = {
+    "Tenable.io": "tenable-io",
+    "Tenable.sc": "tenable-sc",
+    "Have I Been Pwned? V2": "have-i-been-pwned-v2",
+    "Mail Sender (New)": "mail-sender-new",
+    "MITRE ATT&CK v2": "mitre-att-ck-v2",
+    "Server Message Block (SMB) v2": "server-message-block-smb-v2",
+    "AppSentinels.ai": "appsentinels-ai",
+    "Microsoft Management Activity API (O365 Azure Events)":
+        "microsoft-management-activity-api-o365-azure-events",
+    "OpenCTI Feed 4.X": "opencti-feed-4-x",
+    "Skyhigh Secure Web Gateway (On Prem)": "skyhigh-secure-web-gateway-on-prem",
+    "VMware Workspace ONE UEM (AirWatch MDM)": "vmware-workspace-one-uem-airwatch-mdm",
+    "abuse.ch SSL Blacklist Feed": "abuse-ch-ssl-blacklist-feed",
+}
+
+
+@pytest.mark.parametrize("integration_id,expected", _SLUGIFY_SPECIAL_CASES.items())
+def test_slugify_special_characters(integration_id, expected):
+    """`. ( ) & ?` and other non-alphanumerics collapse to single dashes, matching
+    the handler dir names on disk (regression for the exit-40 preflight bug)."""
+    assert slugify(integration_id) == expected
+
+
+def test_slugify_matches_manifest_title_to_slug():
+    """resolver.slugify (LOOKUP) must agree with manifest_generator.title_to_slug
+    (CREATE) for every case, so generated dirs are found by the resolver."""
+    from connectus_migration.manifest_generator import title_to_slug
+    samples = list(_SLUGIFY_SPECIAL_CASES) + [
+        "Salesforce IAM", "AWS - ACM", "ServiceNow v2",
+    ]
+    for s in samples:
+        assert slugify(s) == title_to_slug(s), s
+
+
 def test_handler_dir_name():
     assert handler_dir_name("Salesforce IAM") == "xsoar-salesforce-iam"
     assert handler_dir_name("AWS - ACM") == "xsoar-aws-acm"
+    # Special-char IDs get the same collapse, prefixed with xsoar-.
+    assert handler_dir_name("Tenable.io") == "xsoar-tenable-io"
+    assert handler_dir_name("MITRE ATT&CK v2") == "xsoar-mitre-att-ck-v2"
+
+
+def test_slugify_keep_underscore():
+    from resolver import slugify_keep_underscore
+    # underscores preserved; other non-alnum still collapse to dash
+    assert slugify_keep_underscore("CheckPointFirewall_v2") == "checkpointfirewall_v2"
+    assert slugify_keep_underscore("Tenable.io") == "tenable-io"
+    assert slugify_keep_underscore("MITRE ATT&CK v2") == "mitre-att-ck-v2"
+
+
+def test_handler_dir_candidates_order_and_variant():
+    from resolver import handler_dir_candidates
+    # underscore ID -> canonical (dash) first, then underscore-preserving variant
+    assert handler_dir_candidates("CheckPointFirewall_v2") == [
+        "xsoar-checkpointfirewall-v2",
+        "xsoar-checkpointfirewall_v2",
+    ]
+    # no underscore -> single candidate (variant equals canonical, de-duped)
+    assert handler_dir_candidates("Tenable.io") == ["xsoar-tenable-io"]
+    assert handler_dir_candidates("Salesforce IAM") == ["xsoar-salesforce-iam"]
 
 
 def test_instance_name_in_hard_ignore_params():
     """The connector-injected `instance_name` is on the hard ignore-list so it is
     never flagged EXTRA_IN_CONNECTOR."""
     assert "instance_name" in HARD_IGNORE_PARAMS
+
+
+def test_logs_in_hard_ignore_params():
+    """The PowerShell handler `logs` debug-output stream is on the hard
+    ignore-list — it is runtime noise (UCP bootstrap log text), not a
+    user-configurable YML param, and differs by construction between the two
+    sides, so it must never be compared / flagged."""
+    assert "logs" in HARD_IGNORE_PARAMS
 
 
 # ---------------------------------------------------------------------------
@@ -368,6 +438,55 @@ def test_is_hidden_param():
     assert _is_hidden_param({"name": "x", "hidden": False}) is False
     assert _is_hidden_param({"name": "x", "hidden": []}) is False
     assert _is_hidden_param({"name": "x"}) is False
+
+
+def test_is_hidden_param_type9_both_leaves_hidden():
+    """A type-9 credentials param with BOTH hiddenusername AND hiddenpassword has
+    NO live leaves, so it is treated as fully hidden (excluded from the connector
+    and the comparison) — this is the Tenable.sc ``credentials`` shape, whose real
+    keys live in the separate ``creds_keys`` param."""
+    assert (
+        _is_hidden_param(
+            {
+                "name": "credentials",
+                "type": 9,
+                "hiddenusername": True,
+                "hiddenpassword": True,
+            }
+        )
+        is True
+    )
+
+
+def test_is_hidden_param_type9_single_leaf_hidden_not_hidden():
+    """A type-9 param with only ONE leaf hidden still has a live leaf to compare,
+    so it is NOT treated as fully hidden (the live leaf is compared; the hidden
+    leaf is suppressed by the normalizer reduction)."""
+    assert (
+        _is_hidden_param(
+            {"name": "creds_keys", "type": 9, "hiddenusername": True}
+        )
+        is False
+    )
+    assert (
+        _is_hidden_param(
+            {"name": "creds", "type": 9, "hiddenpassword": True}
+        )
+        is False
+    )
+    # A normal type-9 with neither leaf hidden is not hidden.
+    assert _is_hidden_param({"name": "creds", "type": 9}) is False
+
+
+def test_is_hidden_param_both_hidden_flags_only_apply_to_type9():
+    """The both-leaves-hidden rule is scoped to type 9. A non-type-9 param that
+    happens to carry the flags is NOT treated as hidden by this rule."""
+    assert (
+        _is_hidden_param(
+            {"name": "x", "type": 0, "hiddenusername": True, "hiddenpassword": True}
+        )
+        is False
+    )
 
 
 def test_hidden_yml_param_is_ignored_as_hidden(env):

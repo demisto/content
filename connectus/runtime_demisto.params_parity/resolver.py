@@ -56,6 +56,7 @@ from __future__ import annotations
 import csv
 import logging
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -156,6 +157,14 @@ HARD_IGNORE_PARAMS: frozenset[str] = frozenset(
         # tool — it appears ONLY on the connector side in demisto.params(); must
         # be IGNORED, never flagged EXTRA_IN_CONNECTOR.
         "ucp_credentials",
+        # PowerShell handler runtime debug-output stream. NOT a user-configurable
+        # YML param — it is the captured `[UCP]` bootstrap/interpolation log text
+        # that PowerShell integrations append to demisto.params() at runtime. It
+        # differs by construction between the two sides (connector side runs UCP
+        # interpolation and logs it; integration side runs plain with
+        # UcpAuthParamsInjected=False), so it spuriously VALUE_MISMATCHes. Never
+        # appears comparably; must be IGNORED. USER-CONFIRMED 2026-06-22.
+        "logs",
     }
 )
 
@@ -464,17 +473,57 @@ class ParityInputs:
 def slugify(integration_id: str) -> str:
     """``"Salesforce IAM"`` -> ``"salesforce-iam"``; ``"AWS - ACM"`` -> ``"aws-acm"``.
 
-    Lowercases, turns spaces into dashes, then collapses the ``---`` produced by
-    a spaced separator (`` - ``) into a single dash, matching the canonical
-    ``connectus_migration.manifest_generator.title_to_slug`` used to CREATE the
-    connector/handler directories on disk.
+    Lowercases, then collapses every run of non-alphanumeric characters into a
+    single dash and strips leading/trailing dashes. This matches how the handler
+    directories were actually CREATED on disk (e.g. ``"Tenable.io"`` →
+    ``xsoar-tenable-io``, ``"MITRE ATT&CK v2"`` → ``xsoar-mitre-att-ck-v2``,
+    ``"Mail Sender (New)"`` → ``xsoar-mail-sender-new``).
+
+    Previously this only replaced spaces (and collapsed the ``---`` from a
+    `` - `` separator), so any integration ID containing ``. ( ) & ?`` produced a
+    slug that did NOT exist on disk — the resolver's handler-dir preflight then
+    failed (exit 40). Collapsing ALL non-alphanumerics fixes that while remaining
+    backward-compatible for plain space/`` - ``-separated names.
     """
-    return integration_id.strip().lower().replace(" ", "-").replace("---", "-")
+    return re.sub(r"[^a-z0-9]+", "-", integration_id.strip().lower()).strip("-")
+
+
+def slugify_keep_underscore(integration_id: str) -> str:
+    """Like :func:`slugify` but PRESERVES underscores.
+
+    On-disk handler dir naming is inconsistent for ``_``: some dirs were created
+    from the display *title* (no underscore — e.g. ``"Tenable.sc"`` →
+    ``tenable-sc``), while others were created from the literal *integration ID*
+    keeping the underscore (e.g. ``"CheckPointFirewall_v2"`` →
+    ``checkpointfirewall_v2``). This variant covers the underscore-preserving
+    case so :func:`handler_dir_candidates` can fall back to it.
+    """
+    return re.sub(r"[^a-z0-9_]+", "-", integration_id.strip().lower()).strip("-_")
 
 
 def handler_dir_name(integration_id: str) -> str:
     """``"Salesforce IAM"`` -> ``"xsoar-salesforce-iam"`` (USER-CONFIRMED rule)."""
     return "xsoar-" + slugify(integration_id)
+
+
+def handler_dir_candidates(integration_id: str) -> list[str]:
+    """Candidate handler dir names to try, in order, for ``integration_id``.
+
+    Returns the primary ``xsoar-`` + :func:`slugify` name first (the canonical
+    rule), then the underscore-preserving variant when it differs. The resolver
+    tries each until it finds an existing ``handler.yaml`` — this absorbs the
+    inconsistent on-disk underscore handling without changing the canonical slug
+    (which the manifest generator relies on). Order-preserving + de-duplicated.
+    """
+    names = ["xsoar-" + slugify(integration_id),
+             "xsoar-" + slugify_keep_underscore(integration_id)]
+    seen: set[str] = set()
+    out: list[str] = []
+    for n in names:
+        if n not in seen:
+            seen.add(n)
+            out.append(n)
+    return out
 
 
 def _load_yaml(path: Path) -> Any:
@@ -499,12 +548,24 @@ def _is_hidden_param(p: dict) -> bool:
     on a non-platform marketplace is still present on the platform and IS compared;
     only ``hidden: true`` or a list that includes ``"platform"`` counts as hidden
     here.
+
+    Additionally, a ``type: 9`` credentials param with BOTH ``hiddenusername:
+    true`` AND ``hiddenpassword: true`` has NO live leaves — both the identifier
+    and the password are suppressed — so there is nothing comparable to migrate.
+    Per the migration guide (§1.3), such a param is treated as if ``hidden: true``
+    applied at the whole-param level: it is excluded from the connector and from
+    the parity comparison entirely. (Tenable.sc's ``credentials`` is exactly this
+    shape — its access/secret keys live in the separate ``creds_keys`` type-9
+    param, while ``credentials`` is a legacy fully-hidden alternative.)
     """
     hidden = p.get("hidden")
     if hidden is True:
         return True
     if isinstance(hidden, (list, tuple)):
-        return any(str(m).strip().lower() == "platform" for m in hidden)
+        if any(str(m).strip().lower() == "platform" for m in hidden):
+            return True
+    if p.get("type") == 9 and p.get("hiddenusername") and p.get("hiddenpassword"):
+        return True
     return False
 
 
@@ -1215,13 +1276,26 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
             f"(REPO_DIR={repo_dir}, Connector Folder Path={connector_folder_path!r})."
         )
 
-    handler_dir = connector_dir / "components" / "handlers" / handler_dir_name(integration_id)
-    handler_yaml_path = handler_dir / "handler.yaml"
-    if not handler_yaml_path.exists():
+    # Try each candidate handler-dir name (canonical slug first, then the
+    # underscore-preserving variant) — absorbs the inconsistent on-disk
+    # underscore handling without changing the canonical slug. See
+    # handler_dir_candidates.
+    handlers_root = connector_dir / "components" / "handlers"
+    candidates = handler_dir_candidates(integration_id)
+    handler_dir = None
+    handler_yaml_path = None
+    for cand in candidates:
+        cand_yaml = handlers_root / cand / "handler.yaml"
+        if cand_yaml.exists():
+            handler_dir = handlers_root / cand
+            handler_yaml_path = cand_yaml
+            break
+    if handler_yaml_path is None:
+        tried = ", ".join(repr(c) for c in candidates)
         raise ResolverError(
-            f"Handler not found for {integration_id!r}: expected {handler_yaml_path}. "
-            f"(Handler dir name is computed as 'xsoar-' + slugify(Integration ID) = "
-            f"{handler_dir_name(integration_id)!r}.)"
+            f"Handler not found for {integration_id!r}: expected "
+            f"{handlers_root / candidates[0] / 'handler.yaml'}. "
+            f"(Tried handler dir name candidate(s): {tried}.)"
         )
 
     handler_doc = _load_yaml(handler_yaml_path)

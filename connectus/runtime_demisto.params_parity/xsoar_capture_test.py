@@ -335,6 +335,67 @@ def test_type9_without_hiddenpassword_still_yields_password():
 
 
 # ---------------------------------------------------------------------------
+# Server-managed PORT fields (longRunningPort): push a VALID numeric port so
+# both parity sides carry the same concrete value. The generic non-numeric
+# ``<override_...>`` sentinel would diverge — the legacy integration stores the
+# junk verbatim while the connector backend auto-assigns a real port.
+# ---------------------------------------------------------------------------
+def test_longrunningport_yields_valid_numeric_port_not_sentinel():
+    """``longRunningPort`` (type 0) → a fixed valid numeric port STRING, never
+    the generic ``<override_longRunningPort>`` sentinel."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "longRunningPort", "type": 0, "required": True}
+    )
+    assert value == xsoar_capture._DUMMY_LONG_RUNNING_PORT
+    assert value == "51111"
+    # It is a STRING (type-0 round-trips as a string) that parses to a valid port.
+    assert isinstance(value, str)
+    assert 1 <= int(value) <= 65535
+    assert "override" not in value
+
+
+def test_longrunningport_dummy_is_identical_for_both_parity_sides():
+    """The SAME dummy is the single source for the integration capture and the
+    connector serialized payload, so both sides carry the identical port —
+    guaranteeing parity instead of a server-assigned-port mismatch."""
+    a = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "longRunningPort", "type": 0}
+    )
+    b = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "longRunningPort", "type": 0}
+    )
+    assert a == b == "51111"
+
+
+def test_non_port_text_field_still_uses_override_sentinel():
+    """Contrast: an ordinary type-0 text field is unaffected — it still emits the
+    generic per-param ``<override_name>`` sentinel."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "service_address", "type": 0}
+    )
+    assert value == "<override_service_address>"
+
+
+def test_longrunningport_flows_through_fill_params_from_yml():
+    """End-to-end: the valid port reaches the filled INTEGRATION payload (which is
+    also the source of the connector serialized value)."""
+    filled = xsoar_capture.fill_params_from_yml(
+        [{"name": "longRunningPort", "type": 0, "required": True}], overrides=None
+    )
+    assert filled["longRunningPort"] == "51111"
+
+
+def test_longrunningport_explicit_override_still_wins():
+    """A caller-supplied override for the port still takes precedence over the
+    server-managed-port default (override path is unchanged)."""
+    filled = xsoar_capture.fill_params_from_yml(
+        [{"name": "longRunningPort", "type": 0}],
+        overrides={"longRunningPort": "49999"},
+    )
+    assert filled["longRunningPort"] == "49999"
+
+
+# ---------------------------------------------------------------------------
 # fetch_flags-driven BE-synthesized injection (Issue 1 + Issue 3).
 # ---------------------------------------------------------------------------
 def _stub_capture_recording_extra_fields(monkeypatch, *, yml_script):

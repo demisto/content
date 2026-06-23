@@ -44,6 +44,16 @@ def save_csv(rows):  # type: ignore[no-redef]
     """Indirect to ``workflow_state.save_csv`` so tests can monkey-patch."""
     import workflow_state as _ws
     return _ws.save_csv(rows)
+
+
+def save_row(row):  # type: ignore[no-redef]
+    """Indirect to ``workflow_state.save_row`` so tests can monkey-patch.
+
+    Concurrency-safe single-row commit used by markpass/fail so parallel runs
+    against the shared pipeline CSV don't clobber each other's rows.
+    """
+    import workflow_state as _ws
+    return _ws.save_row(row)
 from workflow_state.display import (
     format_by_assignee,
     format_dashboard_row,
@@ -285,7 +295,7 @@ def _set_json_data_step(args: list[str], step_name: str, setter_cmd: str) -> Non
         print(f"ERROR: {e.message}")
         sys.exit(1)
 
-    save_csv(rows)
+    save_row(rows[idx])
     print(msg)
     cur = current_step(rows[idx])
     if cur is not None:
@@ -1002,7 +1012,7 @@ def cmd_set_assignee(args: list[str]) -> None:
     idx = _resolve_row_or_exit(rows, name)
 
     rows[idx]["assignee"] = assignee
-    save_csv(rows)
+    save_row(rows[idx])
     print(f"Set assignee for '{rows[idx]['Integration ID']}' to: {assignee}")
     cur = current_step(rows[idx])
     if cur is not None:
@@ -1312,7 +1322,7 @@ def cmd_markpass(args: list[str]) -> None:
                 sys.exit(1)
             if flag in {v.upper() for v in inter.when_value_in}:
                 row[step_name] = inter.write_value
-                save_csv(rows)
+                save_row(row)
                 print(
                     f"'{step_name}' set to {inter.write_value} (auth parity test not required)."
                 )
@@ -1352,7 +1362,10 @@ def cmd_markpass(args: list[str]) -> None:
         print(f"ERROR: {e.message}")
         sys.exit(1)
 
-    save_csv(rows)
+    # Single-row, concurrency-safe commit (re-read disk + overlay only THIS row
+    # under the cross-process lock) so a parallel markpass on another
+    # integration is not clobbered by this whole-file write. See save_row.
+    save_row(row)
     if no_op:
         print(f"'{step_name}' already passed. No change.")
     else:
@@ -1404,7 +1417,7 @@ def cmd_skip(args: list[str]) -> None:
         print(f"ERROR: {e.message}")
         sys.exit(1)
 
-    save_csv(rows)
+    save_row(row)
     print(f"✓ Skipped step {target.index} ('{target.name}') for '{row['Integration ID']}'.")
     if cleared:
         print(f"  Cleared {len(cleared)} subsequent step(s): {cleared}")
@@ -1446,7 +1459,7 @@ def _do_reset_to(rows: list[dict[str, str]], idx: int, step_name: str, verb: str
     # "index > step.index" filter.
     cleared, preserved = reset_after(row, target, respect_preserve=True)
 
-    save_csv(rows)
+    save_row(row)
     print(f"{verb}: cleared step {target.index} ('{target.name}') and all "
           f"subsequent non-preserved steps for '{integration_id}'.")
     if preserved:
@@ -1565,7 +1578,7 @@ def cmd_reset(args: list[str]) -> None:
     for col in cfg.workflow_columns:
         rows[idx][col] = ""
 
-    save_csv(rows)
+    save_row(rows[idx])
     print(f"Reset all workflow columns for '{rows[idx]['Integration ID']}'.")
 
 

@@ -91,6 +91,15 @@ HARD_IGNORE_PARAM_NAMES: set[str] = {
     # ONLY on the connector side in demisto.params(); must be dropped, never
     # flagged EXTRA_IN_CONNECTOR. Mirrors resolver.HARD_IGNORE_PARAMS.
     "ucp_credentials",
+    # PowerShell handler runtime debug-output stream. NOT a user-configurable YML
+    # param — it is the captured `[UCP]` bootstrap/interpolation log text that
+    # PowerShell integrations append to demisto.params() at runtime. It differs by
+    # construction between the two sides (the connector side runs UCP param
+    # interpolation and logs it; the integration side runs as a plain XSOAR
+    # integration with UcpAuthParamsInjected=False), so it spuriously
+    # VALUE_MISMATCHes. Never appears comparably; must be dropped on both sides.
+    # Mirrors resolver.HARD_IGNORE_PARAMS. USER-CONFIRMED 2026-06-22.
+    "logs",
 }
 
 #: KNOWN-GAP ignore (TEMPORARY): params that the connector does not yet emit at

@@ -22,6 +22,11 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
+try:
+    import fcntl  # POSIX-only; used for the cross-process commit lock.
+except ImportError:  # pragma: no cover - non-POSIX fallback
+    fcntl = None  # type: ignore[assignment]
+
 # Make the shared connectus env loader importable (connectus/ is not a package).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
@@ -112,14 +117,29 @@ def load_csv() -> list[dict[str, str]]:
     return rows
 
 
-def save_csv(rows: list[dict[str, str]]) -> None:
-    """Write rows back to CSV atomically. Normalizes on write."""
-    if not rows:
-        return
+def _lock_path(csv_path: str) -> str:
+    """Sidecar lock file path for the pipeline CSV commit lock."""
+    return csv_path + ".lock"
 
-    _normalize_rows_with_warning(rows, context="saved")
 
-    fieldnames = list(rows[0].keys())
+def _read_rows_from_disk(csv_path: str) -> list[dict[str, str]]:
+    """Read the CSV currently on disk as raw row dicts (no normalize warnings).
+
+    Returns ``[]`` if the file does not exist yet (first write). Used by the
+    locked merge-write in :func:`save_csv` to obtain the authoritative latest
+    state before overlaying this caller's rows.
+    """
+    if not _os().path.exists(csv_path):
+        return []
+    with open(csv_path, "r", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def _write_rows_atomic(final_rows: list[dict[str, str]], fieldnames: list[str]) -> None:
+    """Serialize ``final_rows`` and atomically replace the CSV on disk."""
+    csv_path = _csv_path()
+    os_mod = _os()
+    target_dir = os_mod.path.dirname(csv_path) or "."
 
     output = io.StringIO()
     writer = csv.DictWriter(
@@ -129,11 +149,8 @@ def save_csv(rows: list[dict[str, str]]) -> None:
         lineterminator="\n",
     )
     writer.writeheader()
-    writer.writerows(rows)
+    writer.writerows(final_rows)
 
-    csv_path = _csv_path()
-    os_mod = _os()
-    target_dir = os_mod.path.dirname(csv_path) or "."
     tmp_path: Optional[str] = None
     try:
         with tempfile.NamedTemporaryFile(
@@ -154,6 +171,90 @@ def save_csv(rows: list[dict[str, str]]) -> None:
                 os_mod.remove(tmp_path)
             except OSError:
                 pass
+
+
+class _csv_commit_lock:
+    """Context manager: exclusive cross-process lock for a CSV commit.
+
+    Acquires an exclusive :func:`fcntl.flock` on the sidecar ``<csv>.lock`` file
+    for the duration of the ``with`` block, so a re-read + write inside the block
+    is atomic with respect to other committing processes. No-op when ``fcntl`` is
+    unavailable (non-POSIX).
+    """
+
+    def __init__(self) -> None:
+        self._fd = None
+
+    def __enter__(self):
+        if fcntl is not None:
+            lock_path = _lock_path(_csv_path())
+            self._fd = _os_module.open(
+                lock_path, _os_module.O_CREAT | _os_module.O_RDWR, 0o644
+            )
+            fcntl.flock(self._fd, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, *exc):
+        if self._fd is not None:
+            try:
+                fcntl.flock(self._fd, fcntl.LOCK_UN)
+            finally:
+                _os_module.close(self._fd)
+                self._fd = None
+        return False
+
+
+def save_csv(rows: list[dict[str, str]]) -> None:
+    """Write the FULL row list back to CSV atomically. Normalizes on write.
+
+    This is the authoritative whole-file writer (bulk operations, resets that
+    span the file, etc.). It writes ``rows`` verbatim under the commit lock — it
+    does NOT merge with disk, so callers that only changed ONE integration and
+    might be racing other processes must use :func:`save_row` instead to avoid
+    the lost-update race.
+    """
+    if not rows:
+        return
+
+    _normalize_rows_with_warning(rows, context="saved")
+    fieldnames = list(rows[0].keys())
+    with _csv_commit_lock():
+        _write_rows_atomic(rows, fieldnames)
+
+
+def save_row(row: dict[str, str]) -> None:
+    """Commit a SINGLE integration's row safely under the cross-process lock.
+
+    Concurrency-safe against the lost-update race: holds the exclusive commit
+    lock while it RE-READS the current CSV from disk, replaces ONLY this row
+    (matched by ``Integration ID``, case-insensitive; appended if new), and
+    atomically rewrites. Because only the one changed row is overlaid onto the
+    freshly-read file, concurrent commits to OTHER rows are preserved.
+
+    The lock is held only for the brief re-read/write, NOT for any slow work the
+    caller did beforehand (e.g. a parity gate), so parallelism is preserved.
+    """
+    _normalize_rows_with_warning([row], context="saved")
+    target_key = (row.get("Integration ID") or "").strip().lower()
+
+    with _csv_commit_lock():
+        disk_rows = _read_rows_from_disk(_csv_path())
+        if not disk_rows:
+            _write_rows_atomic([row], list(row.keys()))
+            return
+
+        fieldnames = list(disk_rows[0].keys())
+        replaced = False
+        final_rows: list[dict[str, str]] = []
+        for r in disk_rows:
+            if (r.get("Integration ID") or "").strip().lower() == target_key:
+                final_rows.append(row)
+                replaced = True
+            else:
+                final_rows.append(r)
+        if not replaced:
+            final_rows.append(row)
+        _write_rows_atomic(final_rows, fieldnames)
 
 
 def find_row(rows: list[dict[str, str]], integration_id: str) -> Optional[int]:
