@@ -438,7 +438,6 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:Z|[\+\-]\d{2}:\
         msg ~= "(?i)SUCCESS|SUCCEEDED|logged in|logged out|has been closed|established", XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.type = event_category,
     xdm.network.session_id = session_id,
-    xdm.observer.host.hostname = device_hostname,
     xdm.observer.type = "Network Switch",
     xdm.observer.unique_identifier = device_hostname,
     xdm.source.host.hostname = login_src_host,
