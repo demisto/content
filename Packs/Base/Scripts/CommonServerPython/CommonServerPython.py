@@ -14425,9 +14425,11 @@ def invalidate_ucp_credentials(method_unique_id):
 # cheap no-op (unifiedConnectorMetadata() is empty / unavailable).
 try:
     interpolate_ucp_params()
-except Exception as e:
+except Exception as _ucp_import_err:
     # Import-time safety net: never let interpolation break module import.
-    demisto.error("[UCP][CommonServerPython.py] import-time interpolate_ucp_params() swallowed error: {}".format(e))
+    demisto.error(
+        "[UCP][CommonServerPython.py] import-time interpolate_ucp_params() swallowed error: {}".format(_ucp_import_err)
+    )
 
 
 ###########################################
