@@ -1,0 +1,6 @@
+{
+  "description": "Whole-row promotion in configurations.yaml general_configurations — row whose only field is XSOAR-advanced gains `advanced: true`.",
+  "connector": "simpleconn",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

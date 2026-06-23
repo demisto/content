@@ -304,6 +304,71 @@ def test_type9_credentials_with_real_identifier_still_compared():
 
 
 # ---------------------------------------------------------------------------
+# type-9 credentials with hiddenpassword:true (BitSight API-key widget)
+# ---------------------------------------------------------------------------
+def test_type9_credentials_hiddenpassword_reduced_to_identifier():
+    """A hiddenpassword:true type-9 field (e.g. BitSight's API-key credentials
+    widget) is reduced to {identifier} on BOTH sides. The integration side
+    carries the full XSOAR vault skeleton WITH a populated identifier but the
+    password leaf is suppressed (no dummy injected); the connector side delivers
+    a flat {identifier} (no password migrated, since hiddenpassword:true). Both
+    canonicalize to {identifier} → identifier-only parity → diffs OK (no spurious
+    VALUE_MISMATCH)."""
+    yml = [{"name": "credentials", "type": 9}]
+    integration_raw = {
+        "credentials": {
+            "credential": "",
+            "credentials": {"id": "", "user": "", "password": ""},
+            "identifier": "api-key-user",
+            # password leaf suppressed for hiddenpassword:true (empty/absent).
+            "password": "",
+            "passwordChanged": False,
+        }
+    }
+    connector_raw = {"credentials": {"identifier": "api-key-user"}}
+
+    integration_kept, _ = normalize_for_diff(integration_raw, yml, side="integration")
+    connector_kept, _ = normalize_for_diff(connector_raw, yml, side="connector")
+
+    assert integration_kept == {"credentials": {"identifier": "api-key-user"}}
+    assert connector_kept == {"credentials": {"identifier": "api-key-user"}}
+    # Both sides equal → parity holds with no password compared.
+    assert integration_kept == connector_kept
+
+
+def test_type9_credentials_with_real_password_still_compared():
+    """A NON-hiddenpassword type-9 field that carries a REAL non-empty password
+    RETAINS the password in the reduction — guarding against a false-OK. Two
+    DIFFERING passwords must produce two DIFFERENT reduced dicts so a genuine
+    password mismatch still surfaces."""
+    yml = [{"name": "credentials", "type": 9}]
+    side_a = {
+        "credentials": {
+            "identifier": "user",
+            "password": "pw-a",
+            "credential": "",
+            "passwordChanged": False,
+        }
+    }
+    side_b = {
+        "credentials": {
+            "identifier": "user",
+            "password": "pw-b",  # DIFFERENT password
+            "credential": "",
+            "passwordChanged": False,
+        }
+    }
+    kept_a, _ = normalize_for_diff(side_a, yml, side="integration")
+    kept_b, _ = normalize_for_diff(side_b, yml, side="connector")
+
+    # password is RETAINED (non-empty) on both sides.
+    assert kept_a == {"credentials": {"identifier": "user", "password": "pw-a"}}
+    assert kept_b == {"credentials": {"identifier": "user", "password": "pw-b"}}
+    # Differing passwords → differing reduced dicts → NOT a false-OK.
+    assert kept_a != kept_b
+
+
+# ---------------------------------------------------------------------------
 # Category 3 — alertType is a SERVER BUG (explicit named ignore)
 # ---------------------------------------------------------------------------
 def test_alerttype_is_explicitly_ignored_as_server_bug():

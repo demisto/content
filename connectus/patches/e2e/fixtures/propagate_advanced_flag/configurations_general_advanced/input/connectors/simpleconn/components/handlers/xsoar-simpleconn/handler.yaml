@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-simpleconn
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for SimpleConn.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: SimpleConn
+    xsoar-pack-id: SimpleConn
+  args: {}
+capabilities:
+- auth_options:
+  - id: api_key.simpleconn
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

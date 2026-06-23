@@ -1,0 +1,6 @@
+{
+  "description": "Multi-handler connector — advanced flag from QualysV2 applies only to qualysv2-owned capabilities; advanced flag from qualys_fim applies only to qualys_fim-owned capabilities. Also exercises mixed-row auto-split in per-capability context (no view_group propagation).",
+  "connector": "qualys",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

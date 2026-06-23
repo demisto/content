@@ -197,7 +197,6 @@ def generate_dummy_value_for_param(param: dict) -> object:
         # accepts the instance creation request.
         auth_value: dict[str, Any] = {
             "credential": "",
-            "password": "<override_pass_{}>".format(raw_name or "unknown"),
             "passwordChanged": False,
         }
         # For hiddenusername:true type-9 fields (e.g. Akamai's credentials_*),
@@ -206,6 +205,13 @@ def generate_dummy_value_for_param(param: dict) -> object:
         # (which keeps identifier only when non-empty). Omit it in that case.
         if not param.get("hiddenusername"):
             auth_value["identifier"] = "<override_user_{}>".format(raw_name or "unknown")
+        # Symmetrically, for hiddenpassword:true type-9 fields (e.g. BitSight's
+        # API-key credentials widget), the connector delivers no password, so
+        # injecting a dummy password would re-introduce a spurious mismatch after
+        # the normalizer reduction (which keeps password only when non-empty).
+        # Omit it in that case.
+        if not param.get("hiddenpassword"):
+            auth_value["password"] = "<override_pass_{}>".format(raw_name or "unknown")
         return auth_value
 
     if param_type == PARAM_TYPE_SINGLE_SELECT:

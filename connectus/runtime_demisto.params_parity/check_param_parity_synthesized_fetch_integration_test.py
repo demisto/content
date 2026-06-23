@@ -97,7 +97,9 @@ def test_isfetchevents_variant_integration_dummies_carry_toggle_and_interval():
     """An isFetchEvents-only variant's shared dummies carry the boolean toggle
     ``True`` AND the non-default interval string ``"111"`` (the int/string
     contract: connector coerces the same to int ``111``)."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchEvents"))
+    out = apply_be_config_transform(
+        {}, {"isfetchevents": True}, fetch_flags=_flags("isFetchEvents")
+    )
     assert out["isFetchEvents"] is True                       # toggle: boolean
     assert out["eventFetchInterval"] == "111"                 # interval: string
     # connector side of the int/string contract.
@@ -114,7 +116,9 @@ def test_isfetchevents_variant_integration_dummies_carry_toggle_and_interval():
 def test_isfetchevents_only_off_flag_toggles_not_set():
     """GUARD: an isFetchEvents-only variant must NOT enable isFetch / feed /
     assets toggles anywhere in the shared dummies."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchEvents"))
+    out = apply_be_config_transform(
+        {}, {"isfetchevents": True}, fetch_flags=_flags("isFetchEvents")
+    )
     assert "isFetch" not in out
     assert "isFetchAssets" not in out
     assert "feed" not in out
@@ -128,7 +132,9 @@ def test_isfetchevents_only_off_flag_toggles_not_set():
 def test_isfetchevents_fields_are_at_parity_across_sides():
     """The isFetchEvents synthesized fields compare EQUAL across the two parity
     sides: interval ("111" string vs 111 int) and toggle (True vs True)."""
-    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchEvents"))
+    out = apply_be_config_transform(
+        {}, {"isfetchevents": True}, fetch_flags=_flags("isFetchEvents")
+    )
     # interval: int/string equivalence is restored by values_match.
     assert values_match(
         "eventFetchInterval",

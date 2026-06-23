@@ -1,0 +1,35 @@
+category: Vulnerability Management
+commonfields:
+  id: QualysV2
+  version: -1
+configuration:
+- display: API Server
+  name: apiserver
+  type: 0
+  required: true
+- display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 0
+  advanced: true
+  required: false
+- display: Event Fetch Interval
+  name: eventFetchInterval
+  type: 0
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  advanced: true
+  required: false
+description: Slimmed-down mocked QualysV2 XSOAR integration used only as a fixture source for the propagate_advanced_flag e2e suite.
+display: Qualys VMDR
+name: QualysV2
+script:
+  commands: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.0.0
+fromversion: 6.10.0
