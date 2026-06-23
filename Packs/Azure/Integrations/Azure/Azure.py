@@ -5537,7 +5537,7 @@ def get_azure_client(params: dict, args: dict, command: str):
         verify=not params.get("insecure", False),
         proxy=params.get("proxy", False),
         tenant_id=params.get("tenant_id"),
-        enc_key=params.get("credentials", {}).get("password"),
+        enc_key=(params.get("credentials") or {}).get("password"),
         resource=resource,
         scope=client_scope,
         headers=headers,
