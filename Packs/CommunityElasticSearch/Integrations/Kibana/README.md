@@ -88,6 +88,7 @@ Updates the status of an input alert.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-case-status-update
 
 ***
@@ -108,6 +109,7 @@ Updates the status of an input case.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-user-spaces-find
 
 ***
@@ -169,6 +171,7 @@ Deletes a case in Kibana based on case ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-rule-delete
 
 ***
@@ -187,6 +190,7 @@ Deletes a rule in Kibana based on the input rule ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-rule-details-search
 
 ***
@@ -230,6 +234,7 @@ Adds a comment to a case in Kibana. The case ID and owner can be obtained from t
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-user-list-get
 
 ***
@@ -270,6 +275,7 @@ Assigns an alert in Kibana to a user via user ID input.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-detection-alerts-list
 
 ***
@@ -314,6 +320,7 @@ Adds a note to an alert in Kibana.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-alerting-health-get
 
 ***
@@ -354,6 +361,7 @@ Disables a detection alerting rule. Clears associated alerts from the active ale
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-alert-rule-enable
 
 ***
@@ -372,6 +380,7 @@ Enables a rule used for detection alerting.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-exception-lists-get
 
 ***
@@ -415,6 +424,7 @@ Creates a value list in Kibana.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-value-lists-get
 
 ***
@@ -456,6 +466,7 @@ Imports value list items from a TXT or CSV file.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-value-list-item-create
 
 ***
@@ -475,6 +486,7 @@ Creates a value list item and associates it with the specified value list.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-value-list-items-get
 
 ***
@@ -518,6 +530,7 @@ Deletes a value list item, given the item ID and list ID as input.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-value-list-delete
 
 ***
@@ -536,6 +549,7 @@ Deletes a value list given the list ID as input.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-status-get
 
 ***
@@ -621,6 +635,7 @@ Deletes a case comment.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-case-file-add
 
 ***
@@ -640,6 +655,7 @@ Attaches a file to a case.
 #### Context Output
 
 There is no context output for this command.
+
 ### kibana-user-by-email-get
 
 ***
