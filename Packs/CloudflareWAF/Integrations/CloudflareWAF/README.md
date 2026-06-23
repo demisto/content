@@ -1250,7 +1250,7 @@ The command creates a new ruleset at the account or zone level.
 
 #### Human Readable Output
 
->### Ruleset was successfully created.
+>### Ruleset was successfully created
 >
 >|Id|Name|Kind|Phase|Description|Version|Last Updated|
 >|---|---|---|---|---|---|---|
