@@ -1,0 +1,53 @@
+commonfields:
+  id: ExampleGetWeather
+  version: -1
+name: ExampleGetWeather
+display: Example - Get Weather
+description: >
+  Retrieves the current weather for a given city. Use the
+  `ExampleWeatherReporting` skill to decide how to phrase the city name and how
+  to present the result to the user.
+category: Utilities
+internal: true
+fromversion: 8.15.0
+marketplaces:
+  - platform
+tags:
+  - Utilities
+args:
+- name: city
+  underlyingargname: city
+  description: >
+    The name of the city to get the current weather for (e.g. "London",
+    "New York").
+  type: string
+  required: true
+  isgeneratable: true
+
+- name: units
+  underlyingargname: units
+  description: >
+    OPTIONAL. The temperature unit system to use. One of `metric` (Celsius) or
+    `imperial` (Fahrenheit). Omit to default to `metric`.
+  type: string
+  required: false
+
+outputs:
+  - name: Example.Weather.city
+    underlyingoutputcontextpath: Example.Weather.city
+    description: The city the weather was retrieved for.
+    type: String
+  - name: Example.Weather.temperature
+    underlyingoutputcontextpath: Example.Weather.temperature
+    description: The current temperature in the requested units.
+    type: Number
+  - name: Example.Weather.conditions
+    underlyingoutputcontextpath: Example.Weather.conditions
+    description: A short text description of the current weather conditions.
+    type: String
+underlyingcontentitem:
+  id: ExampleGetWeather
+  name: ExampleGetWeather
+  type: script
+  version: -1
+  command: ""
