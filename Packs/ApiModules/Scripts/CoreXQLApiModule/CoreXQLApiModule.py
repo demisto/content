@@ -772,24 +772,18 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     if execution_id == "FAILURE":
         demisto.debug("Did not succeed to start query, retrying.")
         # the 'start_xql_query' function failed because it reached the maximum allowed number of parallel running queries.
-        # Re-schedule this same command so the query creation stays here (in the create command) and is retried
-        # every 'interval_in_secs' seconds until a worker frees up or the polling timeout is reached.
+        # running the command again using polling with an interval of 'interval_in_secs' seconds.
         command_results = CommandResults()
         interval_in_secs = int(args.get("interval_in_seconds", 20))
         timeout_in_secs = int(args.get("timeout_in_seconds", 600))
         scheduled_command = ScheduledCommand(
-            command="xdr-xql-generic-query",
-            next_run_in_seconds=interval_in_secs,
-            args=args,
-            timeout_in_seconds=timeout_in_secs,
+            command="xdr-xql-generic-query", next_run_in_seconds=interval_in_secs, args=args, timeout_in_seconds=timeout_in_secs
         )
         command_results.scheduled_command = scheduled_command
-        # Only post the "workers busy" note on the first attempt to avoid spamming an entry on every retry.
-        if not is_scheduled_command_retry():
-            command_results.readable_output = (
-                f"The maximum allowed number of parallel running queries has been reached."
-                f" The query will be retried every {interval_in_secs} seconds until it can start."
-            )
+        command_results.readable_output = (
+            f"The maximum allowed number of parallel running queries has been reached."
+            f" The query will be executed in the next interval, in {interval_in_secs} seconds."
+        )
         return command_results
 
     if execution_id == "UNSUPPORTED":

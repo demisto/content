@@ -779,45 +779,17 @@ def test_start_xql_query_polling_command_http_request_failure(mocker):
     Given:
     - A query that failed to start due to reaching the max allowed amount of parallel running queries.
     When:
-    - Calling start_xql_query_polling_command function (first attempt, not a polling retry).
-    Then:
-    - Ensure the command re-schedules itself (xdr-xql-generic-query) so query creation stays in the create command,
-      and the "workers busy" note is shown on this first attempt.
-    """
-    from CoreXQLApiModule import start_xql_query_polling_command
-
-    query = "MOCK_QUERY"
-    mocker.patch.object(CLIENT, "start_xql_query", return_value="FAILURE")
-    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
-    mocker.patch("CoreXQLApiModule.is_scheduled_command_retry", return_value=False)
-    args = {"query": query, "query_name": "mock_name"}
-    command_results = start_xql_query_polling_command(CLIENT, args)
-    assert command_results.scheduled_command
-    assert command_results.scheduled_command._command == "xdr-xql-generic-query"
-    assert "The maximum allowed number of parallel running queries has been reached." in command_results.readable_output
-
-
-def test_start_xql_query_polling_command_http_request_failure_on_retry(mocker):
-    """
-    Given:
-    - A query that failed to start due to the worker limit, on a polling retry (not the first attempt).
-    When:
     - Calling start_xql_query_polling_command function.
     Then:
-    - Ensure the command re-schedules itself (xdr-xql-generic-query), and the "workers busy" note is NOT
-      repeated on retries (to avoid spamming an entry every interval).
+    - Ensure the command will run again in the next polling interval instead of returning error.
     """
     from CoreXQLApiModule import start_xql_query_polling_command
 
     query = "MOCK_QUERY"
     mocker.patch.object(CLIENT, "start_xql_query", return_value="FAILURE")
-    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
-    mocker.patch("CoreXQLApiModule.is_scheduled_command_retry", return_value=True)
-    args = {"query": query, "query_name": "mock_name"}
-    command_results = start_xql_query_polling_command(CLIENT, args)
+    command_results = start_xql_query_polling_command(CLIENT, {"query": query, "query_name": "mock_name"})
     assert command_results.scheduled_command
-    assert command_results.scheduled_command._command == "xdr-xql-generic-query"
-    assert not command_results.readable_output
+    assert "The maximum allowed number of parallel running queries has been reached." in command_results.readable_output
 
 
 def test_get_xql_query_results_polling_command_success_under_1000(mocker):
