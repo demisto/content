@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Wiz"
+    ],
     "dependencies": {
         "Base": {
             "mandatory": true,
@@ -23,7 +25,9 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "ariel-wiz",
+    "githubUser": [
+        "ariel-wiz"
+    ],
     "defaultDataSource": "Wiz",
     "marketplaces": [
         "xsoar",

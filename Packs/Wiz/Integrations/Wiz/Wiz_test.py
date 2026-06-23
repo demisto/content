@@ -2370,6 +2370,27 @@ def test_mirror_status_to_wiz_resolved_non_threat_skipped_via_api(mock_check_api
 
 
 @patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value=None)
+def test_mirror_status_to_wiz_resolved_unknown_issue_skipped(mock_type, mock_resolve):
+    """When the issue type can't be resolved (issue not found → None), the mirror must NOT push RESOLVED."""
+    from Wiz import _mirror_status_to_wiz
+
+    _mirror_status_to_wiz("11111111-1111-1111-1111-111111111111", "resolved", {})
+
+    mock_resolve.assert_not_called()
+
+
+@patch("Wiz.checkAPIerrors")
+def test_get_issue_type_returns_none_when_not_found(mock_check_api):
+    """_get_issue_type returns None when the API responds with no matching nodes."""
+    from Wiz import _get_issue_type
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": ""}}}}
+
+    assert _get_issue_type("11111111-1111-1111-1111-111111111111") is None
+
+
+@patch("Wiz.reject_or_resolve_issue")
 @patch("Wiz._get_issue_type", return_value="TOXIC_COMBINATION")
 def test_mirror_status_to_wiz_rejected_non_threat_still_pushes(mock_type, mock_resolve):
     """The guard is RESOLVED-only: REJECTED is valid for any issue type and must still be pushed."""
