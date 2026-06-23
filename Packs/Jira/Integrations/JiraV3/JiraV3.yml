@@ -228,6 +228,7 @@ script:
         Note: if a user has hidden their email address, an exact email match is required.
       type: String
       name: query
+      required: true
     - description: The maximum number of results to return.
       type: Number
       name: limit
@@ -236,10 +237,10 @@ script:
     name: jira-user-group-search
     outputs:
     - contextPath: Jira.UsersAndGroups.Users
-      description: The Users that match the query string.
+      description: The users that match the query string.
       type: Object
     - contextPath: Jira.UsersAndGroups.Groups
-      description: The Groups that match the query string.
+      description: The groups that match the query string.
       type: Object
   - arguments:
     - description: Deprecated. Please use issue_id or issue_key.

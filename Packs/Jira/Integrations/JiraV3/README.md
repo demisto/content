@@ -2398,7 +2398,7 @@ Scope: `read:jira-work`
     "total": 25
   },
   "users": {
-    "header": "Showing 20 of 25 matching groups",
+    "header": "Showing 20 of 25 matching users",
     "total": 25,
     "users": [
       {

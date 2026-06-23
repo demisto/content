@@ -2645,24 +2645,26 @@ def get_users_and_groups_command(client: JiraBaseClient, args: Dict[str, str]) -
     users: list[Dict[str, Any]] = res.get("users", {}).get("users", [])
     groups: list[Dict[str, Any]] = res.get("groups", {}).get("groups", [])
 
+    if not users and not groups:
+        readable_output = "No users or groups were found."
+
     outputs: Dict[str, Any] = {"Users": users, "Groups": groups}
 
     users_md = [
         {
-            "Account ID": user.get("accountId", ""),
-            "Display Name": user.get("displayName", ""),
-            "Account Type": user.get("accountType", ""),
+            "Account ID": user.get("accountId"),
+            "Display Name": user.get("displayName"),
+            "Account Type": user.get("accountType"),
         }
         for user in users
     ]
     groups_md = [
         {
-            "Group ID": group.get("groupId", ""),
-            "Name": group.get("name", ""),
+            "Group ID": group.get("groupId"),
+            "Name": group.get("name"),
         }
         for group in groups
     ]
-
     readable_output = tableToMarkdown(name="Users", t=users_md, removeNull=True)
     readable_output += tableToMarkdown(name="Groups", t=groups_md, removeNull=True)
 
