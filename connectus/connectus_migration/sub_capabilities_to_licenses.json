@@ -1018,7 +1018,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_have-i-been-pwned?-v2": [
+  "automation-and-remediation_have-i-been-pwned-v2": [
     "xsiam",
     "agentix"
   ],
@@ -1714,7 +1714,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_server-message-block-(smb)-v2": [
+  "automation-and-remediation_server-message-block-smb-v2": [
     "cloud_posture",
     "cloud",
     "cloud_runtime_security",
@@ -1766,7 +1766,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_skyhigh-secure-web-gateway-(on-prem)": [
+  "automation-and-remediation_skyhigh-secure-web-gateway-on-prem": [
     "xsiam",
     "agentix"
   ],
@@ -1783,6 +1783,10 @@
     "cloud",
     "cloud_runtime_security",
     "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_slackv3": [
     "xsiam",
     "agentix"
   ],
@@ -2835,7 +2839,7 @@
     "xsiam",
     "agentix"
   ],
-  "log-collection_appsentinels.ai": [
+  "log-collection_appsentinels-ai": [
     "xsiam"
   ],
   "log-collection_armiseventcollector": [
@@ -3292,7 +3296,7 @@
     "xsiam",
     "agentix"
   ],
-  "threat-intelligence-and-enrichment_abuse.ch-ssl-blacklist-feed": [
+  "threat-intelligence-and-enrichment_abuse-ch-ssl-blacklist-feed": [
     "xsiam",
     "agentix"
   ],
@@ -3505,6 +3509,10 @@
     "agentix"
   ],
   "threat-intelligence-and-enrichment_zoom-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_logrhythmrest": [
     "xsiam",
     "agentix"
   ]

@@ -163,7 +163,17 @@ IGNORED_PARAMS = {
     "close_end_status_statuses",
     "close_extra_labels",
     "comment_tag_from_splunk",
-    "comment_tag_to_splunk"
+    "comment_tag_to_splunk",
+    "close_alerts_in_xdr",
+    "close_xdr_incident",
+    "close_xsoar_incident",
+    "custom_xdr_to_xsoar_close_reason_mapping",
+    "custom_xsoar_to_xdr_close_reason_mapping",
+    "xdr_delay",
+    "close_ibm_incident",
+    "close_xsoar_incident",
+    "tag_from_ibm",
+    "tag_to_ibm"
 }
 
 ENGINE_PROXY_EXCLUDED: frozenset[str] = frozenset(
