@@ -515,3 +515,100 @@ class TestCommands:
         assert result.outputs[0]["uuid"] == "rule-uuid-123"
         assert result.outputs[0]["name"] == "Pickle Scan"
         assert result.outputs[0]["rule_type"] == "ARTIFACT"
+
+    @patch.object(Client, 'http_request')
+    def test_runtime_topics_apply_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test runtime topics apply command - orchestrates multiple API calls.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        # Mock response 1: List topics to find topic by name
+        topics_response = {
+            "custom_topics": [
+                {
+                    "topic_id": "topic-uuid-123",
+                    "topic_name": "credit-cards",
+                    "revision": 2,
+                    "active": True,
+                    "description": "Detects credit card numbers",
+                    "examples": ["4111-1111-1111-1111"]
+                }
+            ]
+        }
+
+        # Mock response 2: List profiles to find profile by name
+        profiles_response = {
+            "ai_profiles": [
+                {
+                    "profile_id": "profile-uuid-456",
+                    "profile_name": "production-profile",
+                    "active": True,
+                    "policy": {
+                        "ai-security-profiles": [
+                            {
+                                "model-type": "default",
+                                "model-configuration": {
+                                    "model-protection": [
+                                        {
+                                            "name": "topic-guardrails",
+                                            "action": "block",
+                                            "topic-list": []
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+        # Mock response 3: Update profile response
+        update_response = {
+            "profile_id": "profile-uuid-456",
+            "profile_name": "production-profile",
+            "active": True
+        }
+
+        # Configure mock to return different responses based on call order
+        mock_http.side_effect = [topics_response, profiles_response, update_response]
+
+        args = {
+            "profile_name": "production-profile",
+            "topic_name": "credit-cards",
+            "action": "block",
+            "guardrail_action": "block"
+        }
+        result = runtime_topics_apply_command(mock_client, args)
+
+        # Verify outputs
+        assert result.outputs_prefix == "PrismaAIRs.TopicApplied"
+        assert result.outputs["profile_name"] == "production-profile"
+        assert result.outputs["topic_name"] == "credit-cards"
+        assert result.outputs["topic_id"] == "topic-uuid-123"
+        assert result.outputs["topic_revision"] == 2
+        assert result.outputs["action"] == "block"
+        assert result.outputs["guardrail_action"] == "block"
+        assert result.outputs["applied"] is True
+
+        # Verify http_request was called 3 times (list topics, list profiles, update profile)
+        assert mock_http.call_count == 3
+
+        # Verify the update call included the modified policy
+        update_call = mock_http.call_args_list[2]
+        update_body = update_call[1]["json_data"]
+        assert update_body["profile_name"] == "production-profile"
+        assert "policy" in update_body
+        # Verify topic was added to topic-list
+        policy = update_body["policy"]
+        model_protection = policy["ai-security-profiles"][0]["model-configuration"]["model-protection"]
+        topic_guardrails = next(mp for mp in model_protection if mp["name"] == "topic-guardrails")
+        assert len(topic_guardrails["topic-list"]) == 1
+        assert topic_guardrails["topic-list"][0]["action"] == "block"
+        assert len(topic_guardrails["topic-list"][0]["topic"]) == 1
+        applied_topic = topic_guardrails["topic-list"][0]["topic"][0]
+        assert applied_topic["topic_id"] == "topic-uuid-123"
+        assert applied_topic["topic_name"] == "credit-cards"
+        assert applied_topic["revision"] == 2

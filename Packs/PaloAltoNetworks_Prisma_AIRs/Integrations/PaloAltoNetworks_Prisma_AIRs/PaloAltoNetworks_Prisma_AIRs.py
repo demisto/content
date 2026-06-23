@@ -741,6 +741,73 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
     )
 
 
+def runtime_api_keys_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a Runtime API Key by name.
+
+    This permanently deletes the API key and revokes access immediately.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR with deletion confirmation.
+    """
+    # Required arguments
+    api_key_name = args.get("api_key_name")
+    updated_by = args.get("updated_by")
+
+    if not api_key_name:
+        raise ValueError("api_key_name is required")
+    if not updated_by:
+        raise ValueError("updated_by is required (email of user performing deletion)")
+
+    # Call Management API to delete API key
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/api-keys.ts
+    # SDK: ApiKeysClient.delete(apiKeyName, updatedBy)
+    # Endpoint: DELETE /v1/mgmt/apikey/delete/{apiKeyName}?updated_by={email}
+    # Response: { message: "deleted" } (or plain string that gets transformed)
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikey/delete/{api_key_name}"
+    params = {
+        "updated_by": updated_by
+    }
+
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK handles both string and object responses
+    # ApiKeyDeleteResponseSchema transforms plain string to { message: "..." }
+    # Response: { message: "deleted" } or { message: "successfully deleted apiKeyName: <name>" }
+    message = response.get("message", "API key deleted successfully") if isinstance(response, dict) else str(response)
+
+    # Create readable output with deletion confirmation
+    readable_output = f"## ✅ API Key Deleted\n\n"
+    readable_output += f"**Key Name:** {api_key_name}\n\n"
+    readable_output += f"**Deleted By:** {updated_by}\n\n"
+    readable_output += f"**Status:** {message}\n\n"
+    readable_output += "**⚠️ WARNING:** This action cannot be undone. The API key has been permanently revoked."
+
+    # Context output
+    context_output = {
+        "api_key_name": api_key_name,
+        "deleted_by": updated_by,
+        "message": message,
+        "deleted": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKeyDeleted",
+        outputs_key_field="api_key_name",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List runtime security profiles.
 
@@ -798,6 +865,347 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
         outputs_key_field="id",
         outputs=profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific security profile by ID or name.
+
+    Note: There is no dedicated GET endpoint - this fetches all profiles and filters.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    profile_name = args.get("profile_name")
+
+    if not profile_id and not profile_name:
+        raise ValueError("Either profile_id or profile_name is required")
+
+    # Call Management API to list all profiles, then filter
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
+    # SDK: ProfilesClient.get(profileId) or getByName(profileName)
+    # Note: No dedicated GET endpoint exists - SDK fetches all and filters
+    url_suffix = f"{MGMT_API_V1_PREFIX}/profiles/tsg/{client.tsg_id}"
+    params = {
+        "offset": "0",
+        "limit": "1000"  # Get all profiles for filtering
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response and filter
+    profiles_raw = response.get("ai_profiles", [])
+
+    # Filter by ID or name
+    if profile_id:
+        matches = [p for p in profiles_raw if p.get("profile_id") == profile_id]
+        search_key = f"ID: {profile_id}"
+    else:
+        # Filter by name and get highest revision (SDK behavior)
+        matches = [p for p in profiles_raw if p.get("profile_name") == profile_name]
+        if len(matches) > 1:
+            # Return highest revision
+            matches = [max(matches, key=lambda p: p.get("revision", 0))]
+        search_key = f"Name: {profile_name}"
+
+    if not matches:
+        raise ValueError(f"Profile not found: {search_key}")
+
+    profile = matches[0]
+
+    # Extract full profile details including policy
+    profile_info = {
+        "id": profile.get("profile_id"),
+        "name": profile.get("profile_name"),
+        "revision": profile.get("revision"),
+        "active": profile.get("active"),
+        "policy": profile.get("policy"),  # Full policy object
+        "created_by": profile.get("created_by"),
+        "updated_by": profile.get("updated_by"),
+        "last_modified_ts": profile.get("last_modified_ts"),
+        "tsg_id": profile.get("tsg_id"),
+        "csp_id": profile.get("csp_id")
+    }
+
+    # Create readable output
+    readable_output = f"## Security Profile: {profile_info.get('name')}\n\n"
+    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
+    readable_output += f"**Revision:** {profile_info.get('revision')}\n\n"
+    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
+    readable_output += f"**Created By:** {profile_info.get('created_by', 'N/A')}\n\n"
+    readable_output += f"**Updated By:** {profile_info.get('updated_by', 'N/A')}\n\n"
+    readable_output += f"**Last Modified:** {profile_info.get('last_modified_ts', 'N/A')}\n\n"
+
+    # Add policy summary if present
+    if profile_info.get("policy"):
+        policy = profile_info["policy"]
+        ai_profiles_count = len(policy.get("ai-security-profiles", []))
+        dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
+        readable_output += f"**Policy:**\n\n"
+        readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
+        readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=profile
+    )
+
+
+def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new security profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_name = args.get("profile_name")
+    active = argToBoolean(args.get("active", True))
+    policy_json = args.get("policy")
+
+    if not profile_name:
+        raise ValueError("profile_name is required")
+
+    # Build request body according to CreateSecurityProfileRequest
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-security-profile.ts
+    # Required: profile_name, active, policy
+    request_body: dict[str, Any] = {
+        "profile_name": profile_name,
+        "active": active
+    }
+
+    # Parse policy JSON if provided
+    if policy_json:
+        try:
+            import json
+            policy = json.loads(policy_json)
+            request_body["policy"] = policy
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid policy JSON: {str(e)}")
+    else:
+        # Default empty policy
+        request_body["policy"] = {
+            "ai-security-profiles": [],
+            "dlp-data-profiles": []
+        }
+
+    # Call Management API to create profile
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
+    # SDK: ProfilesClient.create(body)
+    # Endpoint: POST /v1/mgmt/profile
+    url_suffix = f"{MGMT_API_V1_PREFIX}/profile"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response - returns full SecurityProfile
+    profile_info = {
+        "id": response.get("profile_id"),
+        "name": response.get("profile_name"),
+        "revision": response.get("revision"),
+        "active": response.get("active"),
+        "policy": response.get("policy"),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by"),
+        "last_modified_ts": response.get("last_modified_ts"),
+        "tsg_id": response.get("tsg_id"),
+        "csp_id": response.get("csp_id")
+    }
+
+    # Create readable output
+    readable_output = f"## ✅ Security Profile Created\n\n"
+    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
+    readable_output += f"**Name:** {profile_info.get('name')}\n\n"
+    readable_output += f"**Revision:** {profile_info.get('revision')}\n\n"
+    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
+    readable_output += f"**Created By:** {profile_info.get('created_by', 'N/A')}\n\n"
+
+    # Add policy summary
+    if profile_info.get("policy"):
+        policy = profile_info["policy"]
+        ai_profiles_count = len(policy.get("ai-security-profiles", []))
+        dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
+        readable_output += f"**Policy:**\n\n"
+        readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
+        readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing security profile.
+
+    WARNING: This modifies the profile configuration and can break scanning if misconfigured.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    profile_name = args.get("profile_name")
+    active = args.get("active")
+    policy_json = args.get("policy")
+
+    if not profile_id:
+        raise ValueError("profile_id is required")
+    if not profile_name:
+        raise ValueError("profile_name is required")
+
+    # Build request body according to CreateSecurityProfileRequest
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-security-profile.ts
+    # Required: profile_name, active, policy
+    request_body: dict[str, Any] = {
+        "profile_name": profile_name
+    }
+
+    # Add active if provided
+    if active is not None:
+        request_body["active"] = argToBoolean(active)
+
+    # Parse policy JSON if provided
+    if policy_json:
+        try:
+            import json
+            policy = json.loads(policy_json)
+            request_body["policy"] = policy
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid policy JSON: {str(e)}")
+
+    # Call Management API to update profile
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
+    # SDK: ProfilesClient.update(profileId, body)
+    # Endpoint: PUT /v1/mgmt/profile/uuid/{profileId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/profile/uuid/{profile_id}"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response - returns updated SecurityProfile with incremented revision
+    profile_info = {
+        "id": response.get("profile_id"),
+        "name": response.get("profile_name"),
+        "revision": response.get("revision"),  # Incremented
+        "active": response.get("active"),
+        "policy": response.get("policy"),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by"),
+        "last_modified_ts": response.get("last_modified_ts"),
+        "tsg_id": response.get("tsg_id"),
+        "csp_id": response.get("csp_id")
+    }
+
+    # Create readable output
+    readable_output = f"## ✅ Security Profile Updated\n\n"
+    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
+    readable_output += f"**Name:** {profile_info.get('name')}\n\n"
+    readable_output += f"**Revision:** {profile_info.get('revision')} (incremented)\n\n"
+    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
+    readable_output += f"**Updated By:** {profile_info.get('updated_by', 'N/A')}\n\n"
+    readable_output += f"**Last Modified:** {profile_info.get('last_modified_ts', 'N/A')}\n\n"
+
+    # Add policy summary
+    if profile_info.get("policy"):
+        policy = profile_info["policy"]
+        ai_profiles_count = len(policy.get("ai-security-profiles", []))
+        dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
+        readable_output += f"**Policy:**\n\n"
+        readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
+        readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_profiles_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a security profile.
+
+    WARNING: This permanently deletes the security profile. This action cannot be undone.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Call Management API to delete profile
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
+    # SDK: ProfilesClient.delete(profileId)
+    # Endpoint: DELETE /v1/mgmt/profile/{profileId}
+    # Response: { message: "deleted" } (or plain string transformed to object)
+    url_suffix = f"{MGMT_API_V1_PREFIX}/profile/{profile_id}"
+
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK handles both string and object responses
+    # DeleteProfileResponseSchema transforms plain string to { message: "..." }
+    message = response.get("message", "Security profile deleted successfully") if isinstance(response, dict) else str(response)
+
+    # Create readable output
+    readable_output = f"## ✅ Security Profile Deleted\n\n"
+    readable_output += f"**Profile ID:** {profile_id}\n\n"
+    readable_output += f"**Status:** {message}\n\n"
+    readable_output += "**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted."
+
+    # Context output
+    context_output = {
+        "profile_id": profile_id,
+        "message": message,
+        "deleted": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileDeleted",
+        outputs_key_field="profile_id",
+        outputs=context_output,
         readable_output=readable_output,
         raw_response=response
     )
@@ -1262,6 +1670,74 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
     )
 
 
+def runtime_customer_apps_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a customer application and all associated API keys.
+
+    WARNING: This permanently deletes the application and revokes all associated API keys immediately.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR with deletion confirmation.
+    """
+    # Required arguments
+    app_name = args.get("app_name")
+    updated_by = args.get("updated_by")
+
+    if not app_name:
+        raise ValueError("app_name is required")
+    if not updated_by:
+        raise ValueError("updated_by is required (email of user performing deletion)")
+
+    # Call Management API to delete customer app
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/customer-apps.ts
+    # SDK: CustomerAppsClient.delete(appName, updatedBy)
+    # Endpoint: DELETE /v1/mgmt/customerapp?app_name={appName}&updated_by={email}
+    # Response: { message: "customer app and associated keys successfully deleted" }
+    url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
+    params = {
+        "app_name": app_name,
+        "updated_by": updated_by
+    }
+
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK handles both string and object responses
+    # CustomerAppDeleteResponseSchema transforms plain string to { message: "..." }
+    message = response.get("message", "Customer app and associated keys deleted successfully") if isinstance(
+        response, dict) else str(response)
+
+    # Create readable output with deletion confirmation
+    readable_output = f"## ✅ Customer Application Deleted\n\n"
+    readable_output += f"**App Name:** {app_name}\n\n"
+    readable_output += f"**Deleted By:** {updated_by}\n\n"
+    readable_output += f"**Status:** {message}\n\n"
+    readable_output += "**⚠️ WARNING:** This action cannot be undone. The customer application and all associated API keys have been permanently deleted and revoked."
+
+    # Context output
+    context_output = {
+        "app_name": app_name,
+        "deleted_by": updated_by,
+        "message": message,
+        "deleted": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppDeleted",
+        outputs_key_field="app_name",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List deployment profiles.
 
@@ -1392,6 +1868,321 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
         outputs_key_field="id",
         outputs=profiles,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single DLP data profile by ID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Call DLP data profiles get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+    # SDK: GET /v2/api/data-profiles/{resourceId}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
+        use_dlp_base=True
+    )
+
+    # Extract profile details from response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-profile.ts
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "profile_status": response.get("profile_status"),
+        "profile_type": response.get("profile_type"),
+        "is_granular_data_profile": response.get("is_granular_data_profile"),
+        "is_parent_managed": response.get("is_parent_managed"),
+        "version": response.get("version"),
+        "detection_rules": response.get("detection_rules"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Data Profile: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "profile_status", "profile_type", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new DLP data profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-profile.ts
+    # Required fields: name, detection_rules (array of rule objects)
+    name = args.get("name")
+    detection_rules_str = args.get("detection_rules")
+
+    if not name:
+        raise ValueError("name is required")
+    if not detection_rules_str:
+        raise ValueError("detection_rules is required (JSON array)")
+
+    # Parse detection_rules from JSON
+    try:
+        detection_rules = json.loads(detection_rules_str)
+    except (json.JSONDecodeError, ValueError) as e:
+        raise ValueError(f"detection_rules must be valid JSON: {e}")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "detection_rules": detection_rules
+    }
+
+    # Optional: description
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    # Optional: is_granular_data_profile
+    if args.get("is_granular_data_profile") is not None:
+        request_body["is_granular_data_profile"] = argToBoolean(args.get("is_granular_data_profile"))
+
+    # Call DLP data profiles create endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+    # SDK: POST /v2/api/data-profiles
+    response = client.http_request(
+        method="POST",
+        url_suffix=DLP_DATA_PROFILES_PATH,
+        json_data=request_body,
+        use_dlp_base=True
+    )
+
+    # Extract created profile details
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "profile_status": response.get("profile_status"),
+        "profile_type": response.get("profile_type"),
+        "is_granular_data_profile": response.get("is_granular_data_profile"),
+        "version": response.get("version"),
+        "detection_rules": response.get("detection_rules"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Data Profile Created: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "profile_status", "profile_type", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Partially update a DLP data profile (JSON Merge Patch).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-profile.ts
+    # PATCH requires: name, profile_type (cannot be cleared)
+    name = args.get("name")
+    profile_type = args.get("profile_type")
+
+    if not name:
+        raise ValueError("name is required for PATCH")
+    if not profile_type:
+        raise ValueError("profile_type is required for PATCH")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "profile_type": profile_type
+    }
+
+    # Optional: description (can be null to clear)
+    if args.get("description") is not None:
+        desc_value = args.get("description")
+        request_body["description"] = None if desc_value == "null" else desc_value
+
+    # Optional: detection_rules (can be null to clear)
+    if args.get("detection_rules") is not None:
+        rules_value = args.get("detection_rules")
+        if rules_value == "null":
+            request_body["detection_rules"] = None
+        else:
+            try:
+                request_body["detection_rules"] = json.loads(rules_value)
+            except (json.JSONDecodeError, ValueError) as e:
+                raise ValueError(f"detection_rules must be valid JSON or 'null': {e}")
+
+    # Call DLP data profiles patch endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+    # SDK: PATCH /v2/api/data-profiles/{resourceId}
+    # Uses Content-Type: application/merge-patch+json
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
+        json_data=request_body,
+        use_dlp_base=True,
+        headers={"Content-Type": "application/merge-patch+json"}
+    )
+
+    # Extract updated profile details
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "profile_status": response.get("profile_status"),
+        "profile_type": response.get("profile_type"),
+        "version": response.get("version"),
+        "detection_rules": response.get("detection_rules"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Data Profile Patched: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "profile_status", "profile_type", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Replace (full update) a DLP data profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-profile.ts
+    # Required fields: name, detection_rules
+    name = args.get("name")
+    detection_rules_str = args.get("detection_rules")
+
+    if not name:
+        raise ValueError("name is required")
+    if not detection_rules_str:
+        raise ValueError("detection_rules is required (JSON array)")
+
+    # Parse detection_rules from JSON
+    try:
+        detection_rules = json.loads(detection_rules_str)
+    except (json.JSONDecodeError, ValueError) as e:
+        raise ValueError(f"detection_rules must be valid JSON: {e}")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "detection_rules": detection_rules
+    }
+
+    # Optional: description
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    # Optional: is_granular_data_profile
+    if args.get("is_granular_data_profile") is not None:
+        request_body["is_granular_data_profile"] = argToBoolean(args.get("is_granular_data_profile"))
+
+    # Call DLP data profiles replace endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+    # SDK: PUT /v2/api/data-profiles/{resourceId}
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
+        json_data=request_body,
+        use_dlp_base=True
+    )
+
+    # Extract updated profile details
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "profile_status": response.get("profile_status"),
+        "profile_type": response.get("profile_type"),
+        "version": response.get("version"),
+        "detection_rules": response.get("detection_rules"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Data Profile Replaced: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "profile_status", "profile_type", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
         readable_output=readable_output,
         raw_response=response
     )
@@ -1637,7 +2428,8 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
     readable_output = tableToMarkdown(
         "Model Security Scan Status",
         [scan_info],
-        headers=["uuid", "eval_outcome", "model_uri", "security_group_name", "source_type", "rules_passed", "rules_failed", "total_rules", "updated_at"],
+        headers=["uuid", "eval_outcome", "model_uri", "security_group_name",
+                 "source_type", "rules_passed", "rules_failed", "total_rules", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True
     )
@@ -2148,6 +2940,376 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
     )
 
 
+def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single rule evaluation by UUID.
+
+    Retrieves detailed information about a specific rule evaluation result.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Data API to get evaluation
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getEvaluation(uuid)
+    # Endpoint: GET /v1/evaluations/{uuid} (data plane)
+    url_suffix = f"/v1/evaluations/{uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: RuleEvaluationResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, result, violation_count,
+    #         rule_instance_uuid, scan_uuid, rule_name, rule_description, rule_instance_state
+    evaluation_info = {
+        "uuid": response.get("uuid"),
+        "scan_uuid": response.get("scan_uuid"),
+        "rule_instance_uuid": response.get("rule_instance_uuid"),
+        "rule_name": response.get("rule_name"),
+        "rule_description": response.get("rule_description"),
+        "result": response.get("result"),
+        "violation_count": response.get("violation_count"),
+        "rule_instance_state": response.get("rule_instance_state"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Model Security Rule Evaluation",
+        [evaluation_info],
+        headers=["rule_name", "result", "violation_count", "rule_instance_state", "scan_uuid"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add result-specific context
+    result = evaluation_info.get("result")
+    if result == "PASSED":
+        readable_output += "\n\n✅ **Rule Passed** - No violations found"
+    elif result == "FAILED":
+        readable_output += f"\n\n❌ **Rule Failed** - {evaluation_info.get('violation_count', 0)} violation(s) detected"
+    elif result == "ERROR":
+        readable_output += "\n\n⚠️ **Evaluation Error** - Rule evaluation encountered an error"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityEvaluation",
+        outputs_key_field="uuid",
+        outputs=evaluation_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_violation_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single violation by UUID.
+
+    Retrieves detailed information about a specific security rule violation.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Data API to get violation
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getViolation(uuid)
+    # Endpoint: GET /v1/violations/{uuid} (data plane)
+    url_suffix = f"/v1/violations/{uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: ViolationResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, description, rule_instance_uuid,
+    #         rule_name, rule_description, rule_instance_state, file, hash, module,
+    #         operator, threat, threat_description
+    violation_info = {
+        "uuid": response.get("uuid"),
+        "rule_name": response.get("rule_name"),
+        "rule_description": response.get("rule_description"),
+        "description": response.get("description"),
+        "rule_instance_state": response.get("rule_instance_state"),
+        "file": response.get("file"),
+        "threat": response.get("threat"),
+        "threat_description": response.get("threat_description"),
+        "module": response.get("module"),
+        "operator": response.get("operator"),
+        "hash": response.get("hash"),
+        "rule_instance_uuid": response.get("rule_instance_uuid"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Model Security Violation Details",
+        [violation_info],
+        headers=["rule_name", "description", "threat", "file", "module", "operator"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add threat context if present
+    if violation_info.get("threat"):
+        readable_output += f"\n\n**Threat:** {violation_info.get('threat')}"
+        if violation_info.get("threat_description"):
+            readable_output += f"\n**Threat Description:** {violation_info.get('threat_description')}"
+
+    # Add file context
+    if violation_info.get("file"):
+        readable_output += f"\n**File:** {violation_info.get('file')}"
+        if violation_info.get("hash"):
+            readable_output += f"\n**File Hash:** {violation_info.get('hash')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityViolationDetail",
+        outputs_key_field="uuid",
+        outputs=violation_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get files for a scan.
+
+    Lists all files that were scanned within a model, showing file structure and scan results.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_uuid = args.get("scan_uuid")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    if not scan_uuid:
+        raise ValueError("scan_uuid is required")
+
+    # Call Model Security Data API to get scan files
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getFiles(scanUuid, opts)
+    # Endpoint: GET /v1/scans/{uuid}/files (data plane)
+    url_suffix = f"/v1/scans/{scan_uuid}/files"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    # Add optional filters
+    if args.get("sort_field"):
+        params["sort_field"] = args.get("sort_field")
+    if args.get("sort_dir"):
+        params["sort_dir"] = args.get("sort_dir")
+    if args.get("type"):
+        params["type"] = args.get("type")
+    if args.get("result"):
+        params["result"] = args.get("result")
+    if args.get("query_path"):
+        params["query_path"] = args.get("query_path")
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: FileListSchema
+    # Response: { pagination: {...}, files: [...] }
+    files_list = response.get("files", [])
+    pagination = response.get("pagination", {})
+
+    # Transform files for XSOAR output
+    # Fields per FileResponseSchema: uuid, tsg_id, created_at, updated_at, path,
+    # parent_path, type, result, model_version_uuid, blob_id, formats, scan_uuid
+    files = []
+    for file in files_list:
+        file_info = {
+            "uuid": file.get("uuid"),
+            "path": file.get("path"),
+            "parent_path": file.get("parent_path"),
+            "type": file.get("type"),
+            "result": file.get("result"),
+            "model_version_uuid": file.get("model_version_uuid"),
+            "blob_id": file.get("blob_id"),
+            "scan_uuid": file.get("scan_uuid"),
+            "created_at": file.get("created_at"),
+            "updated_at": file.get("updated_at"),
+            "tsg_id": file.get("tsg_id")
+        }
+
+        # Add formats if present
+        if file.get("formats"):
+            file_info["formats"] = file.get("formats")
+
+        files.append(file_info)
+
+    # Create readable output using XSOAR table format
+    if files:
+        readable_output = tableToMarkdown(
+            f"Model Security Scan Files (Scan: {scan_uuid})",
+            files,
+            headers=["path", "type", "result", "formats", "parent_path"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Files:** {len(files)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(files)} of {pagination.get('total_items')})"
+    else:
+        readable_output = f"No files found for scan {scan_uuid}"
+
+    # Add context output with pagination metadata
+    context_output = {
+        "scan_uuid": scan_uuid,
+        "files": files,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityFiles",
+        outputs_key_field="uuid",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_evaluations_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get rule evaluations for a scan.
+
+    Lists all rule evaluations for a scan, showing which security rules passed, failed, or had errors.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_uuid = args.get("scan_uuid")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    if not scan_uuid:
+        raise ValueError("scan_uuid is required")
+
+    # Call Model Security Data API to get scan rule evaluations
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getEvaluations(scanUuid, opts)
+    # Endpoint: GET /v1/scans/{uuid}/evaluations (data plane)
+    url_suffix = f"/v1/scans/{scan_uuid}/evaluations"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    # Add optional filters
+    if args.get("sort_field"):
+        params["sort_field"] = args.get("sort_field")
+    if args.get("sort_order"):
+        params["sort_order"] = args.get("sort_order")
+    if args.get("result"):
+        params["result"] = args.get("result")
+    if args.get("rule_instance_uuid"):
+        params["rule_instance_uuid"] = args.get("rule_instance_uuid")
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: RuleEvaluationListSchema
+    # Response: { pagination: {...}, evaluations: [...] }
+    evaluations_list = response.get("evaluations", [])
+    pagination = response.get("pagination", {})
+
+    # Transform evaluations for XSOAR output
+    # Fields per RuleEvaluationResponseSchema: uuid, tsg_id, created_at, updated_at,
+    # scan_uuid, rule_name, result, violation_count, rule_instance_state,
+    # rule_instance_uuid, rule_description
+    evaluations = []
+    for evaluation in evaluations_list:
+        eval_info = {
+            "uuid": evaluation.get("uuid"),
+            "scan_uuid": evaluation.get("scan_uuid"),
+            "rule_name": evaluation.get("rule_name"),
+            "result": evaluation.get("result"),
+            "violation_count": evaluation.get("violation_count"),
+            "rule_instance_state": evaluation.get("rule_instance_state"),
+            "rule_instance_uuid": evaluation.get("rule_instance_uuid"),
+            "rule_description": evaluation.get("rule_description"),
+            "created_at": evaluation.get("created_at"),
+            "updated_at": evaluation.get("updated_at"),
+            "tsg_id": evaluation.get("tsg_id")
+        }
+        evaluations.append(eval_info)
+
+    # Create readable output using XSOAR table format
+    if evaluations:
+        readable_output = tableToMarkdown(
+            f"Model Security Scan Rule Evaluations (Scan: {scan_uuid})",
+            evaluations,
+            headers=["rule_name", "result", "violation_count", "rule_instance_state", "rule_description"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Evaluations:** {len(evaluations)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(evaluations)} of {pagination.get('total_items')})"
+    else:
+        readable_output = f"No rule evaluations found for scan {scan_uuid}"
+
+    # Add context output with pagination metadata
+    context_output = {
+        "scan_uuid": scan_uuid,
+        "evaluations": evaluations,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityEvaluations",
+        outputs_key_field="uuid",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List model security groups.
 
@@ -2342,6 +3504,140 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
     # Add helpful note
     readable_output += f"\n**UUID:** `{group_info.get('uuid')}`"
     readable_output += f"\n**State:** {group_info.get('state')} (Group will become ACTIVE after rule instances are configured)"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
+        outputs_key_field="uuid",
+        outputs=group_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_groups_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a security group.
+
+    Removes a security group that is no longer needed.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Management API to delete security group
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.delete(uuid)
+    # Endpoint: DELETE /v1/security-groups/{uuid} (management plane)
+    url_suffix = f"/v1/security-groups/{uuid}"
+
+    client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        use_model_sec_mgmt=True,
+        resp_type="response"  # DELETE returns empty response
+    )
+
+    # Response is void on success per SDK
+    # Create readable output
+    readable_output = f"✅ Successfully deleted security group: {uuid}"
+
+    # Context output
+    context_output = {
+        "uuid": uuid,
+        "deleted": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupDelete",
+        outputs_key_field="uuid",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response={}  # Empty response
+    )
+
+
+def model_security_groups_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing security group.
+
+    Updates the name and/or description of a security group.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    name = args.get("name")
+    description = args.get("description")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # At least one field must be provided to update
+    if not name and not description:
+        raise ValueError("At least one of 'name' or 'description' must be provided")
+
+    # Build request body according to ModelSecurityGroupUpdateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Schema: { name?: string, description?: string }
+    request_body: dict[str, Any] = {}
+
+    if name:
+        request_body["name"] = name
+    if description:
+        request_body["description"] = description
+
+    # Call Model Security Management API to update security group
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.update(uuid, body)
+    # Endpoint: PUT /v1/security-groups/{uuid} (management plane)
+    url_suffix = f"/v1/security-groups/{uuid}"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityGroupResponseSchema (same as groups-get)
+    group_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "source_type": response.get("source_type"),
+        "state": response.get("state"),
+        "is_tombstone": response.get("is_tombstone"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Updated Model Security Group",
+        [group_info],
+        headers=["uuid", "name", "description", "source_type", "state", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add update summary
+    updates = []
+    if name:
+        updates.append(f"name → '{name}'")
+    if description:
+        updates.append(f"description → '{description}'")
+    readable_output += f"\n\n**Updated:** {', '.join(updates)}"
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
@@ -2709,6 +4005,80 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         readable_output += f"\n\n**State Updated:** {state}"
     if response.get("field_values"):
         readable_output += f"\n**Custom Field Values:** {len(response.get('field_values', {}))} field(s) configured"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
+        outputs_key_field="uuid",
+        outputs=rule_instance_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_rule_instances_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single rule instance within a security group.
+
+    Retrieves detailed configuration of a specific rule instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    security_group_uuid = args.get("security_group_uuid")
+    rule_instance_uuid = args.get("rule_instance_uuid")
+
+    if not security_group_uuid:
+        raise ValueError("security_group_uuid is required")
+    if not rule_instance_uuid:
+        raise ValueError("rule_instance_uuid is required")
+
+    # Call Model Security Management API to get rule instance
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.getRuleInstance(securityGroupUuid, ruleInstanceUuid)
+    # Endpoint: GET /v1/security-groups/{groupUuid}/rule-instances/{instanceUuid} (management plane)
+    url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances/{rule_instance_uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityRuleInstanceResponseSchema
+    # Same structure as rule-instances-list items
+    rule_data = response.get("rule", {})
+    rule_instance_info = {
+        "uuid": response.get("uuid"),
+        "security_group_uuid": response.get("security_group_uuid"),
+        "security_rule_uuid": response.get("security_rule_uuid"),
+        "state": response.get("state"),
+        "rule_name": rule_data.get("name"),
+        "rule_type": rule_data.get("rule_type"),
+        "rule_description": rule_data.get("description"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Add field_values if present
+    if response.get("field_values"):
+        rule_instance_info["field_values"] = response.get("field_values")
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        f"Model Security Rule Instance Details",
+        [rule_instance_info],
+        headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add configuration details
+    if rule_instance_info.get("field_values"):
+        readable_output += f"\n\n**Custom Field Values:** {len(rule_instance_info.get('field_values', {}))} field(s) configured"
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
@@ -3194,6 +4564,212 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
         outputs_key_field="uuid",
         outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team target profile (background, context, profiling status).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    target_uuid = args.get("target_uuid")
+    if not target_uuid:
+        raise ValueError("target_uuid is required")
+
+    # Call Red Team target profile endpoint
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/red-team/targets-client.ts (lines 272-282)
+    # SDK: TargetsClient.getProfile(uuid)
+    # Endpoint: GET /v1/target/{uuid}/profile
+    # Response: TargetProfileResponseSchema - { target_id, target_version, status, profiling_status, target_background, additional_context, ai_generated_fields, other_details }
+    url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/{target_uuid}/profile"
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetProfileResponseSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (lines 1160-1172)
+    profile_info = {
+        "target_id": response.get("target_id"),
+        "target_version": response.get("target_version"),
+        "status": response.get("status"),
+        "profiling_status": response.get("profiling_status")
+    }
+
+    # Add optional fields if present
+    if response.get("target_background"):
+        profile_info["target_background"] = response.get("target_background")
+    if response.get("additional_context"):
+        profile_info["additional_context"] = response.get("additional_context")
+    if response.get("ai_generated_fields"):
+        profile_info["ai_generated_fields"] = response.get("ai_generated_fields")
+    if response.get("other_details"):
+        profile_info["other_details"] = response.get("other_details")
+
+    # Create readable output
+    readable_output = f"## Red Team Target Profile\n\n"
+    readable_output += f"**Target ID:** {profile_info.get('target_id')}\n\n"
+    readable_output += f"**Version:** {profile_info.get('target_version')}\n\n"
+    readable_output += f"**Status:** {profile_info.get('status')}\n\n"
+    readable_output += f"**Profiling Status:** {profile_info.get('profiling_status')}\n\n"
+
+    if profile_info.get("target_background"):
+        import json
+        readable_output += f"**Background:**\n```json\n{json.dumps(profile_info.get('target_background'), indent=2)}\n```\n\n"
+
+    if profile_info.get("additional_context"):
+        import json
+        readable_output += f"**Additional Context:**\n```json\n{json.dumps(profile_info.get('additional_context'), indent=2)}\n```\n\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetProfile",
+        outputs_key_field="target_id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_update_profile_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update Red Team target profile (background and additional context).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    import json
+
+    target_uuid = args.get("target_uuid")
+    if not target_uuid:
+        raise ValueError("target_uuid is required")
+
+    # Build request body according to TargetContextUpdateSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (lines 1063-1069)
+    # SDK: TargetsClient.updateProfile(uuid, body)
+    # Endpoint: PUT /v1/target/{uuid}/profile
+    # Body: { target_background?: {...}, additional_context?: {...} }
+    request_body: dict[str, Any] = {}
+
+    # Parse target_background from JSON string if provided
+    target_background_json = args.get("target_background")
+    if target_background_json:
+        try:
+            request_body["target_background"] = json.loads(target_background_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in target_background: {e}")
+
+    # Parse additional_context from JSON string if provided
+    additional_context_json = args.get("additional_context")
+    if additional_context_json:
+        try:
+            request_body["additional_context"] = json.loads(additional_context_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in additional_context: {e}")
+
+    if not request_body:
+        raise ValueError("At least one of target_background or additional_context must be provided")
+
+    # Call Red Team target update profile endpoint
+    url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/{target_uuid}/profile"
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_redteam_mgmt=True
+    )
+
+    # Parse response according to TargetResponseSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (lines 1071-1099)
+    target_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "status": response.get("status"),
+        "active": response.get("active"),
+        "validated": response.get("validated"),
+        "updated_at": response.get("updated_at")
+    }
+
+    # Add target_background and additional_context if present in response
+    if response.get("target_background"):
+        target_info["target_background"] = response.get("target_background")
+    if response.get("additional_context"):
+        target_info["additional_context"] = response.get("additional_context")
+
+    # Create readable output
+    readable_output = f"## ✅ Target Profile Updated\n\n"
+    readable_output += f"**Target:** {target_info.get('name')} (UUID: {target_info.get('uuid')})\n\n"
+    readable_output += f"**Status:** {target_info.get('status')}\n\n"
+    readable_output += f"**Updated:** {target_info.get('updated_at')}\n\n"
+
+    if target_info.get("target_background"):
+        readable_output += f"**Background:**\n```json\n{json.dumps(target_info.get('target_background'), indent=2)}\n```\n\n"
+
+    if target_info.get("additional_context"):
+        readable_output += f"**Additional Context:**\n```json\n{json.dumps(target_info.get('additional_context'), indent=2)}\n```\n\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_key_field="uuid",
+        outputs=target_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team target field metadata (field definitions for target configuration).
+
+    This command returns metadata describing all available fields for target configuration,
+    including their types, requirements, and constraints. Useful for understanding what
+    fields are available when creating or updating targets.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team target metadata endpoint
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/red-team/targets-client.ts (lines 357-366)
+    # SDK: TargetsClient.getTargetMetadata()
+    # Endpoint: GET /v1/template/target-metadata
+    # Response: Record<string, unknown> - field definitions
+    url_suffix = f"{RED_TEAM_TEMPLATE_ENDPOINT}/target-metadata"
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_redteam_mgmt=True
+    )
+
+    # Response is a dictionary of field definitions
+    # Example: { "rate_limit": { "type": "number", "required": false }, "multi_turn": { "type": "boolean" } }
+    metadata = response if isinstance(response, dict) else {}
+
+    # Create readable output showing field definitions
+    import json
+    readable_output = f"## Red Team Target Field Metadata\n\n"
+    readable_output += f"**Total Fields:** {len(metadata)}\n\n"
+
+    if metadata:
+        readable_output += "**Field Definitions:**\n```json\n"
+        readable_output += json.dumps(metadata, indent=2)
+        readable_output += "\n```\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetMetadata",
+        outputs=metadata,
         readable_output=readable_output,
         raw_response=response
     )
@@ -5154,6 +6730,527 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
+def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific custom topic by ID or name.
+
+    Note: There is no dedicated GET endpoint - this fetches all topics and filters.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    topic_id = args.get("topic_id")
+    topic_name = args.get("topic_name")
+
+    if not topic_id and not topic_name:
+        raise ValueError("Either topic_id or topic_name is required")
+
+    # Call Management API to list all topics, then filter
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
+    # SDK: TopicsClient has no get() method - uses list() and client-side filtering
+    # Note: No dedicated GET endpoint exists - SDK pattern is same as profiles
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
+    params = {
+        "offset": "0",
+        "limit": "1000"  # Get all topics for filtering
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_mgmt_base=True
+    )
+
+    # Parse response and filter
+    # SDK schema: CustomTopicListResponseSchema has "custom_topics" field
+    topics_raw = response.get("custom_topics", response.get("data", []))
+
+    # Filter by ID or name
+    if topic_id:
+        matches = [t for t in topics_raw if t.get("topic_id") == topic_id]
+        search_key = f"ID: {topic_id}"
+    else:
+        # Filter by name
+        matches = [t for t in topics_raw if t.get("topic_name") == topic_name]
+        search_key = f"Name: {topic_name}"
+
+    if not matches:
+        raise ValueError(f"Topic not found: {search_key}")
+
+    topic = matches[0]
+
+    # Extract full topic details
+    topic_info = {
+        "topic_id": topic.get("topic_id"),
+        "topic_name": topic.get("topic_name"),
+        "revision": topic.get("revision"),
+        "active": topic.get("active"),
+        "description": topic.get("description"),
+        "examples": topic.get("examples", []),
+        "created_by": topic.get("created_by"),
+        "updated_by": topic.get("updated_by"),
+        "last_modified_ts": topic.get("last_modified_ts"),
+        "created_ts": topic.get("created_ts")
+    }
+
+    # Create readable output
+    readable_output = f"## Custom Topic: {topic_info.get('topic_name')}\n\n"
+    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
+    readable_output += f"**Revision:** {topic_info.get('revision')}\n\n"
+    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
+    readable_output += f"**Description:** {topic_info.get('description', 'N/A')}\n\n"
+    readable_output += f"**Created By:** {topic_info.get('created_by', 'N/A')}\n\n"
+    readable_output += f"**Updated By:** {topic_info.get('updated_by', 'N/A')}\n\n"
+    readable_output += f"**Last Modified:** {topic_info.get('last_modified_ts', 'N/A')}\n\n"
+
+    # Add examples
+    if topic_info.get("examples"):
+        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        for i, example in enumerate(topic_info["examples"][:5], 1):  # Show first 5
+            readable_output += f"{i}. {example}\n"
+        if len(topic_info["examples"]) > 5:
+            readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_key_field="topic_id",
+        outputs=topic_info,
+        readable_output=readable_output,
+        raw_response=topic
+    )
+
+
+def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new custom topic guardrail.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    topic_name = args.get("topic_name")
+    description = args.get("description")
+    examples = argToList(args.get("examples"))
+    active = argToBoolean(args.get("active", True))
+
+    if not topic_name:
+        raise ValueError("topic_name is required")
+    if not description:
+        raise ValueError("description is required")
+    if not examples:
+        raise ValueError("examples is required (comma-separated list)")
+
+    # Build request body according to CreateCustomTopicRequest
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-custom-topic.ts
+    # Required: topic_name, description, examples
+    # Optional: active
+    request_body: dict[str, Any] = {
+        "topic_name": topic_name,
+        "description": description,
+        "examples": examples,
+        "active": active
+    }
+
+    # Call Management API to create topic
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
+    # SDK: TopicsClient.create(body)
+    # Endpoint: POST /v1/mgmt/topic
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topic"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response - returns full CustomTopic
+    topic_info = {
+        "topic_id": response.get("topic_id"),
+        "topic_name": response.get("topic_name"),
+        "revision": response.get("revision"),
+        "active": response.get("active"),
+        "description": response.get("description"),
+        "examples": response.get("examples", []),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by"),
+        "last_modified_ts": response.get("last_modified_ts"),
+        "created_ts": response.get("created_ts")
+    }
+
+    # Create readable output
+    readable_output = f"## ✅ Custom Topic Created\n\n"
+    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
+    readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
+    readable_output += f"**Revision:** {topic_info.get('revision')}\n\n"
+    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
+    readable_output += f"**Description:** {topic_info.get('description')}\n\n"
+    readable_output += f"**Created By:** {topic_info.get('created_by', 'N/A')}\n\n"
+
+    # Add examples
+    if topic_info.get("examples"):
+        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        for i, example in enumerate(topic_info["examples"][:5], 1):
+            readable_output += f"{i}. {example}\n"
+        if len(topic_info["examples"]) > 5:
+            readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_key_field="topic_id",
+        outputs=topic_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing custom topic.
+
+    WARNING: This modifies the topic definition and can break detection if misconfigured.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    topic_id = args.get("topic_id")
+    topic_name = args.get("topic_name")
+    description = args.get("description")
+    examples = args.get("examples")
+    active = args.get("active")
+
+    if not topic_id:
+        raise ValueError("topic_id is required")
+    if not topic_name:
+        raise ValueError("topic_name is required")
+
+    # Build request body according to CreateCustomTopicRequest
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-custom-topic.ts
+    request_body: dict[str, Any] = {
+        "topic_name": topic_name
+    }
+
+    # Add optional fields if provided
+    if description:
+        request_body["description"] = description
+    if examples:
+        request_body["examples"] = argToList(examples)
+    if active is not None:
+        request_body["active"] = argToBoolean(active)
+
+    # Call Management API to update topic
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
+    # SDK: TopicsClient.update(topicId, body)
+    # Endpoint: PUT /v1/mgmt/topic/uuid/{topicId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topic/uuid/{topic_id}"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_mgmt_base=True
+    )
+
+    # Parse response - returns updated CustomTopic with incremented revision
+    topic_info = {
+        "topic_id": response.get("topic_id"),
+        "topic_name": response.get("topic_name"),
+        "revision": response.get("revision"),  # Incremented
+        "active": response.get("active"),
+        "description": response.get("description"),
+        "examples": response.get("examples", []),
+        "created_by": response.get("created_by"),
+        "updated_by": response.get("updated_by"),
+        "last_modified_ts": response.get("last_modified_ts"),
+        "created_ts": response.get("created_ts")
+    }
+
+    # Create readable output
+    readable_output = f"## ✅ Custom Topic Updated\n\n"
+    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
+    readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
+    readable_output += f"**Revision:** {topic_info.get('revision')} (incremented)\n\n"
+    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
+    readable_output += f"**Description:** {topic_info.get('description')}\n\n"
+    readable_output += f"**Updated By:** {topic_info.get('updated_by', 'N/A')}\n\n"
+    readable_output += f"**Last Modified:** {topic_info.get('last_modified_ts', 'N/A')}\n\n"
+
+    # Add examples
+    if topic_info.get("examples"):
+        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        for i, example in enumerate(topic_info["examples"][:5], 1):
+            readable_output += f"{i}. {example}\n"
+        if len(topic_info["examples"]) > 5:
+            readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_key_field="topic_id",
+        outputs=topic_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_topics_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a custom topic.
+
+    WARNING: This permanently deletes the topic. Fails if topic is referenced by a profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    topic_id = args.get("topic_id")
+
+    if not topic_id:
+        raise ValueError("topic_id is required")
+
+    # Call Management API to delete topic
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
+    # SDK: TopicsClient.delete(topicId)
+    # Endpoint: DELETE /v1/mgmt/topic/{topicId}
+    # Response: { message: "deleted" } (or plain string transformed to object)
+    # NOTE: Fails with 409 Conflict if topic is referenced by any profile
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topic/{topic_id}"
+
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        use_mgmt_base=True
+    )
+
+    # Parse response - SDK handles both string and object responses
+    # DeleteTopicResponseSchema transforms plain string to { message: "..." }
+    message = response.get("message", "Custom topic deleted successfully") if isinstance(response, dict) else str(response)
+
+    # Create readable output
+    readable_output = f"## ✅ Custom Topic Deleted\n\n"
+    readable_output += f"**Topic ID:** {topic_id}\n\n"
+    readable_output += f"**Status:** {message}\n\n"
+    readable_output += "**⚠️ WARNING:** This action cannot be undone. The custom topic has been permanently deleted."
+
+    # Context output
+    context_output = {
+        "topic_id": topic_id,
+        "message": message,
+        "deleted": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicDeleted",
+        outputs_key_field="topic_id",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Apply a topic to a security profile (additive - preserves existing topics).
+
+    This command orchestrates multiple API calls to apply a custom topic to a security profile:
+    1. Find topic by name → get topic_id and current revision
+    2. Get profile by name → extract current topic-guardrails configuration
+    3. Merge topics: remove old instance (if exists), add new with action/revision
+    4. Update profile with modified policy
+
+    CRITICAL: AIRS requires the topic revision number to pin topic content correctly.
+    Omitting revision defaults to revision 0 (original), not latest.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_name = args.get("profile_name")
+    topic_name = args.get("topic_name")
+    action = args.get("action", "block")  # Topic action: "allow" or "block"
+    guardrail_action = args.get("guardrail_action", "block")  # Overall default action
+
+    if not profile_name or not topic_name:
+        raise ValueError("profile_name and topic_name are required")
+
+    if action not in ["allow", "block"]:
+        raise ValueError("action must be 'allow' or 'block'")
+
+    if guardrail_action not in ["allow", "block"]:
+        raise ValueError("guardrail_action must be 'allow' or 'block'")
+
+    # Step 1: Find topic by name and get current revision
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/cli/commands/topics-apply.ts (lines 24-28)
+    # SDK: ManagementClient.topics.list()
+    # Endpoint: GET /v1/mgmt/topics/tsg/{tsgId}
+    url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
+    topics_response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_mgmt_base=True
+    )
+
+    all_topics = topics_response.get("custom_topics", [])
+    topic = next((t for t in all_topics if t.get("topic_name") == topic_name), None)
+
+    if not topic:
+        raise DemistoException(f"Topic '{topic_name}' not found. Create it first with prisma-airs-runtime-topics-create.")
+
+    topic_id = topic.get("topic_id")
+    topic_revision = topic.get("revision", 0)
+
+    if not topic_id:
+        raise DemistoException(f"Topic '{topic_name}' found but missing topic_id")
+
+    # Step 2: Get profile by name
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 102-106)
+    # SDK: ManagementClient.profiles.list()
+    # Endpoint: GET /v1/mgmt/securityprofiles/tsg/{tsgId}
+    profiles_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/tsg/{client.tsg_id}"
+    profiles_response = client.http_request(
+        method="GET",
+        url_suffix=profiles_url_suffix,
+        use_mgmt_base=True
+    )
+
+    ai_profiles = profiles_response.get("ai_profiles", [])
+    profile = next((p for p in ai_profiles if p.get("profile_name") == profile_name), None)
+
+    if not profile:
+        raise DemistoException(f"Profile '{profile_name}' not found. Create it first with prisma-airs-runtime-profiles-create.")
+
+    profile_id = profile.get("profile_id")
+    if not profile_id:
+        raise DemistoException(f"Profile '{profile_name}' found but missing profile_id")
+
+    # Step 3: Extract and modify profile policy
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 114-162)
+    # Profile structure: policy → ai-security-profiles → model-configuration → model-protection → topic-guardrails
+    import copy
+    policy = copy.deepcopy(profile.get("policy", {}))
+
+    # Navigate to ai-security-profiles
+    ai_sec_profiles = policy.get("ai-security-profiles", [])
+    if not ai_sec_profiles:
+        ai_sec_profiles = [{"model-type": "default", "model-configuration": {}}]
+        policy["ai-security-profiles"] = ai_sec_profiles
+
+    model_config = ai_sec_profiles[0].get("model-configuration", {})
+    if "model-configuration" not in ai_sec_profiles[0]:
+        ai_sec_profiles[0]["model-configuration"] = model_config
+
+    # Navigate to model-protection
+    model_protection = model_config.get("model-protection", [])
+    if "model-protection" not in model_config:
+        model_config["model-protection"] = model_protection
+
+    # Find or create topic-guardrails
+    topic_guardrails = next((mp for mp in model_protection if mp.get("name") == "topic-guardrails"), None)
+
+    if not topic_guardrails:
+        topic_guardrails = {
+            "action": guardrail_action,
+            "name": "topic-guardrails",
+            "options": [],
+            "topic-list": []
+        }
+        model_protection.append(topic_guardrails)
+    else:
+        # Update guardrail-level action
+        topic_guardrails["action"] = guardrail_action
+
+    # Get current topic-list
+    topic_list = topic_guardrails.get("topic-list", [])
+    if "topic-list" not in topic_guardrails:
+        topic_guardrails["topic-list"] = topic_list
+
+    # Remove old instance of this topic (if exists) to avoid duplicates
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/cli/commands/topics-apply.ts (lines 32-34)
+    for entry in topic_list:
+        topics_in_entry = entry.get("topic", [])
+        entry["topic"] = [t for t in topics_in_entry if t.get("topic_name") != topic_name]
+
+    # Remove empty action groups (AIRS rejects them)
+    topic_list = [entry for entry in topic_list if entry.get("topic")]
+
+    # Add new topic to appropriate action group
+    # Find or create action group
+    action_group = next((entry for entry in topic_list if entry.get("action") == action), None)
+
+    if not action_group:
+        action_group = {"action": action, "topic": []}
+        topic_list.append(action_group)
+
+    # Add topic with revision (CRITICAL: must include revision)
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 144-152)
+    action_group["topic"].append({
+        "topic_id": topic_id,
+        "topic_name": topic_name,
+        "revision": topic_revision
+    })
+
+    topic_guardrails["topic-list"] = topic_list
+
+    # Step 4: Update profile with modified policy
+    # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 169-173)
+    # SDK: ManagementClient.profiles.update(profileId, body)
+    # Endpoint: PUT /v1/mgmt/securityprofiles/uuid/{profileId}
+    update_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/uuid/{profile_id}"
+    update_body = {
+        "profile_name": profile_name,
+        "active": profile.get("active", True),
+        "policy": policy
+    }
+
+    update_response = client.http_request(
+        method="PUT",
+        url_suffix=update_url_suffix,
+        json_data=update_body,
+        use_mgmt_base=True
+    )
+
+    # Create readable output
+    readable_output = f"## ✅ Topic Applied to Profile\n\n"
+    readable_output += f"**Topic:** {topic_name} (ID: {topic_id}, Revision: {topic_revision})\n\n"
+    readable_output += f"**Profile:** {profile_name}\n\n"
+    readable_output += f"**Topic Action:** {action}\n\n"
+    readable_output += f"**Guardrail Default Action:** {guardrail_action}\n\n"
+    readable_output += "**Note:** Topic has been added to the profile. Existing topics were preserved. "
+    readable_output += "The topic's current revision was pinned to ensure consistent detection behavior."
+
+    # Context output
+    context_output = {
+        "profile_name": profile_name,
+        "profile_id": profile_id,
+        "topic_name": topic_name,
+        "topic_id": topic_id,
+        "topic_revision": topic_revision,
+        "action": action,
+        "guardrail_action": guardrail_action,
+        "applied": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicApplied",
+        outputs_key_field="profile_name",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=update_response
+    )
+
+
 def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Perform bulk scanning of prompts via async API.
 
@@ -5364,6 +7461,426 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
     )
 
 
+def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single DLP dictionary by ID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    dictionary_id = args.get("dictionary_id")
+    if not dictionary_id:
+        raise ValueError("dictionary_id is required")
+
+    include_keywords = argToBoolean(args.get("include_keywords", False))
+
+    # Build query parameters
+    params: dict[str, Any] = {}
+    if include_keywords:
+        params["keywords"] = "true"
+
+    # Call DLP dictionaries get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # SDK: GET /v2/api/dictionaries/{resourceId}?keywords=true
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
+        params=params,
+        use_dlp_base=True
+    )
+
+    # Extract dictionary details from response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-dictionary.ts
+    dict_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "category": response.get("category"),
+        "region_name": response.get("region_name"),
+        "type": response.get("type"),
+        "is_case_sensitive": response.get("is_case_sensitive"),
+        "is_parent_managed": response.get("is_parent_managed"),
+        "detection_technique": response.get("detection_technique"),
+        "detection_sub_technique": response.get("detection_sub_technique"),
+        "dictionary_metadata": response.get("dictionary_metadata"),
+        "keywords": response.get("keywords"),  # Only populated if include_keywords=true
+        "tags": response.get("tags"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Dictionary: {dict_info.get('name')}",
+        dict_info,
+        headers=["id", "name", "category", "type", "region_name", "is_case_sensitive", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_key_field="id",
+        outputs=dict_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new DLP dictionary by uploading a keyword file.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Build metadata (required fields)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-dictionary.ts
+    name = args.get("name")
+    category = args.get("category")
+    region_name = args.get("region_name")
+    entry_id = args.get("entry_id")
+
+    if not name:
+        raise ValueError("name is required")
+    if not category:
+        raise ValueError("category is required")
+    if not region_name:
+        raise ValueError("region_name is required")
+    if not entry_id:
+        raise ValueError("entry_id is required (file entry ID from war room)")
+
+    # Get uploaded file from war room
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = file_info["name"]
+
+    # Read file content
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    # Build metadata JSON
+    metadata: dict[str, Any] = {
+        "category": category,
+        "name": name,
+        "original_file_name": file_name,
+        "region_name": region_name
+    }
+
+    # Optional fields
+    if args.get("description"):
+        metadata["description"] = args.get("description")
+
+    if args.get("is_case_sensitive") is not None:
+        metadata["is_case_sensitive"] = argToBoolean(args.get("is_case_sensitive"))
+
+    if args.get("type"):
+        metadata["type"] = args.get("type")
+
+    include_keywords = argToBoolean(args.get("include_keywords", False))
+
+    # Build query parameters
+    params: dict[str, Any] = {}
+    if include_keywords:
+        params["keywords"] = "true"
+
+    # Build multipart form data
+    # SDK sends: FormData with 'json' part (metadata as JSON blob) and 'file' part (keyword file)
+    files = {
+        'json': ('metadata.json', json.dumps(metadata).encode('utf-8'), 'application/json'),
+        'file': (file_name, file_content, 'text/plain')
+    }
+
+    # Call DLP dictionaries create endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # SDK: POST /v2/api/dictionaries (multipart/form-data)
+    response = client.http_request(
+        method="POST",
+        url_suffix=DLP_DICTIONARIES_PATH,
+        params=params,
+        files=files,
+        use_dlp_base=True
+    )
+
+    # Extract created dictionary details
+    dict_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "category": response.get("category"),
+        "region_name": response.get("region_name"),
+        "type": response.get("type"),
+        "is_case_sensitive": response.get("is_case_sensitive"),
+        "detection_technique": response.get("detection_technique"),
+        "dictionary_metadata": response.get("dictionary_metadata"),
+        "keywords": response.get("keywords"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Dictionary Created: {dict_info.get('name')}",
+        dict_info,
+        headers=["id", "name", "category", "type", "region_name", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_key_field="id",
+        outputs=dict_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Partially update a DLP dictionary (JSON Merge Patch).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    dictionary_id = args.get("dictionary_id")
+    if not dictionary_id:
+        raise ValueError("dictionary_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-dictionary.ts
+    # PATCH requires: category, name, original_file_name (cannot be cleared)
+    name = args.get("name")
+    category = args.get("category")
+    original_file_name = args.get("original_file_name")
+
+    if not name:
+        raise ValueError("name is required for PATCH")
+    if not category:
+        raise ValueError("category is required for PATCH")
+    if not original_file_name:
+        raise ValueError("original_file_name is required for PATCH")
+
+    request_body: dict[str, Any] = {
+        "category": category,
+        "name": name,
+        "original_file_name": original_file_name
+    }
+
+    # Optional: description (can be null to clear)
+    if args.get("description") is not None:
+        desc_value = args.get("description")
+        request_body["description"] = None if desc_value == "null" else desc_value
+
+    # Optional: is_case_sensitive (can be null to clear)
+    if args.get("is_case_sensitive") is not None:
+        case_value = args.get("is_case_sensitive")
+        if case_value == "null":
+            request_body["is_case_sensitive"] = None
+        else:
+            request_body["is_case_sensitive"] = argToBoolean(case_value)
+
+    # Optional: region_name (can be null to clear)
+    if args.get("region_name") is not None:
+        region_value = args.get("region_name")
+        request_body["region_name"] = None if region_value == "null" else region_value
+
+    # Call DLP dictionaries patch endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # SDK: PATCH /v2/api/dictionaries/{resourceId}
+    # Uses Content-Type: application/merge-patch+json
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
+        json_data=request_body,
+        use_dlp_base=True,
+        headers={"Content-Type": "application/merge-patch+json"}
+    )
+
+    # Extract updated dictionary details
+    dict_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "category": response.get("category"),
+        "region_name": response.get("region_name"),
+        "type": response.get("type"),
+        "is_case_sensitive": response.get("is_case_sensitive"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Dictionary Patched: {dict_info.get('name')}",
+        dict_info,
+        headers=["id", "name", "category", "type", "region_name", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_key_field="id",
+        outputs=dict_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Replace (full update) a DLP dictionary by uploading a new keyword file.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    dictionary_id = args.get("dictionary_id")
+    if not dictionary_id:
+        raise ValueError("dictionary_id is required")
+
+    # Build metadata (required fields)
+    name = args.get("name")
+    category = args.get("category")
+    region_name = args.get("region_name")
+    entry_id = args.get("entry_id")
+
+    if not name:
+        raise ValueError("name is required")
+    if not category:
+        raise ValueError("category is required")
+    if not region_name:
+        raise ValueError("region_name is required")
+    if not entry_id:
+        raise ValueError("entry_id is required (file entry ID from war room)")
+
+    # Get uploaded file from war room
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = file_info["name"]
+
+    # Read file content
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    # Build metadata JSON
+    metadata: dict[str, Any] = {
+        "category": category,
+        "name": name,
+        "original_file_name": file_name,
+        "region_name": region_name
+    }
+
+    # Optional fields
+    if args.get("description"):
+        metadata["description"] = args.get("description")
+
+    if args.get("is_case_sensitive") is not None:
+        metadata["is_case_sensitive"] = argToBoolean(args.get("is_case_sensitive"))
+
+    if args.get("type"):
+        metadata["type"] = args.get("type")
+
+    include_keywords = argToBoolean(args.get("include_keywords", False))
+
+    # Build query parameters
+    params: dict[str, Any] = {}
+    if include_keywords:
+        params["keywords"] = "true"
+
+    # Build multipart form data
+    files = {
+        'json': ('metadata.json', json.dumps(metadata).encode('utf-8'), 'application/json'),
+        'file': (file_name, file_content, 'text/plain')
+    }
+
+    # Call DLP dictionaries replace endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # SDK: PUT /v2/api/dictionaries/{resourceId} (multipart/form-data)
+    # API may return 200 with body or 204 with no body
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
+        params=params,
+        files=files,
+        use_dlp_base=True
+    )
+
+    # Handle both 200 (with body) and 204 (no body) responses
+    if response:
+        dict_info = {
+            "id": response.get("id"),
+            "name": response.get("name"),
+            "description": response.get("description"),
+            "category": response.get("category"),
+            "region_name": response.get("region_name"),
+            "type": response.get("type"),
+            "is_case_sensitive": response.get("is_case_sensitive"),
+            "keywords": response.get("keywords"),
+            "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+            "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        }
+
+        readable_output = tableToMarkdown(
+            f"Prisma AIRs DLP Dictionary Replaced: {dict_info.get('name')}",
+            dict_info,
+            headers=["id", "name", "category", "type", "region_name", "description"],
+            headerTransform=lambda h: h.replace("_", " ").title()
+        )
+
+        return CommandResults(
+            outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+            outputs_key_field="id",
+            outputs=dict_info,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        # 204 No Content response
+        readable_output = f"## Prisma AIRs DLP Dictionary Replaced\n\nDictionary ID `{dictionary_id}` has been successfully replaced (204 No Content)."
+        return CommandResults(readable_output=readable_output)
+
+
+def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a DLP dictionary.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    dictionary_id = args.get("dictionary_id")
+    if not dictionary_id:
+        raise ValueError("dictionary_id is required")
+
+    # Call DLP dictionaries delete endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
+    # SDK: DELETE /v2/api/dictionaries/{resourceId}
+    # Returns 204 No Content on success
+    client.http_request(
+        method="DELETE",
+        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
+        use_dlp_base=True,
+        resp_type="response"
+    )
+
+    readable_output = f"## Prisma AIRs DLP Dictionary Deleted\n\nDictionary ID `{dictionary_id}` has been successfully deleted."
+
+    return CommandResults(
+        readable_output=readable_output
+    )
+
+
 def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List DLP data patterns.
 
@@ -5436,6 +7953,436 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single DLP data pattern by ID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    pattern_id = args.get("pattern_id")
+    if not pattern_id:
+        raise ValueError("pattern_id is required")
+
+    # Call DLP patterns get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # SDK: GET /v2/api/data-patterns/{resourceId}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
+        use_dlp_base=True
+    )
+
+    # Extract pattern details from response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
+    pattern_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "status": response.get("status"),
+        "license_type": response.get("license_type"),
+        "is_parent_managed": response.get("is_parent_managed"),
+        "version": response.get("version"),
+        "detection_config": response.get("detection_config"),
+        "matching_rules": response.get("matching_rules"),
+        "tags": response.get("tags"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Pattern: {pattern_info.get('name')}",
+        pattern_info,
+        headers=["id", "name", "type", "status", "license_type", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_key_field="id",
+        outputs=pattern_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new DLP data pattern.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
+    # Required fields: name, type, detection_config
+    name = args.get("name")
+    pattern_type = args.get("type")
+    detection_technique = args.get("detection_technique")
+
+    if not name:
+        raise ValueError("name is required")
+    if not pattern_type:
+        raise ValueError("type is required")
+    if not detection_technique:
+        raise ValueError("detection_technique is required")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "type": pattern_type,
+        "detection_config": {
+            "technique": detection_technique
+        }
+    }
+
+    # Optional: supported_confidence_levels (array of low/medium/high)
+    if args.get("supported_confidence_levels"):
+        confidence_levels = args.get("supported_confidence_levels")
+        if isinstance(confidence_levels, str):
+            try:
+                confidence_list = json.loads(confidence_levels)
+            except (json.JSONDecodeError, ValueError):
+                confidence_list = [c.strip() for c in confidence_levels.split(",")]
+        else:
+            confidence_list = confidence_levels
+        request_body["detection_config"]["supported_confidence_levels"] = confidence_list
+
+    # Optional: description
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    # Optional: matching_rules (complex nested object)
+    if args.get("matching_rules"):
+        matching_rules_str = args.get("matching_rules")
+        try:
+            matching_rules = json.loads(matching_rules_str)
+            request_body["matching_rules"] = matching_rules
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"matching_rules must be valid JSON: {e}")
+
+    # Optional: tags (classification, compliance, geography arrays)
+    if args.get("tags"):
+        tags_str = args.get("tags")
+        try:
+            tags = json.loads(tags_str)
+            request_body["tags"] = tags
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"tags must be valid JSON: {e}")
+
+    # Call DLP patterns create endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # SDK: POST /v2/api/data-patterns
+    response = client.http_request(
+        method="POST",
+        url_suffix=DLP_PATTERNS_PATH,
+        json_data=request_body,
+        use_dlp_base=True
+    )
+
+    # Extract created pattern details
+    pattern_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "status": response.get("status"),
+        "license_type": response.get("license_type"),
+        "version": response.get("version"),
+        "detection_config": response.get("detection_config"),
+        "matching_rules": response.get("matching_rules"),
+        "tags": response.get("tags"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Pattern Created: {pattern_info.get('name')}",
+        pattern_info,
+        headers=["id", "name", "type", "status", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_key_field="id",
+        outputs=pattern_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Partially update a DLP data pattern (JSON Merge Patch).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    pattern_id = args.get("pattern_id")
+    if not pattern_id:
+        raise ValueError("pattern_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
+    # PATCH requires: name, type, detection_config (cannot be cleared)
+    name = args.get("name")
+    pattern_type = args.get("type")
+    detection_technique = args.get("detection_technique")
+
+    if not name:
+        raise ValueError("name is required for PATCH")
+    if not pattern_type:
+        raise ValueError("type is required for PATCH")
+    if not detection_technique:
+        raise ValueError("detection_technique is required for PATCH")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "type": pattern_type,
+        "detection_config": {
+            "technique": detection_technique
+        }
+    }
+
+    # Optional: supported_confidence_levels
+    if args.get("supported_confidence_levels"):
+        confidence_levels = args.get("supported_confidence_levels")
+        if isinstance(confidence_levels, str):
+            try:
+                confidence_list = json.loads(confidence_levels)
+            except (json.JSONDecodeError, ValueError):
+                confidence_list = [c.strip() for c in confidence_levels.split(",")]
+        else:
+            confidence_list = confidence_levels
+        request_body["detection_config"]["supported_confidence_levels"] = confidence_list
+
+    # Optional: description (can be null to clear)
+    if args.get("description") is not None:
+        desc_value = args.get("description")
+        request_body["description"] = None if desc_value == "null" else desc_value
+
+    # Optional: matching_rules (can be null to clear)
+    if args.get("matching_rules") is not None:
+        matching_rules_str = args.get("matching_rules")
+        if matching_rules_str == "null":
+            request_body["matching_rules"] = None
+        else:
+            try:
+                request_body["matching_rules"] = json.loads(matching_rules_str)
+            except (json.JSONDecodeError, ValueError) as e:
+                raise ValueError(f"matching_rules must be valid JSON or 'null': {e}")
+
+    # Optional: tags (can be null to clear)
+    if args.get("tags") is not None:
+        tags_str = args.get("tags")
+        if tags_str == "null":
+            request_body["tags"] = None
+        else:
+            try:
+                request_body["tags"] = json.loads(tags_str)
+            except (json.JSONDecodeError, ValueError) as e:
+                raise ValueError(f"tags must be valid JSON or 'null': {e}")
+
+    # Call DLP patterns patch endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # SDK: PATCH /v2/api/data-patterns/{resourceId}
+    # Uses Content-Type: application/merge-patch+json
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
+        json_data=request_body,
+        use_dlp_base=True,
+        headers={"Content-Type": "application/merge-patch+json"}
+    )
+
+    # Extract updated pattern details
+    pattern_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "status": response.get("status"),
+        "version": response.get("version"),
+        "detection_config": response.get("detection_config"),
+        "matching_rules": response.get("matching_rules"),
+        "tags": response.get("tags"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Pattern Patched: {pattern_info.get('name')}",
+        pattern_info,
+        headers=["id", "name", "type", "status", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_key_field="id",
+        outputs=pattern_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Replace (full update) a DLP data pattern.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    pattern_id = args.get("pattern_id")
+    if not pattern_id:
+        raise ValueError("pattern_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
+    # Required fields: name, type, detection_config
+    name = args.get("name")
+    pattern_type = args.get("type")
+    detection_technique = args.get("detection_technique")
+
+    if not name:
+        raise ValueError("name is required")
+    if not pattern_type:
+        raise ValueError("type is required")
+    if not detection_technique:
+        raise ValueError("detection_technique is required")
+
+    request_body: dict[str, Any] = {
+        "name": name,
+        "type": pattern_type,
+        "detection_config": {
+            "technique": detection_technique
+        }
+    }
+
+    # Optional: supported_confidence_levels
+    if args.get("supported_confidence_levels"):
+        confidence_levels = args.get("supported_confidence_levels")
+        if isinstance(confidence_levels, str):
+            try:
+                confidence_list = json.loads(confidence_levels)
+            except (json.JSONDecodeError, ValueError):
+                confidence_list = [c.strip() for c in confidence_levels.split(",")]
+        else:
+            confidence_list = confidence_levels
+        request_body["detection_config"]["supported_confidence_levels"] = confidence_list
+
+    # Optional: description
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    # Optional: matching_rules
+    if args.get("matching_rules"):
+        matching_rules_str = args.get("matching_rules")
+        try:
+            request_body["matching_rules"] = json.loads(matching_rules_str)
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"matching_rules must be valid JSON: {e}")
+
+    # Optional: tags
+    if args.get("tags"):
+        tags_str = args.get("tags")
+        try:
+            request_body["tags"] = json.loads(tags_str)
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"tags must be valid JSON: {e}")
+
+    # Call DLP patterns replace endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # SDK: PUT /v2/api/data-patterns/{resourceId}
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
+        json_data=request_body,
+        use_dlp_base=True
+    )
+
+    # Extract updated pattern details
+    pattern_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "status": response.get("status"),
+        "version": response.get("version"),
+        "detection_config": response.get("detection_config"),
+        "matching_rules": response.get("matching_rules"),
+        "tags": response.get("tags"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Pattern Replaced: {pattern_info.get('name')}",
+        pattern_info,
+        headers=["id", "name", "type", "status", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_key_field="id",
+        outputs=pattern_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete (soft-delete/archive) a DLP data pattern.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    pattern_id = args.get("pattern_id")
+    if not pattern_id:
+        raise ValueError("pattern_id is required")
+
+    # Call DLP patterns delete endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
+    # SDK: DELETE /v2/api/data-patterns/{resourceId}
+    # Returns 204 No Content on success
+    client.http_request(
+        method="DELETE",
+        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
+        use_dlp_base=True,
+        resp_type="response"
+    )
+
+    readable_output = f"## Prisma AIRs DLP Pattern Deleted\n\nPattern ID `{pattern_id}` has been successfully archived."
+
+    return CommandResults(
+        readable_output=readable_output
+    )
+
+
 def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List DLP filtering profiles.
 
@@ -5504,6 +8451,181 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
     )
 
 
+def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single DLP filtering profile by ID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Call DLP filtering profiles get endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
+    # SDK: GET /v2/api/data-filtering-profiles/{resourceId}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}",
+        use_dlp_base=True
+    )
+
+    # Extract profile details from response
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-filtering-profile.ts
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "data_profile_id": response.get("data_profile_id"),
+        "direction": response.get("direction"),
+        "file_based": response.get("file_based"),
+        "non_file_based": response.get("non_file_based"),
+        "log_severity": response.get("log_severity"),
+        "scan_type": response.get("scan_type"),
+        "is_end_user_coaching_enabled": response.get("is_end_user_coaching_enabled"),
+        "is_granular_profile": response.get("is_granular_profile"),
+        "is_parent_managed": response.get("is_parent_managed"),
+        "euc_template_id": response.get("euc_template_id"),
+        "version": response.get("version"),
+        "file_type": response.get("file_type"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Filtering Profile: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Replace (full update) a DLP filtering profile.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Build request body
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-filtering-profile.ts
+    # Required fields: file_based, non_file_based
+    request_body: dict[str, Any] = {
+        "file_based": argToBoolean(args.get("file_based", False)),
+        "non_file_based": argToBoolean(args.get("non_file_based", False))
+    }
+
+    # Optional fields
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    if args.get("direction"):
+        request_body["direction"] = args.get("direction")
+
+    if args.get("log_severity"):
+        request_body["log_severity"] = args.get("log_severity")
+
+    if args.get("scan_type"):
+        request_body["scan_type"] = args.get("scan_type")
+
+    if args.get("data_profile_id"):
+        request_body["data_profile_id"] = arg_to_number(args.get("data_profile_id"))
+
+    if args.get("euc_template_id"):
+        request_body["euc_template_id"] = args.get("euc_template_id")
+
+    if args.get("is_end_user_coaching_enabled") is not None:
+        request_body["is_end_user_coaching_enabled"] = argToBoolean(args.get("is_end_user_coaching_enabled"))
+
+    if args.get("is_granular_profile") is not None:
+        request_body["is_granular_profile"] = argToBoolean(args.get("is_granular_profile"))
+
+    # Handle file_type as comma-separated string or JSON array
+    if args.get("file_type"):
+        file_type_value = args.get("file_type")
+        if isinstance(file_type_value, str):
+            try:
+                # Try parsing as JSON array first
+                file_type_list = json.loads(file_type_value)
+            except (json.JSONDecodeError, ValueError):
+                # Fall back to comma-separated string
+                file_type_list = [ft.strip() for ft in file_type_value.split(",")]
+        else:
+            file_type_list = file_type_value
+        request_body["file_type"] = file_type_list
+
+    # Call DLP filtering profiles replace endpoint
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
+    # SDK: PUT /v2/api/data-filtering-profiles/{resourceId}
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}",
+        json_data=request_body,
+        use_dlp_base=True
+    )
+
+    # Extract updated profile details from response
+    profile_info = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "tenant_id": response.get("tenant_id"),
+        "type": response.get("type"),
+        "data_profile_id": response.get("data_profile_id"),
+        "direction": response.get("direction"),
+        "file_based": response.get("file_based"),
+        "non_file_based": response.get("non_file_based"),
+        "log_severity": response.get("log_severity"),
+        "scan_type": response.get("scan_type"),
+        "is_end_user_coaching_enabled": response.get("is_end_user_coaching_enabled"),
+        "is_granular_profile": response.get("is_granular_profile"),
+        "is_parent_managed": response.get("is_parent_managed"),
+        "version": response.get("version"),
+        "created_at": response.get("audit_metadata", {}).get("created_at"),
+        "updated_at": response.get("audit_metadata", {}).get("updated_at"),
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
+        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs DLP Filtering Profile Updated: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
+        headerTransform=lambda h: h.replace("_", " ").title()
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfile",
+        outputs_key_field="id",
+        outputs=profile_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def main() -> None:
     """Main function for Prisma AIRs integration."""
     params = demisto.params()
@@ -5556,8 +8678,23 @@ def main() -> None:
         elif command == "prisma-airs-runtime-api-keys-regenerate":
             return_results(runtime_api_keys_regenerate_command(client, args))
 
+        elif command == "prisma-airs-runtime-api-keys-delete":
+            return_results(runtime_api_keys_delete_command(client, args))
+
         elif command == "prisma-airs-runtime-profiles-list":
             return_results(runtime_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-profiles-get":
+            return_results(runtime_profiles_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-profiles-create":
+            return_results(runtime_profiles_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-profiles-update":
+            return_results(runtime_profiles_update_command(client, args))
+
+        elif command == "prisma-airs-runtime-profiles-delete":
+            return_results(runtime_profiles_delete_command(client, args))
 
         elif command == "prisma-airs-runtime-customer-apps-list":
             return_results(runtime_customer_apps_list_command(client, args))
@@ -5574,26 +8711,92 @@ def main() -> None:
         elif command == "prisma-airs-runtime-customer-apps-violations":
             return_results(runtime_customer_apps_violations_command(client, args))
 
+        elif command == "prisma-airs-runtime-customer-apps-delete":
+            return_results(runtime_customer_apps_delete_command(client, args))
+
         elif command == "prisma-airs-runtime-deployment-profiles-list":
             return_results(runtime_deployment_profiles_list_command(client, args))
 
         elif command == "prisma-airs-runtime-dlp-profiles-list":
             return_results(runtime_dlp_profiles_list_command(client, args))
 
+        elif command == "prisma-airs-runtime-dlp-profiles-get":
+            return_results(runtime_dlp_profiles_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-profiles-create":
+            return_results(runtime_dlp_profiles_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-profiles-patch":
+            return_results(runtime_dlp_profiles_patch_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-profiles-replace":
+            return_results(runtime_dlp_profiles_replace_command(client, args))
+
         elif command == "prisma-airs-runtime-dlp-dictionaries-list":
             return_results(runtime_dlp_dictionaries_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-get":
+            return_results(runtime_dlp_dictionaries_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-create":
+            return_results(runtime_dlp_dictionaries_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-patch":
+            return_results(runtime_dlp_dictionaries_patch_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-replace":
+            return_results(runtime_dlp_dictionaries_replace_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-dictionaries-delete":
+            return_results(runtime_dlp_dictionaries_delete_command(client, args))
 
         elif command == "prisma-airs-runtime-dlp-patterns-list":
             return_results(runtime_dlp_patterns_list_command(client, args))
 
+        elif command == "prisma-airs-runtime-dlp-patterns-get":
+            return_results(runtime_dlp_patterns_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-patterns-create":
+            return_results(runtime_dlp_patterns_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-patterns-patch":
+            return_results(runtime_dlp_patterns_patch_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-patterns-replace":
+            return_results(runtime_dlp_patterns_replace_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-patterns-delete":
+            return_results(runtime_dlp_patterns_delete_command(client, args))
+
         elif command == "prisma-airs-runtime-dlp-filtering-profiles-list":
             return_results(runtime_dlp_filtering_profiles_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-filtering-profiles-get":
+            return_results(runtime_dlp_filtering_profiles_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-filtering-profiles-replace":
+            return_results(runtime_dlp_filtering_profiles_replace_command(client, args))
 
         elif command == "prisma-airs-runtime-scan-logs":
             return_results(runtime_scan_logs_command(client, args))
 
         elif command == "prisma-airs-runtime-topics-list":
             return_results(runtime_topics_list_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-get":
+            return_results(runtime_topics_get_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-create":
+            return_results(runtime_topics_create_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-update":
+            return_results(runtime_topics_update_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-delete":
+            return_results(runtime_topics_delete_command(client, args))
+
+        elif command == "prisma-airs-runtime-topics-apply":
+            return_results(runtime_topics_apply_command(client, args))
 
         elif command == "prisma-airs-runtime-bulk-scan":
             return_results(runtime_bulk_scan_command(client, args))
@@ -5625,6 +8828,18 @@ def main() -> None:
         elif command == "prisma-airs-model-security-labels-delete":
             return_results(model_security_labels_delete_command(client, args))
 
+        elif command == "prisma-airs-model-security-scans-evaluation":
+            return_results(model_security_scans_evaluation_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-violation":
+            return_results(model_security_scans_violation_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-files":
+            return_results(model_security_scans_files_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-evaluations":
+            return_results(model_security_scans_evaluations_command(client, args))
+
         elif command == "prisma-airs-model-security-groups-list":
             return_results(model_security_groups_list_command(client, args))
 
@@ -5633,6 +8848,12 @@ def main() -> None:
 
         elif command == "prisma-airs-model-security-groups-create":
             return_results(model_security_groups_create_command(client, args))
+
+        elif command == "prisma-airs-model-security-groups-delete":
+            return_results(model_security_groups_delete_command(client, args))
+
+        elif command == "prisma-airs-model-security-groups-update":
+            return_results(model_security_groups_update_command(client, args))
 
         elif command == "prisma-airs-model-security-rules-list":
             return_results(model_security_rules_list_command(client, args))
@@ -5645,6 +8866,9 @@ def main() -> None:
 
         elif command == "prisma-airs-model-security-rule-instances-update":
             return_results(model_security_rule_instances_update_command(client, args))
+
+        elif command == "prisma-airs-model-security-rule-instances-get":
+            return_results(model_security_rule_instances_get_command(client, args))
 
         elif command == "prisma-airs-redteam-targets-list":
             return_results(redteam_targets_list_command(client, args))

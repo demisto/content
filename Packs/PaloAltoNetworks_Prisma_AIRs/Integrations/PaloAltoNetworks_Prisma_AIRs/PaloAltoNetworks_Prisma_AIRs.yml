@@ -301,6 +301,29 @@ script:
     - contextPath: PrismaAIRs.ApiKey.cust_app
       description: Customer application name.
       type: String
+  - name: prisma-airs-runtime-api-keys-delete
+    execution: true
+    description: Delete a Runtime API Key by name. WARNING - This action cannot be undone and immediately revokes access for all applications using this key.
+    arguments:
+    - name: api_key_name
+      required: true
+      description: Name of the API key to delete.
+    - name: updated_by
+      required: true
+      description: Email of the user performing the deletion.
+    outputs:
+    - contextPath: PrismaAIRs.ApiKeyDeleted.api_key_name
+      description: Name of the deleted API key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKeyDeleted.deleted_by
+      description: Email of the user who deleted the key.
+      type: String
+    - contextPath: PrismaAIRs.ApiKeyDeleted.message
+      description: Deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.ApiKeyDeleted.deleted
+      description: Boolean indicating successful deletion.
+      type: Boolean
   - name: prisma-airs-runtime-profiles-list
     description: List all runtime security profiles.
     arguments:
@@ -333,6 +356,162 @@ script:
     - contextPath: PrismaAIRs.SecurityProfile.tsg_id
       description: Tenant Service Group ID.
       type: String
+  - name: prisma-airs-runtime-profiles-get
+    description: Get a specific security profile by ID or name. Returns the highest-revision profile if filtering by name.
+    arguments:
+    - name: profile_id
+      required: false
+      description: Profile UUID (either profile_id or profile_name is required).
+    - name: profile_name
+      required: false
+      description: Profile name (returns highest-revision match if multiple exist).
+    outputs:
+    - contextPath: PrismaAIRs.SecurityProfile.id
+      description: Profile ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.name
+      description: Profile name.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.revision
+      description: Profile revision number.
+      type: Number
+    - contextPath: PrismaAIRs.SecurityProfile.active
+      description: Whether the profile is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.SecurityProfile.policy
+      description: Full policy configuration (AI security profiles and DLP data profiles).
+      type: Unknown
+    - contextPath: PrismaAIRs.SecurityProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.SecurityProfile.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.csp_id
+      description: Cloud Service Provider ID.
+      type: String
+  - name: prisma-airs-runtime-profiles-create
+    description: Create a new security profile with custom policy configuration.
+    arguments:
+    - name: profile_name
+      required: true
+      description: Name for the new security profile (must be unique).
+    - name: active
+      required: false
+      description: Whether the profile should be active.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: policy
+      required: false
+      description: Policy configuration as JSON string. Structure - ai-security-profiles array and dlp-data-profiles array. If omitted, creates empty policy.
+    outputs:
+    - contextPath: PrismaAIRs.SecurityProfile.id
+      description: Profile ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.name
+      description: Profile name.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.revision
+      description: Profile revision number (starts at 1).
+      type: Number
+    - contextPath: PrismaAIRs.SecurityProfile.active
+      description: Whether the profile is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.SecurityProfile.policy
+      description: Full policy configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.SecurityProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.SecurityProfile.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.csp_id
+      description: Cloud Service Provider ID.
+      type: String
+  - name: prisma-airs-runtime-profiles-update
+    execution: true
+    description: Update an existing security profile. WARNING - Modifying profile configuration can break scanning if misconfigured.
+    arguments:
+    - name: profile_id
+      required: true
+      description: Profile UUID to update.
+    - name: profile_name
+      required: true
+      description: Profile name (can be changed or kept the same).
+    - name: active
+      required: false
+      description: Whether the profile should be active.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: policy
+      required: false
+      description: Updated policy configuration as JSON string. If omitted, policy remains unchanged.
+    outputs:
+    - contextPath: PrismaAIRs.SecurityProfile.id
+      description: Profile ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.name
+      description: Profile name.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.revision
+      description: Profile revision number (incremented after update).
+      type: Number
+    - contextPath: PrismaAIRs.SecurityProfile.active
+      description: Whether the profile is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.SecurityProfile.policy
+      description: Full policy configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.SecurityProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.SecurityProfile.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfile.csp_id
+      description: Cloud Service Provider ID.
+      type: String
+  - name: prisma-airs-runtime-profiles-delete
+    execution: true
+    description: Delete a security profile. WARNING - This action cannot be undone and permanently removes the profile.
+    arguments:
+    - name: profile_id
+      required: true
+      description: Profile UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.SecurityProfileDeleted.profile_id
+      description: Deleted profile ID.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfileDeleted.message
+      description: Deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.SecurityProfileDeleted.deleted
+      description: Boolean indicating successful deletion.
+      type: Boolean
   - name: prisma-airs-runtime-customer-apps-list
     description: List all customer applications.
     arguments:
@@ -610,6 +789,29 @@ script:
     - contextPath: PrismaAIRs.CustomerAppViolations.detectors.total
       description: Total violations count for this detector.
       type: Number
+  - name: prisma-airs-runtime-customer-apps-delete
+    execution: true
+    description: Delete a customer application and all associated API keys. WARNING - This action cannot be undone and immediately revokes all API keys for this application.
+    arguments:
+    - name: app_name
+      required: true
+      description: Name of the customer application to delete.
+    - name: updated_by
+      required: true
+      description: Email of the user performing the deletion.
+    outputs:
+    - contextPath: PrismaAIRs.CustomerAppDeleted.app_name
+      description: Name of the deleted customer application.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppDeleted.deleted_by
+      description: Email of the user who deleted the application.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppDeleted.message
+      description: Deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.CustomerAppDeleted.deleted
+      description: Boolean indicating successful deletion.
+      type: Boolean
   - name: prisma-airs-runtime-deployment-profiles-list
     description: List all deployment profiles.
     arguments:
@@ -698,6 +900,217 @@ script:
     - contextPath: PrismaAIRs.DlpProfile.updated_by
       description: User who last updated the profile.
       type: String
+  - name: prisma-airs-runtime-dlp-profiles-get
+    description: Get a single DLP data profile by ID.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP data profile to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfile.id
+      description: DLP Profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.name
+      description: DLP Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.description
+      description: DLP Profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.tenant_id
+      description: Tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.type
+      description: Profile type (custom or predefined).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_status
+      description: Profile status (active, disabled, deleted).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_type
+      description: Profile type (basic or advanced).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.is_granular_data_profile
+      description: Whether this is a granular data profile.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfile.is_parent_managed
+      description: Whether the profile is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfile.version
+      description: DLP Profile version.
+      type: Number
+    - contextPath: PrismaAIRs.DlpProfile.detection_rules
+      description: Detection rules array (expression_tree or multi_profile).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+  - name: prisma-airs-runtime-dlp-profiles-create
+    description: Create a new DLP data profile with detection rules.
+    arguments:
+    - name: name
+      required: true
+      description: Profile name (1-64 characters).
+    - name: detection_rules
+      required: true
+      description: Detection rules as JSON array. Each rule must have rule_type (expression_tree or multi_profile) and corresponding structure.
+    - name: description
+      required: false
+      description: Profile description.
+    - name: is_granular_data_profile
+      required: false
+      description: Whether this is a granular data profile.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfile.id
+      description: DLP Profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.name
+      description: DLP Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.description
+      description: DLP Profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_status
+      description: Profile status.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_type
+      description: Profile type (basic or advanced).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.is_granular_data_profile
+      description: Whether this is a granular data profile.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfile.version
+      description: Profile version.
+      type: Number
+    - contextPath: PrismaAIRs.DlpProfile.detection_rules
+      description: Detection rules array.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.created_by
+      description: User who created the profile.
+      type: String
+  - name: prisma-airs-runtime-dlp-profiles-patch
+    description: Partially update a DLP data profile (JSON Merge Patch). Fields set to "null" will be cleared.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP data profile to update.
+    - name: name
+      required: true
+      description: Profile name (required for PATCH, cannot be cleared).
+    - name: profile_type
+      required: true
+      description: Profile type (required for PATCH, cannot be cleared).
+      auto: PREDEFINED
+      predefined:
+      - basic
+      - advanced
+    - name: description
+      required: false
+      description: Profile description (set to "null" to clear).
+    - name: detection_rules
+      required: false
+      description: Detection rules as JSON array (set to "null" to clear).
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfile.id
+      description: DLP Profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.name
+      description: DLP Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.description
+      description: DLP Profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_status
+      description: Profile status.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.version
+      description: Profile version.
+      type: Number
+    - contextPath: PrismaAIRs.DlpProfile.detection_rules
+      description: Detection rules array.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+  - name: prisma-airs-runtime-dlp-profiles-replace
+    description: Replace (full update) a DLP data profile. This replaces the entire profile configuration.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP data profile to replace.
+    - name: name
+      required: true
+      description: Profile name (1-64 characters).
+    - name: detection_rules
+      required: true
+      description: Detection rules as JSON array.
+    - name: description
+      required: false
+      description: Profile description.
+    - name: is_granular_data_profile
+      required: false
+      description: Whether this is a granular data profile.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfile.id
+      description: DLP Profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.name
+      description: DLP Profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.description
+      description: DLP Profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_status
+      description: Profile status.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.profile_type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfile.version
+      description: Profile version.
+      type: Number
+    - contextPath: PrismaAIRs.DlpProfile.detection_rules
+      description: Detection rules array.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpProfile.updated_by
+      description: User who last updated the profile.
+      type: String
   - name: prisma-airs-runtime-dlp-dictionaries-list
     description: List DLP dictionaries.
     arguments:
@@ -751,6 +1164,320 @@ script:
     - contextPath: PrismaAIRs.DlpDictionary.updated_at
       description: Last update timestamp.
       type: Date
+  - name: prisma-airs-runtime-dlp-dictionaries-get
+    description: Get a single DLP dictionary by ID, optionally including keywords.
+    arguments:
+    - name: dictionary_id
+      required: true
+      description: The ID of the DLP dictionary to retrieve.
+    - name: include_keywords
+      required: false
+      description: Include keyword list in response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpDictionary.id
+      description: Dictionary ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.name
+      description: Dictionary name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.description
+      description: Dictionary description.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.category
+      description: Dictionary category.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.type
+      description: Dictionary type (predefined or custom).
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.is_case_sensitive
+      description: Whether the dictionary is case sensitive.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.is_parent_managed
+      description: Whether the dictionary is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.detection_technique
+      description: Detection technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.detection_sub_technique
+      description: Detection sub-technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.dictionary_metadata
+      description: Dictionary metadata (number of keywords, file size, original filename).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.keywords
+      description: Keyword list (only populated if include_keywords is true).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.tags
+      description: Tags (classification array).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.created_by
+      description: User who created the dictionary.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.updated_by
+      description: User who last updated the dictionary.
+      type: String
+  - name: prisma-airs-runtime-dlp-dictionaries-create
+    description: Create a new DLP dictionary by uploading a keyword file.
+    arguments:
+    - name: name
+      required: true
+      description: Dictionary name.
+    - name: category
+      required: true
+      description: Dictionary category.
+      auto: PREDEFINED
+      predefined:
+      - Academic
+      - Confidential
+      - Employment
+      - Financial
+      - Government
+      - Healthcare
+      - Legal
+      - Marketing
+      - Source Code
+    - name: region_name
+      required: true
+      description: Region name (e.g., us-west-2).
+    - name: entry_id
+      required: true
+      description: War room entry ID of the keyword file to upload.
+    - name: description
+      required: false
+      description: Dictionary description.
+    - name: is_case_sensitive
+      required: false
+      description: Whether the dictionary is case sensitive.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      required: false
+      description: Dictionary type.
+      auto: PREDEFINED
+      predefined:
+      - predefined
+      - custom
+    - name: include_keywords
+      required: false
+      description: Include keyword list in response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpDictionary.id
+      description: Dictionary ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.name
+      description: Dictionary name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.description
+      description: Dictionary description.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.category
+      description: Dictionary category.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.type
+      description: Dictionary type.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.is_case_sensitive
+      description: Whether the dictionary is case sensitive.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.detection_technique
+      description: Detection technique.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.dictionary_metadata
+      description: Dictionary metadata.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.keywords
+      description: Keyword list.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.created_by
+      description: User who created the dictionary.
+      type: String
+  - name: prisma-airs-runtime-dlp-dictionaries-patch
+    description: Partially update a DLP dictionary (JSON Merge Patch). Fields set to "null" will be cleared.
+    arguments:
+    - name: dictionary_id
+      required: true
+      description: The ID of the DLP dictionary to update.
+    - name: name
+      required: true
+      description: Dictionary name (required for PATCH, cannot be cleared).
+    - name: category
+      required: true
+      description: Dictionary category (required for PATCH, cannot be cleared).
+      auto: PREDEFINED
+      predefined:
+      - Academic
+      - Confidential
+      - Employment
+      - Financial
+      - Government
+      - Healthcare
+      - Legal
+      - Marketing
+      - Source Code
+    - name: original_file_name
+      required: true
+      description: Original filename (required for PATCH, cannot be cleared).
+    - name: description
+      required: false
+      description: Dictionary description (set to "null" to clear).
+    - name: is_case_sensitive
+      required: false
+      description: Whether the dictionary is case sensitive (set to "null" to clear).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      - 'null'
+    - name: region_name
+      required: false
+      description: Region name (set to "null" to clear).
+    outputs:
+    - contextPath: PrismaAIRs.DlpDictionary.id
+      description: Dictionary ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.name
+      description: Dictionary name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.description
+      description: Dictionary description.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.category
+      description: Dictionary category.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.type
+      description: Dictionary type.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.is_case_sensitive
+      description: Whether the dictionary is case sensitive.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.updated_by
+      description: User who last updated the dictionary.
+      type: String
+  - name: prisma-airs-runtime-dlp-dictionaries-replace
+    description: Replace (full update) a DLP dictionary by uploading a new keyword file.
+    arguments:
+    - name: dictionary_id
+      required: true
+      description: The ID of the DLP dictionary to replace.
+    - name: name
+      required: true
+      description: Dictionary name.
+    - name: category
+      required: true
+      description: Dictionary category.
+      auto: PREDEFINED
+      predefined:
+      - Academic
+      - Confidential
+      - Employment
+      - Financial
+      - Government
+      - Healthcare
+      - Legal
+      - Marketing
+      - Source Code
+    - name: region_name
+      required: true
+      description: Region name (e.g., us-west-2).
+    - name: entry_id
+      required: true
+      description: War room entry ID of the keyword file to upload.
+    - name: description
+      required: false
+      description: Dictionary description.
+    - name: is_case_sensitive
+      required: false
+      description: Whether the dictionary is case sensitive.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      required: false
+      description: Dictionary type.
+      auto: PREDEFINED
+      predefined:
+      - predefined
+      - custom
+    - name: include_keywords
+      required: false
+      description: Include keyword list in response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.DlpDictionary.id
+      description: Dictionary ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.name
+      description: Dictionary name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.description
+      description: Dictionary description.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.category
+      description: Dictionary category.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.region_name
+      description: Region name.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.type
+      description: Dictionary type.
+      type: String
+    - contextPath: PrismaAIRs.DlpDictionary.is_case_sensitive
+      description: Whether the dictionary is case sensitive.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpDictionary.keywords
+      description: Keyword list.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpDictionary.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpDictionary.updated_by
+      description: User who last updated the dictionary.
+      type: String
+  - name: prisma-airs-runtime-dlp-dictionaries-delete
+    execution: true
+    description: Delete a DLP dictionary. This action cannot be undone.
+    arguments:
+    - name: dictionary_id
+      required: true
+      description: The ID of the DLP dictionary to delete.
   - name: prisma-airs-runtime-dlp-patterns-list
     description: List DLP data patterns.
     arguments:
@@ -796,6 +1523,305 @@ script:
     - contextPath: PrismaAIRs.DlpPattern.updated_at
       description: Last update timestamp.
       type: Date
+  - name: prisma-airs-runtime-dlp-patterns-get
+    description: Get a single DLP data pattern by ID.
+    arguments:
+    - name: pattern_id
+      required: true
+      description: The ID of the DLP data pattern to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.DlpPattern.id
+      description: Pattern ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.name
+      description: Pattern name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.description
+      description: Pattern description.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.tenant_id
+      description: Tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.type
+      description: Pattern type (predefined, custom, file_property).
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.status
+      description: Pattern status (active, disabled, deleted, deprecated, silent).
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.license_type
+      description: License tier (standard, enterprise, essentials).
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.is_parent_managed
+      description: Whether the pattern is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpPattern.version
+      description: Pattern version number.
+      type: Number
+    - contextPath: PrismaAIRs.DlpPattern.detection_config
+      description: Detection configuration (technique and confidence levels).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.matching_rules
+      description: Matching rules (proximity, delimiters, regexes, metadata).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.tags
+      description: Tags (classification, compliance, geography).
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.created_by
+      description: User who created the pattern.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.updated_by
+      description: User who last updated the pattern.
+      type: String
+  - name: prisma-airs-runtime-dlp-patterns-create
+    description: Create a new DLP data pattern.
+    arguments:
+    - name: name
+      required: true
+      description: Pattern name (1-64 characters).
+    - name: type
+      required: true
+      description: Pattern type.
+      auto: PREDEFINED
+      predefined:
+      - predefined
+      - custom
+      - file_property
+    - name: detection_technique
+      required: true
+      description: Detection technique.
+      auto: PREDEFINED
+      predefined:
+      - edm
+      - document_fingerprint
+      - trainable_classifier
+      - ml_document
+      - regex
+      - weighted_regex
+      - ml
+      - titus_tag
+      - wildfire
+      - file_property
+      - dictionary
+      - pab
+      - document_classifier
+    - name: supported_confidence_levels
+      required: false
+      description: Comma-separated confidence levels (low, medium, high) or JSON array.
+    - name: description
+      required: false
+      description: Pattern description.
+    - name: matching_rules
+      required: false
+      description: Matching rules as JSON object (proximity, delimiters, regexes, metadata_criteria).
+    - name: tags
+      required: false
+      description: Tags as JSON object with classification, compliance, geography arrays.
+    outputs:
+    - contextPath: PrismaAIRs.DlpPattern.id
+      description: Pattern ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.name
+      description: Pattern name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.description
+      description: Pattern description.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.type
+      description: Pattern type.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.status
+      description: Pattern status.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.detection_config
+      description: Detection configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.matching_rules
+      description: Matching rules.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.tags
+      description: Tags.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.created_by
+      description: User who created the pattern.
+      type: String
+  - name: prisma-airs-runtime-dlp-patterns-patch
+    description: Partially update a DLP data pattern (JSON Merge Patch). Fields set to "null" will be cleared.
+    arguments:
+    - name: pattern_id
+      required: true
+      description: The ID of the DLP data pattern to update.
+    - name: name
+      required: true
+      description: Pattern name (required for PATCH, cannot be cleared).
+    - name: type
+      required: true
+      description: Pattern type (required for PATCH, cannot be cleared).
+      auto: PREDEFINED
+      predefined:
+      - predefined
+      - custom
+      - file_property
+    - name: detection_technique
+      required: true
+      description: Detection technique (required for PATCH, cannot be cleared).
+      auto: PREDEFINED
+      predefined:
+      - edm
+      - document_fingerprint
+      - trainable_classifier
+      - ml_document
+      - regex
+      - weighted_regex
+      - ml
+      - titus_tag
+      - wildfire
+      - file_property
+      - dictionary
+      - pab
+      - document_classifier
+    - name: supported_confidence_levels
+      required: false
+      description: Comma-separated confidence levels or JSON array.
+    - name: description
+      required: false
+      description: Pattern description (set to "null" to clear).
+    - name: matching_rules
+      required: false
+      description: Matching rules as JSON object (set to "null" to clear).
+    - name: tags
+      required: false
+      description: Tags as JSON object (set to "null" to clear).
+    outputs:
+    - contextPath: PrismaAIRs.DlpPattern.id
+      description: Pattern ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.name
+      description: Pattern name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.description
+      description: Pattern description.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.type
+      description: Pattern type.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.status
+      description: Pattern status.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.version
+      description: Pattern version number.
+      type: Number
+    - contextPath: PrismaAIRs.DlpPattern.detection_config
+      description: Detection configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.matching_rules
+      description: Matching rules.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.tags
+      description: Tags.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.updated_by
+      description: User who last updated the pattern.
+      type: String
+  - name: prisma-airs-runtime-dlp-patterns-replace
+    description: Replace (full update) a DLP data pattern. This replaces the entire pattern configuration.
+    arguments:
+    - name: pattern_id
+      required: true
+      description: The ID of the DLP data pattern to replace.
+    - name: name
+      required: true
+      description: Pattern name (1-64 characters).
+    - name: type
+      required: true
+      description: Pattern type.
+      auto: PREDEFINED
+      predefined:
+      - predefined
+      - custom
+      - file_property
+    - name: detection_technique
+      required: true
+      description: Detection technique.
+      auto: PREDEFINED
+      predefined:
+      - edm
+      - document_fingerprint
+      - trainable_classifier
+      - ml_document
+      - regex
+      - weighted_regex
+      - ml
+      - titus_tag
+      - wildfire
+      - file_property
+      - dictionary
+      - pab
+      - document_classifier
+    - name: supported_confidence_levels
+      required: false
+      description: Comma-separated confidence levels or JSON array.
+    - name: description
+      required: false
+      description: Pattern description.
+    - name: matching_rules
+      required: false
+      description: Matching rules as JSON object.
+    - name: tags
+      required: false
+      description: Tags as JSON object.
+    outputs:
+    - contextPath: PrismaAIRs.DlpPattern.id
+      description: Pattern ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.name
+      description: Pattern name.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.description
+      description: Pattern description.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.type
+      description: Pattern type.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.status
+      description: Pattern status.
+      type: String
+    - contextPath: PrismaAIRs.DlpPattern.version
+      description: Pattern version number.
+      type: Number
+    - contextPath: PrismaAIRs.DlpPattern.detection_config
+      description: Detection configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.matching_rules
+      description: Matching rules.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.tags
+      description: Tags.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpPattern.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpPattern.updated_by
+      description: User who last updated the pattern.
+      type: String
+  - name: prisma-airs-runtime-dlp-patterns-delete
+    execution: true
+    description: Delete (soft-delete/archive) a DLP data pattern. This action cannot be undone.
+    arguments:
+    - name: pattern_id
+      required: true
+      description: The ID of the DLP data pattern to delete.
   - name: prisma-airs-runtime-dlp-filtering-profiles-list
     description: List DLP filtering profiles.
     arguments:
@@ -832,6 +1858,205 @@ script:
     - contextPath: PrismaAIRs.DlpFilteringProfile.updated_at
       description: Last update timestamp.
       type: Date
+  - name: prisma-airs-runtime-dlp-filtering-profiles-get
+    description: Get a single DLP filtering profile by ID.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP filtering profile to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.DlpFilteringProfile.id
+      description: Filtering profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.name
+      description: Filtering profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.description
+      description: Filtering profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.tenant_id
+      description: Tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.data_profile_id
+      description: Associated data profile ID.
+      type: Number
+    - contextPath: PrismaAIRs.DlpFilteringProfile.direction
+      description: Scan direction (BOTH, UPLOAD, DOWNLOAD).
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.file_based
+      description: Whether file-based scanning is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.non_file_based
+      description: Whether non-file-based scanning is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.log_severity
+      description: Log severity level.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.scan_type
+      description: Scan type (include or exclude).
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_end_user_coaching_enabled
+      description: Whether end user coaching is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_granular_profile
+      description: Whether this is a granular profile.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_parent_managed
+      description: Whether the profile is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.euc_template_id
+      description: End user coaching template ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.version
+      description: Profile version number.
+      type: Number
+    - contextPath: PrismaAIRs.DlpFilteringProfile.file_type
+      description: Allowed file types for scanning.
+      type: Unknown
+    - contextPath: PrismaAIRs.DlpFilteringProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpFilteringProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpFilteringProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.updated_by
+      description: User who last updated the profile.
+      type: String
+  - name: prisma-airs-runtime-dlp-filtering-profiles-replace
+    description: Replace (full update) a DLP filtering profile. This is a destructive operation that replaces the entire profile configuration.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP filtering profile to replace.
+    - name: file_based
+      required: true
+      description: Whether file-based scanning is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: non_file_based
+      required: true
+      description: Whether non-file-based scanning is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: description
+      required: false
+      description: Profile description.
+    - name: direction
+      required: false
+      description: Scan direction.
+      auto: PREDEFINED
+      predefined:
+      - BOTH
+      - UPLOAD
+      - DOWNLOAD
+    - name: log_severity
+      required: false
+      description: Log severity level.
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+    - name: scan_type
+      required: false
+      description: Scan type (include or exclude file types).
+      auto: PREDEFINED
+      predefined:
+      - include
+      - exclude
+    - name: data_profile_id
+      required: false
+      description: Associated data profile ID (numeric).
+    - name: euc_template_id
+      required: false
+      description: End user coaching template ID.
+    - name: is_end_user_coaching_enabled
+      required: false
+      description: Whether end user coaching is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: is_granular_profile
+      required: false
+      description: Whether this is a granular profile.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: file_type
+      required: false
+      description: Comma-separated list of file types to include/exclude.
+    outputs:
+    - contextPath: PrismaAIRs.DlpFilteringProfile.id
+      description: Filtering profile ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.name
+      description: Filtering profile name.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.description
+      description: Filtering profile description.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.tenant_id
+      description: Tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.type
+      description: Profile type.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.data_profile_id
+      description: Associated data profile ID.
+      type: Number
+    - contextPath: PrismaAIRs.DlpFilteringProfile.direction
+      description: Scan direction (BOTH, UPLOAD, DOWNLOAD).
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.file_based
+      description: Whether file-based scanning is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.non_file_based
+      description: Whether non-file-based scanning is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.log_severity
+      description: Log severity level.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.scan_type
+      description: Scan type (include or exclude).
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_end_user_coaching_enabled
+      description: Whether end user coaching is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_granular_profile
+      description: Whether this is a granular profile.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.is_parent_managed
+      description: Whether the profile is parent-managed.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpFilteringProfile.version
+      description: Profile version number.
+      type: Number
+    - contextPath: PrismaAIRs.DlpFilteringProfile.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpFilteringProfile.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.DlpFilteringProfile.created_by
+      description: User who created the profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpFilteringProfile.updated_by
+      description: User who last updated the profile.
+      type: String
   - name: prisma-airs-runtime-scan-logs
     description: Query runtime scan logs for a specified time period.
     arguments:
@@ -924,6 +2149,220 @@ script:
     - contextPath: PrismaAIRs.Topic.tsg_id
       description: Tenant Service Group ID.
       type: String
+  - name: prisma-airs-runtime-topics-get
+    description: Get a specific custom topic by ID or name.
+    arguments:
+    - name: topic_id
+      required: false
+      description: Topic UUID (either topic_id or topic_name is required).
+    - name: topic_name
+      required: false
+      description: Topic name.
+    outputs:
+    - contextPath: PrismaAIRs.Topic.topic_id
+      description: Topic UUID.
+      type: String
+    - contextPath: PrismaAIRs.Topic.topic_name
+      description: Topic name.
+      type: String
+    - contextPath: PrismaAIRs.Topic.revision
+      description: Topic revision number.
+      type: Number
+    - contextPath: PrismaAIRs.Topic.active
+      description: Whether the topic is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.Topic.description
+      description: Topic description.
+      type: String
+    - contextPath: PrismaAIRs.Topic.examples
+      description: Example prompts for the topic.
+      type: Unknown
+    - contextPath: PrismaAIRs.Topic.created_by
+      description: User who created the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.updated_by
+      description: User who last updated the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.Topic.created_ts
+      description: Creation timestamp.
+      type: Date
+  - name: prisma-airs-runtime-topics-create
+    description: Create a new custom topic guardrail with examples for detection.
+    arguments:
+    - name: topic_name
+      required: true
+      description: Name for the new topic (must be unique).
+    - name: description
+      required: true
+      description: Description of what this topic detects.
+    - name: examples
+      required: true
+      description: Comma-separated list of example prompts/content that match this topic.
+      isArray: true
+    - name: active
+      required: false
+      description: Whether the topic should be active.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.Topic.topic_id
+      description: Topic UUID.
+      type: String
+    - contextPath: PrismaAIRs.Topic.topic_name
+      description: Topic name.
+      type: String
+    - contextPath: PrismaAIRs.Topic.revision
+      description: Topic revision number (starts at 1).
+      type: Number
+    - contextPath: PrismaAIRs.Topic.active
+      description: Whether the topic is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.Topic.description
+      description: Topic description.
+      type: String
+    - contextPath: PrismaAIRs.Topic.examples
+      description: Example prompts for the topic.
+      type: Unknown
+    - contextPath: PrismaAIRs.Topic.created_by
+      description: User who created the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.updated_by
+      description: User who last updated the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.Topic.created_ts
+      description: Creation timestamp.
+      type: Date
+  - name: prisma-airs-runtime-topics-update
+    execution: true
+    description: Update an existing custom topic. WARNING - Modifying topic definition can break detection if misconfigured.
+    arguments:
+    - name: topic_id
+      required: true
+      description: Topic UUID to update.
+    - name: topic_name
+      required: true
+      description: Topic name (can be changed or kept the same).
+    - name: description
+      required: false
+      description: Updated description (if omitted, description remains unchanged).
+    - name: examples
+      required: false
+      description: Updated comma-separated list of examples (if omitted, examples remain unchanged).
+      isArray: true
+    - name: active
+      required: false
+      description: Whether the topic should be active.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.Topic.topic_id
+      description: Topic UUID.
+      type: String
+    - contextPath: PrismaAIRs.Topic.topic_name
+      description: Topic name.
+      type: String
+    - contextPath: PrismaAIRs.Topic.revision
+      description: Topic revision number (incremented after update).
+      type: Number
+    - contextPath: PrismaAIRs.Topic.active
+      description: Whether the topic is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.Topic.description
+      description: Topic description.
+      type: String
+    - contextPath: PrismaAIRs.Topic.examples
+      description: Example prompts for the topic.
+      type: Unknown
+    - contextPath: PrismaAIRs.Topic.created_by
+      description: User who created the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.updated_by
+      description: User who last updated the topic.
+      type: String
+    - contextPath: PrismaAIRs.Topic.last_modified_ts
+      description: Last modification timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.Topic.created_ts
+      description: Creation timestamp.
+      type: Date
+  - name: prisma-airs-runtime-topics-delete
+    execution: true
+    description: Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is referenced by any security profile.
+    arguments:
+    - name: topic_id
+      required: true
+      description: Topic UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.TopicDeleted.topic_id
+      description: Deleted topic ID.
+      type: String
+    - contextPath: PrismaAIRs.TopicDeleted.message
+      description: Deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.TopicDeleted.deleted
+      description: Boolean indicating successful deletion.
+      type: Boolean
+  - name: prisma-airs-runtime-topics-apply
+    description: Apply a topic to a security profile (additive - preserves existing topics). This command orchestrates multiple API calls to assign a custom topic to a profile's topic-guardrails configuration.
+    arguments:
+    - name: profile_name
+      required: true
+      description: Security profile name to apply the topic to.
+    - name: topic_name
+      required: true
+      description: Topic name to apply. The topic must already exist (create with prisma-airs-runtime-topics-create).
+    - name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - block
+      defaultValue: block
+      description: Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Default is 'block'.
+    - name: guardrail_action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - block
+      defaultValue: block
+      description: Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Default is 'block'.
+    outputs:
+    - contextPath: PrismaAIRs.TopicApplied.profile_name
+      description: Security profile name.
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.profile_id
+      description: Security profile UUID.
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.topic_name
+      description: Topic name that was applied.
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.topic_id
+      description: Topic UUID.
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.topic_revision
+      description: Topic revision number (pinned to ensure consistent detection).
+      type: Number
+    - contextPath: PrismaAIRs.TopicApplied.action
+      description: Topic action (allow or block).
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.guardrail_action
+      description: Guardrail-level default action.
+      type: String
+    - contextPath: PrismaAIRs.TopicApplied.applied
+      description: Boolean indicating successful application.
+      type: Boolean
   - name: prisma-airs-runtime-bulk-scan
     description: Perform bulk scanning of multiple prompts.
     arguments:
@@ -1323,6 +2762,249 @@ script:
     - contextPath: PrismaAIRs.ModelSecurityLabelsDelete.success
       description: Whether the operation succeeded.
       type: Boolean
+  - name: prisma-airs-model-security-scans-evaluation
+    description: Get a single rule evaluation by UUID. Retrieves detailed information about how a specific rule was evaluated during a scan.
+    arguments:
+    - name: uuid
+      required: true
+      description: Evaluation UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.uuid
+      description: Evaluation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.scan_uuid
+      description: Scan UUID this evaluation belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_instance_uuid
+      description: Rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.result
+      description: Evaluation result (PASSED/FAILED/ERROR).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.violation_count
+      description: Number of violations found.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_instance_state
+      description: Rule instance state (BLOCKING/ALLOWING/DISABLED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.created_at
+      description: Evaluation creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.updated_at
+      description: Evaluation last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-scans-violation
+    description: Get a single violation by UUID. Retrieves detailed information about a specific security rule violation found during a scan.
+    arguments:
+    - name: uuid
+      required: true
+      description: Violation UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.uuid
+      description: Violation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_name
+      description: Security rule name that failed.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.description
+      description: Violation description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_instance_state
+      description: Rule instance state (BLOCKING/ALLOWING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.file
+      description: File path where violation was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.threat
+      description: Threat type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.threat_description
+      description: Threat description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.module
+      description: Module where threat was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.operator
+      description: Operator involved in violation.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.hash
+      description: Hash of the violating file.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_instance_uuid
+      description: Rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.created_at
+      description: Violation creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.updated_at
+      description: Violation last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-scans-files
+    description: Get files for a scan. Lists all files that were scanned within a model, showing file structure and scan results.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: Scan UUID to retrieve files for.
+    - name: limit
+      required: false
+      description: Maximum number of files to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: Offset for pagination.
+      defaultValue: '0'
+    - name: sort_field
+      required: false
+      description: Sort by field (path, type).
+    - name: sort_dir
+      required: false
+      description: Sort direction (asc, desc).
+    - name: type
+      required: false
+      description: Filter by file type (FILE, DIRECTORY).
+    - name: result
+      required: false
+      description: Filter by scan result (SUCCESS, FAILURE).
+    - name: query_path
+      required: false
+      description: Filter files by path prefix (default '/').
+      defaultValue: '/'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityFiles.scan_uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.uuid
+      description: File entry UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.path
+      description: File path within model.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.parent_path
+      description: Parent directory path.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.type
+      description: File type (FILE, DIRECTORY).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.result
+      description: Scan result (SUCCESS, FAILURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.model_version_uuid
+      description: Model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.blob_id
+      description: Blob storage identifier.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.formats
+      description: Model formats detected.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.scan_uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.created_at
+      description: File entry creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.updated_at
+      description: File entry last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.total_items
+      description: Total number of files available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityFiles.limit
+      description: Limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityFiles.offset
+      description: Offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-scans-evaluations
+    description: Get rule evaluations for a scan. Lists all rule evaluations showing which security rules passed, failed, or had errors.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: Scan UUID to retrieve evaluations for.
+    - name: limit
+      required: false
+      description: Maximum number of evaluations to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: Offset for pagination.
+      defaultValue: '0'
+    - name: sort_field
+      required: false
+      description: Sort by field (created_at, updated_at).
+    - name: sort_order
+      required: false
+      description: Sort order (asc, desc).
+    - name: result
+      required: false
+      description: Filter by evaluation result (PASSED, FAILED, ERROR).
+    - name: rule_instance_uuid
+      required: false
+      description: Filter by specific rule instance UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.scan_uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.uuid
+      description: Rule evaluation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.scan_uuid
+      description: Scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_name
+      description: Security rule name (e.g., Pickle Scan, Malware Scan).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.result
+      description: Evaluation result (PASSED, FAILED, ERROR).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.violation_count
+      description: Number of violations detected by this rule.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_state
+      description: Rule instance state (BLOCKING, MONITORING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_uuid
+      description: Rule instance UUID that performed the evaluation.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_description
+      description: Rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at
+      description: Evaluation creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at
+      description: Evaluation last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.total_items
+      description: Total number of evaluations available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.limit
+      description: Limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.offset
+      description: Offset used for pagination.
+      type: Number
   - name: prisma-airs-model-security-groups-list
     description: List all model security groups.
     arguments:
@@ -1427,6 +3109,59 @@ script:
       type: String
     - contextPath: PrismaAIRs.ModelSecurityGroup.state
       description: Group state (PENDING initially, becomes ACTIVE after configuration).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-groups-delete
+    description: Delete a security group. Removes a security group that is no longer needed.
+    arguments:
+    - name: uuid
+      required: true
+      description: Security group UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroupDelete.uuid
+      description: UUID of deleted security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupDelete.deleted
+      description: Whether the deletion succeeded.
+      type: Boolean
+  - name: prisma-airs-model-security-groups-update
+    description: Update an existing security group. Updates the name and/or description of a security group.
+    arguments:
+    - name: uuid
+      required: true
+      description: Security group UUID to update.
+    - name: name
+      required: false
+      description: New name for the security group.
+    - name: description
+      required: false
+      description: New description for the security group.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
+      description: Security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.name
+      description: Security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.description
+      description: Security group description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+      description: Model source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.state
+      description: Group state (ACTIVE, PENDING).
       type: String
     - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
       description: Whether the group is marked for deletion.
@@ -1598,6 +3333,49 @@ script:
     - name: field_values
       required: false
       description: Custom field values as JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.uuid
+      description: Rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.security_group_uuid
+      description: Security group UUID this instance belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.security_rule_uuid
+      description: Security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.state
+      description: Rule instance state (DISABLED/ALLOWING/BLOCKING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_type
+      description: Security rule type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.created_at
+      description: Rule instance creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.updated_at
+      description: Rule instance last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.tsg_id
+      description: Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.field_values
+      description: Custom field values for this rule instance.
+      type: Unknown
+  - name: prisma-airs-model-security-rule-instances-get
+    description: Get a single rule instance within a security group. Retrieves detailed configuration of a specific rule instance.
+    arguments:
+    - name: security_group_uuid
+      required: true
+      description: Security group UUID.
+    - name: rule_instance_uuid
+      required: true
+      description: Rule instance UUID to retrieve.
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityRuleInstance.uuid
       description: Rule instance UUID.
