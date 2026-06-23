@@ -2917,12 +2917,12 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
     url_suffix = f"/v1/scans/{scan_uuid}/labels"
     params = {"keys": keys}  # SDK passes array as repeated query params
 
-    response = client.http_request(
+    client.http_request(
         method="DELETE",
         url_suffix=url_suffix,
         params=params,
         use_model_sec_data=True,
-        resp_type="response"  # DELETE may return empty response (204 No Content)
+        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Response is void/undefined on success per SDK
@@ -5897,11 +5897,11 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
     # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (deletePrompt method)
     # Endpoint: DELETE /v1/custom-attack/custom-prompt-set/{promptSetUuid}/custom-prompt/{promptUuid}
     # Response: BaseResponse (message, status) or undefined
-    response = client.http_request(
+    client.http_request(
         method="DELETE",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
         use_redteam_mgmt=True,
-        resp_type="response"  # DELETE may return empty response
+        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Parse response according to BaseResponseSchema (optional)
@@ -7888,7 +7888,7 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
         method="DELETE",
         url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
         use_dlp_base=True,
-        resp_type="response"  # DELETE returns 204 No Content (empty response)
+        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     readable_output = f"## Prisma AIRs DLP Dictionary Deleted\n\nDictionary ID `{dictionary_id}` has been successfully deleted."
@@ -8390,7 +8390,7 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
         method="DELETE",
         url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
         use_dlp_base=True,
-        resp_type="response"  # DELETE returns 204 No Content (empty response)
+        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     readable_output = f"## Prisma AIRs DLP Pattern Deleted\n\nPattern ID `{pattern_id}` has been successfully archived."
