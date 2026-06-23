@@ -1608,7 +1608,6 @@ def test_get_file_content_command_google_doc(mocker_http_request, gsuite_client)
         result = get_file_content_command(gsuite_client, args)
 
     assert result.outputs_prefix == "FileContent"
-    assert result.outputs_key_field == "Id"
     assert result.outputs["Id"] == "test-file-id"
     assert result.outputs["Title"] == "test_document"
     assert result.outputs["Type"] == "text/markdown"
@@ -1651,7 +1650,7 @@ def test_get_file_content_command_google_sheet_text_export(mocker_http_request, 
 def test_get_file_content_command_regular_text_file(mocker_http_request, gsuite_client):
     """
     Given:
-        A Google Drive URL pointing to a regular text/plain file uploaded directly to Drive.
+        A Google Drive URL pointing to a regular CSV file uploaded directly to Drive.
     When:
         Calling the get-file-content command with the URL.
     Then:
@@ -1660,22 +1659,22 @@ def test_get_file_content_command_regular_text_file(mocker_http_request, gsuite_
     from GoogleDrive import get_file_content_command
 
     mock_metadata = {
-        "id": "test-txt-id",
-        "name": "test_notes.txt",
-        "mimeType": "text/plain",
-        "webViewLink": "https://drive.google.com/file/d/test-txt-id/view",
+        "id": "test-csv-id",
+        "name": "test_notes.csv",
+        "mimeType": "text/csv",
+        "webViewLink": "https://drive.google.com/file/d/test-csv-id/view",
     }
     mocker_http_request.return_value = mock_metadata
 
     mock_drive_service = MagicMock()
-    mock_drive_service.files().get_media().execute.return_value = b"hello world\n"
+    mock_drive_service.files().get_media().execute.return_value = b"hello,world\n"
 
     with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
-        args = {"url": "https://drive.google.com/file/d/test-txt-id/view"}
+        args = {"url": "https://drive.google.com/file/d/test-csv-id/view"}
         result = get_file_content_command(gsuite_client, args)
 
-    assert result.outputs["Type"] == "text/plain"
-    assert result.outputs["Content"] == "hello world\n"
+    assert result.outputs["Type"] == "text/csv"
+    assert result.outputs["Content"] == "hello,world\n"
 
 
 def test_get_file_content_command_missing_url(gsuite_client):

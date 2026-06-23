@@ -17,7 +17,7 @@ import yaml
 from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
-APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx", ".yaml", ".yml", ".txt"}
+APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx", ".yaml", ".yml"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
@@ -35,7 +35,6 @@ MIME_TO_EXTENSION = {
     "application/x-yaml": ".yaml",
     "application/vnd.google-apps.document": ".md",
     "application/vnd.google-apps.spreadsheet": ".csv",
-    "text/plain": ".txt",
 }
 
 
