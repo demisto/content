@@ -1462,6 +1462,692 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def model_security_scans_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new model security scan.
+
+    This command creates a scan and returns immediately with PENDING status.
+    Use prisma-airs-model-security-scans-get to poll for completion.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    model_uri = args.get("model_uri")
+    security_group_uuid = args.get("security_group_uuid")
+    scan_origin = args.get("scan_origin", "XSOAR_INTEGRATION")
+
+    if not model_uri:
+        raise ValueError("model_uri is required")
+    if not security_group_uuid:
+        raise ValueError("security_group_uuid is required")
+
+    # Build request body according to ScanCreateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Required: model_uri, security_group_uuid, scan_origin
+    # Optional: allow_patterns, ignore_patterns, labels, model_author, model_name, model_version, scan_details
+    request_body: dict[str, Any] = {
+        "model_uri": model_uri,
+        "security_group_uuid": security_group_uuid,
+        "scan_origin": scan_origin
+    }
+
+    # Add optional fields if provided
+    if args.get("model_name"):
+        request_body["model_name"] = args.get("model_name")
+    if args.get("model_author"):
+        request_body["model_author"] = args.get("model_author")
+    if args.get("model_version"):
+        request_body["model_version"] = args.get("model_version")
+
+    # Call Model Security Data API to create scan
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.create(body)
+    # Endpoint: POST /v1/scans (data plane, not management)
+    url_suffix = "/v1/scans"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: ScanBaseResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, model_uri, owner, scan_origin,
+    #         security_group_uuid, security_group_name, model_version_uuid, eval_outcome,
+    #         source_type, eval_summary, etc.
+    scan_info = {
+        "uuid": response.get("uuid"),
+        "model_uri": response.get("model_uri"),
+        "security_group_uuid": response.get("security_group_uuid"),
+        "security_group_name": response.get("security_group_name"),
+        "scan_origin": response.get("scan_origin"),
+        "eval_outcome": response.get("eval_outcome"),
+        "source_type": response.get("source_type"),
+        "owner": response.get("owner"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Add eval_summary if present
+    eval_summary = response.get("eval_summary")
+    if eval_summary:
+        scan_info["rules_passed"] = eval_summary.get("rules_passed", 0)
+        scan_info["rules_failed"] = eval_summary.get("rules_failed", 0)
+        scan_info["total_rules"] = eval_summary.get("total_rules", 0)
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Model Security Scan Created",
+        [scan_info],
+        headers=["uuid", "model_uri", "eval_outcome", "security_group_name", "source_type", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add helpful notes
+    readable_output += f"\n**Scan UUID:** `{scan_info.get('uuid')}`"
+    readable_output += f"\n**Status:** {scan_info.get('eval_outcome')} (scan is processing)"
+    readable_output += f"\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-get uuid=\"{scan_info.get('uuid')}\"` to check scan status and results."
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
+        outputs_key_field="uuid",
+        outputs=scan_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get model security scan status and results.
+
+    This command retrieves the current state of a scan, including eval_outcome (PENDING/ALLOWED/BLOCKED),
+    rule evaluation summary, and any error details.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Data API to get scan details
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.get(uuid)
+    # Endpoint: GET /v1/scans/{uuid} (data plane)
+    url_suffix = f"/v1/scans/{uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: ScanBaseResponseSchema (same as scans-create)
+    # Key fields: uuid, eval_outcome (PENDING/ALLOWED/BLOCKED), eval_summary, error_code, error_message
+    scan_info = {
+        "uuid": response.get("uuid"),
+        "model_uri": response.get("model_uri"),
+        "security_group_uuid": response.get("security_group_uuid"),
+        "security_group_name": response.get("security_group_name"),
+        "scan_origin": response.get("scan_origin"),
+        "eval_outcome": response.get("eval_outcome"),
+        "source_type": response.get("source_type"),
+        "owner": response.get("owner"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "created_by": response.get("created_by"),
+        "tsg_id": response.get("tsg_id"),
+        "model_version_uuid": response.get("model_version_uuid"),
+        "enabled_rule_count_snapshot": response.get("enabled_rule_count_snapshot"),
+        "scanner_version": response.get("scanner_version"),
+        "time_started": response.get("time_started"),
+        "total_files_scanned": response.get("total_files_scanned"),
+        "total_files_skipped": response.get("total_files_skipped")
+    }
+
+    # Add eval_summary if present
+    eval_summary = response.get("eval_summary")
+    if eval_summary:
+        scan_info["rules_passed"] = eval_summary.get("rules_passed", 0)
+        scan_info["rules_failed"] = eval_summary.get("rules_failed", 0)
+        scan_info["total_rules"] = eval_summary.get("total_rules", 0)
+
+    # Add error details if present
+    if response.get("error_code"):
+        scan_info["error_code"] = response.get("error_code")
+    if response.get("error_message"):
+        scan_info["error_message"] = response.get("error_message")
+
+    # Add model formats if present
+    if response.get("model_formats"):
+        scan_info["model_formats"] = response.get("model_formats")
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Model Security Scan Status",
+        [scan_info],
+        headers=["uuid", "eval_outcome", "model_uri", "security_group_name", "source_type", "rules_passed", "rules_failed", "total_rules", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add status-specific notes
+    eval_outcome = scan_info.get("eval_outcome")
+    if eval_outcome == "PENDING":
+        readable_output += "\n\n**Status:** Scan is still processing. Poll this command to check for completion."
+    elif eval_outcome == "ALLOWED":
+        readable_output += f"\n\n**Status:** ✅ Scan complete - model ALLOWED ({scan_info.get('rules_passed', 0)} rules passed, {scan_info.get('rules_failed', 0)} failed)"
+    elif eval_outcome == "BLOCKED":
+        readable_output += f"\n\n**Status:** ❌ Scan complete - model BLOCKED ({scan_info.get('rules_failed', 0)} rules failed)"
+        readable_output += f"\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-violations uuid=\"{uuid}\"` to see detailed violations."
+
+    # Add error details if present
+    if scan_info.get("error_code") or scan_info.get("error_message"):
+        readable_output += f"\n\n**Error Code:** {scan_info.get('error_code', 'N/A')}"
+        readable_output += f"\n**Error Message:** {scan_info.get('error_message', 'N/A')}"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
+        outputs_key_field="uuid",
+        outputs=scan_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_scans_violations_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get rule violations for a model security scan.
+
+    This command retrieves detailed violation information for a completed scan,
+    showing which security rules failed and why.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Data API to get scan violations
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getViolations(scanUuid, opts)
+    # Endpoint: GET /v1/scans/{uuid}/rule-violations (data plane)
+    url_suffix = f"/v1/scans/{uuid}/rule-violations"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: ViolationListSchema
+    # Response: { pagination: {...}, violations: [...] }
+    violations_list = response.get("violations", [])
+    pagination = response.get("pagination", {})
+
+    # Transform violations for XSOAR output
+    # Fields per ViolationResponseSchema: uuid, tsg_id, created_at, updated_at, description,
+    # rule_instance_uuid, rule_name, rule_description, rule_instance_state,
+    # file, hash, module, operator, threat, threat_description
+    violations = []
+    for violation in violations_list:
+        violations.append({
+            "uuid": violation.get("uuid"),
+            "rule_name": violation.get("rule_name"),
+            "rule_description": violation.get("rule_description"),
+            "description": violation.get("description"),
+            "rule_instance_state": violation.get("rule_instance_state"),
+            "file": violation.get("file"),
+            "threat": violation.get("threat"),
+            "threat_description": violation.get("threat_description"),
+            "module": violation.get("module"),
+            "operator": violation.get("operator"),
+            "hash": violation.get("hash"),
+            "rule_instance_uuid": violation.get("rule_instance_uuid"),
+            "created_at": violation.get("created_at"),
+            "updated_at": violation.get("updated_at"),
+            "tsg_id": violation.get("tsg_id")
+        })
+
+    # Create readable output using XSOAR table format
+    if violations:
+        readable_output = tableToMarkdown(
+            f"Model Security Scan Violations (Scan: {uuid})",
+            violations,
+            headers=["rule_name", "description", "threat", "file", "module", "operator", "rule_instance_state"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Violations:** {len(violations)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(violations)} of {pagination.get('total_items')})"
+    else:
+        readable_output = f"No violations found for scan {uuid}"
+
+    # Add context output with pagination metadata
+    context_output = {
+        "scan_uuid": uuid,
+        "violations": violations,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityViolation",
+        outputs_key_field="uuid",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get distinct label keys across all scans.
+
+    Lists all unique label keys that have been used across scans for organization/filtering.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    # Call Model Security Data API to get label keys
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getLabelKeys(opts)
+    # Endpoint: GET /v1/scans/label-keys (data plane)
+    url_suffix = "/v1/scans/label-keys"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: LabelKeyListSchema
+    # Response: { pagination: {...}, keys: [...] }
+    keys = response.get("keys", [])
+    pagination = response.get("pagination", {})
+
+    # Create readable output
+    if keys:
+        # Convert array of strings to list of dicts for table display
+        keys_table = [{"Key": key} for key in keys]
+        readable_output = tableToMarkdown(
+            "Model Security Label Keys",
+            keys_table,
+            headers=["Key"],
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Keys:** {len(keys)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(keys)} of {pagination.get('total_items')})"
+    else:
+        readable_output = "No label keys found"
+
+    # Add context output
+    context_output = {
+        "keys": keys,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelKeys",
+        outputs_key_field=None,  # No unique key field for this list
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_labels_values_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get distinct values for a label key.
+
+    Lists all unique values that have been used for a specific label key across scans.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    key = args.get("key")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    if not key:
+        raise ValueError("key is required")
+
+    # Call Model Security Data API to get label values
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.getLabelValues(key, opts)
+    # Endpoint: GET /v1/scans/label-keys/{key}/values (data plane)
+    # Note: SDK uses encodeURIComponent for key in path
+    from urllib.parse import quote
+    url_suffix = f"/v1/scans/label-keys/{quote(key, safe='')}/values"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: LabelValueListSchema
+    # Response: { pagination: {...}, values: [...] }
+    values = response.get("values", [])
+    pagination = response.get("pagination", {})
+
+    # Create readable output
+    if values:
+        # Convert array of strings to list of dicts for table display
+        values_table = [{"Value": value} for value in values]
+        readable_output = tableToMarkdown(
+            f"Model Security Label Values for Key: {key}",
+            values_table,
+            headers=["Value"],
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Values:** {len(values)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(values)} of {pagination.get('total_items')})"
+    else:
+        readable_output = f"No label values found for key: {key}"
+
+    # Add context output
+    context_output = {
+        "key": key,
+        "values": values,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelValues",
+        outputs_key_field=None,  # No unique key field for this list
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Add labels to a model security scan.
+
+    Adds one or more labels to an existing scan for organization/filtering.
+    Labels are key-value pairs that can be used to tag scans.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_uuid = args.get("scan_uuid")
+    labels_json = args.get("labels")
+
+    if not scan_uuid:
+        raise ValueError("scan_uuid is required")
+    if not labels_json:
+        raise ValueError("labels is required")
+
+    # Parse labels JSON
+    # Expected format: [{"key": "env", "value": "prod"}, {"key": "team", "value": "security"}]
+    import json
+    try:
+        labels = json.loads(labels_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"labels must be valid JSON array: {e}")
+
+    # Validate labels structure
+    if not isinstance(labels, list):
+        raise ValueError("labels must be a JSON array of objects with 'key' and 'value' fields")
+
+    for label in labels:
+        if not isinstance(label, dict) or "key" not in label or "value" not in label:
+            raise ValueError("Each label must have 'key' and 'value' fields")
+
+    # Build request body according to LabelsCreateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Schema: { labels: [{ key: string, value: string }] }
+    request_body = {
+        "labels": labels
+    }
+
+    # Call Model Security Data API to add labels
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.addLabels(scanUuid, body)
+    # Endpoint: POST /v1/scans/{uuid}/labels (data plane)
+    url_suffix = f"/v1/scans/{scan_uuid}/labels"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_data=True
+    )
+
+    # Response is empty object on success per LabelsResponseSchema
+    # Create readable output
+    labels_summary = ", ".join([f"{label['key']}={label['value']}" for label in labels])
+    readable_output = f"✅ Successfully added {len(labels)} label(s) to scan {scan_uuid}\n\n"
+    readable_output += f"**Labels Added:** {labels_summary}"
+
+    # Context output
+    context_output = {
+        "scan_uuid": scan_uuid,
+        "labels_added": labels,
+        "success": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsAdd",
+        outputs_key_field=None,
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Set labels on a model security scan (replace all existing).
+
+    Replaces all existing labels on a scan with the provided labels.
+    This is different from add which appends to existing labels.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_uuid = args.get("scan_uuid")
+    labels_json = args.get("labels")
+
+    if not scan_uuid:
+        raise ValueError("scan_uuid is required")
+    if not labels_json:
+        raise ValueError("labels is required")
+
+    # Parse labels JSON
+    # Expected format: [{"key": "env", "value": "prod"}, {"key": "team", "value": "security"}]
+    import json
+    try:
+        labels = json.loads(labels_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"labels must be valid JSON array: {e}")
+
+    # Validate labels structure
+    if not isinstance(labels, list):
+        raise ValueError("labels must be a JSON array of objects with 'key' and 'value' fields")
+
+    for label in labels:
+        if not isinstance(label, dict) or "key" not in label or "value" not in label:
+            raise ValueError("Each label must have 'key' and 'value' fields")
+
+    # Build request body according to LabelsCreateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Schema: { labels: [{ key: string, value: string }] }
+    request_body = {
+        "labels": labels
+    }
+
+    # Call Model Security Data API to set labels (replace all)
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.setLabels(scanUuid, body)
+    # Endpoint: PUT /v1/scans/{uuid}/labels (data plane)
+    url_suffix = f"/v1/scans/{scan_uuid}/labels"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_data=True
+    )
+
+    # Response is empty object on success per LabelsResponseSchema
+    # Create readable output
+    labels_summary = ", ".join([f"{label['key']}={label['value']}" for label in labels])
+    readable_output = f"✅ Successfully set {len(labels)} label(s) on scan {scan_uuid}\n\n"
+    readable_output += f"**Labels (all previous labels replaced):** {labels_summary}"
+
+    # Context output
+    context_output = {
+        "scan_uuid": scan_uuid,
+        "labels_set": labels,
+        "success": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsSet",
+        outputs_key_field=None,
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete labels from a model security scan by key.
+
+    Deletes specific labels from a scan by providing their keys.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_uuid = args.get("scan_uuid")
+    keys_str = args.get("keys")
+
+    if not scan_uuid:
+        raise ValueError("scan_uuid is required")
+    if not keys_str:
+        raise ValueError("keys is required")
+
+    # Parse keys - can be comma-separated string or JSON array
+    # Expected format: "env,team" or '["env","team"]'
+    keys = []
+    if keys_str.startswith("["):
+        # JSON array format
+        import json
+        try:
+            keys = json.loads(keys_str)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"keys must be valid JSON array or comma-separated string: {e}")
+
+        if not isinstance(keys, list):
+            raise ValueError("keys JSON must be an array of strings")
+    else:
+        # Comma-separated format
+        keys = [key.strip() for key in keys_str.split(",")]
+
+    # Validate keys
+    if not keys:
+        raise ValueError("At least one key must be provided")
+
+    # Call Model Security Data API to delete labels
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
+    # SDK: ScansClient.deleteLabels(scanUuid, keys)
+    # Endpoint: DELETE /v1/scans/{uuid}/labels?keys=key1&keys=key2 (data plane)
+    url_suffix = f"/v1/scans/{scan_uuid}/labels"
+    params = {"keys": keys}  # SDK passes array as repeated query params
+
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_data=True,
+        resp_type="response"  # DELETE may return empty response
+    )
+
+    # Response is void/undefined on success per SDK
+    # Create readable output
+    keys_summary = ", ".join(keys)
+    readable_output = f"✅ Successfully deleted {len(keys)} label key(s) from scan {scan_uuid}\n\n"
+    readable_output += f"**Deleted Keys:** {keys_summary}"
+
+    # Context output
+    context_output = {
+        "scan_uuid": scan_uuid,
+        "keys_deleted": keys,
+        "success": True
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsDelete",
+        outputs_key_field=None,
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response={}  # Empty response
+    )
+
+
 def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List model security groups.
 
@@ -1525,6 +2211,147 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
+def model_security_groups_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get model security group details by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Management API to get security group details
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.get(uuid)
+    # Endpoint: GET /v1/security-groups/{uuid}
+    url_suffix = f"/v1/security-groups/{uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityGroupResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
+    group_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "source_type": response.get("source_type"),
+        "state": response.get("state"),
+        "is_tombstone": response.get("is_tombstone"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        f"Model Security Group: {group_info.get('name')}",
+        [group_info],
+        headers=["uuid", "name", "description", "source_type", "state", "created_at", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
+        outputs_key_field="uuid",
+        outputs=group_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_groups_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new model security group.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    name = args.get("name")
+    source_type = args.get("source_type")
+    description = args.get("description", "")
+
+    if not name:
+        raise ValueError("name is required")
+    if not source_type:
+        raise ValueError("source_type is required")
+
+    # Validate source_type
+    valid_source_types = ["HUGGING_FACE", "LOCAL", "S3", "GCS", "AZURE"]
+    if source_type not in valid_source_types:
+        raise ValueError(f"source_type must be one of: {', '.join(valid_source_types)}")
+
+    # Build request body according to ModelSecurityGroupCreateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Required: name, source_type
+    # Optional: description, rule_configurations
+    request_body = {
+        "name": name,
+        "source_type": source_type,
+        "description": description
+    }
+
+    # Call Model Security Management API to create security group
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.create(body)
+    # Endpoint: POST /v1/security-groups
+    url_suffix = "/v1/security-groups"
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityGroupResponseSchema
+    # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
+    group_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "source_type": response.get("source_type"),
+        "state": response.get("state"),
+        "is_tombstone": response.get("is_tombstone"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        f"Model Security Group Created: {group_info.get('name')}",
+        [group_info],
+        headers=["uuid", "name", "description", "source_type", "state", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add helpful note
+    readable_output += f"\n**UUID:** `{group_info.get('uuid')}`"
+    readable_output += f"\n**State:** {group_info.get('state')} (Group will become ACTIVE after rule instances are configured)"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
+        outputs_key_field="uuid",
+        outputs=group_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
 def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List model security rules.
 
@@ -1580,6 +2407,313 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRule",
         outputs_key_field="uuid",
         outputs=rules,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get model security rule details by UUID.
+
+    Retrieves full rule definition including description, compatible sources, default state,
+    remediation steps, and editable fields.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Call Model Security Management API to get rule details
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-rules-client.ts
+    # SDK: SecurityRulesClient.get(uuid)
+    # Endpoint: GET /v1/security-rules/{uuid} (management plane)
+    url_suffix = f"/v1/security-rules/{uuid}"
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityRuleResponseSchema
+    # Fields: uuid, name, description, rule_type, compatible_sources, default_state,
+    #         remediation (description, steps, url), editable_fields, constant_values, default_values
+    rule_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "description": response.get("description"),
+        "rule_type": response.get("rule_type"),
+        "compatible_sources": response.get("compatible_sources", []),
+        "default_state": response.get("default_state")
+    }
+
+    # Add remediation info
+    remediation = response.get("remediation")
+    if remediation:
+        rule_info["remediation_description"] = remediation.get("description")
+        rule_info["remediation_steps"] = remediation.get("steps", [])
+        rule_info["remediation_url"] = remediation.get("url")
+
+    # Add editable_fields, constant_values, default_values for advanced use
+    if response.get("editable_fields"):
+        rule_info["editable_fields"] = response.get("editable_fields")
+    if response.get("constant_values"):
+        rule_info["constant_values"] = response.get("constant_values")
+    if response.get("default_values"):
+        rule_info["default_values"] = response.get("default_values")
+
+    # Create readable output using XSOAR table format
+    # Basic info table
+    basic_info = [{
+        "UUID": rule_info.get("uuid"),
+        "Name": rule_info.get("name"),
+        "Type": rule_info.get("rule_type"),
+        "Default State": rule_info.get("default_state"),
+        "Compatible Sources": ", ".join(rule_info.get("compatible_sources", []))
+    }]
+
+    readable_output = tableToMarkdown(
+        "Model Security Rule Details",
+        basic_info,
+        headers=["UUID", "Name", "Type", "Default State", "Compatible Sources"],
+        removeNull=True
+    )
+
+    # Add description
+    readable_output += f"\n**Description:** {rule_info.get('description')}"
+
+    # Add remediation section if present
+    if remediation:
+        readable_output += "\n\n### Remediation"
+        readable_output += f"\n{remediation.get('description', '')}"
+        if remediation.get("steps"):
+            readable_output += "\n\n**Steps:**"
+            for i, step in enumerate(remediation.get("steps", []), 1):
+                readable_output += f"\n{i}. {step}"
+        if remediation.get("url"):
+            readable_output += f"\n\n**Reference:** {remediation.get('url')}"
+
+    # Add editable fields info if present
+    editable_fields = response.get("editable_fields", [])
+    if editable_fields:
+        readable_output += f"\n\n**Editable Fields:** {len(editable_fields)} field(s) can be customized when applying this rule to a security group"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRule",
+        outputs_key_field="uuid",
+        outputs=rule_info,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_rule_instances_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List rule instances for a security group.
+
+    Rule instances are rules that have been applied to a specific security group.
+    Each instance has a state (DISABLED/ALLOWING/BLOCKING) and optional field customizations.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    security_group_uuid = args.get("security_group_uuid")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    offset = arg_to_number(args.get("offset", 0))
+
+    if not security_group_uuid:
+        raise ValueError("security_group_uuid is required")
+
+    # Call Model Security Management API to list rule instances
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.listRuleInstances(securityGroupUuid, opts)
+    # Endpoint: GET /v1/security-groups/{uuid}/rule-instances (management plane)
+    url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances"
+    params = {
+        "limit": limit,
+        "offset": offset
+    }
+
+    # Add optional filters
+    if args.get("security_rule_uuid"):
+        params["security_rule_uuid"] = args.get("security_rule_uuid")
+    if args.get("state"):
+        params["state"] = args.get("state")
+
+    response = client.http_request(
+        method="GET",
+        url_suffix=url_suffix,
+        params=params,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ListModelSecurityRuleInstancesResponseSchema
+    # Response: { pagination: {...}, rule_instances: [...] }
+    rule_instances_list = response.get("rule_instances", [])
+    pagination = response.get("pagination", {})
+
+    # Transform rule instances for XSOAR output
+    # Fields per ModelSecurityRuleInstanceResponseSchema: uuid, tsg_id, created_at, updated_at,
+    # security_group_uuid, security_rule_uuid, state, rule (nested ModelSecurityRuleResponseSchema), field_values
+    rule_instances = []
+    for instance in rule_instances_list:
+        rule_data = instance.get("rule", {})
+        rule_instance_info = {
+            "uuid": instance.get("uuid"),
+            "security_group_uuid": instance.get("security_group_uuid"),
+            "security_rule_uuid": instance.get("security_rule_uuid"),
+            "state": instance.get("state"),
+            "rule_name": rule_data.get("name"),
+            "rule_type": rule_data.get("rule_type"),
+            "rule_description": rule_data.get("description"),
+            "created_at": instance.get("created_at"),
+            "updated_at": instance.get("updated_at"),
+            "tsg_id": instance.get("tsg_id")
+        }
+
+        # Add field_values if present (custom configuration for this rule instance)
+        if instance.get("field_values"):
+            rule_instance_info["field_values"] = instance.get("field_values")
+
+        rule_instances.append(rule_instance_info)
+
+    # Create readable output using XSOAR table format
+    if rule_instances:
+        readable_output = tableToMarkdown(
+            f"Model Security Rule Instances (Security Group: {security_group_uuid})",
+            rule_instances,
+            headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True
+        )
+        readable_output += f"\n\n**Total Rule Instances:** {len(rule_instances)}"
+        if pagination.get("total_items"):
+            readable_output += f" (showing {offset + 1}-{offset + len(rule_instances)} of {pagination.get('total_items')})"
+    else:
+        readable_output = f"No rule instances found for security group {security_group_uuid}"
+
+    # Add context output with pagination metadata
+    context_output = {
+        "security_group_uuid": security_group_uuid,
+        "rule_instances": rule_instances,
+        "total_items": pagination.get("total_items"),
+        "limit": limit,
+        "offset": offset
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
+        outputs_key_field="uuid",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def model_security_rule_instances_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update a rule instance within a security group.
+
+    This command allows updating the state (DISABLED/ALLOWING/BLOCKING) and field values
+    of a rule instance. Use this to enable/disable rules or customize rule parameters.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    security_group_uuid = args.get("security_group_uuid")
+    rule_instance_uuid = args.get("rule_instance_uuid")
+    state = args.get("state")
+
+    if not security_group_uuid:
+        raise ValueError("security_group_uuid is required")
+    if not rule_instance_uuid:
+        raise ValueError("rule_instance_uuid is required")
+
+    # Build request body according to ModelSecurityRuleInstanceUpdateRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
+    # Required: security_group_uuid
+    # Optional: state (DISABLED/ALLOWING/BLOCKING), field_values (custom rule config)
+    request_body: dict[str, Any] = {
+        "security_group_uuid": security_group_uuid
+    }
+
+    # Add optional state update
+    if state:
+        request_body["state"] = state
+
+    # Add optional field_values update (JSON object with custom rule configuration)
+    # Note: field_values is a JSON object, so we expect it as a JSON string in args
+    if args.get("field_values"):
+        import json
+        try:
+            request_body["field_values"] = json.loads(args.get("field_values"))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"field_values must be valid JSON: {e}")
+
+    # Call Model Security Management API to update rule instance
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
+    # SDK: SecurityGroupsClient.updateRuleInstance(securityGroupUuid, ruleInstanceUuid, body)
+    # Endpoint: PUT /v1/security-groups/{uuid}/rule-instances/{ruleInstanceUuid} (management plane)
+    url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances/{rule_instance_uuid}"
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=url_suffix,
+        json_data=request_body,
+        use_model_sec_mgmt=True
+    )
+
+    # Parse response - SDK schema: ModelSecurityRuleInstanceResponseSchema (same as list)
+    rule_data = response.get("rule", {})
+    rule_instance_info = {
+        "uuid": response.get("uuid"),
+        "security_group_uuid": response.get("security_group_uuid"),
+        "security_rule_uuid": response.get("security_rule_uuid"),
+        "state": response.get("state"),
+        "rule_name": rule_data.get("name"),
+        "rule_type": rule_data.get("rule_type"),
+        "rule_description": rule_data.get("description"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "tsg_id": response.get("tsg_id")
+    }
+
+    # Add field_values if present
+    if response.get("field_values"):
+        rule_instance_info["field_values"] = response.get("field_values")
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Updated Model Security Rule Instance",
+        [rule_instance_info],
+        headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
+
+    # Add helpful context about the update
+    if state:
+        readable_output += f"\n\n**State Updated:** {state}"
+    if response.get("field_values"):
+        readable_output += f"\n**Custom Field Values:** {len(response.get('field_values', {}))} field(s) configured"
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
+        outputs_key_field="uuid",
+        outputs=rule_instance_info,
         readable_output=readable_output,
         raw_response=response
     )
@@ -4467,11 +5601,50 @@ def main() -> None:
         elif command == "prisma-airs-model-security-scans-list":
             return_results(model_security_scans_list_command(client, args))
 
+        elif command == "prisma-airs-model-security-scans-create":
+            return_results(model_security_scans_create_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-get":
+            return_results(model_security_scans_get_command(client, args))
+
+        elif command == "prisma-airs-model-security-scans-violations":
+            return_results(model_security_scans_violations_command(client, args))
+
+        elif command == "prisma-airs-model-security-labels-keys":
+            return_results(model_security_labels_keys_command(client, args))
+
+        elif command == "prisma-airs-model-security-labels-values":
+            return_results(model_security_labels_values_command(client, args))
+
+        elif command == "prisma-airs-model-security-labels-add":
+            return_results(model_security_labels_add_command(client, args))
+
+        elif command == "prisma-airs-model-security-labels-set":
+            return_results(model_security_labels_set_command(client, args))
+
+        elif command == "prisma-airs-model-security-labels-delete":
+            return_results(model_security_labels_delete_command(client, args))
+
         elif command == "prisma-airs-model-security-groups-list":
             return_results(model_security_groups_list_command(client, args))
 
+        elif command == "prisma-airs-model-security-groups-get":
+            return_results(model_security_groups_get_command(client, args))
+
+        elif command == "prisma-airs-model-security-groups-create":
+            return_results(model_security_groups_create_command(client, args))
+
         elif command == "prisma-airs-model-security-rules-list":
             return_results(model_security_rules_list_command(client, args))
+
+        elif command == "prisma-airs-model-security-rules-get":
+            return_results(model_security_rules_get_command(client, args))
+
+        elif command == "prisma-airs-model-security-rule-instances-list":
+            return_results(model_security_rule_instances_list_command(client, args))
+
+        elif command == "prisma-airs-model-security-rule-instances-update":
+            return_results(model_security_rule_instances_update_command(client, args))
 
         elif command == "prisma-airs-redteam-targets-list":
             return_results(redteam_targets_list_command(client, args))
