@@ -699,8 +699,8 @@ def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]
 def main():  # pragma: no cover
     params = demisto.params()
     mail_server_url = params.get("MailServerURL")
-    port = arg_to_number(params.get("port"))
-    folder = params.get("folder")
+    port = arg_to_number(params.get("port") or 143)
+    folder = params.get("folder") or "INBOX"
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
     verify_ssl = not params.get("insecure", False)

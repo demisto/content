@@ -114,8 +114,8 @@ def test_module(client: Client, params) -> str:
     """
     'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    if argToBoolean(params.get("isFetchEvents")):
-        max_limit_validation(arg_to_number(params.get("max_fetch")))
+    if argToBoolean(params.get("isFetchEvents", False)):
+        max_limit_validation(arg_to_number(params.get("max_fetch", MAX_EVENTS_API_CALL)))
 
     args = {"limit": 1}
     get_events_command(client, args)
@@ -241,7 +241,7 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials", {})
     client_id = credentials.get("identifier")
     client_secret = credentials.get("password")
-    limit_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_API_CALL
+    limit_fetch = arg_to_number(params.get("max_fetch") or MAX_EVENTS_API_CALL)
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

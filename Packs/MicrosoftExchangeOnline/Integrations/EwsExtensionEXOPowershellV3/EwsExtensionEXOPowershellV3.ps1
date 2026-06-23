@@ -2652,6 +2652,23 @@ function DisableMailForwardingCommand {
 }
 function TestModuleCommand($client)
 {
+    # Override: params parity dump for test-module
+    try {
+        $pp_payload = @{
+            '__params_parity_dump__' = $true
+            'params' = $demisto.Params()
+        }
+        $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+        ReturnError "PARAMS_PARITY_DUMP::$pp_json"
+        return $null, $null, $null
+    }
+    catch [System.Management.Automation.MethodInvocationException] {
+        throw
+    }
+    catch {
+        # Probe must never break unrelated integrations. Swallow and continue.
+    }
+
     try
     {
         $client.CreateSession()
@@ -2667,172 +2684,286 @@ function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     param()
-    $command = $demisto.GetCommand()
-    $command_arguments = $demisto.Args()
-    $integration_params = [Hashtable] $demisto.Params()
-    if ($integration_params.password.password)
-    {
-        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
-    }
-    else
-    {
-        $password = $null
+
+    # Override: params parity dump for test-module (before any setup that might fail)
+    if ($demisto.GetCommand() -eq "test-module") {
+        try {
+            $pp_payload = @{
+                '__params_parity_dump__' = $true
+                'params' = $demisto.Params()
+            }
+            $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+            ReturnError "PARAMS_PARITY_DUMP::$pp_json"
+            return
+        }
+        catch [System.Management.Automation.MethodInvocationException] {
+            throw
+        }
+        catch {
+            # Probe must never break unrelated integrations. Swallow and continue.
+        }
     }
 
-    $exo_client = [ExchangeOnlinePowershellV3Client]::new(
-            $integration_params.url,
-            $integration_params.app_id,
-            $integration_params.organization,
-            $integration_params.certificate.password,
-            $password
-    )
-    try
-    {
-        # Executing command
-        $Demisto.Debug("Command being called is $Command")
-        switch ($command)
-        {
-            "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
+    $command = $null
+    $command_arguments = $null
+    $integration_params = $null
+    $ucp_creds = $null
+    $exo_client = $null
+    try {
+        if (Test-ShouldUseUcpAuth) {
+            ReturnOutputs "Running on UCP, preparing to obtain creds" $null $null | Out-Null
+
+            # Bypass the Get-UcpCredentials wrapper (which is currently broken on
+            # capability/profile resolution for this connector). Pick the
+            # method_unique_id from the first connection profile directly, then
+            # call $demisto.GetUCPCredentials with fromCache=$false.
+            $ucpInfo = $demisto.UnifiedConnectorMetadata()
+            ReturnOutputs "UCP metadata: $($ucpInfo | ConvertTo-Json -Compress -Depth 10)" $null $null | Out-Null
+
+            $firstProfile = $null
+            if ($ucpInfo -is [System.Collections.IDictionary] -and $ucpInfo.Contains('connectionProfiles')) {
+                $firstProfile = @($ucpInfo['connectionProfiles'])[0]
+            } elseif ($ucpInfo.PSObject -and $ucpInfo.PSObject.Properties['connectionProfiles']) {
+                $firstProfile = @($ucpInfo.connectionProfiles)[0]
             }
-            "$script:COMMAND_PREFIX-cas-mailbox-list" {
-                ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
+            if ($null -eq $firstProfile) {
+                throw "[UCP][EwsExtensionEXOPowershellV3.ps1] No connection profile found in connector metadata."
             }
-            "$script:COMMAND_PREFIX-mailbox-list" {
-                ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxCommand $exo_client $command_arguments
+
+            # Try the standard snake_case key first, then common alternatives.
+            $methodId = $null
+            foreach ($candidate in @('method_unique_id', 'methodUniqueId', 'methodUniqueID', 'id', 'unique_id')) {
+                if ($firstProfile -is [System.Collections.IDictionary] -and $firstProfile.Contains($candidate)) {
+                    $methodId = "$($firstProfile[$candidate])"
+                } elseif ($firstProfile.PSObject -and $firstProfile.PSObject.Properties[$candidate]) {
+                    $methodId = "$($firstProfile.$candidate)"
+                }
+                if (-not [string]::IsNullOrEmpty($methodId)) { break }
             }
-            "$script:COMMAND_PREFIX-mailbox-permission-list" {
-                ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxPermissionCommand $exo_client $command_arguments
+            ReturnOutputs "Resolved methodId='$methodId'" $null $null | Out-Null
+            if ([string]::IsNullOrEmpty($methodId)) {
+                throw "[UCP][EwsExtensionEXOPowershellV3.ps1] Could not resolve method_unique_id from first connection profile."
             }
-            "$script:COMMAND_PREFIX-recipient-permission-list" {
-                ($human_readable, $entry_context, $raw_response) = GetEXORecipientPermissionCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-recipient-list" {
-                ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
-                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
-                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
-                ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-tenant-allow-block-list-count" {
-                ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
-                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
-                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-export-quarantinemessage" {
-                ($human_readable, $entry_context, $raw_response) = EXOExportQuarantineMessageCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-quarantinemessage" {
-                ($human_readable, $entry_context, $raw_response) = EXOGetQuarantineMessageCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-release-quarantinemessage" {
-                ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-junk-rules-get" {
-                ($human_readable, $entry_context, $raw_response) = GetJunkRulesCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-junk-rules-set" {
-                ($human_readable, $entry_context, $raw_response) = SetJunkRulesCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-global-junk-rules-set" {
-                ($human_readable, $entry_context, $raw_response) = SetGlobalJunkRulesCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-message-trace-get" {
-                ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-message-trace-list" {
-                ($human_readable, $entry_context, $raw_response) = GetMessageTraceListCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-federation-trust-get" {
-                ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-federation-configuration-get" {
-                ($human_readable, $entry_context, $raw_response) = GetFederationConfigurationCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remote-domain-get" {
-                ($human_readable, $entry_context, $raw_response) = GetRemoteDomainCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-user-list" {
-                ($human_readable, $entry_context, $raw_response) = GetUserCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mailbox-audit-bypass-association-list" {
-                ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-rule-list" {
-                ($human_readable, $entry_context, $raw_response) = ListRulesCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-rule" {
-                ($human_readable, $entry_context, $raw_response) = GetRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remove-rule" {
-                ($human_readable, $entry_context, $raw_response) = RemoveRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-rule-disable" {
-                ($human_readable, $entry_context, $raw_response) = DisableRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-rule-enable" {
-                ($human_readable, $entry_context, $raw_response) = EnableRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-flow-rules-list" {
-                ($human_readable, $entry_context, $raw_response) = ListMailFlowRulesCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-flow-rule-get" {
-                ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-flow-rule-remove" {
-                ($human_readable, $entry_context, $raw_response) = RemoveMailFlowRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-flow-rule-disable" {
-                ($human_readable, $entry_context, $raw_response) = DisableMailFlowRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-flow-rule-enable" {
-                ($human_readable, $entry_context, $raw_response) = EnableMailFlowRuleCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-mail-forwarding-disable" {
-                ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
-            }
-            default {
-                ReturnError "Could not recognize $command"
-            }
+
+            $ucp_creds = $demisto.GetUCPCredentials($methodId, $false)
+            ReturnOutputs "obtained ucp_creds (type=$(if ($null -eq $ucp_creds) { 'null' } else { $ucp_creds.GetType().FullName }))" $null $null | Out-Null
+
+            # Convert PSCustomObject -> nested [hashtable] via JSON round-trip
+            # (-AsHashtable requires PowerShell 7+). Then $ucp_creds_ht['plain']['username'] etc. works.
+            $ucp_creds_ht = $ucp_creds | ConvertTo-Json -Depth 10 | ConvertFrom-Json -AsHashtable
+            # DEBUG: print full ucp_creds_ht to the War Room. Remove before shipping - this leaks credentials.
+            ReturnOutputs "ucp_creds_ht: $($ucp_creds_ht | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+
+            # The 'plain' credentials response only contains username/password
+            # (per ps_demo/connection.yaml auth.parameter mapping: organization -> username,
+            # password -> password). The remaining fields (url, certificate, app_id)
+            # live elsewhere - we need to discover where.
+            # DEBUG: print $firstProfile, full $ucpInfo, and $demisto.Params() to find the
+            # actual location of url/certificate/app_id. Remove before shipping.
+            ReturnOutputs "firstProfile: $($firstProfile | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+            ReturnOutputs "FULL UCP metadata: $($ucpInfo | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+            ReturnOutputs "demisto.Params(): $($demisto.Params() | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+
+            $ucp_url          = "$($firstProfile.url)"
+            $ucp_app_id       = "$($firstProfile.app_id)"
+            $ucp_certificate  = "$($firstProfile.certificate)"
+            $ucp_organization = "$($ucp_creds_ht['plain']['username'])"   # mapped via auth.parameter: username
+            $ucp_password_str = "$($ucp_creds_ht['plain']['password'])"
+
+            ReturnOutputs "Resolved EXO fields: url='$ucp_url' app_id='$ucp_app_id' organization='$ucp_organization' certificate.len=$($ucp_certificate.Length) password.len=$($ucp_password_str.Length)" $null $null | Out-Null
+
+            $password = if (-not [string]::IsNullOrEmpty($ucp_password_str)) {
+                ConvertTo-SecureString $ucp_password_str -AsPlainText -Force
+            } else { $null }
+
+            $exo_client = [ExchangeOnlinePowershellV3Client]::new(
+                $ucp_url,
+                $ucp_app_id,
+                $ucp_organization,
+                $ucp_certificate,
+                $password
+            )
         }
-        # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        else {
+            ReturnOutputs "Not running on UCP" $null $null | Out-Null
+            $ucp_creds = $null
+            $command = $demisto.GetCommand()
+            $command_arguments = $demisto.Args()
+            $integration_params = [Hashtable] $demisto.Params()
+            if ($integration_params.password.password)
+            {
+                $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
+            }
+            else
+            {
+                $password = $null
+            }
+            $exo_client = [ExchangeOnlinePowershellV3Client]::new(
+                    $integration_params.url,
+                    $integration_params.app_id,
+                    $integration_params.organization,
+                    $integration_params.certificate.password,
+                    $password
+            )
+        } 
+    } catch {
+        # Surface the failure but continue with the fallback path so legacy
+        # installs keep working.
+        ReturnOutputs "in catch close.." $null $null | Out-Null
+        $ucp_creds = $null
+        $command = $demisto.GetCommand()
+        $command_arguments = $demisto.Args()
+        $integration_params = [Hashtable] $demisto.Params()
     }
-    catch
-    {
-        $Demisto.debug(
-                "Integration: $script:INTEGRATION_NAME
-        Command: $command
-        Arguments: $( $command_arguments | ConvertTo-Json )
-        Error: $( $_.Exception.Message )"
-        )
-        if ($command -ne "test-module")
-        {
-            ReturnError "Error:
-            Integration: $script:INTEGRATION_NAME
-            Command: $command
-            Arguments: $( $command_arguments | ConvertTo-Json )
-            Error: $( $_.Exception )"
-        }
-        else
-        {
-            ReturnError $_.Exception.Message
-        }
-    }
-    finally
-    {
-        # Always disconnect the session, even if no sessions available.
-        $exo_client.DisconnectSession()
-    }
+    ReturnOutputs "Done" $null $null | Out-Null
+
+    # try
+    # {
+    #     # Executing command
+    #     $Demisto.Debug("Command being called is $Command")
+    #     switch ($command)
+    #     {
+    #         "test-module" {
+    #             ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
+    #         }
+    #         "$script:COMMAND_PREFIX-cas-mailbox-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mailbox-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mailbox-permission-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxPermissionCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-recipient-permission-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetEXORecipientPermissionCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-recipient-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
+    #             ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
+    #             ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
+    #             ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-get-tenant-allow-block-list-count" {
+    #             ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
+    #             ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
+    #             ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-export-quarantinemessage" {
+    #             ($human_readable, $entry_context, $raw_response) = EXOExportQuarantineMessageCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-get-quarantinemessage" {
+    #             ($human_readable, $entry_context, $raw_response) = EXOGetQuarantineMessageCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-release-quarantinemessage" {
+    #             ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-junk-rules-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetJunkRulesCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-junk-rules-set" {
+    #             ($human_readable, $entry_context, $raw_response) = SetJunkRulesCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-global-junk-rules-set" {
+    #             ($human_readable, $entry_context, $raw_response) = SetGlobalJunkRulesCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-message-trace-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-message-trace-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetMessageTraceListCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-federation-trust-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-federation-configuration-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetFederationConfigurationCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-remote-domain-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetRemoteDomainCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-user-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetUserCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mailbox-audit-bypass-association-list" {
+    #             ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-rule-list" {
+    #             ($human_readable, $entry_context, $raw_response) = ListRulesCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-get-rule" {
+    #             ($human_readable, $entry_context, $raw_response) = GetRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-remove-rule" {
+    #             ($human_readable, $entry_context, $raw_response) = RemoveRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-rule-disable" {
+    #             ($human_readable, $entry_context, $raw_response) = DisableRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-rule-enable" {
+    #             ($human_readable, $entry_context, $raw_response) = EnableRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-flow-rules-list" {
+    #             ($human_readable, $entry_context, $raw_response) = ListMailFlowRulesCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-flow-rule-get" {
+    #             ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-flow-rule-remove" {
+    #             ($human_readable, $entry_context, $raw_response) = RemoveMailFlowRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-flow-rule-disable" {
+    #             ($human_readable, $entry_context, $raw_response) = DisableMailFlowRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-flow-rule-enable" {
+    #             ($human_readable, $entry_context, $raw_response) = EnableMailFlowRuleCommand $exo_client $command_arguments
+    #         }
+    #         "$script:COMMAND_PREFIX-mail-forwarding-disable" {
+    #             ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
+    #         }
+    #         default {
+    #             ReturnError "Could not recognize $command"
+    #         }
+    #     }
+    #     # Return results to Demisto Server
+    #     ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+    # }
+    # catch
+    # {
+    #     $Demisto.debug(
+    #             "Integration: $script:INTEGRATION_NAME
+    #     Command: $command
+    #     Arguments: $( $command_arguments | ConvertTo-Json )
+    #     Error: $( $_.Exception.Message )"
+    #     )
+    #     if ($command -ne "test-module")
+    #     {
+    #         ReturnError "Error:
+    #         Integration: $script:INTEGRATION_NAME
+    #         Command: $command
+    #         Arguments: $( $command_arguments | ConvertTo-Json )
+    #         Error: $( $_.Exception )"
+    #     }
+    #     else
+    #     {
+    #         ReturnError $_.Exception.Message
+    #     }
+    # }
+    # finally
+    # {
+    #     # Always disconnect the session, even if no sessions available.
+    #     $exo_client.DisconnectSession()
+    # }
 }
 
 # Execute Main when not in Tests

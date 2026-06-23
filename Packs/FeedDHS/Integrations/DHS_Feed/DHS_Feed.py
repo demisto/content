@@ -325,9 +325,9 @@ def main():
     params = demisto.params()
     key = fix_rsa_data(params.get("key_creds", {}).get("password") or params.get("key", ""), 4)
     crt = params.get("crt_creds", {}).get("password") or params.get("crt", "")
-    collection = params.get("collection")
+    collection = params.get("collection") or "AIS"
     tags = argToList(params["tags"]) if params.get("tags") else None
-    client = TaxiiClient(key, crt, collection, base_url=params.get("base_url"), verify=argToBoolean(params.get("insecure")))
+    client = TaxiiClient(key, crt, collection, base_url=params.get("base_url"), verify=argToBoolean(params.get("insecure", False)))
     command = demisto.command()
     handle_proxy()
     try:

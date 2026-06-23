@@ -1003,9 +1003,9 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     event_type_names = [et.strip() for et in argToList(params.get("event_types_to_fetch", [REPORT.name]))]
     demisto.debug(f"List:{event_type_names}, list length:{len(event_type_names)}")
     fetch_limits = {
-        REPORT.name: arg_to_number(params.get("max_fetch")) or REPORT.default_max_fetch,
-        CREDENTIALS.name: arg_to_number(params.get("max_fetch_creds")) or CREDENTIALS.default_max_fetch,
-        DOMAIN.name: arg_to_number(params.get("max_fetch_domain")) or DOMAIN.default_max_fetch,
+        REPORT.name: arg_to_number(params.get("max_fetch") or REPORT.default_max_fetch),
+        CREDENTIALS.name: arg_to_number(params.get("max_fetch_creds") or CREDENTIALS.default_max_fetch),
+        DOMAIN.name: arg_to_number(params.get("max_fetch_domain") or DOMAIN.default_max_fetch),
     }
     event_types = []
     for event_type in EVENT_TYPE.values():

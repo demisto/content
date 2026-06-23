@@ -8019,7 +8019,8 @@ def main():  # pragma: no cover
             password=params["credentials"].get("password"),
             token=token,
             verify=not params.get("unsecure"),
-            connection_error_retries=arg_to_number(params.get("connection_error_retries")) or CONNECTION_ERRORS_RETRIES,
+            connection_error_retries=arg_to_number(params.get("connection_error_retries", CONNECTION_ERRORS_RETRIES))
+            or CONNECTION_ERRORS_RETRIES,
         )
 
         results: CommandResults | list[CommandResults] | dict | str
