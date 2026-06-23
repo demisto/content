@@ -134,6 +134,8 @@ class Client(BaseClient):
         use_redteam_data: bool = False,
         use_redteam_mgmt: bool = False,
         use_dlp_base: bool = False,
+        resp_type: str = "json",
+        return_empty_response: bool = False,
     ) -> dict[str, Any]:
         """Execute HTTP request with OAuth2 authentication for Management API.
 
@@ -149,6 +151,8 @@ class Client(BaseClient):
             use_redteam_data: If True, use RED_TEAM_DATA_PATH prefix (e.g., /ai-red-teaming/data-plane/...).
             use_redteam_mgmt: If True, use RED_TEAM_MGMT_PATH prefix (e.g., /ai-red-teaming/mgmt-plane/...).
             use_dlp_base: If True, use DLP_BASE_URL (https://api.dlp.paloaltonetworks.com) + url_suffix directly.
+            resp_type: Response type - "json" (default), "text", "content", "xml", or "response".
+            return_empty_response: If True, return empty response object for 204 No Content responses (DELETE operations).
 
         Returns:
             dict: API response.
@@ -181,7 +185,8 @@ class Client(BaseClient):
                 params=params,
                 json_data=json_data,
                 headers=headers,
-                resp_type="json"
+                resp_type=resp_type,
+                return_empty_response=return_empty_response
             )
 
         return self._http_request(
@@ -190,7 +195,8 @@ class Client(BaseClient):
             params=params,
             json_data=json_data,
             headers=headers,
-            resp_type="json"
+            resp_type=resp_type,
+            return_empty_response=return_empty_response
         )
 
     def scanner_request(
@@ -2916,7 +2922,7 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
         url_suffix=url_suffix,
         params=params,
         use_model_sec_data=True,
-        resp_type="response"  # DELETE may return empty response
+        resp_type="response"  # DELETE may return empty response (204 No Content)
     )
 
     # Response is void/undefined on success per SDK
@@ -3536,31 +3542,41 @@ def model_security_groups_delete_command(client: Client, args: dict[str, Any]) -
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
     # SDK: SecurityGroupsClient.delete(uuid)
     # Endpoint: DELETE /v1/security-groups/{uuid} (management plane)
+    # Returns: 204 No Content (empty response)
     url_suffix = f"/v1/security-groups/{uuid}"
 
+    # XSOAR Best Practice: Use return_empty_response=True for DELETE operations that return 204
+    # This allows BaseClient to handle empty responses gracefully without JSON parsing errors
+    # Reference: CommonServerPython BaseClient._http_request() - return_empty_response parameter
     client.http_request(
         method="DELETE",
         url_suffix=url_suffix,
         use_model_sec_mgmt=True,
-        resp_type="response"  # DELETE returns empty response
+        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Response is void on success per SDK
-    # Create readable output
-    readable_output = f"✅ Successfully deleted security group: {uuid}"
-
-    # Context output
+    # Create context output
     context_output = {
         "uuid": uuid,
-        "deleted": True
+        "deleted": True,
+        "status": "Successfully deleted"
     }
+
+    # Create readable output using XSOAR table format
+    readable_output = tableToMarkdown(
+        "Model Security Group Deleted",
+        [context_output],
+        headers=["uuid", "status"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupDelete",
         outputs_key_field="uuid",
         outputs=context_output,
-        readable_output=readable_output,
-        raw_response={}  # Empty response
+        readable_output=readable_output
     )
 
 
@@ -5885,7 +5901,7 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
         method="DELETE",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
         use_redteam_mgmt=True,
-        resp_type="response"  # Allow empty response
+        resp_type="response"  # DELETE may return empty response
     )
 
     # Parse response according to BaseResponseSchema (optional)
@@ -6539,7 +6555,7 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     params = {"prompt_set_uuid": uuid}
 
     # Build full URL
-    full_url = f"{client.base_url_no_aisec}{url_suffix}"
+    full_url = f"{client._base_url}{RED_TEAM_MGMT_PATH}{url_suffix}"
 
     # Prepare files for multipart upload
     files = {
@@ -7872,7 +7888,7 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
         method="DELETE",
         url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
         use_dlp_base=True,
-        resp_type="response"
+        resp_type="response"  # DELETE returns 204 No Content (empty response)
     )
 
     readable_output = f"## Prisma AIRs DLP Dictionary Deleted\n\nDictionary ID `{dictionary_id}` has been successfully deleted."
@@ -8374,7 +8390,7 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
         method="DELETE",
         url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
         use_dlp_base=True,
-        resp_type="response"
+        resp_type="response"  # DELETE returns 204 No Content (empty response)
     )
 
     readable_output = f"## Prisma AIRs DLP Pattern Deleted\n\nPattern ID `{pattern_id}` has been successfully archived."
