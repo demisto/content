@@ -110,6 +110,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   commands:
   - deprecated: true

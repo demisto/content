@@ -93,6 +93,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Enrichment Excluded
   name: enrichmentExcluded
   type: 8

@@ -108,6 +108,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch time
   additionalinfo: First commit date of first published indicators to bring. e.g., "1 min ago","2 weeks ago","3 months ago".
   name: fetch_since

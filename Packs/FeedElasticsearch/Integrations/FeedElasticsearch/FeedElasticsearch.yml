@@ -108,6 +108,9 @@ configuration:
   required: false
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy

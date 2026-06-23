@@ -196,6 +196,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When selected, all the incoming indicators will map to a CyCognito Asset indicator type.
   display: Default Indicator Mapping
   name: default_mapping

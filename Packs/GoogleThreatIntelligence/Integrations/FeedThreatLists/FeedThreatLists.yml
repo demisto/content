@@ -130,6 +130,9 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Use this feed integration to fetch Google Threat Intelligence Threat Lists matches as indicators.
 display: Google Threat Intelligence Threat Lists
 name: Google Threat Intelligence Threat Lists

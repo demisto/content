@@ -138,6 +138,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When selected, all the incoming indicators will map to the Ignite Indicator.
   display: Default Indicator Mapping
   name: defaultMap

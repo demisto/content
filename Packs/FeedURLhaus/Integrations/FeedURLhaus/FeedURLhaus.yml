@@ -54,6 +54,9 @@ configuration:
   - GREEN
   - WHITE
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feed
   defaultvalue: 'true'
   display: Fetch indicators

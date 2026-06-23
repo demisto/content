@@ -120,6 +120,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""

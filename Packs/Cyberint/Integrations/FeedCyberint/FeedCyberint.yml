@@ -73,6 +73,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Which indicator types to fetch
   defaultvalue: All
   display: Indicator Type

@@ -94,6 +94,9 @@ configuration:
   - WHITE
   defaultvalue: WHITE
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feedTags
   display: Tags
   type: 0

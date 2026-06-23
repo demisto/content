@@ -77,6 +77,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Indicator Reputation
   additionalinfo: Indicators from this integration instance will be marked with this reputation. If not selected, Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown.
   name: feedReputation

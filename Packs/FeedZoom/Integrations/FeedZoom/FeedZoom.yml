@@ -80,6 +80,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath

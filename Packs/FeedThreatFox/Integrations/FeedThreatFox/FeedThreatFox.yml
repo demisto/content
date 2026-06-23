@@ -73,6 +73,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType

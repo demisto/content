@@ -115,6 +115,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards.
   defaultvalue: 'true'
   hidden: true

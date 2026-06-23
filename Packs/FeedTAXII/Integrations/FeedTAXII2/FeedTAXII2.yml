@@ -46,6 +46,9 @@ configuration:
   defaultvalue: 'WHITE'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ''
   name: feedExpirationPolicy
   options:
