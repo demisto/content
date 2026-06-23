@@ -9,9 +9,12 @@ from __future__ import print_function
 import base64
 import binascii
 import gc
+import io as _io
 import json
 import logging
 import os
+import pickle as _pickle
+import pickletools
 import re
 import socket
 import sys
@@ -44,7 +47,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 50, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -2707,6 +2710,57 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
     return st
+
+
+def sanitize_html_output(value, allow_tags=None):
+    # type: (str, Optional[Set[str]]) -> str
+    """Escape HTML for safe rendering in ContentsFormat:'html' outputs.
+
+    :type value: ``str``
+    :param value: Raw string that may contain attacker-controlled content.
+
+    :type allow_tags: ``Optional[Set[str]]``
+    :param allow_tags: Optional set of allowed HTML tag names
+        (e.g. ``{'b','i','a','br','p','table','tr','td','th'}``). If ``None``, escapes everything.
+
+    :return: HTML-safe string.
+    :rtype: ``str``
+    """
+    try:
+        from html import escape as _html_escape  # Python 3
+    except ImportError:
+        from cgi import escape as _cgi_escape  # Python 2
+
+        def _html_escape(s, quote=True):
+            return _cgi_escape(s, quote=quote).replace("'", "&#x27;")
+    if allow_tags is None:
+        return _html_escape(str(value))
+    # For allowlist mode, use bleach if available, else strip all
+    try:
+        import bleach
+        return bleach.clean(str(value), tags=allow_tags, strip=True)
+    except ImportError:
+        return _html_escape(str(value))
+
+
+def getFilePathSafe(entry_id):
+    # type: (str) -> dict
+    """Wrapper around demisto.getFilePath() that basenames the 'name' field.
+
+    Prevents path traversal when callers use the returned name as a filesystem destination.
+
+    :type entry_id: ``str``
+    :param entry_id: The entry ID of the file.
+
+    :return: dict with ``'id'``, ``'path'``, and ``'name'`` keys, where ``'name'`` is basenamed.
+    :rtype: ``dict``
+    """
+    result = demisto.getFilePath(entry_id)
+    if not result:
+        return result
+    if "name" in result:
+        result["name"] = os.path.basename(result["name"])
+    return result
 
 
 def raiseTable(root, key):
@@ -9193,6 +9247,34 @@ def is_xsiam():
 
 
 
+def resolve_should_push_events(args):
+    """Resolve the ``should_push_events`` flag from command args based on the current platform.
+
+    Extracts the ``should_push_events`` argument (defaulting to ``False``) and converts it
+    to a boolean. If it is ``True`` but the platform is not Cortex XSIAM, the value is
+    silently overridden to ``False`` and a debug log is emitted.
+
+    Use this in ``get-events`` debug commands to gracefully degrade on
+    non-XSIAM platforms (e.g., Cortex XSOAR) instead of raising an error.
+
+    :param args: The command arguments dict (``demisto.args()``), expected to optionally
+        contain a ``should_push_events`` key.
+    :type args: ``dict``
+    :return: The resolved push-events flag (``False`` on unsupported platforms).
+    :rtype: ``bool``
+
+    Example::
+
+        should_push = resolve_should_push_events(args)
+    """
+    should_push_events = argToBoolean(args.get("should_push_events", False))
+    if should_push_events and not is_xsiam():
+        demisto.debug("[Events Push Check] "
+                      "should_push_events is not supported on this platform. Overriding to False.")
+        return False
+    return should_push_events
+
+
 def is_using_engine():
     """Determines whether or not the platform is using engine.
     NOTE:
@@ -12781,7 +12863,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None,
+                         use_streaming_send=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12821,6 +12904,11 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12839,7 +12927,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
         multiple_threads=multiple_threads,
-        client_class=client_class if client_class else BaseClient
+        client_class=client_class if client_class else BaseClient,
+        use_streaming_send=use_streaming_send,
     )
 
 
@@ -12953,7 +13042,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       client_class=None):
+                       client_class=None, use_streaming_send=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -13004,6 +13093,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -13028,9 +13122,18 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
+    # Feature flag (CIAC-16981): stream-serialize one item at a time (list-of-items, single-thread path only).
+    streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
+    # Decide JSON-encoding once on the first item, like the legacy list path, so the payload is identical.
+    streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
+    if streaming_items_are_json:
+        data_format = 'json'
+
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
-    if isinstance(data, list):
+    if streaming_send:
+        demisto.debug("Sending {size} {data_type} to XSIAM (streaming send)".format(size=len(data), data_type=data_type))
+    elif isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
         if isinstance(data[0], dict):
@@ -13099,6 +13202,60 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if client_class is None:
         client_class = BaseClient
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
+
+    if streaming_send:
+        # Streaming path: serialize+gzip one event at a time, freeing each as we go, so peak
+        # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
+        target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+        demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
+
+        def _post_zipped(zipped_data):
+            xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                        error_msg=header_msg, headers=headers,
+                                        num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                        zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+
+        buf = _io.BytesIO()
+        gz = gzip.GzipFile(fileobj=buf, mode='wb')
+        chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
+        chunk_items = 0         # items written into the current gzip stream
+
+        for index in range(len(data)):
+            serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
+            data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
+
+            # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
+            # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
+            entry_size = sys.getsizeof(serialized)
+            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
+                              "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
+                continue
+
+            line = serialized.encode('utf-8')
+            gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
+            chunk_uncompressed += len(line) + (1 if chunk_items else 0)
+            chunk_items += 1
+
+            if chunk_uncompressed >= target_chunk_size:
+                gz.close()
+                _post_zipped(buf.getvalue())
+                data_size += chunk_items
+                buf = _io.BytesIO()
+                gz = gzip.GzipFile(fileobj=buf, mode='wb')
+                chunk_uncompressed = 0
+                chunk_items = 0
+
+        # flush the final (partial) chunk
+        gz.close()
+        if chunk_items:
+            _post_zipped(buf.getvalue())
+            data_size += chunk_items
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
@@ -13898,6 +14055,156 @@ def invalidate_ucp_credentials(method_unique_id):
 ###########################################
 #     End of UCP Functions     #
 ###########################################
+
+
+###########################################
+#   Safe Pickle Loading     #
+###########################################
+# Two-layer defense against insecure deserialization (RCE via malicious pickle payloads).
+# Layer 1 RestrictedUnpickler: allowlist of safe (module, class) pairs + safe module prefixes.
+# Layer 2 Opcode validator: blocks legacy/rare pickle opcodes that legitimate models never use.
+
+# Common (module, class) pairs shared by all ML-model loading sites.
+# Each script extends this base with its own site-specific entries via set union.
+BASE_PICKLE_ALLOWED_CLASSES = {
+    # Numpy
+    ("numpy.core.multiarray", "_reconstruct"),
+    ("numpy", "ndarray"),
+    ("numpy", "dtype"),
+    ("numpy.core.multiarray", "scalar"),
+    # Pandas
+    ("pandas.core.frame", "DataFrame"),
+    ("pandas.core.series", "Series"),
+    ("pandas.core.indexes.base", "Index"),
+    ("pandas.core.indexes.range", "RangeIndex"),
+    # Python builtins
+    ("builtins", "dict"),
+    ("builtins", "list"),
+    ("builtins", "tuple"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "str"),
+    ("builtins", "int"),
+    ("builtins", "float"),
+    ("builtins", "bool"),
+    ("builtins", "bytes"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("builtins", "slice"),
+    ("builtins", "range"),
+    # Python internals used by pickle protocol
+    ("collections", "OrderedDict"),
+    ("_codecs", "encode"),
+    ("copyreg", "_reconstructor"),
+}
+
+
+class UnsafePickleError(Exception):
+    """Raised when a pickle payload contains unsafe opcodes or classes.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+
+# Legacy/rare opcodes that legitimate ML models never use.
+_BLOCKED_PICKLE_OPCODES = {
+    "INST", "OBJ", "NEWOBJ_EX",
+    "EXT1", "EXT2", "EXT4",
+    "PERSID", "BINPERSID",
+}
+
+
+def validate_pickle_opcodes(payload):
+    # type: (bytes) -> None
+    """
+    Layer 2 defense-in-depth: reject pickle payloads containing
+    legacy/rare opcodes that legitimate ML models never use.
+
+    :type payload: ``bytes``
+    :param payload: Raw pickle byte stream to validate.
+
+    :raises UnsafePickleError: If a blocked opcode is found or the payload is malformed.
+
+    :return: None
+    :rtype: ``None``
+    """
+    try:
+        for opcode, _arg, pos in pickletools.genops(payload):
+            if opcode.name in _BLOCKED_PICKLE_OPCODES:
+                raise UnsafePickleError(
+                    "Blocked unsafe pickle opcode {!r} at byte {}".format(opcode.name, pos)
+                )
+    except (UnsafePickleError, Exception) as e:
+        if isinstance(e, UnsafePickleError):
+            raise
+        raise UnsafePickleError("Invalid or malformed pickle payload: {}".format(e))
+
+
+def _make_restricted_unpickler(allowed_classes, safe_module_prefixes):
+    # type: (set, set) -> type
+    """
+    Factory that creates a RestrictedUnpickler class with the given allowlists.
+
+    :type allowed_classes: ``set``
+    :param allowed_classes: Set of ``(module, name)`` tuples for exact class matches.
+
+    :type safe_module_prefixes: ``set``
+    :param safe_module_prefixes: Set of top-level module names (e.g. ``"sklearn"``, ``"numpy"``)
+        whose submodules are all considered safe data-science code.
+
+    :rtype: ``type``
+    :return: A subclass of ``pickle.Unpickler`` with restricted ``find_class``.
+    """
+
+    class RestrictedUnpickler(_pickle.Unpickler):
+        """Strict whitelist-based unpickler (Layer 1 primary defense)."""
+
+        def find_class(self, module, name):
+            # type: (str, str) -> type
+            if (module, name) in allowed_classes:
+                return _pickle.Unpickler.find_class(self, module, name)
+            top_module = module.split(".")[0]
+            if top_module in safe_module_prefixes:
+                return _pickle.Unpickler.find_class(self, module, name)
+            raise _pickle.UnpicklingError(
+                "Blocked unauthorized class: '{}.{}'".format(module, name)
+            )
+
+    return RestrictedUnpickler
+
+
+def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
+    # type: (bytes, set, set) -> object
+    """
+    Drop-in replacement for ``pickle.loads()`` / ``dill.loads()`` with two-layer security.
+
+    Layer 1 (primary): ``RestrictedUnpickler`` only allows classes in *allowed_classes*
+    or from modules whose top-level name is in *safe_module_prefixes*.
+
+    Layer 2 (defense-in-depth): opcode validator blocks legacy/rare pickle opcodes
+    that legitimate ML models never use.
+
+    :type data: ``bytes``
+    :param data: The raw pickle payload to deserialize.
+
+    :type allowed_classes: ``set``
+    :param allowed_classes: Set of ``(module, name)`` tuples for exact class matches
+        (e.g. ``{("builtins", "dict"), ("__main__", "MyModel")}``).
+
+    :type safe_module_prefixes: ``set``
+    :param safe_module_prefixes: Set of top-level module names whose submodules are
+        all considered safe (e.g. ``{"sklearn", "numpy", "pandas"}``).
+
+    :rtype: ``object``
+    :return: The deserialized Python object.
+
+    :raises UnsafePickleError: If the payload contains blocked opcodes or is malformed.
+    :raises pickle.UnpicklingError: If the payload references an unauthorized class.
+    """
+    validate_pickle_opcodes(data)
+    unpickler_cls = _make_restricted_unpickler(allowed_classes, safe_module_prefixes)
+    return unpickler_cls(_io.BytesIO(data)).load()
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

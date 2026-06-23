@@ -336,3 +336,6 @@ outputs: []
 tests:
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
+supportedModules:
+- agentix
+- xsiam
