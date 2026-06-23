@@ -1,0 +1,12 @@
+!claude-get-events limit=10 should_push_events=false
+!claude-list-organizations limit=50
+!claude-list-organization-users org_uuid=org-uuid limit=50
+!claude-list-roles org_uuid=org-uuid
+!claude-list-role-permissions org_uuid=org-uuid role_id=role-id
+!claude-list-groups
+!claude-list-group-members group_id=group-id
+!claude-list-chats user_ids=user-id limit=100
+!claude-list-chat-messages chat_id=chat-id
+!claude-list-projects
+!claude-list-project-attachments project_id=project-id
+!claude-get-project-document project_id=project-id document_id=claude_proj_doc_id
