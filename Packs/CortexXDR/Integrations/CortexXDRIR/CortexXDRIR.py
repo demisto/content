@@ -402,7 +402,7 @@ class Client(CoreClient):
         set_sorted_paths_and_names(incident)
         # workaround for excluding fields which is not supported with the get_incident_extra_data endpoint
         if exclude_artifacts:
-            for field in FIELDS_TO_EXCLUDE:
+            for field in FIELDS_TO_EXCLUDE:# hi
                 incident.pop(field, None)
         return incident
 
