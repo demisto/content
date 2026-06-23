@@ -60,7 +60,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   hidden:
   - marketplacev2
   supportedModules:
@@ -317,7 +317,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   hidden:
   - xsoar
   supportedModules:
