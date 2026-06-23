@@ -1,1 +1,1 @@
-!etd-fetch-logs
+!cisco-etd-get-events

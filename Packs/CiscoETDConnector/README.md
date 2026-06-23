@@ -16,7 +16,7 @@ The pack enables ingestion, visualization, and monitoring of Cisco ETD Message E
 
 ---
 
-## Key Features
+## What does this pack do?
 
 * Cisco ETD Message Event Log ingestion
 * Email threat classification
@@ -28,6 +28,8 @@ The pack enables ingestion, visualization, and monitoring of Cisco ETD Message E
 ## Supported Platform
 
 * Cortex XSIAM
+
+> This pack is intended for Cortex XSIAM Event Collection and is not supported on Cortex XSOAR.
 
 ---
 
@@ -89,15 +91,15 @@ Before configuring the integration, ensure the following requirements are met:
 | Parameter                 | Description                                                                   |
 | ------------------------- | ----------------------------------------------------------------------------- |
 | ETD Base URL              | Cisco ETD API URL (for example: `https://api.ironport.com`)                   |
+| API Key                   | Cisco ETD API Key                                                             |
 | Client ID                 | Cisco ETD Client ID                                                           |
 | Client Secret             | Cisco ETD Client Secret                                                       |
-| API Key                   | Cisco ETD API Key                                                             |
 | First Fetch Time          | Initial log collection window (for example: `5 days`, `7 days`, or `30 days`) |
 | Fetch Events              | Enable continuous log ingestion into Cortex XSIAM                             |
 | Use system proxy settings | Enable if your environment requires a proxy                                   |
-| Trust any certificate     | Enable only for testing environments using self-signed certificates           |
 
-> **Note:** Fetch Events must be enabled for continuous log ingestion into Cortex XSIAM.
+
+> **Note:** You must enable **Fetch Events** for continuous log ingestion into Cortex XSIAM.
 
 ### Verify Connectivity
 
@@ -270,7 +272,7 @@ dataset = cisco_etd_raw
 
 ## Author
 
-NuSummit
+Nusummit
 
 ---
 

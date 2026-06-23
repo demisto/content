@@ -14,11 +14,18 @@
         "ETD"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "ETD",
+        "Email Threat Defense",
+        "Email Security"
+    ],
     "marketplaces": [
-        "xsoar",
+        "platform",
         "marketplacev2"
     ],
-    "firstCreated": "2026-06-15T12:20:10Z",
-    "githubUser": []
+    "created": "2026-06-15T12:20:10Z",
+    "githubUser": [
+        "ashwinidoddamani"
+    ]
 }

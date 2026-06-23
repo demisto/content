@@ -1,17 +1,7 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 from datetime import datetime, timedelta, timezone
 import json
-from dateparser import parse
+import traceback
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -25,12 +15,12 @@ ETD_LOG_TYPES = ["message", "audit", "connection"]
 VENDOR = "Cisco"
 PRODUCT = "ETD"
 
+BATCH_SIZE = 1000
+
 # ============================================
 # CLIENT
 # ============================================
-
-
-class ETDClient(ContentClient):
+class ETDClient(BaseClient):
 
     def __init__(self, base_url: str, params: dict):
         self.params = params
@@ -45,16 +35,10 @@ class ETDClient(ContentClient):
 
         api_key = get_credential(self.params.get("api_key"))
         client_secret = get_credential(self.params.get("client_secret"))
-
-        demisto.debug(f"[DEBUG] BASE URL: {self._base_url}")
-        demisto.debug(f"[DEBUG] API KEY TYPE: {type(api_key)}")
-        demisto.debug(f"[DEBUG] API KEY LENGTH: {len(api_key) if api_key else 0}")
-        demisto.debug(f"[DEBUG] SECRET LENGTH: {len(client_secret) if client_secret else 0}")
-
         headers = {
             "x-api-key": api_key
         }
-        demisto.debug("[DEBUG] Sending token request...")
+
         res = self._http_request(
             method="POST",
             url_suffix="/v1/oauth/token",
@@ -70,7 +54,12 @@ class ETDClient(ContentClient):
 
         return token
 
-    def request_log_export(self, token: str, start: str, end: str) -> dict:
+    def request_log_export(
+        self,
+        token: str,
+        start: str,
+        end: str
+    ) -> Dict[str, Any]:
         headers = {
             "Authorization": f"Bearer {token}",
             "x-api-key": get_credential(self.params.get("api_key")),
@@ -90,7 +79,10 @@ class ETDClient(ContentClient):
             timeout=120
         )
 
-    def get_links(self, response: dict) -> List[Tuple[str, str]]:
+    def get_links(
+        self,
+        response: Dict[str, Any]
+    ) -> List[Tuple[str, str]]:
         data = response.get("data", {})
         links = []
 
@@ -101,7 +93,10 @@ class ETDClient(ContentClient):
 
         return links
 
-    def download_logs(self, links: List[Tuple[str, str]]) -> List[dict]:
+    def download_logs(
+        self,
+        links: List[Tuple[str, str]]
+    ) -> List[Dict[str, Any]]:
         events = []
 
         for log_type, link in links:
@@ -117,11 +112,12 @@ class ETDClient(ContentClient):
                     continue
 
                 try:
-                    ev = json.loads(line)
-                    if not ev.get("logType"):
-                        ev["logType"] = log_type
-                    events.append(ev)
-                except Exception:
+                    event = json.loads(line)
+                    if not event.get("logType"):
+                        event["logType"] = log_type
+
+                    events.append(event)
+                except json.JSONDecodeError:
                     continue
 
         return events
@@ -130,9 +126,7 @@ class ETDClient(ContentClient):
 # ============================================
 # XSIAM INGEST
 # ============================================
-def ingest_events_to_xsiam(events):
-
-    BATCH_SIZE = 1000
+def ingest_events_to_xsiam(events: List[dict]) -> None:
 
     for i in range(0, len(events), BATCH_SIZE):
         batch = events[i:i + BATCH_SIZE]
@@ -148,20 +142,21 @@ def ingest_events_to_xsiam(events):
 # ============================================
 
 
-def get_credential(param):
+def get_credential(
+    param: Union[Dict[str, Any], str]
+) -> str:
     if isinstance(param, dict):
         return param.get("password") or param.get("credentials", {}).get("password")
     return param
 
 
-def generate_intervals(start_dt, end_dt):
+def generate_intervals(start_dt: datetime, end_dt: datetime) -> List[Tuple[datetime, datetime]]:
     intervals = []
     current = start_dt
 
     while current < end_dt:
         next_t = current + timedelta(hours=3)
 
-        # THIS IS THE IMPORTANT LINE
         if next_t > end_dt:
             next_t = end_dt
 
@@ -174,9 +169,12 @@ def generate_intervals(start_dt, end_dt):
 # ============================================
 # FETCH INCIDENTS / INGEST LOGS
 # ============================================
-def fetch_and_ingest_logs(client: ETDClient, params: dict):
+def fetch_and_ingest_logs(
+        client: ETDClient,
+        params: Dict[str, Any]
+) -> None:
 
-    demisto.debug("ETD fetch-incidents started")
+    demisto.debug("ETD fetch-events started")
 
     now = datetime.now(timezone.utc).replace(
         minute=0,
@@ -194,14 +192,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
 
         first_fetch = params.get("first_fetch", "30 days")
 
-        parsed_time = parse(first_fetch)
-
-        if not parsed_time:
-            raise DemistoException(
-                f"Invalid first fetch value: {first_fetch}"
-            )
-
-        start_dt = parsed_time.astimezone(timezone.utc)
+        start_dt = arg_to_datetime(first_fetch).astimezone(timezone.utc)
 
         # ETD 30-day workaround
         if first_fetch.strip().lower() == "30 days":
@@ -209,9 +200,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
 
     else:
 
-        start_dt = datetime.fromisoformat(
-            last_fetch.replace("Z", "+00:00")
-        )
+        start_dt = arg_to_datetime(last_fetch)
 
     backlog_days = (now - start_dt).days
 
@@ -260,10 +249,6 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
         )
 
         try:
-
-            # ------------------------------
-            # REQUEST EXPORT
-            # ------------------------------
             resp = client.request_log_export(
                 token,
                 start_time,
@@ -312,8 +297,8 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
         except Exception as e:
 
             demisto.error(
-                f"Interval failed: "
-                f"{start_time} → {end_time} | {str(e)}"
+                f"Interval failed: {start_time} → {end_time} | {str(e)}\n"
+                f"{traceback.format_exc()}"
             )
             break
 
@@ -335,7 +320,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
 # ============================================
 # TEST MODULE
 # ============================================
-def test_module(client: ETDClient):
+def test_module(client: ETDClient) -> str:
 
     try:
         token = client.get_access_token()
@@ -346,21 +331,19 @@ def test_module(client: ETDClient):
         return "ok"
 
     except Exception as e:
-        demisto.error(f"[ERROR] Test failed: {str(e)}")
+        demisto.error(
+            f"[ERROR] Test failed: {str(e)}\n"
+            f"{traceback.format_exc()}"
+        )
         raise
 
 
 # ============================================
 # MAIN
 # ============================================
-def main():
-    demisto.debug("[DEBUG] MAIN STARTED")
-
+def main() -> None:
     params = demisto.params()
     command = demisto.command()
-
-    demisto.debug(f"[DEBUG] COMMAND: {command}")
-    demisto.debug(f"[DEBUG] PARAM KEYS: {list(params.keys())}")
 
     client = ETDClient(
         base_url=params.get("etd_base_url"),
@@ -370,15 +353,18 @@ def main():
     try:
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "etd-fetch-logs":
+        elif command == "cisco-etd-get-events":
             fetch_and_ingest_logs(client, params)
             return_results("ETD logs fetched successfully")
         elif command == "fetch-events":
             fetch_and_ingest_logs(client, params)
-            return_results("ok")
 
     except Exception as e:
-        demisto.error(f"[ERROR] MAIN FAILED: {str(e)}")
+
+        demisto.error(
+            f"[ERROR] MAIN FAILED: {str(e)}\n"
+            f"{traceback.format_exc()}"
+        )
         return_error(str(e))
 
 

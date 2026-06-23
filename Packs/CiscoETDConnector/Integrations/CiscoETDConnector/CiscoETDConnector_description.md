@@ -1,8 +1,16 @@
-## BaseIntegration Help
+# Cisco ETD Connector
 
-Markdown file for integration configuration  help snippet. In this file add:
+## Configure Cisco ETD Connector on Cortex XSIAM
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+1. Navigate to Settings → Configurations → Integrations.
+2. Search for CiscoETDConnector.
+3. Click Add Instance.
+4. Configure:
+   - ETD API Base URL
+   - Client ID
+   - Client Secret
+   - API Key
+   - First Fetch Time
+5. Enable Fetch Events.
+6. Click Test.
+7. Save & Enable.
