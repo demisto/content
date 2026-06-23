@@ -204,13 +204,6 @@
             ]
         },
         {
-            "id": "Unit42Intel",
-            "supportedModules": [
-                "agentix",
-                "xsiam"
-            ]
-        },
-        {
             "id": "VirusTotal",
             "supportedModules": [
                 "agentix",
