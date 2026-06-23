@@ -37,12 +37,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   defaultvalue: Google Threat Intelligence RS Alert
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: First Fetch Time
   name: first_fetch
   defaultvalue: '3 days'
@@ -50,6 +56,9 @@ configuration:
   required: false
   additionalinfo: "The date or relative timestamp from which to begin fetching RS Alerts. Default value is '3 days'.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 01 May 2026 04:45:33, 2026-05-17T14:05:44Z."
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Max Fetch
   name: max_fetch
   defaultvalue: '100'
@@ -57,6 +66,9 @@ configuration:
   required: false
   additionalinfo: "The maximum number of Alerts to fetch each time. Default value is 100. The maximum is 200.\n\nIf the value is greater than 200, it will be considered as 200."
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Relevance Level
   name: relevance_level
   type: 16
@@ -68,6 +80,9 @@ configuration:
   additionalinfo: Filter the alerts by the relevance level.
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Severity Level
   name: severity_level
   type: 16
@@ -79,6 +94,9 @@ configuration:
   additionalinfo: Filter the alerts by the severity level.
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Priority Level
   name: priority_level
   type: 16
@@ -91,6 +109,9 @@ configuration:
   additionalinfo: Filter the alerts by the priority level.
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Status
   name: status
   type: 16
@@ -109,6 +130,9 @@ configuration:
   additionalinfo: Filter the alerts by the status.
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Threat Scenarios
   name: threat_scenarios
   type: 16
@@ -120,8 +144,10 @@ configuration:
   additionalinfo: Filter the alerts by the threat scenarios.
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Mirroring Direction
-  hidden: false
   name: mirror_direction
   type: 15
   options:
@@ -131,6 +157,9 @@ configuration:
   required: false
   additionalinfo: The mirroring direction in which to mirror the alert. You can mirror 'Incoming' (from GTI to Cortex XSOAR), 'Outgoing' (from Cortex XSOAR to GTI), or in both directions.
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - display: Reopen Incident for Open Alert Status
   name: reopen_incident_for_open_alert_status
   type: 8
@@ -139,6 +168,9 @@ configuration:
   additionalinfo: "Whether to reopen the incident when the Alert status is 'Read', 'Triaged', or 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
+  - platform
 - display: Close Incident for Close Alert Status
   name: close_incident_for_close_alert_status
   type: 8
@@ -147,6 +179,9 @@ configuration:
   additionalinfo: "Whether to close the incident when the Alert status is 'False Positive', 'Resolved', 'Duplicate', 'Benign', 'Not Actionable', or 'Tracked Externally'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
+  - platform
 - display: Alert Status for Incident Reopen
   name: alert_status_for_incident_reopen
   type: 15
@@ -159,6 +194,9 @@ configuration:
   additionalinfo: "Alert Status set in GTI when reopening incidents in XSOAR. Default value is 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
+  - platform
 - display: Alert Status for Incident Closure
   name: alert_status_for_incident_closure
   type: 15
@@ -174,6 +212,9 @@ configuration:
   additionalinfo: "Alert Status set in GTI when closing incidents in XSOAR. Default value is 'Resolved'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
+  - platform
 - display: Use system proxy settings
   name: proxy
   type: 8
