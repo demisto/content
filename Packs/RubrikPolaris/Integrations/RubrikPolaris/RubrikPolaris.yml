@@ -5682,7 +5682,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: string
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.9721466
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.10133006
   isfetch: true
   runonce: false
   script: '-'
