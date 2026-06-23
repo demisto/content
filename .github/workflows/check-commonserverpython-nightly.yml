@@ -1,0 +1,50 @@
+name: CommonServerPython nightly run verification
+
+# Reminds contributors that changes to CommonServerPython (and the other
+# runtime-injected helpers) must be validated against the content nightly
+# pipeline before merge. The check passes only when the `nightly-run-passed`
+# label has been applied to the PR.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write   # needed to post / update the reminder comment & read labels
+  issues: write          # PR comments are issue comments
+
+jobs:
+  check_commonserverpython_nightly_label_job:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+
+      - name: Install python dependencies
+        run: |
+          poetry install --with github-actions
+
+      - name: Set PYTHONPATH
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Verify nightly-run-passed label for CommonServerPython changes
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Verifying CommonServerPython nightly enforcement on PR: $PR_NUMBER"
+          cd .github/github_workflow_scripts
+          poetry run python check_commonserverpython_nightly_label.py \
+            --pr_number "$PR_NUMBER" \
+            --github_token "$GITHUB_TOKEN"

@@ -4,7 +4,7 @@
 // Place here all common functions you'd like to share between server scripts.
 
 
-// ============= Fix vault credentials =============
+// =========== Fix vault credentials ===============
 // =================================================
 try {
     if(params && typeof params === 'object'){
