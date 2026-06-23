@@ -66,15 +66,14 @@ configuration:
   supportedModules:
   - "xsiam"
   - "agentix"
-- display: 'Fetch types'
+- display: 'Incident Fetch types'
   defaultvalue: 'Endpoint Detection'
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
-  advanced: true
   required: false
   additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note:
+    Choose what incident types to fetch - You can choose any combination. Note:
     Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
@@ -322,14 +321,14 @@ configuration:
   - xsoar
   supportedModules:
   - "xsiam"
-- display: 'Fetch types'
+- display: 'Event Fetch types'
   defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
   type: 16
   section: Collect
   required: false
   additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what event types to fetch - You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Detection
