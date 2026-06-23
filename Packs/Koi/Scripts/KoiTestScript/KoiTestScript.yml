@@ -1,0 +1,46 @@
+args:
+- description: The person's first name.
+  name: first_name
+  required: true
+- description: The person's last name.
+  name: last_name
+  required: true
+- description: The person's age.
+  name: age
+  defaultValue: 10
+  required: true
+- description: The person's city.
+  name: city
+  required: true
+commonFields:
+  id: Koi Test Script
+  version: -10
+enabled: true
+name: KoiTestScript
+runas: DBotWeakRole
+scriptTarget: 0
+subtype: js
+tags:
+- Utility
+type: python3
+outputs:
+        - contextPath: Koi.Profile.FullName
+          description: The full name (first and last name).
+          type: String
+        - contextPath: Koi.Profile.FirstName
+          description: The person's first name.
+          type: String
+        - contextPath: Koi.Profile.LastName
+          description: The person's last name.
+          type: String
+        - contextPath: Koi.Profile.Age
+          description: The person's age.
+          type: Number
+        - contextPath: Koi.Profile.City
+          description: The person's city.
+          type: String
+        - contextPath: Koi.Profile.IsAdult
+          description: Whether the person is an adult (age 18 or older).
+          type: Boolean
+tests:
+- No tests (auto formatted)
