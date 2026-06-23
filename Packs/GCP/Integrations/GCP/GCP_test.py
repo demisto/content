@@ -5539,6 +5539,39 @@ def _make_http_error(status: int, content: str):
     return HttpError(resp=resp, content=content.encode("utf-8"))
 
 
+@pytest.mark.parametrize(
+    "status, content, expected",
+    [
+        # 403 with the SERVICE_DISABLED reason -> disabled.
+        (403, '{"error": {"status": "PERMISSION_DENIED", "message": "... SERVICE_DISABLED"}}', True),
+        # 403 with the "has not been used in project" phrasing -> disabled.
+        (403, "Compute Engine API has not been used in project 123 before or it is disabled.", True),
+        # Matching is case-insensitive.
+        (403, "SERVICE_DISABLED", True),
+        # 403 but a genuine permission denial (no disabled marker) -> not disabled.
+        (403, '{"error": {"message": "caller does not have permission"}}', False),
+        # Right marker but wrong status -> not disabled.
+        (404, "service_disabled", False),
+        # Non-decodable / empty content is handled safely -> not disabled.
+        ("", "", False),
+    ],
+)
+def test_is_service_disabled_error(status, content, expected):
+    """
+    Given:
+        - HttpErrors with various status codes and response bodies (including a non-int
+          status that makes the status comparison/content handling fall through safely).
+    When:
+        - _is_service_disabled_error is called.
+    Then:
+        - Returns True only for a 403 whose content indicates the API is disabled
+          (SERVICE_DISABLED / "has not been used in project"), case-insensitively; False otherwise.
+    """
+    from GCP import _is_service_disabled_error
+
+    assert _is_service_disabled_error(_make_http_error(status, content)) is expected
+
+
 def test_test_module_falls_back_when_resource_manager_api_disabled(mocker):
     """
     Given:

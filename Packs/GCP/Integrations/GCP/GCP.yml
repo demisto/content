@@ -9,8 +9,8 @@ sectionorder:
 configuration:
 - displaypassword: Service Account Private Key (JSON)
   name: credentials
-  required: false
-  required:xsoar: true
+  required: true
+  required:platform: false
   type: 9
   hiddenusername: true
   section: Connect
