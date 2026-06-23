@@ -1072,13 +1072,20 @@ def main() -> None:  # pragma: no cover
     try:
         if command == "test-module":
             # Validate whichever credentials are configured (a customer may configure either or both).
+            # Each test is labeled so a failure clearly indicates which key is invalid.
             results: list[str] = []
             if api_key:
-                llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
-                results.append(test_module(client=llm_client, params=params))
+                try:
+                    llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
+                    results.append(test_module(client=llm_client, params=params))
+                except Exception as e:
+                    raise DemistoException(f"API Key (LLM) validation failed: {e}") from e
             if compliance_api_key:
-                compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
-                results.append(module_test_compliance(client=compliance_client))
+                try:
+                    compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+                    results.append(module_test_compliance(client=compliance_client))
+                except Exception as e:
+                    raise DemistoException(f"Compliance Access Key validation failed: {e}") from e
             if not results:
                 raise DemistoException(
                     "No credentials configured. Set the 'API Key' for LLM commands and/or the "
