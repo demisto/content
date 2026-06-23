@@ -304,7 +304,7 @@ alter
     xdm.target.user.identifier = uid,
     xdm.target.process.name = comm,
     xdm.target.process.parent_id = if(event_name_clean = "SYSCALL", null, ppid),
-    xdm.target.process.executable.path = replex(parsed_fields -> exe, "\\", ""),
+    xdm.target.process.executable.path = parsed_fields -> exe,
     xdm.target.process.pid = to_number(pid),
     xdm.target.process.command_line = if(event_name_clean = "SYSCALL", null, comm);
 
