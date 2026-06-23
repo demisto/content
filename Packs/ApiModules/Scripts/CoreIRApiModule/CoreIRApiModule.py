@@ -1453,8 +1453,7 @@ class CoreClient(BaseClient):
         """
         return self._http_request(
             method="GET",
-            url_suffix="/healthcheck",
-            json_data={"request_data": {}},
+            url_suffix="/healthcheck"
         )
 
 
