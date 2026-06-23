@@ -1,0 +1,82 @@
+{
+    "openai_admin_audit_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "effective_at": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "project": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_updated": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "openai_chatgpt_compliance_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_result": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_privilege": {
+            "type": "string",
+            "is_array": false
+        },
+        "principal": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "workspace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "conversation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
