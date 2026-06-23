@@ -144,7 +144,7 @@ Analyze email headers for potential security issues using the OpenAI Responses A
 
 | **Path**                              | **Type** | **Description**                        |
 |---------------------------------------|----------|----------------------------------------|
-| OpenAiChatGPTV3.Response              | Unknown  | Conversation state including the response_id. |
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
 | OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
 | OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
 | OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
@@ -178,7 +178,7 @@ Analyze email body for potential security risks using the OpenAI Responses API. 
 
 | **Path**                              | **Type** | **Description**                        |
 |---------------------------------------|----------|----------------------------------------|
-| OpenAiChatGPTV3.Response              | Unknown  | Conversation state including the response_id. |
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
 | OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
 | OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
 | OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
@@ -233,7 +233,7 @@ Draft a SOC email template using the OpenAI Responses API. This command uses the
 
 | **Path**                              | **Type** | **Description**                        |
 |---------------------------------------|----------|----------------------------------------|
-| OpenAiChatGPTV3.Response              | Unknown  | Conversation state including the response_id. |
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
 | OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
 | OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
 | OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
@@ -268,8 +268,8 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 | **Path**                     | **Type** | **Description**                                                  |
 |------------------------------|----------|------------------------------------------------------------------|
 | OpenAI.Event.id              | String   | The unique identifier of the event.                              |
-| OpenAI.Event._event_type     | String   | Upstream `event_type` (Compliance only). Empty for Audit events. |
-| OpenAI.Event.source_log_type | String   | Source log type used by downstream parsing/modeling rules.       |
+| OpenAI.Event._event_type     | String   | The upstream event_type for Compliance events. Left empty for Audit events. |
+| OpenAI.Event.source_log_type | String   | The source log type used by downstream parsing rules.       |
 | OpenAI.Event._time           | Date     | The event timestamp in ISO 8601 format.                          |
 
 #### Human Readable Output
@@ -308,7 +308,7 @@ Sends a message to the OpenAI Responses API and receives the generated response.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenAiChatGPTV3.Response | Unknown | The conversation state including the response_id for multi-turn continuity. |
+| OpenAiChatGPTV3.Response | Unknown | The conversation state, which includes the response_id for multi-turn continuity. |
 | OpenAiChatGPTV3.Response.user | String | The user message sent. |
 | OpenAiChatGPTV3.Response.assistant | String | The assistant response text. |
 | OpenAiChatGPTV3.Response.response_id | String | The OpenAI response ID used for multi-turn conversation continuity. |
@@ -332,7 +332,7 @@ Lists all models available to the configured API key. Lets users discover models
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpenAiChatGPTV3.Model.Id | String | The model identifier \(e.g., gpt-4, gpt-3.5-turbo\). |
-| OpenAiChatGPTV3.Model.Created | Number | The Unix timestamp of when the model was created. |
+| OpenAiChatGPTV3.Model.Created | Number | The Unix timestamp when the model was created. |
 | OpenAiChatGPTV3.Model.OwnedBy | String | The organization or entity that owns the model. |
 
 ### gpt-create-moderation
@@ -357,6 +357,8 @@ Runs text or an image through the OpenAI Moderations API and returns per-categor
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| OpenAiChatGPTV3.Moderation.Input.input_type | String | The type of input that was moderated (text, image, or image_url). |
+| OpenAiChatGPTV3.Moderation.Input.input_value | String | The value of the input that was moderated. |
 | OpenAiChatGPTV3.Moderation.Flagged | Boolean | Whether the content was flagged by the moderation model. |
 | OpenAiChatGPTV3.Moderation.Categories | Unknown | The object of boolean values indicating which categories were flagged. |
 | OpenAiChatGPTV3.Moderation.CategoryScores | Unknown | The object of float values indicating the confidence score for each category. |
