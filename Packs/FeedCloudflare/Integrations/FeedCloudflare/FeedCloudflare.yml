@@ -105,6 +105,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Timeout of the polling request in seconds.
   display: Request Timeout
   name: polling_timeout

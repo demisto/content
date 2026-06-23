@@ -175,6 +175,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetches indicators from a JSON feed.
 display: JSON Feed
 name: JSON Feed

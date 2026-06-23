@@ -200,6 +200,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetch indicators from a CSV feed.
 display: CSV Feed
 name: CSVFeed

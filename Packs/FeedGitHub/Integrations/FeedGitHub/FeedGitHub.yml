@@ -171,6 +171,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feedReputation
   display: Indicator Reputation
   type: 18

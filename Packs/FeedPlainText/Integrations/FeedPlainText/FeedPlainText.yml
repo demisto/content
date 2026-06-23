@@ -205,6 +205,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed

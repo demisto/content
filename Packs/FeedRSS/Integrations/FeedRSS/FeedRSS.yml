@@ -138,6 +138,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: RSS Feed reader can ingest new items as report indicators.
 display: RSS Feed
 name: RSS Feed
