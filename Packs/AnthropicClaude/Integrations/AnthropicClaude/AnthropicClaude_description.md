@@ -30,7 +30,7 @@ This integration supports two independent credentials; configure either or both:
 - **API Key** — required for the LLM commands (`claude-send-message`, `claude-check-email-*`, `claude-create-soc-email-template`). Generate one at [https://console.anthropic.com/keys](https://console.anthropic.com/keys).
 - **Compliance Access Key** (`sk-ant-api01-...`) — required for event collection and the read-only `claude-list-*` / `claude-get-*` commands.
 
-### Event Collection (Compliance API)
+### Compliance API
 Event collection and the read-only compliance commands use the **Compliance Access Key**.
 
 #### Prerequisites
