@@ -1,7 +1,7 @@
 
 
-# [pack]
-# ignore=RN107, RM114
+[pack]
+ignore=RN107, RM114
 
 [file:README.md]
 ignore=RM104,RM106,BA125
