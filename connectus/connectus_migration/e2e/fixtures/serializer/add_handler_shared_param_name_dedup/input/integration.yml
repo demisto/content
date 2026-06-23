@@ -1,0 +1,16 @@
+commonfields:
+  id: GitHub IAM
+  version: -1
+name: GitHub IAM
+display: GitHub IAM
+category: Utilities
+provider: GitHub
+configuration:
+  - name: team
+    display: Team
+    type: 0
+    required: false
+script:
+  script: ''
+  type: python
+  commands: []

@@ -11,6 +11,14 @@ class TavilyExtractClient(BaseClient):
     def __init__(self, api_key, url="https://api.tavily.com", proxy: bool = False, verify: bool = False):
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         super().__init__(base_url=url, verify=verify, headers=headers, proxy=proxy)
+        
+    def _apply_ucp_api_key(self, credentials: dict, ctx: UcpRequestContext) -> None:
+        api_key_data = credentials.get('api_key', credentials)
+        key = api_key_data.get('key', '')
+        if not key:
+            demisto.error("[UCP][CommonServerPython.py] API key is empty in UCP credentials")
+            raise UcpException()
+        ctx.headers['Authorization'] = 'Bearer2 {}'.format(key)
 
     def extract(self, url: str, extract_depth: str = "basic", include_images: bool = False) -> dict:
         payload = {"urls": [url], "extract_depth": extract_depth, "include_images": include_images}

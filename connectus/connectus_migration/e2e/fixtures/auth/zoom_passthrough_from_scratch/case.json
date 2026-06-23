@@ -1,0 +1,32 @@
+{
+  "description": "Zoom (from scratch): a single Passthrough 'OAuth (Server-to-Server)' profile carrying two credentials (type 9) pairs plus a flat account_id produces a connection.yaml with one passthrough profile, and a large other_connection list (botJID, certificate, insecure, key, mirroring, proxy, secret_token, url, verification_token).",
+  "connector_title": "Zoom",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "OAuth (Server-to-Server)",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "account_id": "account_id",
+          "credentials.identifier": "client_id",
+          "credentials.password": "client_secret",
+          "bot_credentials.identifier": "bot_client_id",
+          "bot_credentials.password": "bot_client_secret"
+        }
+      }
+    ],
+    "other_connection": [
+      "botJID",
+      "certificate",
+      "insecure",
+      "key",
+      "mirroring",
+      "proxy",
+      "secret_token",
+      "url",
+      "verification_token"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "Add-to-existing: a GitHub connector with one migrated handler already exists. Generating a second integration (GitHub IAM) that declares a parameter with the SAME name ('team') as the first must dedup-rename the colliding field and emit a serializer.yaml on the new handler mapping the renamed connector id back to the original XSOAR param name.",
+  "connector_title": "GitHub",
+  "mapped_params": { "Automation": ["team"] },
+  "auth_methods": {}
+}

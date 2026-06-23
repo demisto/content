@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../schema/summary.schema.json
+metadata:
+  title: Summary
+  description: Summary for connector Jamf
