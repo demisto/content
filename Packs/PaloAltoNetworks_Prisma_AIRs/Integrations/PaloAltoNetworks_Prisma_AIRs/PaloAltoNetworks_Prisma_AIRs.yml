@@ -3658,6 +3658,80 @@ script:
     - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
       description: Full probe results metadata.
       type: Unknown
+  - name: prisma-airs-redteam-targets-profile
+    description: Get Red Team target profile (background, context, profiling status). View detailed profiling information including background context and AI-generated fields.
+    arguments:
+    - name: target_uuid
+      required: true
+      description: Target UUID to retrieve profile for.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_id
+      description: Target ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_version
+      description: Target version number.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.profiling_status
+      description: Profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_background
+      description: Target background information (industry, use case, etc.).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.additional_context
+      description: Additional context (model details, languages, etc.).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.ai_generated_fields
+      description: AI-generated fields from profiling.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.other_details
+      description: Other profile details.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-update-profile
+    description: Update Red Team target profile (background and additional context). Modify target background information or add additional context like model details and supported languages.
+    arguments:
+    - name: target_uuid
+      required: true
+      description: Target UUID to update.
+    - name: target_background
+      required: false
+      description: 'Target background as JSON string. Example: {"industry": "Healthcare", "use_case": "Patient Support Chatbot"}.'
+    - name: additional_context
+      required: false
+      description: 'Additional context as JSON string. Example: {"base_model": "GPT-4", "languages_supported": ["en", "es"]}.'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: Target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: Target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: Target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target is validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+      description: Last update timestamp.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.target_background
+      description: Updated target background.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTarget.additional_context
+      description: Updated additional context.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-metadata
+    description: Get Red Team target field metadata. Returns field definitions (types, requirements, constraints) for all available target configuration fields. Useful for understanding what fields can be configured when creating or updating targets.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetMetadata
+      description: Field metadata dictionary with field definitions.
+      type: Unknown
   - name: prisma-airs-redteam-scan-create
     description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
     arguments:

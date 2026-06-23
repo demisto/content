@@ -9,9 +9,13 @@ from PaloAltoNetworks_Prisma_AIRs import (
     runtime_customer_apps_list_command,
     runtime_deployment_profiles_list_command,
     runtime_dlp_profiles_list_command,
+    runtime_topics_apply_command,
     model_security_scans_list_command,
     model_security_groups_list_command,
     model_security_rules_list_command,
+    redteam_targets_profile_command,
+    redteam_targets_update_profile_command,
+    redteam_targets_metadata_command,
 )
 
 
@@ -612,3 +616,96 @@ class TestCommands:
         assert applied_topic["topic_id"] == "topic-uuid-123"
         assert applied_topic["topic_name"] == "credit-cards"
         assert applied_topic["revision"] == 2
+
+    @patch.object(Client, 'http_request')
+    def test_redteam_targets_profile_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets profile command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "target_id": "target-uuid-123",
+            "target_version": 1,
+            "status": "READY",
+            "profiling_status": "COMPLETED",
+            "target_background": {"industry": "Healthcare", "use_case": "Patient Support"},
+            "additional_context": {"base_model": "GPT-4", "languages_supported": ["en", "es"]},
+            "ai_generated_fields": {"sensitivity": "high"},
+            "other_details": {"region": "us-west-2"}
+        }
+
+        args = {"target_uuid": "target-uuid-123"}
+        result = redteam_targets_profile_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetProfile"
+        assert result.outputs["target_id"] == "target-uuid-123"
+        assert result.outputs["target_version"] == 1
+        assert result.outputs["status"] == "READY"
+        assert result.outputs["profiling_status"] == "COMPLETED"
+        assert result.outputs["target_background"]["industry"] == "Healthcare"
+        assert result.outputs["additional_context"]["base_model"] == "GPT-4"
+
+    @patch.object(Client, 'http_request')
+    def test_redteam_targets_update_profile_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets update profile command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "target-uuid-123",
+            "name": "prod-chatbot",
+            "status": "READY",
+            "active": True,
+            "validated": True,
+            "updated_at": "2024-01-15T10:30:00Z",
+            "target_background": {"industry": "Healthcare", "use_case": "Patient Support"},
+            "additional_context": {"base_model": "GPT-4"}
+        }
+
+        args = {
+            "target_uuid": "target-uuid-123",
+            "target_background": '{"industry": "Healthcare", "use_case": "Patient Support"}',
+            "additional_context": '{"base_model": "GPT-4"}'
+        }
+        result = redteam_targets_update_profile_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTarget"
+        assert result.outputs["uuid"] == "target-uuid-123"
+        assert result.outputs["name"] == "prod-chatbot"
+        assert result.outputs["status"] == "READY"
+        assert result.outputs["target_background"]["industry"] == "Healthcare"
+        assert result.outputs["additional_context"]["base_model"] == "GPT-4"
+
+        # Verify http_request was called with correct body
+        call_args = mock_http.call_args
+        body = call_args[1]["json_data"]
+        assert body["target_background"]["industry"] == "Healthcare"
+        assert body["additional_context"]["base_model"] == "GPT-4"
+
+    @patch.object(Client, 'http_request')
+    def test_redteam_targets_metadata_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets metadata command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "rate_limit": {"type": "number", "required": False},
+            "multi_turn": {"type": "boolean", "required": False},
+            "content_filter": {"type": "boolean", "required": False},
+            "base_model": {"type": "string", "required": True}
+        }
+
+        args: dict[str, str] = {}
+        result = redteam_targets_metadata_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetMetadata"
+        assert "rate_limit" in result.outputs
+        assert result.outputs["rate_limit"]["type"] == "number"
+        assert result.outputs["multi_turn"]["type"] == "boolean"
+        assert result.outputs["base_model"]["required"] is True

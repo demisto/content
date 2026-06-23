@@ -31,6 +31,7 @@ RED_TEAM_CUSTOM_ATTACKS_ENDPOINT = "/v1/custom-attacks"
 RED_TEAM_CUSTOM_ATTACK_ENDPOINT = "/v1/custom-attack"  # For prompts within prompt sets
 RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
+RED_TEAM_TEMPLATE_ENDPOINT = "/v1/template"
 # DLP API path suffixes (v2 API) - uses separate base URL
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
 # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
@@ -8887,6 +8888,15 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-probe":
             return_results(redteam_targets_probe_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-profile":
+            return_results(redteam_targets_profile_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-update-profile":
+            return_results(redteam_targets_update_profile_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-metadata":
+            return_results(redteam_targets_metadata_command(client, args))
 
         elif command == "prisma-airs-redteam-scan-create":
             return_results(redteam_scan_create_command(client, args))
