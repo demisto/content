@@ -120,7 +120,7 @@ script:
   - description: Generates the login URL used for authorization code flow. Relevant only for Cortex XSOAR and Cortex XSIAM (Authorization Code flow).
     name: azure-generate-login-url
   - arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -225,7 +225,7 @@ script:
   - name: azure-vn-security-rule-update
     description: "Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -322,7 +322,7 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -556,7 +556,7 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -610,7 +610,7 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -693,7 +693,7 @@ script:
         description: An array of predefined, supported blob types. The only supported value is BlockBlob.
         type: String
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         required: false
         required:platform: true
@@ -706,7 +706,7 @@ script:
   - name: azure-storage-blob-service-property-get
     description: "Run this command to get the blob service properties of a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -783,7 +783,7 @@ script:
         description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
         type: Boolean
     arguments:
-      - description: "The subscription ID."
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         required: false
         required:platform: true
@@ -815,7 +815,7 @@ script:
   - name: azure-storage-blob-container-update
     description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -870,7 +870,7 @@ script:
     - description: The name of the Container.
       name: container_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -911,7 +911,7 @@ script:
         https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
       name: container_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -928,7 +928,7 @@ script:
     - description: The name of the Container to delete.
       name: container_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -951,7 +951,7 @@ script:
       required: true
     - description: The name of the Blob to create. Default is the file name.
       name: blob_name
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -968,7 +968,7 @@ script:
   - name: azure-storage-blob-create
     description: "Create a new Blob under the specified Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     arguments:
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -994,7 +994,7 @@ script:
     - description: The name of the Blob to retrieve.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1042,7 +1042,7 @@ script:
   - name: azure-storage-blob-get
     description: "Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     arguments:
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1097,7 +1097,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1132,7 +1132,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1166,7 +1166,7 @@ script:
     - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
       name: tags
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1199,7 +1199,7 @@ script:
     - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
       name: tags
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1224,7 +1224,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1277,7 +1277,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1356,7 +1356,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1409,7 +1409,7 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1455,7 +1455,7 @@ script:
     - description: Name of a container.
       name: container_name
       required: true
-    - description: "The subscription ID."
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -1475,7 +1475,7 @@ script:
     - name: subscription_id
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: scope
       type: string
       description: The scope of the policy assignment.
@@ -1561,7 +1561,7 @@ script:
       required: false
       required:platform: true
       type: string
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: source
       type: string
       description: Source of the configuration.
@@ -1581,7 +1581,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       type: string
       required: true
@@ -1714,7 +1714,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       type: string
       required: true
@@ -1838,7 +1838,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       type: string
       required: true
@@ -1962,7 +1962,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       type: string
       required: true
@@ -2081,7 +2081,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: server_name
       type: string
       required: true
@@ -2110,7 +2110,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: location
       description: Resource location.
     - name: retention_policy_days
@@ -2168,7 +2168,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: disk_name
       type: string
       required: true
@@ -2314,7 +2314,7 @@ script:
       type: string
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: disk_name
       type: string
       required: true
@@ -2456,7 +2456,7 @@ script:
       type: String
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       type: String
       required: true
@@ -2695,7 +2695,7 @@ script:
     - name: subscription_id
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: name
       required: true
       description: Name of the Web App.
@@ -2800,7 +2800,7 @@ script:
       type: String
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: registry_name
       type: String
       required: true
@@ -2915,7 +2915,7 @@ script:
       type: String
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: registry_name
       type: String
       required: true
@@ -3025,7 +3025,7 @@ script:
       type: String
       required: false
       required:platform: true
-      description: Subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: server_name
       type: String
       required: true
@@ -3047,7 +3047,7 @@ script:
     - name: subscription_id
       required: false
       required:platform: true
-      description: The subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       type: String
     - name: resource_group_name
       required: true
@@ -3149,7 +3149,7 @@ script:
     - name: subscription_id
       required: false
       required:platform: true
-      description: The subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       type: String
     - name: resource_group_name
       required: true
@@ -3235,7 +3235,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -3308,7 +3308,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - description: Subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -3378,7 +3378,7 @@ script:
       - Disabled
       - Enabled
       required: true
-    - description: Subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -3399,7 +3399,7 @@ script:
       - 'true'
       - 'false'
       type: bool
-    - description: Subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -3553,7 +3553,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - description: Subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -3732,7 +3732,7 @@ script:
         type: List
     arguments:
       - name: subscription_id
-        description: The subscription ID.
+        description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         type: String
         required: false
         required:platform: true
@@ -3744,7 +3744,7 @@ script:
     description: "Creates a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/write."
     arguments:
       - name: subscription_id
-        description: The subscription ID.
+        description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: resource_group_name
@@ -3874,7 +3874,7 @@ script:
     description: "List all network security groups. Required permissions: Microsoft.Network/networkSecurityGroups/read."
     arguments:
     - name: subscription_id
-      description: The subscription ID.
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       type: String
       required: false
       required:platform: true
@@ -3970,7 +3970,7 @@ script:
         description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -3989,7 +3989,7 @@ script:
   - name: azure-vn-security-rule-get
     description: "Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4059,7 +4059,7 @@ script:
     description: "Retrieves all security rules in a network security group. Deprecated. Use the azure-vn-security-rules-list command instead. Required permission: Microsoft.Network/networkSecurityGroups/securityRules/read."
     deprecated: true
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4109,7 +4109,7 @@ script:
   - name: azure-vn-security-rules-list
     description: "Gets all security rules in a network security group. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4206,7 +4206,7 @@ script:
         description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4273,7 +4273,7 @@ script:
   - name: azure-vn-security-rule-create
     description: "Create a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4388,7 +4388,7 @@ script:
     name: azure-nsg-security-rule-delete
     deprecated: true
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4406,7 +4406,7 @@ script:
   - description: "Delete a security rule. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete."
     name: azure-vn-security-rule-delete
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4425,7 +4425,7 @@ script:
     name: azure-nsg-resource-group-list
     deprecated: true
     arguments:
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4477,7 +4477,7 @@ script:
   - description: "Gets all resource groups for a subscription. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read."
     name: azure-rm-resource-groups-list
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4579,7 +4579,7 @@ script:
         name: resource_group_name
         type: String
         required: true
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4602,7 +4602,7 @@ script:
       name: resource_group_name
       type: String
       required: true
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4710,7 +4710,7 @@ script:
         name: resource_group_name
         type: String
         required: true
-      - description: The subscription ID.
+      - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: subscription_id
         type: String
         required: false
@@ -4733,7 +4733,7 @@ script:
       name: resource_group_name
       type: String
       required: true
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       type: String
       required: false
@@ -4798,7 +4798,7 @@ script:
     execution: true
     deprecated: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -4824,7 +4824,7 @@ script:
     description: "Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/start/action."
     execution: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -4849,7 +4849,7 @@ script:
     execution: true
     deprecated: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -4882,7 +4882,7 @@ script:
     description: "Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/poweroff/action."
     execution: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -4913,7 +4913,7 @@ script:
     description: "Retrieves the properties of a specific virtual machine. Deprecated. Use the azure-compute-vm-get command instead. Required permission: Microsoft.Compute/virtualMachines/read."
     deprecated: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -4985,7 +4985,7 @@ script:
   - name: azure-compute-vm-get
     description: "Gets the properties of a given virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -5047,7 +5047,7 @@ script:
     description: "Retrieves the properties of a specific network interface. Deprecated. Use the azure-vn-network-interface-get command instead. Required permission: Microsoft.Network/networkInterfaces/read."
     deprecated: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -5105,7 +5105,7 @@ script:
   - name: azure-vn-network-interface-get
     description: "Gets the properties of a given network interface. Required permissions: Microsoft.Network/networkInterfaces/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -5158,7 +5158,7 @@ script:
   - name: azure-vn-network-interface-update
     description: "Updates a network interface. Required Permissions: Microsoft.Network/networkInterfaces/read, Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -5395,7 +5395,7 @@ script:
     description: "Retrieves the properties of a specific public IP address. Deprecated. Use the azure-vn-public-ip-address-get command instead. Required permission: Microsoft.Network/publicIPAddresses/read."
     deprecated: true
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -5447,7 +5447,7 @@ script:
   - name: azure-vn-public-ip-address-get
     description: "Gets the properties of a given public IP address. Permissions required: Microsoft.Network/publicIPAddresses/read."
     arguments:
-    - description: The subscription ID.
+    - description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: subscription_id
       required: false
       required:platform: true
@@ -7144,7 +7144,7 @@ script:
     description: "Returns actual usage and cost details for a given time period, optionally filtered by service name. Required permission: Microsoft.Consumption/usageDetails/read."
     arguments:
       - name: subscription_id
-        description: The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
+        description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: expand_result
@@ -7349,7 +7349,7 @@ script:
     description: "Returns cost forecast for a subscription over a given time range. Required permission: Microsoft.CostManagement/forecast/read."
     arguments:
       - name: subscription_id
-        description: Azure subscription ID (required).
+        description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
         type: String
@@ -7433,7 +7433,7 @@ script:
     description: "Lists configured budgets at the subscription or resource group level. Required permission: Microsoft.Consumption/budgets/read."
     arguments:
       - name: subscription_id
-        description: The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
+        description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: budget_name
@@ -10842,7 +10842,7 @@ script:
     description: "Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
     - name: subscription_id
-      description: "The subscription ID."
+      description: The Azure subscription ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name

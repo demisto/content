@@ -5665,14 +5665,29 @@ def test_network_interface_update_command_conflict_nsg(mocker):
         network_interface_update_command(client, params, args)
 
 
-def test_test_module_device_code_flow(mocker):
+def test_test_module_device_code_flow_authenticated(mocker):
     """
-    Given: A client configured with the Device Code authentication flow.
-    When: test_module is called.
-    Then: A DemistoException directing the user to the auth commands is raised.
+    Given: A client configured with the Device Code flow where authentication was already completed.
+    When: test_module is called (Test button).
+    Then: It obtains an access token and runs the connectivity check, returning "ok".
     """
-    mocker.patch("MicrosoftApiModule.MicrosoftClient.get_access_token")
     client = AzureClient(app_id="test_app_id", connection_type="Device Code")
+    mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+    mock_get_token.assert_called_once()
+    mock_http.assert_called_once()
+
+
+def test_test_module_device_code_flow_not_authenticated(mocker):
+    """
+    Given: A client configured with the Device Code flow where authentication was NOT completed.
+    When: test_module is called (Test button).
+    Then: A clear DemistoException pointing to the auth commands is raised.
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Device Code")
+    mocker.patch.object(client.ms_client, "get_access_token", side_effect=Exception("no token"))
 
     with pytest.raises(DemistoException) as excinfo:
         Azure.test_module(client)
@@ -5680,19 +5695,34 @@ def test_test_module_device_code_flow(mocker):
     assert "azure-auth-start" in str(excinfo.value)
 
 
-def test_test_module_authorization_code_flow(mocker):
+def test_test_module_authorization_code_flow_authenticated(mocker):
     """
-    Given: A client configured with the Authorization Code authentication flow.
-    When: test_module is called.
-    Then: A DemistoException directing the user to azure-auth-test is raised.
+    Given: A client configured with the Authorization Code flow where the auth code was provided.
+    When: test_module is called (Test button).
+    Then: It obtains an access token and runs the connectivity check, returning "ok".
     """
-    mocker.patch("MicrosoftApiModule.MicrosoftClient.get_access_token")
     client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
+    mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+    mock_get_token.assert_called_once()
+    mock_http.assert_called_once()
+
+
+def test_test_module_authorization_code_flow_not_authenticated(mocker):
+    """
+    Given: A client configured with the Authorization Code flow without a valid auth code.
+    When: test_module is called (Test button).
+    Then: A clear DemistoException pointing to the Authorization code parameter is raised.
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
+    mocker.patch.object(client.ms_client, "get_access_token", side_effect=Exception("no token"))
 
     with pytest.raises(DemistoException) as excinfo:
         Azure.test_module(client)
 
-    assert "azure-auth-test" in str(excinfo.value)
+    assert "Authorization code" in str(excinfo.value)
 
 
 def test_test_module_client_credentials_ok(mocker, client):

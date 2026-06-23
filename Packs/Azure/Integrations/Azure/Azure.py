@@ -5387,30 +5387,40 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
 
 
 def test_module(client: AzureClient) -> str:
-    """Tests API connectivity and authentication'
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    """Tests API connectivity and authentication.
 
-    For the interactive flows (Device Code / Authorization Code) the Test button cannot validate the
-    connection on its own, so the user is directed to the dedicated auth commands.
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    The Test button validates the connection for every authentication type:
+
+    - Client Credentials / Azure Managed Identities: a token is obtained non-interactively and a
+      lightweight Azure Resource Manager call is made to confirm connectivity and permissions.
+    - Device Code / Authorization Code: these are interactive flows. The user must first complete the
+      authentication (Device Code: `!azure-auth-start` + `!azure-auth-complete`; Authorization Code:
+      provide the Authorization code parameter). Once completed, the Test button validates the stored
+      authentication by obtaining an access token and making the same lightweight call. If the
+      authentication has not been completed yet, a clear, actionable error is raised.
+
+    Raises exceptions if something goes wrong.
 
     :type AzureClient: ``Client``
     :param Client: client to use
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    if "Device Code" in client.connection_type:
-        raise DemistoException(
-            "When using the Device Code flow, save the instance and run the `!azure-auth-start` and "
-            "`!azure-auth-complete` commands to log in. You can validate the connection by running "
-            "`!azure-auth-test`. For more details, see the Detailed Instructions (?) section."
-        )
-    if "Authorization Code" in client.connection_type:
-        raise DemistoException(
-            "When using the Authorization Code flow, save the instance and run the `!azure-auth-test` "
-            "command to validate the connection. For more details, see the Detailed Instructions (?) section."
-        )
+    is_interactive_flow = "Device Code" in client.connection_type or "Authorization Code" in client.connection_type
+    if is_interactive_flow:
+        # Validate that the interactive authentication has already been completed by obtaining a token.
+        # If the user has not completed the flow yet, surface a clear, actionable error.
+        try:
+            _get_ms_client(client).get_access_token()
+        except Exception as token_err:
+            raise DemistoException(
+                "Could not authenticate to Azure using the configured authentication type "
+                f"('{client.connection_type}'). Make sure you completed the authentication steps first: "
+                "for Device Code run `!azure-auth-start` and `!azure-auth-complete`; for Authorization Code "
+                "provide the Authorization code parameter (see the Detailed Instructions (?) section). "
+                f"Error: {token_err}"
+            ) from token_err
     try:
         client.http_request(
             method="GET",
