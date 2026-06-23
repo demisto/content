@@ -2,9 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
+import base64
 import re
 import time
 import urllib.parse
+import uuid
 from collections import OrderedDict
 from enum import Enum
 from re import Match
@@ -84,6 +86,14 @@ REFRESH_TOKEN = "refresh_token"
 
 CLIENT_CREDENTIALS = "client_credentials"
 AUTHORIZATION_CODE = "authorization_code"
+
+AUTH_CERTIFICATE_THUMBPRINT: str = replace_spaces_in_credential(
+    PARAMS.get("creds_auth_certificate", {}).get("identifier", "")
+)
+AUTH_PRIVATE_KEY: str = replace_spaces_in_credential(
+    PARAMS.get("creds_auth_certificate", {}).get("password", "")
+)
+TENANT_ID_PARAM: str = PARAMS.get("tenant_id", "")
 
 CHANNEL_SPECIAL_MARKDOWN_HEADERS: dict = {
     "id": "Membership id",
@@ -919,6 +929,45 @@ def resolve_adaptive_card(adaptive_card: dict) -> dict:
     return handle_raw_adaptive_card(adaptive_card)
 
 
+def create_client_assertion(tenant_id: str, audience_url: str | None = None) -> str:
+    """
+    Creates a JWT client assertion for certificate-based authentication against Azure AD.
+
+    Per the Microsoft certificate credentials spec, the JWT is signed with the private key
+    and includes the x5t header (base64url-encoded SHA-1 thumbprint of the certificate).
+
+    :param tenant_id: The Azure AD tenant ID.
+    :param audience_url: The token endpoint URL to use as the JWT audience claim.
+                         Defaults to the Graph token endpoint for the given tenant.
+    :return: A signed JWT assertion string.
+    """
+    if not AUTH_CERTIFICATE_THUMBPRINT or not AUTH_PRIVATE_KEY:
+        raise DemistoException(
+            "Certificate Thumbprint and Private Key must be provided for certificate-based authentication."
+        )
+
+    token_url = audience_url or f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+
+    # Convert hex thumbprint to base64url (no padding) per Microsoft spec
+    thumbprint_hex = AUTH_CERTIFICATE_THUMBPRINT.replace(":", "").replace(" ", "")
+    x5t = base64.urlsafe_b64encode(bytes.fromhex(thumbprint_hex)).rstrip(b"=").decode()
+
+    now = int(time.time())
+    jwt_payload = {
+        "aud": token_url,
+        "iss": BOT_ID,
+        "sub": BOT_ID,
+        "jti": str(uuid.uuid4()),
+        "nbf": now,
+        "iat": now,
+        "exp": now + 600,  # 10 minutes
+    }
+    jwt_headers = {"x5t": x5t}
+
+    assertion: str = jwt.encode(jwt_payload, AUTH_PRIVATE_KEY, algorithm="RS256", headers=jwt_headers)
+    return assertion
+
+
 def get_bot_access_token() -> str:
     """
     Retrieves Bot Framework API access token, either from cache or from Microsoft
@@ -934,13 +983,19 @@ def get_bot_access_token() -> str:
     data: dict = {
         "grant_type": "client_credentials",
         "client_id": BOT_ID,
-        "client_secret": BOT_PASSWORD,
         "scope": "https://api.botframework.com/.default",
     }
 
     if bot_type == "multi-tenant":
         demisto.debug("Attempting authentication to the multi-tenant bot framework url")
         url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+        if AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY:
+            data["client_assertion_type"] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data["client_assertion"] = create_client_assertion(
+                tenant_id="botframework.com", audience_url=url
+            )
+        else:
+            data["client_secret"] = BOT_PASSWORD
         response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
         if response.json().get("error", "") == "unauthorized_client":
             # Could not find bot-id in the common directory for multi-tenant bots, assume it is a single-tenant bot
@@ -948,11 +1003,17 @@ def get_bot_access_token() -> str:
             bot_type = "single-tenant"
 
     if bot_type == "single-tenant":
-        tenant_id = integration_context.get("tenant_id")
+        tenant_id = integration_context.get("tenant_id") or TENANT_ID_PARAM
         if not tenant_id:
             raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
         demisto.debug(f"Attempting authentication to the {tenant_id} tenant specific bot framework url")
         url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        if AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY:
+            data["client_assertion_type"] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data["client_assertion"] = create_client_assertion(tenant_id=tenant_id, audience_url=url)
+            data.pop("client_secret", None)
+        else:
+            data["client_secret"] = BOT_PASSWORD
         response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
 
     if not response.ok:
@@ -1151,7 +1212,7 @@ def get_graph_access_token(auth_type: str = "") -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug("Using access token from integration context")
         return access_token
-    tenant_id = integration_context.get("tenant_id")
+    tenant_id = integration_context.get("tenant_id") or TENANT_ID_PARAM
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
@@ -1160,8 +1221,16 @@ def get_graph_access_token(auth_type: str = "") -> str:
         "grant_type": CLIENT_CREDENTIALS,
         "client_id": BOT_ID,
         "scope": "https://graph.microsoft.com/.default",
-        "client_secret": BOT_PASSWORD,
     }
+
+    # Certificate-based auth takes precedence over client secret
+    if AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY:
+        demisto.debug("Using certificate-based authentication for Graph API token")
+        data["client_assertion_type"] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        data["client_assertion"] = create_client_assertion(tenant_id=tenant_id)
+    else:
+        data["client_secret"] = BOT_PASSWORD
+
     if auth_type == AUTHORIZATION_CODE_FLOW:
         if not AUTH_CODE:
             raise ValueError(
@@ -1174,6 +1243,9 @@ def get_graph_access_token(auth_type: str = "") -> str:
             demisto.debug("Using refresh token from integration context")
             data["grant_type"] = REFRESH_TOKEN
             data["refresh_token"] = refresh_token
+            # Re-create assertion for refresh token request (new jti/exp required)
+            if AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY:
+                data["client_assertion"] = create_client_assertion(tenant_id=tenant_id)
         else:
             if SESSION_STATE in AUTH_CODE:
                 raise ValueError(
@@ -3910,8 +3982,12 @@ def test_module():
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    if not BOT_ID or not BOT_PASSWORD:
-        raise DemistoException("Bot ID and Bot Password must be provided.")
+    if not BOT_ID:
+        raise DemistoException("Bot ID must be provided.")
+    if not BOT_PASSWORD and not (AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY):
+        raise DemistoException(
+            "Either Bot Password or both Certificate Thumbprint and Private Key must be provided."
+        )
 
     raise DemistoException(
         "Test module is unavailable for the Microsoft Teams Integration."
