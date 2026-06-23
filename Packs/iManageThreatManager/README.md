@@ -59,7 +59,7 @@ Configure the integration in Cortex XSIAM using the following parameters.
 | Token | Application token for API token authentication. Required for Behavior Analytics alerts. | Conditional |
 | Secret | Application secret for API token authentication. Required for Behavior Analytics alerts. | Conditional |
 | Fetch events | Whether to fetch events. | False |
-| Events types to fetch | Select which event types to fetch: Behavior Analytics alerts, Addressable Alerts, Detect And Protect Alerts. Default is Behavior Analytics alerts. | False |
+| Event types to fetch | Select which event types to fetch: Behavior Analytics alerts, Addressable Alerts, Detect And Protect Alerts. Default is Behavior Analytics alerts. | False |
 | Maximum number of events per type | Default and maximum is 900 events to fetch for each type. | False |
 | Trust any certificate (not secure) | Use SSL secure connection or not. | False |
 | Use system proxy settings | Use proxy settings for connection or not. | False |
