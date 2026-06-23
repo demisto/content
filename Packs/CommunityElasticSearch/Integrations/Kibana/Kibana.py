@@ -55,6 +55,7 @@ elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment,misc]
 
+
 def get_api_key_header_val(api_key):
     """
     Check the type of the passed api_key and return the correct header value
@@ -646,7 +647,7 @@ def kibana_get_user_list(args, proxies):
 
         return result
 
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         raise DemistoException(f"Error querying all users: {e}")
 
 
@@ -1112,8 +1113,9 @@ def kibana_get_user_by_email(args, proxies):
 
         return result
 
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         raise DemistoException(f"Error querying users by email: {e}")
+
 
 def kibana_get_case_information(args, proxies):
     """
