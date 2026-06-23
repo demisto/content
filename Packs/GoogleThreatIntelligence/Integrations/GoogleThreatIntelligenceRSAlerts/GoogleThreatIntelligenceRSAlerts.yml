@@ -1,0 +1,620 @@
+name: GoogleThreatIntelligenceRSAlerts
+display: Google Threat Intelligence - Relevance System Alerts
+commonfields:
+  id: GoogleThreatIntelligenceRSAlerts
+  version: -1
+fromversion: 6.10.0
+category: Data Enrichment & Threat Intelligence
+provider: Google
+defaultmapperin: Google Threat Intelligence RS Alerts - Incoming Mapper
+sectionorder:
+- Connect
+- Collect
+description: This integration allows the creation of incidents based on RS Alerts from Google Threat Intelligence.
+configuration:
+- display: Server URL
+  name: server_url
+  type: 0
+  required: true
+  defaultvalue: https://threatintelligence.googleapis.com/
+  additionalinfo: URL of the GTI platform.
+  section: Connect
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  additionalinfo: Provide the API key for authentication.
+  section: Connect
+- display: Project ID
+  name: project_id
+  type: 0
+  required: true
+  additionalinfo: Specify the ID of the project.
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  defaultvalue: Google Threat Intelligence RS Alert
+  type: 13
+  required: false
+  section: Collect
+- display: First Fetch Time
+  name: first_fetch
+  defaultvalue: '3 days'
+  type: 0
+  required: false
+  additionalinfo: "The date or relative timestamp from which to begin fetching RS Alerts. Default value is '3 days'.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 01 May 2026 04:45:33, 2026-05-17T14:05:44Z."
+  section: Collect
+- display: Max Fetch
+  name: max_fetch
+  defaultvalue: '100'
+  type: 0
+  required: false
+  additionalinfo: "The maximum number of Alerts to fetch each time. Default value is 100. The maximum is 200.\n\nIf the value is greater than 200, it will be considered as 200."
+  section: Collect
+- display: Relevance Level
+  name: relevance_level
+  type: 16
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  additionalinfo: Filter the alerts by the relevance level.
+  section: Collect
+  advanced: true
+- display: Severity Level
+  name: severity_level
+  type: 16
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  additionalinfo: Filter the alerts by the severity level.
+  section: Collect
+  advanced: true
+- display: Priority Level
+  name: priority_level
+  type: 16
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  additionalinfo: Filter the alerts by the priority level.
+  section: Collect
+  advanced: true
+- display: Status
+  name: status
+  type: 16
+  options:
+  - New
+  - Read
+  - Triaged
+  - Escalated
+  - Resolved
+  - Duplicate
+  - False Positive
+  - Not Actionable
+  - Benign
+  - Tracked Externally
+  required: false
+  additionalinfo: Filter the alerts by the status.
+  section: Collect
+  advanced: true
+- display: Threat Scenarios
+  name: threat_scenarios
+  type: 16
+  options:
+  - Data Leak
+  - Initial Access Broker
+  - Insider Threat
+  required: false
+  additionalinfo: Filter the alerts by the threat scenarios.
+  section: Collect
+  advanced: true
+- display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  type: 15
+  options:
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  additionalinfo: The mirroring direction in which to mirror the alert. You can mirror 'Incoming' (from GTI to Cortex XSOAR), 'Outgoing' (from Cortex XSOAR to GTI), or in both directions.
+  section: Collect
+- display: Reopen Incident for Open Alert Status
+  name: reopen_incident_for_open_alert_status
+  type: 8
+  required: false
+  defaultvalue: 'true'
+  additionalinfo: "Whether to reopen the incident when the Alert status is 'Read', 'Triaged', or 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  section: Collect
+  advanced: true
+- display: Close Incident for Close Alert Status
+  name: close_incident_for_close_alert_status
+  type: 8
+  required: false
+  defaultvalue: 'true'
+  additionalinfo: "Whether to close the incident when the Alert status is 'False Positive', 'Resolved', 'Duplicate', 'Benign', 'Not Actionable', or 'Tracked Externally'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  section: Collect
+  advanced: true
+- display: Alert Status for Incident Reopen
+  name: alert_status_for_incident_reopen
+  type: 15
+  options:
+  - Read
+  - Triaged
+  - Escalated
+  required: false
+  defaultvalue: Escalated
+  additionalinfo: "Alert Status set in GTI when reopening incidents in XSOAR. Default value is 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  section: Collect
+  advanced: true
+- display: Alert Status for Incident Closure
+  name: alert_status_for_incident_closure
+  type: 15
+  options:
+  - Resolved
+  - Duplicate
+  - False Positive
+  - Benign
+  - Not Actionable
+  - Tracked Externally
+  required: false
+  defaultvalue: Resolved
+  additionalinfo: "Alert Status set in GTI when closing incidents in XSOAR. Default value is 'Resolved'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  section: Collect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: gti-rs-alert-list
+    description: List the RS Alerts with provided filter arguments.
+    arguments:
+    - name: page_size
+      description: Specify the desired page size for the request.
+      defaultValue: '50'
+      required: false
+    - name: order_by
+      description: Filter alerts by the provided sort order.
+      auto: PREDEFINED
+      predefined:
+      - Asc
+      - Desc
+      defaultValue: Desc
+      required: false
+    - name: sort_by
+      description: Filter alerts by the provided sort field.
+      auto: PREDEFINED
+      predefined:
+      - Create Time
+      - Update Time
+      - Relevance Level
+      - Severity Level
+      - Priority Level
+      defaultValue: Update Time
+      required: false
+    - name: create_time
+      description: "Filter the alerts by created on or after the provided time. Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      required: false
+    - name: update_time
+      description: "Filter the alerts by updated on or after the provided time. Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      defaultValue: '3 days'
+      required: false
+    - name: relevance_level
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: A comma-separated list of relevance levels by which to filter the alerts.
+      required: false
+    - name: severity_level
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: A comma-separated list of severity levels by which to filter the alerts.
+      required: false
+    - name: priority_level
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: A comma-separated list of priority levels by which to filter the alerts.
+      required: false
+    - name: status
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Read
+      - Triaged
+      - Escalated
+      - Resolved
+      - Duplicate
+      - False Positive
+      - Not Actionable
+      - Benign
+      - Tracked Externally
+      description: A comma-separated list of statuses by which to filter the alerts.
+      required: false
+    - name: threat_scenarios
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Data Leak
+      - Initial Access Broker
+      - Insider Threat
+      description: A comma-separated list of threat scenarios by which to filter the alerts.
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.name
+      description: Unique identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findings
+      description: List of findings associated with the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.state
+      description: Current state of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updateTime
+      description: Timestamp of last update to the alert.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.createTime
+      description: Timestamp when the alert was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.creator
+      description: User or system that created the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updater
+      description: User or system that last updated the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.displayName
+      description: Display name of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.detailType
+      description: Type of detail analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.severity
+      description: Severity level for initial access broker threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.discoveryDocumentIds
+      description: Document IDs related to initial access broker discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.severity
+      description: Severity level for data leak threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.discoveryDocumentIds
+      description: Document IDs related to data leak discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.severity
+      description: Severity level for insider threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.discoveryDocumentIds
+      description: Document IDs related to insider threat discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicateOf
+      description: Identifier of the alert this is a duplicate of, if applicable.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicatedBy
+      description: List of alert identifiers that are duplicates of this alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.etag
+      description: Entity tag for optimistic concurrency control.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.externalId
+      description: External identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.aiSummary
+      description: AI-generated summary of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevant
+      description: Whether the alert is relevant.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.confidence
+      description: Confidence level of relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.reasoning
+      description: Reasoning for relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.commonThemes
+      description: Common themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.distinctThemes
+      description: Distinct themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevanceLevel
+      description: Overall relevance level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.severityLevel
+      description: Assessed severity level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.confidence
+      description: Confidence level of severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.reasoning
+      description: Reasoning for severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.priorityLevel
+      description: Assessed priority level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.confidence
+      description: Confidence level of priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.reasoning
+      description: Reasoning for priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findingCount
+      description: Number of findings associated with the alert.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.configurations
+      description: List of configurations related to the alert.
+      type: Array
+  - name: gti-rs-alert-get
+    description: Get a particular RS Alert by ID.
+    arguments:
+    - name: alert_id
+      description: "Specify the ID of the alert.\n\nNote: Use 'gti-rs-alert-list' to retrieve the Alert ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.name
+      description: Unique identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findings
+      description: List of findings associated with the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.state
+      description: Current state of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updateTime
+      description: Timestamp of last update to the alert.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.createTime
+      description: Timestamp when the alert was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.creator
+      description: User or system that created the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updater
+      description: User or system that last updated the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.displayName
+      description: Display name of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.detailType
+      description: Type of detail analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.severity
+      description: Severity level for initial access broker threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.discoveryDocumentIds
+      description: Document IDs related to initial access broker discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.severity
+      description: Severity level for data leak threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.discoveryDocumentIds
+      description: Document IDs related to data leak discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.severity
+      description: Severity level for insider threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.discoveryDocumentIds
+      description: Document IDs related to insider threat discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicateOf
+      description: Identifier of the alert this is a duplicate of, if applicable.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicatedBy
+      description: List of alert identifiers that are duplicates of this alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.etag
+      description: Entity tag for optimistic concurrency control.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.externalId
+      description: External identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.aiSummary
+      description: AI-generated summary of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevant
+      description: Whether the alert is relevant.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.confidence
+      description: Confidence level of relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.reasoning
+      description: Reasoning for relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.commonThemes
+      description: Common themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.distinctThemes
+      description: Distinct themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevanceLevel
+      description: Overall relevance level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.severityLevel
+      description: Assessed severity level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.confidence
+      description: Confidence level of severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.reasoning
+      description: Reasoning for severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.priorityLevel
+      description: Assessed priority level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.confidence
+      description: Confidence level of priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.reasoning
+      description: Reasoning for priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findingCount
+      description: Number of findings associated with the alert.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.configurations
+      description: List of configurations related to the alert.
+      type: Array
+  - name: gti-rs-alert-status-update
+    description: Update the status of an RS Alert.
+    arguments:
+    - name: alert_id
+      description: "Specify the ID of the alert.\n\nNote: Use 'gti-rs-alert-list' to retrieve the Alert ID."
+      required: true
+    - name: status
+      description: Specify the status of the alert.
+      auto: PREDEFINED
+      predefined:
+      - Read
+      - Triaged
+      - Escalated
+      - Resolved
+      - Duplicate
+      - False Positive
+      - Not Actionable
+      - Benign
+      - Tracked Externally
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.name
+      description: Unique identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findings
+      description: List of findings associated with the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.state
+      description: Current state of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updateTime
+      description: Timestamp of last update to the alert.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.createTime
+      description: Timestamp when the alert was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.creator
+      description: User or system that created the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.audit.updater
+      description: User or system that last updated the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.displayName
+      description: Display name of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.detailType
+      description: Type of detail analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.severity
+      description: Severity level for initial access broker threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.initialAccessBroker.discoveryDocumentIds
+      description: Document IDs related to initial access broker discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.severity
+      description: Severity level for data leak threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.dataLeak.discoveryDocumentIds
+      description: Document IDs related to data leak discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.severity
+      description: Severity level for insider threat.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.detail.insiderThreat.discoveryDocumentIds
+      description: Document IDs related to insider threat discovery.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicateOf
+      description: Identifier of the alert this is a duplicate of, if applicable.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.duplicatedBy
+      description: List of alert identifiers that are duplicates of this alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.etag
+      description: Entity tag for optimistic concurrency control.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.externalId
+      description: External identifier for the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.aiSummary
+      description: AI-generated summary of the alert.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevant
+      description: Whether the alert is relevant.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.confidence
+      description: Confidence level of relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.reasoning
+      description: Reasoning for relevance assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.commonThemes
+      description: Common themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.evidence.distinctThemes
+      description: Distinct themes found in the alert.
+      type: Array
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.relevanceAnalysis.relevanceLevel
+      description: Overall relevance level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.severityLevel
+      description: Assessed severity level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.confidence
+      description: Confidence level of severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.severityAnalysis.reasoning
+      description: Reasoning for severity assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.priorityLevel
+      description: Assessed priority level.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.confidence
+      description: Confidence level of priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.priorityAnalysis.reasoning
+      description: Reasoning for priority assessment.
+      type: String
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.findingCount
+      description: Number of findings associated with the alert.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.configurations
+      description: List of configurations related to the alert.
+      type: Array
+  dockerimage: demisto/python3:3.12.13.9059085
+  isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
+tests:
+- No tests (auto formatted)
