@@ -5528,7 +5528,7 @@ script:
       - resolved_security_testing
     - name: resolve_comment
       description: The resolve comment.
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isfetch:xpanse: false
   script: ''
