@@ -9,12 +9,14 @@ Use this workflow ONLY after plan approval. Never implement without an approved 
 - [ ] Plan was explicitly approved by user
 - [ ] All UNKNOWN items were resolved
 - [ ] All ASSUMED items were confirmed or documented
+- [ ] CLI documentation reference is verified in ./knowledge
 - [ ] Rollback plan is clear
 
 **STOP if:**
 - No plan was created
 - Plan was not approved
 - Any UNKNOWN items remain unresolved
+- CLI/API documentation doesn't support the planned implementation
 
 ---
 
@@ -28,80 +30,86 @@ Use this workflow ONLY after plan approval. Never implement without an approved 
 
 **Safety checks during implementation:**
 
-- [ ] If editing docker-compose.yaml → verify syntax before saving
-- [ ] If editing litellm_config.yaml → verify YAML syntax and model definitions
-- [ ] If editing .env → confirm salt key and master key unchanged (or explicitly approved to change)
-- [ ] If editing .github/workflows → verify deployment target and triggers
-- [ ] Never commit .env file or database volumes
+- [ ] If editing .py files → follow type hints, use CommandResults, handle errors gracefully
+- [ ] If editing .yml files → verify YAML syntax, validate command structure
+- [ ] If editing _test.py files → ensure tests cover both success and error cases
+- [ ] If editing pack_metadata.json → verify version increment follows semantic versioning
+- [ ] **CRITICAL: Validate ALL field names against SDK Zod schemas BEFORE implementation**
+  - Read `./knowledge/prisma-airs-sdk-main/src/models/mgmt-{resource}.ts`
+  - Check SDK client at `./knowledge/prisma-airs-sdk-main/src/management/{resource}.ts`
+  - Use EXACT field names from schema - do NOT guess or assume
+  - Common mistakes: `customer_app_id` vs `customer_appId`, `expires_at` vs `expiration`, `created_at` (doesn't exist in most schemas)
+- [ ] Always reference CLI documentation in ./knowledge for API implementation accuracy
 
 ---
 
 ## 3. Local Verification (Required Before Commit)
 
-**For docker-compose.yaml changes:**
+**For Python integration changes (.py files):**
 
 ```bash
-# Validate syntax
-docker compose config
+# Run demisto-sdk format (MANDATORY per AGENTS.md)
+demisto-sdk format -i Integrations/PaloAltoNetworks_Prisma_AIRs/
 
-# Test locally (if .env exists)
-docker compose up -d
-docker compose ps
-docker compose logs -f litellm
+# Run unit tests
+cd Integrations/PaloAltoNetworks_Prisma_AIRs/
+python -m pytest PaloAltoNetworks_Prisma_AIRs_test.py -v
 
-# Verify LiteLLM accessible and healthy
-curl http://localhost:8080/health/liveliness
+# Run demisto-sdk validate
+cd ../..
+demisto-sdk validate -i Packs/PaloAltoNetworks_Prisma_AIRs/
 
-# Check database
-docker compose exec db pg_isready -U llmproxy -d litellm
-
-# Stop test
-docker compose down
+# Check for linting issues
+demisto-sdk lint -i Integrations/PaloAltoNetworks_Prisma_AIRs/
 ```
 
-- [ ] Syntax validation passed
-- [ ] All containers start without errors
-- [ ] Logs show no critical errors
-- [ ] LiteLLM health check passes
-- [ ] Database connection successful
+- [ ] demisto-sdk format completed successfully
+- [ ] All unit tests pass
+- [ ] demisto-sdk validate passes with no errors
+- [ ] Linting passes or issues are justified
 
-**For litellm_config.yaml changes:**
+**For YAML configuration changes (.yml files):**
 
 ```bash
-# Start services
-docker compose up -d
+# Validate YAML syntax
+demisto-sdk validate -i Integrations/PaloAltoNetworks_Prisma_AIRs/PaloAltoNetworks_Prisma_AIRs.yml
 
-# Check LiteLLM loaded config correctly
-docker compose logs litellm | grep -i "config"
+# Check command structure
+grep -A 20 "script.commands:" Integrations/PaloAltoNetworks_Prisma_AIRs/PaloAltoNetworks_Prisma_AIRs.yml
 
-# Verify models are available
-curl http://localhost:8080/v1/models \
-  -H "Authorization: Bearer ${LITELLM_MASTER_KEY}"
-
-# Test a model endpoint
-curl http://localhost:8080/v1/chat/completions \
-  -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
-  -H "Content-Type: application/json" \
-  -d '{"model": "ollama_llama3", "messages": [{"role": "user", "content": "test"}]}'
+# Verify outputs are defined
+grep -A 10 "outputs:" Integrations/PaloAltoNetworks_Prisma_AIRs/PaloAltoNetworks_Prisma_AIRs.yml
 ```
-
-- [ ] Config file loaded without errors
-- [ ] All expected models appear in /v1/models
-- [ ] Test request succeeds (or fails with expected error)
-- [ ] Guardrails are active if configured
-
-**For .github/workflows changes:**
 
 - [ ] YAML syntax is valid
-- [ ] Deployment triggers are correct
-- [ ] Protected files (.env) are excluded from sync
-- [ ] Target host label matches production runner
+- [ ] Command definitions are complete
+- [ ] Arguments and outputs are properly structured
+- [ ] Validation passes
+
+**For unit test changes (_test.py files):**
+
+```bash
+# Run specific test
+python -m pytest PaloAltoNetworks_Prisma_AIRs_test.py::test_function_name -v
+
+# Run all tests with coverage
+python -m pytest PaloAltoNetworks_Prisma_AIRs_test.py --cov=PaloAltoNetworks_Prisma_AIRs -v
+
+# Check test data fixtures
+ls -la test_data/
+```
+
+- [ ] New tests pass
+- [ ] Existing tests still pass
+- [ ] Mocks are properly configured
+- [ ] Test fixtures are appropriately used
 
 **For documentation changes:**
 
 - [ ] Markdown formatting is correct
+- [ ] Command examples are accurate
 - [ ] No broken links
-- [ ] Information is accurate and current
+- [ ] Information matches implementation
 
 ---
 
@@ -110,7 +118,7 @@ curl http://localhost:8080/v1/chat/completions \
 - [ ] Stage ONLY the files in the approved plan
 - [ ] Write clear commit message explaining WHY
 - [ ] Do NOT commit unrelated changes
-- [ ] Verify .env is not staged
+- [ ] Run demisto-sdk pre-commit hooks (per AGENTS.md)
 
 **Commit message format:**
 
@@ -119,56 +127,71 @@ curl http://localhost:8080/v1/chat/completions \
 
 - Specific change 1
 - Specific change 2
+- CLI reference: ./knowledge/prisma-airs-cli-main/docs/cli/<command>.md
 
-Related to: <context or issue if applicable>
+Related to: <Prisma AIRs feature/API endpoint>
 ```
 
-Types: `feat`, `fix`, `docs`, `config`, `ci`, `refactor`
+Types: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`
 
 ---
 
 ## 5. Pre-Push Safety Check
 
-**CRITICAL: Pushing to main auto-deploys to production**
+**IMPORTANT: This is XSOAR marketplace content - changes affect all customers**
 
 Before `git push`:
 
-- [ ] Confirm changes were tested locally
-- [ ] Verify commit is on the intended branch
-- [ ] Check if this will trigger auto-deployment
-- [ ] Rollback plan is documented and ready
-- [ ] User explicitly approved pushing to production (if applicable)
+- [ ] Confirm all unit tests pass
+- [ ] Verify demisto-sdk validate passes
+- [ ] Check commit is on the intended branch (NOT master/main directly)
+- [ ] Backward compatibility verified (no breaking changes without migration path)
+- [ ] User explicitly approved the changes
 
-**Auto-deploy triggers:**
-- Push to `main` branch
-- Changes to: docker-compose.yaml, litellm_config.yaml, .github/workflows/**, config/**, src/**
+**Quality gates:**
+- All unit tests must pass
+- demisto-sdk validate must pass
+- demisto-sdk format must have been run
+- Type hints are present (per AGENTS.md)
+- CommandResults pattern is used correctly
 
-If auto-deploy will trigger:
-- [ ] User is aware and approved
-- [ ] Changes were tested locally
-- [ ] Monitoring plan exists to verify deployment
-- [ ] Rollback steps are documented
+If this is a new feature:
+- [ ] CLI documentation in ./knowledge supports this
+- [ ] API endpoints are verified in Prisma AIRs docs
+- [ ] **SDK Zod schema validation completed** (field names match exactly)
+- [ ] SDK client implementation reviewed for endpoint paths and response structure
+- [ ] Unit tests use correct field names from SDK schema (not guessed names)
+- [ ] YAML outputs match SDK schema field names exactly
+- [ ] README.md is updated with new commands
 
 ---
 
 ## 6. Post-Push Verification
 
-**After pushing to main (triggers auto-deploy):**
+**After pushing to branch:**
 
-- [ ] GitHub Actions workflow started successfully
-- [ ] Workflow completed without errors
-- [ ] Verify on production:
-  - [ ] Containers running: `docker compose ps`
-  - [ ] Health check passes: `curl http://<GCP_IP>:8080/health/liveliness`
-  - [ ] Models available: `curl http://<GCP_IP>:8080/v1/models -H "Authorization: Bearer $MASTER_KEY"`
-  - [ ] Database accessible: `docker compose exec db pg_isready`
-- [ ] No rollback needed
+- [ ] GitHub CI workflow started (if configured)
+- [ ] All validation checks pass
+- [ ] Create pull request with clear description
+- [ ] Reference CLI documentation in PR description
+- [ ] Link to test results
+- [ ] No validation errors
 
-**If deployment fails:**
+**Pull Request Checklist:**
 
-1. Check GitHub Actions logs for errors
-2. Follow rollback procedure in CLAUDE.md
-3. Do NOT push additional "fixes" without new plan approval
+- [ ] Title clearly describes the change
+- [ ] Description explains WHY (not just what)
+- [ ] References CLI command/API being implemented
+- [ ] Lists test coverage
+- [ ] Notes any breaking changes or migration requirements
+- [ ] Release notes added to ReleaseNotes/ directory
+
+**If validation fails:**
+
+1. Check CI logs for specific errors
+2. Fix issues locally
+3. Re-run demisto-sdk validate
+4. Do NOT push additional "fixes" without verifying locally first
 
 ---
 
@@ -176,16 +199,19 @@ If auto-deploy will trigger:
 
 **If behavior changed:**
 
-- [ ] Update README.md if user-facing behavior changed
-- [ ] Update CLAUDE.md if new constraints or processes added
-- [ ] Document any new assumptions or gotchas
+- [ ] Update README.md with new commands and examples
+- [ ] Update command_examples.txt with usage examples
+- [ ] Update CLAUDE.md if new patterns or constraints added
+- [ ] Add release notes to ReleaseNotes/X_Y_Z.md
+- [ ] Document any CLI-to-XSOAR mapping decisions
 
 ---
 
 ## Never Skip Verification For
 
-- docker-compose.yaml changes (always test locally first)
-- litellm_config.yaml changes (always verify models load)
-- .github/workflows changes (auto-deploy implications)
-- Environment variable changes (salt key risk)
-- Any change that will deploy to production
+- Python integration code changes (always run unit tests)
+- YAML configuration changes (always run demisto-sdk validate)
+- New command additions (always add unit tests)
+- API authentication changes (critical for SCM connection)
+- CommandResults structure changes (affects all playbooks)
+- Any change that affects backward compatibility

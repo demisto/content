@@ -8,153 +8,161 @@ Use this workflow to review existing code, changes, or pull requests WITHOUT mak
 
 ## 1. Understand Review Scope
 
-- [ ] What am I reviewing? (PR, commit, specific files, entire codebase)
-- [ ] What is the review goal? (safety, quality, correctness, best practices)
-- [ ] Is this a pre-commit review or post-deployment analysis?
+- [ ] What am I reviewing? (PR, commit, specific files, integration code)
+- [ ] What is the review goal? (XSOAR compliance, quality, correctness, API accuracy)
+- [ ] Is this a pre-commit review or post-implementation analysis?
 
 ---
 
-## 2. Safety & Security Review
+## 2. XSOAR Standards & Compliance Review
 
-**Critical safety checks for this project:**
+**Critical compliance checks per AGENTS.md:**
 
-### docker-compose.yaml
+### Python Integration Files (.py)
 
-- [ ] `LITELLM_SALT_KEY` is loaded from `.env` (not hardcoded)
-- [ ] `LITELLM_MASTER_KEY` is loaded from `.env` (not hardcoded)
-- [ ] `DATABASE_URL` references correct database credentials
-- [ ] Volume mount `postgres_data` with name `litellm_postgres_data` preserves data
-- [ ] Volume marked as `external: true` (migrated from previous setup)
-- [ ] Port mapping 8080:4000 is correct
-- [ ] No secrets hardcoded in environment variables
-- [ ] Service dependencies correct (litellm depends_on db)
-- [ ] Health checks defined for litellm and db
-- [ ] Container restart policies appropriate
+- [ ] Type hints are present on all functions (MANDATORY per AGENTS.md)
+- [ ] `CommandResults` is used (NOT deprecated `demisto.results()`)
+- [ ] Error handling is graceful with user-friendly messages
+- [ ] API authentication uses Client ID/Secret from credentials parameter
+- [ ] No hardcoded credentials or API keys
+- [ ] Logging uses `demisto.debug()` appropriately
+- [ ] Functions follow existing code patterns
+- [ ] Helper functions are properly documented
+- [ ] Code is formatted with `demisto-sdk format`
 
-### litellm_config.yaml
+### YAML Configuration Files (.yml)
 
-- [ ] All models reference `os.environ/` for API keys (not hardcoded)
-- [ ] Guardrail configurations reference environment variables
-- [ ] Model names are consistent and documented
-- [ ] Tags are appropriate and meaningful
-- [ ] RPM/TPM limits are reasonable
-- [ ] `supports_function_calling` flags are correct for each model size
-- [ ] Ollama models reference `os.environ/OLLAMA_API_BASE`
-- [ ] Protected models have guardrails attached
-- [ ] Guardrail mode (pre_call/post_call) is appropriate
+- [ ] Command names follow pattern: `<feature>-<action>-<object>`
+- [ ] All arguments have clear descriptions
+- [ ] Required vs optional arguments are correctly marked
+- [ ] Outputs are structured with proper context paths
+- [ ] Context output keys follow XSOAR naming conventions
+- [ ] Credentials parameter uses correct type (authentication fields)
+- [ ] Integration configuration parameters are well-documented
+- [ ] No sensitive defaults in configuration
 
-### .env and .env.example
+### Unit Test Files (_test.py)
 
-- [ ] `.env` is in `.gitignore` (never committed)
-- [ ] `.env.example` has no real secrets (only placeholders)
-- [ ] `LITELLM_SALT_KEY` is not changing (if .env exists)
-- [ ] `LITELLM_MASTER_KEY` format is correct (starts with "sk-")
-- [ ] `DATABASE_URL` components match `POSTGRES_*` variables
-- [ ] All required variables are documented in `.env.example`
-- [ ] Provider API keys (OpenAI, AWS, Prisma) are documented
-- [ ] Ollama API base URL is documented
+- [ ] Tests use proper mocking for API responses
+- [ ] Both success and failure scenarios are covered
+- [ ] Test fixtures in test_data/ are appropriately used
+- [ ] Tests validate CommandResults structure
+- [ ] Mock objects match actual API response structure
+- [ ] Edge cases are tested (empty responses, errors)
+- [ ] All new commands have corresponding tests
 
-### .github/workflows/
+### Pack Metadata (pack_metadata.json)
 
-- [ ] Deployment triggers are correct (main branch only)
-- [ ] Target host label matches production (`gcp-docker-ai-vm`)
-- [ ] `rsync --exclude` protects `.env`
-- [ ] Deployment paths include litellm_config.yaml
-- [ ] No credentials or secrets in workflow file
-- [ ] `docker compose up -d --build --remove-orphans` is correct
-
-### .gitignore
-
-- [ ] `.env` is excluded (must never be committed)
-- [ ] Docker volumes are excluded (if local)
-- [ ] `.claude/` session/cache/tmp directories excluded
-- [ ] No sensitive files are accidentally tracked
+- [ ] Version follows semantic versioning
+- [ ] Dependencies list is accurate and minimal
+- [ ] Support level is correct (XSOAR official)
+- [ ] Supported modules match pack capabilities
+- [ ] Author and URL information is accurate
+- [ ] Pack description is clear and marketing-appropriate
 
 ---
 
-## 3. Deployment Impact Analysis
+## 3. API & CLI Accuracy Review
 
-- [ ] Will these changes trigger auto-deployment?
-  - Push to `main` branch?
-  - Modifies: docker-compose.yaml, litellm_config.yaml, .github/workflows/, config/, src/?
-- [ ] What is the production impact?
-  - Container restart required?
-  - Existing API keys affected?
-  - Model availability changes?
-  - Data migration needed?
-- [ ] Is this change reversible?
-- [ ] What is the rollback procedure?
+**Verify implementation matches Prisma AIRs documentation:**
+
+- [ ] API endpoints match those in ./knowledge/docs/Prisma_AIRs/
+- [ ] Request/response formats match CLI tool in ./knowledge/prisma-airs-cli-main/
+- [ ] Command parameters match CLI command options
+- [ ] Output structure matches API response structure
+- [ ] Authentication flow matches SCM Client ID/Secret pattern
+- [ ] Error codes from API are handled appropriately
+- [ ] Rate limiting is considered (if applicable)
+- [ ] API versioning is documented
+
+**CLI-to-XSOAR Conversion Quality:**
+
+- [ ] CLI command maps logically to XSOAR command
+- [ ] CLI flags/options map to XSOAR arguments
+- [ ] CLI output format adapted appropriately for XSOAR context
+- [ ] Batch operations handled correctly (CSV export, bulk scans)
+- [ ] File upload/download operations work correctly
 
 ---
 
 ## 4. Code Quality Review
 
-### Configuration Files
+### Python Code Quality
 
-- [ ] YAML syntax is valid
+- [ ] Functions have clear, descriptive names
+- [ ] Code follows PEP 8 style guidelines
+- [ ] Complex logic has explanatory comments
+- [ ] No duplicate code (DRY principle)
+- [ ] Error messages are actionable for users
+- [ ] Constants are properly defined (not magic numbers/strings)
+- [ ] API client code is reusable and maintainable
+
+### YAML Quality
+
+- [ ] YAML syntax is valid (validated with demisto-sdk)
 - [ ] Indentation is consistent
-- [ ] Values are appropriate for production
-- [ ] Comments explain non-obvious settings
-- [ ] Model configurations follow established patterns
-- [ ] Guardrail configurations are complete
+- [ ] Descriptions are clear and user-friendly
+- [ ] Examples are provided where helpful
+- [ ] Default values are sensible
+- [ ] Command outputs are well-structured
 
 ### Documentation
 
-- [ ] README.md is accurate and up-to-date
-- [ ] CLAUDE.md reflects current architecture
-- [ ] Examples in documentation actually work
+- [ ] README.md accurately describes all commands
+- [ ] Command examples in command_examples.txt work correctly
+- [ ] CLAUDE.md reflects current integration state
 - [ ] No broken links or outdated references
-- [ ] Environment variables documented
-- [ ] Model configurations documented
+- [ ] CLI-to-XSOAR mapping is documented
+- [ ] API endpoints are referenced with knowledge/ paths
 
 ### Version Control
 
-- [ ] Commit messages are clear and descriptive
-- [ ] Changes are focused and coherent
+- [ ] Commit messages explain WHY (not just what)
+- [ ] Changes are focused and atomic
 - [ ] No unnecessary files committed
-- [ ] Git history is clean (no sensitive data in history)
+- [ ] Release notes added for user-facing changes
 
 ---
 
 ## 5. Best Practices Check
 
-**Docker Compose:**
+**XSOAR Integration Patterns:**
 
-- [ ] Using specific image tags (not `latest`) OR `latest` is intentional for LiteLLM
-- [ ] Environment variables properly documented
-- [ ] Volume mounts preserve data correctly
-- [ ] Named volumes used for persistence
-- [ ] Network configuration is appropriate
-- [ ] Health checks defined for critical services
-- [ ] Service dependencies defined correctly
+- [ ] CommandResults used consistently (not demisto.results)
+- [ ] Context outputs follow XSOAR naming conventions (PascalCase)
+- [ ] Readable outputs are formatted clearly for analysts
+- [ ] Raw responses are included in context when useful
+- [ ] Pagination is handled for large result sets
+- [ ] Timeouts are set appropriately for API calls
+- [ ] Retry logic for transient API errors
 
-**LiteLLM Configuration:**
+**Prisma AIRs Specific:**
 
-- [ ] Model naming is consistent and clear
-- [ ] Guardrails attached to appropriate models
-- [ ] Tags used for categorization (protected/unprotected)
-- [ ] Rate limits (rpm/tpm) are reasonable
-- [ ] API bases reference environment variables
-- [ ] Function calling support matches model capabilities
-- [ ] Callbacks configured (prometheus)
+- [ ] SCM authentication handled correctly (Client ID/Secret)
+- [ ] Tenant Service Group ID parameter implemented
+- [ ] Runtime scanning follows security profile patterns
+- [ ] DLP filtering profiles correctly configured
+- [ ] Red Team modes (static/dynamic/custom) implemented correctly
+- [ ] Model security groups and rules properly structured
+- [ ] Backup/restore functionality follows API patterns
 
-**CI/CD:**
+**Error Handling:**
 
-- [ ] Deployment process is idempotent
-- [ ] Rollback process exists and is documented
-- [ ] Secrets managed securely (not in code)
-- [ ] Deployment validation included
-- [ ] Error handling is appropriate
-- [ ] Protected files excluded from sync
+- [ ] API errors translated to user-friendly messages
+- [ ] HTTP error codes handled appropriately
+- [ ] Authentication failures provide clear guidance
+- [ ] Network timeouts handled gracefully
+- [ ] Invalid parameters caught before API call
+- [ ] Error context includes helpful troubleshooting info
 
 **Security:**
 
-- [ ] No secrets in version control
-- [ ] Sensitive files properly ignored
-- [ ] Environment variables loaded securely
-- [ ] Encryption keys protected
-- [ ] Provider API keys isolated in .env
-- [ ] Guardrails configured for AI security
+- [ ] No credentials hardcoded anywhere
+- [ ] API keys loaded from integration configuration
+- [ ] Sensitive data not logged in debug statements
+- [ ] User input sanitized before API calls
+- [ ] File uploads validated (if applicable)
+- [ ] Output sanitized to prevent injection attacks
 
 ---
 
@@ -162,16 +170,18 @@ Use this workflow to review existing code, changes, or pull requests WITHOUT mak
 
 **Rate the risk level:**
 
-- **LOW** - Documentation changes, non-functional updates
-- **MEDIUM** - Model additions, guardrail configs, non-breaking features
-- **HIGH** - Volume mounts, encryption keys, database changes, auto-deploy to production
+- **LOW** - Documentation changes, new commands with tests, minor fixes
+- **MEDIUM** - New features, command signature changes with backward compatibility
+- **HIGH** - Breaking changes, authentication changes, API client modifications, pack dependency changes
 
 **For HIGH-risk changes, verify:**
 
-- [ ] Change was tested locally before merge
-- [ ] Backup/rollback plan exists and is tested
-- [ ] User is aware of production impact
-- [ ] Monitoring plan exists for post-deployment
+- [ ] Breaking changes documented with migration guide
+- [ ] Backward compatibility maintained OR migration path clear
+- [ ] All unit tests updated and passing
+- [ ] Integration tests performed (if available)
+- [ ] Impact on existing playbooks assessed
+- [ ] Release notes explain the change clearly
 
 ---
 
@@ -211,6 +221,7 @@ Use this workflow to review existing code, changes, or pull requests WITHOUT mak
 - [ ] Report findings and await user decision
 
 If user wants changes implemented:
+
 1. Present findings from this review
 2. Get approval for specific changes
 3. Switch to plan-first workflow
@@ -222,11 +233,12 @@ If user wants changes implemented:
 
 ## Use This Workflow For
 
-- Pre-commit review of changes
-- Pull request review
-- Post-deployment analysis
-- Security audit of configuration
+- Pre-commit review of integration changes
+- Pull request review for new commands
+- XSOAR compliance validation
+- CLI-to-XSOAR conversion accuracy check
+- API implementation correctness review
+- Unit test coverage assessment
+- Backward compatibility analysis
+- Security review of authentication code
 - "What could go wrong?" analysis before risky changes
-- Understanding unfamiliar code before modifying it
-- Model configuration validation
-- Guardrail configuration review
