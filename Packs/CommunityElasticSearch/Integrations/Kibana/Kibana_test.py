@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 import demistomock as demisto
 import pytest
 
-UTC = timezone.utc
+UTC = timezone.utc  # noqa: UP017
 
 DEFAULT_PARAMS = {
     "url": "https://example.com",

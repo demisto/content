@@ -9,7 +9,7 @@ import requests
 import json
 from datetime import datetime, timezone
 
-UTC = timezone.utc
+UTC = timezone.utc  # noqa: UP017
 
 """Parameters"""
 PARAMS = demisto.params()
@@ -133,7 +133,9 @@ def get_elastic_token(proxies):
             )
 
             payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
-            response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD), proxies=proxies)
+            response = requests.post(
+                url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD), proxies=proxies
+            )
 
             if response.status_code == 200:
                 now = datetime.now(UTC)
@@ -249,7 +251,9 @@ def elasticsearch_builder(proxies):
     return es
 
 
-def http_request(method, url_suffix, headers, auth=AUTH, params=None, data=None, files=None, safe=False, parse_json=True, proxies=None):
+def http_request(
+    method, url_suffix, headers, auth=AUTH, params=None, data=None, files=None, safe=False, parse_json=True, proxies=None
+):
     """
     A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -614,7 +618,9 @@ def kibana_add_case_comment(args, proxies):
         "comment": comment,
     }
 
-    response = http_request(method="POST", url_suffix=f"/api/cases/{case_id}/comments", data=json_data, headers=headers, proxies=proxies)
+    response = http_request(
+        method="POST", url_suffix=f"/api/cases/{case_id}/comments", data=json_data, headers=headers, proxies=proxies
+    )
     updated_at = response["updated_at"]
 
     return CommandResults(readable_output=f"Case comment updated at {updated_at}")
@@ -668,7 +674,9 @@ def kibana_assign_alert_user(args, proxies):
         },
     }
 
-    http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers, proxies=proxies)
+    http_request(
+        method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers, proxies=proxies
+    )
 
     return CommandResults(readable_output=f"Assigned user ID {user_id} to alert {alert_id}")
 
@@ -706,7 +714,9 @@ def kibana_list_detection_alerts(args, proxies):
         "runtime_mappings": {},
     }
 
-    response = http_request(method="POST", url_suffix="/api/detection_engine/signals/search", data=json_data, headers=headers, proxies=proxies)
+    response = http_request(
+        method="POST", url_suffix="/api/detection_engine/signals/search", data=json_data, headers=headers, proxies=proxies
+    )
 
     result_json = response["hits"]
     result_list = result_json.get("hits")
@@ -783,7 +793,9 @@ def kibana_disable_alert_rule(args, proxies):
         "untrack": True,
     }
 
-    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers, proxies=proxies)
+    http_request(
+        method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers, proxies=proxies
+    )
 
     return CommandResults(readable_output=f"Successfully disabled rule with ID of {rule_id}")
 
@@ -888,7 +900,9 @@ def kibana_import_value_list_items(args, proxies):
 
     files = {"file": ("value_list.txt", file_content, "text/plain")}
 
-    http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers, proxies=proxies)
+    http_request(
+        method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers, proxies=proxies
+    )
 
     return CommandResults(readable_output=f"Successfully imported {file_content} to value list with ID of {list_id}")
 
