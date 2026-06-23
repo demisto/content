@@ -39,6 +39,10 @@
     "action_state": {
       "type": "string",
       "is_array": false
+    },
+    "_source_log_type": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
