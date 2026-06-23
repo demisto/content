@@ -70,7 +70,6 @@ GET_MODIFIED_REMOTE_DATA_LIMIT = 100
 MIRROR_POLL_LOOKBACK = timedelta(minutes=1)
 MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=1)
 MIRROR_UPDATED_TO_BUFFER = timedelta(minutes=1)
-MIRROR_LOG_PREFIX = "Vega mirror"
 
 MITRE_TACTIC_KEYS = ("mitreTactics", "mitre_tactics", "tactics")
 MITRE_TECHNIQUE_KEYS = ("mitreTechniques", "mitre_techniques", "techniques")
@@ -379,22 +378,6 @@ def parse_backfill_days(backfill_days: str | int | float | None) -> str:
         days = DEFAULT_BACKFILL_DAYS
     start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
     return start.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _mirror_log(stage: str, message: str, *, level: str = "debug", **context: Any) -> None:
-    """Emit a structured mirror log. Grep by ``Vega mirror`` or ``stage=<name>``."""
-    parts = [f"{MIRROR_LOG_PREFIX} | stage={stage} | {message}"]
-    if context:
-        context_parts = ", ".join(f"{key}={value}" for key, value in sorted(context.items()) if value is not None)
-        if context_parts:
-            parts.append(context_parts)
-    log_text = " | ".join(parts)
-    (demisto.error if level == "error" else demisto.debug)(log_text)
-
-
-def _mirror_log_error(stage: str, message: str, **context: Any) -> None:
-    """Emit a structured mirror error log."""
-    _mirror_log(stage, message, level="error", **context)
 
 
 def _mirror_bool(value: Any) -> bool:
@@ -3356,14 +3339,14 @@ def _resolve_mirror_updated_from(last_update: str | None) -> str:
     cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
     minimum_lookback = datetime.now(UTC) - MIRROR_POLL_LOOKBACK
     resolved = _format_mirror_timestamp(min(cursor_start, minimum_lookback))
-    _mirror_log("time-window", "Resolved incident poll updatedFrom", last_update=last_update, updated_from=resolved)
+    demisto.info(f"Resolved incident poll updatedFrom: last_update={last_update}, updated_from={resolved}")
     return resolved
 
 
 def _resolve_mirror_updated_to() -> str:
     """Resolve updatedTo as current time plus a small buffer."""
     resolved = _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
-    _mirror_log("time-window", "Resolved poll updatedTo", updated_to=resolved)
+    demisto.info(f"Resolved poll updatedTo: updated_to={resolved}")
     return resolved
 
 
@@ -3596,24 +3579,14 @@ def _mirror_entity_type_from_args(
     for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident"), args.get("delta")):
         entity_type = _entity_type_from_mirror_payload(_mirror_dict(raw_payload))
         if entity_type:
-            _mirror_log(
-                "resolve-entity",
-                "Resolved entity type from mirror args payload",
-                remote_id=remote_id,
-                entity_type=entity_type,
-            )
+            demisto.info(f"Resolved entity type from mirror args payload: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     if use_investigation_context:
         incident = load_current_incident()
         entity_type = _entity_type_from_mirror_payload(incident)
         if entity_type:
-            _mirror_log(
-                "resolve-entity",
-                "Resolved entity type from investigation context",
-                remote_id=remote_id,
-                entity_type=entity_type,
-            )
+            demisto.info(f"Resolved entity type from investigation context: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     entity_type = _entity_type_from_mirror_payload(
@@ -3637,13 +3610,13 @@ def _fetch_alert_for_mirror_lookup(
     """Fetch and normalize an alert for mirror resolution."""
     alert = client.get_alert_for_mirror(vega_id, **lookup_filters)
     if not alert:
-        _mirror_log("resolve-entity", "Lightweight alert lookup empty; trying get_alert_by_id", vega_id=vega_id)
+        demisto.info(f"Lightweight alert lookup empty; trying get_alert_by_id: vega_id={vega_id}")
         alert = client.get_alert_by_id(vega_id, **lookup_filters)
     normalized = _normalize_alert_api_entity(alert) if alert else {}
     if not normalized or not _entity_matches_remote_id(normalized, vega_id):
         return {}
     if require_vega_alert_id and not _poll_entity_is_alert(normalized):
-        _mirror_log("resolve-entity", "Alert payload missing vegaAlertId; treating as non-alert", vega_id=vega_id)
+        demisto.info(f"Alert payload missing vegaAlertId; treating as non-alert: vega_id={vega_id}")
         return {}
     return normalized
 
@@ -3657,7 +3630,7 @@ def _fetch_incident_for_mirror_lookup(
     """Fetch and normalize an incident for mirror resolution."""
     incident = client.get_incident_for_mirror(vega_id, **lookup_filters)
     if not incident:
-        _mirror_log("resolve-entity", "Lightweight incident lookup empty; trying get_incident_by_id", vega_id=vega_id)
+        demisto.info(f"Lightweight incident lookup empty; trying get_incident_by_id: vega_id={vega_id}")
         incident = client.get_incident_by_id(vega_id, **lookup_filters)
     normalized = _normalize_incident_api_entity(incident) if incident else {}
     if normalized and _entity_matches_remote_id(normalized, vega_id):
@@ -3674,9 +3647,9 @@ def _resolve_preferred_alert_entity(
     """Resolve a remote ID when the preferred entity type is Vega Alert."""
     normalized = _fetch_alert_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        _mirror_log("resolve-entity", "Resolved as alert", remote_id=remote_id)
+        demisto.info(f"Resolved as alert: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_ALERT
-    _mirror_log("resolve-entity", "Alert not found", remote_id=remote_id)
+    demisto.info(f"Alert not found: remote_id={remote_id}")
     return {}, ""
 
 
@@ -3689,9 +3662,9 @@ def _resolve_preferred_incident_entity(
     """Resolve a remote ID when the preferred entity type is Vega Incident."""
     normalized = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        _mirror_log("resolve-entity", "Resolved as incident", remote_id=remote_id)
+        demisto.info(f"Resolved as incident: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_INCIDENT
-    _mirror_log("resolve-entity", "Incident not found", remote_id=remote_id)
+    demisto.info(f"Incident not found: remote_id={remote_id}")
     return {}, ""
 
 
@@ -3709,21 +3682,16 @@ def _resolve_ambiguous_remote_entity(
         require_vega_alert_id=True,
     )
     if normalized_alert:
-        _mirror_log("resolve-entity", "Resolved as alert via vegaAlertId", remote_id=remote_id)
+        demisto.info(f"Resolved as alert via vegaAlertId: remote_id={remote_id}")
         return normalized_alert, MIRROR_ENTITY_SUFFIX_ALERT
 
-    _mirror_log(
-        "resolve-entity",
-        "Alert not found or missing vegaAlertId; trying incident lookup",
-        remote_id=remote_id,
-        vega_id=vega_id,
-    )
+    demisto.info(f"Alert not found or missing vegaAlertId; trying incident lookup: remote_id={remote_id}, vega_id={vega_id}")
     normalized_incident = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized_incident:
-        _mirror_log("resolve-entity", "Resolved as incident (fallback)", remote_id=remote_id)
+        demisto.info(f"Resolved as incident (fallback): remote_id={remote_id}")
         return normalized_incident, MIRROR_ENTITY_SUFFIX_INCIDENT
 
-    _mirror_log("resolve-entity", "No matching Vega entity found", remote_id=remote_id)
+    demisto.info(f"No matching Vega entity found: remote_id={remote_id}")
     return {}, ""
 
 
@@ -3743,12 +3711,8 @@ def _resolve_remote_entity(
     elif hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
         preferred_entity_type = "Vega Incident"
 
-    _mirror_log(
-        "resolve-entity",
-        "Resolving remote entity",
-        remote_id=remote_id,
-        vega_id=vega_id,
-        preferred_entity_type=preferred_entity_type,
+    demisto.info(
+        f"Resolving remote entity: preferred_entity_type={preferred_entity_type}, remote_id={remote_id}, vega_id={vega_id}"
     )
 
     if preferred_entity_type == "Vega Alert":
@@ -3847,12 +3811,7 @@ def _build_mirror_sync_object(
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
 
-    _mirror_log(
-        "build-sync-object",
-        "Built mirrored sync object",
-        entity_type=entity_type_suffix,
-        remote_id=effective_remote_id,
-    )
+    demisto.info(f"Built mirrored sync object: entity_type={entity_type_suffix}, remote_id={effective_remote_id}")
     return sync_object
 
 
@@ -3867,7 +3826,7 @@ def _build_incoming_status_sync_entries(
 
     api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
     if api_status in VEGA_CLOSE_STATUSES:
-        _mirror_log("incoming-status", "Building close entry", entity_type=entity_type_suffix, api_status=api_status)
+        demisto.info(f"Building close entry: api_status={api_status}, entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -3881,7 +3840,7 @@ def _build_incoming_status_sync_entries(
             }
         ]
     if api_status == "REOPENED":
-        _mirror_log("incoming-status", "Building reopen entry", entity_type=entity_type_suffix)
+        demisto.info(f"Building reopen entry: entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -3905,7 +3864,7 @@ def _normalize_mirror_entries(entries: Any) -> list[dict[str, Any]]:
         try:
             entries = json.loads(entries)
         except (json.JSONDecodeError, TypeError, ValueError):
-            _mirror_log_error("update-remote-system", "Failed to parse entries JSON")
+            demisto.info("Failed to parse entries JSON")
             return []
     if isinstance(entries, dict):
         return [entries]
@@ -3983,11 +3942,7 @@ def _poll_modified_alerts_for_mirror(
             )
             api_error = response.get("error")
             if isinstance(api_error, dict) and api_error.get("message"):
-                _mirror_log_error(
-                    "get-modified-remote-data",
-                    "Alert poll API error",
-                    error=str(api_error.get("message")),
-                )
+                demisto.info(f"Alert poll API error: error={str(api_error.get('message'))}")
 
             page_count, should_continue = _poll_modified_mirror_page(
                 response,
@@ -4001,9 +3956,9 @@ def _poll_modified_alerts_for_mirror(
                 break
             offset += page_count
 
-        _mirror_log("get-modified-remote-data", "Alert poll complete", alert_count=len(alert_bare_ids))
+        demisto.info(f"Alert poll complete: alert_count={len(alert_bare_ids)}")
     except Exception as exc:
-        _mirror_log_error("get-modified-remote-data", "Alert poll failed", error=str(exc))
+        demisto.info(f"Alert poll failed: error={str(exc)}")
 
 
 def _poll_modified_incidents_for_mirror(
@@ -4038,9 +3993,9 @@ def _poll_modified_incidents_for_mirror(
                 break
             offset += page_count
 
-        _mirror_log("get-modified-remote-data", "Incident poll complete", incident_count=len(incident_bare_ids))
+        demisto.info(f"Incident poll complete: incident_count={len(incident_bare_ids)}")
     except Exception as exc:
-        _mirror_log_error("get-modified-remote-data", "Incident poll failed", error=str(exc))
+        demisto.info(f"Incident poll failed: error={str(exc)}")
 
 
 def _finalize_modified_mirror_ids(
@@ -4053,11 +4008,7 @@ def _finalize_modified_mirror_ids(
     finalized_ids = list(modified_ids)
     for bare_id in sorted(alert_bare_ids | incident_bare_ids):
         if bare_id in shared_bare_ids:
-            _mirror_log(
-                "get-modified-remote-data",
-                "Skipping ambiguous bare mirror id shared by alert and incident",
-                remote_id=bare_id,
-            )
+            demisto.info(f"Skipping ambiguous bare mirror id shared by alert and incident: remote_id={bare_id}")
             continue
         if bare_id not in finalized_ids:
             finalized_ids.append(bare_id)
@@ -4071,12 +4022,9 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     fetch_alerts = "Alerts" in vega_entities
     fetch_incidents = "Incidents" in vega_entities
 
-    _mirror_log(
-        "get-modified-remote-data",
-        "Command started",
-        last_update=remote_args.last_update,
-        fetch_alerts=fetch_alerts,
-        fetch_incidents=fetch_incidents,
+    demisto.info(
+        f"Command started: fetch_alerts={fetch_alerts}, fetch_incidents={fetch_incidents}, "
+        f"last_update={remote_args.last_update}"
     )
 
     modified_ids: list[str] = []
@@ -4101,11 +4049,9 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         )
 
     finalized_ids = _finalize_modified_mirror_ids(modified_ids, alert_bare_ids, incident_bare_ids)
-    _mirror_log(
-        "get-modified-remote-data",
-        "Command finished",
-        total_ids=len(finalized_ids),
-        sample_ids=",".join(finalized_ids[:5]) if finalized_ids else "none",
+    demisto.info(
+        f"Command finished: total_ids={len(finalized_ids)}, "
+        f"sample_ids={','.join(finalized_ids[:5]) if finalized_ids else 'none'}"
     )
     return GetModifiedRemoteDataResponse(finalized_ids)
 
@@ -4130,12 +4076,10 @@ def _resolve_remote_entity_for_mirror(
     if context_entity_type:
         context_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT if context_entity_type == "Vega Incident" else MIRROR_ENTITY_SUFFIX_ALERT
         if entity_type_suffix != context_suffix:
-            _mirror_log(
-                "get-remote-data",
-                "Enforcing investigation entity type over mismatched remote resolution",
-                remote_id=remote_id,
-                investigation_type=context_entity_type,
-                resolved_as=entity_type_suffix or "none",
+            demisto.info(
+                f"Enforcing investigation entity type over mismatched remote resolution: "
+                f"remote_id={remote_id}, investigation_type={context_entity_type}, "
+                f"resolved_as={entity_type_suffix or 'none'}"
             )
             preferred_entity_type = context_entity_type
             entity, entity_type_suffix = _resolve_remote_entity(
@@ -4148,12 +4092,9 @@ def _resolve_remote_entity_for_mirror(
     if (preferred_entity_type == "Vega Incident" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT) or (
         preferred_entity_type == "Vega Alert" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
     ):
-        _mirror_log(
-            "get-remote-data",
-            "Re-resolving entity with preferred type",
-            remote_id=remote_id,
-            preferred_entity_type=preferred_entity_type,
-            resolved_as=entity_type_suffix,
+        demisto.info(
+            f"Re-resolving entity with preferred type: remote_id={remote_id}, "
+            f"preferred_entity_type={preferred_entity_type}, resolved_as={entity_type_suffix}"
         )
         entity, entity_type_suffix = _resolve_remote_entity(
             client,
@@ -4262,7 +4203,7 @@ def get_remote_data_command(
     remote_id = remote_args.remote_incident_id
     last_update_dt = _parse_mirror_last_update(remote_args.last_update)
 
-    _mirror_log("get-remote-data", "Command started", remote_id=remote_id, last_update=remote_args.last_update)
+    demisto.info(f"Command started: remote_id={remote_id}, last_update={remote_args.last_update}")
 
     try:
         entity, entity_type_suffix, preferred_entity_type, context_entity_type = _resolve_remote_entity_for_mirror(
@@ -4272,7 +4213,7 @@ def get_remote_data_command(
             remote_args.last_update,
         )
         if not entity:
-            _mirror_log("get-remote-data", "Remote entity not found", remote_id=remote_id)
+            demisto.info(f"Remote entity not found: remote_id={remote_id}")
             return _build_not_found_mirror_response(remote_id, preferred_entity_type, context_entity_type)
 
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
@@ -4292,16 +4233,12 @@ def get_remote_data_command(
         entries = _build_incoming_mirror_comment_entries(entity, last_update_dt)
         entries.extend(_build_incoming_status_sync_entries(entity, entity_type_suffix, last_update_dt))
 
-        _mirror_log(
-            "get-remote-data",
-            "Command finished",
-            remote_id=remote_id,
-            entity_type=entity_type_suffix,
-            comment_entries=len(entries),
+        demisto.info(
+            f"Command finished: remote_id={remote_id}, entity_type={entity_type_suffix}, " f"comment_entries={len(entries)}"
         )
         return GetRemoteDataResponse(mirrored_object=mirrored_object, entries=entries)
     except Exception as exc:
-        _mirror_log_error("get-remote-data", "Command failed", remote_id=remote_id, error=str(exc))
+        demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}")
         return _build_get_remote_data_error_response(remote_id, args, exc)
 
 
@@ -4405,14 +4342,12 @@ def _push_outgoing_mirror_entity_update(
     """Push outgoing mirror field updates to Vega."""
     if not update_input:
         entity_label = "alert" if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else "incident"
-        _mirror_log("update-remote-system", f"No {entity_label} fields to push", remote_id=remote_id)
+        demisto.info(f"No {entity_label} fields to push: remote_id={remote_id}")
         return
 
-    _mirror_log(
-        "update-remote-system",
-        f"Updating {'alert' if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else 'incident'} in Vega",
-        remote_id=remote_id,
-        payload=update_input,
+    demisto.info(
+        f"Updating {'alert' if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else 'incident'} in Vega: "
+        f"remote_id={remote_id}, payload={update_input}"
     )
     if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
         client.update_alerts({**update_input, "alertIds": [vega_id]})
@@ -4429,7 +4364,7 @@ def _mirror_outgoing_war_room_comments(
 ) -> None:
     """Mirror eligible War Room comments to Vega."""
     for comment in _collect_outgoing_entry_comments(mirror_entries):
-        _mirror_log("update-remote-system", "Mirroring War Room comment to Vega", remote_id=remote_id)
+        demisto.info(f"Mirroring War Room comment to Vega: remote_id={remote_id}")
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
             client.update_alerts({"alertIds": [vega_id], "comment": comment})
         else:
@@ -4450,12 +4385,9 @@ def _resolve_outgoing_mirror_entity(
     if delta:
         mirror_args["delta"] = delta
     preferred_entity_type = _mirror_entity_type_from_args(mirror_args, remote_id, use_investigation_context=True)
-    _mirror_log(
-        "update-remote-system",
-        "Resolved mirror context",
-        remote_id=remote_id,
-        entity_type=preferred_entity_type,
-        delta_keys=",".join(sorted(delta.keys())) or "none",
+    demisto.info(
+        f"Resolved mirror context: remote_id={remote_id}, entity_type={preferred_entity_type}, "
+        f"delta_keys={','.join(sorted(delta.keys())) or 'none'}"
     )
 
     mirror_last_update = str(args.get("lastUpdate") or args.get("last_update") or "").strip() or None
@@ -4468,12 +4400,9 @@ def _resolve_outgoing_mirror_entity(
     if (preferred_entity_type == "Vega Alert" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT) or (
         preferred_entity_type == "Vega Incident" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT
     ):
-        _mirror_log(
-            "update-remote-system",
-            "Re-resolving entity with preferred type",
-            remote_id=remote_id,
-            preferred_entity_type=preferred_entity_type,
-            resolved_as=entity_type_suffix,
+        demisto.info(
+            f"Re-resolving entity with preferred type: remote_id={remote_id}, "
+            f"preferred_entity_type={preferred_entity_type}, resolved_as={entity_type_suffix}"
         )
         entity, entity_type_suffix = _resolve_remote_entity(
             client,
@@ -4489,23 +4418,20 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     remote_id = parsed_args.remote_incident_id or ""
     if not remote_id:
-        _mirror_log("update-remote-system", "Command skipped; no remote ID")
+        demisto.info("Command skipped; no remote ID")
         return remote_id
 
-    _mirror_log(
-        "update-remote-system",
-        "Command started",
-        remote_id=remote_id,
-        incident_changed=parsed_args.incident_changed,
-        entry_count=len(parsed_args.entries or []),
+    demisto.info(
+        f"Command started: remote_id={remote_id}, incident_changed={parsed_args.incident_changed}, "
+        f"entry_count={len(parsed_args.entries or [])}"
     )
 
     if not _is_xsoar_to_vega_mirroring_enabled():
-        _mirror_log("update-remote-system", "Outgoing mirroring disabled; skipping", remote_id=remote_id)
+        demisto.info(f"Outgoing mirroring disabled; skipping: remote_id={remote_id}")
         return remote_id
 
     if not _mirror_bool(parsed_args.incident_changed) and not parsed_args.entries:
-        _mirror_log("update-remote-system", "No changes to mirror; skipping", remote_id=remote_id)
+        demisto.info(f"No changes to mirror; skipping: remote_id={remote_id}")
         return remote_id
 
     delta = _mirror_dict(parsed_args.delta)
@@ -4517,7 +4443,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     try:
         entity, entity_type_suffix, _ = _resolve_outgoing_mirror_entity(client, args, remote_id, delta, data)
         if not entity:
-            _mirror_log_error("update-remote-system", "Remote entity not found", remote_id=remote_id)
+            demisto.info(f"Remote entity not found: remote_id={remote_id}")
             return remote_id
 
         if _mirror_bool(parsed_args.incident_changed):
@@ -4528,15 +4454,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             _push_outgoing_mirror_entity_update(client, entity_type_suffix, vega_id, remote_id, update_input)
 
         _mirror_outgoing_war_room_comments(client, mirror_entries, entity_type_suffix, vega_id, remote_id)
-        _mirror_log("update-remote-system", "Command finished", remote_id=remote_id)
+        demisto.info(f"Command finished: remote_id={remote_id}")
     except Exception as exc:
-        _mirror_log_error(
-            "update-remote-system",
-            "Command failed",
-            remote_id=remote_id,
-            error=str(exc),
-            error_type=type(exc).__name__,
-        )
+        demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}, error_type={type(exc).__name__}")
 
     return remote_id
 
