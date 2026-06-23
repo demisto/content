@@ -449,3 +449,48 @@ def test_main_pass_no_playbook_id(mocker):
     )
 
     assert command == expected_command
+
+
+@freeze_time("2023-04-01 00:00:00")
+def test_main_xsiam_uses_guid_flow(mocker):
+    """
+    Given
+            Sample input values on a Cortex XSIAM tenant (platform "x2") at/above the minimum
+            version and build that support the stopScheduleEntry GUID flow (XSUP-36162).
+    When
+            Calling main.
+    Then
+            The GUID flow is used: a scheduledEntryGuid is generated, added to the schedule args and
+            embedded in the command, and an absolute endTime is embedded as well.
+    """
+    good_input = {
+        "ids": "123",
+        "pollingCommand": "jira-get-issue",
+        "pollingCommandArgName": "issueId",
+        "playbookId": "pi",
+        "dt": "Ticket(val.Status != 'Done').Id",
+        "interval": "3",
+        "timeout": "5",
+        "tag": "polling",
+        "additionalPollingCommandArgNames": "my_arg_name",
+        "additionalPollingCommandArgValues": "my_arg_value",
+    }
+
+    mocker.patch.object(demisto, "args", return_value=good_input)
+    # Simulate a Cortex XSIAM tenant that meets the minimum version/build for the GUID flow.
+    mocker.patch.object(
+        demisto,
+        "demistoVersion",
+        return_value={"platform": "x2", "version": "8.3.0", "buildNumber": "313276"},
+    )
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value="abc")
+    main()
+
+    assert execute_command_mocker.call_count == 1
+    schedule_args = execute_command_mocker.call_args_list[0][0][1]
+    # GUID flow: a scheduledEntryGuid is passed to ScheduleCommand and embedded in the command.
+    assert "scheduledEntryGuid" in schedule_args
+    assert 'scheduledEntryGuid="' in schedule_args["command"]
+    # The absolute endTime is embedded too.
+    assert 'endTime="2023-04-01 00:05:00"' in schedule_args["command"]

@@ -17,8 +17,8 @@
  */
 
 // Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
-//const MINIMUM_XSIAM_VERSION = '8.3.0';
-//const MINIMUM_BUILD_NUMBER_XSIAM = 313276;
+const MINIMUM_XSIAM_VERSION = '8.3.0';
+const MINIMUM_BUILD_NUMBER_XSIAM = 313276;
 const MINIMUM_XSOAR_VERSION = '8.2.0';
 const MINIMUM_BUILD_NUMBER_XSOAR = 309463;
 
@@ -123,9 +123,6 @@ function shouldRunWithGuid() {
     version = res.version;
     buildNumber = res.buildNumber;
 
-    // conditions to add when the feature is supported in XSIAM:
-    // ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM))
-
     // Checking if the stopScheduleEntry command is available.
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
     // The try/catch mechanism is to support development and to ignore parseInt errors.
@@ -133,10 +130,15 @@ function shouldRunWithGuid() {
         if  ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
             return true;
         }
+        // XSIAM (platform "x2") support for the stopScheduleEntry GUID flow. See XSUP-36162.
+        if  ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM)) {
+            return true;
+        }
     }
     catch (err) {
         return false;
     }
+    return false;
 }
 
 // Returns true if the polling window has elapsed.
@@ -239,6 +241,21 @@ function genericPollingScheduled(){
         return res;
     }
     catch (err) {
+        // A failure here is usually the polling command itself erroring on a single recurrence
+        // (e.g. a transient API/network error, or the polling integration being momentarily
+        // unavailable). Previously we immediately called finish(), which completed the gating task
+        // and let the parent playbook advance even though polling had not actually finished
+        // (XSUP-58905). Instead, while the polling window is still open we log the error and let the
+        // next scheduled recurrence retry. We only finish() (and stop the entry) once the window has
+        // elapsed, so the playbook is never permanently stuck waiting on a tag that will never complete.
+        logError('GenericPollingScheduledTask: polling iteration failed: ' + err);
+        if (!isPollingTimedOut()) {
+            logDebug('GenericPollingScheduledTask: error occurred but the polling window is still open; ' +
+                'NOT completing the task - the next recurrence will retry. See XSUP-58905.');
+            throw err;
+        }
+        logDebug('GenericPollingScheduledTask: polling window has elapsed after an error; completing the task ' +
+            'so the playbook is not left waiting. See XSUP-58905.');
         finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
         throw err;
     }
