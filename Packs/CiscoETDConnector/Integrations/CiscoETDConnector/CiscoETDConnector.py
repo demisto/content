@@ -1,7 +1,5 @@
 """Base Integration for Cortex XSOAR (aka Demisto)
 
-
-
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
@@ -24,11 +22,15 @@ from CommonServerPython import *
 # ============================================
 ETD_LOG_TYPES = ["message", "audit", "connection"]
 
+VENDOR = "Cisco"
+PRODUCT = "ETD"
 
 # ============================================
 # CLIENT
 # ============================================
-class ETDClient(BaseClient):
+
+
+class ETDClient(ContentClient):
 
     def __init__(self, base_url: str, params: dict):
         self.params = params
@@ -60,7 +62,6 @@ class ETDClient(BaseClient):
             auth=(self.params.get("client_id"), client_secret),
             timeout=30
         )
-        demisto.debug(f"[DEBUG] TOKEN RESPONSE: {res}")
 
         token = res.get("accessToken")
 
@@ -138,8 +139,8 @@ def ingest_events_to_xsiam(events):
 
         send_events_to_xsiam(
             events=batch,
-            vendor="Cisco",
-            product="ETD"
+            vendor=VENDOR,
+            product=PRODUCT
         )
 
 # ============================================
@@ -191,7 +192,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict):
     # ----------------------------------
     if not last_fetch:
 
-        first_fetch = params.get("first_fetch", "5 days")
+        first_fetch = params.get("first_fetch", "30 days")
 
         parsed_time = parse(first_fetch)
 
