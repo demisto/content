@@ -26,6 +26,8 @@ configuration:
   required: false
   type: 0
   advanced: true
+  supportedModules:
+  - xsiam
 - defaultvalue: 2500
   section: Collect
   display: The maximum number of alerts per fetch.

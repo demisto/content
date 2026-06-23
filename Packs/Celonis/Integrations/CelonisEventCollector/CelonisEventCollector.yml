@@ -49,6 +49,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
 description: 'The Celonis Platform offers you a suite of process mining and intelligence features, helping you to integrate your data and then use that data to analyze, improve, and monitor your business performance across key metrics.'
 display: Celonis
 name: CelonisEventCollector
