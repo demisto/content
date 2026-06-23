@@ -5381,19 +5381,6 @@ def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
-
-    Validation by authentication type:
-
-    - Client Credentials / Authorization Code / Azure Managed Identities: the Test button obtains a
-      token and makes a lightweight Azure Resource Manager call to confirm connectivity and
-      permissions. The Authorization Code flow works here because the authorization code is stored in
-      the instance parameters and is used to obtain a token on demand.
-    - Device Code: the token is stored in the instance's integration context only after the user
-      completes the interactive `!azure-auth-start` / `!azure-auth-complete` steps. The configuration
-      page Test button runs in a separate context and cannot read that stored token, so it cannot
-      validate this flow. Instead, the user is directed to validate with the `!azure-auth-test`
-      command after completing the authentication steps.
-
     Raises exceptions if something goes wrong.
 
     :type AzureClient: ``Client``
@@ -5444,7 +5431,7 @@ def test_connection(client: AzureClient) -> str:
     Raises an exception (from MicrosoftApiModule) if authentication fails.
     """
     _get_ms_client(client).get_access_token()  # If fails, MicrosoftApiModule raises an error
-    return "✅ Success!"
+    return "Success!"
 
 
 def start_auth(client: AzureClient) -> CommandResults:
@@ -5456,7 +5443,7 @@ def start_auth(client: AzureClient) -> CommandResults:
 def complete_auth(client: AzureClient) -> str:
     """Complete the interactive (Device Code) authorization process (marketplace flows)."""
     _get_ms_client(client).get_access_token()
-    return "✅ Authorization completed successfully."
+    return "Authorization completed successfully."
 
 
 def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:  # pragma: no cover
