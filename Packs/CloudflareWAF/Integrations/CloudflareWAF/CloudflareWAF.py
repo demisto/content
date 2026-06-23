@@ -512,9 +512,7 @@ class Client(BaseClient):
         else:
             url_suffix = f"accounts/{self.account_id}/rulesets/{ruleset_id}"
 
-        return self._http_request(
-            method="DELETE", url_suffix=url_suffix, resp_type="response", return_empty_response=True
-        )
+        return self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response", return_empty_response=True)
 
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
