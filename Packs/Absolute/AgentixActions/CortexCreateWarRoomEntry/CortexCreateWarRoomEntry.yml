@@ -42,6 +42,7 @@ underlyingcontentitem:
 requiresuserapproval: false
 marketplaces:
   - platform
+fromversion: 8.8.0
 supportedModules:
   - agentix
   - xsiam
