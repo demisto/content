@@ -4754,7 +4754,7 @@ async def fetch_vulnerabilities_by_severity(
                 withheld_records.append(vulnerabilities[0])
                 records_to_send = vulnerabilities[1:]
                 log_falcon_assets(
-                    f"[{severity}] Withholding first record for the sealing batch "
+                    f"[SEAL-TEST] [{severity}] Withholding first record for the sealing batch "
                     f"(id={vulnerabilities[0].get('id')}); sending {len(records_to_send)} records in this batch.",
                     "info",
                 )
@@ -4928,7 +4928,8 @@ async def await_and_aggregate_severity_results(
                 )
                 save_spotlight_state(context_store, spotlight_state)
                 log_falcon_assets(
-                    f"[{severity}] Saved completion state to context " f"(withheld_records so far: {len(all_withheld_records)})",
+                    f"[SEAL-TEST] [{severity}] Saved completion state to context "
+                    f"(withheld_records so far: {len(all_withheld_records)})",
                     "info",
                 )
 
@@ -4997,8 +4998,9 @@ async def finalize_severity_fetch(
             # Send final sealing batch carrying the withheld real records and the actual
             # total count ONLY when all severities complete (XSUP-70815).
             log_falcon_assets(
-                f"All severities completed successfully. Sending final sealing batch with "
-                f"{len(withheld_records)} withheld record(s) and total count: {total_vulnerabilities}",
+                f"[SEAL-TEST] All severities completed successfully. Sending final sealing batch for "
+                f"snapshot_id={snapshot_id} with {len(withheld_records)} withheld record(s) and "
+                f"total-items-count={total_vulnerabilities}",
                 "info",
             )
             final_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -5014,7 +5016,11 @@ async def finalize_severity_fetch(
                 data_type="assets",
             )
             await final_task
-            log_falcon_assets("Final sealing batch sent successfully", "info")
+            log_falcon_assets(
+                f"[SEAL-TEST] Final sealing batch sent successfully for snapshot_id={snapshot_id} "
+                f"(total-items-count={total_vulnerabilities})",
+                "info",
+            )
 
         # Flush remaining AIDs and wait for all asset enrichment tasks
         total_assets_count = len(all_unique_aids)
