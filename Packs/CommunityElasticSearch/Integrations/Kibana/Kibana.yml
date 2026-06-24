@@ -19,12 +19,14 @@ configuration:
   display: Elastic API Port
   name: elastic_port
   required: false
+  section: Connect
   type: 0
 - additionalinfo: The port for the Kibana API.
   defaultvalue: '443'
   display: Kibana API Port
   name: kibana_port
   required: false
+  section: Connect
   type: 0
 - additionalinfo: 'The authentication type and credentials to use: Basic Auth (Username and Password), Bearer Auth (Username and Password), or API Key Auth (API Key ID and API Key).'
   display: Authorization type
@@ -34,11 +36,13 @@ configuration:
   - Bearer auth
   - API key auth
   required: false
+  section: Connect
   type: 15
 - display: API key ID
   displaypassword: API Key
   name: api_key_auth_credentials
   required: false
+  section: Connect
   type: 9
 - additionalinfo: The username and password to use instead of API key and API ID.
   display: Username
