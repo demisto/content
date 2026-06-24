@@ -1,0 +1,493 @@
+display: Kibana
+name: Kibana
+category: Analytics & SIEM
+provider: Elastic
+sectionorder:
+- Connect
+commonfields:
+  id: Kibana
+  version: -1
+configuration:
+- additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- additionalinfo: The port for the Elastic API.
+  defaultvalue: '9200'
+  display: Elastic API Port
+  name: elastic_port
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: The port for the Kibana API.
+  defaultvalue: '443'
+  display: Kibana API Port
+  name: kibana_port
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: 'The authentication type and credentials to use: Basic Auth (Username and Password), Bearer Auth (Username and Password), or API Key Auth (API Key ID and API Key).'
+  display: Authorization type
+  name: auth_type
+  options:
+  - Basic auth
+  - Bearer auth
+  - API key auth
+  required: false
+  section: Connect
+  type: 15
+- display: API key ID
+  displaypassword: API Key
+  name: api_key_auth_credentials
+  required: false
+  section: Connect
+  type: 9
+- additionalinfo: The username and password to use instead of API key and API ID.
+  display: Username
+  displaypassword: Password
+  name: credentials
+  required: false
+  section: Connect
+  type: 9
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  advanced: true
+  defaultvalue: Elasticsearch
+  display: Client type
+  name: client_type
+  options:
+  - Elasticsearch
+  - OpenSearch
+  - Elasticsearch_v8
+  - Elasticsearch_v9
+  required: false
+  section: Connect
+  type: 15
+- advanced: true
+  defaultvalue: '60'
+  display: Request timeout (in seconds).
+  name: timeout
+  required: false
+  section: Connect
+  type: 0
+description: This integration enables using Elastic Security for SIEM for security operations management and searching Elastic logs. This pack is to be used in combination with the Elasticsearch v2 integration.
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: open
+      description: The status of the cases to retrieve.
+      name: status
+      predefined:
+      - open
+      - in-progress
+      - closed
+    - auto: PREDEFINED
+      description: The severity of the cases to retrieve.
+      name: severity
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+    - description: The earliest time to search from (for example, 2025-10-02T00:27:58.162Z).
+      name: from_time
+      type: shortText
+    description: Lists cases in Kibana.
+    name: kibana-cases-find
+    outputs:
+    - contextPath: Kibana.Cases.Status
+      description: The status of the case in Kibana.
+    - contextPath: Kibana.Cases.Version
+      description: The version number of the case in Kibana.
+    - contextPath: Kibana.Cases.ID
+      description: The ID number of the case in Kibana.
+  - arguments:
+    - description: The ID of the case in Kibana. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    description: Returns information on the alerts of the input case in Kibana.
+    name: kibana-case-alerts-find
+    outputs:
+    - contextPath: Kibana.CaseAlerts.ID
+      description: The ID of alerts tied to the case in Kibana.
+  - arguments:
+    - description: The alert ID to update. Find it with the "kibana-detection-alerts-list" command.
+      name: alert_id
+      required: true
+      type: shortText
+    - auto: PREDEFINED
+      description: The status to set the alert to.
+      name: status
+      predefined:
+      - open
+      - closed
+      required: true
+    description: Updates the status of an input alert.
+    name: kibana-alert-status-update
+  - arguments:
+    - auto: PREDEFINED
+      description: The status of the case to update.
+      name: status
+      predefined:
+      - open
+      - in-progress
+      - closed
+      required: true
+    - description: The ID of the case in Kibana. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    - description: The version ID of the case. Find it with the "kibana-cases-find" command. This ID changes after each case update.
+      name: version_id
+      required: true
+      type: shortText
+    description: Updates the status of an input case.
+    name: kibana-case-status-update
+  - arguments: []
+    description: Gets the list of user spaces in Kibana.
+    name: kibana-user-spaces-find
+    outputs:
+    - contextPath: Kibana.UserSpaces.description
+      description: The default user space description.
+    - contextPath: Kibana.UserSpaces.disabledFeatures
+      description: The list of disabled Kibana features.
+  - arguments:
+    - description: The case ID to find comments for. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    description: Finds comments for an input case ID.
+    name: kibana-case-comments-find
+    outputs:
+    - contextPath: Kibana.CaseComments.version
+      description: The version number of the case comment in Kibana.
+    - contextPath: Kibana.CaseComments.id
+      description: The ID number of the case comment in Kibana.
+  - arguments:
+    - description: The case ID to delete. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    description: Deletes a case in Kibana based on case ID.
+    name: kibana-case-delete
+  - arguments:
+    - description: The rule ID to delete. Find it with the "kibana-rule-details-search" command.
+      name: rule_id
+      required: true
+      type: shortText
+    description: Deletes a rule in Kibana based on the input rule ID.
+    name: kibana-rule-delete
+  - arguments:
+    - description: 'The KQL filter to search rules with. For example: "alert.attributes.name: *Smith*".'
+      name: kql_query
+      type: shortText
+    description: Retrieves details about a detection rule in Kibana based on the input KQL filter.
+    name: kibana-rule-details-search
+    outputs:
+    - contextPath: Kibana.RuleDetails.enabled
+      description: Whether the rule is enabled in Kibana.
+    - contextPath: Kibana.RuleDetails.name
+      description: The name of the rule in Kibana.
+    - contextPath: Kibana.RuleDetails.id
+      description: The ID of the rule in Kibana.
+  - arguments:
+    - description: The case ID to add the comment to. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    - auto: PREDEFINED
+      description: The owner of the case, as listed in the "kibana-cases-find" command output.
+      name: case_owner
+      predefined:
+      - cases
+      - observability
+      - securitySolution
+      required: true
+    - description: The comment to add to the case in Kibana.
+      name: comment
+      required: true
+      type: shortText
+    description: Adds a comment to a case in Kibana. The case ID and owner can be obtained from the "kibana-cases-find" command.
+    name: kibana-case-comment-add
+  - arguments: []
+    description: Searches for the list of users in Kibana and returns the users' UIDs.
+    name: kibana-user-list-get
+    outputs:
+    - contextPath: Kibana.UserList.username
+      description: The username of the user in Kibana.
+    - contextPath: Kibana.UserList.roles
+      description: The associated roles of the user in Kibana.
+  - arguments:
+    - description: The UID of the user to be assigned. Locate it with the "kibana-user-list-get" command.
+      name: user_id
+      required: true
+      type: shortText
+    - description: The alert ID to assign the user to. Find it with the "kibana-detection-alerts-list" command.
+      name: alert_id
+      required: true
+      type: shortText
+    description: Assigns an alert in Kibana to a user via user ID input.
+    name: kibana-alert-assign
+    compliantpolicies:
+    - User Soft Remediation
+  - arguments:
+    - auto: PREDEFINED
+      description: The status of the detection alert to search for.
+      name: alert_status
+      predefined:
+      - open
+      - closed
+      required: true
+    description: Searches for detection alerts in Kibana.
+    name: kibana-detection-alerts-list
+    outputs:
+    - contextPath: Kibana.DetectionAlerts.bhe.windows.security_id
+      description: The username associated with the detection alert.
+    - contextPath: Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset
+      description: The dataset associated with the detection alert.
+    - contextPath: Kibana.DetectionAlerts.message
+      description: The raw log message of the detection alert.
+    - contextPath: Kibana.DetectionAlerts.kibana.alert.uuid
+      description: The ID of the detection alert.
+    - contextPath: Kibana.DetectionAlerts.kibana.alert.rule.name
+      description: The rule name associated with the detection alert.
+  - arguments:
+    - description: The alert ID to update the note on. Find it with the "kibana-detection-alerts-list" command.
+      name: alert_id
+      required: true
+      type: shortText
+    - description: The note text to add to the alert.
+      name: note
+      required: true
+      type: shortText
+    description: Adds a note to an alert in Kibana.
+    name: kibana-alert-note-add
+  - arguments: []
+    description: Retrieves the health status of the Kibana alerting framework.
+    name: kibana-alerting-health-get
+    outputs:
+    - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status
+      description: Whether Kibana can successfully decrypt encrypted alert data.
+    - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status
+      description: Whether rules are running on time or failing.
+    - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status
+      description: Whether rule configurations can be successfully retrieved from internal Kibana indices.
+  - arguments:
+    - description: The rule ID to disable. Find it with the "kibana-rule-details-search" command.
+      name: rule_id
+      required: true
+      type: shortText
+    description: Disables a detection alerting rule. Clears associated alerts from the active alerts page.
+    name: kibana-alert-rule-disable
+  - arguments:
+    - description: The rule ID to enable. Find it with the "kibana-rule-details-search" command.
+      name: rule_id
+      required: true
+      type: shortText
+    description: Enables a rule used for detection alerting.
+    name: kibana-alert-rule-enable
+  - arguments: []
+    description: Retrieves a list of all exception list containers.
+    name: kibana-exception-lists-get
+    outputs:
+    - contextPath: Kibana.ExceptionLists.name
+      description: The name of the exception list.
+    - contextPath: Kibana.ExceptionLists.list_id
+      description: The list ID of the exception list.
+    - contextPath: Kibana.ExceptionLists.description
+      description: The description of the exception list.
+  - arguments:
+    - description: The description of the value list.
+      name: description
+      required: true
+      type: shortText
+    - description: The name of the value list.
+      name: name
+      required: true
+      type: shortText
+    - auto: PREDEFINED
+      description: The Elasticsearch data type the list container holds.
+      name: data_type
+      predefined:
+      - keyword
+      - ip
+      - ip_range
+      - text
+      required: true
+    - description: The identifier of the value list.
+      name: list_id
+      required: true
+      type: shortText
+    description: Creates a value list in Kibana.
+    name: kibana-value-list-create
+  - arguments: []
+    description: Finds all value lists in the Kibana Detection Rules menu.
+    name: kibana-value-lists-get
+    outputs:
+    - contextPath: Kibana.ValueLists.name
+      description: The name of the value list.
+    - contextPath: Kibana.ValueLists.id
+      description: The ID of the value list.
+    - contextPath: Kibana.ValueLists.description
+      description: The description of the value list.
+  - arguments:
+    - description: The value list ID to import values to. Find it with the "kibana-value-lists-get" command.
+      name: list_id
+      required: true
+      type: shortText
+    - description: The IOC file entries to import to Kibana in Python string format.
+      name: file_content
+      required: true
+      type: shortText
+    description: Imports value list items from a TXT or CSV file.
+    name: kibana-value-list-items-import
+  - arguments:
+    - description: The value list ID to update. Find it with the "kibana-value-lists-get" command.
+      name: list_id
+      required: true
+      type: shortText
+    - description: The item to add to the specified value list.
+      name: new_value_list_item
+      required: true
+      type: shortText
+    description: Creates a value list item and associates it with the specified value list.
+    name: kibana-value-list-item-create
+  - arguments:
+    - description: The value list ID to retrieve values for. Find it with the "kibana-value-lists-get" command.
+      name: list_id
+      required: true
+      type: shortText
+    - defaultValue: '100'
+      description: The size of results to return.
+      name: result_size
+      type: number
+    description: Displays entries in an input value list.
+    name: kibana-value-list-items-get
+    outputs:
+    - contextPath: Kibana.ValueListItems.value
+      description: The value of the value list item.
+    - contextPath: Kibana.ValueListItems.id
+      description: The ID of the value list item.
+    - contextPath: Kibana.ValueListItems.list_id
+      description: The list ID of the value list.
+  - arguments:
+    - description: The value list entry ID to delete. Find it with the "kibana-value-list-items-get" command.
+      name: item_id
+      required: true
+      type: shortText
+    - description: The value list ID to delete the value from. Find it with the "kibana-value-lists-get" command.
+      name: list_id
+      required: true
+      type: shortText
+    description: Deletes a value list item, given the item ID and list ID as input.
+    name: kibana-value-list-item-delete
+  - arguments:
+    - description: The value list ID to delete. Find it with the "kibana-value-lists-get" command.
+      name: list_id
+      required: true
+      type: shortText
+    description: Deletes a value list given the list ID as input.
+    name: kibana-value-list-delete
+  - arguments: []
+    description: Checks the Kibana operational status.
+    name: kibana-status-get
+    outputs:
+    - contextPath: Kibana.OperationalStatus.core.elasticsearch.level
+      description: The connection health between Kibana and Elasticsearch.
+    - contextPath: Kibana.OperationalStatus.overall.level
+      description: The aggregated health status of the Kibana instance.
+    - contextPath: Kibana.OperationalStatus.core.savedObjects.level
+      description: The health status of the Saved Objects repository.
+  - arguments: []
+    description: Retrieves the health status of the Kibana task manager.
+    name: kibana-task-manager-health-get
+    outputs:
+    - contextPath: Kibana.TaskManagerHealth.capacity_estimation.status
+      description: The ability to handle scheduled tasks in Kibana.
+    - contextPath: Kibana.TaskManagerHealth.configuration.status
+      description: The configuration status of the Kibana task manager.
+    - contextPath: Kibana.TaskManagerHealth.runtime.status
+      description: The performance, drift, and load of Kibana task execution.
+    - contextPath: Kibana.TaskManagerHealth.workload.status
+      description: The status of tasks running, to identify potential overload.
+  - arguments: []
+    description: Checks the status of the cluster.
+    name: kibana-upgrade-readiness-status-get
+    outputs:
+    - contextPath: Kibana.UpgradeReadinessStatus.details
+      description: The details for what is needed prior to Kibana upgrades.
+    - contextPath: Kibana.UpgradeReadinessStatus.readyForUpgrade
+      description: Whether Kibana is ready for upgrade.
+  - arguments:
+    - description: The case ID to delete the comment on. Retrieve case IDs with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    - description: The identifier for the comment. Find comment IDs with the "kibana-case-comments-find" command.
+      name: comment_id
+      required: true
+      type: shortText
+    description: Deletes a case comment.
+    name: kibana-case-comment-delete
+  - arguments:
+    - description: The case ID to attach the file to. Locate it with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    - description: The file entry ID from Cortex XSOAR context data to add to the case.
+      name: file_id
+      required: true
+      type: shortText
+    description: Attaches a file to a case.
+    name: kibana-case-file-add
+  - arguments:
+    - description: The full or partial email address to search for the user with (for example, william.smith@*).
+      name: email_wildcard
+      required: true
+      type: shortText
+    description: Searches for a single user's UID in Kibana by email address filter.
+    name: kibana-user-by-email-get
+    outputs:
+    - contextPath: Kibana.UserData.profile_uid
+      description: The user ID for tracking user activity and checking privileges.
+    - contextPath: Kibana.UserData.roles
+      description: The roles tied to the user account.
+  - arguments:
+    - description: The case ID to retrieve information for. View available case IDs with the "kibana-cases-find" command.
+      name: case_id
+      required: true
+      type: shortText
+    description: Retrieves information for a specific case in Kibana.
+    name: kibana-case-information-get
+    outputs:
+    - contextPath: Kibana.CaseInfo.status
+      description: Whether the case is open, in-progress, or closed.
+    - contextPath: Kibana.CaseInfo.owner
+      description: The application that created the case.
+    - contextPath: Kibana.CaseInfo.version
+      description: The version of the case being updated.
+    - contextPath: Kibana.CaseInfo.id
+      description: The unique identifier for a case.
+  dockerimage: demisto/elasticsearch:1.0.0.8425368
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
