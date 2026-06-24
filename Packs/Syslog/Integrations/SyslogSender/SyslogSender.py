@@ -231,7 +231,7 @@ def init_manager(params: dict) -> SyslogManager:
     )
     certificate_path: Optional[str] = None
     default_port: int = DEFAULT_TLS_SYSLOG_PORT if protocol == "tls" else DEFAULT_TCP_SYSLOG_PORT
-    port = arg_to_number(params.get("port"), required=False) or default_port
+    port = arg_to_number(params.get("port"), required=False) or default_port  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or default_port`)
     self_signed_certificate = params.get("self_signed_certificate", False)
     if not address:
         raise DemistoException("A address must be provided.")
