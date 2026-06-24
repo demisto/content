@@ -68,4 +68,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![CrowdStrike Falcon - SIEM ingestion - Get Incident Data](../doc_files/CrowdStrike_Falcon_-_SIEM_ingestion_-_Get_Incident_Data.png)
+![CrowdStrike Falcon - SIEM ingestion - Get Incident Data](../doc_files/CrowdStrike_Falcon_SIEM_ingestion_-_Get_Incident_Data.png)
