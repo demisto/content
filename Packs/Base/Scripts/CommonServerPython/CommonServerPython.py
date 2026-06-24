@@ -13147,9 +13147,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if not data_format:
         data_format = 'text'
 
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before getLicenseCustomField('Http_Connector.token') (RPC to server)")
     xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG got Http_Connector.token, before getLicenseCustomField('Http_Connector.url')")
     xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
     xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG resolved xsiam_url={xsiam_url} (both getLicenseCustomField calls returned)".format(
+        xsiam_url=xsiam_url))
     headers = {
         'authorization': xsiam_api_token,
         'format': data_format,
@@ -13257,15 +13261,19 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return
 
     data_chunks = split_data_to_chunks(data, chunk_size)
+    demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG built headers + client, prepared data_chunks (before send loop)")
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG before POST to {xsiam_url}/logs/v1/xsiam (chunk size={chunk_size})".format(
+            xsiam_url=xsiam_url, chunk_size=chunk_size))
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        demisto.debug("send_data_to_xsiam: XSUP-70868-DIAG POST to /logs/v1/xsiam returned (chunk)")
         return chunk_size
 
     if multiple_threads:
