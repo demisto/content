@@ -200,6 +200,7 @@ def create_pr(repo, title, body, base, head, labels, assignees, reviewers, t):
 # -----------------------------
 def remove_branch_protection(repo, branch_name, t):
     try:
+        print(f'{t.cyan}Removing protection from branch "{branch_name}"{t.normal}')
         branch = repo.get_branch(branch_name)
         branch.remove_protection()
         branch.remove_required_status_checks()
