@@ -1,3 +1,9 @@
+### Required ServiceNow Roles
+
+This integration uses the [ServiceNow CMDB Instance API](https://docs.servicenow.com/bundle/xanadu-api-reference/page/integrate/inbound-rest/concept/c_CMDBInstanceAPI.html) (`/api/now/cmdb/instance/`).
+
+> **The CMDB Instance API requires the user to have the ITIL role.**
+
 ### Instance Configuration
 The integration supports two types of authorization:
 1. Basic authorization using username and password.
