@@ -212,7 +212,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Isolates the specified endpoint. This quick action is deprecated. Use the new Isolate Endpoint quick action instead.
+    description: Isolates the specified endpoint. This quick action is deprecated. Use the new built-in Isolate Endpoint quick action instead.
     execution: true
     name: core-isolate-endpoint-quick-action
     supportedModules:
@@ -1099,7 +1099,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints. This quick action is deprecated. Use the new Quarantine File quick action instead.
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints. This quick action is deprecated. Use the new built-in Quarantine File quick action instead.
     name: core-quarantine-files-quick-action
     supportedModules:
     - cloud_runtime_security
@@ -1223,7 +1223,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Restores a quarantined file on the requested endpoints. This quick action is deprecated. Use the new Restore File From Quarantine quick action instead.
+    description: Restores a quarantined file on the requested endpoints. This quick action is deprecated. Use the new built-in Restore File From Quarantine quick action instead.
     name: core-restore-file-quick-action
     supportedModules:
     - cloud_runtime_security
@@ -1426,7 +1426,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run the command with the argument all=true. Scanning all endpoints may impact performance and cause latency. This quick action is deprecated. Use the new Run Malware Scan quick action instead.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run the command with the argument all=true. Scanning all endpoints may impact performance and cause latency. This quick action is deprecated. Use the new built-in Run Malware Scan quick action instead.
     execution: true
     name: core-endpoint-scan-quick-action
     supportedModules:
@@ -1824,7 +1824,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status. This quick action is deprecated. Use the new Retrieve File quick action instead.
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status. This quick action is deprecated. Use the new built-in Retrieve File quick action instead.
     name: core-retrieve-files-quick-action
     supportedModules:
     - cloud_runtime_security
@@ -3834,7 +3834,7 @@ script:
       hidden: true
       description: Is the command being called from a core pack.
       defaultValue: true
-    description: Initiates a new endpoint script execution using a script from the script library and returns the results. This quick action is deprecated. Use the new Run Endpoint Script quick action instead.
+    description: Initiates a new endpoint script execution using a script from the script library and returns the results. This quick action is deprecated. Use the new built-in Run Endpoint Script quick action instead.
     name: core-script-run-quick-action
     supportedModules:
     - cloud_runtime_security
@@ -4069,7 +4069,7 @@ script:
     prettyname: Terminate CGO (deprecated)
     quickaction: true
     hidden: true
-    description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4 and above. This quick action is deprecated. Use the new Terminate CGO quick action instead.
+    description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4 and above. This quick action is deprecated. Use the new built-in Terminate CGO quick action instead.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id
