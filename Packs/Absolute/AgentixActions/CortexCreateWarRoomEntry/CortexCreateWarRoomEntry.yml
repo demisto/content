@@ -1,0 +1,54 @@
+commonfields:
+  id: CortexCreateWarRoomEntry
+  version: -1
+display: Cortex - Create War Room Entry
+name: CortexCreateWarRoomEntry
+category: Utilities
+description: >-
+  Creates a war room entry for up to 20 cases and/or issues.
+  At least one of issue_id or case_id must be provided.
+args:
+  - name: issue_ids
+    type: string
+    description: >-
+      A comma-separated list of issue IDs for which to create the war room entry.
+    underlyingargname: issue_ids
+  - name: case_ids
+    type: string
+    description: >-
+      A comma-separated list of case IDs for which to create the war room entry.
+    underlyingargname: case_ids
+  - name: content
+    type: string
+    description: The content for the war room entry.
+    underlyingargname: content
+    required: true
+    isgeneratable: true
+outputs:
+  - name: CortexCreateWarRoomEntry.result
+    description: The entry IDs in case of success.
+    type: String
+    underlyingoutputcontextpath: CortexCreateWarRoomEntry.result
+  - name: CortexCreateWarRoomEntry.errors
+    description: A list of errors that occurred during the operation.
+    type: String
+    underlyingoutputcontextpath: CortexCreateWarRoomEntry.errors
+underlyingcontentitem:
+  id: CreateWarRoomEntry
+  name: CreateWarRoomEntry
+  type: script
+  version: -1
+  command: ""
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - asm
+  - email_security
+  - exposure_management
