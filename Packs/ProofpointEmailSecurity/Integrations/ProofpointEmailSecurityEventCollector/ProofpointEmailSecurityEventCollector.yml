@@ -106,7 +106,7 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-  dockerimage: demisto/netutils:1.0.0.4887408
+  dockerimage: demisto/netutils:1.0.0.10187688
   longRunning: true
   isfetchevents: true
   subtype: python3
