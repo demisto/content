@@ -21,6 +21,9 @@ configuration:
   type: 0
   required: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8

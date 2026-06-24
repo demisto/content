@@ -20,6 +20,9 @@ configuration:
   name: first_fetch
   required: true
   type: 0
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   additionalinfo: Base Url for CybelAngel platform
   defaultvalue: https://platform.cybelangel.com

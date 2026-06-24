@@ -74,6 +74,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.
   defaultvalue: "30"
   display: Fetch incidents timeout

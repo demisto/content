@@ -111,6 +111,9 @@ configuration:
   section: Collect
   required: false
   additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Incident resolution status'
   name: resolution_status
   type: 16

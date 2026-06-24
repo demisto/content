@@ -35,6 +35,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Log types to fetch
   additionalinfo: To maximize scalability, it is recommended to configure one type per instance. Setup multiple integration instances to fetch multiple log types.
   name: log_types

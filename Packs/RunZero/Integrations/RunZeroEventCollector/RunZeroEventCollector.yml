@@ -56,6 +56,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 description: This is the RunZero event collector integration for XSIAM.
 display: RunZero Event Collector
 name: RunZero Event Collector

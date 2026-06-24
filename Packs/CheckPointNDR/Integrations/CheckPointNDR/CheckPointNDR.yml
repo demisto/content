@@ -43,6 +43,9 @@ configuration:
   defaultvalue: 7 days
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   advanced: true
   display: Fetch incidents

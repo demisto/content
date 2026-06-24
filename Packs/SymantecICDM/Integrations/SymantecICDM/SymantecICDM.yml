@@ -61,6 +61,9 @@ configuration:
   required: false
   section: Collect
   type: 0
+  supportedModules:
+  - agentix
+  - xsiam
 - advanced: true
   display: Trust any certificate (not secure)
   name: insecure

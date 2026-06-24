@@ -35,6 +35,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Company ID in SOCRadar to fetch incidents.
   display: Company ID
   name: socradar_company_id

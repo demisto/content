@@ -62,6 +62,9 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval

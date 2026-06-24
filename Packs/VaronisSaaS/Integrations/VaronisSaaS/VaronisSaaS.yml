@@ -57,6 +57,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   hidden: false

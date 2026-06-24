@@ -77,6 +77,9 @@ configuration:
   additionalinfo: This value represents how far the first fetch will grab the events stored in the GCenter e.g. 2 days
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 200
   display: Fetch limit
   name: max_fetch

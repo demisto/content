@@ -54,6 +54,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Maximum number of events to fetch per type.
   name: max_fetch
   type: 0

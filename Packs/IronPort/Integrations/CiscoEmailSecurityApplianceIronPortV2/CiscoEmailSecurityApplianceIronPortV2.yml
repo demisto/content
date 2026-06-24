@@ -39,6 +39,9 @@ configuration:
       e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - name: filter_by
     display: Filter by
     type: 15

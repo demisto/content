@@ -39,6 +39,9 @@ configuration:
   additionalinfo: ""
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: ticket_type
   display: Ticket Type
   defaultvalue: All

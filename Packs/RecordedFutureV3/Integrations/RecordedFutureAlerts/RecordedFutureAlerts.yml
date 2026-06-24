@@ -65,6 +65,9 @@ configuration:
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Enable Classic Alerts'
   name: classic_alerts_enabled
   type: 8

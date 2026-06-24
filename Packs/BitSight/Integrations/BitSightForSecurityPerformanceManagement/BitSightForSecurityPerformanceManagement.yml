@@ -25,6 +25,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The mirroring direction in which to mirror the findings. You can mirror "Incoming" (from Bitsight to XSOAR), "Outgoing" (from XSOAR to Bitsight), or in both directions.
   display: Mirroring Direction
   name: mirror_direction

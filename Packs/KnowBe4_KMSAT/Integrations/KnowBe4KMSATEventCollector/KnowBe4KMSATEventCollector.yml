@@ -30,6 +30,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - additionalinfo: The fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key.
   defaultvalue: 300
   display: Events Fetch Interval

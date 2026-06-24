@@ -65,6 +65,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Fetch only incidents with matching state'
   additionalinfo: Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used.
   name: state

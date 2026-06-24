@@ -60,6 +60,8 @@ configuration:
   section: Collect
   additionalinfo: First time to start fetching alerts from.
   required: false
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8

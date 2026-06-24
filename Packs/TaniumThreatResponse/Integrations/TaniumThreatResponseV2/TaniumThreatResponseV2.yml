@@ -33,6 +33,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+    - agentix
+    - xsiam
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch each time
   name: max_fetch

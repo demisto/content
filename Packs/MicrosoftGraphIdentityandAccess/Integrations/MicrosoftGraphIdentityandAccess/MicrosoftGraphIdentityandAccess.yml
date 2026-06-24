@@ -94,6 +94,9 @@ configuration:
   type: 0
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   defaultvalue: '50'
   display: Max Fetch Incidents Returned

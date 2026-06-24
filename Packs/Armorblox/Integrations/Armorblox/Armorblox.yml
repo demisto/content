@@ -45,6 +45,9 @@ configuration:
   type: 15
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval

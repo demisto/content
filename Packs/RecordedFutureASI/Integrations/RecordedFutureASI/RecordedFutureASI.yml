@@ -78,6 +78,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: '-'
   type: python

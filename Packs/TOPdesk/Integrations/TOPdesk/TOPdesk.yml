@@ -31,6 +31,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Default Incident Caller ID
   name: defaultCallerId
   type: 0

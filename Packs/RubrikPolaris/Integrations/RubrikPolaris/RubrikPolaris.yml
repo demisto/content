@@ -96,6 +96,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations) are selected, the limit is distributed optimally among them to fetch all types."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)

@@ -97,6 +97,9 @@ configuration:
   defaultvalue: 7 days
   required: false
   hidden: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

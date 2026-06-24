@@ -43,6 +43,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Collect all events
   name: collect_all_events
   type: 8

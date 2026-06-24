@@ -49,6 +49,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Role Session Name
   name: role_session_name
   type: 0

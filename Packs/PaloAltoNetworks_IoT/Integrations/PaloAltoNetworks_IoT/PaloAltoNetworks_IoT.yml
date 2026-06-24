@@ -56,6 +56,9 @@ configuration:
   additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc."
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '10'

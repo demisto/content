@@ -43,6 +43,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '200'
   display: Max Issues to Fetch
   name: max_fetch

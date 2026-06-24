@@ -75,6 +75,9 @@ configuration:
   defaultvalue: 7 days
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false

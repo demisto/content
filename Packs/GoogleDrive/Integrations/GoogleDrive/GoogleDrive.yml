@@ -90,6 +90,9 @@ configuration:
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours.
   defaultvalue: 10 minutes
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8

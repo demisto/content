@@ -57,6 +57,9 @@ configuration:
   type: 0
   required: false
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform.
 display: MS-ISAC
 name: MS-ISAC

@@ -35,6 +35,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: |-
     Fetches reports based on the specified program handle. Supports comma separated values.
 

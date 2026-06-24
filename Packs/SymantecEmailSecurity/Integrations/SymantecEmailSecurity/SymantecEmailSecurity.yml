@@ -67,6 +67,9 @@ configuration:
   type: 0
   section: Collect
   defaultvalue: 3 days
+  supportedModules:
+  - agentix
+  - xsiam
 - name: fetch_type
   display: Fetch Type
   additionalinfo: 'The API to fetch incidents from: Data Feeds, Quarantine or both.'

@@ -67,6 +67,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Event types to fetch
   name: fetch_event_types
   type: 16

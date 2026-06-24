@@ -31,6 +31,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: All
   display: Filter incidents by status.
   name: status

@@ -52,6 +52,9 @@ configuration:
   additionalinfo: "How far back should the first run fetch open cases in Argus."
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"

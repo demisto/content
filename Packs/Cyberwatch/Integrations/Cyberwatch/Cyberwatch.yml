@@ -51,6 +51,9 @@ configuration:
   section: Collect
   additionalinfo: |
     Formats acceptés : 3 days, 1 week, 2 months, 2025-05-20T00:00:00Z.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Limit
   name: max_fetch
   defaultvalue: 50

@@ -42,6 +42,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Advanced: Minutes to look back when fetching'
   name: look_back
   type: 0

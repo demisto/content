@@ -59,6 +59,9 @@ configuration:
   additionalinfo:
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Outgoing mirroring
   name: is_mirroring
   type: 8

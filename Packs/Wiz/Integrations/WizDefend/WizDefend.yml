@@ -44,6 +44,9 @@ configuration:
   required: false
   defaultvalue: 12 hours
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   defaultvalue: '1000'
   display: Max Detections to Fetch

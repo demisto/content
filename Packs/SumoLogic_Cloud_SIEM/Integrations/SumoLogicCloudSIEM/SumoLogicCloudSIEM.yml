@@ -67,6 +67,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Pull associated Sumo Logic Signals as Incidents
   additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
   defaultvalue: "false"

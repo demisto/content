@@ -90,6 +90,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max events to fetch
   additionalinfo: Maximum events that can be fetch is 200 (Only for Fetch Incidents)
   name: max_fetch

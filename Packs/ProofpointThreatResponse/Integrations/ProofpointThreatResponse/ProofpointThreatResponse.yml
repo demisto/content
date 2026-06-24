@@ -54,6 +54,9 @@ configuration:
   additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit

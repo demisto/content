@@ -49,6 +49,9 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: On 'Fetch incidents' import all alerts related to the incident
   name: import_alerts

@@ -23,6 +23,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Max fetch limit is 50
   defaultvalue: '10'
   display: Fetch limit

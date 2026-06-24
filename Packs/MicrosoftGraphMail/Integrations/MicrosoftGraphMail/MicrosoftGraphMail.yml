@@ -99,6 +99,9 @@ configuration:
   section: Collect
   additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: HTTP Timeout
   name: timeout
   type: 0

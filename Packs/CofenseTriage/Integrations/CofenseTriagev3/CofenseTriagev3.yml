@@ -34,6 +34,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports.
   display: Report Location
   name: mailbox_location

@@ -59,6 +59,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
   display: Watcher group UID(s)
   name: watcher_group_uids

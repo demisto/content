@@ -61,6 +61,9 @@ configuration:
   defaultvalue: 3 days
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"

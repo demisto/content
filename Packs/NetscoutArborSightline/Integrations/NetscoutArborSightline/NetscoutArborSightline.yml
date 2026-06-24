@@ -36,6 +36,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit

@@ -76,6 +76,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Event types
   name: event_types
   additionalinfo: Comma-separated list of event type IDs. The IDs can be retrieved from the cisco-amp-event-type-list command.

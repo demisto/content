@@ -85,6 +85,9 @@ configuration:
   additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: timeout
   display: Global timeout to all requests
   defaultvalue: "10"

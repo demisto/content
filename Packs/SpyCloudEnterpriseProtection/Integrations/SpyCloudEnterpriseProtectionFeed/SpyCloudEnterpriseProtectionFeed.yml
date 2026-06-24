@@ -37,6 +37,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+    - agentix
+    - xsiam
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.

@@ -65,6 +65,9 @@ configuration:
     defaultvalue: "3 days"
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - additionalinfo: Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100.
     display: Max fetch
     name: max_fetch
