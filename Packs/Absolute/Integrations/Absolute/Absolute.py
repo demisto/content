@@ -350,7 +350,7 @@ class ClientV3(BaseClient):
         return all_events
 
     def prepare_query_string_for_fetch_events(
-        self, start_date: datetime, end_date: datetime, page_size: int = None, next_page: str = None
+        self, start_date: datetime, end_date: datetime, page_size: Optional[int] = None, next_page: Optional[str] = None
     ) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
@@ -849,6 +849,214 @@ def device_unenroll_command(args, client) -> CommandResults:
     )
 
 
+def prepare_wipe_request_query(args: dict, status) -> str:
+    created_from = args.get("created_from_date_time_utc")
+    created_to = args.get("created_to_date_time_utc")
+    request_status = args.get("request_status") or args.get("action_status")
+
+    query_params = []
+    if created_from:
+        query_params.append(f"createdFromDateTimeUtc={created_from}")
+    if created_to:
+        query_params.append(f"createdToDateTimeUtc={created_to}")
+    if request_status:
+        query_params.append(f"{status}={request_status}")
+
+    return "&".join(query_params)
+
+
+def wipe_actions_list_command(args, client) -> CommandResults:
+    """
+    Get the status of actions by devices or by request.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    request_uid = args.get("request_uid")
+    device_uids = argToList(args.get("device_uids"))
+    page = arg_to_number(args.get("page", 0))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    payload = {}
+    if device_uids:
+        payload["deviceUids"] = device_uids
+
+    if request_uid:
+        res = client.api_request_absolute(
+            "POST",
+            f"/v3/actions/wipe/get-actions/{request_uid}",
+            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            body=payload,
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+    else:
+        res = client.api_request_absolute(
+            "POST",
+            "/v3/actions/wipe/get-actions",
+            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            body=payload,
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+
+    if res:
+        outputs = res
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe actions list:",
+            outputs,
+            headers=["actionUid", "requestUid", "deviceUid", "deviceName", "esn", "actionStatus"],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeAction",
+            outputs=outputs,
+            outputs_key_field="actionUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(readable_output=f"No wipe actions found in {INTEGRATION} for the given filters: {args}")
+
+
+def wipe_request_cancel_command(args, client) -> CommandResults:
+    """
+    cancel a wipe request based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    request_uid = args.get("request_uid")
+    action_uids = argToList(args.get("action_uids"))
+    cancel_all_actions = argToBoolean(args.get("cancel_all_actions", False))
+
+    payload = {}
+    if action_uids:
+        payload["actionUids"] = action_uids
+    if cancel_all_actions:
+        payload["cancelAllActions"] = cancel_all_actions
+
+    res = client.api_request_absolute(
+        "POST",
+        f"/v3/actions/wipe/cancel-actions/{request_uid}",
+        body=payload,
+    )
+
+    return CommandResults(
+        readable_output=f"Wipe actions for the request {request_uid} have been successfully canceled.",
+        raw_response=res,
+    )
+
+
+def wipe_request_create_command(args, client) -> CommandResults:
+    """
+    Create a Wipe request for the devices based on provided arguments.
+
+     Args:
+         args (Dict[str, Any]): Command arguments.
+         client (ClientV3): Absolute Client.
+
+     Returns:
+         CommandResults: The command results.
+    """
+    device_uids = argToList(args.get("device_uids"))
+    mac_user_name = args.get("mac_user_name")
+    mac_pwd = args.get("mac_pwd")
+
+    payload = {
+        "deviceUids": device_uids,
+        "unenrollDevicesAndFreeLicenses": argToBoolean(args.get("unenroll_devices_and_free_licenses", False)),
+    }
+    if mac_user_name:
+        payload["macUsername"] = mac_user_name
+    if mac_pwd:
+        payload["macPwd"] = mac_pwd
+
+    res = client.api_request_absolute(
+        "POST",
+        "/v3/actions/requests/wipe",
+        body=payload,
+    )
+
+    return CommandResults(
+        readable_output=f"Wipe request {res.get('requestUid')} has been successfully created.",
+        raw_response=res,
+    )
+
+
+def wipe_request_list_command(args, client) -> CommandResults:
+    """
+    Retrieves wipe requests based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    request_uid = args.get("request_uid")
+    page = arg_to_number(args.get("page", 0))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    hr_headers = [
+        "requestId",
+        "requestUid",
+        "requestStatus",
+        "totalDevices",
+        "pending",
+        "processing",
+        "completed",
+        "canceled",
+        "failed",
+    ]
+
+    if request_uid:
+        res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe/{request_uid}")
+    else:
+        res = client.api_request_absolute(
+            "GET",
+            "/v3/actions/requests/wipe",
+            query_string=prepare_wipe_request_query(args, "requestStatus"),
+            page=page,
+            page_size=limit,
+            specific_page=True,
+        )
+
+    if res:
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe request details:" if request_uid else f"{INTEGRATION} wipe requests list:",
+            res,
+            headers=hr_headers,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeRequest",
+            outputs=res,
+            outputs_key_field="requestUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(
+            readable_output=f"No wipe request found in {INTEGRATION} for the given request_uid: {request_uid}"
+            if request_uid
+            else f"No wipe requests found in {INTEGRATION} for the given filters: {args}"
+        )
+
+
 def add_list_to_filter_string(field_name, list_of_values, query):
     if not list_of_values:
         return query
@@ -1312,6 +1520,18 @@ def main() -> None:  # pragma: no cover
             if should_push_events and events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
+
+        elif demisto.command() == "absolute-wipe-request-list":
+            return_results(wipe_request_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-actions-list":
+            return_results(wipe_actions_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-create":
+            return_results(wipe_request_create_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-cancel":
+            return_results(wipe_request_cancel_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")
