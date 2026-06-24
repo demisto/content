@@ -19730,7 +19730,7 @@ script:
       type: String
 
   - name: aws-network-firewall-rule-group-create
-    description: "Creates the specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags. You must provide either at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order) or the rules argument. Required permissions: network-firewall:CreateRuleGroup, network-firewall:TagResource."
+    description: "Creates the specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags. You must provide either at least one of the rule_group arguments (rules_source is required, the ip_sets, port_sets, ip_sets_references, stateful_rule_options_rule_order are optionals) or the rules argument. Required permissions: network-firewall:CreateRuleGroup, network-firewall:TagResource."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -19792,7 +19792,7 @@ script:
     - name: ip_sets_references
       description: 'A JSON string specifying an object of IP set references. For example: {\"string\": {\"ReferenceArn\": \"string\"}}.'
     - name: rules_source
-      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. For example: {\"RulesString\": \"RulesString\", \"RulesSourceList\": \"Targets\": [\"string\",]}.'
+      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. This argument is required if you choose to use the RuleGroup option. For example: {\"RulesString\": \"RulesString\", \"RulesSourceList\": \"Targets\": [\"string\",]}.'
     - name: stateful_rule_options_rule_order
       description: Indicates how to manage the order of the rule evaluation for the rule group.
       auto: PREDEFINED
@@ -19800,7 +19800,7 @@ script:
         - DEFAULT_ACTION_ORDER
         - STRICT_ORDER
     - name: rules
-      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line. Use this to import your existing Suricata compatible rule groups. You must provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both.
+      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both.
     - name: description
       description: A description of the rule group.
     - name: tags
@@ -20095,6 +20095,7 @@ script:
         description: The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken.
       - name: scope
         description: The scope of the request. The default setting of ACCOUNT or a setting of NULL returns all of the rule groups in your account. A setting of MANAGED returns all available managed rule groups.
+        defaultValue: ACCOUNT
         auto: PREDEFINED
         predefined:
           - MANAGED
@@ -20199,7 +20200,7 @@ script:
         - DEFAULT_ACTION_ORDER
         - STRICT_ORDER
     - name: rules
-      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line. Use this to import your existing Suricata compatible rule groups. You must provide either this argument or the rule_group arguments, but not both.
+      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either this argument or the rule_group arguments, but not both.
     - name: description
       description: A description of the rule group.
     - name: encryption_configuration_key_id
