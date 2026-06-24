@@ -87,8 +87,8 @@ class Client:
         app_id: str,
         verify: bool,
         proxy: bool,
-        azure_cloud: AzureCloud = None,
-        base_url: str = None,
+        azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
+        base_url: str = BASE_URL,
         tenant_id: str = None,
         enc_key: str = None,
         client_credentials: bool = False,
@@ -102,20 +102,12 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        if azure_cloud is None:
-            azure_cloud = AZURE_WORLDWIDE_CLOUD
-
         cloud_abbreviation = azure_cloud.abbreviation
-        # Resolve the base URL from the cloud. Only use explicit base_url if it differs from the default Worldwide URL.
         cloud_base_url = MICROSOFT_365_DEFENDER_API.get(cloud_abbreviation, BASE_URL)
         resolved_base_url = cloud_base_url if (not base_url or base_url == BASE_URL) else base_url
-        # Resolve the resource URI for the token audience.
         resource_uri = MICROSOFT_365_DEFENDER_RESOURCE.get(cloud_abbreviation, BASE_URL)
-        # Resolve the managed identities resource URI.
         managed_identities_resource = MICROSOFT_365_DEFENDER_RESOURCE.get(cloud_abbreviation, Resources.security)
-        # Resolve the scope for the OAuth token request.
-        scope = MICROSOFT_365_DEFENDER_SCOPE.get(cloud_abbreviation,
-                                                  "offline_access https://security.microsoft.com/mtp/.default")
+        scope = MICROSOFT_365_DEFENDER_SCOPE.get(cloud_abbreviation, "offline_access https://security.microsoft.com/mtp/.default")
 
         demisto.debug(
             f"Microsoft 365 Defender - Using azure_cloud={cloud_abbreviation}, "
