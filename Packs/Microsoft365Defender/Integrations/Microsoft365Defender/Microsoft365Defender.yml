@@ -26,7 +26,7 @@ configuration:
   defaultvalue: https://api.security.microsoft.com
   display: Endpoint URI
   name: base_url
-  required: false
+  required: true
   type: 0
   section: Connect
   advanced: true

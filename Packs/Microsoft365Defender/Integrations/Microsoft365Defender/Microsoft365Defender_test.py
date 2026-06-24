@@ -1319,3 +1319,190 @@ def test_update_remote_system_with_entries(mocker):
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
+
+
+from MicrosoftApiModule import (
+    AZURE_WORLDWIDE_CLOUD,
+    AZURE_US_GCC_CLOUD,
+    AZURE_US_GCC_HIGH_CLOUD,
+    AZURE_DOD_CLOUD,
+)
+
+
+@pytest.mark.parametrize(
+    "azure_cloud_obj, expected_base_url, expected_token_url_contains, expected_resource",
+    [
+        (
+            AZURE_WORLDWIDE_CLOUD,
+            "https://api.security.microsoft.com",
+            "login.microsoftonline.com",
+            "https://api.security.microsoft.com",
+        ),
+        (
+            AZURE_US_GCC_CLOUD,
+            "https://api-gcc.security.microsoft.us",
+            "login.microsoftonline.com",
+            "https://api-gcc.security.microsoft.us",
+        ),
+        (
+            AZURE_US_GCC_HIGH_CLOUD,
+            "https://api-gov.security.microsoft.us",
+            "login.microsoftonline.us",
+            "https://api-gov.security.microsoft.us",
+        ),
+        (
+            AZURE_DOD_CLOUD,
+            "https://api-gov-dod.security.microsoft.us",
+            "login.microsoftonline.us",
+            "https://api-gov-dod.security.microsoft.us",
+        ),
+    ],
+    ids=["Worldwide", "US_GCC", "US_GCC_High", "DoD"],
+)
+def test_client_azure_cloud_configuration(
+    mocker,
+    azure_cloud_obj,
+    expected_base_url,
+    expected_token_url_contains,
+    expected_resource,
+):
+    """
+    Given:
+        - Different Azure cloud configurations (Worldwide, US GCC, US GCC-High, DoD).
+    When:
+        - Creating a Client instance with each Azure cloud.
+    Then:
+        - Ensure the base_url, token_retrieval_url, and resource are set correctly for each cloud.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"current_refresh_token": "refresh_token", "access_token": "access_token"},
+    )
+
+    client = Client(
+        app_id="test_app_id",
+        verify=False,
+        proxy=False,
+        azure_cloud=azure_cloud_obj,
+    )
+
+    # Verify base URL
+    assert client.ms_client._base_url == expected_base_url
+
+    # Verify token retrieval URL contains the correct login endpoint (device code flow)
+    assert expected_token_url_contains in client.ms_client.token_retrieval_url
+
+    # Verify the azure_ad_endpoint uses the correct active directory endpoint
+    assert client.ms_client.azure_ad_endpoint == azure_cloud_obj.endpoints.active_directory
+
+
+@pytest.mark.parametrize(
+    "azure_cloud_obj, expected_base_url, expected_resource",
+    [
+        (
+            AZURE_WORLDWIDE_CLOUD,
+            "https://api.security.microsoft.com",
+            "https://api.security.microsoft.com",
+        ),
+        (
+            AZURE_US_GCC_HIGH_CLOUD,
+            "https://api-gov.security.microsoft.us",
+            "https://api-gov.security.microsoft.us",
+        ),
+    ],
+    ids=["Worldwide_ClientCredentials", "US_GCC_High_ClientCredentials"],
+)
+def test_client_azure_cloud_client_credentials_flow(
+    mocker,
+    azure_cloud_obj,
+    expected_base_url,
+    expected_resource,
+):
+    """
+    Given:
+        - Azure cloud configurations with client credentials flow.
+    When:
+        - Creating a Client instance with client_credentials=True.
+    Then:
+        - Ensure the base_url is set correctly and token_retrieval_url uses the correct tenant endpoint.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"current_refresh_token": "refresh_token", "access_token": "access_token"},
+    )
+
+    client = Client(
+        app_id="test_app_id",
+        verify=False,
+        proxy=False,
+        azure_cloud=azure_cloud_obj,
+        tenant_id="test_tenant_id",
+        enc_key="test_enc_key",
+        client_credentials=True,
+    )
+
+    # Verify base URL
+    assert client.ms_client._base_url == expected_base_url
+
+    # Verify the token retrieval URL uses the correct active directory endpoint for the cloud
+    assert azure_cloud_obj.endpoints.active_directory in client.ms_client.token_retrieval_url
+    assert "test_tenant_id" in client.ms_client.token_retrieval_url
+
+
+def test_client_azure_cloud_base_url_override(mocker):
+    """
+    Given:
+        - An Azure cloud configuration with a custom base_url override.
+    When:
+        - Creating a Client instance with both azure_cloud and base_url.
+    Then:
+        - Ensure the explicit base_url takes precedence over the cloud-derived URL.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"current_refresh_token": "refresh_token", "access_token": "access_token"},
+    )
+
+    custom_url = "https://custom.api.endpoint.com"
+    client = Client(
+        app_id="test_app_id",
+        verify=False,
+        proxy=False,
+        azure_cloud=AZURE_US_GCC_HIGH_CLOUD,
+        base_url=custom_url,
+    )
+
+    # The explicit base_url should override the cloud-derived URL
+    assert client.ms_client._base_url == custom_url
+
+    # But the token retrieval URL should still use the GCC-High login endpoint
+    assert "login.microsoftonline.us" in client.ms_client.token_retrieval_url
+
+
+def test_client_default_azure_cloud(mocker):
+    """
+    Given:
+        - No Azure cloud configuration provided.
+    When:
+        - Creating a Client instance without azure_cloud parameter.
+    Then:
+        - Ensure the client defaults to Worldwide cloud configuration.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"current_refresh_token": "refresh_token", "access_token": "access_token"},
+    )
+
+    client = Client(
+        app_id="test_app_id",
+        verify=False,
+        proxy=False,
+    )
+
+    # Should default to Worldwide
+    assert client.ms_client._base_url == "https://api.security.microsoft.com"
+    assert "login.microsoftonline.com" in client.ms_client.token_retrieval_url
