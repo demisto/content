@@ -638,6 +638,7 @@ def test_fetch_incidents__last_uid_as_int(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
     assert isinstance(fetch_mail_mocker.call_args[1]["uid_to_fetch_from"], int)
     assert isinstance(next_run["last_uid"], str)
@@ -669,6 +670,7 @@ def test_fetch_incidents__last_uid_as_string(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
     assert isinstance(fetch_mail_mocker.call_args[1]["uid_to_fetch_from"], int)
     assert isinstance(next_run["last_uid"], str)
@@ -700,6 +702,7 @@ def test_fetch_incidents__last_uid_was_zero(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
     assert next_run is None
 
