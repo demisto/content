@@ -1888,6 +1888,30 @@ def map_case_format(case_list):
     return mapped_cases
 
 
+def extract_case_ids(case_id_list: Any) -> list[str]:
+    """Extract clean numeric-only case IDs from a comma-separated ``case_id_list`` argument.
+
+    The input may contain letters, symbols, or spaces. For each item, only the digits (0-9)
+    are kept (joined together), and any item containing no digits is dropped. The original
+    input is never modified in place and the user is never asked to correct their input.
+
+    Examples (per item):
+        "ID-123" -> "123", "c123" -> "123", "12a 3" -> "123", "abc" -> dropped.
+
+    Args:
+        case_id_list: The raw ``case_id_list`` argument (comma-separated string, int, or list).
+
+    Returns:
+        A list of clean numeric-only ID strings.
+    """
+    clean_ids: list[str] = []
+    for item in argToList(case_id_list):
+        digits = "".join(ch for ch in str(item) if ch.isdigit())
+        if digits:
+            clean_ids.append(digits)
+    return clean_ids
+
+
 def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
@@ -1925,7 +1949,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field(
         CaseManagement.FIELDS["case_id_list"],
         FilterType.EQ,
-        argToList(args.get("case_id_list")),
+        extract_case_ids(args.get("case_id_list")),
     )
     filter_builder.add_field(
         CaseManagement.FIELDS["case_domain"],
@@ -3528,7 +3552,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         filter_builder.add_field(
             CaseManagement.FIELDS["case_id_list"],
             FilterType.EQ,
-            case_ids,
+            extract_case_ids(case_ids),
         )
         request_data = build_webapp_request_data(
             table_name=CASES_TABLE,

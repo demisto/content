@@ -365,6 +365,46 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     assert result[1].readable_output.startswith("table")
 
 
+@pytest.mark.parametrize(
+    "raw_input, expected",
+    [
+        # Single items: only digits are kept, all yield "123".
+        ("ID-123", ["123"]),
+        ("c123", ["123"]),
+        ("c123 ", ["123"]),
+        ("12a 3", ["123"]),
+        ("#123", ["123"]),
+        # Comma-separated list stays in order, cleaned per item.
+        ("234,235,236", ["234", "235", "236"]),
+        ("ID-234, #235, c236", ["234", "235", "236"]),
+        # Int input is supported via argToList.
+        (123, ["123"]),
+        (1, ["1"]),
+        # Items with no digits are dropped.
+        ("abc, 5", ["5"]),
+        ("abc", []),
+        # Empty / None input yields an empty list.
+        ("", []),
+        (None, []),
+        # Already-clean list input is preserved.
+        (["234", "235"], ["234", "235"]),
+    ],
+)
+def test_extract_case_ids(raw_input, expected):
+    """
+    Given:
+        - A case_id_list argument that may contain letters, symbols, or spaces.
+    When:
+        - Calling extract_case_ids.
+    Then:
+        - Only the digits (0-9) of each item are kept (joined), items with no
+          digits are dropped, and the result is a list of numeric-only strings.
+    """
+    from CortexPlatformCore import extract_case_ids
+
+    assert extract_case_ids(raw_input) == expected
+
+
 def test_replace_substring_string():
     """
     GIVEN a string containing or not containing the substring 'issue'.
