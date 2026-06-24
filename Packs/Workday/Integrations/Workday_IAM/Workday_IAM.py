@@ -729,11 +729,11 @@ def main():
 
     days_before_hire_to_sync = params.get("days_before_hire_to_sync")
     if days_before_hire_to_sync:
-        days_before_hire_to_sync = int(days_before_hire_to_sync)  # noqa: ucp-param-default  # guarded by truthy check above
+        days_before_hire_to_sync = int(days_before_hire_to_sync)
 
     days_before_hire_to_enable_ad = params.get("days_before_hire_to_enable_ad")
     if days_before_hire_to_enable_ad:
-        days_before_hire_to_enable_ad = int(days_before_hire_to_enable_ad)  # noqa: ucp-param-default  # guarded by truthy check above
+        days_before_hire_to_enable_ad = int(days_before_hire_to_enable_ad)
 
     demisto.debug(f"Command being called is {command}")
 
@@ -806,7 +806,7 @@ def main():
                         source_priority=source_priority,
                     )
 
-                fetch_limit = int(params.get("max_fetch") or 50)
+                fetch_limit = int(params.get("max_fetch"))
 
                 demisto.incidents(events[:fetch_limit])
                 demisto.setLastRun({"synced_users": True, "events": events[fetch_limit:]})

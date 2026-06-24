@@ -1766,7 +1766,7 @@ def _download_operation_export_file(client: MsGraphClient, operation: dict) -> d
     res = client.download_export_file(download_url)
 
     status = getattr(res, "status_code", None)
-    ok = bool(getattr(res, "ok", False))  # noqa: ucp-param-default  # getattr on HTTP response object `res`, not a demisto param — analyzer false positive
+    ok = bool(getattr(res, "ok", False))
     if not ok:
         text = (getattr(res, "text", "") or "")[:500]
         raise DemistoException(f"Failed to download export file. HTTP {status}. {text}")

@@ -364,7 +364,7 @@ def module_test_command(client: Client, params: dict) -> str:
             if is_fetch:
                 body = assign_params(
                     criteria=assign_params(
-                        minimum_severity=arg_to_number(params.get("min_severity")),  # noqa: ucp-param-default  # arg_to_number(None) returns None (required=False), dropped by assign_params
+                        minimum_severity=arg_to_number(params.get("min_severity")),
                         device_policy_id=argToList(params.get("policy_id")),
                         device_username=argToList(params.get("device_username")),
                         device_id=argToList(params.get("device_id")),
@@ -450,7 +450,7 @@ def fetch_incidents(client: Client, params: dict):
 
     body = assign_params(
         criteria=assign_params(
-            minimum_severity=arg_to_number(params.get("min_severity")),  # noqa: ucp-param-default  # arg_to_number(None) returns None (required=False), dropped by assign_params
+            minimum_severity=arg_to_number(params.get("min_severity")),
             device_policy_id=argToList(params.get("policy_id")),
             device_username=argToList(params.get("device_username")),
             device_id=argToList(params.get("device_id")),

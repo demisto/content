@@ -290,7 +290,7 @@ def main():
     user_key = params.get("credentials", {}).get("identifier")
     api_key = params.get("credentials", {}).get("password")
     organization = params.get("organization", "")
-    fetch_limit = arg_to_number(params.get("max_audit_per_fetch") or MAX_FETCH_AUDIT_LIMIT)
+    fetch_limit = arg_to_number(params.get("max_audit_per_fetch")) or MAX_FETCH_AUDIT_LIMIT
     demisto.debug(f"AppSentinels.ai  - Command being called is {command}")
 
     try:
