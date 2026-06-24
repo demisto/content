@@ -1,3 +1,5 @@
+name: GCP
+display: Google Cloud Platform
 commonfields:
   id: GCP
   version: -1
@@ -5,12 +7,20 @@ sectionorder:
 - Connect
 - Collect
 configuration:
-- displaypassword: Service Account Private Key file content (JSON).
+- displaypassword: Service Account Private Key (JSON)
   name: credentials
-  required: false
+  required: true
+  required:platform: false
   type: 9
   hiddenusername: true
   section: Connect
+  additionalinfo: "The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM (version < 3.0). On Cortex XSIAM (version >= 3.0) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM & Admin > Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here."
+- display: GCP Project ID
+  name: project_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: "The GCP project ID to authenticate against when testing the integration (e.g. my-project-123). If left empty, the project ID from the Service Account private key JSON is used."
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -23,19 +33,18 @@ configuration:
   required: false
   section: Connect
   advanced: true
-name: GCP
-display: Google Cloud Platform
 category: Cloud Services
 provider: Google
-description: Cloud integrations are installed from the Data Sources page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select GCP, then in Advanced Settings > Security Capabilities, enable "Automation".
+description: "Manage and secure Google Cloud Platform resources. On Cortex Platform, authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID."
 script:
   commands:
   - name: gcp-compute-firewall-patch
     description: "Updates a specific firewall rule with the data included in the request. Required permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the firewall rule to update.
@@ -146,8 +155,9 @@ script:
     description: "Creates a new firewall rule in a specific project. Required permission: compute.firewalls.create."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the firewall rule to create.
@@ -233,8 +243,9 @@ script:
     description: "Lists the firewall rules in a specific project. Required permission: compute.firewalls.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
@@ -290,8 +301,9 @@ script:
     description: "Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Firewall rule name.
@@ -321,8 +333,9 @@ script:
     description: "Lists snapshots in a specific project. Required permission: compute.snapshots.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
@@ -404,8 +417,9 @@ script:
     description: "Retrieves details for a specific snapshot. Required permission: compute.snapshots.get."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Snapshot name.
@@ -480,8 +494,9 @@ script:
     description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: ip_address
       required: true
       description: The IP address to search for.
@@ -516,8 +531,9 @@ script:
     description: "Adds a network tag to a VM instance (merges with existing tags). Required permission: compute.instances.setTags."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: Zone of the VM (e.g., us-central1-a).
@@ -585,7 +601,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -673,8 +689,9 @@ script:
     description: "Removes an entity from a bucket's Access Control List. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the GCS bucket.
@@ -693,7 +710,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -721,7 +738,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -749,7 +766,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -774,8 +791,9 @@ script:
     description: "Enables flow logs or Private Google Access on a subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: region
       required: true
       description: GCP region.
@@ -839,7 +857,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -910,7 +928,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -977,8 +995,9 @@ script:
     description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: region
       required: true
       description: GCP region.
@@ -1086,7 +1105,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -1196,7 +1215,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -1298,8 +1317,9 @@ script:
     description: "Updates Google Cloud Storage (GCS) bucket metadata, including settings such as versioning and Uniform Bucket-Level Access (UBLA). Required permission: storage.buckets.update."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the bucket.
@@ -1399,7 +1419,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -1502,7 +1522,7 @@ script:
     arguments:
       - name: project_id
         required: true
-        description: GCP project ID.
+        description: The GCP project ID.
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
@@ -1596,8 +1616,9 @@ script:
     description: "Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: limit
       required: false
       description: Maximum number of buckets to return.
@@ -1654,8 +1675,9 @@ script:
     description: "Retrieves information about a specific bucket. Required permission: storage.buckets.get."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to retrieve.
@@ -1706,8 +1728,9 @@ script:
     description: "Retrieves the list of objects in a bucket. Required permission: storage.objects.list."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to list objects from.
@@ -1782,8 +1805,9 @@ script:
     description: "Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to retrieve IAM policy from.
@@ -1808,8 +1832,9 @@ script:
     description: "Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to set IAM policy on.
@@ -1838,8 +1863,9 @@ script:
     description: "Retrieves the IAM policy for a specific object in a bucket. Required permission: storage.objects.getIamPolicy."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket containing the object.
@@ -1863,8 +1889,9 @@ script:
     description: "Sets the IAM policy for a specific object in a bucket. Required permission: storage.objects.setIamPolicy."
     arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket containing the object.
@@ -1891,8 +1918,9 @@ script:
     description: "Removes a specified IAM role binding from a GCP project. Required permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy."
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: member
       description: Member to remove (e.g., user:test@example.com).
       required: true
@@ -1905,8 +1933,9 @@ script:
     description: "Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy."
     arguments:
     - name: project_id
-      required: true
-      description: The GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - name: dataset_id
       required: true
       description: The dataset ID of the requested dataset.
@@ -2028,7 +2057,7 @@ script:
 #    description: Creates an IAM deny policy that explicitly blocks specified principals from performing specified permissions on a GCP project.
 #    arguments:
 #      - name: project_id
-#        description: GCP project ID.
+#        description: The GCP project ID.
 #        required: true
 #        type: string
 #      - name: policy_id
@@ -2070,8 +2099,9 @@ script:
       The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -2160,8 +2190,9 @@ script:
       The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       isArray: false
     - name: zone
       description: The name of the zone for this request.
@@ -2245,7 +2276,7 @@ script:
 #    description: Deletes a group membership from a GSuite group.
 #    arguments:
 #    - name: project_id
-#      description: GCP project ID.
+#      description: The GCP project ID.
 #      required: true
 #      isArray: false
 #    - name: group_id
@@ -2263,7 +2294,7 @@ script:
 #    description: Deletes a GCP IAM service account.
 #    arguments:
 #    - name: project_id
-#      description: GCP project ID.
+#      description: The GCP project ID.
 #      required: true
 #      isArray: false
 #    - name: service_account_email
@@ -2277,8 +2308,9 @@ script:
     description: "Starts an instance that was stopped using the instances().stop method. Required permission: compute.instances.start."
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -2359,10 +2391,11 @@ script:
     - description: Name of the network to return.
       name: network
       required: true
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
-    description: "Returns the specified network. Required permission: compute.networks.get."
+      required: false
+      required:platform: true
+    description: Returns the specified network.
     name: gcp-compute-network-get
     outputs:
     - contextPath: GCP.Compute.Networks.id
@@ -2422,9 +2455,10 @@ script:
 
 # gcp-compute-image-get
   - arguments:
-    - description: Project ID for this request.
+    - description: Project ID for this request. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: Name of the image resource to return.
       name: image
       required: true
@@ -2584,9 +2618,10 @@ script:
     - description: Name of the region resource to return.
       name: region
       required: true
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     description: "Returns a specific region resource. Required permission: compute.regions.get."
     name: gcp-compute-region-get
     outputs:
@@ -2653,9 +2688,10 @@ script:
     - description: The name of the instance group.
       name: instance_group
       required: true
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the zone where the instance group is located.
       name: zone
       required: true
@@ -2713,9 +2749,10 @@ script:
     - description: Name of the zone resource to return.
       name: zone
       required: true
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     description: "Returns a specific zone resource. Required permission: compute.zones.get."
     name: gcp-compute-zone-get
     outputs:
@@ -2767,9 +2804,10 @@ script:
 
 # gcp-compute-networks-list
   - arguments:
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - defaultValue: '50'
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive.'
       name: limit
@@ -2840,9 +2878,10 @@ script:
 
 # gcp-compute-network-insert
   - arguments:
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
       name: name
       required: true
@@ -2962,8 +3001,9 @@ script:
     description: "Stops and cleanly shuts down a running instance, allowing you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using such as persistent disks and static IP addresses will continue to be charged until they are deleted. Required permission: compute.instances.stop."
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -3039,8 +3079,9 @@ script:
       type: string
   - arguments:
     - name: project_id
-      required: true
-      description: GCP project ID.
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
     - description: The name of the zone for this request.
       name: zone
       required: true
@@ -3147,13 +3188,13 @@ script:
         description: Enables display device for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.shieldedInstanceConfig
-        description: ''
+        description: Shielded VM configuration for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.sourceMachineImageEncryptionKey
         description: The source machine image encryption key used when creating an instance from a machine image.
         type: Object
       - contextPath: GCP.Compute.Instances.confidentialInstanceConfig
-        description: ''
+        description: Confidential computing configuration for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.fingerprint
         description: Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking.
@@ -3174,10 +3215,10 @@ script:
         description: Last suspended timestamp in RFC3339 text format.
         type: String
       - contextPath: GCP.Compute.Instances.satisfiesPzs
-        description: ''
+        description: Indicates whether the instance satisfies physical zone separation requirements.
         type: String
       - contextPath: GCP.Compute.Instances.satisfiesPzi
-        description: ''
+        description: Indicates whether the instance satisfies physical zone isolation requirements.
         type: String
       - contextPath: GCP.Compute.Instances.resourceStatus
         description: The resource status.
@@ -3198,9 +3239,10 @@ script:
         description: Informational warning message.
         type: Object
   - arguments:
-    - description: GCP project ID.
+    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the zone for this request.
       name: zone
       required: true
@@ -3397,9 +3439,10 @@ script:
       - description: Name of the instance resource to return.
         name: instance
         required: true
-      - description: GCP project ID.
+      - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
         name: project_id
-        required: true
+        required: false
+        required:platform: true
       - description: The name of the zone for this request.
         name: zone
         required: true
@@ -3488,7 +3531,7 @@ script:
 #    description: Updates user account fields in GSuite, such as names, org unit, or status.
 #    arguments:
 #    - name: project_id
-#      description: GCP project ID.
+#      description: The GCP project ID.
 #      required: true
 #    - name: user_key
 #      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
@@ -3830,7 +3873,7 @@ script:
 #    description: Resets the password for a GSuite user account.
 #    arguments:
 #    - name: project_id
-#      description: GCP project ID.
+#      description: The GCP project ID.
 #      required: true
 #    - name: user_key
 #      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
@@ -4173,7 +4216,7 @@ script:
 #    execution: true
 #    arguments:
 #    - name: project_id
-#      description: GCP project ID.
+#      description: The GCP project ID.
 #      required: true
 #    - name: user_key
 #      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
