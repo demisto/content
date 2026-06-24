@@ -54,6 +54,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: SEVERITY_CRITICAL
   display: Event severities to fetch as incidents
   additionalinfo: "Event severities to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for critical severity level. Applies only when RSC fetch type is set to \"Event\"."

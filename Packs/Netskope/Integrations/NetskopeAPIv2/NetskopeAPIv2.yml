@@ -82,6 +82,9 @@ configuration:
   required: false
   type: 16
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Free text query to filter the fetched alerts. For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html)."
   display: Alerts Query
   name: alerts_query

@@ -43,6 +43,8 @@ configuration:
   required: false
   section: Collect
   type: 16
+  supportedModules:
+  - xsiam
 - display: Maximum number of events per fetch
   name: max_fetch
   defaultvalue: '1000'

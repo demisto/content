@@ -54,6 +54,8 @@ configuration:
       - Behavior Analytics alerts
       - Addressable Alerts
       - Detect And Protect Alerts
+    supportedModules:
+      - xsiam
   - display: Maximum number of events per type
     name: max_events_per_type
     defaultvalue: "900"
