@@ -47,12 +47,12 @@ Configure an instance that uses this flow with a self-deployed Azure application
 ### Authentication Using the Authorization Code Flow
 
 1. In the **Authentication Type** field, select the *Authorization Code* option.
-2. In the *Application ID* field, enter your Client/Application ID.
-3. In the *Client Secret* field, enter your Client Secret.
-4. In the *Tenant ID* field, enter your Tenant ID.
-5. In the *Application redirect URI* field, enter your Application redirect URI.
+2. In the **Application ID** field, enter your client/application ID.
+3. In the **Client Secret** field, enter your client secret.
+4. In the **Tenant ID** field, enter your tenant ID.
+5. In the **Application redirect URI** field, enter your application redirect URI.
 6. Save the instance.
-7. Run the `!azure-generate-login-url` command in the War Room and follow the instructions to obtain the Authorization code.
+7. Run the ***!azure-generate-login-url*** command in the War Room and follow the instructions to obtain the authorization code.
 8. Paste the value you received in the *Authorization code* parameter and save the instance again.
 9. Click **Test** to validate the connection.
 
@@ -60,27 +60,28 @@ Configure an instance that uses this flow with a self-deployed Azure application
 
 Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
-1. In the *Authentication Type* field, select the **Device Code** option.
-2. Fill in the *Application ID*, *Tenant ID*, *Default Subscription ID*, and *Default Resource Group Name* fields.
+1. In the **Authentication Type** field, select the *Device Code* option.
+2. Fill in the **Application ID**, **Tenant ID**, **Default Subscription ID**, and **Default Resource Group Name** fields.
 3. Save the instance.
 4. Run the ***!azure-auth-start*** command.
 5. Follow the instructions that appear.
 6. Run the ***!azure-auth-complete*** command.
 7. At the end of the process you will see a message that you have logged in successfully.
-8. Run the ***!azure-auth-test*** command to validate the connection. (For the Device Code flow, use this command instead of the **Test** button.)
+8. Run the ***!azure-auth-test*** command to validate the connection. (instead of the **Test** button.)
 
 ### Azure Managed Identities Authentication
 
 ##### Note: This option is relevant only if the integration is running on an Azure VM.
 
-Follow one of these steps for authentication based on Azure Managed Identities:
+Authenticate using either system assigned managed identity or user assigned managed identity.
 
-- ##### To use System Assigned Managed Identity
-    - In the *Authentication Type* drop-down list, select **Azure Managed Identities** and leave the *Azure Managed Identities Client ID* field empty.
+- For authentication using system assigned managed identity:
+    1. In the **Authentication Type** drop-down list, select *Azure Managed Identities* and leave the **Azure Managed Identities Client ID** field empty.
+2. Click **Test** to validate the connection.  
 
-- ##### To use User Assigned Managed Identity
-    1. Go to [Azure Portal](https://portal.azure.com/) > **Managed Identities**.
-    2. Select your User Assigned Managed Identity, then copy the Client ID and paste it in the *Azure Managed Identities Client ID* field in the instance configuration.
-    3. In the *Authentication Type* drop-down list, select **Azure Managed Identities**.
-
+- For authentication using user assigned managed identity:
+    1. Go to the [Azure Portal](https://portal.azure.com/) > **Managed Identities**.
+    2. Select your user assigned managed identity, then copy the client ID and paste it in the **Azure Managed Identities Client ID** field in the instance configuration.
+    3. In the **Authentication Type** drop-down list, select *Azure Managed Identities*.
+4. Click **Test** to validate the connection.
 Click **Test** to validate the connection.
