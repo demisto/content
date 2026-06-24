@@ -1451,10 +1451,7 @@ class CoreClient(BaseClient):
         Returns:
             dict[str, Any]: The raw API reply from the health check endpoint.
         """
-        return self._http_request(
-            method="GET",
-            url_suffix="/healthcheck"
-        )
+        return self._http_request(method="GET", url_suffix="/healthcheck")
 
 
 class AlertFilterArg:
