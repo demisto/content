@@ -1,0 +1,9 @@
+commonfields:
+  id: example-weather-reporting
+  version: -1
+name: Example Weather Reporting
+description: Rules for choosing the city and units arguments of the Example - Get Weather action and for presenting the weather result to the user.
+internal: true
+fromversion: 8.15.0
+marketplaces:
+  - platform

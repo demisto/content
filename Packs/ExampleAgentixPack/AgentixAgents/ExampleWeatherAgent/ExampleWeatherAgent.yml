@@ -1,0 +1,24 @@
+commonfields:
+  id: example-weather-agent
+  version: -1
+name: Example Weather
+description: |-
+  Answers natural-language questions about the current weather in any city by
+  resolving the location, calling the weather action, and reporting conditions
+  back to the user in a concise, friendly format.
+visibility: public
+color: '#34A1C9'
+conversationstarters:
+  - What's the weather in London right now?
+  - Is it raining in Tel Aviv?
+builtinactions:
+  - InvokeLLM
+actionids:
+  - ExampleGetWeather
+skillids:
+  - example-weather-reporting
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
+  - xsiam
