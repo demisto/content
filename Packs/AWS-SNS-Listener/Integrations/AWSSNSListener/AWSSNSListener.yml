@@ -1,3 +1,4 @@
+name: AWS-SNS-Listener
 category: Messaging and Conferencing
 provider: Amazon
 sectionorder:
@@ -45,6 +46,17 @@ configuration:
   type: 8
   section: Connect
   required: false
+- additionalinfo: "The processing mode for incoming SNS notifications. Choose 'concurrent' to handle multiple notifications at the same time, which helps avoid duplicate notifications during bursts of traffic, or 'sequential' to handle them one at a time."
+  display: Request processing mode
+  name: processing_mode
+  type: 15
+  defaultvalue: sequential
+  options:
+  - concurrent
+  - sequential
+  section: Collect
+  advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -59,7 +71,6 @@ configuration:
   section: Connect
 description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
 display: AWS-SNS-Listener
-name: AWS-SNS-Listener
 script:
   commands: []
   dockerimage: demisto/fastapi:0.125.0.8198656
