@@ -8,10 +8,11 @@ sectionorder:
 - Collect
 configuration:
 - additionalinfo: The API Key to use for connection to SOCRadar
-  display: API Key
+  displaypassword: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
 - display: Fetch incidents
   name: isFetch
@@ -48,6 +49,7 @@ configuration:
   - Low
   - Medium
   - High
+  - Critical
   type: 16
   section: Collect
   required: false
@@ -92,6 +94,13 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Include Company ID
+  name: include_company_id
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, the SOCRadar Company ID configured in this instance will be stored as a custom field on each fetched incident. Useful for multi-tenant environments to identify which company an incident belongs to.
 - display: Incident type
   name: incidentType
   type: 13
