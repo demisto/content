@@ -210,14 +210,31 @@ def remove_branch_protection(repo, branch_name, t):
 # main
 # -----------------------------
 def main():
+    """Creates Internal PRs from Merged External PRs
+
+    Performs the following operations:
+    1. Creates new PR.
+        A) Uses body of merged external PR as the body of the new PR.
+        B) Uses base branch of merged external PR as head branch of the new PR to master.
+        C) Adds 'docs-approved' label if it was on the merged external PR.
+        D) Requests review from the same users as on the merged external PR.
+        E) Add the same labels that the external PR had to the internal PR (including contribution label).
+        F) Assigns the same users as on the merged external PR.
+
+    Will use the following env vars:
+    - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
+    - EVENT_PAYLOAD: json data from the pull_request event
+    """
     t = Terminal()
 
     payload = json.loads(get_env_var("EVENT_PAYLOAD"))
     gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
 
-    repo = gh.get_repo("demisto/content")
-    pr_number = payload["pull_request"]["number"]
-    merged_pr = repo.get_pull(pr_number)
+    org_name = "demisto"
+    repo_name = "content"
+    content_repo = gh.get_repo(f"{org_name}/{repo_name}")
+    pr_number = payload.get("pull_request", {}).get("number")
+    merged_pr = content_repo.get_pull(pr_number)
 
     pr_files = {f.filename: f for f in merged_pr.get_files()}
     xsoar_files, xsiam_files = seperate_pr_files(pr_files)
@@ -228,9 +245,8 @@ def main():
     body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
 
     if "## Contributor" not in merged_pr.body:
-        author = merged_pr.user.login
-        body += f"## Contributor\r\n@{author}\r\n\r\n"
-
+        merged_pr_author = merged_pr.user.login
+        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
     body += merged_pr.body
     body = replace_related_with_fixes_in_pr_body(body)
 
@@ -268,30 +284,17 @@ def main():
 
     elif xsiam_files and not xsoar_files:
         print(f"{t.cyan}Only XSIAM files → mapping only{t.normal}")
-
-        mapping_branch = f"{head_branch}"
-
-        main_branch = None
-
-        prepare_git(head_branch)
-
-        run_git_command(["git", "checkout", "-b", mapping_branch, f"origin/{head_branch}"])
-
-        run_git_command(["git", "push", "origin", mapping_branch])
+        mapping_branch = head_branch
 
     elif xsoar_files and not xsiam_files:
         print(f"{t.cyan}Only XSOAR files → main only{t.normal}")
-        main_branch = f"{head_branch}"
-        mapping_branch = None
-        prepare_git(head_branch)
-        run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"])
-        run_git_command(["git", "push", "origin", main_branch])
+        main_branch = head_branch
 
     created = []
 
     if xsoar_files and main_branch:
         try:
-            pr = create_pr(repo, title, body, base_branch, main_branch, labels, assignees, new_reviewers, t)
+            pr = create_pr(content_repo, title, body, base_branch, main_branch, labels, assignees, new_reviewers, t)
 
             org_reviewers = [r for r in new_reviewers if is_organization_member(gh, r)]
             if org_reviewers:
@@ -313,7 +316,7 @@ def main():
         mapping_assignees = list(mapping_reviewers)
         try:
             pr = create_pr(
-                repo,
+                content_repo,
                 mapping_title,
                 mapping_body,
                 base_branch,
@@ -330,7 +333,7 @@ def main():
             print(f"{t.red}Mapping PR failed: {e}{t.normal}")
 
     for pr in created:
-        remove_branch_protection(repo, pr.head.ref, t)
+        remove_branch_protection(content_repo, pr.head.ref, t)
 
 
 if __name__ == "__main__":
