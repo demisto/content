@@ -1,6 +1,9 @@
 display: Kibana
 name: Kibana
 category: Analytics & SIEM
+provider: Elastic
+sectionorder:
+- Connect
 commonfields:
   id: Kibana
   version: -1
@@ -236,6 +239,8 @@ script:
       type: shortText
     description: Assigns an alert in Kibana to a user via user ID input.
     name: kibana-alert-assign
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - auto: PREDEFINED
       description: The status of the detection alert to search for.
@@ -475,7 +480,6 @@ script:
     - contextPath: Kibana.CaseInfo.id
       description: The unique identifier for a case.
   dockerimage: demisto/elasticsearch:1.0.0.8425368
-  ismappable: true
   runonce: false
   script: ''
   subtype: python3
