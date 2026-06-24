@@ -52,6 +52,8 @@ configuration:
   - Events
   additionalinfo: 'Select which log types to fetch from Halcyon.'
   section: Collect
+  supportedModules:
+  - xsiam
 - name: isFetchEvents
   display: Fetch events
   type: 8

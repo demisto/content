@@ -70,6 +70,8 @@ configuration:
   defaultvalue: Audit
   section: Collect
   required: true
+  supportedModules:
+  - xsiam
 - display: Search log query
   additionalinfo: Query corresponding to the search operation.
   name: search_log_query

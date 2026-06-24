@@ -50,6 +50,8 @@ configuration:
   - Alerts
   - Devices
   - Activities
+  supportedModules:
+  - xsiam
 - section: Collect
   advanced: true
   display: Events Fetch Interval

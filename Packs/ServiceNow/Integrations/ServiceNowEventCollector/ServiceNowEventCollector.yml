@@ -46,6 +46,8 @@ configuration:
   - Syslog Transactions
   - Case
   - Outbound HTTP Log
+  supportedModules:
+  - xsiam
 - additionalinfo: Maximum number of audit events per fetch.
   defaultvalue: '10000'
   display: Maximum audit events to fetch

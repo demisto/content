@@ -47,6 +47,8 @@ configuration:
   - Audit
   - Network
   - Incident
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
