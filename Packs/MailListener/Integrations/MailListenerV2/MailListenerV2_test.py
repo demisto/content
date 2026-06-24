@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from freezegun import freeze_time
 import pytest
 
@@ -232,7 +232,7 @@ def mock_email():
     with patch.object(Email, "__init__", lambda a, b, c, d, e: None):
         email = Email("data", False, False, 0)
         email.id = 0
-        email.date = 0
+        email.date = datetime(year=2020, month=10, day=1, tzinfo=UTC)
         return email
 
 
@@ -704,7 +704,7 @@ def test_fetch_incidents__last_uid_was_zero(mocker):
         save_file=False,
         date_fetch=False,
     )
-    assert next_run is None
+    assert next_run == {"last_date": "2022-01-01T00:00:00+00:00"}
 
 
 def test_fetch_mails__mail_id_is_greater(mocker):
