@@ -1,4 +1,4 @@
-For integration with the Secureworks® Taegis™ XDR platform.
+For integration with the Secureworks Taegis XDR platform.
 
 ## Configure Taegis XDR in Cortex
 
@@ -32,8 +32,8 @@ For integration with the Secureworks® Taegis™ XDR platform.
 | Archive Taegis XDR case on close | When enabled, the "Taegis XDR Archive on Close" checkbox defaults to checked in the Close Incident panel. When disabled \(default\), the checkbox is unchecked. Archiving removes the case from the active Taegis XDR case list. Users can override this per incident at close time. | False |
 | Allow reopen of archived Taegis XDR cases | When enabled, reopening a closed XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled \(default\), archived cases cannot be reopened via XSOAR; the case must be unarchived manually in Taegis XDR first. | False |
 | Retry on Taegis API rate limit (429) | When enabled, GraphQL and auth requests that receive HTTP 429 \(rate limit\) are retried with backoff. Helps when closing many mirrored incidents at once. Uses Retry-After when Taegis returns it. | False |
-| Max retries on API rate limit | Retry attempts after a 429 \(in addition to the first request\). Range 0–10. Each wait uses Retry-After or exponential backoff. | False |
-| Base delay (seconds) for rate-limit backoff | When Retry-After is absent, wait base × 2^attempt seconds before each retry \(capped per wait\). | False |
+| Max retries on API rate limit | Retry attempts after a 429 \(in addition to the first request\). Range 0-10. Each wait uses Retry-After or exponential backoff. | False |
+| Base delay (seconds) for rate-limit backoff | When Retry-After is absent, wait base x 2^attempt seconds before each retry \(capped per wait\). | False |
 
 ## Commands
 

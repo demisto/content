@@ -86,7 +86,7 @@ def _get_field(incident, field_name):
 def _normalize_assignee_id_raw(assignee_id_str):
     """
     Classify Taegis assignee ID from API / incident field.
-    Returns '@customer', '@secureworks', _ID_SPECIFIC_MARKER, or None (empty — use display fallback).
+    Returns '@customer', '@secureworks', _ID_SPECIFIC_MARKER, or None (empty - use display fallback).
     """
     if assignee_id_str is None or not str(assignee_id_str).strip():
         return None
@@ -102,7 +102,7 @@ def _normalize_assignee_id_raw(assignee_id_str):
 def _resolve_current_assignee_queue(incident):
     """
     Return '@customer', '@secureworks', or None.
-    None means current assignee is a specific user (UUID) or unknown — use handoff vs take logic.
+    None means current assignee is a specific user (UUID) or unknown - use handoff vs take logic.
     Primary: taegisxdrassigneeid. Fallback: taegisxdrassignee display (e.g. 'customer' without @).
     """
     raw_id = _get_field(incident, CURRENT_ASSIGNEE_ID_FIELD)
@@ -111,7 +111,7 @@ def _resolve_current_assignee_queue(incident):
         return nid
     if nid == _ID_SPECIFIC_MARKER:
         return None
-    # Empty assignee ID — mirror may only have filled display name
+    # Empty assignee ID - mirror may only have filled display name
     disp = _get_field(incident, CURRENT_ASSIGNEE_FIELD) or ""
     dl = disp.strip().lower()
     if dl in ("customer", "@customer"):

@@ -1,8 +1,8 @@
 {
-  "name": "Secureworks® Taegis™ XDR",
-  "description": "Integration with the Secureworks® Taegis™ XDR platform for case ingestion, bi-directional mirroring, assignee and status management, and threat investigation.",
+  "name": "Secureworks Taegis XDR",
+  "description": "Integration with the Secureworks Taegis XDR platform for case ingestion, bi-directional mirroring, assignee and status management, and threat investigation.",
   "support": "partner",
-  "currentVersion": "3.0.9",
+  "currentVersion": "3.0.10",
   "author": "Sophos",
   "url": "https://www.sophos.com/en-us/products/taegis",
   "email": "support@secureworks.com",
