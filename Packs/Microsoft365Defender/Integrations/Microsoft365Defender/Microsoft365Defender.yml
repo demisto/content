@@ -7,6 +7,18 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
+- additionalinfo: The Azure cloud environment to use. Microsoft 365 Defender is available in Worldwide, US GCC, US GCC-High, and DoD environments.
+  defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  section: Connect
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
@@ -14,9 +26,10 @@ configuration:
   defaultvalue: https://api.security.microsoft.com
   display: Endpoint URI
   name: base_url
-  required: true
+  required: false
   type: 0
   section: Connect
+  advanced: true
 - name: creds_client_id
   type: 9
   displaypassword: ID or Client ID
