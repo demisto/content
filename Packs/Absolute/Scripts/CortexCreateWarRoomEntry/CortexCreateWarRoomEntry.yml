@@ -1,0 +1,32 @@
+commonfields:
+  id: CreateWarRoomEntry
+  version: -1
+name: CreateWarRoomEntry
+comment: Creates a war room entry for up to 20 cases and/or issues.
+  At least one of issue_id or case_id must be provided.
+type: python
+subtype: python3
+args:
+  - name: issue_ids
+    description:  A comma-separated list of issue IDs for which to create the war room entry.
+    isArray: true
+  - name: case_ids
+    description: A comma-separated list of case IDs for which to create the war room entry.
+    isArray: true
+  - name: content
+    description: The content for the war room entry.
+    required: true
+outputs:
+  - contextPath: CortexCreateWarRoomEntry.result
+    description: The entry IDs in case of success.
+    type: String
+  - contextPath: CortexCreateWarRoomEntry.errors
+    description: A list of errors that occurred during the operation.
+    type: Array
+dockerimage: demisto/python3:3.12.13.8319994
+fromversion: 6.10.0
+source: agentix
+internal: true
+script: '-'
+tests:
+  - No tests (auto formatted)
