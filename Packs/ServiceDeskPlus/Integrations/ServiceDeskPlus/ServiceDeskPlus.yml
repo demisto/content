@@ -109,6 +109,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch query -  see (?). Overrides the status filter, if given.
   name: fetch_filter
   type: 12

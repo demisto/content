@@ -60,6 +60,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   type: 0

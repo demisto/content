@@ -54,6 +54,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Activity and Alerts
 name: SentinelOneEventCollector

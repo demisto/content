@@ -64,6 +64,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   additionalinfo: 'Time from which to begin fetching incidents in the <number> <time unit> format. For example: 12 hours, 7 days, 3 months, 1 year.'
   display: First fetch timestamp

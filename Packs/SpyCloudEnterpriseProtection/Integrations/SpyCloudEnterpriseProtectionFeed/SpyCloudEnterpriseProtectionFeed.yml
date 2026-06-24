@@ -152,6 +152,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
 display: SpyCloud Enterprise Protection Feed
 name: SpyCloudEnterpriseProtectionFeed

@@ -70,6 +70,9 @@ configuration:
   section: Collect
   required: false
   additionalinfo: If the API returns duplicates, the duplicates will be dropped, causing the total number of alerts fetched to potentially be fewer than the set limit.
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval

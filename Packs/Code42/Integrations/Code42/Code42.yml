@@ -58,6 +58,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: Include the list of files in returned incidents.
   name: include_files

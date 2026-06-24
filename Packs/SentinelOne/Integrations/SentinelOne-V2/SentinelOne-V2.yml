@@ -112,6 +112,9 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '10'
+  supportedModules:
+  - agentix
+  - xsiam
 - name: fetch_site_ids
   display: Site IDs
   type: 0

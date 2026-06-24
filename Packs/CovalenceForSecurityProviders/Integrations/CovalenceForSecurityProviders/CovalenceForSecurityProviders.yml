@@ -53,6 +53,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use system proxy settings
   name: proxy
   type: 8
