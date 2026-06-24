@@ -4,8 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Constant to verify the minimum build number and version for the new polling feature (stopScheduleEntry feature).
-# MINIMUM_XSIAM_VERSION = '8.3.0'
-# MINIMUM_BUILD_NUMBER_XSIAM = 313276
+MINIMUM_XSIAM_VERSION = "8.3.0"
+MINIMUM_BUILD_NUMBER_XSIAM = 313276
 MINIMUM_XSOAR_VERSION = "8.2.0"
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
@@ -41,16 +41,18 @@ def should_run_with_guid():  # pragma: no cover
     build_number = res_version.get("buildNumber")
     platform = res_version.get("platform")
 
-    # conditions to add when the feature is supported in XSIAM:
-    # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
-    #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
     # The try/except mechanism is to support development and to ignore cast errors.
     try:
-        return (
+        xsoar_supported = (
             platform == "xsoar"
             and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
             and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
         )
+        # XSIAM (platform "x2") support for the stopScheduleEntry GUID flow. See XSUP-36162.
+        xsiam_supported = (
+            platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSIAM
+        )
+        return xsoar_supported or xsiam_supported
     except ValueError as e:
         demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
         return False
@@ -156,26 +158,15 @@ def main():  # pragma: no cover
         f"interval={interval}, timeout={timeout}"
     )
 
-    # Schedule enough recurrences to span the entire timeout window in a single scheduled entry.
-    # The cron pattern "*/{interval} * * * *" fires on wall-clock minute boundaries that are multiples
-    # of `interval`, so the first run happens after a *partial* interval (the gap between "now" and the
-    # next boundary). This means up to one extra cron tick can occur within the timeout window, so we add
-    # a safety margin on top of (timeout // interval) to guarantee the entry survives until the in-task
-    # stop condition (timeout reached / no pending ids) is met.
-    # See XSUP-36162 (GUID flow) and XSUP-58905 (non-GUID flow) for context.
-    # Compute an absolute end time once, here, so every scheduled recurrence shares the same deadline.
-    # This is passed to GenericPollingScheduledTask as endTime and is the authoritative stop signal for
-    # BOTH flows. The non-GUID flow previously relied on a relative `timeout` that the task decremented on
-    # every self-reschedule; since the self-reschedule was removed (single recurring entry), that relative
-    # value became static and the timeout check stopped working - so we now pass an absolute endTime here
-    # too. See XSUP-58905 and XSUP-36162.
+    # Schedule a single recurring entry that spans the whole timeout window, plus a small safety margin
+    # for the partial first interval. An absolute endTime is passed to GenericPollingScheduledTask as the
+    # authoritative stop signal for both flows. See XSUP-36162 (GUID) and XSUP-58905 (non-GUID).
     end_time = calculate_end_time(timeout)
 
     schedule_times = (timeout // interval) + 2
     schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": schedule_times}
     if should_run_with_guid():
-        demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
-        # Generate a GUID for the scheduled entry and add it to the command.
+        demisto.debug("[ScheduleGenericPolling] Entering GUID flow")
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{end_time}"'
         schedule_command_args["command"] = command_string
@@ -184,13 +175,8 @@ def main():  # pragma: no cover
             f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}"
         )
     else:
-        # Non-GUID flow (e.g. XSIAM / older platforms): historically the entry was scheduled with
-        # times=1 and GenericPollingScheduledTask re-scheduled itself every iteration. That chain is
-        # fragile - if any single re-schedule is dropped by the server, polling stops prematurely
-        # (XSUP-58905). Scheduling all recurrences up front (times=schedule_times) makes the polling
-        # resilient: the single recurring entry runs until the in-task endTime check stops it, with no
-        # dependency on per-iteration re-creation. We also pass an absolute endTime so the task has a
-        # reliable, run-independent deadline (the relative timeout is no longer decremented per run).
+        # Non-GUID flow: schedule all recurrences up front so polling does not depend on per-iteration
+        # re-scheduling (which could be dropped and stop polling prematurely - XSUP-58905).
         command_string = f'{command_string} endTime="{end_time}"'
         schedule_command_args["command"] = command_string
         demisto.debug(

@@ -1,19 +1,12 @@
 /**
  * GenericPollingScheduledTask
- *   This task is ment to be scheduled by the ScheduleGenericPolling automation
- *   Logic:
- *     This task schedules itself to run 'interval' minutes from the current run, and decrease the 'timeout' accordingly.
- *     This happens until the end condition is met: either the 'timeout' reaches 0, or all IDs are finished running.
- *     Once the end condition is met, this task will complete the manual task with the given playbookID and tag.
+ *   This task is scheduled by the ScheduleGenericPolling automation and runs once per interval until the
+ *   end condition is met: either the timeout window (endTime) elapses, or none of the polled ids are still
+ *   pending. Once met, it completes the gating manual task with the given playbookID and tag.
  *
- *     The 'dt' parameter, when applied to the context, should retrieve a list of ids which have not finished running.
+ *     The 'dt' parameter, when applied to the context, should retrieve a list of ids which have not finished.
  *     Example:
  *          dt = "Joe.Analysis(val.Status != 'finished').ID"
- *          Breakdown:
- *              Joe - integration name
- *              Analysis - the object that contains the ID and the status
- *              Status - can be 'submitted', 'running' or 'finished'
- *              ID - the key that contains the id for polling
  */
 
 // Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
@@ -47,7 +40,7 @@ function intersect(a, b) {
     });
 }
 
-function finish(playbookId, tag, err, entryGUID) {
+function finish(playbookId, tag, err, entryGUID, runWithGuid) {
     var params = { 'id': tag };
     if (err === undefined) {
         params.input = 'YES';
@@ -57,7 +50,9 @@ function finish(playbookId, tag, err, entryGUID) {
     if (playbookId) {
         params.parentPlaybookID = playbookId;
     }
-    if ((entryGUID !== undefined) && (entryGUID)) {
+    // Cancel the recurring scheduled entry when the GUID flow is active and we have a GUID, so the cron
+    // stops once the task has completed.
+    if (runWithGuid && (entryGUID !== undefined) && (entryGUID)) {
         var res = executeCommand("stopScheduleEntry", {'scheduledEntryGuid': entryGUID});
         if (isError(res[0])) {
             logError('Failed to stop scheduled entry: ' + res[0]);
@@ -95,43 +90,20 @@ function checkCommandSanitized(cmd = '', cmd_args = {}) {
 }
 
 
-function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues, extractMode) {
-    var idsStr = ids.replace(/"/g, '\\"');
-    var playbookIdStr = '';
-    if (playbookId !== undefined) {
-        playbookIdStr = ' playbookId="' + playbookId + '"';
-    }
-    var cmd = '!GenericPollingScheduledTask pollingCommand="' + pollingCommand + '" pollingCommandArgName="' + pollingCommandArgName + '"' + playbookIdStr;
-    cmd += ' ids="' + idsStr + '" pendingIds="' + pendingIds.replace(/"/g,'\\"') + '" interval="' + interval + '" timeout="' + (parseInt(timeout) - parseInt(interval)) + '" tag="' + tag + '"';
-    cmd += ' additionalPollingCommandArgNames="' + additionalArgNames.replace(/"/g,'\\"') + '" additionalPollingCommandArgValues="' + additionalArgValues.replace(/"/g,'\\"') + '"';
-    if (extractMode !== undefined) {
-        cmd += ' extractMode="' + extractMode + '" auto-extract="' + extractMode + '"';
-    }
-
-    checkCommandSanitized(cmd)
-
-    return executeCommand("ScheduleCommand", {
-        'command': cmd,
-        'cron': '*/' + interval + ' * * * *',
-        'times': 1
-    });
-}
-
 function shouldRunWithGuid() {
     res = getDemistoVersion();
     platform = res.platform;
     version = res.version;
     buildNumber = res.buildNumber;
 
-    // Checking if the stopScheduleEntry command is available.
-    // If not, we are running on an older version of platform and we need to use the old polling mechanism.
-    // The try/catch mechanism is to support development and to ignore parseInt errors.
+    // Use the stopScheduleEntry GUID flow when the platform/version supports it. The try/catch ignores
+    // parseInt errors during development.
     try {
-        if  ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
+        if ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
             return true;
         }
         // XSIAM (platform "x2") support for the stopScheduleEntry GUID flow. See XSUP-36162.
-        if  ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM)) {
+        if ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM)) {
             return true;
         }
     }
@@ -141,10 +113,8 @@ function shouldRunWithGuid() {
     return false;
 }
 
-// Returns true if the polling window has elapsed.
-// Preferred signal is the absolute endTime (passed by ScheduleGenericPolling for both the GUID and the
-// non-GUID flows). We fall back to the legacy relative args.timeout only for backward compatibility with
-// scheduled entries that were created before endTime was passed in the non-GUID flow. See XSUP-58905.
+// Returns true if the polling window has elapsed. The absolute endTime (passed by ScheduleGenericPolling)
+// is the authoritative stop signal; the relative args.timeout is a legacy fallback.
 function isPollingTimedOut() {
     if (args.endTime) {
         try {
@@ -154,109 +124,121 @@ function isPollingTimedOut() {
             logError('Failed to parse endTime "' + args.endTime + '": ' + err);
         }
     }
-    // Legacy fallback (pre-endTime non-GUID entries). Note: with the single-recurring-entry model this
-    // value is static across runs, so it only stops polling if it was already <= 0 when scheduled.
     return (args.timeout !== undefined) && (parseInt(args.timeout) <= 0);
 }
 
-function genericPollingScheduled(){
-    try {
-        shouldRunWithGuid = shouldRunWithGuid();
+// Normalizes the value returned by dq() into either null (nothing pending / path not resolved) or a
+// non-empty array of pending values. dq() does not consistently return null when nothing matched - it can
+// return a wrapper such as {"result": null} / {"result": []} or an empty array/string. Treating such an
+// "empty wrapper" as a real (empty) pending set made the task complete prematurely (XSUP-58905).
+function normalizeDqResult(raw) {
+    if (raw && (typeof raw === 'object') && !Array.isArray(raw) && ('result' in raw)) {
+        raw = raw.result;
+    }
+    if (raw === null || raw === undefined || raw === '') {
+        return null;
+    }
+    var cleaned = [];
+    var asList = listOfStrings(raw);
+    for (var i = 0; i < asList.length; i++) {
+        var v = asList[i];
+        if (v !== null && v !== undefined && v !== '' && v !== 'null' && v !== 'undefined') {
+            cleaned.push(v);
+        }
+    }
+    return cleaned.length === 0 ? null : cleaned;
+}
 
-        var timedOut = isPollingTimedOut();
-        if (timedOut) {
-            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+// Resolves the pending ids. Reads the sub-playbook-scoped path first, then falls back to the root path,
+// because on Cortex platform (no "Private to sub-playbook" context) the polling results are written to the
+// root context rather than under subplaybook-<id> (XSUP-58905). Returns:
+//   { ready: <bool>, idsToPoll: <array> }
+// "ready" is true only when a path resolved to a populated pending set AND none of our ids are in it. An
+// unresolved/empty result is treated as "not ready" (keep polling), so the task never completes before the
+// polling command has populated the context.
+function resolvePending(ids, scopedPath, rootPath) {
+    var pendings = normalizeDqResult(dq(invContext, scopedPath));
+    if (pendings === null && rootPath !== scopedPath) {
+        pendings = normalizeDqResult(dq(invContext, rootPath));
+    }
+    if (pendings === null) {
+        return { ready: false, idsToPoll: ids };
+    }
+    var idsToPoll = intersect(listOfStrings(ids), listOfStrings(pendings));
+    if (idsToPoll.length === 0) {
+        return { ready: true, idsToPoll: [] };
+    }
+    return { ready: false, idsToPoll: idsToPoll };
+}
+
+// Executes the polling command for the given ids and remaps the results into the local sub-playbook context.
+function runPollingCommand(idsToPoll, playbookContext) {
+    var pollingCommandArgs = {};
+    var names = argToList(args.additionalPollingCommandArgNames);
+    var values = argToList(args.additionalPollingCommandArgValues);
+    for (var index = 0; index < names.length; index++) {
+        pollingCommandArgs[names[index]] = values[index];
+    }
+    pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+    checkCommandSanitized(args.pollingCommand, pollingCommandArgs);
+    var res = executeCommand(args.pollingCommand, pollingCommandArgs);
+
+    if ('playbookId' in args) {
+        for (var i = 0; i < res.length; i++) {
+            if ('EntryContext' in res[i]) {
+                for (var k in res[i].EntryContext) {
+                    res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
+                    delete res[i].EntryContext[k];
+                }
+            }
+        }
+    }
+    return res;
+}
+
+function genericPollingScheduled(){
+    var runWithGuid = shouldRunWithGuid();
+    try {
+        if (isPollingTimedOut()) {
+            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid, runWithGuid);
         }
 
-        // Get ids that have not finished yet
         var ids = argToList(args.ids);
         for (var i = 0; i < ids.length; i++) {
             ids[i] = ids[i].replace(/[\\]*"/g, '');
         }
 
-    
-        // Set the context of the scheduled task to the local playbook context
-        var idsToPoll = ids;
-        var pendingPath = args.pendingIds;
-
+        var rootPath = args.pendingIds;
+        var scopedPath = args.pendingIds;
         if ('playbookId' in args) {
             playbookContext = 'subplaybook-' + args.playbookId;
-            pendingPath = playbookContext + "." + args.pendingIds;
+            scopedPath = playbookContext + "." + args.pendingIds;
         }
-        var pendings = dq(invContext, pendingPath);
 
-        if (pendings === null) {
-            // The pending-IDs path is not present in the context yet. This is NOT a reliable "all done"
-            // signal - on the first run (and until the polling command has populated the context) the
-            // path is simply not there yet. Previously we called finish() here, which made the task
-            // terminate on its very first cron run before the polling command ever ran (XSUP-58905).
-            // Instead, poll all the original ids to populate the context and let the next recurrence
-            // re-evaluate. We only stop early when the timeout window has actually elapsed (handled above).
-            logDebug('GenericPollingScheduledTask: pending path "' + pendingPath + '" not found in context yet; ' +
-                'polling all ids and continuing instead of finishing. See XSUP-58905.');
-            idsToPoll = ids;
-        }
-        else {
-            var idsStrArr = listOfStrings(ids);
-            var pendingsStrArr = listOfStrings(pendings);
-            idsToPoll = intersect(idsStrArr, pendingsStrArr);
-            if (idsToPoll.length === 0) {
-                // The path exists and resolved to an empty set of pending ids -> all jobs reached their
-                // terminal state. This is a genuine completion.
-                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+        var state = resolvePending(ids, scopedPath, rootPath);
+
+        if (state.ready) {
+            // The pending set resolved empty. Poll once more to refresh the context, then only complete if it
+            // is still empty - this prevents completing before this task has actually polled (XSUP-58905).
+            runPollingCommand(ids, playbookContext);
+            if (resolvePending(ids, scopedPath, rootPath).ready) {
+                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid, runWithGuid);
             }
+            return;
         }
 
-        // Run the polling command for each id
-        var pollingCommandArgs = {};
-        var names = argToList(args.additionalPollingCommandArgNames);
-        var values = argToList(args.additionalPollingCommandArgValues);
-
-        for (var index = 0; index < names.length; index++)
-            pollingCommandArgs[names[index]] = values[index];
-
-        pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
-        checkCommandSanitized(args.pollingCommand, pollingCommandArgs);
-        var res = executeCommand(args.pollingCommand, pollingCommandArgs);
-
-        // Change the context output of the polling results to the local playbook context
-        if ('playbookId' in args) {
-            for (var i = 0; i < res.length; i++) {
-                if ('EntryContext' in res[i]) {
-                    for (var k in res[i].EntryContext) {
-                        res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
-                        delete res[i].EntryContext[k];
-                    }
-                }
-            }
-        }
-
-        // Note: in both the GUID and the non-GUID flows the recurrence is now owned by the single
-        // scheduled entry created in ScheduleGenericPolling (scheduled with enough "times" to span the
-        // whole timeout window). This task therefore does NOT re-schedule itself - doing so would create
-        // a parallel polling chain. The polling stops once the in-task stop conditions above are met
-        // (timeout reached / no pending ids), after which any remaining recurrences are harmless no-ops
-        // (they re-detect that nothing is pending and complete the task again idempotently).
-        // See XSUP-58905.
-        return res;
+        // Recurrence is owned by the single scheduled entry created in ScheduleGenericPolling; this task does
+        // not re-schedule itself.
+        return runPollingCommand(state.idsToPoll, playbookContext);
     }
     catch (err) {
-        // A failure here is usually the polling command itself erroring on a single recurrence
-        // (e.g. a transient API/network error, or the polling integration being momentarily
-        // unavailable). Previously we immediately called finish(), which completed the gating task
-        // and let the parent playbook advance even though polling had not actually finished
-        // (XSUP-58905). Instead, while the polling window is still open we log the error and let the
-        // next scheduled recurrence retry. We only finish() (and stop the entry) once the window has
-        // elapsed, so the playbook is never permanently stuck waiting on a tag that will never complete.
+        // A failure here is usually a transient polling-command error. While the polling window is still open,
+        // log it and let the next recurrence retry instead of completing the task prematurely (XSUP-58905).
         logError('GenericPollingScheduledTask: polling iteration failed: ' + err);
         if (!isPollingTimedOut()) {
-            logDebug('GenericPollingScheduledTask: error occurred but the polling window is still open; ' +
-                'NOT completing the task - the next recurrence will retry. See XSUP-58905.');
             throw err;
         }
-        logDebug('GenericPollingScheduledTask: polling window has elapsed after an error; completing the task ' +
-            'so the playbook is not left waiting. See XSUP-58905.');
-        finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
+        finish(args.playbookId, args.tag, err, args.scheduledEntryGuid, runWithGuid);
         throw err;
     }
 }
