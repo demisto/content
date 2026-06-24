@@ -97,7 +97,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Fetch by email date.
+- display: Fetch by email date
   name: date_fetch
   type: 8
   section: Collect
