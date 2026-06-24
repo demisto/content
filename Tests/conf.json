@@ -3826,12 +3826,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "TrendMicro Cloud App Security",
-            "playbookID": "playbook_TrendmicroCAS_Test",
-            "fromversion": "5.0.0",
-            "timeout": 300
-        },
-        {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
         },
@@ -6133,7 +6127,8 @@
         "AWS-securityhub Test": "The creds were expired CRTX-237114",
         "Alienvault_OTX_v2 - Test": "API reliability issues",
         "ForcepointSecurityManagementCenter_test": "No instance",
-        "AnsibleTower_Test_playbook": "Instance not working"
+        "AnsibleTower_Test_playbook": "Instance not working",
+        "playbook_TrendmicroCAS_Test": "Authentication token not found"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
