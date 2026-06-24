@@ -1,9 +1,9 @@
 Connect to Azure using one of the following authentication methods:
 
-1. *Client Credentials Flow* (recommended).
-2. *Authorization Code Flow*.
-3. *Device Code Flow*.
-4. *Azure Managed Identities Flow*.
+- Client Credentials flow (recommended).
+- Authorization Code flow.
+- Device Code flow.
+- Azure Managed Identities flow.
 
 Select the method in the **Authentication Type** parameter and configure the corresponding fields as described below. After configuring an instance, click **Test** to validate the connection. For the Device Code and Authorization Code flows, complete the authentication steps first (see below), and then click **Test**.
 
@@ -25,25 +25,28 @@ To add a permission:
 3. Click **API permissions** > **Add permission**.
 4. Search for the specific Microsoft API and select the specific permission of type Delegated.
 
-### Authentication Using the Client Credentials Flow (recommended)
+### Authentication Using the Client Credentials Flow (Recommended)  
 
-1. Assign Azure roles using the Azure portal. See this [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal).
+Configure an instance that uses this flow with a self-deployed Azure application.  
+
+
+1. Assign Azure roles in the Azure portal. For more information, see the [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal).
 
    *Note:* In the *Select members* section, assign the application you created earlier.
 
-2. To configure an instance that uses this flow with a self-deployed Azure application:
-   1. In the *Authentication Type* field, select the **Client Credentials** option.
-   2. In the *Application ID* field, enter your Client/Application ID.
-   3. In the *Default Subscription ID* field, enter your Subscription ID.
-   4. In the *Default Resource Group Name* field, enter your Resource Group Name.
-   5. In the *Tenant ID* field, enter your Tenant ID.
-   6. In the *Client Secret* field, enter your Client Secret.
+2. In the integration instance settings, configure the following.
+   1. In the **Authentication Type** field, select the *Client Credentials* option.
+   2. In the **Application ID** field, enter your client/application ID.
+   3. In the **Default Subscription ID** field, enter your subscription ID.
+   4. In the **Default Resource Group Name** field, enter your resource group name.
+   5. In the **Tenant ID** field, enter your tenant ID.
+   6. In the **Client Secret** field, enter your client secret.
    7. Click **Test** to validate the URLs, token, and connection.
    8. Save the instance.
 
 ### Authentication Using the Authorization Code Flow
 
-1. In the *Authentication Type* field, select the **Authorization Code** option.
+1. In the **Authentication Type** field, select the *Authorization Code* option.
 2. In the *Application ID* field, enter your Client/Application ID.
 3. In the *Client Secret* field, enter your Client Secret.
 4. In the *Tenant ID* field, enter your Tenant ID.
