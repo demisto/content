@@ -59,6 +59,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Set the default severity for the incidents using this instance.
   defaultvalue: Unknown
   display: Severity for Incidents

@@ -48,6 +48,9 @@ configuration:
   - Threats
   - Both
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - name: fetch_uam_alert_type
   display: Fetch incidents from UAM Alert type
   type: 15

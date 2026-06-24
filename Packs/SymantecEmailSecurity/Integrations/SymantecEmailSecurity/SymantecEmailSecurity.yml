@@ -77,6 +77,9 @@ configuration:
   - both
   - email_data_feed
   - email_quarantine
+  supportedModules:
+  - agentix
+  - xsiam
 - name: severity
   display: Severity - Email Data Feed
   additionalinfo: Filter the incidents by their severity. When left empty will fetch all.

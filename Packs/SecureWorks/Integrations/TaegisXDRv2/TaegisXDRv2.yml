@@ -87,6 +87,9 @@ configuration:
   - investigations
   additionalinfo: The type of Taegis asset to fetch when using fetch-incidents
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

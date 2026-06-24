@@ -59,6 +59,9 @@ configuration:
   type: 16
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch Types.
   display: Fetches MVX-correlated events only
   name: fetch_mvx_correlated_events

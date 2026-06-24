@@ -132,6 +132,9 @@ configuration:
   - Exabeam Incident
   - Exabeam Notable User
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max Users Per Fetch
   name: max_fetch_users
   additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.

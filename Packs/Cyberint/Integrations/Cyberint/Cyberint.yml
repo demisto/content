@@ -163,6 +163,9 @@ configuration:
   - ssl_tls
   - web_app_security
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Limit
   name: max_fetch
   type: 0

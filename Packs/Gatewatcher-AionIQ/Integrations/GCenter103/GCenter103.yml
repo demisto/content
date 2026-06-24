@@ -55,6 +55,9 @@ configuration:
   - Both
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: engine_selection
   display: Engine alerts selection
   type: 16
