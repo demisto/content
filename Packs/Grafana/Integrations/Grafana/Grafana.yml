@@ -1,8 +1,5 @@
 category: Analytics & SIEM
 provider: Grafana Labs
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Grafana
   version: -1
@@ -12,59 +9,48 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - display: Username
-  section: Connect
   name: credentials
   required: true
   type: 9
 - display: Use system proxy settings
-  section: Connect
   name: proxy
   type: 8
   required: false
 - display: Trust any certificate (not secure)
-  section: Connect
   name: insecure
   type: 8
   required: false
 - additionalinfo: Maximum is limited to 200.
-  section: Collect
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
   required: false
 - display: Fetch incidents
-  section: Collect
   name: isFetch
   type: 8
   required: false
 - defaultvalue: 3 days
-  section: Collect
   display: First fetch time interval
   name: first_fetch
   type: 0
   required: false
 - additionalinfo: A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
-  section: Collect
   name: dashboard_id
   type: 0
   required: false
 - additionalinfo: See "help".
   display: Panel ID to fetch
-  section: Collect
   name: panel_id
   type: 0
   required: false
 - display: Alert name to fetch
-  section: Collect
   name: alert_name
   type: 0
   required: false
 - display: States to fetch
-  section: Collect
   name: state
   options:
   - all
@@ -77,7 +63,6 @@ configuration:
   type: 16
   required: false
 - display: Incident type
-  section: Collect
   name: incidentType
   type: 13
   required: false
@@ -670,7 +655,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.12.13.10325753
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

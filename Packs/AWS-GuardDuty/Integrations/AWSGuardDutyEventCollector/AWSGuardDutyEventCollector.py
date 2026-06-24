@@ -179,7 +179,7 @@ def main():  # pragma: no cover
     retries = params.get("retries") or 5
     aws_gd_severity = params.get("gd_severity", "")
     first_fetch = arg_to_datetime(params.get("first_fetch"))
-    limit = arg_to_number(params.get("limit")) or MAX_RESULTS  # noqa: ucp-param-default  (arg_to_number(None) -> None, then `or MAX_RESULTS` fallback; UCP-safe)
+    limit = arg_to_number(params.get("limit"))
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
 

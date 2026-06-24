@@ -1528,8 +1528,8 @@ def main():  # pragma: no cover
     api_key = params.get("credentials", {}).get("password")
     base_url = urljoin(params.get("server_url"), API_V1_ENDPOINT)
     verify_certificate = not params.get("insecure", True)
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_MAX_FETCH`)
-    devices_max_fetch = arg_to_number(params.get("devices_max_fetch")) or DEVICES_DEFAULT_MAX_FETCH  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEVICES_DEFAULT_MAX_FETCH`)
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    devices_max_fetch = arg_to_number(params.get("devices_max_fetch")) or DEVICES_DEFAULT_MAX_FETCH
     proxy = params.get("proxy", False)
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", []))
     event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
@@ -1538,7 +1538,7 @@ def main():  # pragma: no cover
     fetch_start_time = handle_from_date_argument(from_date) if from_date else None
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
-    fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_FETCH_DELAY`)
+    fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
 
     demisto.debug(f"Command being called is {command}")
 

@@ -359,7 +359,7 @@ def main():  # pragma: no cover
     timeout = params.get("timeout")
     retries = params.get("retries", 5)
 
-    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_RESULTS  # noqa: ucp-param-default  (arg_to_number(None) -> None, then `or DEFAULT_MAX_RESULTS`; UCP-safe)
+    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_RESULTS
 
     if limit <= 0:
         raise ValueError("Max fetch value cannot be lower than 1.")
