@@ -4,8 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Constant to verify the minimum build number and version for the new polling feature (stopScheduleEntry feature).
-# MINIMUM_XSIAM_VERSION = '8.3.0'
-# MINIMUM_BUILD_NUMBER_XSIAM = 313276
+MINIMUM_XSIAM_VERSION = "8.3.0"
+MINIMUM_BUILD_NUMBER_XSIAM = 313276
 MINIMUM_XSOAR_VERSION = "8.2.0"
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
@@ -41,16 +41,18 @@ def should_run_with_guid():  # pragma: no cover
     build_number = res_version.get("buildNumber")
     platform = res_version.get("platform")
 
-    # conditions to add when the feature is supported in XSIAM:
-    # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
-    #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
     # The try/except mechanism is to support development and to ignore cast errors.
     try:
-        return (
+        xsoar_supported = (
             platform == "xsoar"
             and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
             and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
         )
+        # XSIAM (platform "x2") support for the stopScheduleEntry GUID flow. See XSUP-36162.
+        xsiam_supported = (
+            platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSIAM
+        )
+        return xsoar_supported or xsiam_supported
     except ValueError as e:
         demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
         return False
@@ -156,20 +158,30 @@ def main():  # pragma: no cover
         f"interval={interval}, timeout={timeout}"
     )
 
-    schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1}
+    # Schedule a single recurring entry that spans the whole timeout window, plus a small safety margin
+    # for the partial first interval. An absolute endTime is passed to GenericPollingScheduledTask as the
+    # authoritative stop signal for both flows. See XSUP-36162 (GUID) and XSUP-58905 (non-GUID).
+    end_time = calculate_end_time(timeout)
+
+    schedule_times = (timeout // interval) + 2
+    schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": schedule_times}
     if should_run_with_guid():
-        demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
-        # Generate a GUID for the scheduled entry and add it to the command.
+        demisto.debug("[ScheduleGenericPolling] Entering GUID flow")
         entryGuid = str(uuid.uuid4())
-        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
+        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{end_time}"'
         schedule_command_args["command"] = command_string
-        # Set the times to be the number of times the polling command should run (using the cron job functionally).
-        # Adding extra iterations to verify that the polling command will stop the schedule entry.
-        # See XSUP-36162 for the reason adding 2
-        schedule_command_args["times"] = (timeout // interval) + 2
         schedule_command_args["scheduledEntryGuid"] = entryGuid
         demisto.debug(
             f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}"
+        )
+    else:
+        # Non-GUID flow: schedule all recurrences up front so polling does not depend on per-iteration
+        # re-scheduling (which could be dropped and stop polling prematurely - XSUP-58905).
+        command_string = f'{command_string} endTime="{end_time}"'
+        schedule_command_args["command"] = command_string
+        demisto.debug(
+            f"[ScheduleGenericPolling] Non-GUID flow: scheduling recurring entry with times={schedule_times}, "
+            f"endTime={end_time}"
         )
 
     demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
