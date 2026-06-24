@@ -350,14 +350,14 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    if client.client_credentials:
+    if client.client_credentials or client.ms_client.managed_identities_client_id:
         client.ms_client.get_access_token()
         return "ok"
     raise DemistoException(
-                f"The *Test* button is not available for the Device Code Flow. "
-                f"Please run !microsoft-365-auth-start and then "
-                f"!microsoft-365-auth-complete. Then you can check the connection using the "
-                f"!!microsoft-365-auth-test command."
+                "The *Test* button is not available for the Device Code Flow. "
+                "Please run !microsoft-365-defender-auth-start and then "
+                "!microsoft-365-defender-auth-complete. Then you can check the connection using the "
+                "!microsoft-365-defender-auth-test command."
                 )
 
 
