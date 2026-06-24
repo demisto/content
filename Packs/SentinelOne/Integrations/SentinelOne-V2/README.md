@@ -22,12 +22,11 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Define which Threats should be fetched. |  | False |
 | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
 | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
-| Block Site IDs | Comma-separated string of site IDs where the hash should be blocked. If left blank and no other scopes are provided in the sentinelone-add-hash-to-blocklist command, the hash will be blocked globally. If filled, the hash will be blocked only within the specified site scopes. When used with sentinelone-add-hash-to-blocklist, these IDs are combined with any site_ids passed as command arguments to define the final scope. |  | False |
+| Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
 | Incidents Fetch Interval |  | False |
-| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). Cortex XSOAR only parameter. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
 
 ## Commands
@@ -888,6 +887,7 @@ Creates a custom STAR rule. Relevant for API version 2.1.
 | account_ids | A comma-separated list of Account IDs. | Optional |
 | network_quarantine | Whether to enable the network quarantine of the STAR rule. Possible values are: true, false. | Required |
 | treatAsThreat | The treatAsThreat type. Possible values are: Malicious, Suspicious, UNDEFINED. | Required |
+| query_lang | The query language version. Supported values are "1.0" and "2.0". | Optional |
 
 #### Context Output
 
@@ -905,6 +905,7 @@ Creates a custom STAR rule. Relevant for API version 2.1.
 | SentinelOne.StarRule.ScopeHierarchy | String | The scope hierarchy of the STAR rule. |
 | SentinelOne.StarRule.CreatedAt | String | The created time for the STAR rule. |
 | SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
+| SentinelOne.StarRule.QueryLanguage | String | The Query language for the STAR rule. |
 
 ### sentinelone-get-star-rules
 
@@ -973,6 +974,7 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | account_ids | A comma-separated list of account IDs. | Optional |
 | network_quarantine | Whether to enable the network quarantine of the STAR rule. Possible values are: true, false. | Required |
 | treatAsThreat | The treatAsThreat. Possible values are: Malicious, Suspicious, UNDEFINED. | Required |
+| query_lang | The query language version. Supported values are "1.0" and "2.0". | Optional |
 
 #### Context Output
 
@@ -990,6 +992,7 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | SentinelOne.StarRule.ScopeHierarchy | String | The scope hierarchy of the STAR rule. |
 | SentinelOne.StarRule.CreatedAt | String | The created time for the STAR rule. |
 | SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
+| SentinelOne.StarRule.QueryLanguage | String | The Query language for the STAR rule. |
 
 ### sentinelone-enable-star-rules
 

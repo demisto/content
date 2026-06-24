@@ -83,3 +83,6 @@
 !xdr-automation-playbook-create entry_id=abcd1234
 !xdr-automation-playbook-get field=id value=playbook_id
 !xdr-automation-playbook-delete field=name value=playbook_name
+!xdr-issue-list external_id=id
+!xdr-issue-create observation_time="one month" name="Issue Name" description=test domain=Security category=Dropper severity=high
+!xdr-issue-update issue_id=id severity=medium
