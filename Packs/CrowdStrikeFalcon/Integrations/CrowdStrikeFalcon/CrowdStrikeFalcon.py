@@ -10231,7 +10231,6 @@ def main():  # pragma: no cover
             result = module_test()
             return_results(result)
         elif command == "fetch-incidents":
-            disable_for_xsiam()
             last_run, incidents = fetch_items(command=command)
             demisto.incidents(incidents)
         elif command == "fetch-events":
