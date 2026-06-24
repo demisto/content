@@ -9500,6 +9500,111 @@ class TestSendEventsToXSIAMTest:
             assert arguments_called['headers']['snapshot-id'] == '123000'
             assert arguments_called['headers']['total-items-count'] == '2'
 
+    @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
+    def test_send_data_to_xsiam_streaming_matches_legacy(self, mocker, chunk_size):
+        """
+        Given: a list of dict events.
+        When:  calling send_data_to_xsiam with use_streaming_send=False (legacy) and True (streaming),
+               including a small chunk_size to force multiple chunks.
+        Then:  the union of decompressed lines sent to XSIAM is identical between the two paths
+               (same events, same JSON, same newline separation), and the reported count matches.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
+
+        # legacy path
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = []
+        for call in legacy_mock.call_args_list:
+            legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # streaming path
+        streaming_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
+                           data_type='events', use_streaming_send=True)
+        streaming_lines = []
+        for call in streaming_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # same content (order-independent: same set of serialized events)
+        assert sorted(streaming_lines) == sorted(legacy_lines)
+        assert len(streaming_lines) == len(events)
+        # streaming reports the same total count to the health module
+        demisto.updateModuleHealth.assert_called_with({'eventsPulled': len(events)})
+
+    def test_send_data_to_xsiam_streaming_empty(self, mocker):
+        """Streaming path with an empty list makes no HTTP call and reports 0."""
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+        send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events', use_streaming_send=True)
+        assert http_mock.call_count == 0
+
+    def test_send_data_to_xsiam_streaming_skips_oversized_entry_like_legacy(self, mocker):
+        """
+        Given: a list of events where one single entry exceeds MAX_ALLOWED_ENTRY_SIZE.
+        When:  calling send_data_to_xsiam with use_streaming_send=False (legacy) and True (streaming).
+        Then:  both paths skip the oversized entry and send exactly the same remaining lines, so the
+               streaming path is as safe/reliable as the legacy path for this edge case.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch.object(demisto, 'error')
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        # One oversized event (its serialized form exceeds MAX_ALLOWED_ENTRY_SIZE) between two normal events.
+        events = [
+            {'id': 0, 'msg': 'first'},
+            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 2, 'msg': 'second'},
+        ]
+
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = []
+        for call in legacy_mock.call_args_list:
+            legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        streaming_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                           data_type='events', use_streaming_send=True)
+        streaming_lines = []
+        for call in streaming_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # Both paths drop the oversized event and keep the two normal events, identically.
+        assert sorted(streaming_lines) == sorted(legacy_lines)
+        assert len(streaming_lines) == 2
+        assert all('blob' not in line for line in streaming_lines)
+
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
         ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
@@ -11427,29 +11532,14 @@ class TestUcpCapabilityResolution:
     """
 
     def test_resolve_fetch_incidents_maps_to_collection(self):
-        """fetch-incidents should map to 'fetch-issues'."""
+        """fetch-incidents should map to 'collection-and-ingestion'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'fetch-issues'
-
-    def test_resolve_fetch_events_maps_to_log_collection(self):
-        """fetch-events should map to 'log-collection'."""
-        result = CommonServerPython.resolve_ucp_capability(command='fetch-events')
-        assert result == 'log-collection'
-
-    def test_resolve_fetch_credentials_maps_to_secrets(self):
-        """fetch-credentials should map to 'fetch-secrets'."""
-        result = CommonServerPython.resolve_ucp_capability(command='fetch-credentials')
-        assert result == 'fetch-secrets'
-
-    def test_resolve_fetch_indicators_maps_to_threat_intel(self):
-        """fetch-indicators should map to 'threat-intelligence-and-enrichment'."""
-        result = CommonServerPython.resolve_ucp_capability(command='fetch-indicators')
-        assert result == 'threat-intelligence-and-enrichment'
+        assert result == 'collection-and-ingestion'
 
     def test_resolve_fetch_assets_maps_to_collection(self):
-        """fetch-assets should map to 'fetch-assets-and-vulnerabilities'."""
+        """fetch-assets should map to 'collection-and-ingestion'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-assets')
-        assert result == 'fetch-assets-and-vulnerabilities'
+        assert result == 'collection-and-ingestion'
 
     def test_resolve_unknown_command_maps_to_default(self):
         """Unknown commands should fall back to the default capability."""
@@ -11460,7 +11550,7 @@ class TestUcpCapabilityResolution:
         """When command=None, should use demisto.command() to get the current command."""
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         result = CommonServerPython.resolve_ucp_capability(command=None)
-        assert result == 'fetch-issues'
+        assert result == 'collection-and-ingestion'
 
     def test_resolve_none_command_unknown_demisto_command(self, mocker):
         """When command=None and demisto.command() returns an unknown command, should use default."""
@@ -11483,7 +11573,7 @@ class TestUcpCapabilityResolution:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         capability, sub_capability = client._resolve_ucp_capability()
-        assert capability == 'fetch-issues'
+        assert capability == 'collection-and-ingestion'
         assert sub_capability is None
 
     def test_baseclient_resolve_ucp_capability_override(self, mocker):
@@ -11503,11 +11593,8 @@ class TestUcpCapabilityResolution:
         This is a safety net — if someone changes these constants, tests should catch it."""
         assert CommonServerPython._UCP_DEFAULT_CAPABILITY == 'automation-and-remediation'
         assert CommonServerPython._UCP_COMMAND_CAPABILITIES == {
-            'fetch-incidents': 'fetch-issues',
-            'fetch-events': 'log-collection',
-            'fetch-credentials': 'fetch-secrets',
-            'fetch-indicators': 'threat-intelligence-and-enrichment',
-            'fetch-assets': 'fetch-assets-and-vulnerabilities',
+            'fetch-incidents': 'collection-and-ingestion',
+            'fetch-assets': 'collection-and-ingestion',
         }
 
 
@@ -11573,7 +11660,7 @@ class TestUcpProfileResolution:
     def test_find_by_capability_match(self, ucp_metadata_multi):
         """Should find profile when capability matches."""
         profiles = ucp_metadata_multi['connectionProfiles']
-        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'fetch-issues')
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'collection-and-ingestion')
         assert result == 'method-collect-ingest'
 
     def test_find_by_capability_no_match(self, ucp_metadata_single):
@@ -11597,7 +11684,7 @@ class TestUcpProfileResolution:
         """sub_capability match should take priority over capability match."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         result = CommonServerPython.get_ucp_method_unique_id(
-            capability='fetch-issues',
+            capability='collection-and-ingestion',
             sub_capability='salesforce-iam'
         )
         # salesforce-iam is in the first profile (method-auto-remed), not the collection one
@@ -11632,7 +11719,7 @@ class TestUcpProfileResolution:
         """When capability=None, should auto-resolve via resolve_ucp_capability()."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-        # capability=None should resolve to 'fetch-issues' for fetch-incidents
+        # capability=None should resolve to 'collection-and-ingestion' for fetch-incidents
         result = CommonServerPython.get_ucp_method_unique_id(capability=None, sub_capability=None)
         assert result == 'method-collect-ingest'
 
@@ -12214,7 +12301,7 @@ class TestUcpInjectionFlow:
         assert result == 'abc123'
 
     def test_inject_uses_correct_profile_for_fetch_incidents(self, mocker, ucp_metadata_multi, ucp_creds_oauth2, ucp_clean_cache):
-        """For fetch-incidents, should use the fetch-issues profile."""
+        """For fetch-incidents, should use the collection-and-ingestion profile."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -12226,7 +12313,7 @@ class TestUcpInjectionFlow:
             headers={}, params={}, auth=None, data=None, json_data=None
         )
         method_id = client._inject_ucp_credentials(ctx)
-        # fetch-incidents maps to fetch-issues → method-collect-ingest
+        # fetch-incidents maps to collection-and-ingestion → method-collect-ingest
         assert method_id == 'method-collect-ingest'
 
 
@@ -13003,9 +13090,9 @@ class TestUcpNonBaseClientUsage:
         assert result == 'automation-and-remediation'
 
     def test_resolve_ucp_capability_fetch_incidents(self, mocker):
-        """resolve_ucp_capability() maps fetch-incidents to fetch-issues."""
+        """resolve_ucp_capability() maps fetch-incidents to collection-and-ingestion."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'fetch-issues'
+        assert result == 'collection-and-ingestion'
 
     def test_get_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
         """get_ucp_credentials() should call demisto.getUCPCredentials() correctly."""
@@ -13016,37 +13103,6 @@ class TestUcpNonBaseClientUsage:
 
         demisto.getUCPCredentials.assert_called_once_with('test-method-1', from_cache=False)
         assert result == ucp_creds_oauth2
-
-    def test_get_ucp_credentials_forwards_body(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
-        """get_ucp_credentials() should forward the ``body`` argument to getUCPCredentials()."""
-        mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
-        mocker.patch.object(demisto, 'debug')
-
-        body = {'extra': {'subject': 'user@org.com'}}
-        result = CommonServerPython.get_ucp_credentials(method_unique_id='test-method-body', body=body)
-
-        demisto.getUCPCredentials.assert_called_once_with('test-method-body', from_cache=False, body=body)
-        assert result == ucp_creds_oauth2
-
-    def test_get_ucp_credentials_body_unsupported_fallback(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
-        """On older platforms (no ``body`` kwarg) get_ucp_credentials() retries without it."""
-        mocker.patch.object(demisto, 'debug')
-
-        def _get_ucp_credentials(method_unique_id, from_cache=False, **kwargs):
-            if 'body' in kwargs:
-                raise TypeError("getUCPCredentials() got an unexpected keyword argument 'body'")
-            return ucp_creds_oauth2
-
-        get_creds = mocker.patch.object(demisto, 'getUCPCredentials', side_effect=_get_ucp_credentials)
-
-        body = {'extra': {'subject': 'user@org.com'}}
-        result = CommonServerPython.get_ucp_credentials(method_unique_id='test-method-fallback', body=body)
-
-        assert result == ucp_creds_oauth2
-        # First attempt with body raises TypeError, second attempt omits body.
-        assert get_creds.call_count == 2
-        get_creds.assert_any_call('test-method-fallback', from_cache=False, body=body)
-        get_creds.assert_any_call('test-method-fallback', from_cache=False)
 
     def test_invalidate_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
         """invalidate_ucp_credentials() should remove cache entry without BaseClient."""

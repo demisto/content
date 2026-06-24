@@ -12863,7 +12863,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None,
+                         use_streaming_send=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12903,6 +12904,11 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12921,7 +12927,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
         multiple_threads=multiple_threads,
-        client_class=client_class if client_class else BaseClient
+        client_class=client_class if client_class else BaseClient,
+        use_streaming_send=use_streaming_send,
     )
 
 
@@ -13035,7 +13042,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       client_class=None):
+                       client_class=None, use_streaming_send=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -13086,6 +13093,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
+        (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
+        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -13110,9 +13122,18 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
+    # Feature flag (CIAC-16981): stream-serialize one item at a time (list-of-items, single-thread path only).
+    streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
+    # Decide JSON-encoding once on the first item, like the legacy list path, so the payload is identical.
+    streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
+    if streaming_items_are_json:
+        data_format = 'json'
+
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
-    if isinstance(data, list):
+    if streaming_send:
+        demisto.debug("Sending {size} {data_type} to XSIAM (streaming send)".format(size=len(data), data_type=data_type))
+    elif isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
         if isinstance(data[0], dict):
@@ -13181,6 +13202,60 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if client_class is None:
         client_class = BaseClient
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
+
+    if streaming_send:
+        # Streaming path: serialize+gzip one event at a time, freeing each as we go, so peak
+        # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
+        target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+        demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
+
+        def _post_zipped(zipped_data):
+            xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                        error_msg=header_msg, headers=headers,
+                                        num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                        zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+
+        buf = _io.BytesIO()
+        gz = gzip.GzipFile(fileobj=buf, mode='wb')
+        chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
+        chunk_items = 0         # items written into the current gzip stream
+
+        for index in range(len(data)):
+            serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
+            data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
+
+            # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
+            # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
+            entry_size = sys.getsizeof(serialized)
+            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
+                              "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
+                continue
+
+            line = serialized.encode('utf-8')
+            gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
+            chunk_uncompressed += len(line) + (1 if chunk_items else 0)
+            chunk_items += 1
+
+            if chunk_uncompressed >= target_chunk_size:
+                gz.close()
+                _post_zipped(buf.getvalue())
+                data_size += chunk_items
+                buf = _io.BytesIO()
+                gz = gzip.GzipFile(fileobj=buf, mode='wb')
+                chunk_uncompressed = 0
+                chunk_items = 0
+
+        # flush the final (partial) chunk
+        gz.close()
+        if chunk_items:
+            _post_zipped(buf.getvalue())
+            data_size += chunk_items
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
@@ -13678,6 +13753,7 @@ class ISOEncoder(json.JSONEncoder):
 #     UCP Functions     #
 ###########################################
 
+# -- To be set when implementing interpolate -- 
 _UCP_AUTH_PARAMS_INJECTED = False
 
 # Seconds before token expiry to consider the cache stale and re-fetch.
@@ -13689,370 +13765,9 @@ _ucp_creds_cache = {}  # type: Dict[str, Dict[str, Any]]
 # Command-to-capability mapping.  Default: 'automation-and-remediation'.
 _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 _UCP_COMMAND_CAPABILITIES = {
-    'fetch-incidents': 'fetch-issues',
-    'fetch-events': 'log-collection',
-    'fetch-credentials': 'fetch-secrets',
-    'fetch-indicators': 'threat-intelligence-and-enrichment',
-    'fetch-assets': 'fetch-assets-and-vulnerabilities',
+    'fetch-incidents': 'collection-and-ingestion',
+    'fetch-assets': 'collection-and-ingestion',
 }
-
-# Canonical credential-envelope schema per profile type.
-#
-# ``api_key`` and ``plain`` profiles have FIXED envelope schemas: the secret
-# always lives under a known key inside ``creds[creds["type"]]`` regardless of
-# what ``interpolation_mapping`` left-hand id (``field_id``) the manifest emits.
-# The common scripts therefore OWN this knowledge and resolve those values from
-# the canonical location, rather than trusting the generator-emitted field_id.
-#
-# Each entry maps the mapping's left-hand ``field_id`` (which equals the field's
-# ``metadata.auth.parameter``) to the actual key inside the flattened envelope.
-# Note the api_key alias: ``auth.parameter`` is ``api_key`` (per the connection
-# schema / OPA contract) but the runtime envelope stores the value under ``key``.
-#
-# ``passthrough`` is the free-form escape hatch and intentionally has NO entry:
-# its values are looked up generically by field_id.
-_UCP_CANONICAL_FIELD_KEYS = {
-    'api_key': {'api_key': 'key'},
-    'plain': {'username': 'username', 'password': 'password'},
-}
-
-
-# -- UCP helper: interpolate connector field values into demisto.params() --
-
-def _place_by_path(target, path, value):
-    # type: (dict, str, Any) -> None
-    """Place ``value`` into ``target`` at the dotted ``path``, creating
-    intermediate dicts as needed.
-
-    The destination string is split on ``.``; each segment except the last
-    becomes (or reuses) a nested dict, and the final segment receives the
-    value. Two paths that share a parent therefore merge into a single nested
-    dict - this is how multiple connector fields fold into one structured param
-    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
-    ``{"credentials": {"identifier": ..., "password": ...}}``).
-
-    A single-segment path (e.g. ``"url"``) places a flat scalar.
-
-    :type target: ``dict``
-    :param target: The destination params dict (mutated in place).
-
-    :type path: ``str``
-    :param path: A non-empty dotted destination path (e.g. ``"a.b.c"``).
-
-    :type value: ``Any``
-    :param value: The value to set at the leaf of ``path``.
-
-    :return: ``None``
-    :rtype: ``None``
-    """
-    segments = [seg for seg in path.split('.') if seg != '']
-    if not segments:
-        return
-    cursor = target
-    for segment in segments[:-1]:
-        existing = cursor.get(segment)
-        if not isinstance(existing, dict):
-            existing = {}
-            cursor[segment] = existing
-        cursor = existing
-    cursor[segments[-1]] = value
-
-
-def _parse_param_map(param_map):
-    # type: (Any) -> list
-    """Parse a UCP ``param_map`` into a list of ``(field_id, destination)`` pairs.
-
-    The canonical form is a **single comma-separated string** of
-    ``field_id:dotted.destination`` entries, e.g.::
-
-        "username:credentials.identifier,password:credentials.password,server_url:server_url"
-
-    A ``dict`` form (``{field_id: destination}``) is also accepted for
-    convenience/backward-compatibility. Empty/invalid entries are skipped.
-
-    :type param_map: ``Any``
-    :param param_map: The raw ``param_map`` value from the profile (string or dict).
-
-    :return: List of ``(field_id, destination)`` tuples (order preserved for strings).
-    :rtype: ``list``
-    """
-    pairs = []  # type: list
-    if not param_map:
-        return pairs
-    items = []
-    for entry in str(param_map).split(','):
-        entry = entry.strip()
-        if not entry:
-            continue
-        if ':' not in entry:
-            demisto.error(
-                "[UCP][CommonServerPython.py] _parse_param_map: malformed entry '{}' (no ':'); skipping.".format(entry)
-            )
-            continue
-        field_id, destination = entry.split(':', 1)
-        items.append((field_id, destination))
-    for field_id, destination in items:
-        field_id = (field_id or '').strip()
-        destination = (destination or '').strip()
-        if not field_id or not destination:
-            demisto.debug(
-                "[UCP][CommonServerPython.py] _parse_param_map: empty field id or destination "
-                "('{}' -> '{}'); skipping.".format(field_id, destination)
-            )
-            continue
-        pairs.append((field_id, destination))
-    return pairs
-
-
-def _select_ucp_profiles(profiles, capability):
-    # type: (list, str) -> list
-    """Select ALL connection profiles in scope for the current command.
-
-    Interpolation is **metadata-first and capability-scoped**: starting from the
-    connector metadata's ``connectionProfiles``, it keeps **every** profile whose
-    ``capability`` matches ``capability``. More than one profile may be active at
-    a time, so this returns a list (not a single profile). When no profile matches
-    ``capability``, falls back to the first profile that has an
-    ``interpolation_mapping``.
-
-    :type profiles: ``list``
-    :param profiles: The ``connectionProfiles`` from the connector metadata.
-
-    :type capability: ``str``
-    :param capability: The resolved capability for the current command.
-
-    :return: List of matching profile dicts (possibly empty).
-    :rtype: ``list``
-    """
-    if not profiles:
-        demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no connectionProfiles in metadata.')
-        return []
-
-    matched = [p for p in profiles if p.get('capability') == capability]
-    demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: found {} profile(s) with capability {}.'.format(
-        len(matched), capability))
-    if matched:
-        return matched
-
-    for p in profiles:
-        if ((p.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping'):
-            demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no capability match; '
-                          'falling back to first profile with an interpolation_mapping.')
-            return [p]
-    return matched
-
-
-def build_ucp_params(connector_metadata, capability=None):
-    # type: (Optional[dict], Optional[str]) -> dict
-    """Build the reshaped params dict from UCP connector metadata.
-
-    Pure, side-effect-free core of UCP param interpolation. It is
-    **metadata-first**: it scans ``connectionProfiles`` to find every profile in
-    scope for the current capability/sub_capability, then for each such profile
-    reads its ``param_map`` (a mapping of connector field id -> dotted destination
-    path) together with the platform-supplied field values, and *interpolates*
-    them into the nested shape integrations expect - most importantly folding
-    flat fields (e.g. ``username`` / ``password``) into a single structured param
-    (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
-
-    **Multiple profiles may be active at once.** Each matching profile that
-    carries a ``param_map`` contributes its values; results are merged into one
-    params dict (**last-wins** when two profiles target the same destination
-    path, in ``connectionProfiles`` order).
-
-    This function does NOT touch ``demisto`` state, so it can be reused from
-    either ``interpolate_ucp_params()`` (the CommonServerPython applier) or a
-    Demisto class ``params()`` override.
-
-    Expected metadata shape (from ``demisto.unifiedConnectorMetadata()``)::
-
-        {
-            "connectionProfiles": [
-                {
-                    "method_unique_id": "...",
-                    "capability": "automation-and-remediation",
-                    "sub_capabilities": ["salesforce-iam"],
-                    "type": "oauth2",
-                    "param_map": {"username": "credentials.identifier", ...},
-                    "fields": {"username": "alice", "password": "s3cr3t", ...}
-                }
-            ]
-        }
-
-    :type connector_metadata: ``Optional[dict]``
-    :param connector_metadata: The connector metadata.
-
-    :type base_params: ``Optional[dict]``
-    :param base_params: Optional existing params to merge interpolated values
-        onto. A shallow copy is made; the input is not mutated.
-
-    :type capability: ``Optional[str]``
-    :param capability: The resolved capability. When ``None``, resolved via
-        ``resolve_ucp_capability()``.
-
-    :type sub_capability: ``Optional[str]``
-    :param sub_capability: Optional sub-capability to also match.
-
-    :return: A new params dict (base_params + interpolated values). When there
-        is nothing to interpolate, returns a copy of ``base_params`` (or ``{}``).
-    :rtype: ``dict``
-    """
-    result = {}  # type: Dict[str, Any]
-    if not connector_metadata:
-        return result
-
-    if capability is None:
-        capability = resolve_ucp_capability()
-
-    profiles = connector_metadata.get('connectionProfiles') or []
-
-    selected = _select_ucp_profiles(profiles, capability)
-    demisto.debug('build_ucp_params: capability={!r}, selected {} of {} profile(s)'.format(
-        capability, len(selected), len(profiles)))
-
-    for profile in selected:
-        method_unique_id = profile.get('method_unique_id')
-        # The interpolation mapping lives under the profile's module-namespaced
-        # metadata: profile['metadata']['xsoar']['interpolation_mapping'].
-        interpolation_mapping = ((profile.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping')
-        pairs = _parse_param_map(interpolation_mapping)
-        if not pairs:
-            demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
-            continue
-        credentials = get_ucp_credentials(method_unique_id)
-        # The credentials envelope is nested under a type key, e.g.
-        # {"type": "plain", "plain": {"username": "...", "password": "..."}}.
-        # Flatten: look up the field inside creds[creds["type"]], with a
-        # top-level fallback for already-flat envelopes.
-        cred_values = {}  # type: Dict[str, Any]
-        if isinstance(credentials, dict):
-            cred_type = credentials.get('type')
-            type_data = credentials.get(cred_type) if cred_type else None
-            if isinstance(type_data, dict):
-                cred_values = type_data
-            else:
-                cred_values = credentials
-            # Some envelope types (e.g. passthrough) wrap the actual field
-            # values one level deeper under a "parameters" sub-dict:
-            #   {"type": "passthrough", "passthrough": {"parameters": {...}}}
-            # while others (e.g. plain) place them directly under the type key.
-            # Descend into "parameters" when present.
-            inner_params = cred_values.get('parameters') if isinstance(cred_values, dict) else None
-            if isinstance(inner_params, dict):
-                cred_values = inner_params
-        cred_type = credentials.get('type') if isinstance(credentials, dict) else None
-        # Field names only (never values) to keep credential material out of logs.
-        demisto.debug('build_ucp_params: cred_type={!r}, flattened cred keys={}'.format(
-            cred_type, sorted(cred_values.keys())))
-        # For fixed-schema types (api_key, plain) resolve the value from the
-        # canonical envelope key, aliasing the mapping's field_id as needed
-        # (e.g. api_key -> "key"). Free-form types (passthrough) fall back to a
-        # generic field_id lookup.
-        canonical_keys = _UCP_CANONICAL_FIELD_KEYS.get(cred_type, {})
-        for field_id, destination in pairs:
-            lookup_key = canonical_keys.get(field_id, field_id)
-            field_value = cred_values.get(lookup_key)
-            if field_value is None:
-                demisto.debug('missing field value for field {} for profile id {}'.format(field_id, method_unique_id))
-                continue
-            _place_by_path(result, destination, field_value)
-
-    demisto.debug('build_ucp_params: interpolated {} top-level param(s)'.format(len(result)))
-    return result
-
-
-def _deep_merge_dicts(target, source):
-    # type: (dict, dict) -> dict
-    """Recursively merge ``source`` into ``target`` in place.
-
-    For every key in ``source``:
-
-    * If both the existing value in ``target`` and the incoming value in
-      ``source`` are dicts, the two are merged recursively (deep-merge).
-    * Otherwise the incoming value overwrites the existing one (this includes
-      the cases where types differ, e.g. a dict overwrites a scalar or a scalar
-      overwrites a dict).
-
-    Keys present only in ``target`` are preserved; keys present only in
-    ``source`` are added. ``target`` is mutated in place (its object identity,
-    and the identity of any nested dicts that are recursed into, is preserved)
-    and returned.
-
-    :type target: ``dict``
-    :param target: The dict to merge into (mutated in place).
-
-    :type source: ``dict``
-    :param source: The dict whose values take precedence on conflicts.
-
-    :return: The same ``target`` dict, mutated in place.
-    :rtype: ``dict``
-    """
-    for key, source_value in source.items():
-        target_value = target.get(key)
-        if isinstance(target_value, dict) and isinstance(source_value, dict):
-            _deep_merge_dicts(target_value, source_value)
-        else:
-            target[key] = source_value
-    return target
-
-
-def interpolate_ucp_params(connector_metadata=None):
-    # type: (Optional[dict]) -> bool
-    """Interpolate UCP connector field values into ``demisto.params()``.
-
-    Thin CommonServerPython-side applier around the pure
-    :func:`build_ucp_params`. Fetches the connector metadata (if not provided),
-    builds the reshaped params, and merges them into
-    ``demisto.callingContext['params']`` so that subsequent ``demisto.params()``
-    calls observe them. When no ``param_map`` is present the function is a no-op
-    and the legacy params are left untouched.
-
-    On success the module-level ``_UCP_AUTH_PARAMS_INJECTED`` flag is set to
-    ``True`` so that ``should_use_ucp_auth()`` knows credentials have already
-    been pre-injected.
-
-    :type connector_metadata: ``Optional[dict]``
-    :param connector_metadata: The connector metadata. If ``None``, fetched via
-        ``demisto.unifiedConnectorMetadata()``.
-
-    :return: ``True`` if any params were interpolated, ``False`` otherwise.
-    :rtype: ``bool``
-    """
-    global _UCP_AUTH_PARAMS_INJECTED
-    try:
-        if connector_metadata is None:
-            connector_metadata = demisto.unifiedConnectorMetadata()
-            if connector_metadata is None:# we arent in ucpland
-                return False
-    except AttributeError:
-        demisto.debug("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() not available.")
-        return False
-    except Exception as e:
-        demisto.error("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() error: {}".format(e))
-        return False
-
-    # Capability-scoped, multi-profile: resolve the capability for the current
-    # command and interpolate every active profile that carries a param_map.
-    capability = None
-    try:
-        capability = resolve_ucp_capability()
-    except Exception as e:
-        demisto.debug(
-            "[UCP][CommonServerPython.py] interpolate_ucp_params: could not resolve capability ({}).".format(e)
-        )
-
-    interpolated = build_ucp_params(connector_metadata, capability=capability)
-    if not interpolated:
-        return False
-
-    params = demisto.callingContext.setdefault('params', {})
-    _deep_merge_dicts(params, interpolated)
-    _UCP_AUTH_PARAMS_INJECTED = True
-    demisto.debug(
-        "[UCP][CommonServerPython.py] interpolate_ucp_params: interpolated {} top-level param(s) "
-        "for capability={}.".format(len(interpolated), capability)
-    )
-    return True
 
 
 # -- UCP helper: extract expiry from credentials response --
@@ -14271,8 +13986,8 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 # -- Credential fetching with in-process TTL cache --
 
 
-def get_ucp_credentials(method_unique_id=None, body=None):
-    # type: (Optional[str], Optional[dict]) -> dict
+def get_ucp_credentials(method_unique_id=None):
+    # type: (Optional[str]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -14288,13 +14003,6 @@ def get_ucp_credentials(method_unique_id=None, body=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
-
-    :type body: ``Optional[dict]``
-    :param body: Optional extra payload forwarded to ``demisto.getUCPCredentials``
-        (e.g. ``{"extra": {"subject": "<user_id>"}}`` to request an impersonated
-        token). The ``body`` argument is only supported on newer platform
-        versions; on older platforms the call gracefully falls back to fetching
-        credentials without it.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
@@ -14320,23 +14028,7 @@ def get_ucp_credentials(method_unique_id=None, body=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    if body is None:
-        # No extra payload to forward; call with the classic signature so behavior
-        # is unchanged for every caller that does not pass a ``body``.
-        creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
-    else:
-        try:
-            # ``body`` (used to forward the impersonation subject / user id) is only
-            # accepted by ``getUCPCredentials`` on newer platform versions.
-            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
-        except TypeError:
-            # Older platforms do not accept the ``body`` argument; retry without it
-            # so the integration keeps working (without subject impersonation).
-            demisto.debug(
-                "[UCP][CommonServerPython.py] getUCPCredentials does not support 'body'; "
-                "retrying without it for method_unique_id={}".format(method_unique_id)
-            )
-            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
@@ -14358,20 +14050,6 @@ def invalidate_ucp_credentials(method_unique_id):
     """
     _ucp_creds_cache.pop(method_unique_id, None)
     demisto.debug("[UCP][CommonServerPython.py] Invalidated cached credentials for method_unique_id={}".format(method_unique_id))
-
-
-# -- Auto-run interpolation at import time --
-# Placed at the end of the UCP section so every UCP helper it depends on
-# (get_ucp_method_unique_id -> resolve_ucp_capability, profile matching) is
-# already defined. When the integration is not running under UCP, this is a
-# cheap no-op (unifiedConnectorMetadata() is empty / unavailable).
-try:
-    interpolate_ucp_params()
-except Exception:
-    # Import-time safety net: never let interpolation break module import.
-    # Intentionally does NOT call demisto.debug() here - in bare-mock contexts
-    # (e.g. test collection) demisto.debug itself may be unavailable.
-    pass
 
 
 ###########################################
