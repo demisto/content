@@ -5951,6 +5951,11 @@
         {
             "playbookID": "CVEEnrichment-Test",
             "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
+        },
+        {
+            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_Model_Security_Test",
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {

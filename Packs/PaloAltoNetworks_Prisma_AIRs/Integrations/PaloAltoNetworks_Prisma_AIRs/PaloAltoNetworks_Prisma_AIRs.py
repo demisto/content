@@ -97,23 +97,15 @@ class Client(BaseClient):
             return self._access_token
 
         token_url = "https://auth.apps.paloaltonetworks.com/oauth2/access_token"
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "scope": "profile tsg_id:{}".format(self.tsg_id) if self.tsg_id else "profile"
+            "scope": f"profile tsg_id:{self.tsg_id}" if self.tsg_id else "profile",
         }
 
-        response = self._http_request(
-            method="POST",
-            full_url=token_url,
-            headers=headers,
-            data=data,
-            resp_type="json"
-        )
+        response = self._http_request(method="POST", full_url=token_url, headers=headers, data=data, resp_type="json")
 
         self._access_token = response.get("access_token")
         if not self._access_token:
@@ -158,10 +150,7 @@ class Client(BaseClient):
             dict: API response.
         """
         token = self.get_access_token()
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
         # Determine which API path prefix to use
         # CRITICAL: DLP v2 API uses a completely different base URL
@@ -186,7 +175,7 @@ class Client(BaseClient):
                 json_data=json_data,
                 headers=headers,
                 resp_type=resp_type,
-                return_empty_response=return_empty_response
+                return_empty_response=return_empty_response,
             )
 
         return self._http_request(
@@ -196,7 +185,7 @@ class Client(BaseClient):
             json_data=json_data,
             headers=headers,
             resp_type=resp_type,
-            return_empty_response=return_empty_response
+            return_empty_response=return_empty_response,
         )
 
     def scanner_request(
@@ -213,12 +202,11 @@ class Client(BaseClient):
         """
         if not self.runtime_api_key:
             raise DemistoException(
-                "Runtime API Key is required for scanner operations. Please configure the Runtime API Key in the integration settings.")
+                "Runtime API Key is required for scanner operations. "
+                "Please configure the Runtime API Key in the integration settings."
+            )
 
-        headers = {
-            "x-pan-token": self.runtime_api_key,
-            "Content-Type": "application/json"
-        }
+        headers = {"x-pan-token": self.runtime_api_key, "Content-Type": "application/json"}
 
         # Use regional scanner endpoint + sync scan path
         # Full URL: https://service{-region}.api.aisecurity.paloaltonetworks.com/v1/scan/sync/request
@@ -227,7 +215,7 @@ class Client(BaseClient):
             full_url=f"{self.scanner_base_url}{SCANNER_SYNC_SCAN_PATH}",
             json_data=json_data,
             headers=headers,
-            resp_type="json"
+            resp_type="json",
         )
 
 
@@ -282,12 +270,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
     if response_text:
         content["response"] = response_text
 
-    scan_request: dict[str, Any] = {
-        "ai_profile": {
-            "profile_name": profile_name
-        },
-        "contents": [content]
-    }
+    scan_request: dict[str, Any] = {"ai_profile": {"profile_name": profile_name}, "contents": [content]}
 
     # Add optional top-level metadata fields
     if tr_id:
@@ -345,7 +328,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
         "category": scan_response.get("category", "unknown"),
         "detected": overall_detected,
         "prompt_detected": prompt_detected,  # Include full prompt_detected object
-        "response_detected": response_detected  # Include full response_detected object
+        "response_detected": response_detected,  # Include full response_detected object
     }
 
     # Add optional metadata fields from response if present (forward-compatible)
@@ -367,14 +350,16 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
         scan_result["errors"] = scan_response["errors"]
 
     # Create human-readable output using table format
-    scan_summary = [{
-        "Scan ID": scan_result['scan_id'],
-        "Report ID": scan_result['report_id'],
-        "Profile": profile_name,
-        "Action": scan_result['action'].upper(),
-        "Category": scan_result['category'],
-        "Detected": "Yes" if overall_detected else "No"
-    }]
+    scan_summary = [
+        {
+            "Scan ID": scan_result["scan_id"],
+            "Report ID": scan_result["report_id"],
+            "Profile": profile_name,
+            "Action": scan_result["action"].upper(),
+            "Category": scan_result["category"],
+            "Detected": "Yes" if overall_detected else "No",
+        }
+    ]
 
     # Add metadata table if any metadata fields are present
     metadata_table = []
@@ -387,74 +372,60 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
     prompt_detections_table = []
     if prompt_detected:
         for detection_type, detected_value in prompt_detected.items():
-            prompt_detections_table.append({
-                "Detection Type": detection_type.replace("_", " ").title(),
-                "Detected": "Yes" if detected_value else "No"
-            })
+            prompt_detections_table.append(
+                {"Detection Type": detection_type.replace("_", " ").title(), "Detected": "Yes" if detected_value else "No"}
+            )
 
     # Build response detections table (forward-compatible: dynamically handle all detection fields)
     response_detections_table = []
     if response_detected:
         for detection_type, detected_value in response_detected.items():
-            response_detections_table.append({
-                "Detection Type": detection_type.replace("_", " ").title(),
-                "Detected": "Yes" if detected_value else "No"
-            })
+            response_detections_table.append(
+                {"Detection Type": detection_type.replace("_", " ").title(), "Detected": "Yes" if detected_value else "No"}
+            )
 
     # Build scanned content table
-    content_table = [{
-        "Type": "Prompt",
-        "Content": prompt[:100] + "..." if len(prompt) > 100 else prompt,
-        "Threats Detected": "Yes" if prompt_has_detections else "No"
-    }]
+    content_table = [
+        {
+            "Type": "Prompt",
+            "Content": prompt[:100] + "..." if len(prompt) > 100 else prompt,
+            "Threats Detected": "Yes" if prompt_has_detections else "No",
+        }
+    ]
     if response_text:
-        content_table.append({
-            "Type": "Response",
-            "Content": response_text[:100] + "..." if len(response_text) > 100 else response_text,
-            "Threats Detected": "Yes" if response_has_detections else "No"
-        })
+        content_table.append(
+            {
+                "Type": "Response",
+                "Content": response_text[:100] + "..." if len(response_text) > 100 else response_text,
+                "Threats Detected": "Yes" if response_has_detections else "No",
+            }
+        )
 
     # Build readable output
     readable_output = "## Prisma AIRs Runtime Scan Results\n\n"
     readable_output += tableToMarkdown(
-        "Scan Summary",
-        scan_summary,
-        headers=["Scan ID", "Report ID", "Profile", "Action", "Category", "Detected"]
+        "Scan Summary", scan_summary, headers=["Scan ID", "Report ID", "Profile", "Action", "Category", "Detected"]
     )
     readable_output += "\n"
 
     # Add metadata table if present
     if metadata_table:
-        readable_output += tableToMarkdown(
-            "Metadata",
-            metadata_table,
-            headers=["Field", "Value"]
-        )
+        readable_output += tableToMarkdown("Metadata", metadata_table, headers=["Field", "Value"])
         readable_output += "\n"
 
     # Scanned content first to show what was scanned
-    readable_output += tableToMarkdown(
-        "Scanned Content",
-        content_table,
-        headers=["Type", "Content", "Threats Detected"]
-    )
+    readable_output += tableToMarkdown("Scanned Content", content_table, headers=["Type", "Content", "Threats Detected"])
     readable_output += "\n"
 
     # Prompt detections (if any)
     if prompt_detections_table:
-        readable_output += tableToMarkdown(
-            "Prompt Detections",
-            prompt_detections_table,
-            headers=["Detection Type", "Detected"]
-        )
+        readable_output += tableToMarkdown("Prompt Detections", prompt_detections_table, headers=["Detection Type", "Detected"])
         readable_output += "\n"
 
     # Response detections (if any)
     if response_detections_table:
         readable_output += tableToMarkdown(
-            "Response Detections",
-            response_detections_table,
-            headers=["Detection Type", "Detected"]
+            "Response Detections", response_detections_table, headers=["Detection Type", "Detected"]
         )
         readable_output += "\n"
 
@@ -463,7 +434,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
         outputs_key_field="scan_id",
         outputs=scan_result,
         readable_output=readable_output,
-        raw_response=scan_response
+        raw_response=scan_response,
     )
 
 
@@ -484,17 +455,9 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
     # SDK path: /v1/mgmt/apikeys/tsg/{tsgId}
     # SDK uses offset for pagination, but we'll use limit for simplicity
     url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys/tsg/{client.tsg_id}"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK returns snake_case field names
     api_keys_raw = response.get("api_keys", [])
@@ -507,7 +470,7 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
             "last8": key.get("api_key_last8"),
             "created_at": key.get("created_at"),
             "expires_at": key.get("expiration"),
-            "revoked": key.get("revoked")
+            "revoked": key.get("revoked"),
         }
         api_keys.append(api_key_info)
 
@@ -515,7 +478,7 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
         "Prisma AIRs Runtime API Keys",
         api_keys,
         headers=["id", "name", "last8", "created_at", "expires_at", "revoked"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -523,7 +486,7 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_key_field="id",
         outputs=api_keys,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -575,7 +538,7 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         "created_by": created_by,
         "revoked": False,  # Always create as not revoked
         "rotation_time_interval": rotation_time_interval,
-        "rotation_time_unit": rotation_time_unit
+        "rotation_time_unit": rotation_time_unit,
     }
 
     # Add optional fields if provided
@@ -583,7 +546,7 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         "dp_name": args.get("dp_name"),
         "cust_env": args.get("cust_env"),
         "cust_cloud_provider": args.get("cust_cloud_provider"),
-        "cust_ai_agent_framework": args.get("cust_ai_agent_framework")
+        "cust_ai_agent_framework": args.get("cust_ai_agent_framework"),
     }
     for field, value in optional_fields.items():
         if value:
@@ -595,12 +558,7 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
     # Response: ApiKeySchema with full secret (only time it's shown)
     url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response according to ApiKeySchema
     # Fields: api_key_id, api_key_name, api_key (full secret - only shown once!),
@@ -616,18 +574,24 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         "revoked": response.get("revoked"),
         "created_at": response.get("created_at"),
         "created_by": response.get("created_by"),
-        "cust_app": response.get("cust_app")
+        "cust_app": response.get("cust_app"),
     }
 
     # Add optional fields if present
-    optional_response_fields = ["updated_at", "updated_by", "cust_env", "cust_cloud_provider",
-                                "cust_ai_agent_framework", "dp_name"]
+    optional_response_fields = [
+        "updated_at",
+        "updated_by",
+        "cust_env",
+        "cust_cloud_provider",
+        "cust_ai_agent_framework",
+        "dp_name",
+    ]
     for field in optional_response_fields:
         if response.get(field):
             api_key_info[field] = response.get(field)
 
     # Create readable output with WARNING about secret
-    readable_output = f"## ⚠️ API Key Created - Save the Secret Now!\n\n"
+    readable_output = "## ⚠️ API Key Created - Save the Secret Now!\n\n"
     readable_output += f"**ID:** {api_key_info.get('id')}\n\n"
     readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
     readable_output += f"**API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
@@ -642,7 +606,7 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="id",
         outputs=api_key_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -679,10 +643,7 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-api-key.ts
     # Required: rotation_time_interval, rotation_time_unit
     # Optional: updated_by
-    request_body = {
-        "rotation_time_interval": rotation_time_interval,
-        "rotation_time_unit": rotation_time_unit
-    }
+    request_body = {"rotation_time_interval": rotation_time_interval, "rotation_time_unit": rotation_time_unit}
 
     # Add optional updated_by if provided
     updated_by = args.get("updated_by")
@@ -695,12 +656,7 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
     # Response: ApiKeySchema with NEW UUID and NEW full secret
     url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys/regenerate/{api_key_id}"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response according to ApiKeySchema
     # IMPORTANT: Returns NEW api_key_id and NEW api_key (full secret)
@@ -715,18 +671,24 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
         "revoked": response.get("revoked"),
         "updated_at": response.get("updated_at"),
         "updated_by": response.get("updated_by"),
-        "cust_app": response.get("cust_app")
+        "cust_app": response.get("cust_app"),
     }
 
     # Add optional fields if present
-    optional_response_fields = ["created_at", "created_by", "cust_env", "cust_cloud_provider",
-                                "cust_ai_agent_framework", "dp_name"]
+    optional_response_fields = [
+        "created_at",
+        "created_by",
+        "cust_env",
+        "cust_cloud_provider",
+        "cust_ai_agent_framework",
+        "dp_name",
+    ]
     for field in optional_response_fields:
         if response.get(field):
             api_key_info[field] = response.get(field)
 
     # Create readable output with WARNING about new secret and old key invalidation
-    readable_output = f"## ⚠️ API Key Regenerated - Old Key Invalidated!\n\n"
+    readable_output = "## ⚠️ API Key Regenerated - Old Key Invalidated!\n\n"
     readable_output += f"**New ID:** {api_key_info.get('id')}\n\n"
     readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
     readable_output += f"**New API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
@@ -744,7 +706,7 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
         outputs_key_field="id",
         outputs=api_key_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -775,16 +737,9 @@ def runtime_api_keys_delete_command(client: Client, args: dict[str, Any]) -> Com
     # Endpoint: DELETE /v1/mgmt/apikey/delete/{apiKeyName}?updated_by={email}
     # Response: { message: "deleted" } (or plain string that gets transformed)
     url_suffix = f"{MGMT_API_V1_PREFIX}/apikey/delete/{api_key_name}"
-    params = {
-        "updated_by": updated_by
-    }
+    params = {"updated_by": updated_by}
 
-    response = client.http_request(
-        method="DELETE",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # ApiKeyDeleteResponseSchema transforms plain string to { message: "..." }
@@ -792,26 +747,21 @@ def runtime_api_keys_delete_command(client: Client, args: dict[str, Any]) -> Com
     message = response.get("message", "API key deleted successfully") if isinstance(response, dict) else str(response)
 
     # Create readable output with deletion confirmation
-    readable_output = f"## ✅ API Key Deleted\n\n"
+    readable_output = "## ✅ API Key Deleted\n\n"
     readable_output += f"**Key Name:** {api_key_name}\n\n"
     readable_output += f"**Deleted By:** {updated_by}\n\n"
     readable_output += f"**Status:** {message}\n\n"
     readable_output += "**⚠️ WARNING:** This action cannot be undone. The API key has been permanently revoked."
 
     # Context output
-    context_output = {
-        "api_key_name": api_key_name,
-        "deleted_by": updated_by,
-        "message": message,
-        "deleted": True
-    }
+    context_output = {"api_key_name": api_key_name, "deleted_by": updated_by, "message": message, "deleted": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKeyDeleted",
         outputs_key_field="api_key_name",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -831,17 +781,9 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/profiles.ts
     # SDK path: /v1/mgmt/profiles/tsg/{tsgId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/profiles/tsg/{client.tsg_id}"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK returns ai_profiles array
     # Schema: profile_id, profile_name, revision, active, created_by, updated_by, last_modified_ts
@@ -857,7 +799,7 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
             "created_by": profile.get("created_by"),
             "updated_by": profile.get("updated_by"),
             "last_modified_ts": profile.get("last_modified_ts"),
-            "tsg_id": profile.get("tsg_id")
+            "tsg_id": profile.get("tsg_id"),
         }
         profiles.append(profile_info)
 
@@ -865,7 +807,7 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
         "Prisma AIRs Security Profiles",
         profiles,
         headers=["id", "name", "revision", "active", "created_by", "updated_by", "last_modified_ts"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -873,7 +815,7 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_key_field="id",
         outputs=profiles,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -902,15 +844,10 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
     url_suffix = f"{MGMT_API_V1_PREFIX}/profiles/tsg/{client.tsg_id}"
     params = {
         "offset": "0",
-        "limit": "1000"  # Get all profiles for filtering
+        "limit": "1000",  # Get all profiles for filtering
     }
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response and filter
     profiles_raw = response.get("ai_profiles", [])
@@ -943,7 +880,7 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
         "updated_by": profile.get("updated_by"),
         "last_modified_ts": profile.get("last_modified_ts"),
         "tsg_id": profile.get("tsg_id"),
-        "csp_id": profile.get("csp_id")
+        "csp_id": profile.get("csp_id"),
     }
 
     # Create readable output
@@ -960,7 +897,7 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += f"**Policy:**\n\n"
+        readable_output += "**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
@@ -969,7 +906,7 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=profile
+        raw_response=profile,
     )
 
 
@@ -993,25 +930,20 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
     # Build request body according to CreateSecurityProfileRequest
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-security-profile.ts
     # Required: profile_name, active, policy
-    request_body: dict[str, Any] = {
-        "profile_name": profile_name,
-        "active": active
-    }
+    request_body: dict[str, Any] = {"profile_name": profile_name, "active": active}
 
     # Parse policy JSON if provided
     if policy_json:
         try:
             import json
+
             policy = json.loads(policy_json)
             request_body["policy"] = policy
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid policy JSON: {str(e)}")
     else:
         # Default empty policy
-        request_body["policy"] = {
-            "ai-security-profiles": [],
-            "dlp-data-profiles": []
-        }
+        request_body["policy"] = {"ai-security-profiles": [], "dlp-data-profiles": []}
 
     # Call Management API to create profile
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
@@ -1019,12 +951,7 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
     # Endpoint: POST /v1/mgmt/profile
     url_suffix = f"{MGMT_API_V1_PREFIX}/profile"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response - returns full SecurityProfile
     profile_info = {
@@ -1037,11 +964,11 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
         "updated_by": response.get("updated_by"),
         "last_modified_ts": response.get("last_modified_ts"),
         "tsg_id": response.get("tsg_id"),
-        "csp_id": response.get("csp_id")
+        "csp_id": response.get("csp_id"),
     }
 
     # Create readable output
-    readable_output = f"## ✅ Security Profile Created\n\n"
+    readable_output = "## ✅ Security Profile Created\n\n"
     readable_output += f"**ID:** {profile_info.get('id')}\n\n"
     readable_output += f"**Name:** {profile_info.get('name')}\n\n"
     readable_output += f"**Revision:** {profile_info.get('revision')}\n\n"
@@ -1053,7 +980,7 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += f"**Policy:**\n\n"
+        readable_output += "**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
@@ -1062,7 +989,7 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1091,9 +1018,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
     # Build request body according to CreateSecurityProfileRequest
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-security-profile.ts
     # Required: profile_name, active, policy
-    request_body: dict[str, Any] = {
-        "profile_name": profile_name
-    }
+    request_body: dict[str, Any] = {"profile_name": profile_name}
 
     # Add active if provided
     if active is not None:
@@ -1103,6 +1028,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
     if policy_json:
         try:
             import json
+
             policy = json.loads(policy_json)
             request_body["policy"] = policy
         except json.JSONDecodeError as e:
@@ -1114,12 +1040,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
     # Endpoint: PUT /v1/mgmt/profile/uuid/{profileId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/profile/uuid/{profile_id}"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response - returns updated SecurityProfile with incremented revision
     profile_info = {
@@ -1132,11 +1053,11 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
         "updated_by": response.get("updated_by"),
         "last_modified_ts": response.get("last_modified_ts"),
         "tsg_id": response.get("tsg_id"),
-        "csp_id": response.get("csp_id")
+        "csp_id": response.get("csp_id"),
     }
 
     # Create readable output
-    readable_output = f"## ✅ Security Profile Updated\n\n"
+    readable_output = "## ✅ Security Profile Updated\n\n"
     readable_output += f"**ID:** {profile_info.get('id')}\n\n"
     readable_output += f"**Name:** {profile_info.get('name')}\n\n"
     readable_output += f"**Revision:** {profile_info.get('revision')} (incremented)\n\n"
@@ -1149,7 +1070,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += f"**Policy:**\n\n"
+        readable_output += "**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
@@ -1158,7 +1079,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1186,35 +1107,27 @@ def runtime_profiles_delete_command(client: Client, args: dict[str, Any]) -> Com
     # Response: { message: "deleted" } (or plain string transformed to object)
     url_suffix = f"{MGMT_API_V1_PREFIX}/profile/{profile_id}"
 
-    response = client.http_request(
-        method="DELETE",
-        url_suffix=url_suffix,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # DeleteProfileResponseSchema transforms plain string to { message: "..." }
     message = response.get("message", "Security profile deleted successfully") if isinstance(response, dict) else str(response)
 
     # Create readable output
-    readable_output = f"## ✅ Security Profile Deleted\n\n"
+    readable_output = "## ✅ Security Profile Deleted\n\n"
     readable_output += f"**Profile ID:** {profile_id}\n\n"
     readable_output += f"**Status:** {message}\n\n"
     readable_output += "**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted."
 
     # Context output
-    context_output = {
-        "profile_id": profile_id,
-        "message": message,
-        "deleted": True
-    }
+    context_output = {"profile_id": profile_id, "message": message, "deleted": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileDeleted",
         outputs_key_field="profile_id",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1234,17 +1147,9 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/customer-apps.ts
     # SDK path: /v1/mgmt/customerapp/tsg/{tsgId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp/tsg/{client.tsg_id}"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK schema: customer_appId, app_name, model_name, cloud_provider, environment
     apps_raw = response.get("customer_apps", [])
@@ -1258,7 +1163,7 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
             "cloud_provider": app.get("cloud_provider"),
             "environment": app.get("environment"),
             "ai_agent_framework": app.get("ai_agent_framework"),
-            "tsg_id": app.get("tsg_id")
+            "tsg_id": app.get("tsg_id"),
         }
         apps.append(app_info)
 
@@ -1266,7 +1171,7 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
         "Prisma AIRs Customer Applications",
         apps,
         headers=["id", "name", "model_name", "cloud_provider", "environment", "ai_agent_framework"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -1274,7 +1179,7 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="id",
         outputs=apps,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1297,19 +1202,13 @@ def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> C
     # SDK: CustomerAppsClient.get(appName)
     # Endpoint: GET /v1/mgmt/customerapp?app_name={appName}
     url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
-    params = {
-        "app_name": app_name
-    }
+    params = {"app_name": app_name}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK schema (mgmt-customer-app.ts): CustomerAppSchema
-    # Fields: customer_appId, tsg_id, app_name, model_name, cloud_provider, environment, status, created_by, updated_by, ai_agent_framework
+    # Fields: customer_appId, tsg_id, app_name, model_name, cloud_provider, environment,
+    # status, created_by, updated_by, ai_agent_framework
     app_info = {
         "id": response.get("customer_appId"),
         "name": response.get("app_name"),
@@ -1320,16 +1219,25 @@ def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> C
         "tsg_id": response.get("tsg_id"),
         "status": response.get("status"),
         "created_by": response.get("created_by"),
-        "updated_by": response.get("updated_by")
+        "updated_by": response.get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Customer Application: {app_name}",
         [app_info],
-        headers=["id", "name", "model_name", "cloud_provider", "environment",
-                 "ai_agent_framework", "status", "created_by", "updated_by"],
+        headers=[
+            "id",
+            "name",
+            "model_name",
+            "cloud_provider",
+            "environment",
+            "ai_agent_framework",
+            "status",
+            "created_by",
+            "updated_by",
+        ],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
@@ -1337,7 +1245,7 @@ def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="id",
         outputs=app_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1357,12 +1265,13 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
 
     # Build request body from arguments
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-customer-app.ts
-    # SDK: CustomerAppSchema - tsg_id, app_name, model_name (optional), cloud_provider, environment, ai_agent_framework (optional)
+    # SDK: CustomerAppSchema - tsg_id, app_name, model_name (optional), cloud_provider,
+    # environment, ai_agent_framework (optional)
     request_body: dict[str, Any] = {
         "tsg_id": args.get("tsg_id", client.tsg_id),  # Default to client's TSG ID if not provided
         "app_name": args.get("app_name"),
         "cloud_provider": args.get("cloud_provider"),
-        "environment": args.get("environment")
+        "environment": args.get("environment"),
     }
 
     # Add optional fields if provided
@@ -1386,17 +1295,9 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
     # SDK: CustomerAppsClient.update(customerAppId, body)
     # Endpoint: PUT /v1/mgmt/customerapp?customer_app_id={customerAppId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
-    params = {
-        "customer_app_id": customer_app_id
-    }
+    params = {"customer_app_id": customer_app_id}
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        params=params,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, params=params, json_data=request_body, use_mgmt_base=True)
 
     # Parse response - Returns updated CustomerApp
     app_info = {
@@ -1409,7 +1310,7 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
         "tsg_id": response.get("tsg_id"),
         "status": response.get("status"),
         "created_by": response.get("created_by"),
-        "updated_by": response.get("updated_by")
+        "updated_by": response.get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
@@ -1417,7 +1318,7 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
         [app_info],
         headers=["id", "name", "model_name", "cloud_provider", "environment", "ai_agent_framework", "status", "updated_by"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
@@ -1425,7 +1326,7 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
         outputs_key_field="id",
         outputs=app_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1456,21 +1357,12 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
     # Call Dashboard API to get application consumption
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/dashboard.ts
     # SDK: DashboardClient.application(query)
-    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/application?appid={appId}&appname={appName}&time_interval={interval}&time_unit={unit}
+    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/application?appid={appId}&appname={appName}
+    # &time_interval={interval}&time_unit={unit}
     url_suffix = "/v1/mgmt/dashboard/v2/apps/application"
-    params = {
-        "appid": app_id,
-        "appname": app_name,
-        "time_interval": str(time_interval),
-        "time_unit": time_unit
-    }
+    params = {"appid": app_id, "appname": app_name, "time_interval": str(time_interval), "time_unit": time_unit}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK schema (mgmt-dashboard.ts): DashboardApplicationSchema
     # Fields: id, name, cloud, source, created_at, updated_at, profiles[], token_stats{}, session_stats{}
@@ -1501,7 +1393,7 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
         "violations_high": violation_breakdown.get("high"),
         "violations_medium": violation_breakdown.get("medium"),
         "violations_low": violation_breakdown.get("low"),
-        "violations_total": violation_breakdown.get("total")
+        "violations_total": violation_breakdown.get("total"),
     }
 
     # Format readable output using XSOAR best practice table format
@@ -1509,20 +1401,24 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
     readable_parts = []
 
     # Application Overview Table
-    app_overview = [{
-        "App ID": app_info.get("id"),
-        "Name": app_info.get("name"),
-        "Cloud": app_info.get("cloud"),
-        "Source": app_info.get("source"),
-        "Profiles": ", ".join(app_info.get("profiles")) if app_info.get("profiles") else "None",
-        "Time Window": f"{time_interval} {time_unit}"
-    }]
-    readable_parts.append(tableToMarkdown(
-        "Application Overview",
-        app_overview,
-        headers=["App ID", "Name", "Cloud", "Source", "Profiles", "Time Window"],
-        removeNull=True
-    ))
+    app_overview = [
+        {
+            "App ID": app_info.get("id"),
+            "Name": app_info.get("name"),
+            "Cloud": app_info.get("cloud"),
+            "Source": app_info.get("source"),
+            "Profiles": ", ".join(app_info.get("profiles")) if app_info.get("profiles") else "None",
+            "Time Window": f"{time_interval} {time_unit}",
+        }
+    ]
+    readable_parts.append(
+        tableToMarkdown(
+            "Application Overview",
+            app_overview,
+            headers=["App ID", "Name", "Cloud", "Source", "Profiles", "Time Window"],
+            removeNull=True,
+        )
+    )
 
     # Token Consumption Table
     avg_tokens = app_info.get("average_daily_tokens")
@@ -1530,46 +1426,43 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
     monthly_tokens = app_info.get("monthly_total_tokens")
     monthly_scale = app_info.get("monthly_total_tokens_scale") or ""
 
-    token_consumption = [{
-        "Metric": "Daily Average",
-        "Value": f"{avg_tokens}{avg_scale}" if avg_tokens else "N/A"
-    }, {
-        "Metric": "Monthly Total",
-        "Value": f"{monthly_tokens}{monthly_scale}" if monthly_tokens else "N/A"
-    }]
-    readable_parts.append(tableToMarkdown(
-        "Token Consumption",
-        token_consumption,
-        headers=["Metric", "Value"]
-    ))
+    token_consumption = [
+        {"Metric": "Daily Average", "Value": f"{avg_tokens}{avg_scale}" if avg_tokens else "N/A"},
+        {"Metric": "Monthly Total", "Value": f"{monthly_tokens}{monthly_scale}" if monthly_tokens else "N/A"},
+    ]
+    readable_parts.append(tableToMarkdown("Token Consumption", token_consumption, headers=["Metric", "Value"]))
 
     # Session Statistics Table
-    session_stats_table = [{
-        "Total Sessions": app_info.get("sessions_total") or 0,
-        "Violating Sessions": app_info.get("sessions_violating") or 0,
-        "Last Session ID": app_info.get("last_session_id") or "N/A",
-        "Most Recent Session": app_info.get("most_recent_session_time") or "N/A"
-    }]
-    readable_parts.append(tableToMarkdown(
-        "Session Statistics",
-        session_stats_table,
-        headers=["Total Sessions", "Violating Sessions", "Last Session ID", "Most Recent Session"],
-        removeNull=True
-    ))
+    session_stats_table = [
+        {
+            "Total Sessions": app_info.get("sessions_total") or 0,
+            "Violating Sessions": app_info.get("sessions_violating") or 0,
+            "Last Session ID": app_info.get("last_session_id") or "N/A",
+            "Most Recent Session": app_info.get("most_recent_session_time") or "N/A",
+        }
+    ]
+    readable_parts.append(
+        tableToMarkdown(
+            "Session Statistics",
+            session_stats_table,
+            headers=["Total Sessions", "Violating Sessions", "Last Session ID", "Most Recent Session"],
+            removeNull=True,
+        )
+    )
 
     # Violation Severity Breakdown Table
-    violations_table = [{
-        "Critical": app_info.get("violations_critical") or 0,
-        "High": app_info.get("violations_high") or 0,
-        "Medium": app_info.get("violations_medium") or 0,
-        "Low": app_info.get("violations_low") or 0,
-        "Total": app_info.get("violations_total") or 0
-    }]
-    readable_parts.append(tableToMarkdown(
-        "Violation Severity Breakdown",
-        violations_table,
-        headers=["Critical", "High", "Medium", "Low", "Total"]
-    ))
+    violations_table = [
+        {
+            "Critical": app_info.get("violations_critical") or 0,
+            "High": app_info.get("violations_high") or 0,
+            "Medium": app_info.get("violations_medium") or 0,
+            "Low": app_info.get("violations_low") or 0,
+            "Total": app_info.get("violations_total") or 0,
+        }
+    ]
+    readable_parts.append(
+        tableToMarkdown("Violation Severity Breakdown", violations_table, headers=["Critical", "High", "Medium", "Low", "Total"])
+    )
 
     readable_output = "\n".join(readable_parts)
 
@@ -1578,7 +1471,7 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
         outputs_key_field="id",
         outputs=app_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1609,25 +1502,17 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
     # Call Dashboard API to get application violation breakdown
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/dashboard.ts
     # SDK: DashboardClient.applicationViolationBreakdown(query)
-    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/applicationviolationbreakdown?appid={appId}&appname={appName}&time_interval={interval}&time_unit={unit}
+    # Endpoint: GET /v1/mgmt/dashboard/v2/apps/applicationviolationbreakdown
+    # ?appid={appId}&appname={appName}&time_interval={interval}&time_unit={unit}
     url_suffix = "/v1/mgmt/dashboard/v2/apps/applicationviolationbreakdown"
-    params = {
-        "appid": app_id,
-        "appname": app_name,
-        "time_interval": str(time_interval),
-        "time_unit": time_unit
-    }
+    params = {"appid": app_id, "appname": app_name, "time_interval": str(time_interval), "time_unit": time_unit}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK schema (mgmt-dashboard.ts): DashboardApplicationViolationBreakdownSchema
     # Fields: detection_type_violation_breakdown[], total_violating
-    # Known detection types: agent_security, contextual_grounding, dbs, dlp, malicious_code, pi, source_code, tc, topic_guardrails, uf
+    # Known detection types: agent_security, contextual_grounding, dbs, dlp, malicious_code,
+    # pi, source_code, tc, topic_guardrails, uf
     breakdowns_raw = response.get("detection_type_violation_breakdown", [])
     total_violating = response.get("total_violating", 0)
 
@@ -1643,7 +1528,7 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
             "high": violation_breakdown.get("high", 0),
             "medium": violation_breakdown.get("medium", 0),
             "low": violation_breakdown.get("low", 0),
-            "total": violation_breakdown.get("total", 0)
+            "total": violation_breakdown.get("total", 0),
         }
         detectors.append(detector_info)
 
@@ -1655,7 +1540,7 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
         detectors,
         headers=["detection_type", "critical", "high", "medium", "low", "total"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Create structured output
@@ -1665,7 +1550,7 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
         "total_violating": total_violating,
         "detectors": detectors,
         "time_interval": time_interval,
-        "time_unit": time_unit
+        "time_unit": time_unit,
     }
 
     return CommandResults(
@@ -1673,7 +1558,7 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
         outputs_key_field="app_id",
         outputs=output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1704,44 +1589,37 @@ def runtime_customer_apps_delete_command(client: Client, args: dict[str, Any]) -
     # Endpoint: DELETE /v1/mgmt/customerapp?app_name={appName}&updated_by={email}
     # Response: { message: "customer app and associated keys successfully deleted" }
     url_suffix = f"{MGMT_API_V1_PREFIX}/customerapp"
-    params = {
-        "app_name": app_name,
-        "updated_by": updated_by
-    }
+    params = {"app_name": app_name, "updated_by": updated_by}
 
-    response = client.http_request(
-        method="DELETE",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # CustomerAppDeleteResponseSchema transforms plain string to { message: "..." }
-    message = response.get("message", "Customer app and associated keys deleted successfully") if isinstance(
-        response, dict) else str(response)
+    message = (
+        response.get("message", "Customer app and associated keys deleted successfully")
+        if isinstance(response, dict)
+        else str(response)
+    )
 
     # Create readable output with deletion confirmation
-    readable_output = f"## ✅ Customer Application Deleted\n\n"
+    readable_output = "## ✅ Customer Application Deleted\n\n"
     readable_output += f"**App Name:** {app_name}\n\n"
     readable_output += f"**Deleted By:** {updated_by}\n\n"
     readable_output += f"**Status:** {message}\n\n"
-    readable_output += "**⚠️ WARNING:** This action cannot be undone. The customer application and all associated API keys have been permanently deleted and revoked."
+    readable_output += (
+        "**⚠️ WARNING:** This action cannot be undone. The customer application and all "
+        "associated API keys have been permanently deleted and revoked."
+    )
 
     # Context output
-    context_output = {
-        "app_name": app_name,
-        "deleted_by": updated_by,
-        "message": message,
-        "deleted": True
-    }
+    context_output = {"app_name": app_name, "deleted_by": updated_by, "message": message, "deleted": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppDeleted",
         outputs_key_field="app_name",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1762,19 +1640,11 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/deployment-profiles.ts
     # SDK path: /v1/mgmt/deploymentprofiles
     url_suffix = f"{MGMT_API_V1_PREFIX}/deploymentprofiles"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
     if unactivated:
         params["unactivated"] = "true"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response - SDK schema: dp_name, auth_code, tsg_id, status, expiration_date
     profiles_raw = response.get("deployment_profiles", [])
@@ -1787,7 +1657,7 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
             "tsg_id": profile.get("tsg_id"),
             "status": profile.get("status"),
             "expiration_date": profile.get("expiration_date"),
-            "ave_text_records": profile.get("ave_text_records")
+            "ave_text_records": profile.get("ave_text_records"),
         }
         profiles.append(profile_info)
 
@@ -1795,7 +1665,7 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
         "Prisma AIRs Deployment Profiles",
         profiles,
         headers=["name", "auth_code", "status", "expiration_date", "ave_text_records"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -1803,7 +1673,7 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
         outputs_key_field="name",
         outputs=profiles,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1821,20 +1691,12 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
     size = arg_to_number(args.get("size")) or 50
 
     # Build query parameters
-    params: dict[str, Any] = {
-        "page": page,
-        "size": size
-    }
+    params: dict[str, Any] = {"page": page, "size": size}
 
     # Call DLP v2 API to list data profiles
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
     # CRITICAL: Uses DLP v2 API base URL (https://api.dlp.paloaltonetworks.com)
-    response = client.http_request(
-        method="GET",
-        url_suffix=DLP_DATA_PROFILES_PATH,
-        params=params,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=DLP_DATA_PROFILES_PATH, params=params, use_dlp_base=True)
 
     # Parse response
     # SDK schema (dlp-data-profile.ts): id, name, description, tenant_id, type, profile_status, profile_type, etc.
@@ -1857,7 +1719,7 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
             "created_at": profile.get("audit_metadata", {}).get("created_at"),
             "updated_at": profile.get("audit_metadata", {}).get("updated_at"),
             "created_by": profile.get("audit_metadata", {}).get("created_by"),
-            "updated_by": profile.get("audit_metadata", {}).get("updated_by")
+            "updated_by": profile.get("audit_metadata", {}).get("updated_by"),
         }
         profiles.append(profile_info)
 
@@ -1868,7 +1730,7 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
         f"Prisma AIRs DLP Data Profiles (Page {page + 1}/{total_pages}, {len(profiles)} of {total_elements})",
         profiles,
         headers=["id", "name", "type", "profile_status", "profile_type", "version"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -1876,7 +1738,7 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="id",
         outputs=profiles,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1897,11 +1759,7 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
     # Call DLP data profiles get endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
     # SDK: GET /v2/api/data-profiles/{resourceId}
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}", use_dlp_base=True)
 
     # Extract profile details from response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-profile.ts
@@ -1920,14 +1778,14 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
         "created_at": response.get("audit_metadata", {}).get("created_at"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
         "created_by": response.get("audit_metadata", {}).get("created_by"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Data Profile: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -1935,7 +1793,7 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1966,10 +1824,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
     except (json.JSONDecodeError, ValueError) as e:
         raise ValueError(f"detection_rules must be valid JSON: {e}")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "detection_rules": detection_rules
-    }
+    request_body: dict[str, Any] = {"name": name, "detection_rules": detection_rules}
 
     # Optional: description
     if args.get("description"):
@@ -1982,12 +1837,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
     # Call DLP data profiles create endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
     # SDK: POST /v2/api/data-profiles
-    response = client.http_request(
-        method="POST",
-        url_suffix=DLP_DATA_PROFILES_PATH,
-        json_data=request_body,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=DLP_DATA_PROFILES_PATH, json_data=request_body, use_dlp_base=True)
 
     # Extract created profile details
     profile_info = {
@@ -2002,14 +1852,14 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
         "version": response.get("version"),
         "detection_rules": response.get("detection_rules"),
         "created_at": response.get("audit_metadata", {}).get("created_at"),
-        "created_by": response.get("audit_metadata", {}).get("created_by")
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Data Profile Created: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -2017,7 +1867,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2046,10 +1896,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
     if not profile_type:
         raise ValueError("profile_type is required for PATCH")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "profile_type": profile_type
-    }
+    request_body: dict[str, Any] = {"name": name, "profile_type": profile_type}
 
     # Optional: description (can be null to clear)
     if args.get("description") is not None:
@@ -2076,7 +1923,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
         url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
         json_data=request_body,
         use_dlp_base=True,
-        headers={"Content-Type": "application/merge-patch+json"}
+        headers={"Content-Type": "application/merge-patch+json"},
     )
 
     # Extract updated profile details
@@ -2091,14 +1938,14 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
         "version": response.get("version"),
         "detection_rules": response.get("detection_rules"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Data Profile Patched: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -2106,7 +1953,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2141,10 +1988,7 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
     except (json.JSONDecodeError, ValueError) as e:
         raise ValueError(f"detection_rules must be valid JSON: {e}")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "detection_rules": detection_rules
-    }
+    request_body: dict[str, Any] = {"name": name, "detection_rules": detection_rules}
 
     # Optional: description
     if args.get("description"):
@@ -2158,10 +2002,7 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
     # SDK: PUT /v2/api/data-profiles/{resourceId}
     response = client.http_request(
-        method="PUT",
-        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
-        json_data=request_body,
-        use_dlp_base=True
+        method="PUT", url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}", json_data=request_body, use_dlp_base=True
     )
 
     # Extract updated profile details
@@ -2176,14 +2017,14 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
         "version": response.get("version"),
         "detection_rules": response.get("detection_rules"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Data Profile Replaced: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -2191,7 +2032,79 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
+    )
+
+
+def runtime_dlp_profiles_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Soft-delete a DLP data profile.
+
+    The DLP Data Profiles API does not expose a DELETE endpoint. To remove a profile,
+    it must be patched to a deleted lifecycle state (profile_status="deleted"). The
+    JSON Merge Patch requires name + profile_type, so this command first fetches the
+    profile to obtain those fields, then patches profile_status to "deleted".
+
+    Reference: ./knowledge/versions/current/prisma-airs-sdk-main/src/management/dlp/data-profiles.ts
+      "The DLP spec does not expose a DELETE for data profiles - to remove a profile,
+       patch it to a deleted lifecycle state (typically profile_status: 'deleted')."
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    profile_id = args.get("profile_id")
+    if not profile_id:
+        raise ValueError("profile_id is required")
+
+    # Step 1: Fetch the profile to obtain name + profile_type (required by the merge-patch).
+    # SDK: GET /v2/api/data-profiles/{resourceId}
+    profile = client.http_request(method="GET", url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}", use_dlp_base=True)
+
+    name = profile.get("name")
+    profile_type = profile.get("profile_type")
+    if not name or not profile_type:
+        raise ValueError(
+            f"Cannot delete DLP data profile '{profile_id}': unable to resolve required fields "
+            "(name, profile_type) from the existing profile."
+        )
+
+    # Step 2: Patch profile_status to "deleted" (soft-delete).
+    # SDK: PATCH /v2/api/data-profiles/{resourceId} with Content-Type application/merge-patch+json
+    request_body: dict[str, Any] = {"name": name, "profile_type": profile_type, "profile_status": "deleted"}
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{DLP_DATA_PROFILES_PATH}/{profile_id}",
+        json_data=request_body,
+        use_dlp_base=True,
+        headers={"Content-Type": "application/merge-patch+json"},
+    )
+
+    # Action-tracking context (own key, consistent with other delete commands in this pack)
+    context_output = {
+        "id": profile_id,
+        "name": name,
+        "profile_status": (response or {}).get("profile_status", "deleted"),
+        "deleted": True,
+        "status": "Successfully soft-deleted",
+    }
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs DLP Data Profile Deleted",
+        [context_output],
+        headers=["id", "name", "profile_status", "status"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfileDelete",
+        outputs_key_field="id",
+        outputs=context_output,
+        readable_output=readable_output,
+        raw_response=response,
     )
 
 
@@ -2211,17 +2124,9 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
     # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/scans-client.ts
     # SDK path: /v1/scans (data plane)
     url_suffix = "/v1/scans"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema from model-security.ts: ScanBaseResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, model_uri, owner, scan_origin,
@@ -2240,7 +2145,7 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
             "scan_origin": scan.get("scan_origin"),
             "created_at": scan.get("created_at"),
             "updated_at": scan.get("updated_at"),
-            "created_by": scan.get("created_by")
+            "created_by": scan.get("created_by"),
         }
         scans.append(scan_info)
 
@@ -2248,7 +2153,7 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
         "Prisma AIRs Model Security Scans",
         scans,
         headers=["uuid", "model_uri", "eval_outcome", "source_type", "security_group_name", "created_at"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -2256,7 +2161,7 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="uuid",
         outputs=scans,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2289,7 +2194,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
     request_body: dict[str, Any] = {
         "model_uri": model_uri,
         "security_group_uuid": security_group_uuid,
-        "scan_origin": scan_origin
+        "scan_origin": scan_origin,
     }
 
     # Add optional fields if provided
@@ -2306,12 +2211,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
     # Endpoint: POST /v1/scans (data plane, not management)
     url_suffix = "/v1/scans"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_model_sec_data=True)
 
     # Parse response - SDK schema: ScanBaseResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, model_uri, owner, scan_origin,
@@ -2328,7 +2228,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
         "owner": response.get("owner"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Add eval_summary if present
@@ -2344,20 +2244,23 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
         [scan_info],
         headers=["uuid", "model_uri", "eval_outcome", "security_group_name", "source_type", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add helpful notes
     readable_output += f"\n**Scan UUID:** `{scan_info.get('uuid')}`"
     readable_output += f"\n**Status:** {scan_info.get('eval_outcome')} (scan is processing)"
-    readable_output += f"\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-get uuid=\"{scan_info.get('uuid')}\"` to check scan status and results."
+    readable_output += (
+        f"\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-get uuid=\"{scan_info.get('uuid')}\"` "
+        "to check scan status and results."
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2385,11 +2288,7 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
     # Endpoint: GET /v1/scans/{uuid} (data plane)
     url_suffix = f"/v1/scans/{uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_data=True)
 
     # Parse response - SDK schema: ScanBaseResponseSchema (same as scans-create)
     # Key fields: uuid, eval_outcome (PENDING/ALLOWED/BLOCKED), eval_summary, error_code, error_message
@@ -2411,7 +2310,7 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
         "scanner_version": response.get("scanner_version"),
         "time_started": response.get("time_started"),
         "total_files_scanned": response.get("total_files_scanned"),
-        "total_files_skipped": response.get("total_files_skipped")
+        "total_files_skipped": response.get("total_files_skipped"),
     }
 
     # Add eval_summary if present
@@ -2435,10 +2334,19 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
     readable_output = tableToMarkdown(
         "Model Security Scan Status",
         [scan_info],
-        headers=["uuid", "eval_outcome", "model_uri", "security_group_name",
-                 "source_type", "rules_passed", "rules_failed", "total_rules", "updated_at"],
+        headers=[
+            "uuid",
+            "eval_outcome",
+            "model_uri",
+            "security_group_name",
+            "source_type",
+            "rules_passed",
+            "rules_failed",
+            "total_rules",
+            "updated_at",
+        ],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add status-specific notes
@@ -2446,10 +2354,15 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
     if eval_outcome == "PENDING":
         readable_output += "\n\n**Status:** Scan is still processing. Poll this command to check for completion."
     elif eval_outcome == "ALLOWED":
-        readable_output += f"\n\n**Status:** ✅ Scan complete - model ALLOWED ({scan_info.get('rules_passed', 0)} rules passed, {scan_info.get('rules_failed', 0)} failed)"
+        readable_output += (
+            f"\n\n**Status:** ✅ Scan complete - model ALLOWED "
+            f"({scan_info.get('rules_passed', 0)} rules passed, {scan_info.get('rules_failed', 0)} failed)"
+        )
     elif eval_outcome == "BLOCKED":
         readable_output += f"\n\n**Status:** ❌ Scan complete - model BLOCKED ({scan_info.get('rules_failed', 0)} rules failed)"
-        readable_output += f"\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-violations uuid=\"{uuid}\"` to see detailed violations."
+        readable_output += (
+            f'\n\n**Next Steps:** Use `!prisma-airs-model-security-scans-violations uuid="{uuid}"` to see detailed violations.'
+        )
 
     # Add error details if present
     if scan_info.get("error_code") or scan_info.get("error_message"):
@@ -2461,7 +2374,7 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2490,17 +2403,9 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
     # SDK: ScansClient.getViolations(scanUuid, opts)
     # Endpoint: GET /v1/scans/{uuid}/rule-violations (data plane)
     url_suffix = f"/v1/scans/{uuid}/rule-violations"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
+    params = {"limit": limit, "offset": offset}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema: ViolationListSchema
     # Response: { pagination: {...}, violations: [...] }
@@ -2513,23 +2418,25 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
     # file, hash, module, operator, threat, threat_description
     violations = []
     for violation in violations_list:
-        violations.append({
-            "uuid": violation.get("uuid"),
-            "rule_name": violation.get("rule_name"),
-            "rule_description": violation.get("rule_description"),
-            "description": violation.get("description"),
-            "rule_instance_state": violation.get("rule_instance_state"),
-            "file": violation.get("file"),
-            "threat": violation.get("threat"),
-            "threat_description": violation.get("threat_description"),
-            "module": violation.get("module"),
-            "operator": violation.get("operator"),
-            "hash": violation.get("hash"),
-            "rule_instance_uuid": violation.get("rule_instance_uuid"),
-            "created_at": violation.get("created_at"),
-            "updated_at": violation.get("updated_at"),
-            "tsg_id": violation.get("tsg_id")
-        })
+        violations.append(
+            {
+                "uuid": violation.get("uuid"),
+                "rule_name": violation.get("rule_name"),
+                "rule_description": violation.get("rule_description"),
+                "description": violation.get("description"),
+                "rule_instance_state": violation.get("rule_instance_state"),
+                "file": violation.get("file"),
+                "threat": violation.get("threat"),
+                "threat_description": violation.get("threat_description"),
+                "module": violation.get("module"),
+                "operator": violation.get("operator"),
+                "hash": violation.get("hash"),
+                "rule_instance_uuid": violation.get("rule_instance_uuid"),
+                "created_at": violation.get("created_at"),
+                "updated_at": violation.get("updated_at"),
+                "tsg_id": violation.get("tsg_id"),
+            }
+        )
 
     # Create readable output using XSOAR table format
     if violations:
@@ -2538,7 +2445,7 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
             violations,
             headers=["rule_name", "description", "threat", "file", "module", "operator", "rule_instance_state"],
             headerTransform=lambda h: h.replace("_", " ").title(),
-            removeNull=True
+            removeNull=True,
         )
         readable_output += f"\n\n**Total Violations:** {len(violations)}"
         if pagination.get("total_items"):
@@ -2552,7 +2459,7 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
         "violations": violations,
         "total_items": pagination.get("total_items"),
         "limit": limit,
-        "offset": offset
+        "offset": offset,
     }
 
     return CommandResults(
@@ -2560,7 +2467,7 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
         outputs_key_field="uuid",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2584,17 +2491,9 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
     # SDK: ScansClient.getLabelKeys(opts)
     # Endpoint: GET /v1/scans/label-keys (data plane)
     url_suffix = "/v1/scans/label-keys"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
+    params = {"limit": limit, "offset": offset}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema: LabelKeyListSchema
     # Response: { pagination: {...}, keys: [...] }
@@ -2605,12 +2504,7 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
     if keys:
         # Convert array of strings to list of dicts for table display
         keys_table = [{"Key": key} for key in keys]
-        readable_output = tableToMarkdown(
-            "Model Security Label Keys",
-            keys_table,
-            headers=["Key"],
-            removeNull=True
-        )
+        readable_output = tableToMarkdown("Model Security Label Keys", keys_table, headers=["Key"], removeNull=True)
         readable_output += f"\n\n**Total Keys:** {len(keys)}"
         if pagination.get("total_items"):
             readable_output += f" (showing {offset + 1}-{offset + len(keys)} of {pagination.get('total_items')})"
@@ -2618,19 +2512,14 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
         readable_output = "No label keys found"
 
     # Add context output
-    context_output = {
-        "keys": keys,
-        "total_items": pagination.get("total_items"),
-        "limit": limit,
-        "offset": offset
-    }
+    context_output = {"keys": keys, "total_items": pagination.get("total_items"), "limit": limit, "offset": offset}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelKeys",
         outputs_key_field=None,  # No unique key field for this list
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2659,18 +2548,11 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
     # Endpoint: GET /v1/scans/label-keys/{key}/values (data plane)
     # Note: SDK uses encodeURIComponent for key in path
     from urllib.parse import quote
-    url_suffix = f"/v1/scans/label-keys/{quote(key, safe='')}/values"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    url_suffix = f"/v1/scans/label-keys/{quote(key, safe='')}/values"
+    params = {"limit": limit, "offset": offset}
+
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema: LabelValueListSchema
     # Response: { pagination: {...}, values: [...] }
@@ -2682,10 +2564,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
         # Convert array of strings to list of dicts for table display
         values_table = [{"Value": value} for value in values]
         readable_output = tableToMarkdown(
-            f"Model Security Label Values for Key: {key}",
-            values_table,
-            headers=["Value"],
-            removeNull=True
+            f"Model Security Label Values for Key: {key}", values_table, headers=["Value"], removeNull=True
         )
         readable_output += f"\n\n**Total Values:** {len(values)}"
         if pagination.get("total_items"):
@@ -2699,7 +2578,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
         "values": values,
         "total_items": pagination.get("total_items"),
         "limit": limit,
-        "offset": offset
+        "offset": offset,
     }
 
     return CommandResults(
@@ -2707,7 +2586,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
         outputs_key_field=None,  # No unique key field for this list
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2735,6 +2614,7 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
     # Parse labels JSON
     # Expected format: [{"key": "env", "value": "prod"}, {"key": "team", "value": "security"}]
     import json
+
     try:
         labels = json.loads(labels_json)
     except json.JSONDecodeError as e:
@@ -2751,9 +2631,7 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
     # Build request body according to LabelsCreateRequestSchema
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
     # Schema: { labels: [{ key: string, value: string }] }
-    request_body = {
-        "labels": labels
-    }
+    request_body = {"labels": labels}
 
     # Call Model Security Data API to add labels
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
@@ -2761,12 +2639,7 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
     # Endpoint: POST /v1/scans/{uuid}/labels (data plane)
     url_suffix = f"/v1/scans/{scan_uuid}/labels"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_model_sec_data=True)
 
     # Response is empty object on success per LabelsResponseSchema
     # Create readable output
@@ -2775,18 +2648,14 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
     readable_output += f"**Labels Added:** {labels_summary}"
 
     # Context output
-    context_output = {
-        "scan_uuid": scan_uuid,
-        "labels_added": labels,
-        "success": True
-    }
+    context_output = {"scan_uuid": scan_uuid, "labels_added": labels, "success": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsAdd",
         outputs_key_field=None,
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2814,6 +2683,7 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
     # Parse labels JSON
     # Expected format: [{"key": "env", "value": "prod"}, {"key": "team", "value": "security"}]
     import json
+
     try:
         labels = json.loads(labels_json)
     except json.JSONDecodeError as e:
@@ -2830,9 +2700,7 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
     # Build request body according to LabelsCreateRequestSchema
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
     # Schema: { labels: [{ key: string, value: string }] }
-    request_body = {
-        "labels": labels
-    }
+    request_body = {"labels": labels}
 
     # Call Model Security Data API to set labels (replace all)
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
@@ -2840,12 +2708,7 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
     # Endpoint: PUT /v1/scans/{uuid}/labels (data plane)
     url_suffix = f"/v1/scans/{scan_uuid}/labels"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_model_sec_data=True)
 
     # Response is empty object on success per LabelsResponseSchema
     # Create readable output
@@ -2854,18 +2717,14 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
     readable_output += f"**Labels (all previous labels replaced):** {labels_summary}"
 
     # Context output
-    context_output = {
-        "scan_uuid": scan_uuid,
-        "labels_set": labels,
-        "success": True
-    }
+    context_output = {"scan_uuid": scan_uuid, "labels_set": labels, "success": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsSet",
         outputs_key_field=None,
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2895,6 +2754,7 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
     if keys_str.startswith("["):
         # JSON array format
         import json
+
         try:
             keys = json.loads(keys_str)
         except json.JSONDecodeError as e:
@@ -2922,7 +2782,7 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
         url_suffix=url_suffix,
         params=params,
         use_model_sec_data=True,
-        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Response is void/undefined on success per SDK
@@ -2932,18 +2792,14 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
     readable_output += f"**Deleted Keys:** {keys_summary}"
 
     # Context output
-    context_output = {
-        "scan_uuid": scan_uuid,
-        "keys_deleted": keys,
-        "success": True
-    }
+    context_output = {"scan_uuid": scan_uuid, "keys_deleted": keys, "success": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsDelete",
         outputs_key_field=None,
         outputs=context_output,
         readable_output=readable_output,
-        raw_response={}  # Empty response
+        raw_response={},  # Empty response
     )
 
 
@@ -2970,11 +2826,7 @@ def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]
     # Endpoint: GET /v1/evaluations/{uuid} (data plane)
     url_suffix = f"/v1/evaluations/{uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_data=True)
 
     # Parse response - SDK schema: RuleEvaluationResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, result, violation_count,
@@ -2990,7 +2842,7 @@ def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]
         "rule_instance_state": response.get("rule_instance_state"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Create readable output using XSOAR table format
@@ -2999,7 +2851,7 @@ def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]
         [evaluation_info],
         headers=["rule_name", "result", "violation_count", "rule_instance_state", "scan_uuid"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add result-specific context
@@ -3016,7 +2868,7 @@ def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]
         outputs_key_field="uuid",
         outputs=evaluation_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3043,11 +2895,7 @@ def model_security_scans_violation_command(client: Client, args: dict[str, Any])
     # Endpoint: GET /v1/violations/{uuid} (data plane)
     url_suffix = f"/v1/violations/{uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_data=True)
 
     # Parse response - SDK schema: ViolationResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, description, rule_instance_uuid,
@@ -3068,7 +2916,7 @@ def model_security_scans_violation_command(client: Client, args: dict[str, Any])
         "rule_instance_uuid": response.get("rule_instance_uuid"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Create readable output using XSOAR table format
@@ -3077,7 +2925,7 @@ def model_security_scans_violation_command(client: Client, args: dict[str, Any])
         [violation_info],
         headers=["rule_name", "description", "threat", "file", "module", "operator"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add threat context if present
@@ -3097,7 +2945,7 @@ def model_security_scans_violation_command(client: Client, args: dict[str, Any])
         outputs_key_field="uuid",
         outputs=violation_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3125,10 +2973,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
     # SDK: ScansClient.getFiles(scanUuid, opts)
     # Endpoint: GET /v1/scans/{uuid}/files (data plane)
     url_suffix = f"/v1/scans/{scan_uuid}/files"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
+    params = {"limit": limit, "offset": offset}
 
     # Add optional filters
     if args.get("sort_field"):
@@ -3142,12 +2987,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
     if args.get("query_path"):
         params["query_path"] = args.get("query_path")
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema: FileListSchema
     # Response: { pagination: {...}, files: [...] }
@@ -3170,7 +3010,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
             "scan_uuid": file.get("scan_uuid"),
             "created_at": file.get("created_at"),
             "updated_at": file.get("updated_at"),
-            "tsg_id": file.get("tsg_id")
+            "tsg_id": file.get("tsg_id"),
         }
 
         # Add formats if present
@@ -3186,7 +3026,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
             files,
             headers=["path", "type", "result", "formats", "parent_path"],
             headerTransform=lambda h: h.replace("_", " ").title(),
-            removeNull=True
+            removeNull=True,
         )
         readable_output += f"\n\n**Total Files:** {len(files)}"
         if pagination.get("total_items"):
@@ -3200,7 +3040,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
         "files": files,
         "total_items": pagination.get("total_items"),
         "limit": limit,
-        "offset": offset
+        "offset": offset,
     }
 
     return CommandResults(
@@ -3208,7 +3048,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="uuid",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3236,10 +3076,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
     # SDK: ScansClient.getEvaluations(scanUuid, opts)
     # Endpoint: GET /v1/scans/{uuid}/evaluations (data plane)
     url_suffix = f"/v1/scans/{scan_uuid}/evaluations"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
+    params = {"limit": limit, "offset": offset}
 
     # Add optional filters
     if args.get("sort_field"):
@@ -3251,12 +3088,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
     if args.get("rule_instance_uuid"):
         params["rule_instance_uuid"] = args.get("rule_instance_uuid")
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_data=True)
 
     # Parse response - SDK schema: RuleEvaluationListSchema
     # Response: { pagination: {...}, evaluations: [...] }
@@ -3280,7 +3112,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
             "rule_description": evaluation.get("rule_description"),
             "created_at": evaluation.get("created_at"),
             "updated_at": evaluation.get("updated_at"),
-            "tsg_id": evaluation.get("tsg_id")
+            "tsg_id": evaluation.get("tsg_id"),
         }
         evaluations.append(eval_info)
 
@@ -3291,7 +3123,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
             evaluations,
             headers=["rule_name", "result", "violation_count", "rule_instance_state", "rule_description"],
             headerTransform=lambda h: h.replace("_", " ").title(),
-            removeNull=True
+            removeNull=True,
         )
         readable_output += f"\n\n**Total Evaluations:** {len(evaluations)}"
         if pagination.get("total_items"):
@@ -3305,7 +3137,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
         "evaluations": evaluations,
         "total_items": pagination.get("total_items"),
         "limit": limit,
-        "offset": offset
+        "offset": offset,
     }
 
     return CommandResults(
@@ -3313,7 +3145,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
         outputs_key_field="uuid",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3333,17 +3165,9 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
     # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/security-groups-client.ts
     # SDK path: /v1/security-groups (management plane)
     url_suffix = "/v1/security-groups"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityGroupResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
@@ -3360,7 +3184,7 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
             "is_tombstone": group.get("is_tombstone"),
             "created_at": group.get("created_at"),
             "updated_at": group.get("updated_at"),
-            "tsg_id": group.get("tsg_id")
+            "tsg_id": group.get("tsg_id"),
         }
         groups.append(group_info)
 
@@ -3368,7 +3192,7 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
         "Prisma AIRs Model Security Groups",
         groups,
         headers=["uuid", "name", "source_type", "state", "created_at"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -3376,7 +3200,7 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="uuid",
         outputs=groups,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3400,11 +3224,7 @@ def model_security_groups_get_command(client: Client, args: dict[str, Any]) -> C
     # Endpoint: GET /v1/security-groups/{uuid}
     url_suffix = f"/v1/security-groups/{uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityGroupResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
@@ -3417,7 +3237,7 @@ def model_security_groups_get_command(client: Client, args: dict[str, Any]) -> C
         "is_tombstone": response.get("is_tombstone"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Create readable output using XSOAR table format
@@ -3426,15 +3246,15 @@ def model_security_groups_get_command(client: Client, args: dict[str, Any]) -> C
         [group_info],
         headers=["uuid", "name", "description", "source_type", "state", "created_at", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
-        outputs_key_field="uuid",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupGet",  # Query tracking context
+        outputs_key_field="uuid",  # Enables array appending for multiple gets
         outputs=group_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3466,11 +3286,7 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
     # Required: name, source_type
     # Optional: description, rule_configurations
-    request_body = {
-        "name": name,
-        "source_type": source_type,
-        "description": description
-    }
+    request_body = {"name": name, "source_type": source_type, "description": description}
 
     # Call Model Security Management API to create security group
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/security-groups-client.ts
@@ -3478,12 +3294,7 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
     # Endpoint: POST /v1/security-groups
     url_suffix = "/v1/security-groups"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityGroupResponseSchema
     # Fields: uuid, tsg_id, created_at, updated_at, name, description, source_type, state, is_tombstone
@@ -3496,7 +3307,7 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
         "is_tombstone": response.get("is_tombstone"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Create readable output using XSOAR table format
@@ -3505,7 +3316,7 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
         [group_info],
         headers=["uuid", "name", "description", "source_type", "state", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add helpful note
@@ -3513,11 +3324,11 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
     readable_output += f"\n**State:** {group_info.get('state')} (Group will become ACTIVE after rule instances are configured)"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
-        outputs_key_field="uuid",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupAdd",  # Action tracking context (not state)
+        outputs_key_field="uuid",  # Enables array appending for multiple creates
         outputs=group_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3552,16 +3363,12 @@ def model_security_groups_delete_command(client: Client, args: dict[str, Any]) -
         method="DELETE",
         url_suffix=url_suffix,
         use_model_sec_mgmt=True,
-        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Response is void on success per SDK
     # Create context output
-    context_output = {
-        "uuid": uuid,
-        "deleted": True,
-        "status": "Successfully deleted"
-    }
+    context_output = {"uuid": uuid, "deleted": True, "status": "Successfully deleted"}
 
     # Create readable output using XSOAR table format
     readable_output = tableToMarkdown(
@@ -3569,14 +3376,14 @@ def model_security_groups_delete_command(client: Client, args: dict[str, Any]) -
         [context_output],
         headers=["uuid", "status"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupDelete",
         outputs_key_field="uuid",
         outputs=context_output,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -3619,12 +3426,7 @@ def model_security_groups_update_command(client: Client, args: dict[str, Any]) -
     # Endpoint: PUT /v1/security-groups/{uuid} (management plane)
     url_suffix = f"/v1/security-groups/{uuid}"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityGroupResponseSchema (same as groups-get)
     group_info = {
@@ -3636,7 +3438,7 @@ def model_security_groups_update_command(client: Client, args: dict[str, Any]) -
         "is_tombstone": response.get("is_tombstone"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Create readable output using XSOAR table format
@@ -3645,7 +3447,7 @@ def model_security_groups_update_command(client: Client, args: dict[str, Any]) -
         [group_info],
         headers=["uuid", "name", "description", "source_type", "state", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add update summary
@@ -3657,11 +3459,11 @@ def model_security_groups_update_command(client: Client, args: dict[str, Any]) -
     readable_output += f"\n\n**Updated:** {', '.join(updates)}"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroup",
-        outputs_key_field="uuid",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityGroupUpdate",  # Action tracking context (not state)
+        outputs_key_field="uuid",  # Enables array appending for multiple updates
         outputs=group_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3681,17 +3483,9 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
     # Reference: ./knowledge/prisma-airs-sdk-main/src/model-security/security-rules-client.ts
     # SDK path: /v1/security-rules (management plane)
     url_suffix = "/v1/security-rules"
-    params = {
-        "offset": "0",
-        "limit": str(limit) if limit else "100"
-    }
+    params = {"offset": "0", "limit": str(limit) if limit else "100"}
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityRuleResponseSchema
     # Fields: uuid, name, description, rule_type, compatible_sources, default_state, remediation, editable_fields
@@ -3705,7 +3499,7 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
             "description": rule.get("description"),
             "rule_type": rule.get("rule_type"),
             "compatible_sources": rule.get("compatible_sources"),
-            "default_state": rule.get("default_state")
+            "default_state": rule.get("default_state"),
         }
         rules.append(rule_info)
 
@@ -3713,7 +3507,7 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
         "Prisma AIRs Model Security Rules",
         rules,
         headers=["uuid", "name", "rule_type", "default_state"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -3721,7 +3515,7 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="uuid",
         outputs=rules,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3749,11 +3543,7 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
     # Endpoint: GET /v1/security-rules/{uuid} (management plane)
     url_suffix = f"/v1/security-rules/{uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityRuleResponseSchema
     # Fields: uuid, name, description, rule_type, compatible_sources, default_state,
@@ -3764,7 +3554,7 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
         "description": response.get("description"),
         "rule_type": response.get("rule_type"),
         "compatible_sources": response.get("compatible_sources", []),
-        "default_state": response.get("default_state")
+        "default_state": response.get("default_state"),
     }
 
     # Add remediation info
@@ -3784,19 +3574,21 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
 
     # Create readable output using XSOAR table format
     # Basic info table
-    basic_info = [{
-        "UUID": rule_info.get("uuid"),
-        "Name": rule_info.get("name"),
-        "Type": rule_info.get("rule_type"),
-        "Default State": rule_info.get("default_state"),
-        "Compatible Sources": ", ".join(rule_info.get("compatible_sources", []))
-    }]
+    basic_info = [
+        {
+            "UUID": rule_info.get("uuid"),
+            "Name": rule_info.get("name"),
+            "Type": rule_info.get("rule_type"),
+            "Default State": rule_info.get("default_state"),
+            "Compatible Sources": ", ".join(rule_info.get("compatible_sources", [])),
+        }
+    ]
 
     readable_output = tableToMarkdown(
         "Model Security Rule Details",
         basic_info,
         headers=["UUID", "Name", "Type", "Default State", "Compatible Sources"],
-        removeNull=True
+        removeNull=True,
     )
 
     # Add description
@@ -3816,14 +3608,17 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
     # Add editable fields info if present
     editable_fields = response.get("editable_fields", [])
     if editable_fields:
-        readable_output += f"\n\n**Editable Fields:** {len(editable_fields)} field(s) can be customized when applying this rule to a security group"
+        readable_output += (
+            f"\n\n**Editable Fields:** {len(editable_fields)} field(s) can be customized "
+            "when applying this rule to a security group"
+        )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRule",
         outputs_key_field="uuid",
         outputs=rule_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3852,10 +3647,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
     # SDK: SecurityGroupsClient.listRuleInstances(securityGroupUuid, opts)
     # Endpoint: GET /v1/security-groups/{uuid}/rule-instances (management plane)
     url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances"
-    params = {
-        "limit": limit,
-        "offset": offset
-    }
+    params = {"limit": limit, "offset": offset}
 
     # Add optional filters
     if args.get("security_rule_uuid"):
@@ -3863,12 +3655,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
     if args.get("state"):
         params["state"] = args.get("state")
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ListModelSecurityRuleInstancesResponseSchema
     # Response: { pagination: {...}, rule_instances: [...] }
@@ -3891,7 +3678,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
             "rule_description": rule_data.get("description"),
             "created_at": instance.get("created_at"),
             "updated_at": instance.get("updated_at"),
-            "tsg_id": instance.get("tsg_id")
+            "tsg_id": instance.get("tsg_id"),
         }
 
         # Add field_values if present (custom configuration for this rule instance)
@@ -3907,7 +3694,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
             rule_instances,
             headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
             headerTransform=lambda h: h.replace("_", " ").title(),
-            removeNull=True
+            removeNull=True,
         )
         readable_output += f"\n\n**Total Rule Instances:** {len(rule_instances)}"
         if pagination.get("total_items"):
@@ -3921,7 +3708,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
         "rule_instances": rule_instances,
         "total_items": pagination.get("total_items"),
         "limit": limit,
-        "offset": offset
+        "offset": offset,
     }
 
     return CommandResults(
@@ -3929,7 +3716,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
         outputs_key_field="uuid",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -3959,9 +3746,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/model-security.ts
     # Required: security_group_uuid
     # Optional: state (DISABLED/ALLOWING/BLOCKING), field_values (custom rule config)
-    request_body: dict[str, Any] = {
-        "security_group_uuid": security_group_uuid
-    }
+    request_body: dict[str, Any] = {"security_group_uuid": security_group_uuid}
 
     # Add optional state update
     if state:
@@ -3971,6 +3756,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
     # Note: field_values is a JSON object, so we expect it as a JSON string in args
     if args.get("field_values"):
         import json
+
         try:
             request_body["field_values"] = json.loads(args.get("field_values"))
         except json.JSONDecodeError as e:
@@ -3982,12 +3768,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
     # Endpoint: PUT /v1/security-groups/{uuid}/rule-instances/{ruleInstanceUuid} (management plane)
     url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances/{rule_instance_uuid}"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityRuleInstanceResponseSchema (same as list)
     rule_data = response.get("rule", {})
@@ -4001,7 +3782,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         "rule_description": rule_data.get("description"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Add field_values if present
@@ -4014,7 +3795,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         [rule_instance_info],
         headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add helpful context about the update
@@ -4028,7 +3809,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         outputs_key_field="uuid",
         outputs=rule_instance_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4058,11 +3839,7 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
     # Endpoint: GET /v1/security-groups/{groupUuid}/rule-instances/{instanceUuid} (management plane)
     url_suffix = f"/v1/security-groups/{security_group_uuid}/rule-instances/{rule_instance_uuid}"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_model_sec_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_model_sec_mgmt=True)
 
     # Parse response - SDK schema: ModelSecurityRuleInstanceResponseSchema
     # Same structure as rule-instances-list items
@@ -4077,7 +3854,7 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
         "rule_description": rule_data.get("description"),
         "created_at": response.get("created_at"),
         "updated_at": response.get("updated_at"),
-        "tsg_id": response.get("tsg_id")
+        "tsg_id": response.get("tsg_id"),
     }
 
     # Add field_values if present
@@ -4086,11 +3863,11 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
 
     # Create readable output using XSOAR table format
     readable_output = tableToMarkdown(
-        f"Model Security Rule Instance Details",
+        "Model Security Rule Instance Details",
         [rule_instance_info],
         headers=["rule_name", "state", "rule_type", "uuid", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add configuration details
@@ -4102,7 +3879,7 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
         outputs_key_field="uuid",
         outputs=rule_instance_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4129,12 +3906,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
 
     # Call Red Team targets list endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts
-    response = client.http_request(
-        method="GET",
-        url_suffix=RED_TEAM_TARGETS_ENDPOINT,
-        params=params,
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=RED_TEAM_TARGETS_ENDPOINT, params=params, use_redteam_mgmt=True)
 
     # Extract targets from response (forward-compatible: capture all fields)
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
@@ -4158,7 +3930,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
             "session_supported": target.get("session_supported"),
             "auth_type": target.get("auth_type"),
             "created_by_user_id": target.get("created_by_user_id"),
-            "updated_by_user_id": target.get("updated_by_user_id")
+            "updated_by_user_id": target.get("updated_by_user_id"),
         }
         targets.append(target_info)
 
@@ -4166,7 +3938,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
         "Prisma AIRs Red Team Targets",
         targets,
         headers=["uuid", "name", "target_type", "status", "active", "validated", "created_at"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -4174,7 +3946,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_key_field="uuid",
         outputs=targets,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4195,9 +3967,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
 
     # Build request body according to TargetCreateRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetRequestBaseFields)
-    request_body: dict[str, Any] = {
-        "name": name
-    }
+    request_body: dict[str, Any] = {"name": name}
 
     # Optional fields
     if args.get("description"):
@@ -4216,6 +3986,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
     # Connection params (JSON)
     if args.get("connection_params"):
         import json
+
         request_body["connection_params"] = json.loads(args.get("connection_params"))
 
     # Optional validation parameter
@@ -4226,11 +3997,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (create method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
     response = client.http_request(
-        method="POST",
-        url_suffix=RED_TEAM_TARGETS_ENDPOINT,
-        json_data=request_body,
-        params=params,
-        use_redteam_mgmt=True
+        method="POST", url_suffix=RED_TEAM_TARGETS_ENDPOINT, json_data=request_body, params=params, use_redteam_mgmt=True
     )
 
     # Parse response according to TargetResponseSchema
@@ -4251,14 +4018,14 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
         "session_supported": response.get("session_supported"),
         "auth_type": response.get("auth_type"),
         "version": response.get("version"),
-        "created_by_user_id": response.get("created_by_user_id")
+        "created_by_user_id": response.get("created_by_user_id"),
     }
 
     readable_output = tableToMarkdown(
         f"Red Team Target Created: {name}",
         [target_info],
         headers=["uuid", "name", "target_type", "status", "active", "validated"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -4266,7 +4033,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4287,11 +4054,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
     # Call Red Team target get endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (get method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}", use_redteam_mgmt=True)
 
     # Parse response according to TargetResponseSchema
     target_info = {
@@ -4314,7 +4077,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
         "secret_version": response.get("secret_version"),
         "created_by_user_id": response.get("created_by_user_id"),
         "updated_by_user_id": response.get("updated_by_user_id"),
-        "profiling_status": response.get("profiling_status")
+        "profiling_status": response.get("profiling_status"),
     }
 
     # Include metadata if present
@@ -4334,7 +4097,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
         f"Red Team Target: {target_info.get('name', uuid)}",
         [target_info],
         headers=["uuid", "name", "target_type", "status", "active", "validated", "connection_type"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -4342,7 +4105,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4387,6 +4150,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
     # Connection params (JSON)
     if args.get("connection_params"):
         import json
+
         request_body["connection_params"] = json.loads(args.get("connection_params"))
 
     # If no fields provided, error
@@ -4397,9 +4161,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
     # by fetching the current target first
     if "name" not in request_body:
         current_target = client.http_request(
-            method="GET",
-            url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
-            use_redteam_mgmt=True
+            method="GET", url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
         )
         request_body["name"] = current_target.get("name")
 
@@ -4415,7 +4177,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
         url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
         json_data=request_body,
         params=params,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to TargetResponseSchema
@@ -4431,14 +4193,14 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
         "description": response.get("description"),
         "target_type": response.get("target_type"),
         "connection_type": response.get("connection_type"),
-        "updated_by_user_id": response.get("updated_by_user_id")
+        "updated_by_user_id": response.get("updated_by_user_id"),
     }
 
     readable_output = tableToMarkdown(
         f"Red Team Target Updated: {target_info.get('name', uuid)}",
         [target_info],
         headers=["uuid", "name", "target_type", "status", "updated_at"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -4446,7 +4208,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4467,18 +4229,14 @@ def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> Comm
     # Call Red Team target delete endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (delete method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (BaseResponseSchema)
-    response = client.http_request(
-        method="DELETE",
-        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}",
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/{uuid}", use_redteam_mgmt=True)
 
     # Parse response according to BaseResponseSchema (optional - may be empty)
     # Fields: message, status
     delete_info = {
         "uuid": uuid,
         "message": response.get("message", "Target deleted successfully"),
-        "status": response.get("status", 200)
+        "status": response.get("status", 200),
     }
 
     readable_output = f"## Red Team Target Deleted\n\n**UUID:** {uuid}\n\n**Status:** {delete_info.get('status')}\n\n**Message:** {delete_info.get('message')}"
@@ -4488,7 +4246,7 @@ def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="uuid",
         outputs=delete_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4509,9 +4267,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
 
     # Build request body according to TargetProbeRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetProbeRequestSchema)
-    request_body: dict[str, Any] = {
-        "name": name
-    }
+    request_body: dict[str, Any] = {"name": name}
 
     # Optional UUID (for probing existing target)
     if args.get("uuid"):
@@ -4532,6 +4288,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
     # Connection params (JSON)
     if args.get("connection_params"):
         import json
+
         request_body["connection_params"] = json.loads(args.get("connection_params"))
 
     # Probe fields - array of fields to probe (e.g., ["multi_turn", "rate_limit"])
@@ -4543,10 +4300,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/targets-client.ts (probe method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (TargetResponseSchema)
     response = client.http_request(
-        method="POST",
-        url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/probe",
-        json_data=request_body,
-        use_redteam_mgmt=True
+        method="POST", url_suffix=f"{RED_TEAM_TARGETS_ENDPOINT}/probe", json_data=request_body, use_redteam_mgmt=True
     )
 
     # Parse response according to TargetResponseSchema
@@ -4558,7 +4312,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
         "validated": response.get("validated"),
         "profiling_status": response.get("profiling_status"),
         "target_type": response.get("target_type"),
-        "connection_type": response.get("connection_type")
+        "connection_type": response.get("connection_type"),
     }
 
     # Include target_metadata if present (contains probe results)
@@ -4574,7 +4328,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
         f"Red Team Target Probe Results: {name}",
         [target_info],
         headers=["uuid", "name", "status", "validated", "profiling_status", "multi_turn_supported"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -4582,7 +4336,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4606,11 +4360,7 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
     # Endpoint: GET /v1/target/{uuid}/profile
     # Response: TargetProfileResponseSchema - { target_id, target_version, status, profiling_status, target_background, additional_context, ai_generated_fields, other_details }
     url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/{target_uuid}/profile"
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_mgmt=True)
 
     # Parse response according to TargetProfileResponseSchema
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (lines 1160-1172)
@@ -4618,7 +4368,7 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
         "target_id": response.get("target_id"),
         "target_version": response.get("target_version"),
         "status": response.get("status"),
-        "profiling_status": response.get("profiling_status")
+        "profiling_status": response.get("profiling_status"),
     }
 
     # Add optional fields if present
@@ -4632,7 +4382,7 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
         profile_info["other_details"] = response.get("other_details")
 
     # Create readable output
-    readable_output = f"## Red Team Target Profile\n\n"
+    readable_output = "## Red Team Target Profile\n\n"
     readable_output += f"**Target ID:** {profile_info.get('target_id')}\n\n"
     readable_output += f"**Version:** {profile_info.get('target_version')}\n\n"
     readable_output += f"**Status:** {profile_info.get('status')}\n\n"
@@ -4640,18 +4390,22 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
 
     if profile_info.get("target_background"):
         import json
+
         readable_output += f"**Background:**\n```json\n{json.dumps(profile_info.get('target_background'), indent=2)}\n```\n\n"
 
     if profile_info.get("additional_context"):
         import json
-        readable_output += f"**Additional Context:**\n```json\n{json.dumps(profile_info.get('additional_context'), indent=2)}\n```\n\n"
+
+        readable_output += (
+            f"**Additional Context:**\n```json\n{json.dumps(profile_info.get('additional_context'), indent=2)}\n```\n\n"
+        )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetProfile",
         outputs_key_field="target_id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4699,12 +4453,7 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
 
     # Call Red Team target update profile endpoint
     url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/{target_uuid}/profile"
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_redteam_mgmt=True)
 
     # Parse response according to TargetResponseSchema
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (lines 1071-1099)
@@ -4714,7 +4463,7 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
         "status": response.get("status"),
         "active": response.get("active"),
         "validated": response.get("validated"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add target_background and additional_context if present in response
@@ -4724,7 +4473,7 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
         target_info["additional_context"] = response.get("additional_context")
 
     # Create readable output
-    readable_output = f"## ✅ Target Profile Updated\n\n"
+    readable_output = "## ✅ Target Profile Updated\n\n"
     readable_output += f"**Target:** {target_info.get('name')} (UUID: {target_info.get('uuid')})\n\n"
     readable_output += f"**Status:** {target_info.get('status')}\n\n"
     readable_output += f"**Updated:** {target_info.get('updated_at')}\n\n"
@@ -4733,14 +4482,16 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
         readable_output += f"**Background:**\n```json\n{json.dumps(target_info.get('target_background'), indent=2)}\n```\n\n"
 
     if target_info.get("additional_context"):
-        readable_output += f"**Additional Context:**\n```json\n{json.dumps(target_info.get('additional_context'), indent=2)}\n```\n\n"
+        readable_output += (
+            f"**Additional Context:**\n```json\n{json.dumps(target_info.get('additional_context'), indent=2)}\n```\n\n"
+        )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4764,11 +4515,7 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
     # Endpoint: GET /v1/template/target-metadata
     # Response: Record<string, unknown> - field definitions
     url_suffix = f"{RED_TEAM_TEMPLATE_ENDPOINT}/target-metadata"
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_mgmt=True)
 
     # Response is a dictionary of field definitions
     # Example: { "rate_limit": { "type": "number", "required": false }, "multi_turn": { "type": "boolean" } }
@@ -4776,7 +4523,8 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
 
     # Create readable output showing field definitions
     import json
-    readable_output = f"## Red Team Target Field Metadata\n\n"
+
+    readable_output = "## Red Team Target Field Metadata\n\n"
     readable_output += f"**Total Fields:** {len(metadata)}\n\n"
 
     if metadata:
@@ -4788,7 +4536,7 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetMetadata",
         outputs=metadata,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4876,24 +4624,14 @@ def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> Command
     # Build request body according to JobCreateRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobCreateRequestSchema)
     # Required fields: name, target (TargetJobRequestSchema), job_type, job_metadata
-    request_body = {
-        "name": name,
-        "target": {
-            "uuid": target_uuid
-        },
-        "job_type": job_type,
-        "job_metadata": job_metadata
-    }
+    request_body = {"name": name, "target": {"uuid": target_uuid}, "job_type": job_type, "job_metadata": job_metadata}
 
     # Call Red Team scan create endpoint
     # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (create method)
     # Endpoint: POST /ai-red-teaming/data-plane/v1/scan
     # Response: JobResponseSchema
     response = client.http_request(
-        method="POST",
-        url_suffix=RED_TEAM_SCANS_ENDPOINT,
-        json_data=request_body,
-        use_redteam_data=True
+        method="POST", url_suffix=RED_TEAM_SCANS_ENDPOINT, json_data=request_body, use_redteam_data=True
     )
 
     # Parse response according to JobResponseSchema
@@ -4911,12 +4649,11 @@ def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> Command
         "score": response.get("score"),
         "asr": response.get("asr"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
-    optional_fields = ["version", "extra_info", "job_metadata", "time_record",
-                       "created_by_user_id", "updated_by_user_id"]
+    optional_fields = ["version", "extra_info", "job_metadata", "time_record", "created_by_user_id", "updated_by_user_id"]
     for field in optional_fields:
         if response.get(field):
             scan_info[field] = response.get(field)
@@ -4925,22 +4662,36 @@ def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> Command
     readable_output = tableToMarkdown(
         "Red Team Scan Created Successfully",
         [scan_info],
-        headers=["uuid", "name", "job_type", "status", "target_id",
-                 "target_type", "total", "completed", "score", "asr", "created_at"],
+        headers=[
+            "uuid",
+            "name",
+            "job_type",
+            "status",
+            "target_id",
+            "target_type",
+            "total",
+            "completed",
+            "score",
+            "asr",
+            "created_at",
+        ],
         headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True
+        removeNull=True,
     )
 
     # Add helpful note below table
-    readable_output += "\n**Next Steps:** Use `!prisma-airs-redteam-scan-get uuid=\"" + \
-        str(scan_info.get('uuid')) + "\"` to check scan status and progress."
+    readable_output += (
+        '\n**Next Steps:** Use `!prisma-airs-redteam-scan-get uuid="'
+        + str(scan_info.get("uuid"))
+        + '"` to check scan status and progress.'
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4967,12 +4718,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
 
     # Call Red Team scans list endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts
-    response = client.http_request(
-        method="GET",
-        url_suffix=RED_TEAM_SCANS_ENDPOINT,
-        params=params,
-        use_redteam_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=RED_TEAM_SCANS_ENDPOINT, params=params, use_redteam_data=True)
 
     # Extract scans from response (forward-compatible: capture all fields)
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (ScanResponseSchema)
@@ -4994,7 +4740,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
             "total_prompts": scan.get("total_prompts"),
             "completed_prompts": scan.get("completed_prompts"),
             "failed_prompts": scan.get("failed_prompts"),
-            "error_message": scan.get("error_message")
+            "error_message": scan.get("error_message"),
         }
         scans.append(scan_info)
 
@@ -5002,7 +4748,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
         "Prisma AIRs Red Team Scans",
         scans,
         headers=["uuid", "job_type", "status", "target_name", "progress", "created_at"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -5010,7 +4756,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_key_field="uuid",
         outputs=scans,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5031,11 +4777,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
     # Call Red Team scan get endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (get method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobResponseSchema)
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}",
-        use_redteam_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}", use_redteam_data=True)
 
     # Parse response according to JobResponseSchema
     # Critical fields: uuid, name, target, job_type, status, total, completed, score, asr
@@ -5057,7 +4799,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
         "version": response.get("version"),
         "metering_quota_uuid": response.get("metering_quota_uuid"),
         "counted_towards_quota": response.get("counted_towards_quota"),
-        "invocation_id": response.get("invocation_id")
+        "invocation_id": response.get("invocation_id"),
     }
 
     # Add target reference if present
@@ -5084,7 +4826,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
         f"Red Team Scan: {scan_info.get('name', job_id)}",
         [scan_info],
         headers=["uuid", "name", "job_type", "status", "progress", "score", "asr", "target_name"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -5092,7 +4834,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5113,27 +4855,22 @@ def redteam_scan_abort_command(client: Client, args: dict[str, Any]) -> CommandR
     # Call Red Team scan abort endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (abort method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (JobAbortResponseSchema)
-    response = client.http_request(
-        method="POST",
-        url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}/abort",
-        use_redteam_data=True
-    )
+    response = client.http_request(method="POST", url_suffix=f"{RED_TEAM_SCANS_ENDPOINT}/{job_id}/abort", use_redteam_data=True)
 
     # Parse response according to JobAbortResponseSchema
     # Fields: job_id, message
-    abort_info = {
-        "job_id": response.get("job_id"),
-        "message": response.get("message")
-    }
+    abort_info = {"job_id": response.get("job_id"), "message": response.get("message")}
 
-    readable_output = f"## Red Team Scan Aborted\n\n**Job ID:** {abort_info.get('job_id')}\n\n**Message:** {abort_info.get('message')}"
+    readable_output = (
+        f"## Red Team Scan Aborted\n\n**Job ID:** {abort_info.get('job_id')}\n\n**Message:** {abort_info.get('message')}"
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanAbort",
         outputs_key_field="job_id",
         outputs=abort_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5150,11 +4887,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
     # Call Red Team categories endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/scans-client.ts (getCategories method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CategoryModelSchema)
-    response = client.http_request(
-        method="GET",
-        url_suffix=RED_TEAM_CATEGORIES_ENDPOINT,
-        use_redteam_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=RED_TEAM_CATEGORIES_ENDPOINT, use_redteam_data=True)
 
     # Parse response - returns array of CategoryModel
     # Fields: id, display_name, description, preselect, sub_categories
@@ -5165,7 +4898,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
             "display_name": category.get("display_name"),
             "description": category.get("description"),
             "preselect": category.get("preselect"),
-            "sub_category_count": len(category.get("sub_categories", []))
+            "sub_category_count": len(category.get("sub_categories", [])),
         }
 
         # Extract subcategory details
@@ -5176,7 +4909,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
                 "display_name": sub_cat.get("display_name"),
                 "description": sub_cat.get("description"),
                 "preselect": sub_cat.get("preselect"),
-                "active": sub_cat.get("active")
+                "active": sub_cat.get("active"),
             }
             sub_cats.append(sub_cat_info)
 
@@ -5187,7 +4920,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
         "Red Team Attack Categories",
         categories,
         headers=["id", "display_name", "description", "sub_category_count"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -5195,7 +4928,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="id",
         outputs=categories,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5224,11 +4957,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
         # STATIC or CUSTOM scans use static report endpoint
         url_suffix = f"{RED_TEAM_REPORT_STATIC_ENDPOINT}/{job_id}/report"
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_redteam_data=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
 
     # Parse response based on job type
     if job_type.upper() == "DYNAMIC":
@@ -5242,14 +4971,14 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
             "goals_achieved": response.get("goals_achieved"),
             "score": response.get("score"),
             "asr": response.get("asr"),
-            "report_summary": response.get("report_summary")
+            "report_summary": response.get("report_summary"),
         }
 
         readable_output = tableToMarkdown(
             f"Red Team Report (Dynamic) - Job {job_id}",
             [report_info],
             headers=["job_type", "total_goals", "goals_achieved", "total_threats", "score", "asr"],
-            headerTransform=lambda h: h.replace("_", " ").title()
+            headerTransform=lambda h: h.replace("_", " ").title(),
         )
 
     else:
@@ -5265,17 +4994,19 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
             "total_attacks": severity_report.get("total_attacks"),
             "successful_attacks": severity_report.get("successful"),
             "failed_attacks": severity_report.get("failed"),
-            "report_summary": response.get("report_summary")
+            "report_summary": response.get("report_summary"),
         }
 
         # Build severity breakdown
         severity_breakdown = []
         for severity_stat in severity_stats:
-            severity_breakdown.append({
-                "severity": severity_stat.get("severity"),
-                "successful": severity_stat.get("successful"),
-                "failed": severity_stat.get("failed")
-            })
+            severity_breakdown.append(
+                {
+                    "severity": severity_stat.get("severity"),
+                    "successful": severity_stat.get("successful"),
+                    "failed": severity_stat.get("failed"),
+                }
+            )
 
         report_info["severity_breakdown"] = severity_breakdown
 
@@ -5284,16 +5015,18 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
         for cat_type in ["security_report", "safety_report", "brand_report"]:
             cat_report = response.get(cat_type)
             if cat_report:
-                category_reports.append({
-                    "category": cat_type.replace("_report", "").title(),
-                    "id": cat_report.get("id"),
-                    "display_name": cat_report.get("display_name"),
-                    "asr": cat_report.get("asr"),
-                    "total_prompts": cat_report.get("total_prompts"),
-                    "total_attacks": cat_report.get("total_attacks"),
-                    "successful": cat_report.get("successful"),
-                    "failed": cat_report.get("failed")
-                })
+                category_reports.append(
+                    {
+                        "category": cat_type.replace("_report", "").title(),
+                        "id": cat_report.get("id"),
+                        "display_name": cat_report.get("display_name"),
+                        "asr": cat_report.get("asr"),
+                        "total_prompts": cat_report.get("total_prompts"),
+                        "total_attacks": cat_report.get("total_attacks"),
+                        "successful": cat_report.get("successful"),
+                        "failed": cat_report.get("failed"),
+                    }
+                )
 
         report_info["category_reports"] = category_reports
 
@@ -5307,7 +5040,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
             f"Red Team Report (Static) - Job {job_id}",
             [report_info],
             headers=["job_type", "score", "asr", "total_attacks", "successful_attacks", "failed_attacks"],
-            headerTransform=lambda h: h.replace("_", " ").title()
+            headerTransform=lambda h: h.replace("_", " ").title(),
         )
 
         # Add severity breakdown table
@@ -5316,7 +5049,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
                 "Severity Breakdown",
                 severity_breakdown,
                 headers=["severity", "successful", "failed"],
-                headerTransform=lambda h: h.replace("_", " ").title()
+                headerTransform=lambda h: h.replace("_", " ").title(),
             )
 
         # Add category reports table
@@ -5325,7 +5058,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
                 "Category Reports",
                 category_reports,
                 headers=["category", "display_name", "asr", "total_attacks", "successful", "failed"],
-                headerTransform=lambda h: h.replace("_", " ").title()
+                headerTransform=lambda h: h.replace("_", " ").title(),
             )
 
     return CommandResults(
@@ -5333,7 +5066,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_key_field="job_id",
         outputs=report_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5350,11 +5083,7 @@ def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> Command
     # Call Red Team EULA status endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (getStatus method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaResponseSchema)
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/status",
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/status", use_redteam_mgmt=True)
 
     # Parse response according to EulaResponseSchema
     # Fields: uuid, is_accepted, accepted_at, accepted_by_user_id
@@ -5362,7 +5091,7 @@ def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> Command
         "uuid": response.get("uuid"),
         "is_accepted": response.get("is_accepted"),
         "accepted_at": response.get("accepted_at"),
-        "accepted_by_user_id": response.get("accepted_by_user_id")
+        "accepted_by_user_id": response.get("accepted_by_user_id"),
     }
 
     # Create human-readable output
@@ -5380,7 +5109,7 @@ def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="uuid",
         outputs=eula_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5397,25 +5126,20 @@ def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> Comman
     # Call Red Team EULA content endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (getContent method)
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaContentResponseSchema)
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content",
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content", use_redteam_mgmt=True)
 
     # Parse response according to EulaContentResponseSchema
     # Fields: content (string - full EULA text)
     eula_content = response.get("content", "")
 
-    eula_info = {
-        "content": eula_content,
-        "content_length": len(eula_content)
-    }
+    eula_info = {"content": eula_content, "content_length": len(eula_content)}
 
     # Truncate content for display (show first 1000 chars)
     display_content = eula_content[:1000]
     if len(eula_content) > 1000:
-        display_content += f"\n\n... (truncated, {len(eula_content) - 1000} more characters)\n\nFull content available in context output."
+        display_content += (
+            f"\n\n... (truncated, {len(eula_content) - 1000} more characters)\n\nFull content available in context output."
+        )
 
     readable_output = f"## Red Team EULA Content\n\n**Length:** {len(eula_content)} characters\n\n**Content Preview:**\n\n```\n{display_content}\n```"
 
@@ -5424,7 +5148,7 @@ def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_key_field="content_length",
         outputs=eula_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5440,11 +5164,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
     """
     # Get EULA content first (required for accept request)
     # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/eula-client.ts (accept method example)
-    content_response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content",
-        use_redteam_mgmt=True
-    )
+    content_response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/content", use_redteam_mgmt=True)
 
     eula_content = content_response.get("content", "")
     if not eula_content:
@@ -5453,9 +5173,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
     # Build request body according to EulaAcceptRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaAcceptRequestSchema)
     # Fields: eula_content (required), accepted_at (optional)
-    request_body = {
-        "eula_content": eula_content
-    }
+    request_body = {"eula_content": eula_content}
 
     # Optional accepted_at timestamp (will use server time if not provided)
     if args.get("accepted_at"):
@@ -5464,10 +5182,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
     # Call Red Team EULA accept endpoint
     # SDK schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (EulaResponseSchema)
     response = client.http_request(
-        method="POST",
-        url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/accept",
-        json_data=request_body,
-        use_redteam_mgmt=True
+        method="POST", url_suffix=f"{RED_TEAM_EULA_ENDPOINT}/accept", json_data=request_body, use_redteam_mgmt=True
     )
 
     # Parse response according to EulaResponseSchema
@@ -5476,7 +5191,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
         "uuid": response.get("uuid"),
         "is_accepted": response.get("is_accepted"),
         "accepted_at": response.get("accepted_at"),
-        "accepted_by_user_id": response.get("accepted_by_user_id")
+        "accepted_by_user_id": response.get("accepted_by_user_id"),
     }
 
     # Create success message
@@ -5490,7 +5205,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="uuid",
         outputs=eula_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5520,10 +5235,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
     # Build request body according to CustomPromptCreateRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptCreateRequestSchema)
     # Fields: prompt (required), prompt_set_id (required), goal (optional), properties (optional)
-    request_body = {
-        "prompt": prompt_text,
-        "prompt_set_id": prompt_set_uuid
-    }
+    request_body = {"prompt": prompt_text, "prompt_set_id": prompt_set_uuid}
 
     # Optional fields
     if args.get("goal"):
@@ -5544,7 +5256,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
         method="POST",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/custom-prompt",
         json_data=request_body,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptResponseSchema
@@ -5559,7 +5271,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
         "active": response.get("active"),
         "prompt_set_id": response.get("prompt_set_id"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
@@ -5569,7 +5281,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
         prompt_info["properties"] = response.get("properties")
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Created\n\n"
+    readable_output = "## Red Team Prompt Created\n\n"
     readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
     readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
     readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
@@ -5583,7 +5295,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5635,7 +5347,7 @@ def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> Comman
         method="GET",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/list-custom-prompts",
         params=params,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptListSchema
@@ -5654,7 +5366,7 @@ def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> Comman
             "status": prompt.get("status"),
             "active": prompt.get("active"),
             "created_at": prompt.get("created_at"),
-            "updated_at": prompt.get("updated_at")
+            "updated_at": prompt.get("updated_at"),
         }
         # Add optional fields if present
         if prompt.get("goal"):
@@ -5682,7 +5394,7 @@ def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_key_field="uuid",
         outputs=prompts_list,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5713,7 +5425,7 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
     response = client.http_request(
         method="GET",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptResponseSchema
@@ -5728,7 +5440,7 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
         "active": response.get("active"),
         "prompt_set_id": response.get("prompt_set_id"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
@@ -5738,7 +5450,7 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
             prompt_info[field] = response.get(field)
 
     # Create detailed readable output
-    readable_output = f"## Red Team Prompt Details\n\n"
+    readable_output = "## Red Team Prompt Details\n\n"
     readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
     readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
     readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
@@ -5764,7 +5476,7 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5823,7 +5535,7 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
         method="PUT",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
         json_data=request_body,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptResponseSchema
@@ -5838,7 +5550,7 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
         "active": response.get("active"),
         "prompt_set_id": response.get("prompt_set_id"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
@@ -5848,7 +5560,7 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
             prompt_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Updated\n\n"
+    readable_output = "## Red Team Prompt Updated\n\n"
     readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
     readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
     readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
@@ -5868,7 +5580,7 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -5901,20 +5613,16 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
         method="DELETE",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
         use_redteam_mgmt=True,
-        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     # Parse response according to BaseResponseSchema (optional)
     # Fields: message (optional), status (optional)
     # SDK allows undefined response for successful deletion
-    result_info = {
-        "prompt_uuid": prompt_uuid,
-        "prompt_set_uuid": prompt_set_uuid,
-        "status": "deleted"
-    }
+    result_info = {"prompt_uuid": prompt_uuid, "prompt_set_uuid": prompt_set_uuid, "status": "deleted"}
 
     # Try to extract response data if present
-    if response and hasattr(response, 'json'):
+    if response and hasattr(response, "json"):
         try:
             response_data = response.json()
             if response_data.get("message"):
@@ -5926,10 +5634,10 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
             pass
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Deleted\n\n"
+    readable_output = "## Red Team Prompt Deleted\n\n"
     readable_output += f"**Prompt UUID:** {prompt_uuid}\n\n"
     readable_output += f"**Prompt Set UUID:** {prompt_set_uuid}\n\n"
-    readable_output += f"**Status:** Successfully deleted"
+    readable_output += "**Status:** Successfully deleted"
 
     if result_info.get("message"):
         readable_output += f"\n\n**Message:** {result_info.get('message')}"
@@ -5939,7 +5647,7 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_key_field="prompt_uuid",
         outputs=result_info,
         readable_output=readable_output,
-        raw_response=result_info
+        raw_response=result_info,
     )
 
 
@@ -5964,9 +5672,7 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
     # Build request body according to CustomPromptSetCreateRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptSetCreateRequestSchema)
     # Fields: name (required), description (optional), property_names (optional array)
-    request_body: dict[str, Any] = {
-        "name": name
-    }
+    request_body: dict[str, Any] = {"name": name}
 
     # Optional fields
     if args.get("description"):
@@ -5984,7 +5690,7 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
         method="POST",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set",
         json_data=request_body,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptSetResponseSchema
@@ -5999,18 +5705,26 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
         "archive": response.get("archive"),
         "status": response.get("status"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
-    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
-                       "version", "created_by_user_id", "updated_by_user_id"]
+    optional_fields = [
+        "description",
+        "property_names",
+        "properties",
+        "stats",
+        "extra_info",
+        "version",
+        "created_by_user_id",
+        "updated_by_user_id",
+    ]
     for field in optional_fields:
         if response.get(field):
             prompt_set_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Set Created\n\n"
+    readable_output = "## Red Team Prompt Set Created\n\n"
     readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
     readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
     readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
@@ -6029,7 +5743,7 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6081,7 +5795,7 @@ def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> Co
         method="GET",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/list-custom-prompt-sets",
         params=params,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptSetListSchema
@@ -6101,7 +5815,7 @@ def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> Co
             "archive": prompt_set.get("archive"),
             "status": prompt_set.get("status"),
             "created_at": prompt_set.get("created_at"),
-            "updated_at": prompt_set.get("updated_at")
+            "updated_at": prompt_set.get("updated_at"),
         }
         # Add optional fields if present
         optional_fields = ["description", "property_names", "stats", "created_by_user_id"]
@@ -6129,7 +5843,7 @@ def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> Co
         outputs_key_field="uuid",
         outputs=prompt_sets_list,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6153,9 +5867,7 @@ def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> Com
     # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (getPromptSet method)
     # Endpoint: GET /v1/custom-attack/custom-prompt-set/{uuid}
     response = client.http_request(
-        method="GET",
-        url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}",
-        use_redteam_mgmt=True
+        method="GET", url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}", use_redteam_mgmt=True
     )
 
     # Parse response according to CustomPromptSetResponseSchema
@@ -6170,18 +5882,26 @@ def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> Com
         "archive": response.get("archive"),
         "status": response.get("status"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
-    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
-                       "version", "created_by_user_id", "updated_by_user_id"]
+    optional_fields = [
+        "description",
+        "property_names",
+        "properties",
+        "stats",
+        "extra_info",
+        "version",
+        "created_by_user_id",
+        "updated_by_user_id",
+    ]
     for field in optional_fields:
         if response.get(field):
             prompt_set_info[field] = response.get(field)
 
     # Create detailed readable output
-    readable_output = f"## Red Team Prompt Set Details\n\n"
+    readable_output = "## Red Team Prompt Set Details\n\n"
     readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
     readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
     readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
@@ -6210,7 +5930,7 @@ def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6268,7 +5988,7 @@ def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> 
         method="PUT",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}",
         json_data=request_body,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptSetResponseSchema
@@ -6283,18 +6003,26 @@ def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> 
         "archive": response.get("archive"),
         "status": response.get("status"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
-    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
-                       "version", "created_by_user_id", "updated_by_user_id"]
+    optional_fields = [
+        "description",
+        "property_names",
+        "properties",
+        "stats",
+        "extra_info",
+        "version",
+        "created_by_user_id",
+        "updated_by_user_id",
+    ]
     for field in optional_fields:
         if response.get(field):
             prompt_set_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Set Updated\n\n"
+    readable_output = "## Red Team Prompt Set Updated\n\n"
     readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
     readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
     readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
@@ -6316,7 +6044,7 @@ def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6351,9 +6079,7 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
     # Build request body according to CustomPromptSetArchiveRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (CustomPromptSetArchiveRequestSchema)
     # Fields: archive (required boolean)
-    request_body = {
-        "archive": archive_bool
-    }
+    request_body = {"archive": archive_bool}
 
     # Call Red Team Custom Attack endpoint to archive/unarchive prompt set
     # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (archivePromptSet method)
@@ -6362,7 +6088,7 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
         method="PUT",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{uuid}/archive",
         json_data=request_body,
-        use_redteam_mgmt=True
+        use_redteam_mgmt=True,
     )
 
     # Parse response according to CustomPromptSetResponseSchema
@@ -6377,12 +6103,20 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
         "archive": response.get("archive"),
         "status": response.get("status"),
         "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at")
+        "updated_at": response.get("updated_at"),
     }
 
     # Add optional fields if present
-    optional_fields = ["description", "property_names", "properties", "stats", "extra_info",
-                       "version", "created_by_user_id", "updated_by_user_id"]
+    optional_fields = [
+        "description",
+        "property_names",
+        "properties",
+        "stats",
+        "extra_info",
+        "version",
+        "created_by_user_id",
+        "updated_by_user_id",
+    ]
     for field in optional_fields:
         if response.get(field):
             prompt_set_info[field] = response.get(field)
@@ -6402,7 +6136,7 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6421,18 +6155,11 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
     # Endpoint: POST /v1/registry-credentials
     # This is a POST request that either creates new credentials or returns existing ones
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (RegistryCredentialsSchema)
-    response = client.http_request(
-        method="POST",
-        url_suffix=RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT,
-        use_redteam_mgmt=True
-    )
+    response = client.http_request(method="POST", url_suffix=RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT, use_redteam_mgmt=True)
 
     # Parse response according to RegistryCredentialsSchema
     # Fields: token (required), expiry (required)
-    credentials_info = {
-        "token": response.get("token"),
-        "expiry": response.get("expiry")
-    }
+    credentials_info = {"token": response.get("token"), "expiry": response.get("expiry")}
 
     # Create readable output
     # Truncate token for security (show only first and last 8 characters)
@@ -6442,17 +6169,19 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
     else:
         token_truncated = token_display
 
-    readable_output = f"## Red Team Registry Credentials\n\n"
+    readable_output = "## Red Team Registry Credentials\n\n"
     readable_output += f"**Token:** {token_truncated}\n\n"
     readable_output += f"**Expiry:** {credentials_info.get('expiry', 'N/A')}\n\n"
-    readable_output += "**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
+    readable_output += (
+        "**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamRegistryCredentials",
         outputs_key_field="expiry",
         outputs=credentials_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6479,7 +6208,7 @@ def redteam_prompt_sets_download_command(client: Client, args: dict[str, Any]) -
         method="GET",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/download-template/{uuid}",
         use_redteam_mgmt=True,
-        resp_type="text"  # CSV response is plain text, not JSON
+        resp_type="text",  # CSV response is plain text, not JSON
     )
 
     # Response is CSV string like:
@@ -6490,12 +6219,12 @@ def redteam_prompt_sets_download_command(client: Client, args: dict[str, Any]) -
     filename = f"prompt_set_template_{uuid}.csv"
 
     # Return file using XSOAR fileResult() pattern
-    # Reference: CLAUDE.md section "File Handling in XSOAR"
-    from CommonServerPython import fileResult
+    # Reference: knowledge/CLAUDE.md section "File Handling in XSOAR"
+    # fileResult is imported from CommonServerPython at the top of this file
     return fileResult(
         filename=filename,
         data=response,
-        file_type=None  # Auto-detect from extension
+        file_type=None,  # Auto-detect from extension
     )
 
 
@@ -6530,11 +6259,11 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
             raise ValueError(f"Could not get file path for entry ID: {entry_id}")
 
         # Validate file extension
-        if not file_name.lower().endswith('.csv'):
+        if not file_name.lower().endswith(".csv"):
             raise ValueError(f"File must be a CSV file. Got: {file_name}")
 
         # Read CSV file content
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             file_content = f.read()
 
     except FileNotFoundError:
@@ -6558,24 +6287,15 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     full_url = f"{client._base_url}{RED_TEAM_MGMT_PATH}{url_suffix}"
 
     # Prepare files for multipart upload
-    files = {
-        'file': (file_name, file_content, 'text/csv')
-    }
+    files = {"file": (file_name, file_content, "text/csv")}
 
     # Get OAuth token
     token = client._get_oauth_token()
-    headers = {
-        'Authorization': f'Bearer {token}'
-    }
+    headers = {"Authorization": f"Bearer {token}"}
 
     # Make request with files (multipart/form-data)
     response = client._http_request(
-        method='POST',
-        full_url=full_url,
-        params=params,
-        headers=headers,
-        files=files,
-        resp_type='json'
+        method="POST", full_url=full_url, params=params, headers=headers, files=files, resp_type="json"
     )
 
     # Parse response according to BaseResponseSchema
@@ -6583,15 +6303,10 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     message = response.get("message", "Upload completed")
     status_code = response.get("status", 200)
 
-    upload_info = {
-        "message": message,
-        "status": status_code,
-        "prompt_set_uuid": uuid,
-        "file_name": file_name
-    }
+    upload_info = {"message": message, "status": status_code, "prompt_set_uuid": uuid, "file_name": file_name}
 
     # Create readable output
-    readable_output = f"## Red Team Prompt Set Upload\n\n"
+    readable_output = "## Red Team Prompt Set Upload\n\n"
     readable_output += f"**Status:** {status_code}\n\n"
     readable_output += f"**Message:** {message}\n\n"
     readable_output += f"**Prompt Set UUID:** {uuid}\n\n"
@@ -6602,7 +6317,7 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="prompt_set_uuid",
         outputs=upload_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6624,24 +6339,13 @@ def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     # Build query parameters
     # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts (MGMT_SCAN_LOGS_PATH)
-    params: dict[str, Any] = {
-        "interval": interval,
-        "unit": unit,
-        "filter": filter_type,
-        "page": page,
-        "page_size": page_size
-    }
+    params: dict[str, Any] = {"interval": interval, "unit": unit, "filter": filter_type, "page": page, "page_size": page_size}
 
     # Add TSG ID to URL suffix
     url_suffix = f"{MGMT_API_V1_PREFIX}/scanlogs/tsg/{client.tsg_id}"
 
     # Call scan logs endpoint
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Extract scan logs from response (forward-compatible: capture all fields)
     logs_data = response.get("data", []) or response.get("logs", [])
@@ -6657,7 +6361,7 @@ def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandRe
             "category": log.get("category"),
             "detected": log.get("detected"),
             "prompt": log.get("prompt"),
-            "response": log.get("response")
+            "response": log.get("response"),
         }
         scan_logs.append(log_info)
 
@@ -6668,7 +6372,7 @@ def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandRe
             f"Prisma AIRs Runtime Scan Logs ({len(scan_logs)} results)",
             scan_logs,
             headers=["scan_id", "timestamp", "profile_name", "action", "category", "detected"],
-            headerTransform=lambda h: h.replace("_", " ").title()
+            headerTransform=lambda h: h.replace("_", " ").title(),
         )
 
     return CommandResults(
@@ -6676,7 +6380,7 @@ def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandRe
         outputs_key_field="scan_id",
         outputs=scan_logs,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6694,22 +6398,14 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
     offset = arg_to_number(args.get("offset")) or 0
 
     # Build query parameters
-    params: dict[str, Any] = {
-        "limit": limit,
-        "offset": offset
-    }
+    params: dict[str, Any] = {"limit": limit, "offset": offset}
 
     # Add TSG ID to URL suffix
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/topics-client.ts
     url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
 
     # Call topics list endpoint
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Extract topics from response (forward-compatible: capture all fields)
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-topics.ts (TopicSchema)
@@ -6727,7 +6423,7 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
             "created_by": topic.get("created_by"),
             "updated_by": topic.get("updated_by"),
             "csp_id": topic.get("csp_id"),
-            "tsg_id": topic.get("tsg_id")
+            "tsg_id": topic.get("tsg_id"),
         }
         topics.append(topic_info)
 
@@ -6735,7 +6431,7 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
         f"Prisma AIRs Custom Topics ({len(topics)} of {response.get('total', len(topics))})",
         topics,
         headers=["topic_id", "topic_name", "revision", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -6743,7 +6439,7 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="topic_id",
         outputs=topics,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6772,15 +6468,10 @@ def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandR
     url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
     params = {
         "offset": "0",
-        "limit": "1000"  # Get all topics for filtering
+        "limit": "1000",  # Get all topics for filtering
     }
 
-    response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        params=params,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
 
     # Parse response and filter
     # SDK schema: CustomTopicListResponseSchema has "custom_topics" field
@@ -6811,7 +6502,7 @@ def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandR
         "created_by": topic.get("created_by"),
         "updated_by": topic.get("updated_by"),
         "last_modified_ts": topic.get("last_modified_ts"),
-        "created_ts": topic.get("created_ts")
+        "created_ts": topic.get("created_ts"),
     }
 
     # Create readable output
@@ -6837,7 +6528,7 @@ def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
-        raw_response=topic
+        raw_response=topic,
     )
 
 
@@ -6867,12 +6558,7 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-custom-topic.ts
     # Required: topic_name, description, examples
     # Optional: active
-    request_body: dict[str, Any] = {
-        "topic_name": topic_name,
-        "description": description,
-        "examples": examples,
-        "active": active
-    }
+    request_body: dict[str, Any] = {"topic_name": topic_name, "description": description, "examples": examples, "active": active}
 
     # Call Management API to create topic
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
@@ -6880,12 +6566,7 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
     # Endpoint: POST /v1/mgmt/topic
     url_suffix = f"{MGMT_API_V1_PREFIX}/topic"
 
-    response = client.http_request(
-        method="POST",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response - returns full CustomTopic
     topic_info = {
@@ -6898,11 +6579,11 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
         "created_by": response.get("created_by"),
         "updated_by": response.get("updated_by"),
         "last_modified_ts": response.get("last_modified_ts"),
-        "created_ts": response.get("created_ts")
+        "created_ts": response.get("created_ts"),
     }
 
     # Create readable output
-    readable_output = f"## ✅ Custom Topic Created\n\n"
+    readable_output = "## ✅ Custom Topic Created\n\n"
     readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
     readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
     readable_output += f"**Revision:** {topic_info.get('revision')}\n\n"
@@ -6923,7 +6604,7 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -6952,9 +6633,7 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
 
     # Build request body according to CreateCustomTopicRequest
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/mgmt-custom-topic.ts
-    request_body: dict[str, Any] = {
-        "topic_name": topic_name
-    }
+    request_body: dict[str, Any] = {"topic_name": topic_name}
 
     # Add optional fields if provided
     if description:
@@ -6970,12 +6649,7 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
     # Endpoint: PUT /v1/mgmt/topic/uuid/{topicId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/topic/uuid/{topic_id}"
 
-    response = client.http_request(
-        method="PUT",
-        url_suffix=url_suffix,
-        json_data=request_body,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response - returns updated CustomTopic with incremented revision
     topic_info = {
@@ -6988,11 +6662,11 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
         "created_by": response.get("created_by"),
         "updated_by": response.get("updated_by"),
         "last_modified_ts": response.get("last_modified_ts"),
-        "created_ts": response.get("created_ts")
+        "created_ts": response.get("created_ts"),
     }
 
     # Create readable output
-    readable_output = f"## ✅ Custom Topic Updated\n\n"
+    readable_output = "## ✅ Custom Topic Updated\n\n"
     readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
     readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
     readable_output += f"**Revision:** {topic_info.get('revision')} (incremented)\n\n"
@@ -7014,7 +6688,7 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7043,35 +6717,27 @@ def runtime_topics_delete_command(client: Client, args: dict[str, Any]) -> Comma
     # NOTE: Fails with 409 Conflict if topic is referenced by any profile
     url_suffix = f"{MGMT_API_V1_PREFIX}/topic/{topic_id}"
 
-    response = client.http_request(
-        method="DELETE",
-        url_suffix=url_suffix,
-        use_mgmt_base=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # DeleteTopicResponseSchema transforms plain string to { message: "..." }
     message = response.get("message", "Custom topic deleted successfully") if isinstance(response, dict) else str(response)
 
     # Create readable output
-    readable_output = f"## ✅ Custom Topic Deleted\n\n"
+    readable_output = "## ✅ Custom Topic Deleted\n\n"
     readable_output += f"**Topic ID:** {topic_id}\n\n"
     readable_output += f"**Status:** {message}\n\n"
     readable_output += "**⚠️ WARNING:** This action cannot be undone. The custom topic has been permanently deleted."
 
     # Context output
-    context_output = {
-        "topic_id": topic_id,
-        "message": message,
-        "deleted": True
-    }
+    context_output = {"topic_id": topic_id, "message": message, "deleted": True}
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicDeleted",
         outputs_key_field="topic_id",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7113,11 +6779,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # SDK: ManagementClient.topics.list()
     # Endpoint: GET /v1/mgmt/topics/tsg/{tsgId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
-    topics_response = client.http_request(
-        method="GET",
-        url_suffix=url_suffix,
-        use_mgmt_base=True
-    )
+    topics_response = client.http_request(method="GET", url_suffix=url_suffix, use_mgmt_base=True)
 
     all_topics = topics_response.get("custom_topics", [])
     topic = next((t for t in all_topics if t.get("topic_name") == topic_name), None)
@@ -7136,11 +6798,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # SDK: ManagementClient.profiles.list()
     # Endpoint: GET /v1/mgmt/securityprofiles/tsg/{tsgId}
     profiles_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/tsg/{client.tsg_id}"
-    profiles_response = client.http_request(
-        method="GET",
-        url_suffix=profiles_url_suffix,
-        use_mgmt_base=True
-    )
+    profiles_response = client.http_request(method="GET", url_suffix=profiles_url_suffix, use_mgmt_base=True)
 
     ai_profiles = profiles_response.get("ai_profiles", [])
     profile = next((p for p in ai_profiles if p.get("profile_name") == profile_name), None)
@@ -7156,6 +6814,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 114-162)
     # Profile structure: policy → ai-security-profiles → model-configuration → model-protection → topic-guardrails
     import copy
+
     policy = copy.deepcopy(profile.get("policy", {}))
 
     # Navigate to ai-security-profiles
@@ -7177,12 +6836,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     topic_guardrails = next((mp for mp in model_protection if mp.get("name") == "topic-guardrails"), None)
 
     if not topic_guardrails:
-        topic_guardrails = {
-            "action": guardrail_action,
-            "name": "topic-guardrails",
-            "options": [],
-            "topic-list": []
-        }
+        topic_guardrails = {"action": guardrail_action, "name": "topic-guardrails", "options": [], "topic-list": []}
         model_protection.append(topic_guardrails)
     else:
         # Update guardrail-level action
@@ -7212,11 +6866,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
 
     # Add topic with revision (CRITICAL: must include revision)
     # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 144-152)
-    action_group["topic"].append({
-        "topic_id": topic_id,
-        "topic_name": topic_name,
-        "revision": topic_revision
-    })
+    action_group["topic"].append({"topic_id": topic_id, "topic_name": topic_name, "revision": topic_revision})
 
     topic_guardrails["topic-list"] = topic_list
 
@@ -7225,21 +6875,12 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # SDK: ManagementClient.profiles.update(profileId, body)
     # Endpoint: PUT /v1/mgmt/securityprofiles/uuid/{profileId}
     update_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/uuid/{profile_id}"
-    update_body = {
-        "profile_name": profile_name,
-        "active": profile.get("active", True),
-        "policy": policy
-    }
+    update_body = {"profile_name": profile_name, "active": profile.get("active", True), "policy": policy}
 
-    update_response = client.http_request(
-        method="PUT",
-        url_suffix=update_url_suffix,
-        json_data=update_body,
-        use_mgmt_base=True
-    )
+    update_response = client.http_request(method="PUT", url_suffix=update_url_suffix, json_data=update_body, use_mgmt_base=True)
 
     # Create readable output
-    readable_output = f"## ✅ Topic Applied to Profile\n\n"
+    readable_output = "## ✅ Topic Applied to Profile\n\n"
     readable_output += f"**Topic:** {topic_name} (ID: {topic_id}, Revision: {topic_revision})\n\n"
     readable_output += f"**Profile:** {profile_name}\n\n"
     readable_output += f"**Topic Action:** {action}\n\n"
@@ -7256,7 +6897,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
         "topic_revision": topic_revision,
         "action": action,
         "guardrail_action": guardrail_action,
-        "applied": True
+        "applied": True,
     }
 
     return CommandResults(
@@ -7264,7 +6905,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_key_field="profile_name",
         outputs=context_output,
         readable_output=readable_output,
-        raw_response=update_response
+        raw_response=update_response,
     )
 
 
@@ -7320,15 +6961,12 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     demisto.debug(f"Starting bulk scan of {total_prompts} prompts in batches of {batch_size}")
 
     for i in range(0, total_prompts, batch_size):
-        batch = prompts[i:i + batch_size]
+        batch = prompts[i: i + batch_size]
 
         for prompt in batch:
             # Use scanner_request for each prompt
             content = {"prompt": prompt}
-            scan_request = {
-                "ai_profile": {"profile_name": profile_name},
-                "contents": [content]
-            }
+            scan_request = {"ai_profile": {"profile_name": profile_name}, "contents": [content]}
             if session_id:
                 scan_request["session_id"] = session_id
 
@@ -7341,19 +6979,23 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
                     "scan_id": scan_response.get("scan_id"),
                     "action": scan_response.get("action"),
                     "category": scan_response.get("category"),
-                    "detected": any(scan_response.get("prompt_detected", {}).values()) if scan_response.get("prompt_detected") else False
+                    "detected": any(scan_response.get("prompt_detected", {}).values())
+                    if scan_response.get("prompt_detected")
+                    else False,
                 }
                 scan_results.append(scan_result)
             except Exception as e:
                 demisto.error(f"Failed to scan prompt: {str(e)}")
-                scan_results.append({
-                    "prompt": prompt,
-                    "scan_id": None,
-                    "action": "error",
-                    "category": "error",
-                    "detected": False,
-                    "error": str(e)
-                })
+                scan_results.append(
+                    {
+                        "prompt": prompt,
+                        "scan_id": None,
+                        "action": "error",
+                        "category": "error",
+                        "detected": False,
+                        "error": str(e),
+                    }
+                )
 
     # Calculate summary stats
     total = len(scan_results)
@@ -7362,29 +7004,20 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     errors = sum(1 for r in scan_results if r.get("action") == "error")
 
     # Create summary table
-    summary = [{
-        "Total Prompts": total,
-        "Blocked": blocked,
-        "Allowed": allowed,
-        "Errors": errors
-    }]
+    summary = [{"Total Prompts": total, "Blocked": blocked, "Allowed": allowed, "Errors": errors}]
 
-    readable_output = f"## Prisma AIRs Bulk Scan Results\n\n"
+    readable_output = "## Prisma AIRs Bulk Scan Results\n\n"
     readable_output += f"**Profile:** {profile_name}\n"
     if session_id:
         readable_output += f"**Session ID:** {session_id}\n"
     readable_output += "\n"
-    readable_output += tableToMarkdown(
-        "Summary",
-        summary,
-        headers=["Total Prompts", "Blocked", "Allowed", "Errors"]
-    )
+    readable_output += tableToMarkdown("Summary", summary, headers=["Total Prompts", "Blocked", "Allowed", "Errors"])
     readable_output += "\n"
     readable_output += tableToMarkdown(
         "Scan Results (first 50)",
         scan_results[:50],
         headers=["prompt", "action", "category", "detected"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7397,9 +7030,9 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
             "blocked": blocked,
             "allowed": allowed,
             "errors": errors,
-            "results": scan_results
+            "results": scan_results,
         },
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -7418,22 +7051,14 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
     include_keywords = argToBoolean(args.get("include_keywords", False))
 
     # Build query parameters
-    params: dict[str, Any] = {
-        "page": page,
-        "size": size
-    }
+    params: dict[str, Any] = {"page": page, "size": size}
     if include_keywords:
         params["keywords"] = "true"
 
     # Call DLP dictionaries list endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
     # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
-    response = client.http_request(
-        method="GET",
-        url_suffix=DLP_DICTIONARIES_PATH,
-        params=params,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=DLP_DICTIONARIES_PATH, params=params, use_dlp_base=True)
 
     # Extract dictionaries from paginated response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-dictionary.ts
@@ -7455,7 +7080,7 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
             "created_at": dictionary.get("audit_metadata", {}).get("created_at"),
             "updated_at": dictionary.get("audit_metadata", {}).get("updated_at"),
             "created_by": dictionary.get("audit_metadata", {}).get("created_by"),
-            "updated_by": dictionary.get("audit_metadata", {}).get("updated_by")
+            "updated_by": dictionary.get("audit_metadata", {}).get("updated_by"),
         }
         dictionaries.append(dict_info)
 
@@ -7466,7 +7091,7 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
         f"Prisma AIRs DLP Dictionaries (Page {page + 1}/{total_pages}, {len(dictionaries)} of {total_elements})",
         dictionaries,
         headers=["id", "name", "category", "type", "number_of_keywords", "region_name"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7474,7 +7099,7 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
         outputs_key_field="id",
         outputs=dictionaries,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7503,10 +7128,7 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
     # SDK: GET /v2/api/dictionaries/{resourceId}?keywords=true
     response = client.http_request(
-        method="GET",
-        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
-        params=params,
-        use_dlp_base=True
+        method="GET", url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}", params=params, use_dlp_base=True
     )
 
     # Extract dictionary details from response
@@ -7528,14 +7150,14 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
         "created_at": response.get("audit_metadata", {}).get("created_at"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
         "created_by": response.get("audit_metadata", {}).get("created_by"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Dictionary: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "is_case_sensitive", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7543,7 +7165,7 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7583,12 +7205,7 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
         file_content = f.read()
 
     # Build metadata JSON
-    metadata: dict[str, Any] = {
-        "category": category,
-        "name": name,
-        "original_file_name": file_name,
-        "region_name": region_name
-    }
+    metadata: dict[str, Any] = {"category": category, "name": name, "original_file_name": file_name, "region_name": region_name}
 
     # Optional fields
     if args.get("description"):
@@ -7610,20 +7227,14 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
     # Build multipart form data
     # SDK sends: FormData with 'json' part (metadata as JSON blob) and 'file' part (keyword file)
     files = {
-        'json': ('metadata.json', json.dumps(metadata).encode('utf-8'), 'application/json'),
-        'file': (file_name, file_content, 'text/plain')
+        "json": ("metadata.json", json.dumps(metadata).encode("utf-8"), "application/json"),
+        "file": (file_name, file_content, "text/plain"),
     }
 
     # Call DLP dictionaries create endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/dictionaries.ts
     # SDK: POST /v2/api/dictionaries (multipart/form-data)
-    response = client.http_request(
-        method="POST",
-        url_suffix=DLP_DICTIONARIES_PATH,
-        params=params,
-        files=files,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=DLP_DICTIONARIES_PATH, params=params, files=files, use_dlp_base=True)
 
     # Extract created dictionary details
     dict_info = {
@@ -7638,14 +7249,14 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
         "dictionary_metadata": response.get("dictionary_metadata"),
         "keywords": response.get("keywords"),
         "created_at": response.get("audit_metadata", {}).get("created_at"),
-        "created_by": response.get("audit_metadata", {}).get("created_by")
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Dictionary Created: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7653,7 +7264,7 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7685,11 +7296,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
     if not original_file_name:
         raise ValueError("original_file_name is required for PATCH")
 
-    request_body: dict[str, Any] = {
-        "category": category,
-        "name": name,
-        "original_file_name": original_file_name
-    }
+    request_body: dict[str, Any] = {"category": category, "name": name, "original_file_name": original_file_name}
 
     # Optional: description (can be null to clear)
     if args.get("description") is not None:
@@ -7718,7 +7325,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
         url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
         json_data=request_body,
         use_dlp_base=True,
-        headers={"Content-Type": "application/merge-patch+json"}
+        headers={"Content-Type": "application/merge-patch+json"},
     )
 
     # Extract updated dictionary details
@@ -7731,14 +7338,14 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
         "type": response.get("type"),
         "is_case_sensitive": response.get("is_case_sensitive"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Dictionary Patched: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7746,7 +7353,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7789,12 +7396,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
         file_content = f.read()
 
     # Build metadata JSON
-    metadata: dict[str, Any] = {
-        "category": category,
-        "name": name,
-        "original_file_name": file_name,
-        "region_name": region_name
-    }
+    metadata: dict[str, Any] = {"category": category, "name": name, "original_file_name": file_name, "region_name": region_name}
 
     # Optional fields
     if args.get("description"):
@@ -7815,8 +7417,8 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
 
     # Build multipart form data
     files = {
-        'json': ('metadata.json', json.dumps(metadata).encode('utf-8'), 'application/json'),
-        'file': (file_name, file_content, 'text/plain')
+        "json": ("metadata.json", json.dumps(metadata).encode("utf-8"), "application/json"),
+        "file": (file_name, file_content, "text/plain"),
     }
 
     # Call DLP dictionaries replace endpoint
@@ -7824,11 +7426,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
     # SDK: PUT /v2/api/dictionaries/{resourceId} (multipart/form-data)
     # API may return 200 with body or 204 with no body
     response = client.http_request(
-        method="PUT",
-        url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
-        params=params,
-        files=files,
-        use_dlp_base=True
+        method="PUT", url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}", params=params, files=files, use_dlp_base=True
     )
 
     # Handle both 200 (with body) and 204 (no body) responses
@@ -7843,14 +7441,14 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
             "is_case_sensitive": response.get("is_case_sensitive"),
             "keywords": response.get("keywords"),
             "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-            "updated_by": response.get("audit_metadata", {}).get("updated_by")
+            "updated_by": response.get("audit_metadata", {}).get("updated_by"),
         }
 
         readable_output = tableToMarkdown(
             f"Prisma AIRs DLP Dictionary Replaced: {dict_info.get('name')}",
             dict_info,
             headers=["id", "name", "category", "type", "region_name", "description"],
-            headerTransform=lambda h: h.replace("_", " ").title()
+            headerTransform=lambda h: h.replace("_", " ").title(),
         )
 
         return CommandResults(
@@ -7858,7 +7456,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
             outputs_key_field="id",
             outputs=dict_info,
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
         )
     else:
         # 204 No Content response
@@ -7888,14 +7486,12 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
         method="DELETE",
         url_suffix=f"{DLP_DICTIONARIES_PATH}/{dictionary_id}",
         use_dlp_base=True,
-        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     readable_output = f"## Prisma AIRs DLP Dictionary Deleted\n\nDictionary ID `{dictionary_id}` has been successfully deleted."
 
-    return CommandResults(
-        readable_output=readable_output
-    )
+    return CommandResults(readable_output=readable_output)
 
 
 def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -7912,20 +7508,12 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
     size = arg_to_number(args.get("size")) or 50
 
     # Build query parameters
-    params: dict[str, Any] = {
-        "page": page,
-        "size": size
-    }
+    params: dict[str, Any] = {"page": page, "size": size}
 
     # Call DLP patterns list endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
     # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
-    response = client.http_request(
-        method="GET",
-        url_suffix=DLP_PATTERNS_PATH,
-        params=params,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=DLP_PATTERNS_PATH, params=params, use_dlp_base=True)
 
     # Extract patterns from paginated response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
@@ -7947,7 +7535,7 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
             "created_at": pattern.get("audit_metadata", {}).get("created_at"),
             "updated_at": pattern.get("audit_metadata", {}).get("updated_at"),
             "created_by": pattern.get("audit_metadata", {}).get("created_by"),
-            "updated_by": pattern.get("audit_metadata", {}).get("updated_by")
+            "updated_by": pattern.get("audit_metadata", {}).get("updated_by"),
         }
         patterns.append(pattern_info)
 
@@ -7958,7 +7546,7 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
         f"Prisma AIRs DLP Patterns (Page {page + 1}/{total_pages}, {len(patterns)} of {total_elements})",
         patterns,
         headers=["id", "name", "category", "type", "detection_technique", "pattern_status"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -7966,7 +7554,7 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="id",
         outputs=patterns,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -7987,11 +7575,7 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
     # Call DLP patterns get endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
     # SDK: GET /v2/api/data-patterns/{resourceId}
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}", use_dlp_base=True)
 
     # Extract pattern details from response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-pattern.ts
@@ -8011,14 +7595,14 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
         "created_at": response.get("audit_metadata", {}).get("created_at"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
         "created_by": response.get("audit_metadata", {}).get("created_by"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Pattern: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "license_type", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8026,7 +7610,7 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8054,13 +7638,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     if not detection_technique:
         raise ValueError("detection_technique is required")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "type": pattern_type,
-        "detection_config": {
-            "technique": detection_technique
-        }
-    }
+    request_body: dict[str, Any] = {"name": name, "type": pattern_type, "detection_config": {"technique": detection_technique}}
 
     # Optional: supported_confidence_levels (array of low/medium/high)
     if args.get("supported_confidence_levels"):
@@ -8099,12 +7677,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     # Call DLP patterns create endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
     # SDK: POST /v2/api/data-patterns
-    response = client.http_request(
-        method="POST",
-        url_suffix=DLP_PATTERNS_PATH,
-        json_data=request_body,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="POST", url_suffix=DLP_PATTERNS_PATH, json_data=request_body, use_dlp_base=True)
 
     # Extract created pattern details
     pattern_info = {
@@ -8120,14 +7693,14 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
         "matching_rules": response.get("matching_rules"),
         "tags": response.get("tags"),
         "created_at": response.get("audit_metadata", {}).get("created_at"),
-        "created_by": response.get("audit_metadata", {}).get("created_by")
+        "created_by": response.get("audit_metadata", {}).get("created_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Pattern Created: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8135,7 +7708,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8167,13 +7740,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
     if not detection_technique:
         raise ValueError("detection_technique is required for PATCH")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "type": pattern_type,
-        "detection_config": {
-            "technique": detection_technique
-        }
-    }
+    request_body: dict[str, Any] = {"name": name, "type": pattern_type, "detection_config": {"technique": detection_technique}}
 
     # Optional: supported_confidence_levels
     if args.get("supported_confidence_levels"):
@@ -8223,7 +7790,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
         url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
         json_data=request_body,
         use_dlp_base=True,
-        headers={"Content-Type": "application/merge-patch+json"}
+        headers={"Content-Type": "application/merge-patch+json"},
     )
 
     # Extract updated pattern details
@@ -8239,14 +7806,14 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
         "matching_rules": response.get("matching_rules"),
         "tags": response.get("tags"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Pattern Patched: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8254,7 +7821,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8286,13 +7853,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     if not detection_technique:
         raise ValueError("detection_technique is required")
 
-    request_body: dict[str, Any] = {
-        "name": name,
-        "type": pattern_type,
-        "detection_config": {
-            "technique": detection_technique
-        }
-    }
+    request_body: dict[str, Any] = {"name": name, "type": pattern_type, "detection_config": {"technique": detection_technique}}
 
     # Optional: supported_confidence_levels
     if args.get("supported_confidence_levels"):
@@ -8330,10 +7891,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
     # SDK: PUT /v2/api/data-patterns/{resourceId}
     response = client.http_request(
-        method="PUT",
-        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
-        json_data=request_body,
-        use_dlp_base=True
+        method="PUT", url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}", json_data=request_body, use_dlp_base=True
     )
 
     # Extract updated pattern details
@@ -8349,14 +7907,14 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
         "matching_rules": response.get("matching_rules"),
         "tags": response.get("tags"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Pattern Replaced: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8364,7 +7922,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8390,14 +7948,12 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
         method="DELETE",
         url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
         use_dlp_base=True,
-        return_empty_response=True  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
     readable_output = f"## Prisma AIRs DLP Pattern Deleted\n\nPattern ID `{pattern_id}` has been successfully archived."
 
-    return CommandResults(
-        readable_output=readable_output
-    )
+    return CommandResults(readable_output=readable_output)
 
 
 def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -8414,20 +7970,12 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
     size = arg_to_number(args.get("size")) or 50
 
     # Build query parameters
-    params: dict[str, Any] = {
-        "page": page,
-        "size": size
-    }
+    params: dict[str, Any] = {"page": page, "size": size}
 
     # Call DLP filtering profiles list endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
     # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (separate from SCM)
-    response = client.http_request(
-        method="GET",
-        url_suffix=DLP_FILTERING_PROFILES_PATH,
-        params=params,
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=DLP_FILTERING_PROFILES_PATH, params=params, use_dlp_base=True)
 
     # Extract filtering profiles from paginated response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-filtering-profile.ts
@@ -8445,7 +7993,7 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
             "created_at": profile.get("audit_metadata", {}).get("created_at"),
             "updated_at": profile.get("audit_metadata", {}).get("updated_at"),
             "created_by": profile.get("audit_metadata", {}).get("created_by"),
-            "updated_by": profile.get("audit_metadata", {}).get("updated_by")
+            "updated_by": profile.get("audit_metadata", {}).get("updated_by"),
         }
         filtering_profiles.append(profile_info)
 
@@ -8456,7 +8004,7 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
         f"Prisma AIRs DLP Filtering Profiles (Page {page + 1}/{total_pages}, {len(filtering_profiles)} of {total_elements})",
         filtering_profiles,
         headers=["id", "name", "type", "default_action", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8464,7 +8012,7 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
         outputs_key_field="id",
         outputs=filtering_profiles,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8485,11 +8033,7 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
     # Call DLP filtering profiles get endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
     # SDK: GET /v2/api/data-filtering-profiles/{resourceId}
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}",
-        use_dlp_base=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}", use_dlp_base=True)
 
     # Extract profile details from response
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/dlp-data-filtering-profile.ts
@@ -8514,14 +8058,14 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
         "created_at": response.get("audit_metadata", {}).get("created_at"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
         "created_by": response.get("audit_metadata", {}).get("created_by"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Filtering Profile: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8529,7 +8073,7 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8552,7 +8096,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
     # Required fields: file_based, non_file_based
     request_body: dict[str, Any] = {
         "file_based": argToBoolean(args.get("file_based", False)),
-        "non_file_based": argToBoolean(args.get("non_file_based", False))
+        "non_file_based": argToBoolean(args.get("non_file_based", False)),
     }
 
     # Optional fields
@@ -8598,10 +8142,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-filtering-profiles.ts
     # SDK: PUT /v2/api/data-filtering-profiles/{resourceId}
     response = client.http_request(
-        method="PUT",
-        url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}",
-        json_data=request_body,
-        use_dlp_base=True
+        method="PUT", url_suffix=f"{DLP_FILTERING_PROFILES_PATH}/{profile_id}", json_data=request_body, use_dlp_base=True
     )
 
     # Extract updated profile details from response
@@ -8624,14 +8165,14 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
         "created_at": response.get("audit_metadata", {}).get("created_at"),
         "updated_at": response.get("audit_metadata", {}).get("updated_at"),
         "created_by": response.get("audit_metadata", {}).get("created_by"),
-        "updated_by": response.get("audit_metadata", {}).get("updated_by")
+        "updated_by": response.get("audit_metadata", {}).get("updated_by"),
     }
 
     readable_output = tableToMarkdown(
         f"Prisma AIRs DLP Filtering Profile Updated: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
-        headerTransform=lambda h: h.replace("_", " ").title()
+        headerTransform=lambda h: h.replace("_", " ").title(),
     )
 
     return CommandResults(
@@ -8639,7 +8180,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -8676,7 +8217,7 @@ def main() -> None:
             dlp_base_url=dlp_base_url,
             verify=verify_certificate,
             proxy=proxy,
-            headers=headers
+            headers=headers,
         )
 
         if command == "test-module":
@@ -8748,6 +8289,9 @@ def main() -> None:
 
         elif command == "prisma-airs-runtime-dlp-profiles-replace":
             return_results(runtime_dlp_profiles_replace_command(client, args))
+
+        elif command == "prisma-airs-runtime-dlp-profiles-delete":
+            return_results(runtime_dlp_profiles_delete_command(client, args))
 
         elif command == "prisma-airs-runtime-dlp-dictionaries-list":
             return_results(runtime_dlp_dictionaries_list_command(client, args))

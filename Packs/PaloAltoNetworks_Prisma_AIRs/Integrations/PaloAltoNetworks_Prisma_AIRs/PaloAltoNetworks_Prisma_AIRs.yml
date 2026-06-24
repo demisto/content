@@ -1111,6 +1111,29 @@ script:
     - contextPath: PrismaAIRs.DlpProfile.updated_by
       description: User who last updated the profile.
       type: String
+  - name: prisma-airs-runtime-dlp-profiles-delete
+    execution: true
+    description: Soft-delete a DLP data profile. The DLP API has no DELETE endpoint, so the profile is patched to a deleted lifecycle state (profile_status="deleted"). The command first fetches the profile to obtain its name and profile_type (required by the merge-patch). This action cannot be undone.
+    arguments:
+    - name: profile_id
+      required: true
+      description: The ID of the DLP data profile to delete.
+    outputs:
+    - contextPath: PrismaAIRs.DlpProfileDelete.id
+      description: ID of the deleted DLP data profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfileDelete.name
+      description: Name of the deleted DLP data profile.
+      type: String
+    - contextPath: PrismaAIRs.DlpProfileDelete.profile_status
+      description: Lifecycle status after deletion (deleted).
+      type: String
+    - contextPath: PrismaAIRs.DlpProfileDelete.deleted
+      description: Whether the profile was successfully soft-deleted.
+      type: Boolean
+    - contextPath: PrismaAIRs.DlpProfileDelete.status
+      description: Human-readable deletion status.
+      type: String
   - name: prisma-airs-runtime-dlp-dictionaries-list
     description: List DLP dictionaries.
     arguments:
@@ -3047,31 +3070,31 @@ script:
       required: true
       description: Security group UUID.
     outputs:
-    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.uuid
       description: Security group UUID.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.name
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.name
       description: Security group name.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.description
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.description
       description: Security group description.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.source_type
       description: Source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.state
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.state
       description: Group state (ACTIVE, PENDING).
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.is_tombstone
       description: Whether the group is marked for deletion.
       type: Boolean
-    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.updated_at
       description: Last update timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.tsg_id
       description: Tenant Service Group ID.
       type: String
   - name: prisma-airs-model-security-groups-create
@@ -3095,31 +3118,31 @@ script:
       description: Security group description.
       defaultValue: ''
     outputs:
-    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
-      description: Security group UUID.
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.uuid
+      description: UUID of the created security group.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.name
-      description: Security group name.
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.name
+      description: Name of the created security group.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.description
-      description: Security group description.
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.description
+      description: Description of the created security group.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.source_type
       description: Source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.state
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.state
       description: Group state (PENDING initially, becomes ACTIVE after configuration).
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.is_tombstone
       description: Whether the group is marked for deletion.
       type: Boolean
-    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.updated_at
       description: Last update timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.tsg_id
       description: Tenant Service Group ID.
       type: String
   - name: prisma-airs-model-security-groups-delete
@@ -3148,31 +3171,31 @@ script:
       required: false
       description: New description for the security group.
     outputs:
-    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
-      description: Security group UUID.
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.uuid
+      description: UUID of the updated security group.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.name
-      description: Security group name.
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.name
+      description: Updated security group name.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.description
-      description: Security group description.
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.description
+      description: Updated security group description.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.source_type
       description: Model source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.state
-      description: Group state (ACTIVE, PENDING).
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.state
+      description: Group state after update.
       type: String
-    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.is_tombstone
       description: Whether the group is marked for deletion.
       type: Boolean
-    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.updated_at
       description: Last update timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.tsg_id
       description: Tenant Service Group ID.
       type: String
   - name: prisma-airs-model-security-rules-list
@@ -4578,5 +4601,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
 fromversion: 6.10.0

@@ -9,6 +9,7 @@ from PaloAltoNetworks_Prisma_AIRs import (
     runtime_customer_apps_list_command,
     runtime_deployment_profiles_list_command,
     runtime_dlp_profiles_list_command,
+    runtime_dlp_profiles_delete_command,
     runtime_topics_apply_command,
     model_security_scans_list_command,
     model_security_groups_list_command,
@@ -32,10 +33,11 @@ def mock_client() -> Client:
         client_secret="test_client_secret",
         tsg_id="1234567890",
         runtime_api_key="test_runtime_api_key_12345",
-        tenant_region="US",
+        scanner_base_url="https://service.api.aisecurity.paloaltonetworks.com",
+        dlp_base_url="https://api.dlp.paloaltonetworks.com",
         verify=False,
         proxy=False,
-        headers={}
+        headers={},
     )
 
 
@@ -65,7 +67,7 @@ class TestClient:
             "US": "https://service.api.aisecurity.paloaltonetworks.com",
             "EU": "https://service-de.api.aisecurity.paloaltonetworks.com",
             "IN": "https://service-in.api.aisecurity.paloaltonetworks.com",
-            "SG": "https://service-sg.api.aisecurity.paloaltonetworks.com"
+            "SG": "https://service-sg.api.aisecurity.paloaltonetworks.com",
         }
 
         for region, expected_url in regions_and_urls.items():
@@ -78,11 +80,11 @@ class TestClient:
                 tenant_region=region,
                 verify=False,
                 proxy=False,
-                headers={}
+                headers={},
             )
             assert client.scanner_base_url == expected_url, f"Region {region} should use {expected_url}"
 
-    @patch.object(Client, '_http_request')
+    @patch.object(Client, "_http_request")
     def test_get_access_token_success(self, mock_http_request: Mock, mock_client: Client) -> None:
         """Test successful OAuth2 token retrieval.
 
@@ -90,11 +92,7 @@ class TestClient:
             mock_http_request: Mocked HTTP request method.
             mock_client: Mock client fixture.
         """
-        mock_http_request.return_value = {
-            "access_token": "test_access_token_12345",
-            "token_type": "Bearer",
-            "expires_in": 3600
-        }
+        mock_http_request.return_value = {"access_token": "test_access_token_12345", "token_type": "Bearer", "expires_in": 3600}
 
         token = mock_client.get_access_token()
 
@@ -102,7 +100,7 @@ class TestClient:
         assert mock_client._access_token == "test_access_token_12345"
         mock_http_request.assert_called_once()
 
-    @patch.object(Client, '_http_request')
+    @patch.object(Client, "_http_request")
     def test_get_access_token_cached(self, mock_http_request: Mock, mock_client: Client) -> None:
         """Test that access token is cached and not re-requested.
 
@@ -121,7 +119,7 @@ class TestClient:
 class TestCommands:
     """Test cases for integration commands."""
 
-    @patch.object(Client, 'get_access_token')
+    @patch.object(Client, "get_access_token")
     def test_test_module_success(self, mock_get_token: Mock, mock_client: Client) -> None:
         """Test that test-module returns ok on successful connection.
 
@@ -136,7 +134,7 @@ class TestCommands:
         assert result == "ok"
         mock_get_token.assert_called_once()
 
-    @patch.object(Client, 'get_access_token')
+    @patch.object(Client, "get_access_token")
     def test_test_module_failure(self, mock_get_token: Mock, mock_client: Client) -> None:
         """Test that test-module returns error message on failure.
 
@@ -151,7 +149,7 @@ class TestCommands:
         assert "Test failed" in result
         assert "Authentication failed" in result
 
-    @patch.object(Client, 'scanner_request')
+    @patch.object(Client, "scanner_request")
     def test_runtime_scan_command_basic(self, mock_scanner: Mock, mock_client: Client) -> None:
         """Test runtime scan command with basic arguments.
 
@@ -171,14 +169,11 @@ class TestCommands:
                 "toxic_content": False,
                 "dlp": False,
                 "url_cats": False,
-                "malicious_code": False
-            }
+                "malicious_code": False,
+            },
         }
 
-        args = {
-            "profile_name": "test-profile",
-            "prompt": "What is the weather today?"
-        }
+        args = {"profile_name": "test-profile", "prompt": "What is the weather today?"}
 
         result = runtime_scan_command(mock_client, args)
 
@@ -188,7 +183,7 @@ class TestCommands:
         assert result.outputs["action"] == "allow"
         assert result.outputs["detected"] is False
 
-    @patch.object(Client, 'scanner_request')
+    @patch.object(Client, "scanner_request")
     def test_runtime_scan_command_with_detection(self, mock_scanner: Mock, mock_client: Client) -> None:
         """Test runtime scan command with threat detection.
 
@@ -207,15 +202,11 @@ class TestCommands:
                 "toxic_content": True,
                 "dlp": False,
                 "url_cats": False,
-                "malicious_code": False
-            }
+                "malicious_code": False,
+            },
         }
 
-        args = {
-            "profile_name": "security-profile",
-            "prompt": "How do I hack a computer?",
-            "response": "I cannot help with that."
-        }
+        args = {"profile_name": "security-profile", "prompt": "How do I hack a computer?", "response": "I cannot help with that."}
 
         result = runtime_scan_command(mock_client, args)
 
@@ -239,7 +230,7 @@ class TestCommands:
         with pytest.raises(ValueError, match="profile_name and prompt are required"):
             runtime_scan_command(mock_client, args)
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_api_keys_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime API keys list command.
 
@@ -256,7 +247,7 @@ class TestCommands:
                     "api_key_last8": "ABCD1234",
                     "created_at": "2024-01-01T00:00:00Z",
                     "expiration": "2025-01-01T00:00:00Z",
-                    "revoked": False
+                    "revoked": False,
                 },
                 {
                     "api_key_id": "00000000-0000-0000-0000-000000000002",
@@ -264,10 +255,10 @@ class TestCommands:
                     "api_key_last8": "EFGH5678",
                     "created_at": "2024-02-01T00:00:00Z",
                     "expiration": "2025-02-01T00:00:00Z",
-                    "revoked": False
-                }
+                    "revoked": False,
+                },
             ],
-            "next_offset": 10
+            "next_offset": 10,
         }
 
         args = {"limit": "10"}
@@ -280,7 +271,7 @@ class TestCommands:
         assert result.outputs[0]["last8"] == "ABCD1234"
         assert result.outputs[0]["revoked"] is False
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime profiles list command.
 
@@ -298,7 +289,7 @@ class TestCommands:
                     "created_by": "admin@example.com",
                     "updated_by": "admin@example.com",
                     "last_modified_ts": "2024-01-15T00:00:00Z",
-                    "tsg_id": "1234567890"
+                    "tsg_id": "1234567890",
                 },
                 {
                     "profile_id": "550e8400-e29b-41d4-a716-446655440001",
@@ -308,10 +299,10 @@ class TestCommands:
                     "created_by": "user@example.com",
                     "updated_by": "user@example.com",
                     "last_modified_ts": "2024-02-10T00:00:00Z",
-                    "tsg_id": "1234567890"
-                }
+                    "tsg_id": "1234567890",
+                },
             ],
-            "next_offset": 10
+            "next_offset": 10,
         }
 
         args = {"limit": "10"}
@@ -326,7 +317,7 @@ class TestCommands:
         assert result.outputs[0]["created_by"] == "admin@example.com"
         assert result.outputs[0]["last_modified_ts"] == "2024-01-15T00:00:00Z"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_customer_apps_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime customer apps list command.
 
@@ -343,10 +334,10 @@ class TestCommands:
                     "cloud_provider": "AWS",
                     "environment": "production",
                     "ai_agent_framework": "langchain",
-                    "tsg_id": "1234567890"
+                    "tsg_id": "1234567890",
                 }
             ],
-            "next_offset": 10
+            "next_offset": 10,
         }
 
         args = {"limit": "10"}
@@ -358,7 +349,7 @@ class TestCommands:
         assert result.outputs[0]["name"] == "test-app-1"
         assert result.outputs[0]["cloud_provider"] == "AWS"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_deployment_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime deployment profiles list command.
 
@@ -374,10 +365,10 @@ class TestCommands:
                     "tsg_id": "1234567890",
                     "status": "active",
                     "expiration_date": "2025-12-31",
-                    "ave_text_records": 1000
+                    "ave_text_records": 1000,
                 }
             ],
-            "status": "success"
+            "status": "success",
         }
 
         args = {"limit": "10", "unactivated": "false"}
@@ -389,7 +380,7 @@ class TestCommands:
         assert result.outputs[0]["status"] == "active"
         assert result.outputs[0]["auth_code"] == "ac123"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_dlp_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime DLP profiles list command.
 
@@ -406,7 +397,7 @@ class TestCommands:
                     "version": "1.0",
                     "log-severity": "high",
                     "non-file-based": "enabled",
-                    "file-based": "enabled"
+                    "file-based": "enabled",
                 }
             ]
         }
@@ -420,7 +411,7 @@ class TestCommands:
         assert result.outputs[0]["name"] == "pci-dss"
         assert result.outputs[0]["id"] == "dlp-123"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_model_security_scans_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test model security scans list command.
 
@@ -440,10 +431,10 @@ class TestCommands:
                     "scan_origin": "CLI",
                     "created_at": "2024-01-01T00:00:00Z",
                     "updated_at": "2024-01-01T00:10:00Z",
-                    "created_by": "user@example.com"
+                    "created_by": "user@example.com",
                 }
             ],
-            "pagination": {"total_items": 1}
+            "pagination": {"total_items": 1},
         }
 
         args = {"limit": "10"}
@@ -455,7 +446,7 @@ class TestCommands:
         assert result.outputs[0]["model_uri"] == "hf://org/model-name"
         assert result.outputs[0]["eval_outcome"] == "ALLOWED"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_model_security_groups_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test model security groups list command.
 
@@ -474,10 +465,10 @@ class TestCommands:
                     "is_tombstone": False,
                     "created_at": "2024-01-01T00:00:00Z",
                     "updated_at": "2024-01-15T00:00:00Z",
-                    "tsg_id": "1234567890"
+                    "tsg_id": "1234567890",
                 }
             ],
-            "pagination": {"total_items": 1}
+            "pagination": {"total_items": 1},
         }
 
         args = {"limit": "10"}
@@ -489,7 +480,7 @@ class TestCommands:
         assert result.outputs[0]["name"] == "hf-strict"
         assert result.outputs[0]["source_type"] == "HUGGING_FACE"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_model_security_rules_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test model security rules list command.
 
@@ -505,10 +496,10 @@ class TestCommands:
                     "description": "Detect unsafe pickle operations",
                     "rule_type": "ARTIFACT",
                     "compatible_sources": ["HUGGING_FACE", "LOCAL"],
-                    "default_state": "BLOCKING"
+                    "default_state": "BLOCKING",
                 }
             ],
-            "pagination": {"total_items": 1}
+            "pagination": {"total_items": 1},
         }
 
         args = {"limit": "10"}
@@ -520,7 +511,7 @@ class TestCommands:
         assert result.outputs[0]["name"] == "Pickle Scan"
         assert result.outputs[0]["rule_type"] == "ARTIFACT"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_runtime_topics_apply_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test runtime topics apply command - orchestrates multiple API calls.
 
@@ -537,7 +528,7 @@ class TestCommands:
                     "revision": 2,
                     "active": True,
                     "description": "Detects credit card numbers",
-                    "examples": ["4111-1111-1111-1111"]
+                    "examples": ["4111-1111-1111-1111"],
                 }
             ]
         }
@@ -554,27 +545,17 @@ class TestCommands:
                             {
                                 "model-type": "default",
                                 "model-configuration": {
-                                    "model-protection": [
-                                        {
-                                            "name": "topic-guardrails",
-                                            "action": "block",
-                                            "topic-list": []
-                                        }
-                                    ]
-                                }
+                                    "model-protection": [{"name": "topic-guardrails", "action": "block", "topic-list": []}]
+                                },
                             }
                         ]
-                    }
+                    },
                 }
             ]
         }
 
         # Mock response 3: Update profile response
-        update_response = {
-            "profile_id": "profile-uuid-456",
-            "profile_name": "production-profile",
-            "active": True
-        }
+        update_response = {"profile_id": "profile-uuid-456", "profile_name": "production-profile", "active": True}
 
         # Configure mock to return different responses based on call order
         mock_http.side_effect = [topics_response, profiles_response, update_response]
@@ -583,7 +564,7 @@ class TestCommands:
             "profile_name": "production-profile",
             "topic_name": "credit-cards",
             "action": "block",
-            "guardrail_action": "block"
+            "guardrail_action": "block",
         }
         result = runtime_topics_apply_command(mock_client, args)
 
@@ -617,7 +598,7 @@ class TestCommands:
         assert applied_topic["topic_name"] == "credit-cards"
         assert applied_topic["revision"] == 2
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_redteam_targets_profile_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test redteam targets profile command.
 
@@ -633,7 +614,7 @@ class TestCommands:
             "target_background": {"industry": "Healthcare", "use_case": "Patient Support"},
             "additional_context": {"base_model": "GPT-4", "languages_supported": ["en", "es"]},
             "ai_generated_fields": {"sensitivity": "high"},
-            "other_details": {"region": "us-west-2"}
+            "other_details": {"region": "us-west-2"},
         }
 
         args = {"target_uuid": "target-uuid-123"}
@@ -647,7 +628,7 @@ class TestCommands:
         assert result.outputs["target_background"]["industry"] == "Healthcare"
         assert result.outputs["additional_context"]["base_model"] == "GPT-4"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_redteam_targets_update_profile_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test redteam targets update profile command.
 
@@ -663,13 +644,13 @@ class TestCommands:
             "validated": True,
             "updated_at": "2024-01-15T10:30:00Z",
             "target_background": {"industry": "Healthcare", "use_case": "Patient Support"},
-            "additional_context": {"base_model": "GPT-4"}
+            "additional_context": {"base_model": "GPT-4"},
         }
 
         args = {
             "target_uuid": "target-uuid-123",
             "target_background": '{"industry": "Healthcare", "use_case": "Patient Support"}',
-            "additional_context": '{"base_model": "GPT-4"}'
+            "additional_context": '{"base_model": "GPT-4"}',
         }
         result = redteam_targets_update_profile_command(mock_client, args)
 
@@ -686,7 +667,7 @@ class TestCommands:
         assert body["target_background"]["industry"] == "Healthcare"
         assert body["additional_context"]["base_model"] == "GPT-4"
 
-    @patch.object(Client, 'http_request')
+    @patch.object(Client, "http_request")
     def test_redteam_targets_metadata_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test redteam targets metadata command.
 
@@ -698,7 +679,7 @@ class TestCommands:
             "rate_limit": {"type": "number", "required": False},
             "multi_turn": {"type": "boolean", "required": False},
             "content_filter": {"type": "boolean", "required": False},
-            "base_model": {"type": "string", "required": True}
+            "base_model": {"type": "string", "required": True},
         }
 
         args: dict[str, str] = {}
@@ -709,3 +690,51 @@ class TestCommands:
         assert result.outputs["rate_limit"]["type"] == "number"
         assert result.outputs["multi_turn"]["type"] == "boolean"
         assert result.outputs["base_model"]["required"] is True
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test DLP data profile soft-delete (GET to resolve fields, then PATCH to deleted).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        # First call (GET) returns the existing profile; second call (PATCH) returns the updated profile.
+        mock_http.side_effect = [
+            {"id": "profile-123", "name": "pci-dss", "profile_type": "basic", "profile_status": "active"},
+            {"id": "profile-123", "name": "pci-dss", "profile_type": "basic", "profile_status": "deleted"},
+        ]
+
+        args = {"profile_id": "profile-123"}
+        result = runtime_dlp_profiles_delete_command(mock_client, args)
+
+        # Two calls: GET then PATCH
+        assert mock_http.call_count == 2
+        get_call, patch_call = mock_http.call_args_list
+        assert get_call.kwargs["method"] == "GET"
+        assert patch_call.kwargs["method"] == "PATCH"
+
+        # PATCH body must carry name + profile_type (required by merge-patch) and profile_status=deleted
+        patch_body = patch_call.kwargs["json_data"]
+        assert patch_body["profile_status"] == "deleted"
+        assert patch_body["name"] == "pci-dss"
+        assert patch_body["profile_type"] == "basic"
+        assert patch_call.kwargs["headers"]["Content-Type"] == "application/merge-patch+json"
+
+        # Context output uses its own action-tracking key
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfileDelete"
+        assert result.outputs["id"] == "profile-123"
+        assert result.outputs["deleted"] is True
+        assert result.outputs["profile_status"] == "deleted"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_delete_command_missing_id(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test DLP data profile delete raises when profile_id is missing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="profile_id is required"):
+            runtime_dlp_profiles_delete_command(mock_client, {})
+        mock_http.assert_not_called()

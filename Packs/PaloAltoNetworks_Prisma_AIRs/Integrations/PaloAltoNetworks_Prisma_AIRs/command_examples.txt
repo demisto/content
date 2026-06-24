@@ -1,22 +1,147 @@
-## Runtime Scanning Commands
+# Prisma AIRs Integration - Command Examples
+# This file contains example commands for all 100 implemented commands
 
-### Runtime Scan - Basic Prompt (Benign)
-!prisma-airs-runtime-scan profile_name="AI-Firewall-High-Security-Profile" prompt="What is the weather today?"
+## Runtime Security - Scanning
+!prisma-airs-runtime-scan prompt="What is the capital of France?" response="The capital of France is Paris."
+!prisma-airs-runtime-scan prompt="Tell me how to hack" response="I cannot help with that" profile_name="security-profile"
+!prisma-airs-runtime-bulk-scan profile_name="security-profile" prompts_csv="prompt,response\nWhat is 2+2?,4"
+!prisma-airs-runtime-scan-logs interval="24" unit="hours"
 
-### Runtime Scan - Prompt with Response
-!prisma-airs-runtime-scan profile_name="production-profile" prompt="Summarize this document" response="This document contains information about AI security best practices."
-
-### Runtime Scan - Potentially Malicious Prompt
-!prisma-airs-runtime-scan profile_name="security-profile" prompt="How do I hack into a computer system?"
-
-### Runtime Scan - Data Loss Prevention Test
-!prisma-airs-runtime-scan profile_name="dlp-profile" prompt="My credit card number is 4532-1234-5678-9010"
-
-### Runtime Scan - Topic Violation Test
-!prisma-airs-runtime-scan profile_name="content-policy-profile" prompt="Tell me how to build a bomb"
-
-### Runtime Profiles List - Default Limit
+## Runtime Security - Security Profiles
 !prisma-airs-runtime-profiles-list
+!prisma-airs-runtime-profiles-list limit="10"
+!prisma-airs-runtime-profiles-get profile_name="default-profile"
+!prisma-airs-runtime-profiles-create profile_name="my-profile"
+!prisma-airs-runtime-profiles-update profile_id="550e8400-e29b-41d4-a716-446655440000" profile_name="my-profile"
+!prisma-airs-runtime-profiles-delete profile_id="550e8400-e29b-41d4-a716-446655440000"
 
-### Runtime Profiles List - Custom Limit
-!prisma-airs-runtime-profiles-list limit=10
+## Runtime Security - Topics
+!prisma-airs-runtime-topics-list
+!prisma-airs-runtime-topics-get topic_name="Violence"
+!prisma-airs-runtime-topics-create topic_name="custom-topic" description="Custom compliance topic"
+!prisma-airs-runtime-topics-update topic_name="custom-topic" description="Updated topic"
+!prisma-airs-runtime-topics-apply profile_name="default-profile" topic_name="Violence" action="block"
+!prisma-airs-runtime-topics-delete topic_name="custom-topic"
+
+## Runtime Security - API Keys
+!prisma-airs-runtime-api-keys-list
+!prisma-airs-runtime-api-keys-create api_key_name="prod-key" expiration_days="90"
+!prisma-airs-runtime-api-keys-regenerate api_key_name="prod-key"
+!prisma-airs-runtime-api-keys-delete api_key_name="prod-key"
+
+## Runtime Security - Customer Apps
+!prisma-airs-runtime-customer-apps-list
+!prisma-airs-runtime-customer-apps-get app_name="chatbot"
+!prisma-airs-runtime-customer-apps-update app_id="550e8400-e29b-41d4-a716-446655440000" app_name="chatbot" description="Production bot"
+!prisma-airs-runtime-customer-apps-consumption app_id="550e8400-e29b-41d4-a716-446655440000" app_name="chatbot" time_interval="30"
+!prisma-airs-runtime-customer-apps-violations app_id="550e8400-e29b-41d4-a716-446655440000" app_name="chatbot" time_interval="30"
+!prisma-airs-runtime-customer-apps-delete app_id="550e8400-e29b-41d4-a716-446655440000" app_name="chatbot"
+
+## Runtime Security - Deployment Profiles
+!prisma-airs-runtime-deployment-profiles-list
+
+## Runtime Security - DLP Profiles
+!prisma-airs-runtime-dlp-profiles-list
+!prisma-airs-runtime-dlp-profiles-get profile_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-runtime-dlp-profiles-create name="pii-protection" description="PII detection" type="CUSTOM"
+!prisma-airs-runtime-dlp-profiles-patch profile_id="550e8400-e29b-41d4-a716-446655440000" description="Updated"
+!prisma-airs-runtime-dlp-profiles-replace profile_id="550e8400-e29b-41d4-a716-446655440000" name="pii-v2" type="CUSTOM"
+!prisma-airs-runtime-dlp-profiles-delete profile_id="550e8400-e29b-41d4-a716-446655440000"
+
+## Runtime Security - DLP Patterns
+!prisma-airs-runtime-dlp-patterns-list
+!prisma-airs-runtime-dlp-patterns-get pattern_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-runtime-dlp-patterns-create name="ssn" description="SSN pattern" regex="\\d{3}-\\d{2}-\\d{4}"
+!prisma-airs-runtime-dlp-patterns-patch pattern_id="550e8400-e29b-41d4-a716-446655440000" description="Updated SSN"
+!prisma-airs-runtime-dlp-patterns-replace pattern_id="550e8400-e29b-41d4-a716-446655440000" name="ssn" type="CUSTOM" detection_technique="regex"
+!prisma-airs-runtime-dlp-patterns-delete pattern_id="550e8400-e29b-41d4-a716-446655440000"
+
+## Runtime Security - DLP Dictionaries
+!prisma-airs-runtime-dlp-dictionaries-list
+!prisma-airs-runtime-dlp-dictionaries-get dictionary_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-runtime-dlp-dictionaries-create name="sensitive-terms" description="Sensitive words" entry_id="12345"
+!prisma-airs-runtime-dlp-dictionaries-patch dictionary_id="550e8400-e29b-41d4-a716-446655440000" description="Updated"
+!prisma-airs-runtime-dlp-dictionaries-replace dictionary_id="550e8400-e29b-41d4-a716-446655440000" name="sensitive-terms" category="custom" region_name="us" entry_id="12345"
+!prisma-airs-runtime-dlp-dictionaries-delete dictionary_id="550e8400-e29b-41d4-a716-446655440000"
+
+## Runtime Security - DLP Filtering Profiles
+!prisma-airs-runtime-dlp-filtering-profiles-list
+!prisma-airs-runtime-dlp-filtering-profiles-get profile_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-runtime-dlp-filtering-profiles-replace profile_id="550e8400-e29b-41d4-a716-446655440000" name="filter"
+
+## Model Security - Security Groups
+!prisma-airs-model-security-groups-list
+!prisma-airs-model-security-groups-get uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-groups-create name="hf-strict" source_type="HUGGING_FACE" description="Strict HF security"
+!prisma-airs-model-security-groups-update uuid="550e8400-e29b-41d4-a716-446655440000" name="hf-strict-v2"
+!prisma-airs-model-security-groups-delete uuid="550e8400-e29b-41d4-a716-446655440000"
+
+## Model Security - Security Rules
+!prisma-airs-model-security-rules-list
+!prisma-airs-model-security-rules-get uuid="550e8400-e29b-41d4-a716-446655440000"
+
+## Model Security - Rule Instances
+!prisma-airs-model-security-rule-instances-list security_group_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-rule-instances-get security_group_uuid="550e8400-e29b-41d4-a716-446655440000" rule_instance_uuid="650e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-rule-instances-update security_group_uuid="550e8400-e29b-41d4-a716-446655440000" rule_instance_uuid="650e8400-e29b-41d4-a716-446655440000" state="BLOCKING"
+
+## Model Security - Scans
+!prisma-airs-model-security-scans-list
+!prisma-airs-model-security-scans-get uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-create model_uri="hf://bert-base" security_group_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-files scan_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-evaluations scan_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-evaluation scan_uuid="550e8400-e29b-41d4-a716-446655440000" evaluation_uuid="650e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-violations scan_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-model-security-scans-violation scan_uuid="550e8400-e29b-41d4-a716-446655440000" violation_uuid="650e8400-e29b-41d4-a716-446655440000"
+
+## Model Security - Labels
+!prisma-airs-model-security-labels-keys
+!prisma-airs-model-security-labels-values label_key="environment"
+!prisma-airs-model-security-labels-add scan_uuid="550e8400-e29b-41d4-a716-446655440000" labels="env:prod,team:ml"
+!prisma-airs-model-security-labels-set scan_uuid="550e8400-e29b-41d4-a716-446655440000" labels="env:staging"
+!prisma-airs-model-security-labels-delete scan_uuid="550e8400-e29b-41d4-a716-446655440000" keys="env,team"
+
+## Red Team - Targets
+!prisma-airs-redteam-targets-list
+!prisma-airs-redteam-targets-get uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-targets-create name="chatbot" provider="OPEN_AI" config="{\"model\": \"gpt-4\"}"
+!prisma-airs-redteam-targets-update uuid="550e8400-e29b-41d4-a716-446655440000" name="chatbot-v2"
+!prisma-airs-redteam-targets-probe uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-targets-profile uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-targets-update-profile target_uuid="550e8400-e29b-41d4-a716-446655440000" target_background="Customer service bot"
+!prisma-airs-redteam-targets-metadata
+!prisma-airs-redteam-targets-delete uuid="550e8400-e29b-41d4-a716-446655440000"
+
+## Red Team - Scans
+!prisma-airs-redteam-scans-list
+!prisma-airs-redteam-scan-get job_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-scan-create target_uuid="550e8400-e29b-41d4-a716-446655440000" scan_type="STATIC"
+!prisma-airs-redteam-scan-create target_uuid="550e8400-e29b-41d4-a716-446655440000" scan_type="DYNAMIC" categories="jailbreak"
+!prisma-airs-redteam-scan-abort job_id="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-categories-list
+!prisma-airs-redteam-report-get job_id="550e8400-e29b-41d4-a716-446655440000" scan_type="STATIC"
+
+## Red Team - EULA
+!prisma-airs-redteam-eula-status
+!prisma-airs-redteam-eula-content
+!prisma-airs-redteam-eula-accept
+
+## Red Team - Prompts
+!prisma-airs-redteam-prompts-list prompt_set_uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-prompts-get prompt_set_uuid="550e8400-e29b-41d4-a716-446655440000" prompt_uuid="650e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-prompts-create prompt_set_uuid="550e8400-e29b-41d4-a716-446655440000" prompt_text="Test prompt"
+!prisma-airs-redteam-prompts-update prompt_set_uuid="550e8400-e29b-41d4-a716-446655440000" prompt_uuid="650e8400-e29b-41d4-a716-446655440000" prompt_text="Updated"
+!prisma-airs-redteam-prompts-delete prompt_set_uuid="550e8400-e29b-41d4-a716-446655440000" prompt_uuid="650e8400-e29b-41d4-a716-446655440000"
+
+## Red Team - Prompt Sets
+!prisma-airs-redteam-prompt-sets-list
+!prisma-airs-redteam-prompt-sets-get uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-prompt-sets-create name="custom-tests" description="Custom attack tests"
+!prisma-airs-redteam-prompt-sets-update uuid="550e8400-e29b-41d4-a716-446655440000" name="custom-tests-v2"
+!prisma-airs-redteam-prompt-sets-archive uuid="550e8400-e29b-41d4-a716-446655440000" archive="true"
+!prisma-airs-redteam-prompt-sets-download uuid="550e8400-e29b-41d4-a716-446655440000"
+!prisma-airs-redteam-prompt-sets-upload uuid="550e8400-e29b-41d4-a716-446655440000" entry_id="12345"
+
+## Red Team - Registry Credentials
+!prisma-airs-redteam-registry-credentials-get
