@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtirsalertfindings",
+    "version": -1,
+    "modified": "2026-04-30T00:00:00.000000000+05:30",
+    "name": "GTI RS Alert Findings",
+    "ownerOnly": false,
+    "description": "Findings associated with the RS alert.",
+    "cliName": "gtirsalertfindings",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Google Threat Intelligence RS Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
