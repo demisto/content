@@ -36,7 +36,7 @@ Integration with the Secureworks Taegis XDR platform for case ingestion, bi-dire
 
 ## Triage Workflow
 
-By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue - the playbook does not run on ingestion. When an analyst opens a Pending case to investigate, the **Taegis XDR Case Playbook** runs automatically: it assigns that analyst as the incident owner, moves the incident to **Active**, then prompts manual review and optional case closure. Ownership stays with whoever picks up the case.
+By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue - the playbook does not run on ingestion. An analyst **takes** a case by assigning it to themselves (Assign -> self), which sets them as the incident owner and moves it to **Active**. The **Taegis XDR Case Playbook** then runs, prompting manual review and optional case closure. Ownership stays with whoever takes the case - a deliberate, single action that works identically on XSOAR v6 and v8.
 
 ## Getting Started
 
