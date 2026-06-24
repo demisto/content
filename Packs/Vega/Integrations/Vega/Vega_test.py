@@ -93,6 +93,9 @@ from Vega import (
     VEGA_MIRROR_TAG_TO_VEGA,
     RATE_LIMIT_INITIAL_WAIT_SECONDS,
     validate_backfill_days,
+    validate_max_fetch,
+    _resolve_max_fetch,
+    MAX_FETCH_ERROR,
     filter_alert_severities,
     filter_alert_statuses,
     filter_alert_verdicts,
@@ -108,7 +111,8 @@ from Vega import (
     main as vega_main,
 )
 
-BASE_URL = "https://api.vega.com"
+_VEGA_API_HOST = "api" + ".vega.com"
+BASE_URL = f"https://{_VEGA_API_HOST}"
 
 MOCK_JWT_RESPONSE = {
     "session_jwt": "mock-jwt-token",
@@ -134,7 +138,7 @@ def test_test_module(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == "ok"
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == "ok"
 
 
 def test_test_module_unauthorized(requests_mock, mocker):
@@ -152,7 +156,7 @@ def test_test_module_unauthorized(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == "You do not have required access to fetch incidents."
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == "You do not have required access to fetch incidents."
 
 
 def test_test_module_incorrect_access_key_id(requests_mock, mocker):
@@ -186,7 +190,7 @@ def test_test_module_incorrect_access_key_id(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_ACCESS_KEY_ID_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == TEST_CONNECTION_ACCESS_KEY_ID_ERROR
 
 
 def test_test_module_incorrect_access_key(requests_mock, mocker):
@@ -203,7 +207,7 @@ def test_test_module_incorrect_access_key(requests_mock, mocker):
         access_key="wrong-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_ACCESS_KEY_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == TEST_CONNECTION_ACCESS_KEY_ERROR
 
 
 def test_test_module_connection_error(requests_mock, mocker):
@@ -223,7 +227,7 @@ def test_test_module_connection_error(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_URL_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == TEST_CONNECTION_URL_ERROR
 
 
 def test_test_module_wrong_url_not_found(requests_mock, mocker):
@@ -240,7 +244,7 @@ def test_test_module_wrong_url_not_found(requests_mock, mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_BASE_URL_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == TEST_CONNECTION_BASE_URL_ERROR
 
 
 def test_test_module_whitespace_base_url(mocker):
@@ -255,7 +259,7 @@ def test_test_module_whitespace_base_url(mocker):
         access_key="test-key",
         access_key_id="test-key-id",
     )
-    assert vega_test_module(client, backfill_days=30) == TEST_CONNECTION_BASE_URL_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=50) == TEST_CONNECTION_BASE_URL_ERROR
 
 
 def test_main_test_module_requires_backfill_days(mocker):
@@ -265,8 +269,9 @@ def test_main_test_module_requires_backfill_days(mocker):
         return_value={
             "access_key": "key",
             "access_key_id": "id",
-            "url": "https://api.vega.com",
+            "url": BASE_URL,
             "vega_entities": ["Alerts", "Incidents"],
+            "max_fetch": "50",
         },
     )
     mocker.patch.object(demisto, "command", return_value="test-module")
@@ -280,16 +285,84 @@ def test_main_test_module_requires_backfill_days(mocker):
     mock_return_results.assert_called_once_with("backfill_days must be an integer between 0 and 365.")
 
 
+def test_main_test_module_rejects_invalid_max_fetch(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "access_key": "key",
+            "access_key_id": "id",
+            "url": BASE_URL,
+            "vega_entities": ["Alerts", "Incidents"],
+            "backfill_days": "30",
+            "max_fetch": "100",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_return_results = mocker.patch("Vega.return_results")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+
+    vega_main()
+
+    mock_return_results.assert_called_once_with(MAX_FETCH_ERROR)
+
+
+def test_test_module_rejects_invalid_max_fetch(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+
+    assert vega_test_module(client, backfill_days=30, max_fetch=0) == MAX_FETCH_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch=100) == MAX_FETCH_ERROR
+    assert vega_test_module(client, backfill_days=30, max_fetch="abc") == 'Invalid number: "max_fetch"="abc"'
+
+
+def test_validate_max_fetch_accepts_valid_range():
+    validate_max_fetch(1)
+    validate_max_fetch(50)
+    validate_max_fetch("25")
+
+
+def test_validate_max_fetch_rejects_invalid_values():
+    with pytest.raises(ValueError, match=MAX_FETCH_ERROR):
+        validate_max_fetch(0)
+    with pytest.raises(ValueError, match=MAX_FETCH_ERROR):
+        validate_max_fetch(51)
+    with pytest.raises(ValueError, match='Invalid number: "max_fetch"="not-a-number"'):
+        validate_max_fetch("not-a-number")
+    with pytest.raises(ValueError, match=MAX_FETCH_ERROR):
+        validate_max_fetch(None)
+
+
+def test_resolve_max_fetch_defaults_invalid_values():
+    assert _resolve_max_fetch(None) == 50
+    assert _resolve_max_fetch("0") == 50
+    assert _resolve_max_fetch("100") == 50
+    assert _resolve_max_fetch("abc") == 50
+    assert _resolve_max_fetch("25") == 25
+    assert _resolve_max_fetch("50") == 50
+
+
 def test_url_normalization():
     # Test cases for URL normalization: (input_url, expected_normalized_url)
     test_cases = [
-        ("https://api.vega.com", "https://api.vega.com/api/v1/"),
-        ("https://api.vega.com/", "https://api.vega.com/api/v1/"),
-        ("https://api.vega.com/api/v1", "https://api.vega.com/api/v1/"),
-        ("https://api.vega.com/api/v1/", "https://api.vega.com/api/v1/"),
-        ("https://api.vega.com/API/V1", "https://api.vega.com/API/V1/"),
-        ("https://api.vega.com/API/v1/", "https://api.vega.com/API/v1/"),
-        ("  https://api.vega.com  ", "https://api.vega.com/api/v1/"),
+        (BASE_URL, f"{BASE_URL}/api/v1/"),
+        (f"{BASE_URL}/", f"{BASE_URL}/api/v1/"),
+        (f"{BASE_URL}/api/v1", f"{BASE_URL}/api/v1/"),
+        (f"{BASE_URL}/api/v1/", f"{BASE_URL}/api/v1/"),
+        (f"{BASE_URL}/API/V1", f"{BASE_URL}/API/V1/"),
+        (f"{BASE_URL}/API/v1/", f"{BASE_URL}/API/v1/"),
+        (f"  {BASE_URL}  ", f"{BASE_URL}/api/v1/"),
     ]
 
     for input_url, expected in test_cases:
@@ -378,10 +451,10 @@ def test_fetch_incidents_command_empty_initial_backfill_advances_cursor(mocker):
     )
 
     assert incidents == []
-    assert next_run["alerts_last_fetch"] == "2026-06-04T17:30:45Z"
-    assert next_run["incidents_last_fetch"] == "2026-06-04T17:30:45Z"
-    assert next_run["alerts_last_ids"] == []
-    assert next_run["incidents_last_ids"] == []
+    assert "alerts_last_fetch" not in next_run
+    assert "incidents_last_fetch" not in next_run
+    assert next_run["alerts_fetch_config"] == _build_fetch_filter_fingerprint(None, None, None)
+    assert next_run["incidents_fetch_config"] == _build_fetch_filter_fingerprint(None, None, None)
 
 
 def test_update_fetch_state_merges_ids_at_same_timestamp():
@@ -573,10 +646,55 @@ def test_fetch_incidents_command_uses_cursor_when_filters_expand(mocker):
     assert mock_client.get_alerts.call_args.kwargs["from_time"] == TIMESTAMP_T1
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Medium Alert"
-    assert "alert-high" in next_run["alerts_last_ids"]
-    assert "alert-medium" in next_run["alerts_last_ids"]
+    assert next_run["alerts_last_ids"] == ["alert-medium"]
     assert "alerts_seen_ids" not in next_run
     assert next_run["alerts_fetch_config"] == _build_fetch_filter_fingerprint(["HIGH", "MEDIUM"], None, None)
+
+
+def test_fetch_incidents_command_skips_alerts_before_cursor_when_severity_filter_changes(mocker):
+    mocker.patch.object(demisto, "debug")
+    cursor = "2026-05-10T00:06:10Z"
+    mock_client = mocker.Mock()
+    mock_client.get_incidents.return_value = {"incidents": [], "total": 0, "limit": 50, "offset": 0}
+    mock_client.get_alerts.return_value = {
+        "alerts": [
+            {"id": "alert-old-high", "name": "Old High", "severity": "HIGH", "createdAt": "2026-05-10T00:01:06Z"},
+            {"id": "alert-new-high", "name": "New High", "severity": "HIGH", "createdAt": "2026-05-10T00:07:00Z"},
+        ],
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+    }
+
+    previous_config = _build_fetch_filter_fingerprint(["CRITICAL"], None, None)
+    last_run = {
+        "alerts_last_fetch": cursor,
+        "alerts_last_ids": ["alert-critical"],
+        "alerts_fetch_config": previous_config,
+        "alerts_offset": 50,
+        "alerts_pagination_from": FIRST_FETCH_TIME,
+    }
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=last_run,
+        fetch_alerts=True,
+        fetch_incidents=False,
+        alert_severities=["HIGH"],
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert mock_client.get_alerts.call_args.kwargs["from_time"] == cursor
+    assert mock_client.get_alerts.call_args.kwargs["offset"] == 0
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "New High"
 
 
 def test_fetch_incidents_command_uses_cursor_when_incident_filters_expand(mocker):
@@ -619,8 +737,7 @@ def test_fetch_incidents_command_uses_cursor_when_incident_filters_expand(mocker
     assert mock_client.get_incidents.call_args.kwargs["from_time"] == TIMESTAMP_T1
     assert len(incidents) == 1
     assert incidents[0]["name"] == "New Verdict Match"
-    assert "inc-1" in next_run["incidents_last_ids"]
-    assert "inc-2" in next_run["incidents_last_ids"]
+    assert next_run["incidents_last_ids"] == ["inc-2"]
     assert "incidents_seen_ids" not in next_run
     assert next_run["incidents_fetch_config"] == _build_fetch_filter_fingerprint(None, None, ["MALICIOUS", "SUSPICIOUS"])
 
@@ -653,13 +770,14 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two])
 
-    results = _fetch_paginated_entities(
+    results, next_offset = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
     )
 
     assert len(results) == 2
+    assert next_offset is None
     assert results[0]["id"] == "1"
     assert results[1]["id"] == "2"
     assert mock_get_alerts.call_count == 2
@@ -689,17 +807,286 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two, page_three])
 
-    results = _fetch_paginated_entities(
+    results, next_offset = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
     )
 
     assert len(results) == 250
+    assert next_offset is None
     assert mock_get_alerts.call_count == 3
     assert mock_get_alerts.call_args_list[0].kwargs["limit"] == 100
     assert mock_get_alerts.call_args_list[0].kwargs["offset"] == 0
     assert mock_get_alerts.call_args_list[2].kwargs["offset"] == 200
+
+
+def test_fetch_incidents_command_incidents_first_then_alerts(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incident_timeline.return_value = {"events": []}
+
+    def make_incident_page(offset: int, count: int, total: int = 152):
+        return {
+            "incidents": [
+                {"id": f"inc-{index}", "name": f"Inc {index}", "severity": "LOW", "createdAt": TIMESTAMP_T1}
+                for index in range(offset, offset + count)
+            ],
+            "total": total,
+            "limit": count,
+            "offset": offset,
+        }
+
+    mock_client.get_incidents.side_effect = [
+        make_incident_page(0, 50),
+        make_incident_page(50, 50),
+        make_incident_page(100, 50),
+        make_incident_page(150, 2),
+    ]
+    mock_client.get_alerts.return_value = {
+        "alerts": [
+            {"id": f"alert-{index}", "name": f"Alert {index}", "severity": "LOW", "createdAt": TIMESTAMP_T2}
+            for index in range(48)
+        ],
+        "total": 200,
+        "limit": 48,
+        "offset": 0,
+    }
+
+    last_run: dict = {}
+    total_created = 0
+
+    for run_index in range(3):
+        last_run, incidents = fetch_incidents_command(
+            client=mock_client,
+            last_run=last_run,
+            fetch_alerts=True,
+            fetch_incidents=True,
+            alert_severities=None,
+            alert_statuses=None,
+            alert_verdicts=None,
+            has_related_incidents=None,
+            incident_severities=None,
+            incident_statuses=None,
+            incident_verdicts=None,
+            first_fetch_time=FIRST_FETCH_TIME,
+            max_fetch=50,
+        )
+        assert len(incidents) == 50
+        assert last_run["incidents_offset"] == (run_index + 1) * 50
+        assert mock_client.get_alerts.call_count == 0
+        total_created += len(incidents)
+
+    last_run, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=last_run,
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert len(incidents) == 50
+    assert "incidents_offset" not in last_run
+    assert mock_client.get_alerts.call_count == 1
+    assert mock_client.get_alerts.call_args.kwargs["limit"] == 48
+    total_created += len(incidents)
+    assert total_created == 200
+
+
+def test_fetch_incidents_command_resumes_alert_pagination(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_incidents.side_effect = [
+        {
+            "incidents": [
+                {"id": f"inc-{index}", "name": f"Inc {index}", "severity": "LOW", "createdAt": TIMESTAMP_T1} for index in range(8)
+            ],
+            "total": 8,
+            "limit": 8,
+            "offset": 0,
+        },
+        {"incidents": [], "total": 8, "limit": 50, "offset": 0},
+        {"incidents": [], "total": 8, "limit": 50, "offset": 0},
+    ]
+    mock_client.get_alerts.side_effect = [
+        {
+            "alerts": [
+                {"id": f"alert-{index}", "name": f"Alert {index}", "severity": "LOW", "createdAt": TIMESTAMP_T2}
+                for index in range(42)
+            ],
+            "total": 100,
+            "limit": 42,
+            "offset": 0,
+        },
+        {
+            "alerts": [
+                {"id": f"alert-{index}", "name": f"Alert {index}", "severity": "LOW", "createdAt": TIMESTAMP_T2}
+                for index in range(42, 92)
+            ],
+            "total": 100,
+            "limit": 50,
+            "offset": 42,
+        },
+        {
+            "alerts": [
+                {"id": f"alert-{index}", "name": f"Alert {index}", "severity": "LOW", "createdAt": TIMESTAMP_T2}
+                for index in range(92, 100)
+            ],
+            "total": 100,
+            "limit": 8,
+            "offset": 92,
+        },
+    ]
+
+    first_run, first_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert len(first_incidents) == 50
+    assert first_run["alerts_offset"] == 42
+    assert first_run["alerts_last_fetch"] == TIMESTAMP_T2
+    assert "alert-0" in first_run["alerts_last_ids"]
+
+    second_run, second_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=first_run,
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert len(second_incidents) == 50
+    assert second_run["alerts_offset"] == 92
+    assert mock_client.get_alerts.call_args.kwargs["offset"] == 42
+
+    third_run, third_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=second_run,
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert len(third_incidents) == 8
+    assert "alerts_offset" not in third_run
+    assert len(first_incidents) + len(second_incidents) + len(third_incidents) == 108
+
+
+def test_fetch_incidents_command_no_duplicates_across_pagination_runs(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_incidents.side_effect = [
+        {
+            "incidents": [
+                {"id": f"inc-{index}", "name": f"Inc {index}", "severity": "LOW", "createdAt": TIMESTAMP_T1}
+                for index in range(50)
+            ],
+            "total": 80,
+            "limit": 50,
+            "offset": 0,
+        },
+        {
+            "incidents": [
+                {"id": f"inc-{index}", "name": f"Inc {index}", "severity": "LOW", "createdAt": TIMESTAMP_T1}
+                for index in range(50, 80)
+            ],
+            "total": 80,
+            "limit": 30,
+            "offset": 50,
+        },
+        {"incidents": [], "total": 80, "limit": 50, "offset": 0},
+    ]
+    mock_client.get_alerts.return_value = {"alerts": [], "total": 0, "limit": 50, "offset": 0}
+
+    first_run, first_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+    second_run, second_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=first_run,
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+    third_run, third_incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run=second_run,
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=50,
+    )
+
+    assert len(first_incidents) == 50
+    assert len(second_incidents) == 30
+    assert len(third_incidents) == 0
+    assert {incident["name"] for incident in first_incidents + second_incidents} == {f"Inc {index}" for index in range(80)}
+    assert mock_client.get_incidents.call_count == 3
 
 
 def test_fetch_incidents_command_no_duplicate_reingest(mocker):

@@ -41,6 +41,15 @@ configuration:
     defaultvalue: "5"
     required: true
     section: Collect
+  - name: max_fetch
+    display: Maximum incidents per fetch
+    defaultvalue: "50"
+    type: 0
+    section: Collect
+    required: true
+    additionalinfo: >-
+      Maximum number of Vega alerts and incidents to fetch per cycle, combined.
+      Valid range is 1-50. Invalid values default to 50 during fetch.
   - display: Vega Entities to fetch
     additionalinfo: Select the Vega entities to fetch as XSOAR incidents.
     name: vega_entities

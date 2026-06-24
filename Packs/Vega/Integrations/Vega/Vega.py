@@ -173,7 +173,14 @@ VEGA_TIMELINE_ALERT_SEVERITY_LABELS: dict[int, str] = {
 BACKFILL_DAYS_MIN = 0
 BACKFILL_DAYS_MAX = 365
 DEFAULT_BACKFILL_DAYS = 30
-GET_ALERTS_FETCH_LIMIT = None  # Set to None for production (unlimited alert fetch)
+MAX_FETCH_MIN = 1
+MAX_FETCH_CAP = 50
+DEFAULT_MAX_FETCH = 50
+MAX_FETCH_ERROR = "Incorrect value please enter between 1-50."
+INCIDENTS_OFFSET_KEY = "incidents_offset"
+INCIDENTS_PAGINATION_FROM_KEY = "incidents_pagination_from"
+ALERTS_OFFSET_KEY = "alerts_offset"
+ALERTS_PAGINATION_FROM_KEY = "alerts_pagination_from"
 
 VALID_ALERT_STATUSES = frozenset({"OPEN", "IN_PROGRESS", "PEER_REVIEW", "RESOLVED"})
 ALERT_STATUS_DISPLAY_TO_API: dict[str, str] = {
@@ -3241,11 +3248,16 @@ def _fetch_paginated_entities(
     fetch_func: Callable[..., dict],
     entities_key: str,
     max_entities: int | None = None,
+    start_offset: int = 0,
     **fetch_kwargs: Any,
-) -> list[dict]:
-    """Fetch entities from the Vega API with offset-based pagination."""
+) -> tuple[list[dict], int | None]:
+    """Fetch entities from the Vega API.
+
+    Returns the entity list and an optional next offset when max_entities stops
+    the fetch before all matching records are retrieved.
+    """
     entities: list[dict] = []
-    offset = 0
+    offset = start_offset
 
     while True:
         request_kwargs = dict(fetch_kwargs)
@@ -3266,6 +3278,11 @@ def _fetch_paginated_entities(
         entities.extend(page)
         if max_entities is not None and len(entities) >= max_entities:
             entities = entities[:max_entities]
+            total = response.get("total")
+            if total is not None:
+                next_offset = start_offset + len(entities)
+                if next_offset < total:
+                    return entities, next_offset
             break
 
         total = response.get("total")
@@ -3274,7 +3291,7 @@ def _fetch_paginated_entities(
 
         offset += len(page)
 
-    return entities
+    return entities, None
 
 
 def _build_fetch_filter_fingerprint(
@@ -4494,6 +4511,104 @@ def _merge_fetch_boundary_ids(previous_ids: list[str], next_ids: list[str]) -> l
     return list({str(entity_id) for entity_id in previous_ids if entity_id} | set(next_ids))
 
 
+def _fetch_filters_changed(last_run: dict, fetch_config_key: str, fetch_config: str) -> bool:
+    """Return True when fetch filters changed since the previous run."""
+    previous_config = last_run.get(fetch_config_key)
+    return previous_config is not None and previous_config != fetch_config
+
+
+def _clear_fetch_pagination_state(next_run: dict, offset_key: str, pagination_from_key: str) -> None:
+    """Drop saved offset pagination for an entity type."""
+    next_run.pop(offset_key, None)
+    next_run.pop(pagination_from_key, None)
+
+
+def _batch_fetch_last_run(
+    last_run: dict,
+    next_run: dict,
+    *,
+    offset_key: str,
+    pagination_from_key: str,
+    fetch_config_key: str,
+    fetch_config: str,
+) -> dict:
+    """Build the last_run view used for API pagination.
+
+    When fetch filters change, discard stale offset state so the next query uses the
+    stored cursor timestamp instead of an old backfill window.
+    """
+    if not _fetch_filters_changed(last_run, fetch_config_key, fetch_config):
+        return last_run
+
+    _clear_fetch_pagination_state(next_run, offset_key, pagination_from_key)
+    batch_run = dict(last_run)
+    batch_run.pop(offset_key, None)
+    batch_run.pop(pagination_from_key, None)
+    return batch_run
+
+
+def _is_resuming_fetch_pagination(
+    last_run: dict,
+    offset_key: str,
+    fetch_config_key: str,
+    fetch_config: str,
+) -> bool:
+    """Return True only when continuing offset pagination for the same filter set."""
+    return last_run.get(offset_key) is not None and not _fetch_filters_changed(last_run, fetch_config_key, fetch_config)
+
+
+def validate_max_fetch(max_fetch: int | str | None) -> None:
+    """Validate that max_fetch is an integer between 1 and 50 inclusive."""
+    parsed = arg_to_number(max_fetch, arg_name="max_fetch", required=False)
+    if parsed is None or parsed < MAX_FETCH_MIN or parsed > MAX_FETCH_CAP:
+        raise ValueError(MAX_FETCH_ERROR)
+
+
+def _resolve_max_fetch(max_fetch: int | str | None) -> int:
+    """Return the combined per-fetch limit, defaulting to 50 when the value is invalid."""
+    try:
+        validate_max_fetch(max_fetch)
+    except ValueError:
+        return DEFAULT_MAX_FETCH
+    return int(arg_to_number(max_fetch, arg_name="max_fetch", required=False))  # type: ignore[arg-type]
+
+
+def _fetch_vega_entity_batch(
+    last_run: dict,
+    next_run: dict,
+    *,
+    offset_key: str,
+    pagination_from_key: str,
+    default_from_time: str,
+    limit: int,
+    fetch_func: Callable[..., dict],
+    entities_key: str,
+    **fetch_kwargs: Any,
+) -> list[dict]:
+    """Fetch up to `limit` Vega entities and store offset state when more remain."""
+    saved_offset = last_run.get(offset_key)
+    offset = int(saved_offset) if saved_offset is not None else 0
+    from_time = str(last_run.get(pagination_from_key) or default_from_time) if offset > 0 else default_from_time
+
+    entities, next_offset = _fetch_paginated_entities(
+        fetch_func,
+        entities_key=entities_key,
+        max_entities=limit,
+        start_offset=offset,
+        from_time=from_time,
+        **fetch_kwargs,
+    )
+
+    if next_offset is not None:
+        next_run[offset_key] = next_offset
+        next_run[pagination_from_key] = from_time
+    else:
+        next_run.pop(offset_key, None)
+        next_run.pop(pagination_from_key, None)
+
+    return entities
+
+
 def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[dict]:
     """Fetch timeline events for a Vega incident."""
     try:
@@ -4504,6 +4619,76 @@ def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[di
     except Exception:
         return []
     return []
+
+
+def _ingest_fetched_incidents(
+    client: Client,
+    last_run: dict,
+    next_run: dict,
+    xsoar_incidents: list[dict],
+    *,
+    incidents_from_time: str,
+    incidents_last_fetch: str,
+    incidents_last_ids: list[str],
+    incidents_fetch_config: str,
+    incident_severities: list[str] | None,
+    incident_statuses: list[str] | None,
+    incident_verdicts: list[str] | None,
+    limit: int,
+) -> int:
+    """Fetch up to `limit` Vega incidents and return how many were created in XSOAR."""
+    try:
+        batch_last_run = _batch_fetch_last_run(
+            last_run,
+            next_run,
+            offset_key=INCIDENTS_OFFSET_KEY,
+            pagination_from_key=INCIDENTS_PAGINATION_FROM_KEY,
+            fetch_config_key="incidents_fetch_config",
+            fetch_config=incidents_fetch_config,
+        )
+        incidents = _fetch_vega_entity_batch(
+            batch_last_run,
+            next_run,
+            offset_key=INCIDENTS_OFFSET_KEY,
+            pagination_from_key=INCIDENTS_PAGINATION_FROM_KEY,
+            default_from_time=incidents_from_time,
+            limit=limit,
+            fetch_func=client.get_incidents,
+            entities_key="incidents",
+            severities=incident_severities,
+            statuses=incident_statuses,
+            verdicts=incident_verdicts,
+        )
+        ingested: list[dict] = []
+        resuming_offset = _is_resuming_fetch_pagination(
+            last_run, INCIDENTS_OFFSET_KEY, "incidents_fetch_config", incidents_fetch_config
+        )
+        for incident in incidents:
+            if not resuming_offset and not _should_ingest_entity(incident, incidents_last_fetch, incidents_last_ids):
+                continue
+            incident_id = _normalize_entity_id(incident)
+            timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
+            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
+            ingested.append(incident)
+
+        if ingested:
+            new_last_fetch, new_last_ids = _resolve_next_fetch_state(
+                last_run, "incidents_last_fetch", ingested, incidents_last_fetch, incidents_last_ids
+            )
+            next_run["incidents_last_fetch"] = new_last_fetch
+            next_run["incidents_last_ids"] = new_last_ids
+            incidents_last_fetch = new_last_fetch
+            incidents_last_ids = new_last_ids
+        previous_incidents_fetch_config = last_run.get("incidents_fetch_config")
+        if previous_incidents_fetch_config is not None and previous_incidents_fetch_config != incidents_fetch_config:
+            next_run["incidents_last_ids"] = _merge_fetch_boundary_ids(
+                incidents_last_ids, next_run.get("incidents_last_ids", incidents_last_ids)
+            )
+        next_run["incidents_fetch_config"] = incidents_fetch_config
+        return len(ingested)
+    except Exception as exc:
+        _handle_fetch_entity_error("incidents", exc)
+        return 0
 
 
 def _ingest_fetched_alerts(
@@ -4521,75 +4706,58 @@ def _ingest_fetched_alerts(
     alert_verdicts: list[str] | None,
     has_related_incidents: bool | None,
     integration_url: str | None,
-) -> None:
-    """Fetch alerts from Vega and append new XSOAR incidents."""
+    limit: int,
+) -> int:
+    """Fetch up to `limit` Vega alerts and return how many were created in XSOAR."""
     try:
-        alerts = _fetch_paginated_entities(
-            client.get_alerts,
+        batch_last_run = _batch_fetch_last_run(
+            last_run,
+            next_run,
+            offset_key=ALERTS_OFFSET_KEY,
+            pagination_from_key=ALERTS_PAGINATION_FROM_KEY,
+            fetch_config_key="alerts_fetch_config",
+            fetch_config=alerts_fetch_config,
+        )
+        alerts = _fetch_vega_entity_batch(
+            batch_last_run,
+            next_run,
+            offset_key=ALERTS_OFFSET_KEY,
+            pagination_from_key=ALERTS_PAGINATION_FROM_KEY,
+            default_from_time=alerts_from_time,
+            limit=limit,
+            fetch_func=client.get_alerts,
             entities_key="alerts",
-            max_entities=GET_ALERTS_FETCH_LIMIT,
             severities=alert_severities,
             statuses=alert_statuses,
             verdicts=alert_verdicts,
             has_related_incidents=has_related_incidents,
-            from_time=alerts_from_time,
         )
+        ingested: list[dict] = []
+        resuming_offset = _is_resuming_fetch_pagination(last_run, ALERTS_OFFSET_KEY, "alerts_fetch_config", alerts_fetch_config)
         for alert in alerts:
-            if not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
+            if not resuming_offset and not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
                 continue
             xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url))
+            ingested.append(alert)
 
-        next_run["alerts_last_fetch"], next_run["alerts_last_ids"] = _resolve_next_fetch_state(
-            last_run, "alerts_last_fetch", alerts, alerts_last_fetch, alerts_last_ids
-        )
+        if ingested:
+            new_last_fetch, new_last_ids = _resolve_next_fetch_state(
+                last_run, "alerts_last_fetch", ingested, alerts_last_fetch, alerts_last_ids
+            )
+            next_run["alerts_last_fetch"] = new_last_fetch
+            next_run["alerts_last_ids"] = new_last_ids
+            alerts_last_fetch = new_last_fetch
+            alerts_last_ids = new_last_ids
         previous_alerts_fetch_config = last_run.get("alerts_fetch_config")
         if previous_alerts_fetch_config is not None and previous_alerts_fetch_config != alerts_fetch_config:
-            next_run["alerts_last_ids"] = _merge_fetch_boundary_ids(alerts_last_ids, next_run["alerts_last_ids"])
+            next_run["alerts_last_ids"] = _merge_fetch_boundary_ids(
+                alerts_last_ids, next_run.get("alerts_last_ids", alerts_last_ids)
+            )
         next_run["alerts_fetch_config"] = alerts_fetch_config
+        return len(ingested)
     except Exception as exc:
         _handle_fetch_entity_error("alerts", exc)
-
-
-def _ingest_fetched_incidents(
-    client: Client,
-    last_run: dict,
-    next_run: dict,
-    xsoar_incidents: list[dict],
-    *,
-    incidents_from_time: str,
-    incidents_last_fetch: str,
-    incidents_last_ids: list[str],
-    incidents_fetch_config: str,
-    incident_severities: list[str] | None,
-    incident_statuses: list[str] | None,
-    incident_verdicts: list[str] | None,
-) -> None:
-    """Fetch incidents from Vega and append new XSOAR incidents."""
-    try:
-        incidents = _fetch_paginated_entities(
-            client.get_incidents,
-            entities_key="incidents",
-            severities=incident_severities,
-            statuses=incident_statuses,
-            verdicts=incident_verdicts,
-            from_time=incidents_from_time,
-        )
-        for incident in incidents:
-            if not _should_ingest_entity(incident, incidents_last_fetch, incidents_last_ids):
-                continue
-            incident_id = _normalize_entity_id(incident)
-            timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
-            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
-
-        next_run["incidents_last_fetch"], next_run["incidents_last_ids"] = _resolve_next_fetch_state(
-            last_run, "incidents_last_fetch", incidents, incidents_last_fetch, incidents_last_ids
-        )
-        previous_incidents_fetch_config = last_run.get("incidents_fetch_config")
-        if previous_incidents_fetch_config is not None and previous_incidents_fetch_config != incidents_fetch_config:
-            next_run["incidents_last_ids"] = _merge_fetch_boundary_ids(incidents_last_ids, next_run["incidents_last_ids"])
-        next_run["incidents_fetch_config"] = incidents_fetch_config
-    except Exception as exc:
-        _handle_fetch_entity_error("incidents", exc)
+        return 0
 
 
 def fetch_incidents_command(
@@ -4606,8 +4774,14 @@ def fetch_incidents_command(
     incident_verdicts: list[str] | None,
     first_fetch_time: str,
     integration_url: str | None = None,
+    max_fetch: int = DEFAULT_MAX_FETCH,
 ) -> tuple[dict, list[dict]]:
-    """Fetch alerts and/or incidents from Vega and return them as XSOAR incidents."""
+    """Fetch Vega incidents and alerts as XSOAR incidents.
+
+    Each cycle creates up to max_fetch XSOAR incidents total.
+    Incidents are always fetched first; any remaining quota is used for alerts.
+    Offset state is saved when a list is only partly read and resumes on the next cycle.
+    """
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
     next_run.pop("alerts_seen_ids", None)
@@ -4622,43 +4796,112 @@ def fetch_incidents_command(
     )
     incidents_fetch_config = _build_fetch_filter_fingerprint(incident_severities, incident_statuses, incident_verdicts)
 
-    if fetch_alerts:
-        _ingest_fetched_alerts(
+    remaining = max_fetch
+    working_run = last_run
+    incidents_touched = False
+    alerts_touched = False
+
+    # Resume an in-progress incident page before anything else.
+    if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
+        ingested_incidents = _ingest_fetched_incidents(
             client,
-            last_run,
+            working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_resolve_fetch_from_time(last_run, "alerts_last_fetch", first_fetch_time),
-            alerts_last_fetch=last_run.get("alerts_last_fetch") or first_fetch_time,
-            alerts_last_ids=last_run.get("alerts_last_ids", []),
+            incidents_from_time=_resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time),
+            incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
+            incidents_last_ids=working_run.get("incidents_last_ids", []),
+            incidents_fetch_config=incidents_fetch_config,
+            incident_severities=incident_severities,
+            incident_statuses=incident_statuses,
+            incident_verdicts=incident_verdicts,
+            limit=remaining,
+        )
+        remaining -= ingested_incidents
+        working_run = next_run
+        incidents_touched = True
+
+    # Resume an in-progress alert page before starting a new incident page.
+    if (
+        fetch_alerts
+        and remaining > 0
+        and working_run.get(INCIDENTS_OFFSET_KEY) is None
+        and working_run.get(ALERTS_OFFSET_KEY) is not None
+    ):
+        ingested_alerts = _ingest_fetched_alerts(
+            client,
+            working_run,
+            next_run,
+            xsoar_incidents,
+            alerts_from_time=_resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time),
+            alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
+            alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
             alert_severities=alert_severities,
             alert_statuses=alert_statuses,
             alert_verdicts=alert_verdicts,
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
+            limit=remaining,
         )
+        remaining -= ingested_alerts
+        working_run = next_run
+        alerts_touched = True
 
-    if fetch_incidents:
-        _ingest_fetched_incidents(
+    # Start a new incident page when no list is mid-pagination.
+    if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
+        ingested_incidents = _ingest_fetched_incidents(
             client,
-            last_run,
+            working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_resolve_fetch_from_time(last_run, "incidents_last_fetch", first_fetch_time),
-            incidents_last_fetch=last_run.get("incidents_last_fetch") or first_fetch_time,
-            incidents_last_ids=last_run.get("incidents_last_ids", []),
+            incidents_from_time=_resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time),
+            incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
+            incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
+            limit=remaining,
+        )
+        remaining -= ingested_incidents
+        working_run = next_run
+
+    # Fill any leftover quota with a new alert page once incidents are caught up.
+    if (
+        fetch_alerts
+        and remaining > 0
+        and not alerts_touched
+        and next_run.get(INCIDENTS_OFFSET_KEY) is None
+        and next_run.get(ALERTS_OFFSET_KEY) is None
+    ):
+        _ingest_fetched_alerts(
+            client,
+            working_run,
+            next_run,
+            xsoar_incidents,
+            alerts_from_time=_resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time),
+            alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
+            alerts_last_ids=working_run.get("alerts_last_ids", []),
+            alerts_fetch_config=alerts_fetch_config,
+            alert_severities=alert_severities,
+            alert_statuses=alert_statuses,
+            alert_verdicts=alert_verdicts,
+            has_related_incidents=has_related_incidents,
+            integration_url=integration_url,
+            limit=remaining,
         )
 
     return next_run, xsoar_incidents
 
 
-def test_module(client: Client, backfill_days: str | int | None = None):
+def test_module(
+    client: Client,
+    backfill_days: str | int | None = None,
+    max_fetch: int | str | None = None,
+):
     try:
+        validate_max_fetch(max_fetch)
         client.test_connection(backfill_days)
         return "ok"
     except Exception as e:
@@ -4686,6 +4929,7 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "incident_verdicts": filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None),
         "backfill_days": backfill_days,
         "first_fetch_time": parse_backfill_days(backfill_days),
+        "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
     }
 
 
@@ -4703,7 +4947,7 @@ def _build_vega_client(config: dict[str, Any]) -> Client:
 def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any]) -> None:
     """Route a Vega integration command to its handler."""
     command_handlers: dict[str, Callable[..., None]] = {
-        "test-module": lambda: return_results(test_module(client, config["backfill_days"])),
+        "test-module": lambda: return_results(test_module(client, config["backfill_days"], demisto.params().get("max_fetch"))),
         "vega-get-alert-events": lambda: return_results(fetch_alert_events_command(client, demisto.args())),
         "vega-set-detections-state": lambda: return_results(set_detections_state_command(client, demisto.args())),
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
@@ -4733,6 +4977,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             incident_verdicts=config["incident_verdicts"],
             first_fetch_time=config["first_fetch_time"],
             integration_url=config["base_url"],
+            max_fetch=config["max_fetch"],
         )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)
