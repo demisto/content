@@ -1944,7 +1944,7 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
     if not sessions:
         return CommandResults(
             raw_response=task_output,
-            readable_output=f"No active sessions found for endpoint {endpoint_id}.",
+            readable_output=f"No active sessions found on endpoint {endpoint_id}.",
             outputs=endpoint_output,
             outputs_prefix="GravityZone.Endpoint",
             outputs_key_field="ID",
@@ -1954,7 +1954,7 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
     return CommandResults(
         raw_response=task_output,
         readable_output=tableToMarkdown(
-            f"Active sessions for endpoint {endpoint_id}",
+            f"Active sessions on endpoint {endpoint_id}",
             sessions,
             headers=[
                 "Username",

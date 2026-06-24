@@ -1623,7 +1623,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 ### gz-endpoint-users-loggedin
 
 ***
-Retrieves active logged-in sessions for an endpoint.
+Retrieves details of all active user sessions on a specific managed endpoint.
 
 #### Base Command
 
@@ -1633,7 +1633,7 @@ Retrieves active logged-in sessions for an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the endpoint. | Required |
+| id | The target endpoint ID. The endpoint must be accessible to you. | Required |
 
 #### Context Output
 
@@ -1641,13 +1641,13 @@ Retrieves active logged-in sessions for an endpoint.
 | --- | --- | --- |
 | GravityZone.Endpoint.ID | String | The endpoint ID. |
 | GravityZone.Endpoint.Hostname | String | The endpoint hostname. |
-| GravityZone.Endpoint.ActiveSessions.Username | String | The logged-in username. |
+| GravityZone.Endpoint.ActiveSessions.Username | String | The username of the currently logged-in user. |
 | GravityZone.Endpoint.ActiveSessions.ConnectionType | String | The connection type for the session. |
 | GravityZone.Endpoint.ActiveSessions.StartTime | Date | The session start time, if available. |
-| GravityZone.Endpoint.ActiveSessions.UserSID | String | The user SID for the session, if available. |
-| GravityZone.Endpoint.ActiveSessions.DomainSID | String | The domain SID for the session, if available. |
-| GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN | String | The organizational unit distinguished name, if available. |
-| GravityZone.Endpoint.ActiveSessions.MemberOfSIDs | Unknown | The list of group SIDs for the session user, if available. |
+| GravityZone.Endpoint.ActiveSessions.UserSID | String | The Security Identifier (SID) of the logged-in user, if available. |
+| GravityZone.Endpoint.ActiveSessions.DomainSID | String | The Security Identifier (SID) of the logged-in user's domain, if available. |
+| GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN | String | The full distinguished name (DN) of the organizational unit, if available. |
+| GravityZone.Endpoint.ActiveSessions.MemberOfSIDs | Array | The SIDs for the groups to which the logged-in user belongs, if available. |
 
 #### Command example
 
@@ -1682,7 +1682,7 @@ Retrieves active logged-in sessions for an endpoint.
 
 #### Human Readable Output
 
->### Active sessions for endpoint 6942a43afe8d4e463ca5c197
+>### Active sessions on endpoint 6942a43afe8d4e463ca5c197
 >
 >|Username|ConnectionType|StartTime|UserSID|DomainSID|OrganizationalUnitDN|MemberOfSIDs|
 >|---|---|---|---|---|---|---|
@@ -1692,9 +1692,13 @@ Retrieves active logged-in sessions for an endpoint.
 ### gz-endpoint-create-memory-dump
 
 ***
-Creates an endpoint memory dump task. When polling is true or not specified, waits for completion and returns the download URL. When polling is false, returns the task ID immediately.
+Initiates the creation of a memory dump for the specified endpoint. Once the dump is successfully generated, the resulting archive is uploaded to the Bitdefender cloud.
 
-*Note*: Please contact Bitdefender Enterprise Support to configure this feature.
+*Important*:
+
+- Please contact Bitdefender Enterprise Support to configure this feature.
+- The resulting memory dump archive is automatically deleted from the Bitdefender cloud after 24 hours.
+- The memory dump creation task completes successfully only when the generated memory dump archive is 16 GB or smaller.
 
 #### Base Command
 
@@ -1704,29 +1708,29 @@ Creates an endpoint memory dump task. When polling is true or not specified, wai
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the endpoint. | Required |
-| path | The destination folder path on the endpoint where the memory dump archive is created. | Required |
-| password | Password used to encrypt the memory dump archive. | Required |
-| polling | Whether to continue polling until the memory dump task is completed. If false, returns the task ID immediately. | Optional |
+| id | The target endpoint ID. The endpoint must be accessible and run a Windows operating system. | Required |
+| path | The path to the destination folder on the specified endpoint where the memory dump archive will be created. | Required |
+| password | The password used to secure the memory dump archive after it is created. It must contain at least 12 characters, including one uppercase letter, one lowercase letter, one digit, and one special character. | Required |
+| polling | Controls whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated. Default and recommended value: true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GravityZone.MemoryDump.TaskID | String | The task ID. |
+| GravityZone.MemoryDump.TaskID | String | The memory dump task ID. |
 | GravityZone.MemoryDump.TaskType | String | The task type. |
-| GravityZone.MemoryDump.Status | String | The task status. |
+| GravityZone.MemoryDump.Status | String | The memory dump task status. |
 | GravityZone.MemoryDump.EndpointID | String | The endpoint ID. |
 | GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
-| GravityZone.MemoryDump.StartDate | Date | The memory dump task start date for the endpoint. |
-| GravityZone.MemoryDump.EndDate | Date | The memory dump task end date for the endpoint. |
-| GravityZone.MemoryDump.ErrorCode | String | The memory dump task error code, if available. |
-| GravityZone.MemoryDump.Error | String | The memory dump task error message, if available. |
-| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL when task is completed successfully. |
+| GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump task started. |
+| GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump task ended, if available. |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the memory dump task fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the memory dump task fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the task completes successfully. |
 
 #### Command example
 
-```!gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 password="*****" path=C:\\test2```
+```!gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 password="ComplexPass123!" path=C:\\test2```
 
 #### Context Example
 
@@ -1751,6 +1755,8 @@ Creates an endpoint memory dump task. When polling is true or not specified, wai
 
 #### Human Readable Output
 
+This example illustrates the human-readable output when *polling* is set to *true*. When *polling* is *false*, the table contains only the task ID and endpoint ID.
+
 >### Memory dump for endpoint 6942a43afe8d4e463ca5c197
 >
 >|EndpointID|Hostname|StartDate|EndDate|Error|DownloadURL|
@@ -1760,7 +1766,7 @@ Creates an endpoint memory dump task. When polling is true or not specified, wai
 ### gz-endpoint-memory-dump-status
 
 ***
-Checks the status of an endpoint memory dump task using a task ID returned by gz-endpoint-create-memory-dump. Polling is enabled by default (when not specified).
+Verifies the status of a task initiated via gz-endpoint-create-memory-dump.
 
 #### Base Command
 
@@ -1770,24 +1776,24 @@ Checks the status of an endpoint memory dump task using a task ID returned by gz
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task ID. | Required |
-| endpoint_id | The endpoint ID. | Required |
-| polling | Whether to continue polling until the memory dump task is completed. | Optional |
+| task_id | The ID of the task started through gz-endpoint-create-memory-dump. This ID is returned upon task initiation. | Required |
+| endpoint_id | The ID of the endpoint for which the specified task was initiated. | Required |
+| polling | Controls whether the command waits for the gz-endpoint-create-memory-dump task completion. If set to true, the command returns the final result after the task completes successfully or fails. If set to false, the command returns immediately, providing only the task status. Default and recommended value: true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GravityZone.MemoryDump.TaskID | String | The task ID. |
+| GravityZone.MemoryDump.TaskID | String | The ID of the task started through gz-endpoint-create-memory-dump. |
 | GravityZone.MemoryDump.TaskType | String | The task type. |
-| GravityZone.MemoryDump.Status | String | The task status. |
+| GravityZone.MemoryDump.Status | String | The status of the task started through gz-endpoint-create-memory-dump. |
 | GravityZone.MemoryDump.EndpointID | String | The endpoint ID. |
 | GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
-| GravityZone.MemoryDump.StartDate | Date | The memory dump task start date for the endpoint. |
-| GravityZone.MemoryDump.EndDate | Date | The memory dump task end date for the endpoint. |
-| GravityZone.MemoryDump.ErrorCode | String | The memory dump task error code, if available. |
-| GravityZone.MemoryDump.Error | String | The memory dump task error message, if available. |
-| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL when task is completed successfully. |
+| GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump creation task started. |
+| GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump creation task ended, if available. |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the memory dump creation task completes successfully. |
 
 #### Command example
 
@@ -1816,6 +1822,8 @@ Checks the status of an endpoint memory dump task using a task ID returned by gz
 
 #### Human Readable Output
 
+This example illustrates the human-readable output when *polling* is set to *true*. When *polling* is *false*, only the status of the memory dump creation task is displayed.
+
 >### Memory dump for endpoint 6942a43afe8d4e463ca5c197
 >
 >|EndpointID|Hostname|StartDate|EndDate|Error|DownloadURL|
@@ -1825,7 +1833,7 @@ Checks the status of an endpoint memory dump task using a task ID returned by gz
 ### gz-poll-endpoint-users-loggedin-status
 
 ***
-Checks endpoint active sessions task status. This command is not intended for direct use.
+Verifies the status of a task initiated via gz-endpoint-users-loggedin. This command is invoked automatically and is not available for direct use.
 
 #### Base Command
 
@@ -1835,8 +1843,8 @@ Checks endpoint active sessions task status. This command is not intended for di
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task ID. | Required |
-| endpoint_id | The endpoint ID. | Required |
+| task_id | The ID of the task started through gz-endpoint-users-loggedin. | Required |
+| endpoint_id | The ID of the managed endpoint associated with the specified task. | Required |
 
 #### Context Output
 
