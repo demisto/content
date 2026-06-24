@@ -61,6 +61,9 @@ configuration:
   additionalinfo: Default fetch query is status:in("new", "inprogress")
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch time
   name: first_fetch
   defaultvalue: 1 day

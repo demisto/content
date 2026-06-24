@@ -55,6 +55,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: id
   display: Issue Field to fetch by
   name: issue_field_to_fetch_from

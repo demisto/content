@@ -83,6 +83,9 @@ configuration:
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fields to Fetch
   name: fetch_fields
   type: 0

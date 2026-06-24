@@ -45,6 +45,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

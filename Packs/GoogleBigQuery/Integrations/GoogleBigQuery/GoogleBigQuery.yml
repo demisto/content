@@ -87,6 +87,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch time field
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field

@@ -102,6 +102,9 @@ configuration:
     type: 0
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - display: Incident Mirroring Direction
     name: mirror_direction
     type: 15

@@ -48,6 +48,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of incidents per fetch. The default value is 200.
   defaultvalue: '200'
   display: Maximum incidents to fetch.

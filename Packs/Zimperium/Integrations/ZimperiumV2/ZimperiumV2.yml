@@ -30,6 +30,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Max fetch
   name: max_fetch
