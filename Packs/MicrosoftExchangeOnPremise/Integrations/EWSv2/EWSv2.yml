@@ -56,6 +56,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Mark fetched emails as read
   name: markAsRead
   type: 8

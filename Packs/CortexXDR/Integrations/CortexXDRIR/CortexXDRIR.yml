@@ -147,6 +147,9 @@ configuration:
   section: Collect
   required: false
   defaultvalue: 3 days
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Sync Incident Owners
   name: sync_owners
   type: 8

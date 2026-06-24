@@ -121,6 +121,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The minimum severity of incidents to fetch
   name: min_severity
   type: 15

@@ -38,6 +38,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The query that is used to fetch events as incidents (lucene syntax)
   name: fetch_query
   type: 0

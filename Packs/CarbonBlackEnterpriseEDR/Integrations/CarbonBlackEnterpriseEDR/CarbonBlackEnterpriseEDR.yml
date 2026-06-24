@@ -63,6 +63,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Fetch limit
   name: fetch_limit

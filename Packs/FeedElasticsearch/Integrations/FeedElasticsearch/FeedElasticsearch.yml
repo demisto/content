@@ -64,6 +64,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '10000'
   additionalinfo: The maximal number of indicators that could be fetched in a fetch cycle.
   display: Fetch Limit

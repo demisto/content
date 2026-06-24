@@ -156,6 +156,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max incidents per fetch
   name: fetch_limit
   type: 0

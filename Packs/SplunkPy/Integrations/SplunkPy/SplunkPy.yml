@@ -84,6 +84,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   type: 12

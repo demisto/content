@@ -46,6 +46,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: ALL
   display: Fetch only incidents with forensics
   name: has_forensics

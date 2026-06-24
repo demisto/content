@@ -73,6 +73,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The name of the field/column that contains the datetime object or timestamp for the data being fetched (case sensitive). This field is mandatory when 'Fetches incidents' is set to true.
   name: datetime_column
   type: 0

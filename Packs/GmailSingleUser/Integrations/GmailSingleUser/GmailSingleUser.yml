@@ -87,6 +87,9 @@ configuration:
   additionalinfo:
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue:
   display: Events query (e.g., "from:example@demisto.com")
   additionalinfo:

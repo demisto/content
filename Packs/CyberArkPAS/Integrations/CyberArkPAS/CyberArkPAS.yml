@@ -34,6 +34,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '0'
   display: CyberArk PAM score (0.0-100.0)
   name: score
