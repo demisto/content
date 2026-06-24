@@ -65,6 +65,56 @@ def get_current_datetime() -> datetime:
     return datetime.utcnow().astimezone(timezone.utc)
 
 
+# Per-stream watermark keys persisted in last_run (see fetch_incidents).
+THREATS_LAST_FETCH = "threats_last_fetch"
+CAMPAIGNS_LAST_FETCH = "campaigns_last_fetch"
+CASES_LAST_FETCH = "cases_last_fetch"
+
+
+def _resolve_stream_watermark(last_run: dict[str, Any], stream_key: str, first_fetch_time: str) -> datetime:
+    """Resolve a stream's start watermark from last_run.
+
+    Precedence: the per-stream key, then the legacy ``last_fetch`` scalar (for instances
+    deployed before per-stream checkpoints existed), then ``first_fetch_time``.
+
+    Args:
+        last_run: The integration's last_run dict.
+        stream_key: One of THREATS_LAST_FETCH / CAMPAIGNS_LAST_FETCH / CASES_LAST_FETCH.
+        first_fetch_time: ISO-8601 fallback used on the very first fetch.
+
+    Returns:
+        The watermark as a tz-aware UTC datetime.
+    """
+    raw = last_run.get(stream_key) or last_run.get("last_fetch") or first_fetch_time
+    return _parse_iso_utc(raw)
+
+
+def _parse_iso_utc(value: str) -> datetime:
+    """Parse a trailing-``Z`` ISO-8601 string as a true UTC instant.
+
+    Watermarks are stored and re-read through this function so the serialize -> resolve
+    round-trip is stable (no local-timezone drift), keeping per-stream windows consistent
+    across fetch cycles.
+    """
+    text = value[:-1] if value.endswith("Z") else value
+    return datetime.fromisoformat(text).replace(tzinfo=timezone.utc)
+
+
+def _item_sort_key(item: dict[str, Any], timestamp_field: str) -> datetime:
+    """Return an item's sort timestamp, treating missing/unparseable values as oldest.
+
+    A watermark is only safe if items are processed oldest->newest, so we sort
+    defensively rather than trusting API ordering.
+    """
+    value = item.get(timestamp_field)
+    if not value:
+        return datetime.min.replace(tzinfo=timezone.utc)
+    try:
+        return _parse_iso_utc(value)
+    except Exception:
+        return datetime.min.replace(tzinfo=timezone.utc)
+
+
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
 
@@ -1306,7 +1356,18 @@ def download_message_eml_command(client, args):
     return results
 
 
-def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime):
+def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime, watermark=None):
+    """Generate threat incidents, advancing a per-stream watermark as items succeed.
+
+    Threats are processed in the order given (callers sort ascending by
+    ``latestTimeRemediated`` first). After each threat is fully processed the
+    watermark advances to that threat's ``latestTimeRemediated``. A skippable 4xx
+    skips the entity; a non-skippable error stops the stream WITHOUT advancing past
+    the failed item and WITHOUT raising, so already-processed progress is preserved.
+
+    Returns:
+        (incidents, watermark): incidents emitted and the latest safe watermark.
+    """
     incidents = []
     for threat in threats:
         page_number = 1
@@ -1329,7 +1390,10 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
             if _is_skippable_error(e):
                 demisto.debug(f"Threat {threat['threatId']} returned a skippable error, skipping: {e}")
                 continue
-            raise
+            # Non-skippable (5xx / connection reset / 401/403/429): stop this stream,
+            # keep watermark at last good item, do not raise so progress persists.
+            demisto.error(f"Threat {threat['threatId']} returned a non-skippable error, stopping stream: {e}")
+            break
 
         # Skip if we didn't get any threat details (shouldn't happen but defensive)
         if threat_details is None:
@@ -1348,10 +1412,16 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
             "rawJSON": json.dumps(threat_details) if threat_details else {},
         }
         incidents.append(incident)
-    return incidents
+        watermark = _advance_watermark(watermark, threat, "latestTimeRemediated")
+    return incidents, watermark
 
 
-def generate_abuse_campaign_incidents(client, campaigns):
+def generate_abuse_campaign_incidents(client, campaigns, watermark=None):
+    """Generate abuse-campaign incidents, advancing a per-stream watermark as items succeed.
+
+    See ``generate_threat_incidents`` for the watermark / non-skippable-error contract.
+    The watermark advances to each campaign's ``lastReportedTime``.
+    """
     incidents = []
     for campaign in campaigns:
         try:
@@ -1360,7 +1430,8 @@ def generate_abuse_campaign_incidents(client, campaigns):
             if _is_skippable_error(e):
                 demisto.debug(f"Campaign {campaign['campaignId']} returned a skippable error, skipping: {e}")
                 continue
-            raise
+            demisto.error(f"Campaign {campaign['campaignId']} returned a non-skippable error, stopping stream: {e}")
+            break
         first_reported = campaign_details.get("firstReported", "")
         incident = {
             "dbotMirrorId": str(campaign.get("campaignId", "")),
@@ -1370,10 +1441,16 @@ def generate_abuse_campaign_incidents(client, campaigns):
             "rawJSON": json.dumps(campaign_details) if campaign_details else {},
         }
         incidents.append(incident)
-    return incidents
+        watermark = _advance_watermark(watermark, campaign, "lastReportedTime")
+    return incidents, watermark
 
 
-def generate_account_takeover_cases_incidents(client, cases):
+def generate_account_takeover_cases_incidents(client, cases, watermark=None):
+    """Generate account-takeover-case incidents, advancing a per-stream watermark as items succeed.
+
+    See ``generate_threat_incidents`` for the watermark / non-skippable-error contract.
+    The watermark advances to each case's ``lastModifiedTime``.
+    """
     incidents = []
     for case in cases:
         try:
@@ -1382,7 +1459,8 @@ def generate_account_takeover_cases_incidents(client, cases):
             if _is_skippable_error(e):
                 demisto.debug(f"Case {case['caseId']} returned a skippable error, skipping: {e}")
                 continue
-            raise
+            demisto.error(f"Case {case['caseId']} returned a non-skippable error, stopping stream: {e}")
+            break
         incident = {
             "dbotMirrorId": str(case["caseId"]),
             "name": "Account Takeover Case",
@@ -1392,7 +1470,21 @@ def generate_account_takeover_cases_incidents(client, cases):
             "rawJSON": json.dumps(case_details) if case_details else {},
         }
         incidents.append(incident)
-    return incidents
+        watermark = _advance_watermark(watermark, case, "lastModifiedTime")
+    return incidents, watermark
+
+
+def _advance_watermark(current: datetime | None, item: dict[str, Any], timestamp_field: str) -> datetime | None:
+    """Advance a watermark to ``item[timestamp_field]`` if it is newer (never backwards).
+
+    If the item has no parseable timestamp the watermark is left unchanged.
+    """
+    item_time = _item_sort_key(item, timestamp_field)
+    if item_time == datetime.min.replace(tzinfo=timezone.utc):
+        return current
+    if current is None or item_time > current:
+        return item_time
+    return current
 
 
 def fetch_incidents(
@@ -1409,6 +1501,14 @@ def fetch_incidents(
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
 
+    Each stream keeps its own watermark in ``last_run`` (``threats_last_fetch`` /
+    ``campaigns_last_fetch`` / ``cases_last_fetch``) so a transient (non-skippable)
+    failure in one stream mid-cycle does not force a full-window retry of the others
+    and never loses progress. A watermark advances only to the last successfully
+    processed item, so on the next run only un-processed items are re-queried.
+    Backward compatible: a missing per-stream key falls back to the legacy
+    ``last_fetch`` scalar, then to ``first_fetch_time``.
+
     Parameters:
     - client (Client): Client object to interact with the API.
     - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
@@ -1418,52 +1518,68 @@ def fetch_incidents(
     - polling_lag (int, optional): Time in minutes to subtract from polling time window for data consistency. Defaults to 0.
 
     Returns:
-    - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
+    - Tuple[Dict[str, str], List[Dict]]: (next_run with per-stream watermarks, fetched incidents). Returned even on
+      partial failure so main() can persist progress via demisto.setLastRun.
     """
     try:
-        last_fetch = last_run.get("last_fetch", first_fetch_time)
-        last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
+        # Resolve each stream's start watermark independently (per-stream key, then legacy
+        # last_fetch, then first_fetch_time). These seed the returned next_run so a stream
+        # that fetches nothing keeps its prior watermark rather than skipping a window.
+        threats_wm = _resolve_stream_watermark(last_run, THREATS_LAST_FETCH, first_fetch_time)
+        campaigns_wm = _resolve_stream_watermark(last_run, CAMPAIGNS_LAST_FETCH, first_fetch_time)
+        cases_wm = _resolve_stream_watermark(last_run, CASES_LAST_FETCH, first_fetch_time)
 
-        current_datetime = get_current_datetime()
-        start_time = last_fetch + timedelta(milliseconds=1)  # Not to overlap with previous polling window
-        end_time = get_current_datetime()
-
-        if polling_lag is not None:
-            start_time = start_time - polling_lag
-            end_time = end_time - polling_lag
-
-        start_timestamp = start_time.strftime(ISO_8601_FORMAT)
+        if polling_lag is None:
+            polling_lag = timedelta(minutes=0)
+        end_time = get_current_datetime() - polling_lag
         end_timestamp = end_time.strftime(ISO_8601_FORMAT)
 
-        all_incidents = []
+        def _window(watermark: datetime) -> tuple[datetime, str]:
+            # start = watermark + 1ms (minus lag) so the boundary item is not re-emitted.
+            start = watermark + timedelta(milliseconds=1) - polling_lag
+            return start, start.strftime(ISO_8601_FORMAT)
+
+        all_incidents: list[dict] = []
         current_pending_incidents_to_fetch = max_incidents_to_fetch
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
         if fetch_threats and current_pending_incidents_to_fetch > 0:
+            start_time, start_timestamp = _window(threats_wm)
             threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
             )
-            threat_incidents = generate_threat_incidents(
-                client, threats_response.get("threats", []), max_page_number, start_time, end_time
+            threats = sorted(threats_response.get("threats", []), key=lambda t: _item_sort_key(t, "latestTimeRemediated"))
+            threat_incidents, threats_wm = generate_threat_incidents(
+                client, threats, max_page_number, start_time, end_time, watermark=threats_wm
             )
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
+            _, start_timestamp = _window(campaigns_wm)
             abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lte {end_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
             )
-            abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get("campaigns", []))
+            campaigns = sorted(
+                abuse_campaigns_response.get("campaigns", []), key=lambda c: _item_sort_key(c, "lastReportedTime")
+            )
+            abuse_campaign_incidents, campaigns_wm = generate_abuse_campaign_incidents(
+                client, campaigns, watermark=campaigns_wm
+            )
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
+            _, start_timestamp = _window(cases_wm)
             account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lte {end_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
             )
-            account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
-                client, account_takeover_cases_response.get("cases", [])
+            cases = sorted(
+                account_takeover_cases_response.get("cases", []), key=lambda c: _item_sort_key(c, "lastModifiedTime")
+            )
+            account_takeover_cases_incidents, cases_wm = generate_account_takeover_cases_incidents(
+                client, cases, watermark=cases_wm
             )
 
         all_incidents = threat_incidents + abuse_campaign_incidents + account_takeover_cases_incidents
@@ -1471,7 +1587,11 @@ def fetch_incidents(
         logging.error(f"Failed fetching incidents: {e}")
         raise FetchIncidentsError(f"Error while fetching incidents: {e}")
 
-    next_run = {"last_fetch": current_datetime.strftime(ISO_8601_FORMAT)}
+    next_run = {
+        THREATS_LAST_FETCH: threats_wm.strftime(ISO_8601_FORMAT),
+        CAMPAIGNS_LAST_FETCH: campaigns_wm.strftime(ISO_8601_FORMAT),
+        CASES_LAST_FETCH: cases_wm.strftime(ISO_8601_FORMAT),
+    }
 
     return next_run, all_incidents[:max_incidents_to_fetch]
 

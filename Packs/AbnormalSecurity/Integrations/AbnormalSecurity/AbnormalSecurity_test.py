@@ -545,7 +545,7 @@ def test_get_details_of_a_threat_request_two_pages(mocker):
     start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 2, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 2, start_datetime, end_datetime)
     assert len(incidents) == 1
     assert len(json.loads(incidents[0].get("rawJSON")).get("messages")) == 2
 
@@ -558,7 +558,7 @@ def test_get_details_of_a_threat_request_single_page(mocker):
     start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 1, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 1, start_datetime, end_datetime)
     assert len(incidents) == 1
 
 
@@ -664,7 +664,7 @@ def test_get_details_of_a_threat_request_time_window_filtering(mocker):
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 1, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 1, start_datetime, end_datetime)
 
     # Verify we get one incident
     assert len(incidents) == 1
@@ -727,7 +727,7 @@ def test_get_details_of_a_threat_request_early_exit(mocker):
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 3, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 3, start_datetime, end_datetime)
 
     # Verify we get one incident
     assert len(incidents) == 1
@@ -887,9 +887,12 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     assert len(case_incidents) == len(case_ids)
     assert len(campaign_incidents) == len(campaign_ids)
 
-    # Verify next_run contains updated last_fetch timestamp
-    assert next_run.get("last_fetch", None) is not None
-    assert next_run.get("last_fetch") > last_run.get("last_fetch")
+    # Verify next_run carries per-stream watermarks. Cases/campaigns advance to their
+    # list-item timestamps; the threat template lacks latestTimeRemediated so its
+    # watermark holds at the resolved start (legacy last_fetch fallback) rather than skipping.
+    assert next_run.get("cases_last_fetch") > last_run.get("last_fetch")
+    assert next_run.get("campaigns_last_fetch") > last_run.get("last_fetch")
+    assert next_run.get("threats_last_fetch") == last_run.get("last_fetch")
 
 
 def test_get_paginated_threats_list(mocker):
@@ -1574,16 +1577,17 @@ def test_generate_threat_incidents_skips_4xx_error(mocker):
         {"threatId": "valid-threat-id"},
     ]
 
-    incidents = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
 
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
 
 
 @pytest.mark.parametrize("status_code,reason", [(401, "Unauthorized"), (403, "Forbidden"), (429, "Too Many Requests")])
-def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_code, reason):
+def test_generate_threat_incidents_stops_on_non_skippable_errors(mocker, status_code, reason):
     """
-    Test that non-skippable errors (401, 403, 429) are re-raised.
+    Non-skippable errors (401/403/429) stop the stream WITHOUT raising, so progress on
+    already-processed items is preserved (the watermark must not advance past the failure).
     """
 
     def mock_get_details(threat_id, **kwargs):
@@ -1597,14 +1601,14 @@ def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_co
 
     threats = [{"threatId": "some-threat-id"}]
 
-    with pytest.raises(DemistoException) as exc_info:
-        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+    incidents, watermark = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
 
-    assert str(status_code) in str(exc_info.value)
+    assert incidents == []
+    assert watermark is None  # never advanced past the failed item
 
 
-def test_generate_threat_incidents_raises_5xx_errors(mocker):
-    """Test that 5xx errors are re-raised."""
+def test_generate_threat_incidents_stops_on_5xx_errors(mocker):
+    """5xx errors stop the stream without raising (preserving the watermark)."""
 
     def mock_get_details(threat_id, **kwargs):
         raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
@@ -1615,10 +1619,10 @@ def test_generate_threat_incidents_raises_5xx_errors(mocker):
     start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
     end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    with pytest.raises(DemistoException) as exc_info:
-        generate_threat_incidents(client, [{"threatId": "id"}], 1, start_datetime, end_datetime)
+    incidents, watermark = generate_threat_incidents(client, [{"threatId": "id"}], 1, start_datetime, end_datetime)
 
-    assert "500" in str(exc_info.value)
+    assert incidents == []
+    assert watermark is None
 
 
 def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
@@ -1664,7 +1668,7 @@ def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
         {"threatId": "valid-threat-id"},
     ]
 
-    incidents = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
+    incidents, _ = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
 
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
@@ -1695,14 +1699,14 @@ def test_generate_abuse_campaign_incidents_skips_4xx_error(mocker):
         {"campaignId": "valid-campaign-id"},
     ]
 
-    incidents = generate_abuse_campaign_incidents(client, campaigns)
+    incidents, _ = generate_abuse_campaign_incidents(client, campaigns)
 
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-campaign-id"
 
 
-def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
-    """Test that non-skippable errors (401) are re-raised."""
+def test_generate_abuse_campaign_incidents_stops_on_non_skippable_errors(mocker):
+    """Non-skippable errors (401) stop the campaign stream without raising."""
 
     def mock_get_campaign(campaign_id, **kwargs):
         raise DemistoException("Error in API call [401] - Unauthorized", res=MockResponse(None, 401))
@@ -1710,10 +1714,10 @@ def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
 
-    with pytest.raises(DemistoException) as exc_info:
-        generate_abuse_campaign_incidents(client, [{"campaignId": "id"}])
+    incidents, watermark = generate_abuse_campaign_incidents(client, [{"campaignId": "id"}])
 
-    assert "401" in str(exc_info.value)
+    assert incidents == []
+    assert watermark is None
 
 
 """
@@ -1742,14 +1746,14 @@ def test_generate_account_takeover_cases_incidents_skips_4xx_error(mocker):
         {"caseId": "valid-case-id", "description": "Valid case"},
     ]
 
-    incidents = generate_account_takeover_cases_incidents(client, cases)
+    incidents, _ = generate_account_takeover_cases_incidents(client, cases)
 
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "valid-case-id"
 
 
-def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(mocker):
-    """Test that non-skippable errors (429) are re-raised."""
+def test_generate_account_takeover_cases_incidents_stops_on_non_skippable_errors(mocker):
+    """Non-skippable errors (429) stop the case stream without raising."""
 
     def mock_get_case(case_id, **kwargs):
         raise DemistoException("Error in API call [429] - Too Many Requests", res=MockResponse(None, 429))
@@ -1757,7 +1761,180 @@ def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(m
     client = mock_client(mocker, response=None)
     mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
 
-    with pytest.raises(DemistoException) as exc_info:
-        generate_account_takeover_cases_incidents(client, [{"caseId": "id", "description": "test"}])
+    incidents, watermark = generate_account_takeover_cases_incidents(client, [{"caseId": "id", "description": "test"}])
 
-    assert "429" in str(exc_info.value)
+    assert incidents == []
+    assert watermark is None
+
+
+"""
+    Per-stream watermark / self-healing checkpoint tests (INT-1959)
+"""
+
+FIXED_NOW = datetime(2023, 9, 17, 18, 0, 0, tzinfo=UTC)
+
+
+def _threat_detail(threat_id):
+    """Minimal threat-details payload whose single message is inside any wide test window."""
+    return {
+        "threatId": threat_id,
+        "messages": [{"threatId": threat_id, "receivedTime": "2023-09-17T15:00:00Z", "remediationTimestamp": "2023-09-17T15:00:00Z"}],
+    }
+
+
+def test_fetch_incidents_non_skippable_500_midstream_persists_progress(mocker):
+    """
+    (a) A non-skippable 500 on the 2nd of three threats must NOT raise: fetch_incidents
+    returns the already-processed incident(s) and advances threats_last_fetch only to the
+    last good threat (not past the failed one), while campaigns/cases still produce watermarks.
+    """
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FIXED_NOW)
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    threats = [
+        {"threatId": "t1", "latestTimeRemediated": "2023-09-17T15:00:00Z"},
+        {"threatId": "t2", "latestTimeRemediated": "2023-09-17T16:00:00Z"},
+        {"threatId": "t3", "latestTimeRemediated": "2023-09-17T17:00:00Z"},
+    ]
+    mocker.patch.object(client, "get_paginated_threats_list", return_value={"threats": threats})
+
+    def detail(threat_id, **kwargs):
+        if threat_id == "t2":
+            raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
+        return _threat_detail(threat_id)
+
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=detail)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time="2023-09-17T14:00:00Z",
+        max_incidents_to_fetch=200,
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+        polling_lag=timedelta(minutes=0),
+    )
+
+    # Only t1 emitted; stream stopped at t2 without raising.
+    assert [i["dbotMirrorId"] for i in incidents] == ["t1"]
+    # Watermark advanced to t1's timestamp, NOT past the failed t2.
+    assert next_run["threats_last_fetch"] == "2023-09-17T15:00:00Z"
+    # Other streams still get watermarks (fall back to first_fetch_time start).
+    assert next_run["campaigns_last_fetch"] == "2023-09-17T14:00:00Z"
+    assert next_run["cases_last_fetch"] == "2023-09-17T14:00:00Z"
+
+
+def test_fetch_incidents_legacy_last_fetch_backward_compat(mocker):
+    """(b) A last_run with only the legacy last_fetch is honored as the start for all streams."""
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FIXED_NOW)
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    captured = {}
+
+    def paginate(filter_, **kwargs):
+        captured["threats"] = filter_
+        return {"threats": []}
+
+    mocker.patch.object(client, "get_paginated_threats_list", side_effect=paginate)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T12:00:00Z"},
+        first_fetch_time="2000-01-01T00:00:00Z",
+        max_incidents_to_fetch=200,
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+        polling_lag=timedelta(minutes=0),
+    )
+
+    # Legacy last_fetch (not first_fetch_time) seeded the window start (+1ms rounds to same second).
+    assert "latestTimeRemediated gte 2023-09-17T12:00:00Z" in captured["threats"]
+    # With no items the watermark holds at the legacy value rather than skipping forward.
+    assert next_run["threats_last_fetch"] == "2023-09-17T12:00:00Z"
+
+
+def test_fetch_incidents_out_of_order_input_does_not_skip_older_item(mocker):
+    """
+    (c) Ascending-sort safety: when the API returns threats newest-first and the NEWEST one
+    fails non-skippably, the watermark must not jump to the newest item and skip the older
+    (unprocessed) one. After sorting, the older threat is processed first and the watermark
+    stays at it; the failed newer threat is re-queried next cycle.
+    """
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FIXED_NOW)
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    # Returned out of order: newer first, older second.
+    threats = [
+        {"threatId": "newer", "latestTimeRemediated": "2023-09-17T16:00:00Z"},
+        {"threatId": "older", "latestTimeRemediated": "2023-09-17T15:00:00Z"},
+    ]
+    mocker.patch.object(client, "get_paginated_threats_list", return_value={"threats": threats})
+
+    def detail(threat_id, **kwargs):
+        if threat_id == "newer":
+            raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
+        return _threat_detail(threat_id)
+
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=detail)
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time="2023-09-17T14:00:00Z",
+        max_incidents_to_fetch=200,
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+        polling_lag=timedelta(minutes=0),
+    )
+
+    # "older" processed first (sorted asc), then "newer" fails -> watermark stays at older,
+    # so the unprocessed "newer" threat is NOT skipped on the next cycle.
+    assert [i["dbotMirrorId"] for i in incidents] == ["older"]
+    assert next_run["threats_last_fetch"] == "2023-09-17T15:00:00Z"
+
+
+def test_fetch_incidents_clean_run_advances_all_watermarks(mocker):
+    """(d) No-regression: a clean run emits every incident and advances all three watermarks."""
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FIXED_NOW)
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    mocker.patch.object(
+        client, "get_paginated_threats_list",
+        return_value={"threats": [{"threatId": "t1", "latestTimeRemediated": "2023-09-17T15:00:00Z"}]},
+    )
+    mocker.patch.object(
+        client, "get_paginated_abusecampaigns_list",
+        return_value={"campaigns": [{"campaignId": "c1", "lastReportedTime": "2023-09-17T15:10:00Z"}]},
+    )
+    mocker.patch.object(
+        client, "get_paginated_cases_list",
+        return_value={"cases": [{"caseId": "k1", "description": "d", "lastModifiedTime": "2023-09-17T15:20:00Z"}]},
+    )
+    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=lambda threat_id, **kw: _threat_detail(threat_id))
+    mocker.patch.object(
+        client, "get_details_of_an_abuse_mailbox_campaign_request",
+        side_effect=lambda campaign_id, **kw: {"campaignId": campaign_id, "firstReported": "2023-09-17T15:10:00Z"},
+    )
+    mocker.patch.object(
+        client, "get_details_of_an_abnormal_case_request",
+        side_effect=lambda case_id, **kw: {"caseId": case_id, "firstObserved": "2023-09-17T15:20:00Z", "genai_summary": "s"},
+    )
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time="2023-09-17T14:00:00Z",
+        max_incidents_to_fetch=200,
+        fetch_threats=True,
+        fetch_abuse_campaigns=True,
+        fetch_account_takeover_cases=True,
+        polling_lag=timedelta(minutes=0),
+    )
+
+    assert {i["name"] for i in incidents} == {"Threat", "Abuse Campaign", "Account Takeover Case"}
+    assert next_run["threats_last_fetch"] == "2023-09-17T15:00:00Z"
+    assert next_run["campaigns_last_fetch"] == "2023-09-17T15:10:00Z"
+    assert next_run["cases_last_fetch"] == "2023-09-17T15:20:00Z"
