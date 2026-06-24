@@ -654,7 +654,7 @@ script:
       description: The tags attached to the resource group.
       type: String
   - name: azure-sql-firewall-rule-list
-    description: "Gets a list of firewall rules or a specific firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/read."
+    description: "Retrieves a list of firewall rules or a specific firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/read."
     arguments:
     - name: server_name
       description: The name of the server.
@@ -664,7 +664,7 @@ script:
     - name: subscription_id
       description: The subscription ID. This value will override the instance parameter 'subscription_id'.
     - name: resource_group_name
-      description: The comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
+      description: A comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
       isArray: true
     - name: limit
       description: The maximum number of items to return. Applies only when listing all firewall rules (ignored when firewall_rule_name is provided).
@@ -706,7 +706,7 @@ script:
     - name: subscription_id
       description: The subscription ID. This value will override the instance parameter 'subscription_id'.
     - name: resource_group_name
-      description: The comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
+      description: A comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
       isArray: true
     outputs:
     - contextPath: AzureSQL.FirewallRule.id
@@ -736,7 +736,7 @@ script:
     - name: subscription_id
       description: The subscription ID. This value will override the instance parameter 'subscription_id'.
     - name: resource_group_name
-      description: The comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
+      description: A comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
       isArray: true
   - name: azure-sql-firewall-rule-replace
     description: "Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
@@ -755,7 +755,7 @@ script:
     - name: subscription_id
       description: The subscription ID. This value will override the instance parameter 'subscription_id'.
     - name: resource_group_name
-      description: The comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
+      description: A comma-separated list of resource group names. This value will override the instance parameter 'resource_group_name'.
       isArray: true
     outputs:
     - contextPath: AzureSQL.FirewallRule.id
