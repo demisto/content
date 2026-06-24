@@ -1,4 +1,5 @@
 {
+	"fromVersion": "6.0.0",
 	"cacheVersn": 0,
 	"close": {
 		"sections": [
@@ -782,19 +783,10 @@
 						"minW": 1,
 						"moved": false,
 						"name": "Taegis XDR Case Comments",
-						"query": {
-							"fromTime": "0001-01-01T00:00:00Z",
-							"pageSize": 0,
-							"tags": [
-								"xdrcomment",
-								"CommentFromTaegis"
-							],
-							"tagsAndOperator": false,
-							"usersAndOperator": false
-						},
-						"queryType": "warRoomFilter",
+						"query": "TaegisXDRCaseCommentsDisplay",
+						"queryType": "script",
 						"static": false,
-						"type": "invTimeline",
+						"type": "dynamic",
 						"w": 1,
 						"x": 0,
 						"y": 10
@@ -868,7 +860,7 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "29f1205c-d913-428b-8973-5017cce37317",
+	"id": "Taegis XDR Case",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",

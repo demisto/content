@@ -1,19 +1,20 @@
-# Taegis XDR
+# Secureworks® Taegis™ XDR
 
-Integration with the Sophos XDR Powered by Secureworks platform for case ingestion, bi-directional mirroring, assignee and status management, and threat investigation.
+Integration with the Secureworks® Taegis™ XDR platform for case ingestion, bi-directional mirroring, assignee and status management, and threat investigation.
 
 ## What's Included
 
 | Content Type | Name | Description |
 |---|---|---|
-| **Integration** | TaegisXDRv3 | Core integration for Taegis XDR case management, fetching, and bi-directional mirroring. |
+| **Integration** | Taegis XDR | Core integration for Taegis XDR case management, fetching, and bi-directional mirroring. |
 | **Incident Type** | Taegis XDR - Case | Custom incident type for ingested Taegis XDR cases. |
 | **Incident Fields** | 15 custom fields | Case status, assignee, detections, entities, key findings, close reason, and more. |
 | **Classifiers** | Ingestion classifier + incoming/outgoing mappers | Routes Taegis cases to the correct incident type and maps fields in both directions. |
 | **Layout** | Taegis XDR Case | Custom layout with tabs, close form (including archive-on-close), and action buttons. |
-| **Playbook** | Taegis XDR Case | Default playbook for Taegis XDR case incidents. |
-| **Scripts** | TaegisXDRAddCommentNote | Adds a War Room note that mirrors to Taegis XDR as a comment. |
+| **Playbook** | Taegis XDR Case Playbook | Abbreviated triage playbook — on case pickup, assigns the investigating analyst as owner, prompts review, and optionally closes the case. |
+| **Scripts** | TaegisXDRAddCommentNote | Adds a War Room note that mirrors to Taegis XDR as a comment, attributed to the XSOAR user who added it. |
 | | TaegisXDRAssigneeOptions | Populates assignee selection options from Taegis XDR users. |
+| | TaegisXDRCaseCommentsDisplay | Dynamic section that renders case comments newest-first in the layout, with author, timestamp, and direction (to/from Taegis XDR). |
 | | TaegisXDRCaseStatusOpenOptions | Populates available case status options. |
 | | TaegisXDRPushAssigneeStatusForm | Pushes assignee and status changes back to Taegis XDR. |
 | | TaegisXDRSetRequestedStatusFromRequestedAssignee | Sets the requested status based on assignee selection. |
@@ -29,14 +30,18 @@ Integration with the Sophos XDR Powered by Secureworks platform for case ingesti
 - **Case ingestion** — Fetches Taegis XDR cases as XSOAR incidents with full field mapping.
 - **Bi-directional mirroring** — Status changes, assignee updates, and comments sync between XSOAR and Taegis XDR in both directions.
 - **Assignee management** — Update case assignees directly from the XSOAR incident layout using a dynamic user picker populated from Taegis XDR.
-- **Comment sync** — Add comments from the XSOAR War Room that automatically mirror to Taegis XDR case comments.
+- **Comment sync** — Add comments from the XSOAR War Room that automatically mirror to Taegis XDR case comments. Comments are attributed to their author and displayed newest-first in the case layout.
 - **Investigation enrichment** — Retrieve detections, entities, and key findings associated with a case.
 - **Archive on close** — Optionally archive Taegis XDR cases when closing the XSOAR incident.
+
+## Triage Workflow
+
+By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue — the playbook does not run on ingestion. When an analyst opens a Pending case to investigate, the **Taegis XDR Case Playbook** runs automatically: it assigns that analyst as the incident owner, moves the incident to **Active**, then prompts manual review and optional case closure. Ownership stays with whoever picks up the case.
 
 ## Getting Started
 
 1. Install this content pack.
-2. Navigate to **Settings** → **Integrations** and search for **TaegisXDRv3**.
+2. Navigate to **Settings** → **Integrations** and search for **Taegis XDR**.
 3. Create a new instance and configure:
    - **Client ID** and **Client Secret** — your Taegis XDR API credentials.
    - **API base URL** — the Taegis API endpoint for your environment.
