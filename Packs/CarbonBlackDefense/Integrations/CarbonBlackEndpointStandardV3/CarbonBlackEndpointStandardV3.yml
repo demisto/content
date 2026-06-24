@@ -1,5 +1,8 @@
 category: Endpoint
 provider: Broadcom
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Carbon Black Endpoint Standard v3
   version: -1
@@ -3743,7 +3746,7 @@ script:
     - contextPath: CarbonBlackDefense.Events.Results.watchlist_hit
       description: 'Indicates if the event matches a watchlist entry.'
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10399583
   isfetch: true
   runonce: false
   script: '-'
