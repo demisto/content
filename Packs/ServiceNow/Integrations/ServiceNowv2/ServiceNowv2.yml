@@ -369,12 +369,18 @@ configuration:
   - text
   - html
   - source
+  hidden:
+  - marketplacev2
+  - platform
 - section: Collect
   display: Mark attachment as note
   name: mark_attachments_as_note
   additionalinfo: Mark attachments as note. Set this to yes if you prefer to mark file attachments from ServiceNow as Notes.
   defaultvalue: "false"
   type: 8
+  hidden:
+  - marketplacev2
+  - platform
   required: false
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
