@@ -27,7 +27,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -35,41 +35,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: b80a86c0-5c2d-4128-8154-0f31028a19db
-    type: regular
-    task:
-      id: b80a86c0-5c2d-4128-8154-0f31028a19db
-      version: -1
-      name: Assign analyst to incident
-      description: Assigns the incident to the current user (the analyst who opened it for investigation).
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      assignBy:
-        simple: current
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
         }
       }
     note: false
