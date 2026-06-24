@@ -8,6 +8,8 @@ import re
 import urllib3
 from blessings import Terminal
 from github import Github
+from github.PullRequest import PullRequest
+
 from handle_external_pr import EXTERNAL_LABEL
 
 from utils import (
@@ -206,6 +208,40 @@ def remove_branch_protection(repo, branch_name, t):
         print(f"{t.red}Failed to remove protection from {branch_name}: {e}{t.normal}")
 
 
+def prepare_body(pr: PullRequest):
+    body = f"## Original External PR\r\n[external pull request]({pr.html_url})\r\n\r\n"
+    if "## Contributor" not in pr.body:
+        merged_pr_author = pr.user.login
+        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
+    body += pr.body
+    return replace_related_with_fixes_in_pr_body(body)
+
+
+def prepare_labels(pr: PullRequest):
+    labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in pr.labels]
+    labels.append("ready-for-pipeline-running")
+    if MAPPING_LABEL in labels:
+        labels.remove(MAPPING_LABEL)
+    return labels
+
+
+def prepare_reviewers(pr: PullRequest):
+    merged_by = getattr(pr.merged_by, "login", None)
+    reviewers, _ = pr.get_review_requests()
+    reviewer_logins = [r.login for r in reviewers]
+
+    return reviewer_logins or ([merged_by] if merged_by else [])
+
+
+def remove_doc_reviewers(assignees: list, content_roles):
+    try:
+        doc_reviewer = get_doc_reviewer(content_roles)
+        if doc_reviewer in assignees:
+            assignees.remove(doc_reviewer)
+    except Exception:
+        pass
+
+
 # -----------------------------
 # main
 # -----------------------------
@@ -226,12 +262,14 @@ def main():
     - EVENT_PAYLOAD: json data from the pull_request event
     """
     t = Terminal()
-
-    payload = json.loads(get_env_var("EVENT_PAYLOAD"))
-    gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
+    payload_str = get_env_var("EVENT_PAYLOAD")
+    if not payload_str:
+        raise ValueError("EVENT_PAYLOAD env variable not set or empty")
+    payload = json.loads(payload_str)
 
     org_name = "demisto"
     repo_name = "content"
+    gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
     content_repo = gh.get_repo(f"{org_name}/{repo_name}")
     pr_number = payload.get("pull_request", {}).get("number")
     merged_pr = content_repo.get_pull(pr_number)
@@ -239,42 +277,19 @@ def main():
     pr_files = {f.filename: f for f in merged_pr.get_files()}
     xsoar_files, xsiam_files = seperate_pr_files(pr_files)
 
-    merged_pr_url = merged_pr.html_url
+    body = prepare_body(merged_pr)
+    labels = prepare_labels(merged_pr)
     title = merged_pr.title
-
-    body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
-
-    if "## Contributor" not in merged_pr.body:
-        merged_pr_author = merged_pr.user.login
-        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
-    body += merged_pr.body
-    body = replace_related_with_fixes_in_pr_body(body)
 
     base_branch = "master"
     head_branch = merged_pr.base.ref
 
-    labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
-    labels.append("ready-for-pipeline-running")
-    if MAPPING_LABEL in labels:
-        labels.remove(MAPPING_LABEL)
-
-    merged_by = getattr(merged_pr.merged_by, "login", None)
-    reviewers, _ = merged_pr.get_review_requests()
-    reviewer_logins = [r.login for r in reviewers]
-
-    new_reviewers = reviewer_logins or ([merged_by] if merged_by else [])
-
+    new_reviewers = prepare_reviewers(merged_pr)
     assignees = [a.login for a in merged_pr.assignees]
 
-    # tech writer removal
     content_roles = get_content_roles()
     if content_roles:
-        try:
-            doc_reviewer = get_doc_reviewer(content_roles)
-            if doc_reviewer in assignees:
-                assignees.remove(doc_reviewer)
-        except Exception:
-            pass
+        remove_doc_reviewers(assignees, content_roles)
 
     main_branch = None
     mapping_branch = None
@@ -283,11 +298,11 @@ def main():
         main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files)
 
     elif xsiam_files and not xsoar_files:
-        print(f"{t.cyan}Only XSIAM files → mapping only{t.normal}")
+        print(f"{t.cyan}Only XSIAM items files → one pr only{t.normal}")
         mapping_branch = head_branch
 
     elif xsoar_files and not xsiam_files:
-        print(f"{t.cyan}Only XSOAR files → main only{t.normal}")
+        print(f"{t.cyan}No XSIAM items files →  one pr only{t.normal}")
         main_branch = head_branch
 
     created = []
