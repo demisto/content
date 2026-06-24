@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock, patch
 from PaloAltoNetworks_Prisma_AIRs import (
     Client,
-    test_module,
+    test_module as run_test_module,
     runtime_scan_command,
     runtime_api_keys_list_command,
     runtime_profiles_list_command,
@@ -54,35 +54,50 @@ class TestClient:
         assert mock_client.client_secret == "test_client_secret"
         assert mock_client.tsg_id == "1234567890"
         assert mock_client.runtime_api_key == "test_runtime_api_key_12345"
-        assert mock_client.tenant_region == "US"
         assert mock_client.scanner_base_url == "https://service.api.aisecurity.paloaltonetworks.com"
+        assert mock_client.dlp_base_url == "https://api.dlp.paloaltonetworks.com"
         assert mock_client._access_token is None
 
-    def test_client_regional_endpoints(self) -> None:
-        """Test that regional endpoints are correctly set.
+    def test_client_base_url_defaults(self) -> None:
+        """Test that scanner/DLP base URLs fall back to defaults when not configured.
 
-        Tests all supported regions (US, EU, IN, SG).
+        The integration takes scanner_base_url and dlp_base_url as direct configuration
+        parameters. When omitted (None), the client must fall back to the documented
+        global defaults.
         """
-        regions_and_urls = {
-            "US": "https://service.api.aisecurity.paloaltonetworks.com",
-            "EU": "https://service-de.api.aisecurity.paloaltonetworks.com",
-            "IN": "https://service-in.api.aisecurity.paloaltonetworks.com",
-            "SG": "https://service-sg.api.aisecurity.paloaltonetworks.com",
-        }
+        client = Client(
+            base_url="https://api.sase.paloaltonetworks.com",
+            client_id="test_client_id",
+            client_secret="test_client_secret",
+            tsg_id="1234567890",
+            runtime_api_key="test_runtime_api_key",
+            scanner_base_url=None,
+            dlp_base_url=None,
+            verify=False,
+            proxy=False,
+            headers={},
+        )
 
-        for region, expected_url in regions_and_urls.items():
-            client = Client(
-                base_url="https://api.sase.paloaltonetworks.com",
-                client_id="test_client_id",
-                client_secret="test_client_secret",
-                tsg_id="1234567890",
-                runtime_api_key="test_runtime_api_key",
-                tenant_region=region,
-                verify=False,
-                proxy=False,
-                headers={},
-            )
-            assert client.scanner_base_url == expected_url, f"Region {region} should use {expected_url}"
+        assert client.scanner_base_url == "https://service.api.aisecurity.paloaltonetworks.com"
+        assert client.dlp_base_url == "https://api.dlp.paloaltonetworks.com"
+
+    def test_client_base_url_override(self) -> None:
+        """Test that explicitly configured scanner/DLP base URLs are stored as provided."""
+        client = Client(
+            base_url="https://api.sase.paloaltonetworks.com",
+            client_id="test_client_id",
+            client_secret="test_client_secret",
+            tsg_id="1234567890",
+            runtime_api_key="test_runtime_api_key",
+            scanner_base_url="https://service-de.api.aisecurity.paloaltonetworks.com",
+            dlp_base_url="https://api-de.dlp.paloaltonetworks.com",
+            verify=False,
+            proxy=False,
+            headers={},
+        )
+
+        assert client.scanner_base_url == "https://service-de.api.aisecurity.paloaltonetworks.com"
+        assert client.dlp_base_url == "https://api-de.dlp.paloaltonetworks.com"
 
     @patch.object(Client, "_http_request")
     def test_get_access_token_success(self, mock_http_request: Mock, mock_client: Client) -> None:
@@ -129,7 +144,7 @@ class TestCommands:
         """
         mock_get_token.return_value = "test_token"
 
-        result = test_module(mock_client)
+        result = run_test_module(mock_client)
 
         assert result == "ok"
         mock_get_token.assert_called_once()
@@ -144,7 +159,7 @@ class TestCommands:
         """
         mock_get_token.side_effect = Exception("Authentication failed")
 
-        result = test_module(mock_client)
+        result = run_test_module(mock_client)
 
         assert "Test failed" in result
         assert "Authentication failed" in result
@@ -213,8 +228,9 @@ class TestCommands:
         assert result.outputs["action"] == "block"
         assert result.outputs["category"] == "malicious"
         assert result.outputs["detected"] is True
-        assert result.outputs["injection"] is True
-        assert result.outputs["toxic_content"] is True
+        # Detections are nested under prompt_detected / response_detected (forward-compatible shape)
+        assert result.outputs["prompt_detected"]["injection"] is True
+        assert result.outputs["prompt_detected"]["toxic_content"] is True
 
     def test_runtime_scan_command_missing_args(self, mock_client: Client) -> None:
         """Test runtime scan command fails with missing required arguments.
@@ -388,28 +404,33 @@ class TestCommands:
             mock_http: Mocked http_request method.
             mock_client: Mock client fixture.
         """
+        # DLP Data Profiles list returns a Spring Page envelope (content/page), not "dlp_profiles".
         mock_http.return_value = {
-            "dlp_profiles": [
+            "content": [
                 {
-                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
-                    "name": "pci-dss",
                     "id": "dlp-123",
+                    "name": "pci-dss",
+                    "description": "PCI DSS profile",
+                    "tenant_id": "tenant-1",
+                    "type": "predefined",
+                    "profile_status": "active",
+                    "profile_type": "basic",
                     "version": "1.0",
-                    "log-severity": "high",
-                    "non-file-based": "enabled",
-                    "file-based": "enabled",
+                    "audit_metadata": {"created_at": "2026-01-01T00:00:00Z"},
                 }
-            ]
+            ],
+            "page": {"total_elements": 1, "total_pages": 1},
         }
 
-        args = {"limit": "10"}
+        args = {"page": "0", "size": "50"}
         result = runtime_dlp_profiles_list_command(mock_client, args)
 
         assert result.outputs_prefix == "PrismaAIRs.DlpProfile"
         assert len(result.outputs) == 1
-        assert result.outputs[0]["uuid"] == "550e8400-e29b-41d4-a716-446655440000"
-        assert result.outputs[0]["name"] == "pci-dss"
         assert result.outputs[0]["id"] == "dlp-123"
+        assert result.outputs[0]["name"] == "pci-dss"
+        assert result.outputs[0]["profile_status"] == "active"
+        assert result.outputs[0]["profile_type"] == "basic"
 
     @patch.object(Client, "http_request")
     def test_model_security_scans_list_command(self, mock_http: Mock, mock_client: Client) -> None:
