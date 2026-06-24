@@ -76,6 +76,9 @@ configuration:
   additionalinfo: The number of minutes to look back during each fetch to capture late-indexed incidents.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: DLP Regions
   name: dlp_regions
   type: 16

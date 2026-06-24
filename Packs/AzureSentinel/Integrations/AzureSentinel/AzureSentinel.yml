@@ -234,6 +234,9 @@ configuration:
   advanced: true
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel

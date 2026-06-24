@@ -175,6 +175,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8

@@ -169,6 +169,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: 'Advanced: Fetch escalated Accounts and Hosts'
   additionalinfo: "Use this parameter to fetch escalated Accounts and Hosts.\n\nNote: If this parameter is set to True, it will fetch Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time."

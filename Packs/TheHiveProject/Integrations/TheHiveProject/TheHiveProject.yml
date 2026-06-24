@@ -95,6 +95,9 @@ configuration:
   advanced: true
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

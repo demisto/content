@@ -46,6 +46,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

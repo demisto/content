@@ -357,6 +357,9 @@ configuration:
   advanced: true
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2

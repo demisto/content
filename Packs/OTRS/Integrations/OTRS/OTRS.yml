@@ -71,6 +71,9 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   name: use_legacy_sessions
