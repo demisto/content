@@ -370,7 +370,19 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     headers_was_written = False
     files_by_category = {}  # type:Dict
     ioc_counter = 0
+    # While iterating over a large number of indicators, the main thread can hold the stdout lock longer than
+    # the default 60s timeout, causing the heartbeat thread to fail with "Timeout acquiring stdout lock".
+    # Instead of disabling the heartbeat thread (which can make the server consider the container unresponsive),
+    # we temporarily raise the stdout lock timeout to 10 minutes so the heartbeat keeps running safely, and
+    # restore the original value afterwards. getattr/setattr are used so this is a no-op on servers where the
+    # attribute is not present.
+    original_stdout_lock_timeout = getattr(demisto, "_stdout_lock_timeout", 60)
     try:
+        setattr(demisto, "_stdout_lock_timeout", 600)  # 10 minutes
+        demisto.debug(
+            f"Temporarily set demisto._stdout_lock_timeout to 600 seconds "
+            f"(was {original_stdout_lock_timeout}) for the indicators iteration."
+        )
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
@@ -407,6 +419,9 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             # NG + XSIAM can recover from a shutdown
             if version.get("platform") == "x2" or is_demisto_version_ge("8") or version.get("platform") == "unified_platform":
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
+    finally:
+        setattr(demisto, "_stdout_lock_timeout", original_stdout_lock_timeout)
+        demisto.debug(f"Restored demisto._stdout_lock_timeout to {original_stdout_lock_timeout} seconds.")
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write("]")
