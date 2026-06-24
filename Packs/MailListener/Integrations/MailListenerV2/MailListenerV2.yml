@@ -103,6 +103,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Whether to fetch by email date.
 - defaultvalue: 'true'
   display: Use TLS for connection (defaults to True)
   name: TLS_connection
