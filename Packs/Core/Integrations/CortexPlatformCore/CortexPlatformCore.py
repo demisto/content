@@ -686,7 +686,7 @@ class Client(CoreClient):
 
     def test_module(self):
         """
-        Performs basic get request to get item samples
+        Performs basic get request to get health_check samples
         """
         try:
             self.get_health_check()
