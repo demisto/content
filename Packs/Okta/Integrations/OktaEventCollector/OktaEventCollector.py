@@ -181,7 +181,7 @@ def main():
         after: datetime
         if command == "test-module":
             after = cast(datetime, dateparser.parse("1 hour"))
-            get_events_command(client, events_limit, since=after.isoformat())
+            get_events_command(client, total_events_to_fetch=1, since=after.isoformat())
             demisto.results("ok")
 
         elif command == "okta-get-events":
