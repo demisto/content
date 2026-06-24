@@ -1939,7 +1939,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
             human_readable = (
                 f"Type: {note.get('element')}\nCreated By: "
                 f"{note.get('sys_created_by')}\nCreated On: "
-                f"{note.get('sys_created_on')}\n{note.get('value')}"
+                f"{note.get('sys_created_on')}\n{rendered_value}"
             )
             entries.append(
                 {
