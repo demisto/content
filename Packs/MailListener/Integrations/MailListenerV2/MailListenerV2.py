@@ -383,7 +383,7 @@ def fetch_incidents(
     time_to_fetch_from = None
     # First fetch - using the first_fetch_time
     demisto.debug(f"{last_run=}")
-    if not last_run:
+    if not last_run or not last_run.get("last_date"):
         time_to_fetch_from = parse(f"{first_fetch_time} UTC", settings={"TIMEZONE": "UTC"})
         demisto.debug(f"no last_run, using {time_to_fetch_from=}")
 
