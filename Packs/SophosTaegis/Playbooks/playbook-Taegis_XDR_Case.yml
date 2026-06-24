@@ -1,4 +1,5 @@
-id: b0ff6c79-5287-4109-80df-d429363c08d8
+id: Taegis XDR Case Playbook
+fromversion: 5.0.0
 version: 3
 contentitemexportablefields:
   contentitemfields:
@@ -6,12 +7,12 @@ contentitemexportablefields:
     packName: Default
     itemVersion: 2.0.16
     fromServerVersion: 5.0.0
-    toServerVersion: 7.9.9
+    toServerVersion: ""
     definitionid: ""
     prevname: ""
 vcShouldKeepItemLegacyProdMachine: false
-name: Taegis XDR Case
-description: This playbook executes when no other playbook is associated with an incident.
+name: Taegis XDR Case Playbook
+description: Abbreviated triage playbook for Taegis XDR cases. Assigns an analyst, prompts manual review, and optionally closes the investigation.
 starttaskid: "0"
 tasks:
   "0":
@@ -51,7 +52,7 @@ tasks:
       id: b80a86c0-5c2d-4128-8154-0f31028a19db
       version: -1
       name: Assign analyst to incident
-      description: Assigns a random analyst to this incident.
+      description: Assigns the incident to the current user (the analyst who opened it for investigation).
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -61,10 +62,7 @@ tasks:
       - "7"
     scriptarguments:
       assignBy:
-        simple: random
-      onCall:
-        complex:
-          root: inputs.OnCall
+        simple: current
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -192,19 +190,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: Enrich
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether to enrich all indicators in the incident.
-  playbookInputQuery: null
-- key: OnCall
-  value:
-    simple: "false"
-  required: false
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
-  playbookInputQuery: null
+inputs: []
 outputs: []
 sourceplaybookid: playbook0

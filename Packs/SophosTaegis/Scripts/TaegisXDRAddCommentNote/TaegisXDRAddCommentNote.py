@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 """
 Add a War Room note with tag 'xdrcomment' so it is mirrored to Taegis XDR as a comment.
+The note is prefixed with the invoking XSOAR user as "User - ts" so the case-comments
+display (and the Taegis XDR mirror) attribute who wrote it.
 Use as an incident action button on the Taegis XDR Case layout.
 
 Optional: select 'Yes' for 'Assign case back to Sophos MDR team' to also assign the Taegis
@@ -21,10 +24,45 @@ def _is_truthy(value):
     return str(value).strip().lower() in ("true", "1", "yes")
 
 
+def _current_user():
+    """Display name of the user invoking this script, or '' if unavailable.
+
+    callingContext carries the logged-in user for both button and CLI runs; the
+    triggering war-room entry's user is a fallback for the command path.
+    """
+    try:
+        user = (demisto.callingContext.get("context") or {}).get("User") or {}
+        name = user.get("name") or user.get("username")
+        if name:
+            return name
+    except Exception:
+        pass
+    try:
+        return (demisto.parentEntry() or {}).get("user") or ""
+    except Exception:
+        return ""
+
+
+def _format_comment(note, user):
+    """Prefix the note with the author as 'User - ts' so the display can attribute it.
+
+    Deliberately NOT '**User**': the Taegis mirror skips '**'-prefixed entries, and a
+    plain prefix also reads cleanly on the Taegis side. The display parser strips any
+    '*' and splits on the em-dash. With no user we send the note unchanged.
+    \u2014 is the em-dash, written as an escape to keep this file ASCII.
+    """
+    if not user:
+        return note
+    import datetime
+
+    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    return u"{0} \u2014 {1}\n\n{2}".format(user, ts, note)
+
+
 def main():
     args = demisto.args()
     note = args.get("note") or ""
-    note = note.strip() if isinstance(note, str) else str(note).strip()
+    note = note.strip() if isinstance(note, str) else u"{0}".format(note).strip()
     if not note:
         demisto.results(
             [
@@ -43,7 +81,7 @@ def main():
             {
                 "Type": ENTRY_TYPE_NOTE,
                 "ContentsFormat": "markdown",
-                "Contents": note,
+                "Contents": _format_comment(note, _current_user()),
                 "Tags": [TAEGIS_COMMENT_TAG],
             }
         ]

@@ -1,4 +1,5 @@
 {
+	"fromVersion": "6.0.0",
 	"brands": null,
 	"cacheVersn": 0,
 	"defaultIncidentType": "",
@@ -94,7 +95,7 @@
 			}
 		}
 	},
-	"name": "Taegis XDR Case - Outgoing Mapper",
+	"name": "TaegisXDR-Case-Outgoing-Mapper",
 	"nameRaw": "Taegis XDR Case - Outgoing Mapper",
 	"packID": "",
 	"packName": "",

@@ -1,4 +1,5 @@
 {
+  "fromVersion": "5.0.0",
   "id": "Taegis XDR - Case",
   "version": -1,
   "cacheVersn": 0,
@@ -19,7 +20,7 @@
   "name": "Taegis XDR - Case",
   "prevName": "Taegis XDR - Case",
   "color": "#B1EE95",
-  "playbookId": "playbook0",
+  "playbookId": "Taegis XDR Case Playbook",
   "hours": 0,
   "days": 0,
   "weeks": 0,
@@ -35,7 +36,7 @@
   "disabled": false,
   "reputationCalc": 0,
   "onChangeRepAlg": 0,
-  "layout": "29f1205c-d913-428b-8973-5017cce37317",
+  "layout": "Taegis XDR Case",
   "detached": false,
   "extractSettings": {
     "mode": "All",

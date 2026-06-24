@@ -1,0 +1,33 @@
+# ============================================================
+# command_examples.txt
+# Used by: demisto-sdk generate-docs -i SophosTaegis.yml -e command_examples.txt
+# The SDK RUNS each active line against your live XSOAR instance and embeds the
+# real output into README.md. Requires DEMISTO_BASE_URL / DEMISTO_API_KEY /
+# XSIAM_AUTH_ID env vars (same v8 auth as the build guide) + a working instance.
+#
+# Before running: replace <INVESTIGATION_ID> with a REAL Taegis investigation ID.
+# Lines starting with # are comments and are skipped by demisto-sdk.
+# (If your demisto-sdk version errors on # lines, just delete the comments.)
+# tenant_id is OPTIONAL on every command — omit it if your instance has a
+# default Tenant ID configured.
+# ============================================================
+
+# --- SAFE: read-only commands (do NOT change Taegis data) ---
+!taegis-fetch-investigation id="0cd2fffe-ae2a-4e3b-98f1-51c5ed85ab64"
+!taegis-fetch-comments id="0cd2fffe-ae2a-4e3b-98f1-51c5ed85ab64"
+
+# ============================================================
+# ⚠️  MUTATING commands — these CHANGE real Taegis data.
+# Uncomment ONLY against a throwaway / test investigation, never a live case.
+# ============================================================
+# !taegis-create-comment id=<TEST_INVESTIGATION_ID> comment="Test comment from XSOAR docs generation"
+# !taegis-update-investigation id=<TEST_INVESTIGATION_ID> status=OPEN priority=3
+# !taegis-push-assignee-status id=<TEST_INVESTIGATION_ID> assignee_id="Sam Johnson" status=ACTIVE
+# !taegis-close-investigation id=<TEST_INVESTIGATION_ID> status=CLOSED_INCONCLUSIVE reason="Doc generation test"
+
+# ============================================================
+# NOT INCLUDED — engine-internal mirroring hooks (not user-callable):
+#   get-modified-remote-data, get-remote-data, update-remote-system,
+#   get-mapping-fields, taegis-get-remote-data, taegis-update-remote-system
+# generate-docs will keep its "add manually" notice for these — expected & correct.
+# ============================================================
