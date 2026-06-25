@@ -720,8 +720,7 @@ def test_get_entries_for_notes_with_comment(notes, params, expected):
                 {
                     "Type": 1,
                     "Category": None,
-                    "HumanReadable": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\n<p>test</p>",
-                    "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\n<p>test</p>",
+                    "Contents": "Type: comments<br>Created By: Test User<br>Created On: 2022-11-21 20:45:37<br><p>test</p>",
                     "created": "2022-11-21 20:45:37",
                     "ContentsFormat": "html",
                     "Tags": ["CommentFromServiceNow"],
@@ -823,7 +822,8 @@ def test_get_entries_for_notes_comment_format_variations(notes, params, expected
     assert len(result) == 1
     assert result[0]["ContentsFormat"] == expected_format
     assert result[0]["EntryContext"]["comments_and_work_notes"] == notes[0]["value"]
-    assert result[0]["HumanReadable"].endswith(expected_value)
+    # "html" entries only carry "Contents" (no "HumanReadable"); other formats carry both.
+    assert result[0]["Contents"].endswith(expected_value)
 
 
 @pytest.mark.parametrize(

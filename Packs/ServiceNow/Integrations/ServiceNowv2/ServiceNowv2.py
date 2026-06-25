@@ -1935,25 +1935,32 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
             else:
                 entry_format = note.get("format")
 
+            entry = {
+                "Type": note.get("type", 1),
+                "Category": note.get("category"),
+                "created": note.get("sys_created_on", ""),
+                "ContentsFormat": entry_format,
+                "Tags": tags,
+                "Note": True,
+                "EntryContext": comments_context,
+            }
 
-            human_readable = (
-                f"Type: {note.get('element')}\nCreated By: "
-                f"{note.get('sys_created_by')}\nCreated On: "
-                f"{note.get('sys_created_on')}\n{rendered_value}"
-            )
-            entries.append(
-                {
-                    "Type": note.get("type", 1),
-                    "Category": note.get("category"),
-                    "HumanReadable": human_readable,
-                    "Contents": human_readable,
-                    "created": note.get("sys_created_on", ""),
-                    "ContentsFormat": entry_format,
-                    "Tags": tags,
-                    "Note": True,
-                    "EntryContext": comments_context,
-                }
-            )
+            if entry_format == "html":
+                contents = (
+                    f"Type: {note.get('element')}<br>Created By: "
+                    f"{note.get('sys_created_by')}<br>Created On: "
+                    f"{note.get('sys_created_on')}<br>{rendered_value}"
+                )
+                entry["Contents"] = contents
+            else:
+                human_readable = (
+                    f"Type: {note.get('element')}\nCreated By: "
+                    f"{note.get('sys_created_by')}\nCreated On: "
+                    f"{note.get('sys_created_on')}\n{rendered_value}"
+                )
+                entry["HumanReadable"] = human_readable
+                entry["Contents"] = human_readable
+            entries.append(entry)
 
     return entries
 
