@@ -365,7 +365,6 @@ configuration:
   type: 15
   required: false
   options:
-  - markdown
   - text
   - html
   - source
