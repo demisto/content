@@ -21,17 +21,110 @@ from CommonServerUserPython import *
 class Handler:
     @staticmethod
     def write(msg: str):
-        demisto.info(msg)
+        # gevent's pywsgi writes one Common-Log-Format access line per request here.
+        # Tag it so it is easy to grep for and correlate with the nginx access log.
+        demisto.info(f"wsgi access: {msg.rstrip()}")
 
 
 class ErrorHandler:
     @staticmethod
     def write(msg: str):
-        demisto.error(f"wsgi error: {msg}")
+        demisto.error(f"wsgi error: {msg.rstrip()}")
 
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+class RequestLoggingMiddleware:
+    """WSGI middleware that emits a detailed, structured log line per request.
+
+    This is the Python-side counterpart to the nginx ``edl_detailed`` access log.
+    Because nginx serves cache HITs without ever reaching this upstream, a request
+    that appears in the nginx log with ``cache=HIT`` but is absent here was served
+    entirely from cache - making the cache-vs-upstream distinction explicit.
+
+    For every request it logs: the real client (X-Forwarded-For / X-Real-IP) as
+    forwarded by nginx, the original URI, conditional/range headers, user-agent,
+    the cache status nginx attached (X-Proxy-Cache), the response status, the
+    number of body bytes written, and the wall-clock time spent in the app.
+    """
+
+    # Request headers worth capturing for client/cache/conditional diagnostics.
+    _LOGGED_REQUEST_HEADERS = (
+        "X-Forwarded-For",
+        "X-Real-IP",
+        "X-Forwarded-Proto",
+        "X-Original-URI",
+        "Host",
+        "User-Agent",
+        "Range",
+        "If-None-Match",
+        "If-Modified-Since",
+        "Authorization",
+    )
+
+    def __init__(self, app):
+        self.app = app
+
+    @staticmethod
+    def _header_env_key(header_name: str) -> str:
+        # WSGI exposes request headers as HTTP_<UPPER_SNAKE> in the environ.
+        return "HTTP_" + header_name.upper().replace("-", "_")
+
+    def __call__(self, environ, start_response):
+        start_time = time.time()
+        method = environ.get("REQUEST_METHOD", "-")
+        path = environ.get("PATH_INFO", "-")
+        query = environ.get("QUERY_STRING", "")
+        full_path = f"{path}?{query}" if query else path
+        remote_addr = environ.get("REMOTE_ADDR", "-")
+
+        # Collect the interesting request headers (auth is reduced to presence only).
+        header_parts = []
+        for header_name in self._LOGGED_REQUEST_HEADERS:
+            value = environ.get(self._header_env_key(header_name))
+            if value is None:
+                continue
+            if header_name == "Authorization":
+                value = "present"
+            header_parts.append(f'{header_name}="{value}"')
+        headers_str = " ".join(header_parts)
+
+        # Capture the response status/headers via a wrapped start_response.
+        response_info: dict = {"status": "-", "cache": "-", "edl_size": "-", "content_length": "-"}
+
+        def logging_start_response(status, response_headers, exc_info=None):
+            response_info["status"] = status.split(" ", 1)[0] if status else "-"
+            for header_key, header_value in response_headers:
+                lowered = header_key.lower()
+                if lowered == "x-proxy-cache":
+                    response_info["cache"] = header_value
+                elif lowered == "x-edl-size":
+                    response_info["edl_size"] = header_value
+                elif lowered == "content-length":
+                    response_info["content_length"] = header_value
+            return start_response(status, response_headers, exc_info)
+
+        bytes_sent = 0
+        try:
+            result = self.app(environ, logging_start_response)
+            # Count the bytes actually produced by the app so we can detect
+            # size-vs-bytes mismatches / truncated bodies on the Python side.
+            for chunk in result:
+                bytes_sent += len(chunk) if chunk else 0
+                yield chunk
+            if hasattr(result, "close"):
+                result.close()
+        finally:
+            elapsed = time.time() - start_time
+            demisto.info(
+                f"wsgi request: client={remote_addr} method={method} "
+                f'uri="{full_path}" status={response_info["status"]} '
+                f"app_bytes={bytes_sent} content_length={response_info['content_length']} "
+                f'cache="{response_info["cache"]}" edl_size={response_info["edl_size"]} '
+                f"elapsed={elapsed:.3f}s {headers_str}"
+            )
 
 
 # nginx server params
@@ -44,12 +137,46 @@ NGINX_SSL_CERTS = f"""
     ssl_certificate {NGINX_SSL_CRT_FILE};
     ssl_certificate_key {NGINX_SSL_KEY_FILE};
 """
+# Detailed access log format with human-readable key names. Captures, per request:
+#   - real client: forwarded_for / real_client_ip (the firewall), plus
+#     immediate_peer ($remote_addr), the last hop (usually the XSOAR edge / localhost).
+#   - cache decision: cache_status (HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED).
+#   - timing breakdown: total_time_secs, upstream_connect_secs,
+#     upstream_header_secs, upstream_response_secs (isolates slow upstream/Python).
+#   - payload: status_code, body_bytes, total_bytes, and the EDL response headers
+#     echoed back (edl_indicator_count, edl_query_secs) so size-vs-bytes mismatches
+#     (e.g. truncated transfers) are visible on a single line.
+#   - request shape: method, uri, range_header, if_none_match (conditional/
+#     revalidation), if_modified_since, bypass_cache, user_agent.
+#   - connection: connection_id and requests_on_connection (reqs on this conn)
+#     to spot keep-alive reuse and CLOSE_WAIT buildup.
+NGINX_LOG_FORMAT = """
+log_format edl_detailed
+    'time=$time_iso8601 immediate_peer=$remote_addr forwarded_for="$http_x_forwarded_for" '
+    'real_client_ip="$http_x_real_ip" host="$host" scheme=$scheme '
+    'method=$request_method uri="$request_uri" status_code=$status '
+    'body_bytes=$body_bytes_sent total_bytes=$bytes_sent '
+    'cache_status=$upstream_cache_status upstream_address="$upstream_addr" '
+    'total_time_secs=$request_time upstream_connect_secs="$upstream_connect_time" '
+    'upstream_header_secs="$upstream_header_time" upstream_response_secs="$upstream_response_time" '
+    'edl_indicator_count="$sent_http_x_edl_size" edl_origin_count="$sent_http_x_edl_origin_size" '
+    'edl_query_secs="$sent_http_x_edl_query_time_secs" etag="$sent_http_etag" '
+    'range_header="$http_range" if_none_match="$http_if_none_match" '
+    'if_modified_since="$http_if_modified_since" bypass_cache="$arg_nocache" '
+    'user_agent="$http_user_agent" connection_id=$connection requests_on_connection=$connection_requests';
+"""
 NGINX_SERVER_CONF = """
+$log_format
 server {
 
     listen $port default_server $ssl;
 
     $sslcerts
+
+    # Per-request detailed access log + verbose error log so cache decisions,
+    # real client IPs, timings and upstream warnings are all captured.
+    access_log /var/log/nginx/access.log edl_detailed;
+    error_log /var/log/nginx/error.log info;
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
@@ -92,7 +219,18 @@ proxy_cache_background_update on;
     # Proxy everything to python
     location / {
         proxy_pass http://localhost:$serverport/;
-        add_header X-Proxy-Cache $upstream_cache_status;
+
+        # Forward the real client identity to the Python (gevent) upstream so the
+        # WSGI middleware can log the actual firewall/client instead of 127.0.0.1.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+
+        # Surface the cache decision both to the client and (via the access log
+        # variable) to our logging: HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED.
+        add_header X-Proxy-Cache $upstream_cache_status always;
         $extra_headers
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
@@ -101,6 +239,12 @@ proxy_cache_background_update on;
         proxy_send_timeout 3600;
         send_timeout 3600;
     }
+
+    # How long an idle keep-alive client connection stays open. Lowering this lets nginx
+    # reap connections from clients (e.g. firewalls) that polled and went away, instead of
+    # leaving them pinned in CLOSE_WAIT and consuming a worker_connections slot + an FD.
+    # Default "65" matches nginx's built-in default, so behavior is unchanged unless tuned.
+    keepalive_timeout $keepalive_timeout;
 }
 
 """
@@ -135,6 +279,13 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     cache_lock_age = _normalize_nginx_time(params.get("cache_lock_age"), default=timeout, param_name="cache_lock_age")
     cache_404_ttl = _normalize_nginx_time(params.get("cache_404_ttl"), default="1m", param_name="cache_404_ttl")
     cache_default_ttl = _normalize_nginx_time(params.get("cache_default_ttl"), default="1m", param_name="cache_default_ttl")
+
+    # Idle keep-alive timeout for client connections. Normalized independently of `timeout` and
+    # deliberately NOT floored to it: a small value (default "65", nginx's own default) lets nginx
+    # promptly reap connections from clients that polled and disconnected, preventing the CLOSE_WAIT
+    # buildup that otherwise exhausts the worker's connection/FD budget. Behavior is unchanged unless
+    # the `keepalive_timeout` param is explicitly set.
+    keepalive_timeout = _normalize_nginx_time(params.get("keepalive_timeout"), default="65", param_name="keepalive_timeout")
 
     # Ensure cache_refresh_rate is at least as large as timeout, and apply the same anti-stampede
     # floor to the cache lock directives. All values are now guaranteed to end in "s" (the helper
@@ -173,6 +324,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
 
     extra_cache_keys_str = "".join(extra_cache_keys)
     server_conf = Template(template_str).safe_substitute(
+        log_format=NGINX_LOG_FORMAT,
         port=port,
         serverport=serverport,
         ssl=ssl,
@@ -185,7 +337,20 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_lock_age=cache_lock_age,
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
+        keepalive_timeout=keepalive_timeout,
         extra_headers=extra_headers,
+    )
+    # Log the effective cache / timeout settings so each (re)start records exactly
+    # which values are active - essential for interpreting cache=HIT/STALE/UPDATING
+    # decisions and the upstream timing fields in the access logs.
+    demisto.info(
+        "edl: nginx effective settings -> "
+        f"listen_port={port} upstream_port={serverport} ssl={'on' if ssl else 'off'} "
+        f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
+        f"cache_lock_timeout={cache_lock_timeout} cache_lock_age={cache_lock_age} "
+        f"cache_404_ttl={cache_404_ttl} cache_default_ttl={cache_default_ttl} "
+        f"keepalive_timeout={keepalive_timeout} "
+        f"extra_cache_keys=[{extra_cache_keys_str}]"
     )
     with open(file_path, mode="w+") as f:
         f.write(server_conf)
@@ -205,7 +370,9 @@ def start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
         nginx_test_command.extend(directive_args)
         test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
         demisto.info(f"ngnix test passed. command: [{nginx_test_command}]")
-        demisto.debug(f"nginx test ouput:\n{test_output}")
+        # Promote the fully rendered config to info so the active log_format, cache,
+        # timeout and proxy_set_header directives are recorded on every (re)start.
+        demisto.info(f"nginx effective rendered config (nginx -T):\n{test_output}")
     except subprocess.CalledProcessError as err:
         raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
     nginx_command = ["nginx"]
@@ -522,9 +689,17 @@ def run_long_running(params: dict = None, is_test: bool = False):
         log_handler.setFormatter(logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
         APP.logger.addHandler(log_handler)  # type: ignore[name-defined] # pylint: disable=E0602
         demisto.debug("done setting demisto handler for logging")
+        # Wrap the Flask app with RequestLoggingMiddleware so every request that
+        # actually reaches the Python upstream (i.e. cache MISS/BYPASS/EXPIRED) is
+        # logged with the real client, URI, conditional/range headers, cache status,
+        # response status, app-produced byte count and elapsed time. Combined with
+        # the gevent access line (log=DEMISTO_LOGGER) and the nginx edl_detailed
+        # access log, this gives end-to-end per-request visibility.
+        wsgi_app = RequestLoggingMiddleware(APP)  # type: ignore[name-defined] # pylint: disable=E0602
+        demisto.info(f"edl: WSGI upstream listening on 0.0.0.0:{server_port}, nginx proxy on port {nginx_port}.")
         server = WSGIServer(
             ("0.0.0.0", server_port),
-            APP,  # type: ignore[name-defined]    # pylint: disable=E0602
+            wsgi_app,
             log=DEMISTO_LOGGER,  # type: ignore[name-defined] # pylint: disable=E0602
             error_log=ERROR_LOGGER,
         )
