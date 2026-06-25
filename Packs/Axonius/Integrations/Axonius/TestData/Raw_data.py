@@ -7,7 +7,7 @@ DUMMY_TAGS = ["one", "two", "three"]
 DUMMY_ASSET_TYPES = ["devices", "users", "vulnerability_instances", "security_findings"]
 
 DUMMY_V2_ASSETS_RESPONSE = {
-    "data": [
+    "assets": [
         {
             "internal_axon_id": "abc123",
             "cve_id": "CVE-2023-1234",
@@ -22,18 +22,18 @@ DUMMY_V2_ASSETS_RESPONSE = {
         },
     ],
     "meta": {
-        "page": {"total_resources": 2},
-        "next": {"cursor": None},
+        "page": {"totalResources": 2},
+        "next_page": None,
     },
 }
 
 DUMMY_V2_ASSETS_RESPONSE_WITH_CURSOR = {
-    "data": [
+    "assets": [
         {"internal_axon_id": "aaa", "cve_id": "CVE-2023-9999", "cvss_score": 6.0, "hostname": "host-c"},
     ],
     "meta": {
-        "page": {"total_resources": 3},
-        "next": {"cursor": "cursor_token_xyz"},
+        "page": {"totalResources": 3},
+        "next_page": "cursor_token_xyz",
     },
 }
 

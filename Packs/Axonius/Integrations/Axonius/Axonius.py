@@ -352,7 +352,7 @@ def _build_v2_page(limit: int, cursor: Optional[str] = None) -> dict:
 def get_assets(args: dict) -> CommandResults:
     """Fetch assets of any type via POST /api/v2/assets/{asset_type}.
 
-    Supports all asset types including security_findings and
+    Supports all asset types including alert_findings and
     vulnerability_instances. Returns a single page of results together with a
     cursor (next_page) for subsequent calls.
 
@@ -388,11 +388,11 @@ def get_assets(args: dict) -> CommandResults:
     response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    assets: List[dict] = data.get("data") or []
+    assets: List[dict] = data.get("assets") or []
     meta: dict = data.get("meta") or {}
-    next_cursor: Optional[str] = (meta.get("next") or {}).get("cursor")
+    next_cursor: Optional[str] = meta.get("next_page")
     page_meta: dict = meta.get("page") or {}
-    total_count: Optional[int] = page_meta.get("total_resources")
+    total_count: Optional[int] = page_meta.get("totalResources")
 
     if not assets:
         readable_output = f"No {asset_type} assets found."
@@ -433,7 +433,7 @@ def get_asset_types() -> CommandResults:
     response = make_api_call(endpoint=endpoint, method="GET")
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    asset_types: list = data.get("data") or (data if isinstance(data, list) else [])
+    asset_types: list = data.get("asset_types") or []
 
     readable_output = tableToMarkdown(
         "Axonius Asset Types",
@@ -683,12 +683,12 @@ def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: in
         response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
         data = _handle_api_response(response=response, endpoint=endpoint)
 
-        page_assets: List[dict] = data.get("data") or []
+        page_assets: List[dict] = data.get("assets") or []
         all_assets.extend(page_assets)
         page_count += 1
 
         meta: dict = data.get("meta") or {}
-        cursor = (meta.get("next") or {}).get("cursor")
+        cursor = meta.get("next_page")
 
         if not cursor or not page_assets or page_count >= MAX_PAGES:
             if page_count >= MAX_PAGES and cursor:

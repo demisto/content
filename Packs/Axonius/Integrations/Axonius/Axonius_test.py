@@ -234,7 +234,7 @@ def test_get_assets_with_cursor():
 
 
 def test_get_assets_no_results():
-    empty_resp = {"data": [], "meta": {"page": {}, "next": {}}}
+    empty_resp = {"assets": [], "meta": {"page": {}, "next_page": None}}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(empty_resp)):
         result = get_assets({"asset_type": "security_findings"})
     assert result.outputs["assets"] == []
@@ -401,8 +401,8 @@ def test_flatten_instance_multi_element_list_unchanged():
 
 def _make_vi_page(assets: list, cursor: str = None) -> dict:
     return {
-        "data": assets,
-        "meta": {"page": {"total_resources": len(assets)}, "next": {"cursor": cursor}},
+        "assets": assets,
+        "meta": {"page": {"totalResources": len(assets)}, "next_page": cursor},
     }
 
 
