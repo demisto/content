@@ -63,6 +63,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
   defaultvalue: '1'
   display: Days to look back when fetching
@@ -71,6 +74,9 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   name: use_legacy_sessions

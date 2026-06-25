@@ -148,6 +148,9 @@ configuration:
   additionalinfo: Limit for each fetched incident type. Recommended value is 100. Maximum value is 200.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8

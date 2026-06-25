@@ -25,12 +25,18 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   name: first_fetch
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: All
   display: Filter incidents by status.
   name: status

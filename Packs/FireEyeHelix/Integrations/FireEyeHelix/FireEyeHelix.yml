@@ -38,6 +38,9 @@ configuration:
   section: Collect
   defaultvalue: 3 days
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8

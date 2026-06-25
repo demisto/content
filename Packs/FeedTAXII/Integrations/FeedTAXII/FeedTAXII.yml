@@ -54,6 +54,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -178,6 +181,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
 name: TAXIIFeed

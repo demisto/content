@@ -102,6 +102,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -205,6 +208,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed

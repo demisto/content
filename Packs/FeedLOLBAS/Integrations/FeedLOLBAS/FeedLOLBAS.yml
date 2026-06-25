@@ -58,6 +58,9 @@ configuration:
   type: 15
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval

@@ -90,11 +90,17 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp or First fetch ID
   name: first_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use an SSL connection
   name: ssl_connect
   type: 8

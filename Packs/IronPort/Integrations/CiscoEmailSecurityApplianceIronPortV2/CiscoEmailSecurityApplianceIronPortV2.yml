@@ -30,6 +30,9 @@ configuration:
     additionalinfo: Default is 50. Maximum is 100.
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - name: first_fetch
     display: First fetch timestamp
     defaultvalue: 7 days
@@ -39,6 +42,9 @@ configuration:
       e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - name: filter_by
     display: Filter by
     type: 15

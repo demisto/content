@@ -38,6 +38,8 @@ configuration:
     type: 0
     section: Collect
     additionalinfo: Recommended maximum is 10000.
+    supportedModules:
+      - xsiam
   - display: Timestamp Field Name
     name: timestamp_field
     required: false

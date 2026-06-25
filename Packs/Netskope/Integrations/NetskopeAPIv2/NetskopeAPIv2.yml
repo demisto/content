@@ -39,6 +39,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
   defaultvalue: "50"
   display: Maximum incidents per fetch
@@ -46,6 +49,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum Netskope events per fetch. Max value is 200.
   name: max_events_fetch
   defaultvalue: "50"
@@ -82,6 +88,9 @@ configuration:
   required: false
   type: 16
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Free text query to filter the fetched alerts. For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html)."
   display: Alerts Query
   name: alerts_query

@@ -136,6 +136,9 @@ configuration:
   - GREEN
   - WHITE
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

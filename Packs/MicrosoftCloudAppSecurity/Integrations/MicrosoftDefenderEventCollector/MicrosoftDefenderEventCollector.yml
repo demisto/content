@@ -89,6 +89,8 @@ configuration:
   - Alerts
   - Admin activities
   - Login activities
+  supportedModules:
+  - xsiam
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector

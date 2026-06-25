@@ -147,6 +147,9 @@ configuration:
   - WHITE
   type: 15
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Use TLP from source (per indicator)'
   name: use_tlp_from_source
   type: 8

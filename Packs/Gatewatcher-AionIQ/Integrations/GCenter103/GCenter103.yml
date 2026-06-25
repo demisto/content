@@ -55,6 +55,9 @@ configuration:
   - Both
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: engine_selection
   display: Engine alerts selection
   type: 16
@@ -77,6 +80,9 @@ configuration:
   additionalinfo: This value represents how far the first fetch will grab the events stored in the GCenter e.g. 2 days
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 200
   display: Fetch limit
   name: max_fetch
@@ -84,6 +90,9 @@ configuration:
   additionalinfo: This value represents the maximum events fetched by instruction, this integration can handle up to 10000. The default value is 200 and is the optimum for Cortex XSOAR.
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

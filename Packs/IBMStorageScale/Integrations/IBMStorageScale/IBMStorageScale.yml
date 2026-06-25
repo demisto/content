@@ -36,6 +36,8 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
 - name: server_timezone
   display: Server Timezone
   additionalinfo: "Timezone of the IBM Storage Scale server. Accepts IANA names (e.g., 'UTC', 'America/New_York') or fixed offsets (e.g., '+03:00', '-0500', 'UTC-7'). Used to build time filters with the correct local time."

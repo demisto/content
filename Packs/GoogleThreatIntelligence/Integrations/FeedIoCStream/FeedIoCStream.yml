@@ -118,6 +118,9 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Use this feed integration to fetch Google Threat Intelligence IoC Stream notifications as indicators.
 display: Google Threat Intelligence IoC Stream Feed
 name: Google Threat Intelligence IoC Stream Feed

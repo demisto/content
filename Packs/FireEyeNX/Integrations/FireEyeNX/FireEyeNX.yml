@@ -43,6 +43,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of alerts to fetch. A maximum of 200 alerts is fetched. Default is 50.
   defaultvalue: '50'
   display: Fetch Limit
@@ -50,6 +53,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetches Alerts and/or IPS Events.
   display: Fetch Types
   name: fetch_type
@@ -59,6 +65,9 @@ configuration:
   type: 16
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch Types.
   display: Fetches MVX-correlated events only
   name: fetch_mvx_correlated_events

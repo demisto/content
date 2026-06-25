@@ -43,12 +43,16 @@ configuration:
   required: false
   section: Collect
   type: 16
+  supportedModules:
+  - xsiam
 - display: Maximum number of events per fetch
   name: max_fetch
   defaultvalue: '1000'
   required: false
   section: Collect
   type: 0
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   advanced: true

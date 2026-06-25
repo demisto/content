@@ -21,6 +21,9 @@ configuration:
   type: 0
   required: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -43,6 +46,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
