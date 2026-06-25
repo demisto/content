@@ -739,6 +739,11 @@ script:
       security_findings and vulnerability_instances. Use next_page for
       pagination. Large responses (>10 MB) may be stored as a downloadable
       file by XSOAR instead of being written to the context.
+      NOTE: All calls write to the fixed context key Axonius.Assets regardless
+      of asset_type. If a playbook calls this command more than once with
+      different asset types, each call overwrites the previous result.
+      To avoid data loss, store or transform the context output
+      (e.g. using Set) before issuing a second call with a different type.
     name: axonius-get-assets
     outputs:
     - contextPath: Axonius.Assets.asset_type

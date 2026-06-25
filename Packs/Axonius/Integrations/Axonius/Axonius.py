@@ -22,6 +22,10 @@ V2_PAGE_SIZE_DEFAULT: int = 50
 """Default page size for v2 API pagination."""
 V2_PAGE_SIZE_ALL_PAGES: int = 100
 """Page size used when fetching all pages."""
+MAX_PAGES: int = 200
+"""Maximum number of pages to fetch in a single paginated request (infinite-loop guard)."""
+REQUEST_TIMEOUT: int = 30
+"""HTTP request timeout in seconds to prevent silent hangs in Playbooks."""
 
 
 def get_int_arg(
@@ -142,11 +146,11 @@ def make_api_call(
 
     method = method.upper()
     if method == "GET":
-        return requests.get(url, headers=headers, params=query_params, verify=certverify)
+        return requests.get(url, headers=headers, params=query_params, verify=certverify, timeout=REQUEST_TIMEOUT)
     elif method == "DELETE":
-        return requests.delete(url, json=payload, headers=headers, verify=certverify)
+        return requests.delete(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
     else:
-        return requests.post(url, json=payload, headers=headers, verify=certverify)
+        return requests.post(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
 
 
 def _handle_api_response(response: Optional[requests.Response], endpoint: str) -> dict:
@@ -429,7 +433,7 @@ def get_asset_types() -> CommandResults:
     response = make_api_call(endpoint=endpoint, method="GET")
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    asset_types: list = data.get("data") or data if isinstance(data, list) else []
+    asset_types: list = data.get("data") or (data if isinstance(data, list) else [])
 
     readable_output = tableToMarkdown(
         "Axonius Asset Types",
@@ -463,7 +467,7 @@ def get_custom_data(args: dict) -> CommandResults:
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    entries: list = data.get("data") or data if isinstance(data, list) else []
+    entries: list = data.get("data") or (data if isinstance(data, list) else [])
 
     readable_output = tableToMarkdown(
         "Axonius Custom Data",
@@ -535,7 +539,7 @@ def get_enforcements(args: dict) -> CommandResults:
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    enforcements: list = data.get("data") or data if isinstance(data, list) else []
+    enforcements: list = data.get("data") or (data if isinstance(data, list) else [])
 
     readable_output = tableToMarkdown(
         "Axonius Enforcements",
@@ -559,7 +563,7 @@ def run_enforcement(args: dict) -> CommandResults:
         raise DemistoException("The 'enforcement_id' argument is required for axonius-run-enforcement.")
 
     endpoint = f"api/v2/enforcements/{enforcement_id}/run"
-    response = make_api_call(endpoint=endpoint, payload={}, method="POST")
+    response = make_api_call(endpoint=endpoint, method="POST")
     data = _handle_api_response(response=response, endpoint=endpoint)
 
     return CommandResults(
@@ -587,7 +591,7 @@ def get_queries(args: dict) -> CommandResults:
     response = make_api_call(endpoint=endpoint, method="GET", query_params=qp)
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    queries: list = data.get("data") or data if isinstance(data, list) else []
+    queries: list = data.get("data") or (data if isinstance(data, list) else [])
 
     readable_output = tableToMarkdown(
         "Axonius Queries",
@@ -669,6 +673,7 @@ def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: in
     all_assets: List[dict] = []
     cursor: Optional[str] = None
     endpoint = f"api/v2/assets/{asset_type}"
+    page_count: int = 0
 
     while True:
         payload: dict = {"page": _build_v2_page(limit=page_size, cursor=cursor)}
@@ -680,11 +685,17 @@ def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: in
 
         page_assets: List[dict] = data.get("data") or []
         all_assets.extend(page_assets)
+        page_count += 1
 
         meta: dict = data.get("meta") or {}
         cursor = (meta.get("next") or {}).get("cursor")
 
-        if not cursor or not page_assets:
+        if not cursor or not page_assets or page_count >= MAX_PAGES:
+            if page_count >= MAX_PAGES and cursor:
+                demisto.debug(
+                    f"_fetch_all_pages: reached MAX_PAGES ({MAX_PAGES}) for '{asset_type}'; "
+                    f"stopping pagination early with {len(all_assets)} records collected."
+                )
             break
 
     return all_assets
@@ -727,10 +738,10 @@ def get_grouped_vulnerabilities(args: dict) -> CommandResults:
     if query:
         query_parts.append(query)
     if team_name:
-        query_parts.append(f'("team_name" == "{team_name}")')
+        query_parts.append(f'(specific_data.data.team_name == "{team_name}")')
     if urgent is not None:
         urgent_bool = "true" if argToBoolean(urgent) else "false"
-        query_parts.append(f'("urgent" == {urgent_bool})')
+        query_parts.append(f'(specific_data.data.urgent == {urgent_bool})')
     final_query = " and ".join(query_parts) if query_parts else None
 
     instances = _fetch_all_pages(asset_type="vulnerability_instances", query=final_query, page_size=page_size)
