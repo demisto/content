@@ -220,37 +220,38 @@ script:
       required: false
       description: Customer AI agent framework (optional).
     outputs:
-    - contextPath: PrismaAIRs.ApiKey.id
+    - contextPath: PrismaAIRs.ApiKeyCreate.id
       description: Created API Key ID (UUID).
       type: String
-    - contextPath: PrismaAIRs.ApiKey.name
+    - contextPath: PrismaAIRs.ApiKeyCreate.name
       description: API Key name.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.api_key
+    - contextPath: PrismaAIRs.ApiKeyCreate.api_key
       description: FULL API KEY SECRET - Only shown once! Save this securely.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.last8
+    - contextPath: PrismaAIRs.ApiKeyCreate.last8
       description: Last 8 characters of the API key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.auth_code
+    - contextPath: PrismaAIRs.ApiKeyCreate.auth_code
       description: Auth code associated with the key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.expires_at
+    - contextPath: PrismaAIRs.ApiKeyCreate.expires_at
       description: API Key expiration timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ApiKey.revoked
+    - contextPath: PrismaAIRs.ApiKeyCreate.revoked
       description: Whether the API key has been revoked.
       type: Boolean
-    - contextPath: PrismaAIRs.ApiKey.created_at
+    - contextPath: PrismaAIRs.ApiKeyCreate.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ApiKey.created_by
+    - contextPath: PrismaAIRs.ApiKeyCreate.created_by
       description: User who created the key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.cust_app
+    - contextPath: PrismaAIRs.ApiKeyCreate.cust_app
       description: Customer application name.
       type: String
   - name: prisma-airs-runtime-api-keys-regenerate
+    execution: true
     description: Regenerate an existing Runtime API Key. WARNING - This creates a NEW key with a NEW UUID and invalidates the old key. The new secret is only shown once.
     arguments:
     - name: api_key_id
@@ -271,34 +272,34 @@ script:
       required: false
       description: Email of the user performing regeneration (optional).
     outputs:
-    - contextPath: PrismaAIRs.ApiKey.id
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.id
       description: NEW API Key ID (UUID) - different from the old one.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.name
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.name
       description: API Key name (same as before).
       type: String
-    - contextPath: PrismaAIRs.ApiKey.api_key
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.api_key
       description: NEW FULL API KEY SECRET - Only shown once! The old key is now invalid.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.last8
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.last8
       description: Last 8 characters of the new API key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.auth_code
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.auth_code
       description: Auth code associated with the key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.expires_at
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.expires_at
       description: New expiration timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ApiKey.revoked
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.revoked
       description: Whether the API key has been revoked.
       type: Boolean
-    - contextPath: PrismaAIRs.ApiKey.updated_at
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.updated_at
       description: Update timestamp.
       type: Date
-    - contextPath: PrismaAIRs.ApiKey.updated_by
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.updated_by
       description: User who regenerated the key.
       type: String
-    - contextPath: PrismaAIRs.ApiKey.cust_app
+    - contextPath: PrismaAIRs.ApiKeyRegenerate.cust_app
       description: Customer application name.
       type: String
   - name: prisma-airs-runtime-api-keys-delete
@@ -548,34 +549,34 @@ script:
       required: true
       description: Name of the customer application to retrieve.
     outputs:
-    - contextPath: PrismaAIRs.CustomerApp.id
+    - contextPath: PrismaAIRs.CustomerAppGet.id
       description: Customer App ID (UUID).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.name
+    - contextPath: PrismaAIRs.CustomerAppGet.name
       description: Customer App name.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.model_name
+    - contextPath: PrismaAIRs.CustomerAppGet.model_name
       description: Model name used by the app.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.cloud_provider
+    - contextPath: PrismaAIRs.CustomerAppGet.cloud_provider
       description: Cloud provider (aws, azure, gcp, other).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.environment
+    - contextPath: PrismaAIRs.CustomerAppGet.environment
       description: Environment (prod, staging, dev).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.ai_agent_framework
+    - contextPath: PrismaAIRs.CustomerAppGet.ai_agent_framework
       description: AI agent framework used.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.tsg_id
+    - contextPath: PrismaAIRs.CustomerAppGet.tsg_id
       description: Tenant Service Group ID.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.status
+    - contextPath: PrismaAIRs.CustomerAppGet.status
       description: Customer App status.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.created_by
+    - contextPath: PrismaAIRs.CustomerAppGet.created_by
       description: Email of user who created the app.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.updated_by
+    - contextPath: PrismaAIRs.CustomerAppGet.updated_by
       description: Email of user who last updated the app.
       type: String
   - name: prisma-airs-runtime-customer-apps-update
@@ -617,34 +618,34 @@ script:
       required: false
       description: Email of user performing the update.
     outputs:
-    - contextPath: PrismaAIRs.CustomerApp.id
+    - contextPath: PrismaAIRs.CustomerAppUpdate.id
       description: Customer App ID (UUID).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.name
+    - contextPath: PrismaAIRs.CustomerAppUpdate.name
       description: Customer App name.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.model_name
+    - contextPath: PrismaAIRs.CustomerAppUpdate.model_name
       description: Model name used by the app.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.cloud_provider
+    - contextPath: PrismaAIRs.CustomerAppUpdate.cloud_provider
       description: Cloud provider (aws, azure, gcp, other).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.environment
+    - contextPath: PrismaAIRs.CustomerAppUpdate.environment
       description: Environment (prod, staging, dev).
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.ai_agent_framework
+    - contextPath: PrismaAIRs.CustomerAppUpdate.ai_agent_framework
       description: AI agent framework used.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.tsg_id
+    - contextPath: PrismaAIRs.CustomerAppUpdate.tsg_id
       description: Tenant Service Group ID.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.status
+    - contextPath: PrismaAIRs.CustomerAppUpdate.status
       description: Customer App status.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.created_by
+    - contextPath: PrismaAIRs.CustomerAppUpdate.created_by
       description: Email of user who created the app.
       type: String
-    - contextPath: PrismaAIRs.CustomerApp.updated_by
+    - contextPath: PrismaAIRs.CustomerAppUpdate.updated_by
       description: Email of user who last updated the app.
       type: String
   - name: prisma-airs-runtime-customer-apps-consumption
@@ -3515,22 +3516,22 @@ script:
       description: Validate target connectivity before creating (true/false).
       defaultValue: 'false'
     outputs:
-    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.uuid
       description: Target UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.name
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.name
       description: Target name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.status
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.status
       description: Target status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.active
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.active
       description: Whether the target is active.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.validated
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.validated
       description: Whether the target has been validated.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.created_at
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.created_at
       description: Creation timestamp.
       type: Date
   - name: prisma-airs-redteam-targets-get
@@ -3540,40 +3541,40 @@ script:
       required: true
       description: Target UUID.
     outputs:
-    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+    - contextPath: PrismaAIRs.RedTeamTargetGet.uuid
       description: Target UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.name
+    - contextPath: PrismaAIRs.RedTeamTargetGet.name
       description: Target name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.tsg_id
+    - contextPath: PrismaAIRs.RedTeamTargetGet.tsg_id
       description: Tenant Service Group ID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.status
+    - contextPath: PrismaAIRs.RedTeamTargetGet.status
       description: Target status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.active
+    - contextPath: PrismaAIRs.RedTeamTargetGet.active
       description: Whether the target is active.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.validated
+    - contextPath: PrismaAIRs.RedTeamTargetGet.validated
       description: Whether the target has been validated.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.target_type
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_type
       description: Target type.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.connection_type
+    - contextPath: PrismaAIRs.RedTeamTargetGet.connection_type
       description: Connection type.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.profiling_status
+    - contextPath: PrismaAIRs.RedTeamTargetGet.profiling_status
       description: Profiling status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_metadata
       description: Target metadata object with probe results.
       type: Unknown
-    - contextPath: PrismaAIRs.RedTeamTarget.target_background
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_background
       description: Target background context.
       type: Unknown
-    - contextPath: PrismaAIRs.RedTeamTarget.additional_context
+    - contextPath: PrismaAIRs.RedTeamTargetGet.additional_context
       description: Additional target context.
       type: Unknown
   - name: prisma-airs-redteam-targets-update
@@ -3601,16 +3602,16 @@ script:
       required: false
       description: Validate target connectivity after update (true/false).
     outputs:
-    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.uuid
       description: Target UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.name
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.name
       description: Target name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.status
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.status
       description: Target status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.updated_at
       description: Last update timestamp.
       type: Date
   - name: prisma-airs-redteam-targets-delete
@@ -3654,31 +3655,31 @@ script:
       required: false
       description: Comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter").
     outputs:
-    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.uuid
       description: Target UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.name
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.name
       description: Target name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.status
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.status
       description: Target status after probing.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.validated
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.validated
       description: Whether the target was validated.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.profiling_status
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.profiling_status
       description: Profiling status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.multi_turn_supported
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.multi_turn_supported
       description: Whether multi-turn conversation is supported.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.rate_limit_enabled
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.rate_limit_enabled
       description: Whether rate limiting is enabled.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.content_filter_enabled
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.content_filter_enabled
       description: Whether content filtering is enabled.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.target_metadata
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.target_metadata
       description: Full probe results metadata.
       type: Unknown
   - name: prisma-airs-redteam-targets-profile
@@ -3725,28 +3726,28 @@ script:
       required: false
       description: 'Additional context as JSON string. Example: {"base_model": "GPT-4", "languages_supported": ["en", "es"]}.'
     outputs:
-    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.uuid
       description: Target UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.name
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.name
       description: Target name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.status
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.status
       description: Target status.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.active
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.active
       description: Whether the target is active.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.validated
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.validated
       description: Whether the target is validated.
       type: Boolean
-    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.updated_at
       description: Last update timestamp.
       type: String
-    - contextPath: PrismaAIRs.RedTeamTarget.target_background
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.target_background
       description: Updated target background.
       type: Unknown
-    - contextPath: PrismaAIRs.RedTeamTarget.additional_context
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.additional_context
       description: Updated additional context.
       type: Unknown
   - name: prisma-airs-redteam-targets-metadata
@@ -3791,49 +3792,49 @@ script:
       required: false
       description: Comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type.
     outputs:
-    - contextPath: PrismaAIRs.RedTeamScan.uuid
+    - contextPath: PrismaAIRs.RedTeamScanCreate.uuid
       description: Created scan job UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.tsg_id
+    - contextPath: PrismaAIRs.RedTeamScanCreate.tsg_id
       description: Tenant Service Group ID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.name
+    - contextPath: PrismaAIRs.RedTeamScanCreate.name
       description: Scan name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.job_type
+    - contextPath: PrismaAIRs.RedTeamScanCreate.job_type
       description: Job type (STATIC, DYNAMIC, CUSTOM).
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.status
+    - contextPath: PrismaAIRs.RedTeamScanCreate.status
       description: Initial scan status (typically QUEUED).
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.target_id
+    - contextPath: PrismaAIRs.RedTeamScanCreate.target_id
       description: Target UUID being scanned.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.target_type
+    - contextPath: PrismaAIRs.RedTeamScanCreate.target_type
       description: Target type.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.total
+    - contextPath: PrismaAIRs.RedTeamScanCreate.total
       description: Total number of attacks in the scan.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.completed
+    - contextPath: PrismaAIRs.RedTeamScanCreate.completed
       description: Number of completed attacks (initially 0).
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.score
+    - contextPath: PrismaAIRs.RedTeamScanCreate.score
       description: Risk score (null until scan completes).
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.asr
+    - contextPath: PrismaAIRs.RedTeamScanCreate.asr
       description: Attack Success Rate (null until scan completes).
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.created_at
+    - contextPath: PrismaAIRs.RedTeamScanCreate.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.RedTeamScan.updated_at
+    - contextPath: PrismaAIRs.RedTeamScanCreate.updated_at
       description: Last update timestamp.
       type: Date
-    - contextPath: PrismaAIRs.RedTeamScan.version
+    - contextPath: PrismaAIRs.RedTeamScanCreate.version
       description: Scan version.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.job_metadata
+    - contextPath: PrismaAIRs.RedTeamScanCreate.job_metadata
       description: Job metadata containing scan configuration.
       type: Unknown
   - name: prisma-airs-redteam-scans-list
@@ -3902,49 +3903,49 @@ script:
       required: true
       description: The scan job UUID.
     outputs:
-    - contextPath: PrismaAIRs.RedTeamScan.uuid
+    - contextPath: PrismaAIRs.RedTeamScanGet.uuid
       description: Scan UUID.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.name
+    - contextPath: PrismaAIRs.RedTeamScanGet.name
       description: Scan name.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.job_type
+    - contextPath: PrismaAIRs.RedTeamScanGet.job_type
       description: Job type (STATIC, DYNAMIC, CUSTOM).
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.status
+    - contextPath: PrismaAIRs.RedTeamScanGet.status
       description: Scan status (QUEUED, RUNNING, COMPLETED, FAILED, ABORTED).
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.target_id
+    - contextPath: PrismaAIRs.RedTeamScanGet.target_id
       description: Target UUID being scanned.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.target_name
+    - contextPath: PrismaAIRs.RedTeamScanGet.target_name
       description: Target name being scanned.
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.total
+    - contextPath: PrismaAIRs.RedTeamScanGet.total
       description: Total number of attacks in the scan.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.completed
+    - contextPath: PrismaAIRs.RedTeamScanGet.completed
       description: Number of completed attacks.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.score
+    - contextPath: PrismaAIRs.RedTeamScanGet.score
       description: Risk score (0-100).
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.asr
+    - contextPath: PrismaAIRs.RedTeamScanGet.asr
       description: Attack Success Rate (ASR) percentage.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.progress
+    - contextPath: PrismaAIRs.RedTeamScanGet.progress
       description: Progress string (e.g., "150/200").
       type: String
-    - contextPath: PrismaAIRs.RedTeamScan.progress_percentage
+    - contextPath: PrismaAIRs.RedTeamScanGet.progress_percentage
       description: Progress percentage.
       type: Number
-    - contextPath: PrismaAIRs.RedTeamScan.created_at
+    - contextPath: PrismaAIRs.RedTeamScanGet.created_at
       description: Creation timestamp.
       type: Date
-    - contextPath: PrismaAIRs.RedTeamScan.started_at
+    - contextPath: PrismaAIRs.RedTeamScanGet.started_at
       description: Start timestamp.
       type: Date
-    - contextPath: PrismaAIRs.RedTeamScan.completed_at
+    - contextPath: PrismaAIRs.RedTeamScanGet.completed_at
       description: Completion timestamp.
       type: Date
   - name: prisma-airs-redteam-scan-abort

@@ -6,8 +6,16 @@ from PaloAltoNetworks_Prisma_AIRs import (
     test_module as run_test_module,
     runtime_scan_command,
     runtime_api_keys_list_command,
+    runtime_api_keys_create_command,
+    runtime_api_keys_regenerate_command,
+    runtime_api_keys_delete_command,
     runtime_profiles_list_command,
     runtime_customer_apps_list_command,
+    runtime_customer_apps_get_command,
+    runtime_customer_apps_update_command,
+    runtime_customer_apps_consumption_command,
+    runtime_customer_apps_violations_command,
+    runtime_customer_apps_delete_command,
     runtime_deployment_profiles_list_command,
     runtime_dlp_profiles_list_command,
     runtime_dlp_profiles_delete_command,
@@ -37,6 +45,18 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_prompts_get_command,
     redteam_prompts_update_command,
     redteam_prompts_delete_command,
+    redteam_scan_create_command,
+    redteam_scans_list_command,
+    redteam_scan_get_command,
+    redteam_scan_abort_command,
+    redteam_report_get_command,
+    redteam_registry_credentials_get_command,
+    redteam_targets_create_command,
+    redteam_targets_list_command,
+    redteam_targets_get_command,
+    redteam_targets_delete_command,
+    redteam_targets_update_command,
+    redteam_targets_probe_command,
     model_security_scans_list_command,
     model_security_groups_list_command,
     model_security_rules_list_command,
@@ -701,7 +721,7 @@ class TestCommands:
         }
         result = redteam_targets_update_profile_command(mock_client, args)
 
-        assert result.outputs_prefix == "PrismaAIRs.RedTeamTarget"
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetUpdateProfile"
         assert result.outputs["uuid"] == "target-uuid-123"
         assert result.outputs["name"] == "prod-chatbot"
         assert result.outputs["status"] == "READY"
@@ -1318,3 +1338,409 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="prompt_uuid is required"):
             redteam_prompts_delete_command(mock_client, {"prompt_set_uuid": "ps-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """scan-create writes to its own action context, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "job-1", "name": "scan-1", "status": "RUNNING"}
+
+        result = redteam_scan_create_command(
+            mock_client, {"name": "scan-1", "target_uuid": "t-1", "scan_type": "STATIC"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "job-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scans_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """scans-list returns the scan list under the base RedTeamScan key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"jobs": [{"uuid": "job-1", "name": "scan-1", "status": "DONE"}]}
+
+        result = redteam_scans_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScan"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """scan-get writes to its own query context, separate from create/list.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "job-1", "name": "scan-1", "status": "DONE"}
+
+        result = redteam_scan_get_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "job-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_abort_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """scan-abort writes its own context keyed by job_id and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"job_id": "job-1", "message": "Scan aborted"}
+
+        result = redteam_scan_abort_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanAbort"
+        assert result.outputs_key_field == "job_id"
+        assert result.outputs["job_id"] == "job-1"
+        # human-readable table (not a bullet list)
+        assert "|" in result.readable_output
+
+    @patch.object(Client, "http_request")
+    def test_redteam_report_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """report-get returns the report keyed by job_id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "score": 42,
+            "asr": 0.42,
+            "report_summary": "summary",
+            "severity_report": {"total_attacks": 10, "successful": 4, "failed": 6, "severity_stats": []},
+        }
+
+        result = redteam_report_get_command(mock_client, {"job_id": "job-1", "job_type": "STATIC"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamReport"
+        assert result.outputs_key_field == "job_id"
+        assert result.outputs["job_id"] == "job-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_registry_credentials_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """registry-credentials-get is a singleton (no key field) and renders a table with a truncated token.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"token": "abcdefgh12345678ZYXWVUTS", "expiry": "2026-01-01T00:00:00Z"}
+
+        result = redteam_registry_credentials_get_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamRegistryCredentials"
+        assert result.outputs_key_field is None
+        # full token preserved in context for playbook use
+        assert result.outputs["token"] == "abcdefgh12345678ZYXWVUTS"
+        # token is truncated in the human-readable table (not shown in full)
+        assert "abcdefgh12345678ZYXWVUTS" not in result.readable_output
+        assert "|" in result.readable_output
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-create writes to its own action context, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "t-1", "name": "target-1", "status": "ACTIVE"}
+
+        result = redteam_targets_create_command(mock_client, {"name": "target-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "t-1"
+
+    def test_redteam_targets_create_requires_name(self, mock_client: Client) -> None:
+        """targets-create raises when name is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required"):
+            redteam_targets_create_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-list returns the target list under the base RedTeamTarget key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"targets": [{"uuid": "t-1", "name": "target-1"}]}
+
+        result = redteam_targets_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTarget"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-get writes to its own query context, separate from create/list.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "t-1", "name": "target-1"}
+
+        result = redteam_targets_get_command(mock_client, {"uuid": "t-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-delete writes its own context keyed by uuid and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "Target deleted successfully", "status": 200}
+
+        result = redteam_targets_delete_command(mock_client, {"uuid": "t-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetDelete"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "t-1"
+        assert "|" in result.readable_output
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-update writes to its own action context, separate from list/get.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "t-1", "name": "renamed", "status": "ACTIVE"}
+
+        result = redteam_targets_update_command(mock_client, {"uuid": "t-1", "name": "renamed"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetUpdate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_probe_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-probe writes to its own action context, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "t-1", "name": "target-1", "status": "PROBED"}
+
+        result = redteam_targets_probe_command(mock_client, {"name": "target-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetProbe"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_api_keys_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """api-keys-create writes to its own action context (keyed by id) and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "api_key_id": "k-1",
+            "api_key_name": "prod-key",
+            "api_key": "SECRET-FULL-VALUE",
+            "api_key_last8": "FULLVALU",
+            "expiration": "2026-12-31",
+        }
+        args = {
+            "api_key_name": "prod-key",
+            "auth_code": "ac-1",
+            "cust_app": "app-1",
+            "rotation_time_interval": "90",
+            "rotation_time_unit": "days",
+            "created_by": "user@example.com",
+        }
+
+        result = runtime_api_keys_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ApiKeyCreate"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "k-1"
+        assert "|" in result.readable_output
+
+    @patch.object(Client, "http_request")
+    def test_runtime_api_keys_regenerate_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """api-keys-regenerate writes to its own action context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "api_key_id": "k-2",
+            "api_key_name": "prod-key",
+            "api_key": "NEW-SECRET",
+            "api_key_last8": "WSECRET1",
+            "expiration": "2027-01-01",
+        }
+        args = {"api_key_id": "k-1", "rotation_time_interval": "90", "rotation_time_unit": "days"}
+
+        result = runtime_api_keys_regenerate_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ApiKeyRegenerate"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "k-2"
+        assert "|" in result.readable_output
+
+    @patch.object(Client, "http_request")
+    def test_runtime_api_keys_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """api-keys-delete writes its own context keyed by api_key_name and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "successfully deleted apiKeyName: prod-key"}
+
+        result = runtime_api_keys_delete_command(
+            mock_client, {"api_key_name": "prod-key", "updated_by": "user@example.com"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.ApiKeyDeleted"
+        assert result.outputs_key_field == "api_key_name"
+        assert result.outputs["api_key_name"] == "prod-key"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_api_keys_delete_requires_updated_by(self, mock_client: Client) -> None:
+        """api-keys-delete raises when updated_by is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="updated_by is required"):
+            runtime_api_keys_delete_command(mock_client, {"api_key_name": "prod-key"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_customer_apps_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """customer-apps-get writes to its own query context, separate from list/update.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"customer_appId": "app-1", "app_name": "chatbot"}
+
+        result = runtime_customer_apps_get_command(mock_client, {"app_name": "chatbot"})
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerAppGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "app-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_customer_apps_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """customer-apps-update writes to its own action context, separate from list/get.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"customer_appId": "app-1", "app_name": "chatbot-renamed"}
+
+        result = runtime_customer_apps_update_command(
+            mock_client,
+            {
+                "customer_app_id": "app-1",
+                "app_name": "chatbot-renamed",
+                "cloud_provider": "AWS",
+                "environment": "production",
+            },
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerAppUpdate"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "app-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_customer_apps_consumption_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """customer-apps-consumption writes to its own context keyed by app id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "id": "app-1",
+            "name": "chatbot",
+            "token_consumption": {},
+            "session_stats": {},
+            "violation_breakdown": {},
+        }
+
+        result = runtime_customer_apps_consumption_command(
+            mock_client, {"app_id": "app-1", "app_name": "chatbot", "time_interval": "30"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerAppConsumption"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_customer_apps_violations_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """customer-apps-violations writes to its own context keyed by app_id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"violations": [], "total": 0}
+
+        result = runtime_customer_apps_violations_command(
+            mock_client, {"app_id": "app-1", "app_name": "chatbot", "time_interval": "30"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerAppViolations"
+        assert result.outputs_key_field == "app_id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_customer_apps_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """customer-apps-delete writes its own context keyed by app_name and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "deleted"}
+
+        result = runtime_customer_apps_delete_command(
+            mock_client, {"app_name": "chatbot", "updated_by": "user@example.com"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.CustomerAppDeleted"
+        assert result.outputs_key_field == "app_name"
+        assert result.outputs["app_name"] == "chatbot"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_customer_apps_delete_requires_updated_by(self, mock_client: Client) -> None:
+        """customer-apps-delete raises when updated_by is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="updated_by is required"):
+            runtime_customer_apps_delete_command(mock_client, {"app_name": "chatbot"})

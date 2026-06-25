@@ -591,18 +591,20 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
             api_key_info[field] = response.get(field)
 
     # Create readable output with WARNING about secret
-    readable_output = "## ⚠️ API Key Created - Save the Secret Now!\n\n"
-    readable_output += f"**ID:** {api_key_info.get('id')}\n\n"
-    readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
-    readable_output += f"**API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
-    readable_output += f"**Last 8 Characters:** {api_key_info.get('last8')}\n\n"
-    readable_output += f"**Expires:** {api_key_info.get('expires_at', 'N/A')}\n\n"
-    readable_output += f"**Created By:** {api_key_info.get('created_by')}\n\n"
-    readable_output += "**⚠️ IMPORTANT:** This is the ONLY time the full API key secret will be shown. "
-    readable_output += "Save it securely now. Future API calls will only show the last 8 characters."
+    readable_output = tableToMarkdown(
+        "API Key Created",
+        api_key_info,
+        headers=["id", "name", "api_key", "last8", "expires_at", "created_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += (
+        "\n\n**⚠️ IMPORTANT:** This is the ONLY time the full API key secret will be shown. "
+        "Save it securely now. Future API calls will only show the last 8 characters."
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKey",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKeyCreate",
         outputs_key_field="id",
         outputs=api_key_info,
         readable_output=readable_output,
@@ -688,21 +690,23 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
             api_key_info[field] = response.get(field)
 
     # Create readable output with WARNING about new secret and old key invalidation
-    readable_output = "## ⚠️ API Key Regenerated - Old Key Invalidated!\n\n"
-    readable_output += f"**New ID:** {api_key_info.get('id')}\n\n"
-    readable_output += f"**Name:** {api_key_info.get('name')}\n\n"
-    readable_output += f"**New API Key (Secret):** `{api_key_info.get('api_key')}`\n\n"
-    readable_output += f"**Last 8 Characters:** {api_key_info.get('last8')}\n\n"
-    readable_output += f"**New Expiration:** {api_key_info.get('expires_at', 'N/A')}\n\n"
-    readable_output += f"**Updated By:** {api_key_info.get('updated_by', 'N/A')}\n\n"
-    readable_output += "**⚠️ IMPORTANT:**\n\n"
-    readable_output += "1. The OLD API key has been INVALIDATED and will no longer work\n"
-    readable_output += "2. This is the ONLY time the NEW full API key secret will be shown\n"
-    readable_output += "3. Update all applications using the old key with this new key\n"
-    readable_output += "4. The API key ID has changed - use the new ID for future operations"
+    readable_output = tableToMarkdown(
+        "API Key Regenerated",
+        api_key_info,
+        headers=["id", "name", "api_key", "last8", "expires_at", "updated_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += (
+        "\n\n**⚠️ IMPORTANT:**\n\n"
+        "1. The OLD API key has been INVALIDATED and will no longer work\n"
+        "2. This is the ONLY time the NEW full API key secret will be shown\n"
+        "3. Update all applications using the old key with this new key\n"
+        "4. The API key ID has changed - use the new ID for future operations"
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKey",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKeyRegenerate",
         outputs_key_field="id",
         outputs=api_key_info,
         readable_output=readable_output,
@@ -746,15 +750,18 @@ def runtime_api_keys_delete_command(client: Client, args: dict[str, Any]) -> Com
     # Response: { message: "deleted" } or { message: "successfully deleted apiKeyName: <name>" }
     message = response.get("message", "API key deleted successfully") if isinstance(response, dict) else str(response)
 
-    # Create readable output with deletion confirmation
-    readable_output = "## ✅ API Key Deleted\n\n"
-    readable_output += f"**Key Name:** {api_key_name}\n\n"
-    readable_output += f"**Deleted By:** {updated_by}\n\n"
-    readable_output += f"**Status:** {message}\n\n"
-    readable_output += "**⚠️ WARNING:** This action cannot be undone. The API key has been permanently revoked."
-
     # Context output
     context_output = {"api_key_name": api_key_name, "deleted_by": updated_by, "message": message, "deleted": True}
+
+    # Create readable output with deletion confirmation
+    readable_output = tableToMarkdown(
+        "API Key Deleted",
+        context_output,
+        headers=["api_key_name", "deleted_by", "message", "deleted"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += "\n\n**⚠️ WARNING:** This action cannot be undone. The API key has been permanently revoked."
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ApiKeyDeleted",
@@ -1241,7 +1248,7 @@ def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> C
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppGet",
         outputs_key_field="id",
         outputs=app_info,
         readable_output=readable_output,
@@ -1322,7 +1329,7 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerApp",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppUpdate",
         outputs_key_field="id",
         outputs=app_info,
         readable_output=readable_output,
@@ -1601,18 +1608,21 @@ def runtime_customer_apps_delete_command(client: Client, args: dict[str, Any]) -
         else str(response)
     )
 
-    # Create readable output with deletion confirmation
-    readable_output = "## ✅ Customer Application Deleted\n\n"
-    readable_output += f"**App Name:** {app_name}\n\n"
-    readable_output += f"**Deleted By:** {updated_by}\n\n"
-    readable_output += f"**Status:** {message}\n\n"
-    readable_output += (
-        "**⚠️ WARNING:** This action cannot be undone. The customer application and all "
-        "associated API keys have been permanently deleted and revoked."
-    )
-
     # Context output
     context_output = {"app_name": app_name, "deleted_by": updated_by, "message": message, "deleted": True}
+
+    # Create readable output with deletion confirmation
+    readable_output = tableToMarkdown(
+        "Customer Application Deleted",
+        context_output,
+        headers=["app_name", "deleted_by", "message", "deleted"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += (
+        "\n\n**⚠️ WARNING:** This action cannot be undone. The customer application and all "
+        "associated API keys have been permanently deleted and revoked."
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}CustomerAppDeleted",
@@ -4040,7 +4050,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetCreate",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
@@ -4112,7 +4122,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetGet",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
@@ -4215,7 +4225,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetUpdate",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
@@ -4250,7 +4260,13 @@ def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> Comm
         "status": response.get("status", 200),
     }
 
-    readable_output = f"## Red Team Target Deleted\n\n**UUID:** {uuid}\n\n**Status:** {delete_info.get('status')}\n\n**Message:** {delete_info.get('message')}"
+    readable_output = tableToMarkdown(
+        "Red Team Target Deleted",
+        delete_info,
+        headers=["uuid", "status", "message"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetDelete",
@@ -4343,7 +4359,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetProbe",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
@@ -4393,23 +4409,20 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
         profile_info["other_details"] = response.get("other_details")
 
     # Create readable output
-    readable_output = "## Red Team Target Profile\n\n"
-    readable_output += f"**Target ID:** {profile_info.get('target_id')}\n\n"
-    readable_output += f"**Version:** {profile_info.get('target_version')}\n\n"
-    readable_output += f"**Status:** {profile_info.get('status')}\n\n"
-    readable_output += f"**Profiling Status:** {profile_info.get('profiling_status')}\n\n"
-
-    if profile_info.get("target_background"):
-        import json
-
-        readable_output += f"**Background:**\n```json\n{json.dumps(profile_info.get('target_background'), indent=2)}\n```\n\n"
-
-    if profile_info.get("additional_context"):
-        import json
-
-        readable_output += (
-            f"**Additional Context:**\n```json\n{json.dumps(profile_info.get('additional_context'), indent=2)}\n```\n\n"
-        )
+    readable_output = tableToMarkdown(
+        "Red Team Target Profile",
+        profile_info,
+        headers=[
+            "target_id",
+            "target_version",
+            "status",
+            "profiling_status",
+            "target_background",
+            "additional_context",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetProfile",
@@ -4484,21 +4497,16 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
         target_info["additional_context"] = response.get("additional_context")
 
     # Create readable output
-    readable_output = "## ✅ Target Profile Updated\n\n"
-    readable_output += f"**Target:** {target_info.get('name')} (UUID: {target_info.get('uuid')})\n\n"
-    readable_output += f"**Status:** {target_info.get('status')}\n\n"
-    readable_output += f"**Updated:** {target_info.get('updated_at')}\n\n"
-
-    if target_info.get("target_background"):
-        readable_output += f"**Background:**\n```json\n{json.dumps(target_info.get('target_background'), indent=2)}\n```\n\n"
-
-    if target_info.get("additional_context"):
-        readable_output += (
-            f"**Additional Context:**\n```json\n{json.dumps(target_info.get('additional_context'), indent=2)}\n```\n\n"
-        )
+    readable_output = tableToMarkdown(
+        "Red Team Target Profile Updated",
+        target_info,
+        headers=["uuid", "name", "status", "updated_at", "target_background", "additional_context"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTarget",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetUpdateProfile",
         outputs_key_field="uuid",
         outputs=target_info,
         readable_output=readable_output,
@@ -4532,16 +4540,20 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
     # Example: { "rate_limit": { "type": "number", "required": false }, "multi_turn": { "type": "boolean" } }
     metadata = response if isinstance(response, dict) else {}
 
-    # Create readable output showing field definitions
-    import json
+    # Create readable output showing field definitions as a table (one row per field).
+    metadata_rows = []
+    for field_name, definition in metadata.items():
+        if isinstance(definition, dict):
+            metadata_rows.append({"Field": field_name, **definition})
+        else:
+            metadata_rows.append({"Field": field_name, "Value": definition})
 
-    readable_output = "## Red Team Target Field Metadata\n\n"
-    readable_output += f"**Total Fields:** {len(metadata)}\n\n"
-
-    if metadata:
-        readable_output += "**Field Definitions:**\n```json\n"
-        readable_output += json.dumps(metadata, indent=2)
-        readable_output += "\n```\n"
+    readable_output = tableToMarkdown(
+        "Red Team Target Field Metadata",
+        metadata_rows,
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetMetadata",
@@ -4698,7 +4710,7 @@ def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> Command
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanCreate",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
@@ -4841,7 +4853,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScan",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanGet",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
@@ -4872,8 +4884,12 @@ def redteam_scan_abort_command(client: Client, args: dict[str, Any]) -> CommandR
     # Fields: job_id, message
     abort_info = {"job_id": response.get("job_id"), "message": response.get("message")}
 
-    readable_output = (
-        f"## Red Team Scan Aborted\n\n**Job ID:** {abort_info.get('job_id')}\n\n**Message:** {abort_info.get('message')}"
+    readable_output = tableToMarkdown(
+        "Red Team Scan Aborted",
+        abort_info,
+        headers=["job_id", "message"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
     )
 
     return CommandResults(
@@ -6148,16 +6164,22 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
     else:
         token_truncated = token_display
 
-    readable_output = "## Red Team Registry Credentials\n\n"
-    readable_output += f"**Token:** {token_truncated}\n\n"
-    readable_output += f"**Expiry:** {credentials_info.get('expiry', 'N/A')}\n\n"
+    # Display the truncated token in the table (full token remains in context for playbook use)
+    readable_output = tableToMarkdown(
+        "Red Team Registry Credentials",
+        {"token": token_truncated, "expiry": credentials_info.get("expiry")},
+        headers=["token", "expiry"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
     readable_output += (
-        "**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
+        "\n\n**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
     )
 
     return CommandResults(
+        # Singleton current-state credentials (expiry is a timestamp, not an identity), so no key field.
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamRegistryCredentials",
-        outputs_key_field="expiry",
+        outputs_key_field=None,
         outputs=credentials_info,
         readable_output=readable_output,
         raw_response=response,
