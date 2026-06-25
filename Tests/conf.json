@@ -5064,13 +5064,6 @@
             ]
         },
         {
-            "playbookID": "TestIPQualityScorePlaybook",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "IPQualityScore"
-            ]
-        },
-        {
             "integrations": "CrowdStrike Falcon Sandbox V2",
             "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500
@@ -6132,7 +6125,8 @@
         "Gmail Single User - Test": "CIAC-11417",
         "AWS-securityhub Test": "The creds were expired CRTX-237114",
         "Alienvault_OTX_v2 - Test": "API reliability issues",
-        "ForcepointSecurityManagementCenter_test": "No instance"
+        "ForcepointSecurityManagementCenter_test": "No instance",
+        "AnsibleTower_Test_playbook": "Instance not working"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",

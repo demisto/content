@@ -1,6 +1,7 @@
 {
   "dashboards_data": [
     {
+      "id": "fe984e4ee65345ea837a955d65a6c3f2",
       "name": "Veeam Security Activities",
       "description": "Aggregated information about security activities on Veeam Backup & Replication and Veeam ONE servers.",
       "status": "ENABLED",
