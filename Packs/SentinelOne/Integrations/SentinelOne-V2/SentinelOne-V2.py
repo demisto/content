@@ -5413,7 +5413,7 @@ def fetch_handler(client: Client, args):
         incidents += uam_incidents
     # Debug log if no incidents
     if not incidents:
-        demisto.debug(f"{fetch_type=}, {fetch_uam=} -> " f"{incidents=} {current_fetch=} {uam_current_fetch=}")
+        demisto.debug(f"[Fetch] {fetch_type=}, {fetch_uam=} -> " f"{incidents=} {current_fetch=} {uam_current_fetch=}")
 
     demisto.setLastRun({"time": current_fetch, "uam_time": uam_current_fetch})
     demisto.incidents(incidents)
