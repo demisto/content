@@ -239,4 +239,6 @@ outputs:
     The action was successful. "Skipped": The action was skipped.
     "Failed": The action failed.'
   type: String
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
