@@ -32,7 +32,7 @@ Configure an instance that uses this flow with a self-deployed Azure application
 
    *Note:* In the *Select members* section, assign the application you created earlier.
 
-2. In the integration instance settings, configure the following.
+2. In the integration instance settings, configure the following:
    1. In the **Authentication Type** field, select the *Client Credentials* option.
    2. In the **Application ID** field, enter your client/application ID.
    3. In the **Default Subscription ID** field, enter your subscription ID.
@@ -69,17 +69,17 @@ Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure
 
 ### Azure Managed Identities Authentication
 
-Note:  
-This option is relevant only if the integration is running on an Azure VM.
-Authenticate using either system assigned managed identity or user assigned managed identity.
+**Note:** This option is relevant only if the integration is running on an Azure VM. Authenticate using either a system-assigned managed identity or a user-assigned managed identity.
 
-- For authentication using system assigned managed identity:
-    1. In the **Authentication Type** drop-down list, select *Azure Managed Identities* and leave the **Azure Managed Identities Client ID** field empty.
-2. Click **Test** to validate the connection.  
+For authentication using a system-assigned managed identity:
 
-- For authentication using user assigned managed identity:
-    1. Go to the [Azure Portal](https://portal.azure.com/) > **Managed Identities**.
-    2. Select your user assigned managed identity, then copy the client ID and paste it in the **Azure Managed Identities Client ID** field in the instance configuration.
-    3. In the **Authentication Type** drop-down list, select *Azure Managed Identities*.
+1. In the **Authentication Type** drop-down list, select *Azure Managed Identities* and leave the **Azure Managed Identities Client ID** field empty.
+2. Click **Test** to validate the connection.
+
+For authentication using a user-assigned managed identity:
+
+1. Go to the Azure Portal > **Managed Identities**.
+2. Select your user-assigned managed identity, then copy the client ID and paste it in the **Azure Managed Identities Client ID** field in the instance configuration.
+3. In the **Authentication Type** drop-down list, select *Azure Managed Identities*.
 4. Click **Test** to validate the connection.
 Click **Test** to validate the connection.
