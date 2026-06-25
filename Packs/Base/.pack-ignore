@@ -73,6 +73,9 @@ ignore=BA127,BA124,RN107,BA129
 [file:EnrichURLV2.yml]
 ignore=BA127,BA124,RN107,BA129
 
+[file:SearchIndicatorRelationshipsAgentix.yml]
+ignore=SC110
+
 [known_words]
 createindicatorrelationship
 commonserverpython
