@@ -1484,7 +1484,7 @@ script:
     arguments:
     - name: last_update
       description: Retrieve entries that were modified after last_update timestamp.
-  dockerimage: demisto/pytmv1:0.10.1.7762963
+  dockerimage: demisto/pytmv1:0.11.0.10133006
   isFetchSamples: true
   isfetch: true
   ismappable: true

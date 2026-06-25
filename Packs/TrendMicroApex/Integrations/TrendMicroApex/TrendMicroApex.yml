@@ -11,28 +11,36 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Application ID
   name: application_id
   required: true
   type: 0
+  section: Connect
 - display: API Key
   name: token
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: TrendAI™ Apex One central automation to manage agents and User-Defined Suspicious Objects.
 display: TrendAI™ Apex One
 name: Trend Micro Apex
