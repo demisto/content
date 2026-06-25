@@ -5968,8 +5968,6 @@ def test_get_azure_client_credentials_none(mocker, mock_params):
         ("Authorization Code", "redirect_uri", "Application redirect URI"),
         ("Authorization Code", "auth_code", "Authorization code"),
         ("Authorization Code", "subscription_id", "Default Subscription ID"),
-        # Note: omitting managed_identities_client_id is NOT a missing case - absence resolves to the
-        # system-assigned identity sentinel (covered by test_validate_auth_params_managed_identities_system_assigned).
         ("Azure Managed Identities", "subscription_id", "Default Subscription ID"),
     ],
 )
