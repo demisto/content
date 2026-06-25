@@ -17,6 +17,23 @@ def mock_client():
     )
 
 
+def test_client_requests_uncompressed_responses(mock_client):
+    """
+    Given:
+        A configured Rapid7 Nexpose Client.
+    When:
+        Inspecting the headers the client uses for API requests.
+    Then:
+        `Accept-Encoding` is set to `identity` so the InsightVM console returns
+        uncompressed responses. Some consoles (and/or proxies in front of them)
+        return HTTP 500 when asked to gzip large `/api/3/assets` payloads, and the
+        `requests` default `Accept-Encoding: gzip, deflate` triggers that path (XSUP-71502).
+    """
+    assert mock_client._headers.get("Accept-Encoding") == "identity"
+    # The header must also reach the underlying session that performs the requests.
+    assert mock_client._session.headers.get("Accept-Encoding") == "identity"
+
+
 def load_test_data(folder: str, file_name: str) -> dict:
     """
     A function for loading and returning data from json files within the "test_data" folder.

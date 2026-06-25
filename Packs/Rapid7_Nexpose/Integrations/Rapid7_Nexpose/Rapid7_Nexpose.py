@@ -486,6 +486,11 @@ class Client(BaseClient):
         self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            # Force uncompressed responses. Some InsightVM consoles (and/or reverse proxies in
+            # front of them) return HTTP 500 when asked to gzip large `/api/3/assets` payloads.
+            # `requests` advertises `Accept-Encoding: gzip, deflate` by default, which triggers
+            # that broken path; explicitly requesting `identity` avoids it (XSUP-71502).
+            "Accept-Encoding": "identity",
         }
         self.connection_error_retries = CONNECTION_ERRORS_RETRIES
 
