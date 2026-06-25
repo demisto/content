@@ -7368,10 +7368,10 @@ script:
       description: The ID of the parent workflow.
       type: Number
     - contextPath: GitHub.WorkflowRun.CreatedAt
-      description: 'The datetime the workflow run was created. (ISO8601 format: 2020-01-01T00:11:22Z)'
+      description: 'The datetime the workflow run was created. (ISO8601 format: 2020-01-01T00:11:22Z).'
       type: Date
     - contextPath: GitHub.WorkflowRun.UpdatedAt
-      description: 'The datetime the workflow run was last updated. (ISO8601 format: 2020-01-01T00:11:22Z)'
+      description: 'The datetime the workflow run was last updated. (ISO8601 format: 2020-01-01T00:11:22Z).'
       type: Date
     - contextPath: GitHub.WorkflowRun.Url
       description: The workflow run API URL.
@@ -7409,6 +7409,154 @@ script:
       secret: true
     description: Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API. This endpoint is unauthenticated by design and does not use the configured token. Limited to 60 unauthenticated requests per hour.
     name: github-revoke-credentials
+  - arguments:
+    - description: The name of the organization. Defaults to the instance configured owner if not given.
+      name: organization
+    - auto: PREDEFINED
+      defaultValue: all
+      description: The type of repositories to list.
+      name: type
+      predefined:
+      - all
+      - public
+      - private
+      - forks
+      - sources
+      - member
+      - internal
+    - defaultValue: '1'
+      description: The page number of results to return (1-based).
+      name: page
+    - defaultValue: '50'
+      description: The number of results per page (max 100).
+      name: per_page
+    description: Lists repositories for the specified organization.
+    name: github-list-organization-repositories
+    outputs:
+    - contextPath: GitHub.Repository.id
+      description: The repository ID.
+      type: Number
+    - contextPath: GitHub.Repository.name
+      description: The repository name.
+      type: String
+    - contextPath: GitHub.Repository.full_name
+      description: The full repository name (org/repo).
+      type: String
+    - contextPath: GitHub.Repository.private
+      description: Whether the repository is private.
+      type: Boolean
+    - contextPath: GitHub.Repository.default_branch
+      description: The default branch name.
+      type: String
+    - contextPath: GitHub.Repository.updated_at
+      description: The date the repository was last updated, in ISO 8601 format (e.g., 2024-05-01T12:00:00Z).
+      type: Date
+  - arguments:
+    - description: The owner (organization or username) of the repository. Defaults to the instance configured owner if not given.
+      name: owner
+    - description: The repository name. Defaults to the instance configured repository if not given.
+      name: repository
+    - defaultValue: '1'
+      description: The page number of results to return (1-based).
+      name: page
+    - defaultValue: '50'
+      description: The number of results per page (max 100).
+      name: per_page
+    - description: The full Git ref to filter caches by (e.g., refs/heads/main).
+      name: ref
+    - description: The cache key or prefix to filter by.
+      name: key
+    - auto: PREDEFINED
+      description: The property to sort the results by.
+      name: sort
+      predefined:
+      - created_at
+      - last_accessed_at
+      - size_in_bytes
+    - auto: PREDEFINED
+      description: The sort direction (asc or desc).
+      name: direction
+      predefined:
+      - asc
+      - desc
+    description: Lists GitHub Actions caches for a repository.
+    name: github-list-actions-caches
+    outputs:
+    - contextPath: GitHub.ActionsCache.id
+      description: The cache ID.
+      type: Number
+    - contextPath: GitHub.ActionsCache.key
+      description: The cache key.
+      type: String
+    - contextPath: GitHub.ActionsCache.ref
+      description: The Git ref the cache belongs to.
+      type: String
+    - contextPath: GitHub.ActionsCache.version
+      description: The cache version.
+      type: String
+    - contextPath: GitHub.ActionsCache.size_in_bytes
+      description: The size of the cache in bytes.
+      type: Number
+    - contextPath: GitHub.ActionsCache.last_accessed_at
+      description: The date the cache was last accessed, in ISO 8601 format (e.g., 2024-05-01T12:00:00Z).
+      type: Date
+    - contextPath: GitHub.ActionsCache.created_at
+      description: The date the cache was created, in ISO 8601 format (e.g., 2024-05-01T12:00:00Z).
+      type: Date
+  - arguments:
+    - description: The owner (organization or username) of the repository. Defaults to the instance configured owner if not given.
+      name: owner
+    - description: The repository name. Defaults to the instance configured repository if not given.
+      name: repository
+    - description: The ID of the cache to delete.
+      name: cache_id
+      required: true
+    description: Deletes a GitHub Actions cache entry.
+    name: github-delete-actions-cache
+  - arguments:
+    - description: The owner (organization or username) of the repository. Defaults to the instance configured owner if not given.
+      name: owner
+    - description: The repository name. Defaults to the instance configured repository if not given.
+      name: repository
+    - defaultValue: '1'
+      description: The page number of results to return (1-based).
+      name: page
+    - defaultValue: '50'
+      description: The number of results per page (max 100).
+      name: per_page
+    - description: The exact artifact name to filter by.
+      name: name
+    description: Lists GitHub Actions artifacts for a repository.
+    name: github-list-actions-artifacts
+    outputs:
+    - contextPath: GitHub.ActionsArtifact.id
+      description: The artifact ID.
+      type: Number
+    - contextPath: GitHub.ActionsArtifact.name
+      description: The artifact name.
+      type: String
+    - contextPath: GitHub.ActionsArtifact.size_in_bytes
+      description: The size of the artifact in bytes.
+      type: Number
+    - contextPath: GitHub.ActionsArtifact.expired
+      description: Whether the artifact has expired.
+      type: Boolean
+    - contextPath: GitHub.ActionsArtifact.created_at
+      description: The date the artifact was created, in ISO 8601 format (e.g., 2024-05-01T12:00:00Z).
+      type: Date
+    - contextPath: GitHub.ActionsArtifact.expires_at
+      description: The date the artifact expires, in ISO 8601 format (e.g., 2024-05-01T12:00:00Z).
+      type: Date
+  - arguments:
+    - description: The owner (organization or username) of the repository. Defaults to the instance configured owner if not given.
+      name: owner
+    - description: The repository name. Defaults to the instance configured repository if not given.
+      name: repository
+    - description: The ID of the artifact to delete.
+      name: artifact_id
+      required: true
+    description: Deletes a GitHub Actions artifact.
+    name: github-delete-actions-artifact
   dockerimage: demisto/auth-utils:1.0.0.7837600
   isfetch: true
   runonce: false

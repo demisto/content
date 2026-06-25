@@ -2221,6 +2221,123 @@ def github_revoke_credentials_command() -> None:
         )
 
 
+def github_list_organization_repositories_command() -> None:
+    args = demisto.args()
+    organization = args.get("organization") or USER
+    repo_type = args.get("type", "all")
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+
+    url_suffix = f"/orgs/{organization}/repos"
+    params: dict[str, Any] = {"type": repo_type, "per_page": per_page, "page": page}
+    results = http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.Repository",
+            outputs_key_field="id",
+            outputs=results,
+            readable_output=tableToMarkdown(
+                "Organization Repositories",
+                results,
+                headers=["id", "name", "full_name", "private", "default_branch", "updated_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_list_actions_caches_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+    ref = args.get("ref")
+    key = args.get("key")
+    sort = args.get("sort")
+    direction = args.get("direction")
+
+    url_suffix = f"/repos/{owner}/{repository}/actions/caches"
+    params: dict[str, Any] = {"per_page": per_page, "page": page}
+    if ref:
+        params["ref"] = ref
+    if key:
+        params["key"] = key
+    if sort:
+        params["sort"] = sort
+    if direction:
+        params["direction"] = direction
+
+    response = http_request(method="GET", url_suffix=url_suffix, params=params)
+    caches = response.get("actions_caches", [])
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.ActionsCache",
+            outputs_key_field="id",
+            outputs=caches,
+            readable_output=tableToMarkdown(
+                f"Actions Caches for {owner}/{repository}",
+                caches,
+                headers=["id", "key", "ref", "size_in_bytes", "last_accessed_at", "created_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_delete_actions_cache_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    cache_id = args.get("cache_id")
+    url_suffix = f"/repos/{owner}/{repository}/actions/caches/{cache_id}"
+    http_request("DELETE", url_suffix=url_suffix)
+    return_results(f"Actions cache {cache_id} in {owner}/{repository} was deleted successfully.")
+
+
+def github_list_actions_artifacts_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+    name = args.get("name")
+
+    url_suffix = f"/repos/{owner}/{repository}/actions/artifacts"
+    params: dict[str, Any] = {"per_page": per_page, "page": page}
+    if name:
+        params["name"] = name
+
+    response = http_request(method="GET", url_suffix=url_suffix, params=params)
+    artifacts = response.get("artifacts", [])
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.ActionsArtifact",
+            outputs_key_field="id",
+            outputs=artifacts,
+            readable_output=tableToMarkdown(
+                f"Actions Artifacts for {owner}/{repository}",
+                artifacts,
+                headers=["id", "name", "size_in_bytes", "expired", "created_at", "expires_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_delete_actions_artifact_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    artifact_id = args.get("artifact_id")
+    url_suffix = f"/repos/{owner}/{repository}/actions/artifacts/{artifact_id}"
+    http_request("DELETE", url_suffix=url_suffix)
+    return_results(f"Actions artifact {artifact_id} in {owner}/{repository} was deleted successfully.")
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 COMMANDS = {
@@ -2320,6 +2437,11 @@ COMMANDS = {
     "github-get-workflow-run": github_get_workflow_run_command,
     "github-delete-file": github_delete_file_command,
     "github-revoke-credentials": github_revoke_credentials_command,
+    "github-list-organization-repositories": github_list_organization_repositories_command,
+    "github-list-actions-caches": github_list_actions_caches_command,
+    "github-delete-actions-cache": github_delete_actions_cache_command,
+    "github-list-actions-artifacts": github_list_actions_artifacts_command,
+    "github-delete-actions-artifact": github_delete_actions_artifact_command,
 }
 
 
