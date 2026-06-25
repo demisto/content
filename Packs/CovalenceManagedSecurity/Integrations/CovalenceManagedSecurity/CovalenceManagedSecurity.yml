@@ -40,6 +40,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
@@ -47,6 +50,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+    - agentix
+    - xsiam
 - defaultvalue: https://HOST:8443
   additionalinfo: Broker Server URL (Optional).  Required to use Broker commands.
   display: Broker Server URL

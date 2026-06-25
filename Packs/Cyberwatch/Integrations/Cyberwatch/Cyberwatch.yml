@@ -51,12 +51,18 @@ configuration:
   section: Collect
   additionalinfo: |
     Formats acceptés : 3 days, 1 week, 2 months, 2025-05-20T00:00:00Z.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Limit
   name: max_fetch
   defaultvalue: 50
   type: 0
   section: Collect
   additionalinfo: Maximum d’incidents que l’on renverra par fetch (≤ 200 recommandé).
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Asset filters (JSON)
   name: asset_filters
   type: 12       # long text

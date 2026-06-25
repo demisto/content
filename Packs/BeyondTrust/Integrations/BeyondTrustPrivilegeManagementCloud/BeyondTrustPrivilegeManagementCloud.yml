@@ -58,6 +58,8 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Maximum number of events to fetch per fetch cycle.
+  supportedModules:
+  - xsiam
 - display: First fetch timestamp
   name: first_fetch
   defaultvalue: "1 minute"
@@ -65,6 +67,8 @@ configuration:
   required: false
   section: Collect
   additionalinfo: "The time from which to start fetching events on first run. Defaults to 1 minute ago to fetch only new events. Use values like '3 days', '1 week' for historical data if needed."
+  supportedModules:
+  - xsiam
 script:
   script: '-'
   type: python

@@ -61,6 +61,9 @@ configuration:
   section: Collect
   defaultvalue: 1 hour
   additionalinfo: The time range for the first fetch. The default is 1 hour.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: SaaS Application
   name: saas_apps
   section: Collect
@@ -120,6 +123,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: The maximum number of incidents to retrieve per fetch.
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: Collect restore requests
   name: collect_restore_requests

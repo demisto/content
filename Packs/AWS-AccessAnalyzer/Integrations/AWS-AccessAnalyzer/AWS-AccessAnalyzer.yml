@@ -86,12 +86,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents to fetch every time.
   defaultvalue: '25'
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Analyzer ARN
   name: analyzerArn
   additionalinfo: The ARN to fetch findings for.

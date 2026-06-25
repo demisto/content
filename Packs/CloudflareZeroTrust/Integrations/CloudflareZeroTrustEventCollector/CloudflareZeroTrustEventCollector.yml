@@ -50,6 +50,8 @@ configuration:
   - User Audit Logs
   - Access Authentication Logs
   required: true
+  supportedModules:
+  - xsiam
 - name: max_fetch_account_audit_logs
   defaultvalue: 5000
   section: Collect

@@ -127,6 +127,9 @@ configuration:
   required: false
   additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Only fetch starred incidents
   name: starred
   type: 8
@@ -147,6 +150,9 @@ configuration:
   section: Collect
   required: false
   defaultvalue: 3 days
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Sync Incident Owners
   name: sync_owners
   type: 8

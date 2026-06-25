@@ -26,6 +26,8 @@ configuration:
   type: 0
   defaultvalue: 50000
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
   type: 0
@@ -50,6 +52,8 @@ configuration:
   - Alerts
   - Devices
   - Activities
+  supportedModules:
+  - xsiam
 - section: Collect
   advanced: true
   display: Events Fetch Interval

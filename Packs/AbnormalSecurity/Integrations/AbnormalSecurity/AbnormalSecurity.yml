@@ -40,6 +40,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Threats
   name: fetch_threats
   type: 8
@@ -62,6 +65,9 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

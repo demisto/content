@@ -47,6 +47,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 - additionalinfo: Time to start fetching the first incidents.
   defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -54,6 +56,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 description: Use this integration to fetch model breaches from Darktrace as events in XSIAM.
 display: Darktrace Event Collector
 name: Darktrace Event Collector

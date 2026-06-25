@@ -47,6 +47,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -90,6 +93,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Tags
   name: feedTags
   type: 0

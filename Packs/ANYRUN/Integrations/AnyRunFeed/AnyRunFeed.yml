@@ -106,6 +106,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  supportedModules:
+  - agentix
+  - xsiam
 description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains.
 display: ANY.RUN TI Feed
 name: ANY.RUN TI Feed

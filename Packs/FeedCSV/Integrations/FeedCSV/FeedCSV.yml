@@ -47,6 +47,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   display: ""
   name: feedExpirationPolicy
@@ -200,6 +203,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetch indicators from a CSV feed.
 display: CSV Feed
 name: CSVFeed

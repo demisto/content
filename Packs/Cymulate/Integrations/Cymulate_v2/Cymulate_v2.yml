@@ -51,6 +51,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximal number of incidents to fetch. Max value can be no grater than 35.
   defaultvalue: '35'
   display: Max Fetch
@@ -58,6 +61,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

@@ -33,6 +33,8 @@ configuration:
   type: 0
   defaultvalue: "10000"
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Events to fetch
   name: event_types
   type: 16
@@ -43,6 +45,8 @@ configuration:
   - Cybersecurity events
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 display: Druva Event Collector
 name: DruvaEventCollector

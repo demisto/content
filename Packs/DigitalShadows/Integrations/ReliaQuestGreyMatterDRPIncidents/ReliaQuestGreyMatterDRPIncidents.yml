@@ -48,6 +48,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
   defaultvalue: all
   display: Risk Types
@@ -125,6 +128,9 @@ configuration:
   required: true
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: This controls how often the integration will perform a fetch_incidents command
   display: Incidents Fetch Interval
   defaultvalue: "1"

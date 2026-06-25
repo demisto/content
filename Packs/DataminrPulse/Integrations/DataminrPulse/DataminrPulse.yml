@@ -57,6 +57,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Indicates whether to allow connections without verifying the SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
@@ -94,6 +97,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.
 display: Dataminr Pulse
 name: Dataminr Pulse

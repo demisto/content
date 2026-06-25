@@ -37,6 +37,8 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure

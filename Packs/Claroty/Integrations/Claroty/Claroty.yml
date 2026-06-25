@@ -44,12 +44,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max per page
   name: max_fetch
   type: 0
   section: Collect
   defaultvalue: '10'
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Minimal severity to fetch by
   name: severity
   type: 15

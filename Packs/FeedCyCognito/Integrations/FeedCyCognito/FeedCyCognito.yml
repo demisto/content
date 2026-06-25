@@ -63,6 +63,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of assets to fetch every time. The maximum value is '1000'.
   defaultvalue: "50"
   display: Max Fetch
@@ -70,6 +73,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values.
   display: Organizations
   name: organizations
@@ -196,6 +202,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When selected, all the incoming indicators will map to a CyCognito Asset indicator type.
   display: Default Indicator Mapping
   name: default_mapping

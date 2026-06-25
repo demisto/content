@@ -59,6 +59,9 @@ configuration:
   additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
   defaultvalue: '300'
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

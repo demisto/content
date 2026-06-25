@@ -69,6 +69,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of incidents to fetch every time. The maximum value is '1000'.
   defaultvalue: '50'
   display: Max Fetch
@@ -76,6 +79,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The type of issue to fetch. By default, all types of issues will be fetched. Multiple selection is supported.
   display: Issue Type
   name: issue_type
