@@ -9779,6 +9779,12 @@ class TestAssetsDeviceHandler:
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
+        # The error path logs via demisto.error(), which writes to stdout under demistomock and
+        # would trip the conftest no-stdout/stderr guard at teardown. Patch the demisto reference
+        # used inside the integration module so the expected error log from this deliberate
+        # failure path is captured rather than leaked to stdout.
+        mocker.patch("CrowdStrikeFalcon.demisto.error")
+
         mock_client = mocker.AsyncMock()
         mock_client._request.side_effect = Exception("Request failed: real server error")
 

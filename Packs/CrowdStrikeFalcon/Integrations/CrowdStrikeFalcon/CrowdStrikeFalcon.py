@@ -91,7 +91,6 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
-MAX_SPOTLIGHT_ASSET_ENRICHMENT_BATCH = 4000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
@@ -4028,25 +4027,20 @@ class AssetsDeviceHandler:
                     "warning",
                 )
 
+            # Mark the entire batch processed (including invalid IDs) regardless of whether any
+            # devices resolved, so permanently-invalid IDs are not retried indefinitely on every fetch.
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
+
             if not devices:
                 log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
-                # Mark the batch processed even when nothing resolved, so permanently-invalid IDs
-                # are not retried indefinitely on every fetch.
-                self.processed_aids.update(aid_batch)
-                self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
                 return
 
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Update state and send it to XSIAM after finish.
-            # Mark the entire batch processed (including invalid IDs) to avoid re-sending
-            # permanently-invalid IDs to the API on subsequent fetches.
-            self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
-
-            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            # 2. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
                 data=devices,
                 product=SPOTLIGHT_ASSETS_PRODUCT,
@@ -5019,7 +5013,7 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
         processed_aids=set(),  # Start fresh for this fetch
-        batch_limit=MAX_SPOTLIGHT_ASSET_ENRICHMENT_BATCH,
+        batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
     )
 
     # Create parallel tasks for each severity that needs fetching
