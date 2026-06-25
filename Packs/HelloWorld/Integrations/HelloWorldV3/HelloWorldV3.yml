@@ -21,6 +21,26 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
+- name: ip
+  display: IP Threshold
+  additionalinfo: The minimum score for an IP to be considered malicious (0-100).
+  defaultvalue: "65"
+  type: 0
+  required: false
+- name: integrationReliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 description: A dummy Hello World v3 integration used to demonstrate building Cortex integrations.
 display: Hello World v3
 name: HelloWorldV3
@@ -83,6 +103,18 @@ script:
     - contextPath: HelloWorldV3.Alert.status
       description: The status of the alert.
       type: String
+  - name: ip
+    description: Returns IP reputation information for the given IP addresses.
+    arguments:
+    - name: ip
+      description: A comma-separated list of IP addresses to check.
+      required: true
+      isArray: true
+      default: true
+    - name: threshold
+      description: If the IP reputation score is greater than or equal to this threshold, the IP is considered malicious. If not specified, the default integration threshold is used.
+      required: false
+    outputs: []
   dockerimage: demisto/fastapi:0.125.0.9094740
   runonce: false
   script: '-'

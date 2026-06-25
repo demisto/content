@@ -17,6 +17,7 @@ from BaseContentApiModule import *  # noqa: F401
 ''' CONSTANTS '''
 
 default_limit = 10
+DEFAULT_IP_THRESHOLD = 65
 
 
 ''' AUTHENTICATION HANDLER '''
@@ -40,7 +41,7 @@ class HelloWorldV3AuthHandler(APIKeyAuthHandler):
 
 ''' CLIENT CLASS '''
 
-PARAMS = demisto.params()
+
 
 class HelloWorldV3Client(ContentClient):
     """HelloWorld v3 client that extends `ContentClient` for API interactions.
@@ -68,13 +69,13 @@ class HelloWorldV3Client(ContentClient):
             diagnostic_mode=is_debug_mode(),
         )
 
-    def SayHello(self, name: str) -> dict[str, Any]:
+    def say_hello(self, name: str) -> dict[str, Any]:
         """Return a greeting payload for the given name."""
         # In a real implementation:
         # return self.get(url_suffix="/api/v1/hello", params={"name": name}, resp_type="json")
         return {"name": name, "message": f"Hello {name}"}
 
-    def list_alerts(self, limit: int, SEVERITY: str | None) -> list[dict[str, Any]]:
+    def list_alerts(self, limit: int, severity: str | None) -> list[dict[str, Any]]:
         """Return a mocked list of alerts, optionally filtered by severity."""
         # In a real implementation:
         # return self.get(url_suffix="/api/v1/alerts", params=assign_params(limit=limit, severity=severity),
@@ -84,7 +85,7 @@ class HelloWorldV3Client(ContentClient):
             for i in range(1, limit + 1)
         ]
         if SEVERITY:
-            alerts = [alert for alert in alerts if alert["severity"] == SEVERITY]
+            alerts = [alert for alert in alerts if alert["severity"] == severity]
         return alerts
 
     def get_alert(self, alert_id: int) -> dict[str, Any]:
@@ -98,45 +99,36 @@ class HelloWorldV3Client(ContentClient):
             "status": "open",
         }
 
+    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
+        """Return a mocked reputation payload for the given IP address."""
+        # In a real implementation:
+        # return self.get(url_suffix=f"/api/v1/ip/{ip}", resp_type="json")
+        # The mocked score is derived deterministically from the IP so the same
+        # input always yields the same reputation, which keeps demos predictable.
+        score = sum(int(octet) for octet in ip.split(".") if octet.isdigit()) % 100
+        return {
+            "ip": ip,
+            "score": score,
+            "asn": "AS12345",
+            "as_owner": "Dummy AS Owner",
+            "country": "US",
+        }
+
 
 ''' HELPER FUNCTIONS '''
 
 OUTPUTS_PREFIX = "HelloWorldV3"
 
+MOCK_ALERT = (
+    '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
+)
 
-def AlertToMD(alerts: list[dict[str, Any]]) -> str:
-    """Convert a list of alert dictionaries into a Markdown-formatted table.
-
-    Each dictionary represents a single row in the table.
-
-    Args:
-        alerts (list[dict[str, Any]]): The alert rows to render.
-
-    Returns:
-        str: A Markdown table string representing the alert data.
-    """
-    if not alerts:
-        return ""
-
-    headers: list[str] = []
-    for alert in alerts:
-        for key in alert:
-            if key not in headers:
-                headers.append(key)
-
-    header_row = "| " + " | ".join(headers) + " |"
-    separator_row = "| " + " | ".join("---" for _ in headers) + " |"
-    value_rows = [
-        "| " + " | ".join(str(alert.get(header, "")) for header in headers) + " |"
-        for alert in alerts
-    ]
-    return "\n".join([header_row, separator_row, *value_rows])
-
-
-def test_module(Client: HelloWorldV3Client) -> str:
+def test_module(client: HelloWorldV3Client) -> str:
     """Validate connectivity by performing a simple client call."""
     try:
-        Client.SayHello("Test")
+        url = demisto.params().get("url")
+        demisto.info(f"Connecting to {url}")
+        client.say_hello("Test")
     except ContentClientAuthenticationError:
         return "AuthenticationError: make sure the API Key is correctly set."
     return "ok"
@@ -154,7 +146,8 @@ def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
         outputs_key_field="name",
         outputs=result,
         readable_output=result["message"],
-        ignore_auto_extract=False
+        ignore_auto_extract=False,
+        raw_response=result,
     )
 
 
@@ -167,13 +160,17 @@ def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Com
         outputs_prefix=f"{OUTPUTS_PREFIX}.Alert",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=AlertToMD(alerts),
+        readable_output=tableToMarkdown("alerts", alerts),
+        raw_response=alerts,
     )
 
 
 def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """Retrieve a single mocked alert by ID."""
     alert_id = arg_to_number(args.get("alert_id"))
+    if alert_id==0:
+        return_error(f"Failed to execute command")
+        demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
     if alert_id is None:
         raise ValueError("alert_id is a required argument.")
     alert = client.get_alert(alert_id)
@@ -181,8 +178,78 @@ def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f"{OUTPUTS_PREFIX}.Alert",
         outputs_key_field="id",
         outputs=alert,
-        readable_output=AlertToMD( [alert]),
+        readable_output=tableToMarkdown("alert", alert),
+        raw_response=alert,
     )
+
+
+def ip_reputation_command(
+    client: HelloWorldV3Client,
+    args: dict[str, Any],
+    threshold: int,
+    reliability: DBotScoreReliability | str,
+) -> list[CommandResults]:
+    """Run the reputation (enrichment) command for one or more IP addresses.
+
+    Args:
+        client (HelloWorldV3Client): The client used to query reputation data.
+        args (dict[str, Any]): The command arguments. Supports a comma-separated
+            ``ip`` argument and an optional ``threshold`` override.
+        threshold (int): The default score above which an IP is considered
+            malicious.
+        reliability (DBotScoreReliability | str): The reliability of the source
+            providing the intelligence data.
+
+    Returns:
+        list[CommandResults]: One CommandResults entry per IP address.
+    """
+    ips = argToList(args.get("ip"))
+    if not ips:
+        raise ValueError("ip is a required argument.")
+    threshold = arg_to_number(args.get("threshold")) or threshold
+
+    command_results: list[CommandResults] = []
+    for ip in ips:
+        ip_data = client.get_ip_reputation(ip)
+        score = ip_data.get("score", 0)
+
+        reputation = Common.DBotScore.NONE
+        if score == 0:
+            reputation = Common.DBotScore.GOOD
+        elif score >= threshold:
+            reputation = Common.DBotScore.BAD
+        elif score >= threshold / 2:
+            reputation = Common.DBotScore.SUSPICIOUS
+
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name="HelloWorldV3",
+            score=reputation,
+            malicious_description=f"Score above {threshold}" if reputation == Common.DBotScore.BAD else None,
+            reliability=reliability,
+        )
+
+        ip_standard_context = Common.IP(
+            ip=ip,
+            asn=ip_data.get("asn"),
+            geo_country=ip_data.get("country"),
+            dbot_score=dbot_score,
+        )
+
+        command_results.append(
+            CommandResults(
+                outputs_prefix=f"{OUTPUTS_PREFIX}.IP",
+                outputs_key_field="ip",
+                outputs=ip_data,
+                readable_output=tableToMarkdown(f"IP {ip} reputation", ip_data),
+                indicator=ip_standard_context,
+                raw_response=ip_data,
+                ignore_auto_extract=True
+            )
+        )
+
+    return command_results
 
 
 ''' MAIN FUNCTION '''
@@ -199,31 +266,37 @@ def main() -> None:
     api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    ip_threshold = arg_to_number(params.get("ip_threshold")) or DEFAULT_IP_THRESHOLD
+    reliability = params.get("integrationReliability") or DBotScoreReliability.C
 
     demisto.debug(f"Command being called is {command}")
-    try:
-        client = HelloWorldV3Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            api_key=api_key,
-        )
+    # try:
+    client = HelloWorldV3Client(
+        base_url=base_url,
+        verify=verify_certificate,
+        proxy=proxy,
+        api_key=api_key,
+    )
 
-        commands = {
-            "helloworldv3-say-hello": say_hello_command,
-            "helloworldv3-alert-list": list_alerts_command,
-            "helloworldv3-alert-get": get_alert_command,
-        }
+    commands = {
+        "helloworldv3-say-hello": say_hello_command,
+        "helloworldv3-alert-list": list_alerts_command,
+        "helloworldv3-alert-get": get_alert_command,
+    }
 
-        if command == "test-module":
-            return_results(test_module(client))
-        elif command in commands:
-            return_results(commands[command](client, **args))
-        else:
-            raise NotImplementedError(f"Command {command} is not implemented.")
-
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    if command == "test-module":
+        return_results(test_module(client))
+    elif command == "ip":
+        return_results(ip_reputation_command(client, args, ip_threshold, reliability))
+    elif command in commands:
+        return_results(commands[command](client, args))
+    else:
+        raise NotImplementedError(f"Command {command} is not implemented.")
+    #
+    # except Exception as e:
+    #     demisto.error(traceback.format_exc())
+    #     return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    #     demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
 
 
 ''' ENTRY POINT '''
