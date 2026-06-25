@@ -34,6 +34,7 @@ from AbnormalSecurity import (
     _is_skippable_error,
     get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command,
     fetch_incidents,
+    FetchTimeBudgetExceeded,
     ISO_8601_FORMAT,
 )
 from CommonServerPython import DemistoException
@@ -63,6 +64,16 @@ def util_load_json(path):
 def util_load_response(path):
     with open(path, encoding="utf-8") as f:
         return MockResponse(f.read(), 200)
+
+
+def _expected_gte(cursor_iso, polling_lag=timedelta(0)):
+    """Mirror fetch_incidents' window-start computation so cursor assertions are timezone-independent.
+
+    The integration parses the stored ISO cursor and applies ``.astimezone(UTC)``; on a non-UTC
+    test host this shifts the value, so tests must derive the expected timestamp the same way.
+    """
+    start = datetime.fromisoformat(cursor_iso[:-1]).astimezone(UTC) + timedelta(milliseconds=1) - polling_lag
+    return start.strftime(ISO_8601_FORMAT)
 
 
 def mock_client(mocker, response=None, side_effect=None, throw_error=False):
@@ -864,7 +875,8 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     # Verify the filter contains lastReportedTime
     assert "lastReportedTime gte" in campaigns_call_kwargs["filter_"]
     assert "lastReportedTime lte" in campaigns_call_kwargs["filter_"]
-    assert campaigns_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids)
+    # Each type now gets the full budget for page sizing (cursors are per-type, not a shared quota).
+    assert campaigns_call_kwargs["max_incidents_to_fetch"] == max_incidents
 
     # 3. Verify cases pagination (this is called last in the code)
     get_paginated_cases_spy.assert_called_once()
@@ -872,7 +884,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     # Verify the filter contains lastModifiedTime
     assert "lastModifiedTime gte" in cases_call_kwargs["filter_"]
     assert "lastModifiedTime lte" in cases_call_kwargs["filter_"]
-    assert cases_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids) - len(campaign_ids)
+    assert cases_call_kwargs["max_incidents_to_fetch"] == max_incidents
 
     # Verify we got the expected number of incidents
     expected_incident_count = len(threat_ids) + len(case_ids) + len(campaign_ids)
@@ -887,9 +899,150 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     assert len(case_incidents) == len(case_ids)
     assert len(campaign_incidents) == len(campaign_ids)
 
-    # Verify next_run contains updated last_fetch timestamp
-    assert next_run.get("last_fetch", None) is not None
-    assert next_run.get("last_fetch") > last_run.get("last_fetch")
+    # Verify each type advanced its own cursor (separation of concern).
+    for cursor_key in ("last_fetch_threats", "last_fetch_abuse_campaigns", "last_fetch_account_takeover_cases"):
+        assert next_run.get(cursor_key) is not None
+        assert next_run.get(cursor_key) > last_run.get("last_fetch")
+
+
+def test_fetch_incidents_isolates_failing_type(mocker):
+    """
+    A failure in one data type must not block the others.
+
+    threats list raises a non-skippable error; abuse campaigns and cases succeed. The threats
+    cursor must NOT advance, the other two must advance, and only their incidents are emitted.
+    """
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    mocker.patch.object(client, "get_paginated_threats_list", side_effect=DemistoException("Error in API call [500]"))
+    mocker.patch.object(client, "get_paginated_abusecampaigns_list", return_value={"campaigns": [{"campaignId": "c-1"}]})
+    mocker.patch.object(
+        client, "get_paginated_cases_list", return_value={"cases": [{"caseId": "case-1", "description": "d"}]}
+    )
+    mocker.patch.object(
+        client, "get_details_of_an_abuse_mailbox_campaign_request", return_value={"firstReported": "2023-09-18T10:00:00Z"}
+    )
+    mocker.patch.object(
+        client,
+        "get_details_of_an_abnormal_case_request",
+        return_value={"firstObserved": "2023-09-18T10:00:00Z", "genai_summary": "s"},
+    )
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time="2023-09-17T14:43:09Z",
+        fetch_threats=True,
+        fetch_abuse_campaigns=True,
+        fetch_account_takeover_cases=True,
+    )
+
+    # Failing type's cursor is left untouched (absent); the others advanced to "now".
+    assert "last_fetch_threats" not in next_run
+    assert next_run["last_fetch_abuse_campaigns"] == "2023-09-18T14:43:09Z"
+    assert next_run["last_fetch_account_takeover_cases"] == "2023-09-18T14:43:09Z"
+
+    # Only the successful types produced incidents.
+    assert sorted(i["name"] for i in incidents) == ["Abuse Campaign", "Account Takeover Case"]
+
+
+def test_fetch_incidents_time_budget_stops_run(mocker):
+    """
+    When the time budget is exhausted mid-fetch, the run stops immediately: the in-flight type's
+    cursor is not advanced and no later type is attempted.
+    """
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+
+    mocker.patch.object(client, "get_paginated_threats_list", side_effect=FetchTimeBudgetExceeded("boom"))
+    cases_spy = mocker.patch.object(client, "get_paginated_cases_list", return_value={"cases": []})
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
+        first_fetch_time="2023-09-17T14:43:09Z",
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=True,
+    )
+
+    assert incidents == []
+    assert "last_fetch_threats" not in next_run
+    # The run broke out of the loop, so cases (enabled, later in order) was never attempted.
+    assert "last_fetch_account_takeover_cases" not in next_run
+    cases_spy.assert_not_called()
+
+
+def test_fetch_incidents_no_time_budget_skips_all(mocker):
+    """A zero time budget means no type is attempted and no cursor advances."""
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+    threats_spy = mocker.patch.object(client, "get_paginated_threats_list", return_value={"threats": []})
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
+        first_fetch_time="2023-09-17T14:43:09Z",
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+        time_budget_seconds=0,
+    )
+
+    assert incidents == []
+    assert "last_fetch_threats" not in next_run
+    threats_spy.assert_not_called()
+
+
+def test_fetch_incidents_migrates_legacy_cursor(mocker):
+    """
+    First run after upgrade: a type with no per-type cursor falls back to the legacy single
+    cursor for its window, and writes its own per-type cursor on success.
+    """
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+    threats_spy = mocker.patch.object(client, "get_paginated_threats_list", return_value={"threats": []})
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    next_run, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
+        first_fetch_time="2020-01-01T00:00:00Z",
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+    )
+
+    # Window start derived from the legacy cursor, not first_fetch_time.
+    assert f"latestTimeRemediated gte {_expected_gte('2023-09-17T14:43:09Z')}" in threats_spy.call_args.kwargs["filter_"]
+    # Legacy key preserved for the still-unmigrated types; new per-type key written.
+    assert next_run["last_fetch"] == "2023-09-17T14:43:09Z"
+    assert next_run["last_fetch_threats"] == "2023-09-18T14:43:09Z"
+
+
+def test_fetch_incidents_uses_independent_per_type_cursors(mocker):
+    """Each type reads its own cursor independently, so a lagging type does not pull the others back."""
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+    threats_spy = mocker.patch.object(client, "get_paginated_threats_list", return_value={"threats": []})
+    cases_spy = mocker.patch.object(client, "get_paginated_cases_list", return_value={"cases": []})
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
+
+    last_run = {
+        "last_fetch_threats": "2023-09-10T00:00:00Z",
+        "last_fetch_account_takeover_cases": "2023-09-15T00:00:00Z",
+    }
+    fetch_incidents(
+        client=client,
+        last_run=last_run,
+        first_fetch_time="2020-01-01T00:00:00Z",
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=True,
+    )
+
+    assert f"latestTimeRemediated gte {_expected_gte('2023-09-10T00:00:00Z')}" in threats_spy.call_args.kwargs["filter_"]
+    assert f"lastModifiedTime gte {_expected_gte('2023-09-15T00:00:00Z')}" in cases_spy.call_args.kwargs["filter_"]
 
 
 def test_get_paginated_threats_list(mocker):

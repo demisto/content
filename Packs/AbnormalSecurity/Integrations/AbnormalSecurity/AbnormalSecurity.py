@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -13,6 +14,20 @@ DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 FETCH_LIMIT = 200
 MAX_PAGE_SIZE = 100
+
+# Wall-clock budget for a single fetch-incidents run. Kept comfortably under the
+# XSOAR default Docker script timeout (300s) so the run can advance cursors and
+# emit incidents before being killed. Can be promoted to an integration parameter.
+FETCH_TIME_BUDGET_SECONDS = 240
+
+# Per-type cursor keys persisted in last_run. Each data type tracks its own
+# progress so that a lagging or failing type does not block the others.
+LAST_FETCH_THREATS = "last_fetch_threats"
+LAST_FETCH_ABUSE_CAMPAIGNS = "last_fetch_abuse_campaigns"
+LAST_FETCH_ATO_CASES = "last_fetch_account_takeover_cases"
+# Legacy single-cursor key, used as a migration fallback for instances that ran
+# the previous (shared-cursor) version.
+LEGACY_LAST_FETCH = "last_fetch"
 
 
 XSOAR_SEVERITY_BY_AMP_SEVERITY = {
@@ -65,8 +80,23 @@ def get_current_datetime() -> datetime:
     return datetime.utcnow().astimezone(timezone.utc)
 
 
+def check_time_budget(deadline: float | None, context: str) -> None:
+    """Raise FetchTimeBudgetExceeded if the per-run wall-clock budget is exhausted.
+
+    Args:
+        deadline: Monotonic deadline (seconds) after which the run must stop, or None to disable.
+        context: Human-readable description of the work in progress, for logging.
+    """
+    if deadline is not None and time.monotonic() >= deadline:
+        raise FetchTimeBudgetExceeded(f"Time budget exhausted while fetching {context}")
+
+
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
+
+
+class FetchTimeBudgetExceeded(Exception):
+    """Raised when the per-run wall-clock time budget is exhausted mid-fetch."""
 
 
 class Client(BaseClient):
@@ -183,59 +213,53 @@ class Client(BaseClient):
         max_iterations = (max_incidents_to_fetch // page_size) + 1
         return page_size, max_iterations
 
-    def get_paginated_cases_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_cases_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT, deadline=None):
         cases_response: dict[str, list[dict]] = {"cases": []}
         if max_incidents_to_fetch < 1:
             return cases_response
 
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+        page_number = 1
+        page_size, _ = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
 
         while page_number is not None:
+            check_time_budget(deadline, "cases list")
             response = self.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
             cases_response["cases"].extend(response.get("cases", []))
             page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
         return cases_response
 
-    def get_paginated_threats_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_threats_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT, deadline=None):
         threats_response: dict[str, list[dict]] = {"threats": []}
         if max_incidents_to_fetch < 1:
             return threats_response
 
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+        page_number = 1
+        page_size, _ = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
 
         while page_number is not None:
+            check_time_budget(deadline, "threats list")
             response = self.get_a_list_of_threats_request(filter_=filter_, page_size=page_size, page_number=page_number)
             threats_response["threats"].extend(response.get("threats", []))
             page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
         return threats_response
 
-    def get_paginated_abusecampaigns_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
+    def get_paginated_abusecampaigns_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT, deadline=None):
         campaigns_response: dict[str, list[dict]] = {"campaigns": []}
         if max_incidents_to_fetch < 1:
             return campaigns_response
 
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
+        page_number = 1
+        page_size, _ = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
 
         while page_number is not None:
+            check_time_budget(deadline, "abuse campaigns list")
             response = self.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=filter_, page_size=page_size, page_number=page_number
             )
             campaigns_response["campaigns"].extend(response.get("campaigns", []))
             page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
         return campaigns_response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
@@ -1306,14 +1330,16 @@ def download_message_eml_command(client, args):
     return results
 
 
-def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime):
+def generate_threat_incidents(client, threats, max_page_number, start_datetime, end_datetime, deadline=None):
     incidents = []
     for threat in threats:
+        check_time_budget(deadline, "threats")
         page_number = 1
         all_messages, all_filtered_messages = [], []
         threat_details = None
         try:
             while page_number is not None:
+                check_time_budget(deadline, "threat messages")
                 threat_details = client.get_details_of_a_threat_request(threat["threatId"], page_number=page_number)
                 for message in threat_details["messages"]:
                     all_messages.append(message)
@@ -1351,9 +1377,10 @@ def generate_threat_incidents(client, threats, max_page_number, start_datetime, 
     return incidents
 
 
-def generate_abuse_campaign_incidents(client, campaigns):
+def generate_abuse_campaign_incidents(client, campaigns, deadline=None):
     incidents = []
     for campaign in campaigns:
+        check_time_budget(deadline, "abuse campaigns")
         try:
             campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
         except DemistoException as e:
@@ -1373,9 +1400,10 @@ def generate_abuse_campaign_incidents(client, campaigns):
     return incidents
 
 
-def generate_account_takeover_cases_incidents(client, cases):
+def generate_account_takeover_cases_incidents(client, cases, deadline=None):
     incidents = []
     for case in cases:
+        check_time_budget(deadline, "account takeover cases")
         try:
             case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
         except DemistoException as e:
@@ -1405,75 +1433,108 @@ def fetch_incidents(
     max_page_number: int = 8,
     max_incidents_to_fetch: int = FETCH_LIMIT,
     polling_lag: timedelta = timedelta(minutes=0),
+    time_budget_seconds: int = FETCH_TIME_BUDGET_SECONDS,
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
 
+    Each data type maintains its own cursor in ``last_run`` (separation of concern):
+    a type's cursor is advanced only when that type fully drains its window with no
+    errors. If a type errors or the per-run time budget is exhausted, that type's
+    cursor is left untouched and its partial results are dropped, so it retries the
+    same window next run. A failure in one type does not block the others.
+
     Parameters:
     - client (Client): Client object to interact with the API.
-    - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
+    - last_run (Dict[str, Any]): Per-type cursors from the previous run. Falls back to the
+      legacy single ``last_fetch`` cursor, then to ``first_fetch_time``, for migration.
     - first_fetch_time (str): ISO formatted string indicating the first time from which to start fetching incidents.
-    - max_page_number (int): Maximum number of pages to fetch for incidents.
-    - max_incidents_to_fetch (int, optional): Maximum number of incidents to fetch. Defaults to FETCH_LIMIT.
-    - polling_lag (int, optional): Time in minutes to subtract from polling time window for data consistency. Defaults to 0.
+    - max_page_number (int): Maximum number of pages to fetch per threat (message pagination).
+    - max_incidents_to_fetch (int, optional): Controls the list page size. Defaults to FETCH_LIMIT.
+    - polling_lag (timedelta, optional): Time to subtract from the polling window for data consistency. Defaults to 0.
+    - time_budget_seconds (int, optional): Wall-clock budget for the run. Defaults to FETCH_TIME_BUDGET_SECONDS.
 
     Returns:
-    - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
+    - Tuple[Dict[str, Any], List[Dict]]: The updated per-type cursors and the list of fetched incidents.
     """
-    try:
-        last_fetch = last_run.get("last_fetch", first_fetch_time)
-        last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
+    if polling_lag is None:
+        polling_lag = timedelta(minutes=0)
 
-        current_datetime = get_current_datetime()
-        start_time = last_fetch + timedelta(milliseconds=1)  # Not to overlap with previous polling window
-        end_time = get_current_datetime()
+    current_datetime = get_current_datetime()
+    committed_cursor = current_datetime.strftime(ISO_8601_FORMAT)
+    deadline = time.monotonic() + time_budget_seconds
 
-        if polling_lag is not None:
-            start_time = start_time - polling_lag
-            end_time = end_time - polling_lag
+    # Preserve any unknown keys; advance per-type cursors only on full success below.
+    next_run: dict[str, Any] = dict(last_run)
+    all_incidents: list = []
 
-        start_timestamp = start_time.strftime(ISO_8601_FORMAT)
-        end_timestamp = end_time.strftime(ISO_8601_FORMAT)
+    def window_for(cursor_key: str) -> tuple[datetime, datetime]:
+        cursor_iso = last_run.get(cursor_key) or last_run.get(LEGACY_LAST_FETCH) or first_fetch_time
+        start_time = datetime.fromisoformat(cursor_iso[:-1]).astimezone(timezone.utc) + timedelta(milliseconds=1)
+        return start_time - polling_lag, current_datetime - polling_lag
 
-        all_incidents = []
-        current_pending_incidents_to_fetch = max_incidents_to_fetch
-        threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
+    def fetch_threats_window() -> list:
+        start_time, end_time = window_for(LAST_FETCH_THREATS)
+        threats_filter = (
+            f"latestTimeRemediated gte {start_time.strftime(ISO_8601_FORMAT)} "
+            f"and latestTimeRemediated lte {end_time.strftime(ISO_8601_FORMAT)}"
+        )
+        response = client.get_paginated_threats_list(
+            filter_=threats_filter, max_incidents_to_fetch=max_incidents_to_fetch, deadline=deadline
+        )
+        return generate_threat_incidents(
+            client, response.get("threats", []), max_page_number, start_time, end_time, deadline=deadline
+        )
 
-        if fetch_threats and current_pending_incidents_to_fetch > 0:
-            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
-            threats_response = client.get_paginated_threats_list(
-                filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
-            )
-            threat_incidents = generate_threat_incidents(
-                client, threats_response.get("threats", []), max_page_number, start_time, end_time
-            )
-        current_pending_incidents_to_fetch -= len(threat_incidents)
+    def fetch_abuse_campaigns_window() -> list:
+        start_time, end_time = window_for(LAST_FETCH_ABUSE_CAMPAIGNS)
+        abuse_filter = (
+            f"lastReportedTime gte {start_time.strftime(ISO_8601_FORMAT)} "
+            f"and lastReportedTime lte {end_time.strftime(ISO_8601_FORMAT)}"
+        )
+        response = client.get_paginated_abusecampaigns_list(
+            filter_=abuse_filter, max_incidents_to_fetch=max_incidents_to_fetch, deadline=deadline
+        )
+        return generate_abuse_campaign_incidents(client, response.get("campaigns", []), deadline=deadline)
 
-        if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
-            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lte {end_timestamp}"
-            abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
-                filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
-            )
-            abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get("campaigns", []))
-        current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
+    def fetch_cases_window() -> list:
+        start_time, end_time = window_for(LAST_FETCH_ATO_CASES)
+        cases_filter = (
+            f"lastModifiedTime gte {start_time.strftime(ISO_8601_FORMAT)} "
+            f"and lastModifiedTime lte {end_time.strftime(ISO_8601_FORMAT)}"
+        )
+        response = client.get_paginated_cases_list(
+            filter_=cases_filter, max_incidents_to_fetch=max_incidents_to_fetch, deadline=deadline
+        )
+        return generate_account_takeover_cases_incidents(client, response.get("cases", []), deadline=deadline)
 
-        if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
-            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lte {end_timestamp}"
-            account_takeover_cases_response = client.get_paginated_cases_list(
-                filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch
-            )
-            account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
-                client, account_takeover_cases_response.get("cases", [])
-            )
+    sources: list[tuple[str, Any]] = []
+    if fetch_threats:
+        sources.append((LAST_FETCH_THREATS, fetch_threats_window))
+    if fetch_abuse_campaigns:
+        sources.append((LAST_FETCH_ABUSE_CAMPAIGNS, fetch_abuse_campaigns_window))
+    if fetch_account_takeover_cases:
+        sources.append((LAST_FETCH_ATO_CASES, fetch_cases_window))
 
-        all_incidents = threat_incidents + abuse_campaign_incidents + account_takeover_cases_incidents
-    except Exception as e:
-        logging.error(f"Failed fetching incidents: {e}")
-        raise FetchIncidentsError(f"Error while fetching incidents: {e}")
+    for cursor_key, fetcher in sources:
+        if time.monotonic() >= deadline:
+            demisto.debug(f"Time budget exhausted before fetching {cursor_key}; will resume next run.")
+            break
+        try:
+            incidents = fetcher()
+            all_incidents.extend(incidents)
+            next_run[cursor_key] = committed_cursor  # commit only on full success
+            demisto.debug(f"{cursor_key}: fetched {len(incidents)} incidents; cursor advanced to {committed_cursor}.")
+        except FetchTimeBudgetExceeded as e:
+            demisto.debug(f"{cursor_key}: {e}; cursor left unchanged, partial results dropped.")
+            break
+        except Exception as e:
+            # Isolate the failure: leave this type's cursor untouched and continue with the others.
+            logging.error(f"Failed fetching incidents for {cursor_key}: {e}")
+            demisto.error(f"{cursor_key}: fetch failed, cursor left unchanged: {e}")
+            continue
 
-    next_run = {"last_fetch": current_datetime.strftime(ISO_8601_FORMAT)}
-
-    return next_run, all_incidents[:max_incidents_to_fetch]
+    return next_run, all_incidents
 
 
 def test_module(client):
