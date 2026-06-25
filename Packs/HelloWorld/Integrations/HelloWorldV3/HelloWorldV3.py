@@ -16,8 +16,8 @@ from BaseContentApiModule import *  # noqa: F401
 
 ''' CONSTANTS '''
 
-DEFAULT_LIMIT = 10
-OUTPUTS_PREFIX = "HelloWorldV3"
+default_limit = 10
+
 
 ''' AUTHENTICATION HANDLER '''
 
@@ -40,6 +40,7 @@ class HelloWorldV3AuthHandler(APIKeyAuthHandler):
 
 ''' CLIENT CLASS '''
 
+PARAMS = demisto.params()
 
 class HelloWorldV3Client(ContentClient):
     """HelloWorld v3 client that extends `ContentClient` for API interactions.
@@ -67,13 +68,13 @@ class HelloWorldV3Client(ContentClient):
             diagnostic_mode=is_debug_mode(),
         )
 
-    def say_hello(self, name: str) -> dict[str, Any]:
+    def SayHello(self, name: str) -> dict[str, Any]:
         """Return a greeting payload for the given name."""
         # In a real implementation:
         # return self.get(url_suffix="/api/v1/hello", params={"name": name}, resp_type="json")
         return {"name": name, "message": f"Hello {name}"}
 
-    def list_alerts(self, limit: int, severity: str | None) -> list[dict[str, Any]]:
+    def list_alerts(self, limit: int, SEVERITY: str | None) -> list[dict[str, Any]]:
         """Return a mocked list of alerts, optionally filtered by severity."""
         # In a real implementation:
         # return self.get(url_suffix="/api/v1/alerts", params=assign_params(limit=limit, severity=severity),
@@ -82,8 +83,8 @@ class HelloWorldV3Client(ContentClient):
             {"id": i, "name": f"Alert {i}", "severity": "high" if i % 2 == 0 else "low"}
             for i in range(1, limit + 1)
         ]
-        if severity:
-            alerts = [alert for alert in alerts if alert["severity"] == severity]
+        if SEVERITY:
+            alerts = [alert for alert in alerts if alert["severity"] == SEVERITY]
         return alerts
 
     def get_alert(self, alert_id: int) -> dict[str, Any]:
@@ -100,11 +101,42 @@ class HelloWorldV3Client(ContentClient):
 
 ''' HELPER FUNCTIONS '''
 
+OUTPUTS_PREFIX = "HelloWorldV3"
 
-def test_module(client: HelloWorldV3Client) -> str:
+
+def AlertToMD(alerts: list[dict[str, Any]]) -> str:
+    """Convert a list of alert dictionaries into a Markdown-formatted table.
+
+    Each dictionary represents a single row in the table.
+
+    Args:
+        alerts (list[dict[str, Any]]): The alert rows to render.
+
+    Returns:
+        str: A Markdown table string representing the alert data.
+    """
+    if not alerts:
+        return ""
+
+    headers: list[str] = []
+    for alert in alerts:
+        for key in alert:
+            if key not in headers:
+                headers.append(key)
+
+    header_row = "| " + " | ".join(headers) + " |"
+    separator_row = "| " + " | ".join("---" for _ in headers) + " |"
+    value_rows = [
+        "| " + " | ".join(str(alert.get(header, "")) for header in headers) + " |"
+        for alert in alerts
+    ]
+    return "\n".join([header_row, separator_row, *value_rows])
+
+
+def test_module(Client: HelloWorldV3Client) -> str:
     """Validate connectivity by performing a simple client call."""
     try:
-        client.say_hello("Test")
+        Client.SayHello("Test")
     except ContentClientAuthenticationError:
         return "AuthenticationError: make sure the API Key is correctly set."
     return "ok"
@@ -116,25 +148,26 @@ def test_module(client: HelloWorldV3Client) -> str:
 def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """Greet a specified person."""
     name = args.get("name", "World")
-    result = client.say_hello(name)
+    result = client.SayHello(name)
     return CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
         outputs_key_field="name",
         outputs=result,
         readable_output=result["message"],
+        ignore_auto_extract=False
     )
 
 
 def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """List mocked alerts with optional severity filtering."""
-    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    limit = arg_to_number(args.get("limit")) or default_limit
     severity = args.get("severity")
     alerts = client.list_alerts(limit, severity)
     return CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Alert",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=tableToMarkdown("HelloWorld v3 Alerts", alerts),
+        readable_output=AlertToMD(alerts),
     )
 
 
@@ -148,7 +181,7 @@ def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f"{OUTPUTS_PREFIX}.Alert",
         outputs_key_field="id",
         outputs=alert,
-        readable_output=tableToMarkdown(f"HelloWorld v3 Alert {alert_id}", alert),
+        readable_output=AlertToMD( [alert]),
     )
 
 
@@ -185,7 +218,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](client, **args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
