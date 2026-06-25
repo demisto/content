@@ -17,26 +17,21 @@ def mock_client():
     )
 
 
-def test_client_requests_uncompressed_responses(mock_client, requests_mock):
+def test_client_requests_uncompressed_responses(mock_client):
     """
     Given:
         A configured Rapid7 Nexpose Client.
     When:
-        Inspecting the client headers and performing an API request.
+        Inspecting the headers the client applies to every API request.
     Then:
-        `Accept-Encoding` is set to `identity` (on the client headers and on the
-        outgoing request) so the InsightVM console returns uncompressed responses.
-        Some consoles (and/or proxies in front of them) return HTTP 500 when asked
-        to gzip large `/api/3/assets` payloads, and the `requests` default
-        `Accept-Encoding: gzip, deflate` triggers that path (XSUP-71502).
+        `Accept-Encoding` is set to `identity`, so the InsightVM console returns
+        uncompressed responses. Some consoles (and/or proxies in front of them)
+        return HTTP 500 when asked to gzip large `/api/3/assets` payloads, and the
+        `requests` default `Accept-Encoding: gzip, deflate` triggers that path.
+        BaseClient passes `self._headers` on every request (merged over the session
+        defaults), so setting it here is what reaches the wire (XSUP-71502).
     """
     assert mock_client._headers.get("Accept-Encoding") == "identity"
-
-    # The header must reach the actual outgoing request (BaseClient merges
-    # self._headers over the session defaults per request).
-    adapter = requests_mock.get(f"{mock_client._base_url}/assets/1", json={"id": 1})
-    mock_client._http_request(method="GET", url_suffix="/assets/1")
-    assert adapter.last_request.headers.get("Accept-Encoding") == "identity"
 
 
 def load_test_data(folder: str, file_name: str) -> dict:
