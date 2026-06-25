@@ -49,7 +49,7 @@ configuration:
   type: 0
   defaultvalue: 3 days ago
   required: false
-  section: Connect
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
