@@ -26,6 +26,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Role Session Name
   name: roleSessionName
   type: 0
@@ -42,6 +43,7 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
+  section: Collect
 - display: Access Key
   name: access_key
   type: 0
@@ -96,11 +98,13 @@ configuration:
   type: 0
   defaultvalue: '10'
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_time
   type: 0
   defaultvalue: "3 days"
   required: false
+  section: Collect
 - display: Guard Duty Severity level
   name: gs_severity
   type: 16
@@ -118,11 +122,14 @@ configuration:
   defaultvalue: "false"
   additionalinfo: You can set whether findings that are fetched will be moved to the GuardDuty archive.
   required: false
+  section: Collect
+  advanced: true
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   defaultvalue: '1'
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -881,7 +888,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.8544956
   isfetch: true
   runonce: false
   script: '-'

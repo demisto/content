@@ -37,6 +37,10 @@ const brandConfig = {
     "Microsoft 365 Defender": {
         command: "microsoft-365-defender-auth-test",
         message: "run the !microsoft-365-defender-auth-test"
+    },
+     "Jira V3": {
+        command: "jira-oauth-test",
+        message: "run the !jira-oauth-test"
     }
 };
 

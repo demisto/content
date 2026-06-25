@@ -59,6 +59,31 @@ BIOC_AND_CR_SEVERITY_MAPPING = {
     "critical": "SEV_050_CRITICAL",
 }
 
+ISSUE_STATUSES_MAP = {"new": "New", "in_progress": "In Progress", "resolved": "Resolved"}
+
+ISSUE_REASON_MAP = {
+    "resolved_threat_handled": "resolved - threat handled",
+    "resolved_known_issue": "resolved - known issue",
+    "resolved_duplicate": "resolved - duplicate issue",
+    "resolved_false_positive": "resolved - false positive",
+    "resolved_other": "resolved - other",
+    "resolved_true_positive": "resolved - true positive",
+    "resolved_security_testing": "resolved - security testing",
+}
+
+INCIDENT_TO_CASE_FIELD_MAP = {
+    "incident_id": "case_id",
+    "incident_name": "case_name",
+    "status": "status_progress",
+    "incident_domain": "case_domain",
+    "alert_count": "issue_count",
+    "low_severity_alert_count": "low_severity_issue_count",
+    "med_severity_alert_count": "med_severity_issue_count",
+    "high_severity_alert_count": "high_severity_issue_count",
+    "critical_severity_alert_count": "critical_severity_issue_count",
+    "alert_categories": "issue_categories",
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -250,7 +275,7 @@ class Client(CoreClient):
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.list_users()
+            self.get_incidents(lte_creation_time=last_one_day, limit=1)
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
@@ -482,17 +507,25 @@ class Client(CoreClient):
         exclude_artifacts,
         incident_id_list=[],
         gte_creation_time_milliseconds=0,
+        lte_creation_time_milliseconds=0,
         statuses=[],
         starred=None,
         starred_incidents_fetch_window=None,
         page_number=0,
         limit=100,
+        search_from=0,
+        sort_field=None,
+        sort_order=None,
         excluded_alert_fields=[],
         remove_nulls_from_alerts=False,
     ):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
+        :param lte_creation_time_milliseconds: Filters incidents created before this timestamp (in milliseconds).
+        :param search_from: The starting offset for pagination (maps to the search_from field).
+        :param sort_field: The field by which to sort the results (creation_time, modification_time, incident_id).
+        :param sort_order: The sort order (asc/desc).
         :return:
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
@@ -500,17 +533,21 @@ class Client(CoreClient):
         request_data = {
             "search_to": limit,
             "sort": {
-                "field": "creation_time",
-                "keyword": "asc",
+                "field": sort_field or "creation_time",
+                "keyword": sort_order or "asc",
             },
             "full_alert_fields": True,
         }
+        if search_from is not None:
+            request_data["search_from"] = search_from
         filters: list[dict] = []
         if incident_id_list:
             incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
         if statuses:
             filters.append({"field": "status", "operator": "in", "value": statuses})
+        if lte_creation_time_milliseconds:
+            filters.append({"field": "creation_time", "operator": "lte", "value": lte_creation_time_milliseconds})
         demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
         if exclude_artifacts:
             request_data["fields_to_exclude"] = FIELDS_TO_EXCLUDE
@@ -841,6 +878,25 @@ class Client(CoreClient):
             url_suffix=f"/case/artifacts/{case_id}",
         )
         return res
+
+    def list_issues(self, request_data: dict) -> list:
+        res = self._http_request(
+            method="POST",
+            url_suffix="/issue/search",
+            json_data=request_data,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def create_issue(self, request_data: dict) -> dict:
+        res = self._http_request(
+            method="POST",
+            url_suffix="/issue",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def update_issue(self, issue_id: str, request_data: dict) -> None:
+        self._http_request(method="POST", url_suffix=f"/issue/{issue_id}", json_data=request_data, resp_type="response")
 
 
 def extract_paths_and_names(paths: list) -> tuple:
@@ -1727,6 +1783,11 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
 
 
 def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deprecated. Use update_issue_command (xdr-issue-update) instead.
+
+    Update one or more alerts with the provided arguments.
+    """
     alerts_list = argToList(args.get("alert_ids"))
     array_of_all_ids = []
     severity = args.get("severity")
@@ -2766,6 +2827,42 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     return CommandResults(readable_output="Automation playbook deleted successfully.")
 
 
+def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normalizes a single record returned by the get_multiple_incidents_extra_data endpoint
+    into the case-shaped output used by the xdr-case-list command.
+
+    Args:
+    - incident_record (dict): A single record from the endpoint, of the form
+      {"incident": {...}, "alerts": {...}, "file_artifacts": {...}, "network_artifacts": {...}}.
+      Flat records (without an "incident" wrapper) are also supported.
+
+    Returns:
+    - dict: The normalized case record.
+    """
+    incident = incident_record.get("incident", incident_record)
+
+    case: dict[str, Any] = {}
+    for field, value in incident.items():
+        case[INCIDENT_TO_CASE_FIELD_MAP.get(field, field)] = value
+
+    case_id = case.get("case_id")
+
+    nested_data_map = {
+        "alerts": "Issues",
+        "file_artifacts": "FileArtifacts",
+        "network_artifacts": "NetworkArtifacts",
+    }
+    for source_key, case_key in nested_data_map.items():
+        records = dict_safe_get(incident_record, [source_key, "data"], default_return_value=[], return_type=list)
+        if records:
+            for record in records:
+                record.setdefault("case_id", case_id)
+            case[case_key] = records
+
+    return case
+
+
 def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
@@ -2786,9 +2883,33 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     created_after = arg_to_timestamp(args.get("created_after"), "created_after") if args.get("created_after") else None
     sort_field = args.get("sort_field")
     sort_order = args.get("sort_order")
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    manual_pagination = page is not None or page_size is not None
     limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page")) or 0
+
+    if manual_pagination:
+        page = page or 0
+        page_size = page_size or limit
+        search_from = page * page_size
+        search_to = (page + 1) * page_size
+    else:
+        search_from = 0
+        search_to = limit
+    extra_data = argToBoolean(args.get("extra_data", False))
+
+    if extra_data:
+        return case_list_with_extra_data(
+            client=client,
+            case_ids=case_ids,
+            statuses=statuses,
+            created_after=created_after,
+            created_before=created_before,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            search_from=search_from,
+            search_to=search_to,
+        )
 
     filters = []
     if case_ids:
@@ -2809,8 +2930,8 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         filters.append({"field": "creation_time", "operator": "gte", "value": created_after})
 
     request_data = {
-        "search_from": page * page_size,
-        "search_to": (page + 1) * page_size,
+        "search_from": search_from,
+        "search_to": search_to,
         "filters": filters,
     }
     if sort_field:
@@ -2838,10 +2959,64 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def case_list_with_extra_data(
+    client: Client,
+    case_ids: List[str],
+    statuses: List[str],
+    created_after: Optional[Union[int, float]],
+    created_before: Optional[Union[int, float]],
+    sort_field: Optional[str],
+    sort_order: Optional[str],
+    search_from: int,
+    search_to: int,
+) -> CommandResults:
+    mapped_sort_field = {
+        "case_id": "incident_id",
+        "creation_time": "creation_time",
+    }.get(sort_field or "")
+
+    raw_records = client.get_multiple_incidents_extra_data(
+        exclude_artifacts=False,
+        incident_id_list=case_ids,
+        statuses=statuses,
+        gte_creation_time_milliseconds=arg_to_number(created_after) or 0,
+        lte_creation_time_milliseconds=arg_to_number(created_before) or 0,
+        sort_field=mapped_sort_field,
+        sort_order=sort_order,
+        search_from=search_from,
+        limit=search_to,
+    )
+
+    cases = [normalize_case_data_record(record) for record in raw_records]
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Cases",
+        t=cases,
+        headers=["case_id", "case_name", "case_domain", "creation_time", "modification_time", "description"],
+        date_fields=["creation_time", "modification_time"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=cases,
+        raw_response=raw_records,
+    )
+
+
 def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-existing-case
-    Updates an existing case.
+    Updates an existing case via the public_api/v1/case/update/{case-id} endpoint.
+
+    Maps user-friendly argument values to the exact API strings and enforces the
+    API's conditional rules client-side:
+      - resolve_reason / resolve_comment are only valid when status is "Resolved".
+      - resolving (status "Resolved") requires a resolve_reason.
+      - at least one valid field must be sent (an empty update_data returns 400).
 
     Args:
     - client (Client): The client to use for the request.
@@ -2850,23 +3025,97 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
+    # Maps friendly status inputs to the exact API strings expected by status_progress.
+    status_mapper = {
+        "new": "New",
+        "in_progress": "In Progress",
+        "in progress": "In Progress",
+        "under_investigation": "In Progress",
+        "resolved": "Resolved",
+    }
+    # Maps snake_case resolve reasons to the exact API strings (all six supported).
     resolve_reason_mapper = {
         "resolved_known_issue": "Resolved - Known Issue",
         "resolved_duplicate": "Resolved - Duplicate Case",
         "resolved_false_positive": "Resolved - False Positive",
+        "resolved_true_positive": "Resolved - True Positive",
+        "resolved_security_testing": "Resolved - Security Testing",
         "resolved_other": "Resolved - Other",
     }
 
     case_id = args.get("case_id", "")  # required
-    status = args.get("status", "").upper() if args.get("status") else None
-    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason", ""))
-    resolve_comment = args.get("resolve_comment")
 
+    status_arg = args.get("status", "")
+    if status_arg:
+        status = status_mapper.get(status_arg.strip().lower())
+        if not status:
+            raise DemistoException(f"Invalid status '{status_arg}'. Supported values are: New, In Progress, Resolved.")
+    else:
+        status = None
+
+    resolve_reason_arg = args.get("resolve_reason")
+    if resolve_reason_arg:
+        resolve_reason = resolve_reason_mapper.get(resolve_reason_arg.strip().lower())
+        if not resolve_reason:
+            raise DemistoException(
+                f"Invalid resolve_reason '{resolve_reason_arg}'. Supported values are: "
+                f"{', '.join(sorted(resolve_reason_mapper))}."
+            )
+    else:
+        resolve_reason = None
+
+    resolve_comment = args.get("resolve_comment")
+    user_severity = args.get("user_severity")
+    assigned_user = args.get("assigned_user")
+    notes = args.get("notes")
+    custom_fields_arg = args.get("custom_fields")
+
+    is_resolving = status == "Resolved"
+
+    # Enforce the API's conditional rules client-side with clear error messages.
+    if (resolve_reason or resolve_comment) and not is_resolving:
+        raise DemistoException(
+            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when 'status' is set to 'Resolved'."
+        )
+    if is_resolving and not resolve_reason:
+        raise DemistoException("The 'resolve_reason' argument is required when resolving a case (status 'Resolved').")
+
+    # assign_params drops None / empty values, which keeps null values out of the payload.
     update_data = assign_params(
         status_progress=status,
         resolve_reason=resolve_reason,
         resolve_comment=resolve_comment,
+        assigned_user=assigned_user,
+        notes=notes,
     )
+
+    # user_severity must allow an explicit empty string "" (used to clear the severity),
+    # so it is handled separately to avoid being dropped by assign_params.
+    if user_severity is not None:
+        update_data["user_severity"] = user_severity
+
+    # custom_fields lets users send tenant-defined fields directly inside update_data.
+    # We only validate that the input is a valid JSON object (a dict); field names/values
+    # are the user's responsibility and are NOT validated by the integration.
+    if custom_fields_arg is not None:
+        try:
+            parsed_custom_fields = json.loads(custom_fields_arg)
+        except (ValueError, TypeError):
+            raise DemistoException("The 'custom_fields' argument must be a valid JSON object.")
+        if not isinstance(parsed_custom_fields, dict):
+            raise DemistoException("The 'custom_fields' argument must be a valid JSON object.")
+        # Standard documented fields are authoritative: skip any custom_fields key that
+        # collides with a standard field already set in update_data (no silent override).
+        for key, value in parsed_custom_fields.items():
+            if key in update_data:
+                continue
+            update_data[key] = value
+
+    if not update_data:
+        raise DemistoException(
+            "No fields to update were provided. Provide at least one of: status, resolve_reason, "
+            "resolve_comment, user_severity, assigned_user, notes, custom_fields."
+        )
 
     client.update_case(case_id, request_data={"request_data": {"update_data": update_data}})
 
@@ -2928,6 +3177,176 @@ def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[Com
         command_results.append(CommandResults(readable_output=f"No artifacts found for case {case_id}"))
 
     return command_results
+
+
+def list_issues_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of issues.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the issues.
+    """
+    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
+    filters = []
+    if issue_ids := argToList(args.get("issue_id")):
+        try:
+            converted_ids = [int(i) for i in issue_ids]
+            filters.append({"field": "id", "operator": "in", "value": converted_ids})
+        except (ValueError, TypeError):
+            raise DemistoException("Invalid Issue ID provided. Please ensure all IDs are numbers.")
+    filter_mappings = {
+        "external_id": "external_id",
+        "detection_method": "detection.method",
+        "domain": "issue_domain",
+        "severity": "severity",
+    }
+    for arg_name, api_field in filter_mappings.items():
+        if values := argToList(args.get(arg_name)):
+            filters.append({"field": api_field, "operator": "in", "value": values})
+    if insert_time := args.get("insert_time"):
+        timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
+        filters.append({"field": "_insert_time", "operator": "gte", "value": timestamp})
+    if status := argToList(args.get("status")):
+        mapped_statuses = [ISSUE_STATUSES_MAP.get(s) for s in status if s in ISSUE_STATUSES_MAP]
+        filters.append({"field": "status.progress", "operator": "in", "value": mapped_statuses})
+
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    request_data: Dict[str, Any] = {
+        "request_data": {
+            "search_from": page * page_size,
+            "search_to": (page + 1) * page_size,
+        }
+    }
+
+    if filters:
+        request_data["request_data"]["filters"] = filters
+
+    if sort_field := args.get("sort_field"):
+        sort_order = args.get("sort_order", "asc").lower()
+        if sort_field == "issue_id":  # converting issue_id to id as the api expects
+            sort_field = "id"
+        request_data["request_data"]["sort"] = {"field": sort_field, "keyword": sort_order}
+
+    request_data["request_data"]["include_fields"] = ["custom_fields", "normalized_fields"]
+
+    issues = client.list_issues(request_data)
+    hr_issues = [
+        {
+            "ID": issue.get("id"),
+            "Name": issue.get("name"),
+            "Type": issue.get("type"),
+            "Severity": issue.get("severity"),
+            "Status": issue.get("status.progress"),
+            "Description": issue.get("description"),
+        }
+        for issue in issues
+    ]
+
+    readable_output = tableToMarkdown(
+        name="Issues",
+        t=hr_issues,
+        headers=["ID", "Name", "Type", "Severity", "Status", "Description"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
+        outputs_key_field="id",
+        outputs=issues,
+        raw_response=issues,
+    )
+
+
+def create_issue_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates a new issue.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the created issue.
+    """
+    # Issues with an 'INFO' severity level are filtered out and will not be displayed in the UI
+    issue_data = {
+        # Required
+        "name": args.get("name"),
+        "description": args.get("description"),
+        "observation_time": arg_to_timestamp(args.get("observation_time"), arg_name="observation_time"),
+        "issue_domain": args.get("domain"),
+        "category": args.get("category"),
+        "severity": args["severity"].upper(),
+        # Optional
+        "asset_ids": argToList(args.get("asset_id")),
+        "mitre_tactic": argToList(args.get("mitre_tactic")),
+        "mitre_technique": argToList(args.get("mitre_technique")),
+        "type": args.get("type"),
+        "extended_description": args.get("extended_description"),
+        "impact": args.get("impact"),
+        "tags": args.get("tags"),
+        "is_excluded": argToBoolean(args.get("is_excluded")) if args.get("is_excluded") is not None else None,
+        "is_starred": argToBoolean(args.get("is_starred")) if args.get("is_starred") is not None else None,
+        "assigned_to": args.get("assigned_to"),
+        "assigned_to_pretty": args.get("assigned_to_pretty"),
+    }
+
+    for field in ["normalized_fields_json", "custom_fields_json"]:
+        field_json = args.get(field)
+        try:
+            issue_data[field] = json.loads(field_json) if field_json else {}
+        except (ValueError, TypeError):
+            raise DemistoException(f"Invalid JSON format in field: {field}")
+
+    result = client.create_issue({"request_data": {"issue": issue_data}})
+
+    readable_output = tableToMarkdown(name="Created Issue", t=result, headerTransform=string_to_table_header, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Issue",
+        outputs_key_field="external_id",
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def update_issue_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an existing issue.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    update_data = assign_params(
+        severity=args["severity"].upper() if args.get("severity") else None,
+    )
+    if status := ISSUE_STATUSES_MAP.get(args.get("status", "")):
+        update_data["status_progress"] = status
+    if resolution_reason := ISSUE_REASON_MAP.get(args.get("resolve_reason", "")):
+        update_data["status_resolution_reason"] = resolution_reason
+    if resolution_comment := args.get("resolve_comment"):
+        update_data["status_resolution_comment"] = resolution_comment
+
+    issue_id = args.get("issue_id", "")
+    if not str(issue_id).isdigit():
+        raise DemistoException(f"'{issue_id}' is not a valid numeric Issue ID.")
+
+    request_data = {"request_data": {"update_data": update_data}}
+    client.update_issue(issue_id, request_data)
+    return CommandResults(readable_output=f"Issue with ID {issue_id} updated successfully")
 
 
 def main():  # pragma: no cover
@@ -3291,6 +3710,7 @@ def main():  # pragma: no cover
             return_results(get_original_alerts_command(client, args))
 
         elif command == "xdr-get-alerts":
+            # This command is Deprecated, use xdr-issue-list instead.
             return_results(get_alerts_by_filter_command(client, args))
 
         elif command == "xdr-run-script-execute-commands":
@@ -3421,6 +3841,7 @@ def main():  # pragma: no cover
             return_results(change_user_role_command(client, args))
 
         elif command == "xdr-update-alert":
+            # This command is Deprecated, use xdr-issue-update instead.
             return_results(update_alerts_in_xdr_command(client, args))
 
         elif command == "xdr-bioc-list":
@@ -3490,6 +3911,15 @@ def main():  # pragma: no cover
 
         elif command == "xdr-case-artifact-list":
             return_results(case_artifact_list_command(client, args))
+
+        elif command == "xdr-issue-list":
+            return_results(list_issues_command(client, args))
+
+        elif command == "xdr-issue-create":
+            return_results(create_issue_command(client, args))
+
+        elif command == "xdr-issue-update":
+            return_results(update_issue_command(client, args))
 
     except Exception as err:
         return_error(str(err))

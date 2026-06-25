@@ -4,3 +4,5 @@ name: LenelS2 NetBox Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

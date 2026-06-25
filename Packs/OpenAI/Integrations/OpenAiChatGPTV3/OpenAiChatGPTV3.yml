@@ -1,11 +1,11 @@
+name: OpenAi ChatGPT v3
+display: OpenAI GPT
 category: Messaging and Conferencing
 provider: OpenAI
 sectionorder:
 - Connect
 - Collect
-name: OpenAi ChatGPT v3
-display: OpenAI GPT
-description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
+description: This integration assists security professionals with security investigations, threat hunting, and anomaly detection by leveraging OpenAI GPT models' natural language conversation capabilities.  
 commonfields:
   id: OpenAi ChatGPT v3
   version: -1
@@ -16,12 +16,54 @@ configuration:
   defaultvalue: https://api.openai.com/
   section: Connect
   type: 0
-- displaypassword: API Key
+- display: ChatGPT Server URL
+  name: chatgpt_api_url
+  type: 0
+  required: false
+  defaultvalue: https://api.chatgpt.com
+  section: Connect
+  additionalinfo: 'The base URL for the ChatGPT Platform Compliance APIs.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- displaypassword: OpenAI API Key
   name: apikey
   type: 9
-  required: true
+  required: false
   section: Connect
   hiddenusername: true
+  additionalinfo: 'The OpenAI Platform API key used by the chat-completion commands. Required only when running those commands or when running test-module without the event-collector keys.'
+- display: Admin API Key
+  name: admin_api_key
+  type: 14
+  required: false
+  section: Connect
+  additionalinfo: 'The Admin API key for the OpenAI Platform. Required only when fetching the "OpenAI Audit logs" event type.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Compliance API Key
+  name: compliance_api_key
+  type: 14
+  required: false
+  section: Connect
+  additionalinfo: 'The Compliance API key for the ChatGPT Platform. Required when fetching Compliance event types.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Workspace ID
+  name: workspace_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: 'The Compliance workspace UUID (for example, 4a4676f3-3d74-4723-b696-c93e6d01078a). Required when fetching Compliance event types.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - display: Model
   additionalinfo: The model that will process the inputs and generate the completion.
   name: model-select
@@ -62,21 +104,21 @@ configuration:
   additionalinfo: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption).
   type: 0
   required: false
-  section: Collect
+  section: Connect
   advanced: true
 - display: Temperature
   name: temperature
   additionalinfo: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
   type: 0
   required: false
-  section: Collect
+  section: Connect
   advanced: true
 - display: Top P
   name: top_p
   additionalinfo: "Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both."
   type: 0
   required: false
-  section: Collect
+  section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
@@ -88,6 +130,70 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Events types to fetch
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - OpenAI Audit logs
+  - Conversation Messages
+  - Apps
+  - Apps Auth
+  - Compliance Audit
+  - Auth
+  - Codex
+  - ChatGPT
+  - Codex Security
+  - Workspace Agents
+  defaultvalue: OpenAI Audit logs,Conversation Messages,Apps,Apps Auth,Compliance Audit,Auth,Codex,ChatGPT,Codex Security,Workspace Agents
+  additionalinfo: 'The event types to fetch. OpenAI Audit logs uses the Admin API; all other selections use the Compliance API and require a Workspace ID.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Maximum number of OpenAI Audit events per fetch
+  name: audit_max_fetch
+  type: 0
+  required: false
+  defaultvalue: '1000'
+  section: Collect
+  additionalinfo: 'The maximum number of Audit events to return per fetch.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Maximum number of Compliance events per fetch
+  name: compliance_max_fetch
+  type: 0
+  required: false
+  defaultvalue: '900'
+  section: Collect
+  additionalinfo: 'The maximum number of Compliance events to return per fetch.'
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 script:
   commands:
   - name: gpt-send-message
@@ -147,8 +253,110 @@ script:
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
+  - name: gpt-analyze-email-header
+    description: Analyzes email headers for potential security issues using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-header (which uses the Chat Completions API).
+    arguments:
+    - name: entry_id
+      description: The entry ID of an uploaded .eml file.
+      required: true
+      type: String
+
+    - name: additional_instructions
+      description: The additional instructions or security issue to focus on. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: The conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
+
+  - name: gpt-analyze-email-body
+    description: Analyzes email body for potential security risks using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-body (which uses the Chat Completions API).
+    arguments:
+    - name: entry_id
+      description: The entry ID of an uploaded .eml file.
+      required: true
+      type: String
+
+    - name: additional_instructions
+      description: The additional instructions or security issue to focus on. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: The conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
+
   - name: gpt-check-email-body
-    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    description: Checks the email body for possible security issues. Enables you to ask subsequent questions on the provided information using the 'gpt-send-message' command, and resets the conversation context by default.  
     arguments:
     - name: entry_id
       description: Entry ID of an uploaded '.eml' file.
@@ -174,6 +382,49 @@ script:
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
+  - name: openai-get-events
+    description: Manually retrieves events from OpenAI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: event_type
+      description: 'A comma-separated list of event types to retrieve. If not specified, uses the value configured in the integration parameters.'
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - 'OpenAI Audit logs'
+      - 'Conversation Messages'
+      - 'Apps'
+      - 'Apps Auth'
+      - 'Compliance Audit'
+      - 'Auth'
+      - 'Codex'
+      - 'ChatGPT'
+      - 'Codex Security'
+      - 'Workspace Agents'
+    - name: limit
+      description: 'The maximum number of events to return per stream.'
+      defaultValue: '50'
+    - name: start_time
+      description: 'The lookback start time for the fetch. Supports ISO 8601 or relative time (for example, "3 days ago", "2099-01-01T00:00:00Z").'
+    - name: should_push_events
+      description: 'Whether retrieved events are also ingested by Cortex.'
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: OpenAI.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: OpenAI.Event._event_type
+      description: The upstream event_type for Compliance events. Left empty for Audit events.
+      type: String
+    - contextPath: OpenAI.Event.source_log_type
+      description: The source log type used by downstream parsing rules.
+      type: String
+    - contextPath: OpenAI.Event._time
+      description: The event timestamp in ISO 8601 format.
+      type: Date
   - name: gpt-create-soc-email-template
     description: Create an email template out of the conversation context to be sent from the SOC.
     arguments:
@@ -194,13 +445,214 @@ script:
       description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
     - contextPath: OpenAiChatGPTV3.Conversation
-      description: Entire conversation (if not reset) between the user and the GPT model.
+      description: The entire conversation (if not reset) between the user and the GPT model.  
       type: Dictionary
+  - name: gpt-draft-soc-email
+    description: Drafts a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of gpt-create-soc-email-template which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding gpt-analyze-email-body call).
+    arguments:
+    - name: additional_instructions
+      description: The specific issue or focus area to weave into the template. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: The conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
+  - name: gpt-create-response
+    description: Sends a message to the OpenAI Responses API and receives the generated response. This command uses the Responses API which is recommended for all new projects (instead of gpt-send-message which uses the Chat Completions API). Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
+    arguments:
+    - name: message
+      required: true
+      description: The user message to send.
+      type: String
+
+    - name: reset_conversation_history
+      required: false
+      description: Whether to discard the existing conversation context and start fresh.
+      defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of output tokens. Falls back to instance config. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: The randomness level in responses. Falls back to instance config. Range 0-2. Lower values produce more deterministic outputs, while higher values increase variety.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: The nucleus sampling threshold. Falls back to instance config. Range 0-1. Lower values result in more focused outputs, while higher values increase diversity.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: The reasoning effort level. This parameter is applicable only to reasoning families (o1, o3, o4, gpt-5) and is ignored for other models. Can be "low", "medium", or "high". Default is "medium". 
+      auto: PREDEFINED
+      predefined:
+      - 'none'
+      - 'minimal'
+      - 'low'
+      - 'medium'
+      - 'high'
+      - 'xhigh'
+      type: String
+
+    - name: background
+      required: false
+      description: Whether to run the model response in the background. When true, the command uses polling to wait for the response to complete.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: String
+
+    - name: compact_threshold
+      required: false
+      description: The token threshold at which compaction should be triggered for this entry. Minimum 1000.
+      type: Number
+
+    - name: model
+      required: false
+      description: The model to use. Use the gpt-list-models command to see available models. Falls back to instance config.
+      type: String
+
+    - name: interval_in_seconds
+      description: The interval in seconds between each poll.
+      defaultValue: "10"
+      hidden: true
+      type: Number
+
+    - name: timeout_in_seconds
+      description: The timeout in seconds until polling stops.
+      defaultValue: "600"
+      hidden: true
+      type: Number
+
+    - name: _polling_response_id
+      description: The response ID used to poll for completion. This is handled internally by the scheduled command and should not be provided manually.  
+      hidden: true
+      type: String
+
+    polling: true
+
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: The conversation state, which includes the response_id for multi-turn continuity.  
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The user message sent.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID used for multi-turn conversation continuity.
+      type: String
+  - name: gpt-list-models
+    description: Lists all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
+    arguments: []
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Model.Id
+      description: The model identifier (e.g., gpt-4, gpt-3.5-turbo).
+      type: String
+    - contextPath: OpenAiChatGPTV3.Model.Created
+      description: The Unix timestamp when the model was created.
+      type: Number
+    - contextPath: OpenAiChatGPTV3.Model.OwnedBy
+      description: The organization or entity that owns the model.
+      type: String
+  - name: gpt-create-moderation
+    description: Runs text or an image through the OpenAI Moderations API and returns per-category flagging results. Exactly one of text, entry_id, or image_url must be provided.
+    arguments:
+    - name: text
+      description: A comma-separated list of text strings to moderate. Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      isArray: true
+      type: String
+    - name: entry_id
+      description: The War Room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      type: String
+    - name: image_url
+      description: The publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      type: String
+    - name: model
+      description: The moderation model to use.
+      required: false
+      defaultValue: omni-moderation-latest
+      auto: PREDEFINED
+      predefined:
+      - 'omni-moderation-latest'
+      - 'omni-moderation-2024-09-26'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Moderation.Input.input_type
+      description: The type of input that was moderated (text, image, or image_url).
+      type: String
+    - contextPath: OpenAiChatGPTV3.Moderation.Input.input_value
+      description: The value of the input that was moderated.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Moderation.Flagged
+      description: Whether the content was flagged by the moderation model.
+      type: Boolean
+    - contextPath: OpenAiChatGPTV3.Moderation.Categories
+      description: The object of boolean values indicating which categories were flagged.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Moderation.CategoryScores
+      description: The object of float values indicating the confidence score for each category.
+      type: Unknown
   runonce: false
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/parse-emails:1.0.0.4363876
+  dockerimage: demisto/parse-emails:0.1.48.8794134
+  isfetchevents: true
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

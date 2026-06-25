@@ -226,7 +226,9 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        if fields_to_present == "use_legacy_query":
+        # Fixes legacy query mode silently lost after the first refresh because
+        # `get_fields_to_present("")` returned "name,type" instead of ""
+        if fields_to_present == "use_legacy_query" or (not fields_to_present and self.out_format == FORMAT_TEXT):
             return ""
 
         fields_for_format = {
@@ -867,7 +869,8 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
             # for PAN-OS *.domain.com does not match domain.com
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
-            if indicator.startswith("*."):
+            # Handle DomainGlob type indicators even when value doesn't start with "*."
+            if indicator.startswith("*.") or ioc_type == FeedIndicatorType.DomainGlob:
                 domain = str(indicator.lstrip("*."))
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:

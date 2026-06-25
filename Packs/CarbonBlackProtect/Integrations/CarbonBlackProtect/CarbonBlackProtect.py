@@ -2106,7 +2106,7 @@ def disable_user_command():
     user_id = args.get("user_id")
     payload = {"enabled": False}
 
-    user_data = http_request("PUT", f"/user/{user_id}", data=json.dumps(payload))
+    user_data = http_request("PUT", f"/user/{user_id}", data=payload)
 
     human_readable = tableToMarkdown("User Data", user_data, headers=[])
 
