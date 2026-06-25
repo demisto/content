@@ -47,11 +47,12 @@ To add a permission:
 2. In the *Application ID* field, enter your Client/Application ID.
 3. In the *Client Secret* field, enter your Client Secret.
 4. In the *Tenant ID* field, enter your Tenant ID.
-5. In the *Application redirect URI* field, enter your Application redirect URI.
-6. Save the instance.
-7. Run the `!azure-generate-login-url` command in the War Room and follow the instructions to obtain the Authorization code.
-8. Paste the value you received in the *Authorization code* parameter and save the instance again.
-9. Click **Test** to validate the connection.
+5. In the *Default Subscription ID* field, enter your Subscription ID.
+6. In the *Application redirect URI* field, enter your Application redirect URI.
+7. Save the instance.
+8. Run the `!azure-generate-login-url` command in the War Room and follow the instructions to obtain the Authorization code.
+9. Paste the value you received in the *Authorization code* parameter and save the instance again.
+10. Click **Test** to validate the connection.
 
 ### Authentication Using the Device Code Flow
 
@@ -76,7 +77,7 @@ Follow one of these steps for authentication based on Azure Managed Identities:
     - In the *Authentication Type* drop-down list, select **Azure Managed Identities** and leave the *Azure Managed Identities Client ID* field empty.
 
 - ##### To use User Assigned Managed Identity
-    1. Go to [Azure Portal](https://portal.azure.com/) > **Managed Identities**.
+    1. Go to the Azure Portal > **Managed Identities**.
     2. Select your User Assigned Managed Identity, then copy the Client ID and paste it in the *Azure Managed Identities Client ID* field in the instance configuration.
     3. In the *Authentication Type* drop-down list, select **Azure Managed Identities**.
 

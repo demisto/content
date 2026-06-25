@@ -5396,11 +5396,22 @@ def test_module(client: AzureClient) -> str:
             "For more details, see the Detailed Instructions (?) section."
         )
     try:
-        client.http_request(
-            method="GET",
-            full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/providers/Microsoft.Authorization/roleAssignments",
-            params={"api-version": PERMISSIONS_VERSION},
-        )
+        if "Azure Managed Identities" in client.connection_type:
+            # The roleAssignments call requires the Microsoft.Authorization/roleAssignments/read
+            # permission, which a Managed Identity often lacks even when it can run other commands.
+            # Validate the connection with a lightweight resource-groups list call, which only requires
+            # the baseline Microsoft.Resources/subscriptions/resourceGroups/read permission.
+            client.http_request(
+                method="GET",
+                full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/resourcegroups",
+                params={"$top": "1"},
+            )
+        else:
+            client.http_request(
+                method="GET",
+                full_url=f"{PREFIX_URL_AZURE}{client.subscription_id}/providers/Microsoft.Authorization/roleAssignments",
+                params={"api-version": PERMISSIONS_VERSION},
+            )
     except (ConnectionError, Timeout) as conn_err:
         raise Exception("Connectivity Error: Cannot reach Azure endpoint") from conn_err
     return "ok"
@@ -5491,6 +5502,64 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     return None
 
 
+def validate_auth_params(params: dict, connection_type: str) -> None:
+    """Validate that all mandatory parameters for the selected authentication type are configured.
+
+    This runs only on the Cortex XSOAR / Cortex XSIAM (marketplace) path.
+
+    The mandatory parameters per authentication type are:
+        - Client Credentials:     Application ID, Tenant ID, Client Secret, Default Subscription ID
+        - Device Code:            Application ID, Default Subscription ID
+        - Authorization Code:     Application ID, Application redirect URI, Authorization code,
+                                  Default Subscription ID
+        - Azure Managed Identities: Azure Managed Identities Client ID, Default Subscription ID
+
+    Raises:
+        DemistoException: If one or more mandatory parameters for the selected auth type are missing.
+    """
+    # Map each configured value to its user-facing display name for clear error messages.
+    app_id = params.get("app_id")
+    subscription_id = params.get("subscription_id")
+    tenant_id = params.get("tenant_id")
+    client_secret = (params.get("credentials") or {}).get("password")
+    auth_code = (params.get("auth_code") or {}).get("password")
+    redirect_uri = params.get("redirect_uri")
+    # Use the resolved Managed Identities client ID so the system-assigned identity (which has no
+    # explicit client ID and resolves to a sentinel value) is treated as configured.
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+
+    required_by_auth_type: dict[str, dict[str, Any]] = {
+        "Client Credentials": {
+            "Application ID": app_id,
+            "Tenant ID": tenant_id,
+            "Client Secret": client_secret,
+            "Default Subscription ID": subscription_id,
+        },
+        "Device Code": {
+            "Application ID": app_id,
+            "Default Subscription ID": subscription_id,
+        },
+        "Authorization Code": {
+            "Application ID": app_id,
+            "Application redirect URI": redirect_uri,
+            "Authorization code": auth_code,
+            "Default Subscription ID": subscription_id,
+        },
+        "Azure Managed Identities": {
+            "Azure Managed Identities Client ID": managed_identities_client_id,
+            "Default Subscription ID": subscription_id,
+        },
+    }
+
+    required_params = required_by_auth_type.get(connection_type, {})
+    missing = [display_name for display_name, value in required_params.items() if not value]
+    if missing:
+        raise DemistoException(
+            f"Missing required parameter(s) for the '{connection_type}' authentication type: "
+            f"{', '.join(missing)}. Configure these in the integration instance and try again."
+        )
+
+
 def get_azure_client(params: dict, args: dict, command: str):
     headers = {}
     client_scope, token_scopes = get_command_and_token_scopes(command)
@@ -5511,12 +5580,10 @@ def get_azure_client(params: dict, args: dict, command: str):
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug("Using CTS.")
-    elif connection_type == "Client Credentials" and not (params.get("credentials") or {}).get("password"):
-        # Marketplace + Client Credentials flow requires a Client Secret.
-        raise DemistoException(
-            "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM with the Client Credentials "
-            "authentication type, configure the Client Secret in the integration instance."
-        )
+    else:
+        # Marketplace path: ensure all mandatory parameters for the selected auth type are configured
+        # before attempting any API call.
+        validate_auth_params(params, connection_type)
     client = AzureClient(
         app_id=params.get("app_id", ""),
         subscription_id=params.get("subscription_id", ""),

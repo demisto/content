@@ -1130,7 +1130,7 @@ def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
     with pytest.raises(DemistoException) as excinfo:
         get_azure_client(params, args, command)
 
-    assert "Missing Client Secret" in str(excinfo.value)
+    assert "Client Secret" in str(excinfo.value)
 
 
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
@@ -1287,19 +1287,26 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
 
 def test_get_azure_client_missing_optional_params(mocker):
     """
-    Given: Parameters with missing optional fields.
+    Given: The mandatory Client Credentials params are provided, but the truly optional fields
+           (resource_group_name, insecure, proxy) are omitted.
     When: The get_azure_client function is called.
-    Then: The function should handle missing parameters gracefully with default values.
+    Then: The function builds the client using default values for the omitted optional fields.
     """
     # Setup mocks
     args = {}
     mock_client = mocker.Mock()
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
-    # Test with minimal parameters
-    params = {"credentials": {"password": "test_password"}}
+    # Mandatory params for Client Credentials present; optional fields omitted.
+    params = {
+        "app_id": "test_app_id",
+        "subscription_id": "test_subscription_id",
+        "tenant_id": "test_tenant_id",
+        "credentials": {"password": "test_password"},
+    }
 
     # Call the function
     result = get_azure_client(params, args, command)
@@ -1307,14 +1314,11 @@ def test_get_azure_client_missing_optional_params(mocker):
     # Verify results
     assert result == mock_client
 
-    # Verify default values were used
+    # Verify default values were used for the optional fields
     call_args = mock_azure_client_constructor.call_args
-    assert call_args[1]["app_id"] == ""
-    assert call_args[1]["subscription_id"] == ""
     assert call_args[1]["resource_group_name"] == ""
     assert call_args[1]["verify"] is True  # Default for insecure=False
     assert call_args[1]["proxy"] is False  # Default
-    assert call_args[1]["tenant_id"] is None
 
 
 def test_format_rule_dict_input(mocker):
@@ -5709,6 +5713,26 @@ def test_test_module_client_credentials_ok(mocker, client):
     assert Azure.test_module(client) == "ok"
 
 
+def test_test_module_managed_identities_uses_resource_groups(mocker):
+    """
+    Given: A client configured with the Azure Managed Identities authentication type.
+    When: test_module is called (Test button).
+    Then: It validates via the lightweight resource-groups list call (not the roleAssignments call),
+          because a Managed Identity often lacks the roleAssignments/read permission while still being
+          able to run other commands. It returns "ok".
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Azure Managed Identities")
+    client.subscription_id = "sub-123"
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+    mock_http.assert_called_once()
+    _, kwargs = mock_http.call_args
+    assert kwargs["full_url"].endswith("/subscriptions/sub-123/resourcegroups")
+    assert "roleAssignments" not in kwargs["full_url"]
+
+
 def test_test_connection_success(mocker, client):
     """
     Given: A client whose MicrosoftClient can fetch an access token.
@@ -5815,6 +5839,88 @@ def test_azure_client_device_code_uses_device_scope(mocker):
     assert captured["token_retrieval_url"] is not None
 
 
+def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
+    """
+    Given: A client constructed with the Azure Managed Identities flow and a user-assigned client ID.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the managed_identities_client_id and the management Azure
+          resource URI, matching the reference Azure packs (e.g. AzureNetworkSecurityGroups). The
+          grant_type is None (the managed-identities path is selected by managed_identities_client_id,
+          not by grant_type). No device-code token URL is set.
+    """
+    from Azure import DEFAULT_RESOURCE, DEFAULT_SCOPE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["managed_identities_client_id"] == "my-mi-client-id"
+    # The MI resource URI must be the management Azure resource (identical to Resources.management_azure).
+    assert captured["managed_identities_resource_uri"] == DEFAULT_RESOURCE
+    assert captured["managed_identities_resource_uri"] == "https://management.azure.com/"
+    # Managed Identities is not a grant_type flow; the path is chosen by managed_identities_client_id.
+    assert captured.get("grant_type") is None
+    # Device-code-only token retrieval URL must not be set for the MI flow.
+    assert captured.get("token_retrieval_url") is None
+
+
+def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with auth_type "Azure Managed Identities" and a configured
+           managed_identities_client_id credential.
+    When: get_azure_client is called.
+    Then: get_azure_managed_identities_client_id resolves the client ID from params and it is passed to
+          AzureClient. The Client Credentials missing-secret guard is NOT triggered (no Client Secret
+          required for the MI flow).
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}  # no client secret configured
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {"password": "resolved-mi-id"}
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Azure Managed Identities"
+    assert kwargs["managed_identities_client_id"] == "resolved-mi-id"
+
+
+def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params):
+    """
+    Given: Marketplace path with auth_type "Azure Managed Identities" and no client ID configured.
+    When: get_azure_client is called.
+    Then: The system-assigned managed identity sentinel is resolved and passed to AzureClient.
+    """
+    from MicrosoftApiModule import MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {}  # no client id -> system assigned
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["managed_identities_client_id"] == MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+
 def test_test_connection_on_platform_raises():
     """
     Given: A client built for the Cortex Platform path (headers set, no MicrosoftClient).
@@ -5833,7 +5939,8 @@ def test_get_azure_client_credentials_none(mocker, mock_params):
     """
     Given: Marketplace path, Client Credentials flow, and credentials explicitly set to None.
     When: get_azure_client is called.
-    Then: It raises the missing-secret DemistoException without an AttributeError.
+    Then: It raises a missing-parameter DemistoException (listing the Client Secret) without an
+          AttributeError.
     """
     mocker.patch("Azure.get_connector_id", return_value=None)
 
@@ -5844,7 +5951,104 @@ def test_get_azure_client_credentials_none(mocker, mock_params):
     with pytest.raises(DemistoException) as excinfo:
         get_azure_client(params, {}, "command")
 
-    assert "Missing Client Secret" in str(excinfo.value)
+    assert "Client Secret" in str(excinfo.value)
+    assert "Client Credentials" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, missing_key, expected_in_message",
+    [
+        ("Client Credentials", "app_id", "Application ID"),
+        ("Client Credentials", "tenant_id", "Tenant ID"),
+        ("Client Credentials", "credentials", "Client Secret"),
+        ("Client Credentials", "subscription_id", "Default Subscription ID"),
+        ("Device Code", "app_id", "Application ID"),
+        ("Device Code", "subscription_id", "Default Subscription ID"),
+        ("Authorization Code", "app_id", "Application ID"),
+        ("Authorization Code", "redirect_uri", "Application redirect URI"),
+        ("Authorization Code", "auth_code", "Authorization code"),
+        ("Authorization Code", "subscription_id", "Default Subscription ID"),
+        # Note: omitting managed_identities_client_id is NOT a missing case - absence resolves to the
+        # system-assigned identity sentinel (covered by test_validate_auth_params_managed_identities_system_assigned).
+        ("Azure Managed Identities", "subscription_id", "Default Subscription ID"),
+    ],
+)
+def test_validate_auth_params_missing(auth_type, missing_key, expected_in_message):
+    """
+    Given: A full set of params for an auth type, with exactly one mandatory param removed.
+    When: validate_auth_params is called.
+    Then: It raises a DemistoException naming the missing parameter and the auth type.
+    """
+    from Azure import validate_auth_params
+
+    full_params = {
+        "app_id": "app",
+        "subscription_id": "sub",
+        "tenant_id": "tenant",
+        "credentials": {"password": "secret"},
+        "auth_code": {"password": "code"},
+        "redirect_uri": "redirect-uri",
+        "managed_identities_client_id": {"password": "mi-id"},
+        "auth_type": auth_type,
+    }
+    full_params.pop(missing_key)
+
+    with pytest.raises(DemistoException) as excinfo:
+        validate_auth_params(full_params, auth_type)
+
+    assert expected_in_message in str(excinfo.value)
+    assert auth_type in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, params",
+    [
+        (
+            "Client Credentials",
+            {"app_id": "app", "subscription_id": "sub", "tenant_id": "t", "credentials": {"password": "s"}},
+        ),
+        ("Device Code", {"app_id": "app", "subscription_id": "sub"}),
+        (
+            "Authorization Code",
+            {
+                "app_id": "app",
+                "subscription_id": "sub",
+                "redirect_uri": "redirect-uri",
+                "auth_code": {"password": "c"},
+            },
+        ),
+        (
+            "Azure Managed Identities",
+            {"subscription_id": "sub", "managed_identities_client_id": {"password": "mi-id"}},
+        ),
+    ],
+)
+def test_validate_auth_params_valid(auth_type, params):
+    """
+    Given: A complete set of mandatory params for an auth type.
+    When: validate_auth_params is called.
+    Then: It does not raise.
+    """
+    from Azure import validate_auth_params
+
+    params = {**params, "auth_type": auth_type}
+    validate_auth_params(params, auth_type)  # Should not raise
+
+
+def test_validate_auth_params_managed_identities_system_assigned():
+    """
+    Given: Azure Managed Identities with no explicit client ID (system-assigned) and a subscription.
+    When: validate_auth_params is called.
+    Then: It does not raise, because the system-assigned identity resolves to a sentinel client ID.
+    """
+    from Azure import validate_auth_params
+
+    params = {
+        "auth_type": "Azure Managed Identities",
+        "subscription_id": "sub",
+        "managed_identities_client_id": {},  # no password -> system assigned
+    }
+    validate_auth_params(params, "Azure Managed Identities")  # Should not raise
 
 
 def test_main_auth_reset(mocker):
