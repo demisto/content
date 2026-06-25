@@ -5,8 +5,6 @@ Connect to Azure using one of the following authentication methods:
 - Device Code flow.
 - Azure Managed Identities flow.
 
-Select the method in the **Authentication Type** parameter and configure the corresponding fields as described below. After configuring an instance, click **Test** to validate the connection. For the Device Code and Authorization Code flows, complete the authentication steps first (see below), and then click **Test**.
-
 ## Self-Deployed Azure App
 
 To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal.
@@ -71,8 +69,8 @@ Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure
 
 ### Azure Managed Identities Authentication
 
-##### Note: This option is relevant only if the integration is running on an Azure VM.
-
+Note:  
+This option is relevant only if the integration is running on an Azure VM.
 Authenticate using either system assigned managed identity or user assigned managed identity.
 
 - For authentication using system assigned managed identity:
