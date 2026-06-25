@@ -257,7 +257,7 @@ def test_get_assets_api_error_raises():
 
 
 def test_get_asset_types():
-    body = {"data": DUMMY_ASSET_TYPES}
+    body = {"asset_types": DUMMY_ASSET_TYPES}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(body)):
         result = get_asset_types()
     assert "devices" in result.outputs
