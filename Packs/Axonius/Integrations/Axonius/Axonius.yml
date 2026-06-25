@@ -688,6 +688,242 @@ script:
     - contextPath: Axonius.assets.updates
       description: Number of assets updated.
       type: Number
+  - arguments:
+    - description: >
+        The asset type to fetch (e.g. devices, users, vulnerability_instances, security_findings).
+        See axonius-get-asset-types for all supported values.
+      name: asset_type
+      required: true
+    - description: AQL filter string to narrow the returned assets.
+      name: query
+    - description: Comma-separated list of fields to include in the response.
+      isArray: true
+      name: fields
+    - description: Comma-separated list of fields to exclude from the response.
+      isArray: true
+      name: fields_to_exclude
+    - defaultValue: "50"
+      description: >
+        Maximum number of assets to return per page (1–2000). Use next_page to
+        paginate. Keep this value small for large asset types (e.g. vulnerability_instances)
+        to avoid XSOAR context size limits (~10 MB).
+      name: page_limit
+    - description: >
+        Pagination cursor returned from a previous call as Axonius.Assets.next_page.
+        Pass this value to retrieve the next page of results.
+      name: next_page
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Include metadata in the response.
+      name: include_metadata
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Include detailed asset data in the response.
+      name: include_details
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Use a cached response entry if available.
+      name: use_cache_entry
+      predefined:
+      - "true"
+      - "false"
+    description: >
+      Fetch assets of any type using the Axonius v2 API
+      (POST /api/v2/assets/{asset_type}). Supports all asset types including
+      security_findings and vulnerability_instances. Use next_page for
+      pagination. Large responses (>10 MB) may be stored as a downloadable
+      file by XSOAR instead of being written to the context.
+    name: axonius-get-assets
+    outputs:
+    - contextPath: Axonius.Assets.asset_type
+      description: The asset type that was queried.
+      type: String
+    - contextPath: Axonius.Assets.assets
+      description: List of asset records returned by the query.
+      type: Unknown
+    - contextPath: Axonius.Assets.count
+      description: Number of assets returned in this page.
+      type: Number
+    - contextPath: Axonius.Assets.total_count
+      description: Total number of assets matching the query (when available).
+      type: Number
+    - contextPath: Axonius.Assets.next_page
+      description: Pagination cursor for the next page of results. Pass this as next_page in the next call.
+      type: String
+  - arguments: []
+    description: Return the list of all available asset types in the Axonius instance (GET /api/v2/assets/asset_types).
+    name: axonius-get-asset-types
+    outputs:
+    - contextPath: Axonius.AssetTypes
+      description: List of available asset types.
+      type: Unknown
+  - arguments:
+    - defaultValue: "50"
+      description: Maximum number of entries to return.
+      name: limit
+    - defaultValue: "0"
+      description: Offset for pagination.
+      name: offset
+    description: List custom data management entries (GET /api/v2/custom_data_management).
+    name: axonius-get-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData
+      description: List of custom data entries.
+      type: Unknown
+  - arguments:
+    - description: >
+        JSON string representing the custom data payload to create.
+        Refer to Axonius API documentation for the required schema.
+      name: payload
+      required: true
+    description: Create a new custom data entry (POST /api/v2/custom_data_management).
+    name: axonius-create-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData
+      description: The created custom data entry.
+      type: Unknown
+  - arguments:
+    - description: ID of the custom data entry to delete.
+      name: id
+      required: true
+    description: Delete a custom data entry by ID (DELETE /api/v2/custom_data_management/{id}).
+    name: axonius-delete-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData.id
+      description: ID of the deleted custom data entry.
+      type: String
+    - contextPath: Axonius.CustomData.deleted
+      description: Whether the entry was deleted.
+      type: Boolean
+  - arguments:
+    - defaultValue: "50"
+      description: Maximum number of enforcements to return.
+      name: limit
+    - defaultValue: "0"
+      description: Offset for pagination.
+      name: offset
+    description: List enforcement sets (GET /api/v2/enforcements).
+    name: axonius-get-enforcements
+    outputs:
+    - contextPath: Axonius.Enforcements.uuid
+      description: Enforcement unique identifier.
+      type: String
+    - contextPath: Axonius.Enforcements.name
+      description: Enforcement name.
+      type: String
+    - contextPath: Axonius.Enforcements
+      description: Full enforcement objects list.
+      type: Unknown
+  - arguments:
+    - description: UUID of the enforcement to run.
+      name: enforcement_id
+      required: true
+    description: Trigger an enforcement run (POST /api/v2/enforcements/{enforcement_id}/run).
+    name: axonius-run-enforcement
+    outputs:
+    - contextPath: Axonius.Enforcements.enforcement_id
+      description: ID of the enforcement that was triggered.
+      type: String
+    - contextPath: Axonius.Enforcements.triggered
+      description: Whether the enforcement was triggered successfully.
+      type: Boolean
+  - arguments:
+    - description: Filter queries by asset type (e.g. devices, users).
+      name: asset_type
+    - defaultValue: "50"
+      description: Maximum number of queries to return.
+      name: limit
+    - defaultValue: "0"
+      description: Offset for pagination.
+      name: offset
+    description: List saved queries (GET /api/v2/queries).
+    name: axonius-get-queries
+    outputs:
+    - contextPath: Axonius.Queries.uuid
+      description: Query unique identifier.
+      type: String
+    - contextPath: Axonius.Queries.name
+      description: Query name.
+      type: String
+    - contextPath: Axonius.Queries
+      description: Full query objects list.
+      type: Unknown
+  - arguments:
+    - description: Name for the new saved query.
+      name: name
+      required: true
+    - description: AQL filter string for the query.
+      name: query
+      required: true
+    - defaultValue: devices
+      description: Asset type this query applies to.
+      name: asset_type
+    - description: Optional description for the query.
+      name: description
+    description: Create a new saved query (POST /api/v2/queries).
+    name: axonius-create-query
+    outputs:
+    - contextPath: Axonius.Queries.uuid
+      description: UUID of the created query.
+      type: String
+    - contextPath: Axonius.Queries.name
+      description: Name of the created query.
+      type: String
+    - contextPath: Axonius.Queries
+      description: The created query object.
+      type: Unknown
+  - arguments:
+    - description: UUID of the query to delete.
+      name: query_id
+      required: true
+    description: Delete a saved query (DELETE /api/v2/queries/{query_id}).
+    name: axonius-delete-query
+    outputs:
+    - contextPath: Axonius.Queries.query_id
+      description: ID of the deleted query.
+      type: String
+    - contextPath: Axonius.Queries.deleted
+      description: Whether the query was deleted.
+      type: Boolean
+  - arguments:
+    - description: Optional AQL filter applied before grouping.
+      name: query
+    - description: Filter vulnerability instances by team name.
+      name: team_name
+    - auto: PREDEFINED
+      description: Filter by the urgent flag on vulnerability instances.
+      name: urgent
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "10"
+      description: Number of top CVEs to return (sorted by affected_hosts_count descending).
+      name: top_n
+    - defaultValue: "100"
+      description: Number of records per page when fetching all instances.
+      name: page_size
+    description: >
+      Fetch all vulnerability instances, flatten them, group by CVE ID, and
+      return the Top N CVEs sorted by affected host count. Computes
+      average_cvss_score per CVE. Outputs as Axonius.GroupedVulnerabilities
+      keyed by cve_id.
+    name: axonius-get-grouped-vulnerabilities
+    outputs:
+    - contextPath: Axonius.GroupedVulnerabilities.cve_id
+      description: CVE identifier.
+      type: String
+    - contextPath: Axonius.GroupedVulnerabilities.affected_hosts_count
+      description: Number of hosts affected by this CVE.
+      type: Number
+    - contextPath: Axonius.GroupedVulnerabilities.average_cvss_score
+      description: Average CVSS score across all instances of this CVE.
+      type: Number
   dockerimage: demisto/axonius:1.1.0.1993107
   runonce: false
   script: '-'
