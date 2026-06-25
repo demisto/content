@@ -270,5 +270,3 @@ outputs:
   description: The email address of an email message on which an action was taken.
   type: string
 fromversion: 5.0.0
-tests:
-- playbook_TrendmicroCAS_Test

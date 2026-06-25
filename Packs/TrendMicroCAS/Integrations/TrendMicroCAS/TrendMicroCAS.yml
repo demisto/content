@@ -590,6 +590,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- playbook_TrendmicroCAS_Test
 fromversion: 5.0.0

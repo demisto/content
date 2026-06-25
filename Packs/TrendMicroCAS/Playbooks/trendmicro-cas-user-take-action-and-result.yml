@@ -240,5 +240,3 @@ outputs:
     "Failed": The action failed.'
   type: String
 fromversion: 5.0.0
-tests:
-- playbook_TrendmicroCAS_Test
