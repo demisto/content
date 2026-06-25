@@ -31,7 +31,7 @@ alter
         if(json_extract_scalar(actor, "$.type") = "session"
                 or (json_extract_scalar(actor, "$.type") = "api_key" and json_extract_scalar(actor, "$.api_key.type") = "user"),
             XDM_CONST.IDENTITY_TYPE_USER,
-            XDM_CONST.IDENTITY_TYPE_SERVICE_ACCOUNT)),
+            XDM_CONST.IDENTITY_TYPE_APPLICATION)),
     xdm.source.ipv4         = json_extract_scalar(actor, "$.session.ip_address"),
     xdm.source.user_agent   = json_extract_scalar(actor, "$.session.user_agent"),
     xdm.source.port         = to_integer(0),
