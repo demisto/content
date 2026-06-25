@@ -235,7 +235,7 @@ def normalize_command_line(command: str) -> str:
     """
 
     if command and isinstance(command, list):
-        command = " ".join(set(command))
+        command = " ".join(str(item) for item in set(command))
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
