@@ -20,7 +20,7 @@ if not SERVER.endswith("/"):
 API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
 ABUSECH_API_KEY = demisto.params().get("hunting_credentials", {}).get("password")
 ABUSECH_URL = demisto.params().get("abusech_hunting_url")
-DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
+DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", False))
 MAX_AGE = demisto.params().get("days", "30")
 THRESHOLD = demisto.params().get("threshold", "80")
 INSECURE = demisto.params().get("insecure", False)
