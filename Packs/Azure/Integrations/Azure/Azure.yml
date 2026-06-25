@@ -40,7 +40,7 @@ configuration:
   display: Authentication Type
   defaultvalue: Client Credentials
   type: 15
-  additionalinfo: The type of authentication. Relevant only for Cortex XSOAR and Cortex XSIAM. On Cortex Platform, authentication is handled automatically and this field is ignored. Can be Client Credentials Flow (recommended), Device Code Flow, Authorization Code Flow, or Azure Managed Identities.
+  additionalinfo: The type of authentication. Relevant only for Cortex XSOAR or Cortex XSIAM. For Cortex Platform, authentication is handled automatically and this field is ignored. Can be Client Credentials (recommended), Device Code, Authorization Code, or Azure Managed Identities.
   options:
   - Client Credentials
   - Device Code
@@ -64,14 +64,14 @@ configuration:
   display: Tenant ID
   defaultvalue:
   type: 0
-  additionalinfo: The Tenant ID of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM. Not required for Cortex Platform.
+  additionalinfo: The tenant ID of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM. Not required for Cortex Platform.
   section: Connect
   required: false
 - name: credentials
   display: Client Secret
   defaultvalue:
   type: 9
-  additionalinfo: The Client Secret of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM when using the Client Credentials flow. Not required for Cortex Platform.
+  additionalinfo: The client secret of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM when using the Client Credentials flow. Not required for Cortex Platform.
   displaypassword: Client Secret
   hiddenusername: true
   section: Connect
@@ -98,7 +98,7 @@ configuration:
   display: Azure Managed Identities Client ID
   defaultvalue:
   type: 9
-  additionalinfo: The Managed Identities client ID for authentication. Relevant only when the integration is running on an Azure VM (Cortex XSOAR and Cortex XSIAM).
+  additionalinfo: The managed identities client ID for authentication. Relevant only when the integration is running on an Azure VM (for Cortex XSOAR and Cortex XSIAM).
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
   section: Connect
