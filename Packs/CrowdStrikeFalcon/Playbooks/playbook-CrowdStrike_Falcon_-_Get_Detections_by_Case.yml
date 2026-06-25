@@ -1,31 +1,34 @@
-id: CrowdStrike Falcon - Get Detections by Incident
+id: CrowdStrike Falcon - Get Detections by Case
 version: -1
-fromversion: 6.5.0
-name: CrowdStrike Falcon - Get Detections by Incident
+contentitemexportablefields:
+  contentitemfields: {}
+name: CrowdStrike Falcon - Get Detections by Case
 description: |-
-  Deprecated. Use the `CrowdStrike Falcon - Get Detections by Case` playbook instead.
-starttaskid: '0'
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook enables getting CrowdStrike Falcon detection (alerts) details based on the CrowdStrike case ID.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 96d3a83c-0e47-4b1b-8c8a-8a9ad8da7966
     type: start
     task:
       id: 96d3a83c-0e47-4b1b-8c8a-8a9ad8da7966
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 377.5,
+          "y": 50
         }
       }
     note: false
@@ -35,31 +38,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
-    taskid: efbe71b9-8a25-4e15-80c5-bf42d1023ab0
+  "2":
+    id: "2"
+    taskid: 303fbaf1-5c5a-4261-9c8c-69c96c585c0e
     type: regular
     task:
-      id: efbe71b9-8a25-4e15-80c5-bf42d1023ab0
+      id: 303fbaf1-5c5a-4261-9c8c-69c96c585c0e
       version: -1
-      name: Get detections for incident
-      description: Gets the detections for a specific incident.
-      script: '|||cs-falcon-get-detections-for-incident'
+      name: Get evidence for case
+      description: Get evidence for a specific case.
+      script: '|||cs-falcon-get-evidence-for-case'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
-      incident_id:
-        simple: ${inputs.IncidentID}
+      id:
+        simple: ${inputs.CaseID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 350
+          "x": 265,
+          "y": 385
         }
       }
     note: false
@@ -69,37 +73,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
-    taskid: 5a7f4edd-f080-4c19-80fd-dcb96cbe286f
+  "3":
+    id: "3"
+    taskid: 4fd45370-e655-4077-8290-44c6df06100e
     type: regular
     task:
-      id: 5a7f4edd-f080-4c19-80fd-dcb96cbe286f
+      id: 4fd45370-e655-4077-8290-44c6df06100e
       version: -1
       name: Get full detection details
       description: Searches for details of specific detections, either using a filter query or by providing the IDs of the detections.
       script: '|||cs-falcon-search-detection'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       extended_data:
-        simple: Yes
+        simple: "Yes"
       ids:
         complex:
-          root: CrowdStrike.IncidentDetection
-          accessor: detection_ids
+          root: CrowdStrike.CaseEvidence.alerts.records.selector
+          accessor: id
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 680
+          "x": 50,
+          "y": 735
         }
       }
     note: false
@@ -140,8 +145,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: fcb0faa4-eb71-4d23-8e52-350a1a9b77f7
     type: title
     task:
@@ -150,14 +155,15 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 850
+          "x": 480,
+          "y": 910
         }
       }
     note: false
@@ -167,37 +173,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
-    taskid: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+  "5":
+    id: "5"
+    taskid: 737d07c1-564e-4d7d-aea2-189d2fb1c2cc
     type: condition
     task:
-      id: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+      id: 737d07c1-564e-4d7d-aea2-189d2fb1c2cc
       version: -1
       name: Are there related detections?
+      description: Checks if the case evidence contains alert detection records.
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '6'
-      yes:
-      - '3'
+      - "6"
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: CrowdStrike.IncidentDetection.detection_ids
+              simple: CrowdStrike.CaseEvidence.alerts.records.selector.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 510
+          "x": 265,
+          "y": 560
         }
       }
     note: false
@@ -207,8 +214,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 1128f484-1855-4136-8c84-17ae1d9cbcdd
     type: regular
     task:
@@ -219,21 +226,59 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       key:
         simple: CrowdStrike.FoundDetections
       value:
-        simple: 'False'
+        simple: "False"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 680
+          "x": 480,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5dacb24d-e3aa-4761-88b4-c2695a50bdd4
+    type: condition
+    task:
+      id: 5dacb24d-e3aa-4761-88b4-c2695a50bdd4
+      version: -1
+      name: is CrowdStrike Falcon integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: CrowdstrikeFalcon
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 210
         }
       }
     note: false
@@ -248,32 +293,43 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 850,
-        "x": 220,
-        "y": 210
+        "height": 920,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs:
-- key: IncidentID
+- key: CaseID
   value: {}
   required: false
-  description: The ID of the CrowdStrike incident.
+  description: The ID of the CrowdStrike Case.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - CaseID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - CrowdStrike.Detection.Behavior
+  - CrowdStrike.Detection.Device
+  - CrowdStrike.FoundDetections
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs:
 - contextPath: CrowdStrike.Detection.Behavior
-  description: CrowdStrike Detection Details
+  description: CrowdStrike Detection Details.
+  type: string
+- contextPath: CrowdStrike.Detection.Device
+  description: CrowdStrike Detection Device Details.
   type: string
 - contextPath: CrowdStrike.FoundDetections
   description: 'Indicates whether detections were found. '
   type: string
 tests:
--  Test Playbook - CrowdStrike Falcon - Get Detections by Incident
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
+- CrowdStrike_Falcon_-_Get_Detections_by_Case
+fromversion: 6.10.0
 marketplaces:
 - xsoar
-# Should not appear in marketplacev2
-deprecated: true
