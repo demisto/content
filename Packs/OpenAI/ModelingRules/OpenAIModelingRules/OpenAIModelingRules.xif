@@ -49,10 +49,10 @@ alter
     xdm.observer.type    = "OpenAI API Platform",
     xdm.observer.sub_type = "Audit Logs",
     xdm.target.resource.id = if(
-        type not in ("login.succeeded", "login.failed", "logout.succeeded", "logout.failed",
+        type in ("login.succeeded", "login.failed", "logout.succeeded", "logout.failed",
             "resource.deleted", "tunnel.created", "tunnel.updated", "tunnel.deleted",
             "ip_allowlist.config.activated", "ip_allowlist.config.deactivated",
-            "certificates.activated", "certificates.deactivated"), 
+            "certificates.activated", "certificates.deactivated"), null,
         type = "api_key.created",         json_extract_scalar(api_key_created, "$.id"),
         type = "api_key.updated",         json_extract_scalar(api_key_updated, "$.id"),
         type = "api_key.deleted",         json_extract_scalar(api_key_deleted, "$.id"),
