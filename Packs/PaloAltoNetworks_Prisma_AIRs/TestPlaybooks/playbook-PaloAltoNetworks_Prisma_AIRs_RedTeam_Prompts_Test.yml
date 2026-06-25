@@ -1,0 +1,877 @@
+description: Test playbook for Prisma AIRs Red Team integration. Tests CRUD operations for prompt sets and prompts.
+id: PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
+inputs:
+- key: PromptSetName
+  value:
+    simple: test-redteam-prompt-set
+  required: false
+  description: Name of the test prompt set to create
+  playbookInputQuery:
+- key: PromptSetDescription
+  value:
+    simple: Test prompt set created by test playbook
+  required: false
+  description: Description of the test prompt set
+  playbookInputQuery:
+- key: UpdatedPromptSetName
+  value:
+    simple: test-redteam-prompt-set-updated
+  required: false
+  description: Updated name for the prompt set
+  playbookInputQuery:
+- key: PromptText
+  value:
+    simple: This is a test adversarial prompt
+  required: false
+  description: Text of the test prompt to create
+  playbookInputQuery:
+- key: PromptGoal
+  value:
+    simple: Test goal for the prompt
+  required: false
+  description: Goal for the test prompt
+  playbookInputQuery:
+- key: UpdatedPromptText
+  value:
+    simple: This is an updated test adversarial prompt
+  required: false
+  description: Updated text for the prompt
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11111111-1111-4111-8111-111111111111
+    type: start
+    task:
+      id: 11111111-1111-4111-8111-111111111111
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 22222222-2222-4222-8222-222222222222
+    type: regular
+    task:
+      id: 22222222-2222-4222-8222-222222222222
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 33333333-3333-4333-8333-333333333333
+    type: title
+    task:
+      id: 33333333-3333-4333-8333-333333333333
+      version: -1
+      name: Red Team Prompt Sets and Prompts - CRUD Operations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 44444444-4444-4444-8444-444444444444
+    type: regular
+    task:
+      id: 44444444-4444-4444-8444-444444444444
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-list
+      description: List all Red Team prompt sets.
+      script: '|||prisma-airs-redteam-prompt-sets-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 55555555-5555-4555-8555-555555555555
+    type: regular
+    task:
+      id: 55555555-5555-4555-8555-555555555555
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-create
+      description: Create a new Red Team prompt set.
+      script: '|||prisma-airs-redteam-prompt-sets-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.PromptSetName
+      description:
+        complex:
+          root: inputs.PromptSetDescription
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 66666666-6666-4666-8666-666666666666
+    type: regular
+    task:
+      id: 66666666-6666-4666-8666-666666666666
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-download
+      description: Download the CSV template for the prompt set.
+      script: '|||prisma-airs-redteam-prompt-sets-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 77777777-7777-4777-8777-777777777777
+    type: regular
+    task:
+      id: 77777777-7777-4777-8777-777777777777
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-get
+      description: Get the prompt set by UUID.
+      script: '|||prisma-airs-redteam-prompt-sets-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 88888888-8888-4888-8888-888888888888
+    type: condition
+    task:
+      id: 88888888-8888-4888-8888-888888888888
+      version: -1
+      name: Validate Prompt Set Created
+      description: Verify the prompt set exists with the expected name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptSetGet
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.PromptSetName
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 99999999-9999-4999-8999-999999999999
+    type: regular
+    task:
+      id: 99999999-9999-4999-8999-999999999999
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-update
+      description: Update the prompt set name.
+      script: '|||prisma-airs-redteam-prompt-sets-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      name:
+        complex:
+          root: inputs.UpdatedPromptSetName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+    type: regular
+    task:
+      id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+      version: -1
+      name: prisma-airs-redteam-prompts-list
+      description: List prompts in the prompt set.
+      script: '|||prisma-airs-redteam-prompts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+    type: regular
+    task:
+      id: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+      version: -1
+      name: prisma-airs-redteam-prompts-create
+      description: Create a prompt in the prompt set.
+      script: '|||prisma-airs-redteam-prompts-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      prompt:
+        complex:
+          root: inputs.PromptText
+      goal:
+        complex:
+          root: inputs.PromptGoal
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cccccccc-cccc-4ccc-8ccc-cccccccccccc
+    type: regular
+    task:
+      id: cccccccc-cccc-4ccc-8ccc-cccccccccccc
+      version: -1
+      name: prisma-airs-redteam-prompts-get
+      description: Get the created prompt by UUID.
+      script: '|||prisma-airs-redteam-prompts-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      prompt_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: dddddddd-dddd-4ddd-8ddd-dddddddddddd
+    type: condition
+    task:
+      id: dddddddd-dddd-4ddd-8ddd-dddddddddddd
+      version: -1
+      name: Validate Prompt Created
+      description: Verify the prompt was retrieved with the expected UUID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptGet
+                accessor: uuid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptCreate
+                accessor: uuid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+    type: regular
+    task:
+      id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+      version: -1
+      name: prisma-airs-redteam-prompts-update
+      description: Update the prompt text.
+      script: '|||prisma-airs-redteam-prompts-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      prompt_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptCreate
+          accessor: uuid
+      prompt:
+        complex:
+          root: inputs.UpdatedPromptText
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ffffffff-ffff-4fff-8fff-ffffffffffff
+    type: regular
+    task:
+      id: ffffffff-ffff-4fff-8fff-ffffffffffff
+      version: -1
+      name: prisma-airs-redteam-prompts-delete
+      description: Delete the prompt from the prompt set.
+      script: '|||prisma-airs-redteam-prompts-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      prompt_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a0a0a0a0-a0a0-4a0a-8a0a-a0a0a0a0a0a0
+    type: condition
+    task:
+      id: a0a0a0a0-a0a0-4a0a-8a0a-a0a0a0a0a0a0
+      version: -1
+      name: Validate Prompt Deleted
+      description: Verify the delete returned the correct prompt UUID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptDeleted
+                accessor: prompt_uuid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptCreate
+                accessor: uuid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b0b0b0b0-b0b0-4b0b-8b0b-b0b0b0b0b0b0
+    type: regular
+    task:
+      id: b0b0b0b0-b0b0-4b0b-8b0b-b0b0b0b0b0b0
+      version: -1
+      name: prisma-airs-redteam-prompts-list
+      description: List prompts after deletion.
+      script: '|||prisma-airs-redteam-prompts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      prompt_set_uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c0c0c0c0-c0c0-4c0c-8c0c-c0c0c0c0c0c0
+    type: regular
+    task:
+      id: c0c0c0c0-c0c0-4c0c-8c0c-c0c0c0c0c0c0
+      version: -1
+      name: prisma-airs-redteam-prompt-sets-archive
+      description: Archive the test prompt set (cleanup).
+      script: '|||prisma-airs-redteam-prompt-sets-archive'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.RedTeamPromptSetCreate
+          accessor: uuid
+      archive:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d0d0d0d0-d0d0-4d0d-8d0d-d0d0d0d0d0d0
+    type: condition
+    task:
+      id: d0d0d0d0-d0d0-4d0d-8d0d-d0d0d0d0d0d0
+      version: -1
+      name: Validate Prompt Set Archived
+      description: Verify the prompt set archive flag is true.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.RedTeamPromptSetArchive
+                accessor: archive
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0
+    type: regular
+    task:
+      id: e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0
+      version: -1
+      name: Test Passed - Close Investigation
+      description: All validations passed successfully.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      closeReason:
+        simple: Test passed - All Red Team prompt set and prompt operations validated successfully
+      closeNotes:
+        simple: "Test playbook completed successfully:\n- Prompt set: create, download, get, update, archive\n- Prompts: create, get, update, delete"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f0f0f0f0-f0f0-4f0f-8f0f-f0f0f0f0f0f0
+    type: regular
+    task:
+      id: f0f0f0f0-f0f0-4f0f-8f0f-f0f0f0f0f0f0
+      version: -1
+      name: Test Failed - Print Error
+      description: Validation failed - print error to fail CI pipeline.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "TEST FAILED: Red Team prompt set/prompt validation failed. Check context: PrismaAIRs.RedTeamPromptSetCreate, PrismaAIRs.RedTeamPromptSetGet, PrismaAIRs.RedTeamPromptCreate, PrismaAIRs.RedTeamPromptGet, PrismaAIRs.RedTeamPromptDeleted, and PrismaAIRs.RedTeamPromptSetArchive"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3365,
+        "width": 800,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0

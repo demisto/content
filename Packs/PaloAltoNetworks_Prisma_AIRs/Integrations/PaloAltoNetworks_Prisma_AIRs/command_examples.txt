@@ -141,7 +141,7 @@
 !prisma-airs-redteam-prompt-sets-update uuid="550e8400-e29b-41d4-a716-446655440000" name="custom-tests-v2"
 !prisma-airs-redteam-prompt-sets-archive uuid="550e8400-e29b-41d4-a716-446655440000" archive="true"
 !prisma-airs-redteam-prompt-sets-download uuid="550e8400-e29b-41d4-a716-446655440000"
-!prisma-airs-redteam-prompt-sets-upload uuid="550e8400-e29b-41d4-a716-446655440000" entry_id="12345"
+!prisma-airs-redteam-prompt-sets-upload uuid="550e8400-e29b-41d4-a716-446655440000" entryID="12345"
 
 ## Red Team - Registry Credentials
 !prisma-airs-redteam-registry-credentials-get

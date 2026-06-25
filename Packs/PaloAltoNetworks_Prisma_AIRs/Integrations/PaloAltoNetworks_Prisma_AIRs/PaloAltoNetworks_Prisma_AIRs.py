@@ -2464,7 +2464,9 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityViolation",
-        outputs_key_field="uuid",
+        # Wrapper per scan ({scan_uuid, violations[], ...}); key by scan_uuid so re-listing a scan updates its
+        # entry and listing a different scan adds a new entry (the wrapper has no top-level uuid).
+        outputs_key_field="scan_uuid",
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -2516,7 +2518,8 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelKeys",
-        outputs_key_field=None,  # No unique key field for this list
+        # Global snapshot of all label keys (no per-invocation resource to key on); latest run reflects current state
+        outputs_key_field=None,
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -2583,7 +2586,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelValues",
-        outputs_key_field=None,  # No unique key field for this list
+        outputs_key_field="key",  # Accumulate by queried label key: different keys add entries, same key updates
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -2652,7 +2655,7 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsAdd",
-        outputs_key_field=None,
+        outputs_key_field="scan_uuid",  # Accumulate by scan: different scans add entries, same scan updates
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -2721,7 +2724,7 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsSet",
-        outputs_key_field=None,
+        outputs_key_field="scan_uuid",  # Accumulate by scan: different scans add entries, same scan updates
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -2796,7 +2799,7 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityLabelsDelete",
-        outputs_key_field=None,
+        outputs_key_field="scan_uuid",  # Accumulate by scan: different scans add entries, same scan updates
         outputs=context_output,
         readable_output=readable_output,
         raw_response={},  # Empty response
@@ -3045,7 +3048,9 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityFiles",
-        outputs_key_field="uuid",
+        # Wrapper per scan ({scan_uuid, files[], ...}); key by scan_uuid so re-listing a scan updates its
+        # entry and listing a different scan adds a new entry (the wrapper has no top-level uuid).
+        outputs_key_field="scan_uuid",
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -3142,7 +3147,9 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityEvaluations",
-        outputs_key_field="uuid",
+        # Wrapper per scan ({scan_uuid, evaluations[], ...}); key by scan_uuid so re-listing a scan updates its
+        # entry and listing a different scan adds a new entry (the wrapper has no top-level uuid).
+        outputs_key_field="scan_uuid",
         outputs=context_output,
         readable_output=readable_output,
         raw_response=response,
@@ -3805,7 +3812,9 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         readable_output += f"\n**Custom Field Values:** {len(response.get('field_values', {}))} field(s) configured"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
+        # Action-tracking context: keyed by the rule instance's own uuid (globally unique per instance).
+        # Separate from list (ModelSecurityRuleInstance) and get (ModelSecurityRuleInstanceGet) to avoid pollution.
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstanceUpdate",
         outputs_key_field="uuid",
         outputs=rule_instance_info,
         readable_output=readable_output,
@@ -3875,7 +3884,9 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
         readable_output += f"\n\n**Custom Field Values:** {len(rule_instance_info.get('field_values', {}))} field(s) configured"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstance",
+        # Query context: keyed by the rule instance's own uuid (globally unique per instance).
+        # Separate from list (ModelSecurityRuleInstance) and update (ModelSecurityRuleInstanceUpdate) to avoid pollution.
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleInstanceGet",
         outputs_key_field="uuid",
         outputs=rule_instance_info,
         readable_output=readable_output,
@@ -5144,8 +5155,10 @@ def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> Comman
     readable_output = f"## Red Team EULA Content\n\n**Length:** {len(eula_content)} characters\n\n**Content Preview:**\n\n```\n{display_content}\n```"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamEula",
-        outputs_key_field="content_length",
+        # Own key, separate from the acceptance record (RedTeamEula) written by status/accept.
+        # Singleton current-state snapshot of the legal text; content_length is not an identity, so no key field.
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamEulaContent",
+        outputs_key_field=None,
         outputs=eula_info,
         readable_output=readable_output,
         raw_response=response,
@@ -5281,17 +5294,16 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
         prompt_info["properties"] = response.get("properties")
 
     # Create readable output
-    readable_output = "## Red Team Prompt Created\n\n"
-    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
-    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
-    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
-    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
-    readable_output += f"**Prompt:** {prompt_info.get('prompt', 'N/A')[:200]}...\n\n"
-    readable_output += f"**Created At:** {prompt_info.get('created_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Created",
+        prompt_info,
+        headers=["uuid", "prompt_set_id", "status", "active", "user_defined_goal", "prompt", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptCreate",
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
@@ -5450,29 +5462,28 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
             prompt_info[field] = response.get(field)
 
     # Create detailed readable output
-    readable_output = "## Red Team Prompt Details\n\n"
-    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
-    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
-    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
-    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
-
-    # Display full prompt text
-    readable_output += f"**Prompt:**\n```\n{prompt_info.get('prompt', 'N/A')}\n```\n\n"
-
-    # Add optional fields if present
-    if prompt_info.get("goal"):
-        readable_output += f"**Goal:** {prompt_info.get('goal')}\n\n"
-    if prompt_info.get("detector_category"):
-        readable_output += f"**Detector Category:** {prompt_info.get('detector_category')}\n\n"
-    if prompt_info.get("severity"):
-        readable_output += f"**Severity:** {prompt_info.get('severity')}\n\n"
-
-    readable_output += f"**Created At:** {prompt_info.get('created_at', 'N/A')}\n\n"
-    readable_output += f"**Updated At:** {prompt_info.get('updated_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Details",
+        prompt_info,
+        headers=[
+            "uuid",
+            "prompt_set_id",
+            "status",
+            "active",
+            "user_defined_goal",
+            "prompt",
+            "goal",
+            "detector_category",
+            "severity",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptGet",
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
@@ -5560,23 +5571,16 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
             prompt_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = "## Red Team Prompt Updated\n\n"
-    readable_output += f"**UUID:** {prompt_info.get('uuid')}\n\n"
-    readable_output += f"**Prompt Set ID:** {prompt_info.get('prompt_set_id')}\n\n"
-    readable_output += f"**Status:** {prompt_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_info.get('active')}\n\n"
-    readable_output += f"**User Defined Goal:** {prompt_info.get('user_defined_goal')}\n\n"
-
-    # Show updated fields
-    if "prompt" in request_body:
-        readable_output += f"**Updated Prompt:** {prompt_info.get('prompt', 'N/A')[:200]}...\n\n"
-    if "goal" in request_body:
-        readable_output += f"**Updated Goal:** {prompt_info.get('goal', 'N/A')}\n\n"
-
-    readable_output += f"**Updated At:** {prompt_info.get('updated_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Updated",
+        prompt_info,
+        headers=["uuid", "prompt_set_id", "status", "active", "user_defined_goal", "prompt", "goal", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPrompt",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptUpdate",
         outputs_key_field="uuid",
         outputs=prompt_info,
         readable_output=readable_output,
@@ -5609,7 +5613,7 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
     # SDK: ./knowledge/prisma-airs-sdk-main/src/red-team/custom-attacks-client.ts (deletePrompt method)
     # Endpoint: DELETE /v1/custom-attack/custom-prompt-set/{promptSetUuid}/custom-prompt/{promptUuid}
     # Response: BaseResponse (message, status) or undefined
-    client.http_request(
+    response = client.http_request(
         method="DELETE",
         url_suffix=f"{RED_TEAM_CUSTOM_ATTACK_ENDPOINT}/custom-prompt-set/{prompt_set_uuid}/custom-prompt/{prompt_uuid}",
         use_redteam_mgmt=True,
@@ -5618,29 +5622,23 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
 
     # Parse response according to BaseResponseSchema (optional)
     # Fields: message (optional), status (optional)
-    # SDK allows undefined response for successful deletion
+    # SDK allows an empty body for successful deletion; http_request returns parsed data (dict) when present.
     result_info = {"prompt_uuid": prompt_uuid, "prompt_set_uuid": prompt_set_uuid, "status": "deleted"}
 
-    # Try to extract response data if present
-    if response and hasattr(response, "json"):
-        try:
-            response_data = response.json()
-            if response_data.get("message"):
-                result_info["message"] = response_data.get("message")
-            if response_data.get("status"):
-                result_info["api_status"] = response_data.get("status")
-        except Exception:
-            # Empty or non-JSON response is valid for DELETE
-            pass
+    if isinstance(response, dict):
+        if response.get("message"):
+            result_info["message"] = response.get("message")
+        if response.get("status"):
+            result_info["api_status"] = response.get("status")
 
     # Create readable output
-    readable_output = "## Red Team Prompt Deleted\n\n"
-    readable_output += f"**Prompt UUID:** {prompt_uuid}\n\n"
-    readable_output += f"**Prompt Set UUID:** {prompt_set_uuid}\n\n"
-    readable_output += "**Status:** Successfully deleted"
-
-    if result_info.get("message"):
-        readable_output += f"\n\n**Message:** {result_info.get('message')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Deleted",
+        result_info,
+        headers=["prompt_uuid", "prompt_set_uuid", "status", "message"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptDeleted",
@@ -5724,22 +5722,16 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
             prompt_set_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = "## Red Team Prompt Set Created\n\n"
-    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
-    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
-    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
-    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
-
-    if prompt_set_info.get("description"):
-        readable_output += f"**Description:** {prompt_set_info.get('description')}\n\n"
-    if prompt_set_info.get("property_names"):
-        readable_output += f"**Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
-
-    readable_output += f"**Created At:** {prompt_set_info.get('created_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Set Created",
+        prompt_set_info,
+        headers=["uuid", "name", "status", "active", "archive", "description", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSetCreate",
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
@@ -5901,32 +5893,28 @@ def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> Com
             prompt_set_info[field] = response.get(field)
 
     # Create detailed readable output
-    readable_output = "## Red Team Prompt Set Details\n\n"
-    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
-    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
-    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
-    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
-
-    # Add optional fields if present
-    if prompt_set_info.get("description"):
-        readable_output += f"**Description:** {prompt_set_info.get('description')}\n\n"
-    if prompt_set_info.get("property_names"):
-        readable_output += f"**Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
-    if prompt_set_info.get("stats"):
-        readable_output += f"**Stats:** {prompt_set_info.get('stats')}\n\n"
-    if prompt_set_info.get("version"):
-        readable_output += f"**Version:** {prompt_set_info.get('version')}\n\n"
-    if prompt_set_info.get("created_by_user_id"):
-        readable_output += f"**Created By:** {prompt_set_info.get('created_by_user_id')}\n\n"
-    if prompt_set_info.get("updated_by_user_id"):
-        readable_output += f"**Updated By:** {prompt_set_info.get('updated_by_user_id')}\n\n"
-
-    readable_output += f"**Created At:** {prompt_set_info.get('created_at', 'N/A')}\n\n"
-    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Set Details",
+        prompt_set_info,
+        headers=[
+            "uuid",
+            "name",
+            "status",
+            "active",
+            "archive",
+            "description",
+            "version",
+            "created_by_user_id",
+            "updated_by_user_id",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSetGet",
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
@@ -6022,25 +6010,16 @@ def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> 
             prompt_set_info[field] = response.get(field)
 
     # Create readable output
-    readable_output = "## Red Team Prompt Set Updated\n\n"
-    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
-    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
-    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
-    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
-
-    # Show updated fields
-    if "name" in request_body:
-        readable_output += f"**Updated Name:** {prompt_set_info.get('name')}\n\n"
-    if "description" in request_body:
-        readable_output += f"**Updated Description:** {prompt_set_info.get('description', 'N/A')}\n\n"
-    if "property_names" in request_body:
-        readable_output += f"**Updated Property Names:** {', '.join(prompt_set_info.get('property_names', []))}\n\n"
-
-    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        "Red Team Prompt Set Updated",
+        prompt_set_info,
+        headers=["uuid", "name", "status", "active", "archive", "description", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSetUpdate",
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
@@ -6123,16 +6102,16 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
 
     # Create readable output
     action = "Archived" if archive_bool else "Unarchived"
-    readable_output = f"## Red Team Prompt Set {action}\n\n"
-    readable_output += f"**UUID:** {prompt_set_info.get('uuid')}\n\n"
-    readable_output += f"**Name:** {prompt_set_info.get('name')}\n\n"
-    readable_output += f"**Status:** {prompt_set_info.get('status')}\n\n"
-    readable_output += f"**Active:** {prompt_set_info.get('active')}\n\n"
-    readable_output += f"**Archive:** {prompt_set_info.get('archive')}\n\n"
-    readable_output += f"**Updated At:** {prompt_set_info.get('updated_at', 'N/A')}"
+    readable_output = tableToMarkdown(
+        f"Red Team Prompt Set {action}",
+        prompt_set_info,
+        headers=["uuid", "name", "status", "active", "archive", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSet",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPromptSetArchive",
         outputs_key_field="uuid",
         outputs=prompt_set_info,
         readable_output=readable_output,
@@ -6238,8 +6217,6 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     Returns:
         CommandResults: Results to return to XSOAR.
     """
-    import demisto
-
     uuid = args.get("uuid")
     entry_id = args.get("entryID")
 
@@ -6290,7 +6267,7 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     files = {"file": (file_name, file_content, "text/csv")}
 
     # Get OAuth token
-    token = client._get_oauth_token()
+    token = client.get_access_token()
     headers = {"Authorization": f"Bearer {token}"}
 
     # Make request with files (multipart/form-data)

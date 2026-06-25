@@ -1,4 +1,5 @@
 import pytest
+import demistomock as demisto
 from unittest.mock import Mock, patch
 from PaloAltoNetworks_Prisma_AIRs import (
     Client,
@@ -11,6 +12,31 @@ from PaloAltoNetworks_Prisma_AIRs import (
     runtime_dlp_profiles_list_command,
     runtime_dlp_profiles_delete_command,
     runtime_topics_apply_command,
+    model_security_labels_add_command,
+    model_security_labels_set_command,
+    model_security_labels_delete_command,
+    model_security_labels_values_command,
+    model_security_rule_instances_get_command,
+    model_security_rule_instances_update_command,
+    model_security_scans_violations_command,
+    model_security_scans_evaluations_command,
+    model_security_scans_files_command,
+    redteam_categories_list_command,
+    redteam_eula_status_command,
+    redteam_eula_content_command,
+    redteam_eula_accept_command,
+    redteam_prompt_sets_create_command,
+    redteam_prompt_sets_list_command,
+    redteam_prompt_sets_get_command,
+    redteam_prompt_sets_update_command,
+    redteam_prompt_sets_archive_command,
+    redteam_prompt_sets_download_command,
+    redteam_prompt_sets_upload_command,
+    redteam_prompts_create_command,
+    redteam_prompts_list_command,
+    redteam_prompts_get_command,
+    redteam_prompts_update_command,
+    redteam_prompts_delete_command,
     model_security_scans_list_command,
     model_security_groups_list_command,
     model_security_rules_list_command,
@@ -759,3 +785,536 @@ class TestCommands:
         with pytest.raises(ValueError, match="profile_id is required"):
             runtime_dlp_profiles_delete_command(mock_client, {})
         mock_http.assert_not_called()
+
+    @patch.object(Client, "http_request")
+    def test_labels_add_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """labels-add keys context by scan_uuid so repeated runs accumulate distinct scan entries.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {}
+        args = {"scan_uuid": "scan-1", "labels": '[{"key": "env", "value": "prod"}]'}
+
+        result = model_security_labels_add_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityLabelsAdd"
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-1"
+        # The DT-keyed context path is what makes repeated runs accumulate instead of overwrite.
+        context = result.to_context()["EntryContext"]
+        assert "PrismaAIRs.ModelSecurityLabelsAdd(val.scan_uuid && val.scan_uuid == obj.scan_uuid)" in context
+
+    @patch.object(Client, "http_request")
+    def test_labels_set_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """labels-set keys context by scan_uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {}
+        args = {"scan_uuid": "scan-2", "labels": '[{"key": "env", "value": "staging"}]'}
+
+        result = model_security_labels_set_command(mock_client, args)
+
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-2"
+
+    @patch.object(Client, "http_request")
+    def test_labels_delete_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """labels-delete keys context by scan_uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+        args = {"scan_uuid": "scan-3", "keys": "env,team"}
+
+        result = model_security_labels_delete_command(mock_client, args)
+
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-3"
+        assert result.outputs["keys_deleted"] == ["env", "team"]
+
+    @patch.object(Client, "http_request")
+    def test_labels_values_accumulates_by_key(self, mock_http: Mock, mock_client: Client) -> None:
+        """labels-values keys context by the queried label key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"values": ["prod", "staging"], "pagination": {"total_items": 2}}
+        args = {"key": "env"}
+
+        result = model_security_labels_values_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityLabelValues"
+        assert result.outputs_key_field == "key"
+        assert result.outputs["key"] == "env"
+        context = result.to_context()["EntryContext"]
+        assert "PrismaAIRs.ModelSecurityLabelValues(val.key && val.key == obj.key)" in context
+
+    @patch.object(Client, "http_request")
+    def test_rule_instances_get_uses_own_keyed_context(self, mock_http: Mock, mock_client: Client) -> None:
+        """rule-instances-get writes to its own context key, keyed by the instance uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "ri-1",
+            "security_group_uuid": "sg-1",
+            "security_rule_uuid": "sr-1",
+            "state": "BLOCKING",
+            "rule": {"name": "PII", "rule_type": "dlp"},
+        }
+        args = {"security_group_uuid": "sg-1", "rule_instance_uuid": "ri-1"}
+
+        result = model_security_rule_instances_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityRuleInstanceGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ri-1"
+        context = result.to_context()["EntryContext"]
+        assert "PrismaAIRs.ModelSecurityRuleInstanceGet(val.uuid && val.uuid == obj.uuid)" in context
+
+    @patch.object(Client, "http_request")
+    def test_rule_instances_update_uses_own_keyed_context(self, mock_http: Mock, mock_client: Client) -> None:
+        """rule-instances-update writes to its own context key, keyed by the instance uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "ri-2",
+            "security_group_uuid": "sg-1",
+            "security_rule_uuid": "sr-1",
+            "state": "DISABLED",
+            "rule": {"name": "PII", "rule_type": "dlp"},
+        }
+        args = {"security_group_uuid": "sg-1", "rule_instance_uuid": "ri-2", "state": "DISABLED"}
+
+        result = model_security_rule_instances_update_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityRuleInstanceUpdate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ri-2"
+        # Verify it does NOT pollute the list/get context keys
+        context = result.to_context()["EntryContext"]
+        assert "PrismaAIRs.ModelSecurityRuleInstanceUpdate(val.uuid && val.uuid == obj.uuid)" in context
+
+    @patch.object(Client, "http_request")
+    def test_scans_violations_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """scans-violations (list) keys its per-scan wrapper by scan_uuid (not the missing top-level uuid).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"violations": [{"uuid": "v-1"}], "pagination": {"total_items": 1}}
+        args = {"uuid": "scan-1"}
+
+        result = model_security_scans_violations_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityViolation"
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-1"
+        context = result.to_context()["EntryContext"]
+        assert "PrismaAIRs.ModelSecurityViolation(val.scan_uuid && val.scan_uuid == obj.scan_uuid)" in context
+
+    @patch.object(Client, "http_request")
+    def test_scans_evaluations_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """scans-evaluations (list) keys its per-scan wrapper by scan_uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"evaluations": [{"uuid": "e-1"}], "pagination": {"total_items": 1}}
+        args = {"scan_uuid": "scan-2"}
+
+        result = model_security_scans_evaluations_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityEvaluations"
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-2"
+
+    @patch.object(Client, "http_request")
+    def test_scans_files_accumulates_by_scan_uuid(self, mock_http: Mock, mock_client: Client) -> None:
+        """scans-files (list) keys its per-scan wrapper by scan_uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"files": [{"uuid": "f-1"}], "pagination": {"total_items": 1}}
+        args = {"scan_uuid": "scan-3"}
+
+        result = model_security_scans_files_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityFiles"
+        assert result.outputs_key_field == "scan_uuid"
+        assert result.outputs["scan_uuid"] == "scan-3"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_categories_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-categories-list returns categories keyed by id, with parsed sub-categories.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = [
+            {
+                "id": "cat-1",
+                "display_name": "Jailbreak",
+                "description": "Jailbreak attacks",
+                "preselect": True,
+                "sub_categories": [
+                    {"id": "sub-1", "display_name": "DAN", "description": "", "preselect": True, "active": True}
+                ],
+            }
+        ]
+
+        result = redteam_categories_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCategory"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["id"] == "cat-1"
+        assert result.outputs[0]["sub_category_count"] == 1
+        assert result.outputs[0]["sub_categories"][0]["id"] == "sub-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_eula_status_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-eula-status returns the acceptance record keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "eula-1",
+            "is_accepted": True,
+            "accepted_at": "2026-01-01T00:00:00Z",
+            "accepted_by_user_id": "user-1",
+        }
+
+        result = redteam_eula_status_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamEula"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "eula-1"
+        assert result.outputs["is_accepted"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_eula_content_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-eula-content writes to its own key (not the acceptance record) with no key field.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"content": "EULA legal text"}
+
+        result = redteam_eula_content_command(mock_client, {})
+
+        # Own key, separate from RedTeamEula (the acceptance record) to avoid shape pollution
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamEulaContent"
+        assert result.outputs_key_field is None
+        assert result.outputs["content"] == "EULA legal text"
+        assert result.outputs["content_length"] == len("EULA legal text")
+
+    @patch.object(Client, "http_request")
+    def test_redteam_eula_accept_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-eula-accept fetches content then POSTs it, returning the acceptance record.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        # First call (GET content) then second call (POST accept)
+        mock_http.side_effect = [
+            {"content": "EULA legal text"},
+            {
+                "uuid": "eula-1",
+                "is_accepted": True,
+                "accepted_at": "2026-01-01T00:00:00Z",
+                "accepted_by_user_id": "user-1",
+            },
+        ]
+
+        result = redteam_eula_accept_command(mock_client, {})
+
+        assert mock_http.call_count == 2
+        get_call, post_call = mock_http.call_args_list
+        assert get_call.kwargs["method"] == "GET"
+        assert post_call.kwargs["method"] == "POST"
+        # The accept request must echo back the fetched EULA content
+        assert post_call.kwargs["json_data"]["eula_content"] == "EULA legal text"
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamEula"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["is_accepted"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_eula_accept_command_no_content(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-eula-accept raises if EULA content cannot be retrieved.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"content": ""}
+
+        with pytest.raises(ValueError, match="Failed to retrieve EULA content"):
+            redteam_eula_accept_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-create writes to its own action context, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ps-1", "name": "set-1", "status": "ACTIVE"}
+
+        result = redteam_prompt_sets_create_command(mock_client, {"name": "set-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSetCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ps-1"
+
+    def test_redteam_prompt_sets_create_requires_name(self, mock_client: Client) -> None:
+        """prompt-sets-create raises when name is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required"):
+            redteam_prompt_sets_create_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-list returns the list keyed by uuid under its own key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"prompt_sets": [{"uuid": "ps-1", "name": "set-1"}], "total": 1}
+
+        result = redteam_prompt_sets_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSets"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-get writes to its own query context, separate from create/update.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ps-1", "name": "set-1"}
+
+        result = redteam_prompt_sets_get_command(mock_client, {"uuid": "ps-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSetGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ps-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-update writes to its own action context, separate from create/get.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ps-1", "name": "renamed"}
+
+        result = redteam_prompt_sets_update_command(mock_client, {"uuid": "ps-1", "name": "renamed"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSetUpdate"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_archive_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-archive writes to its own action context (not the registry-credentials bug key).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ps-1", "name": "set-1", "archive": True, "status": "ARCHIVED"}
+
+        result = redteam_prompt_sets_archive_command(mock_client, {"uuid": "ps-1", "archive": "true"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSetArchive"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ps-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_download_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompt-sets-download returns a fileResult dict (CSV file) for the war room.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = "prompt,goal\nsample,optional"
+
+        result = redteam_prompt_sets_download_command(mock_client, {"uuid": "ps-1"})
+
+        # fileResult returns a dict with the file name and a file entry type
+        assert isinstance(result, dict)
+        assert result.get("File") == "prompt_set_template_ps-1.csv"
+        # CSV requested as plain text
+        assert mock_http.call_args.kwargs["resp_type"] == "text"
+
+    @patch.object(Client, "_http_request")
+    @patch.object(Client, "get_access_token")
+    @patch.object(demisto, "getFilePath")
+    def test_redteam_prompt_sets_upload_command(
+        self, mock_get_file: Mock, mock_token: Mock, mock_http: Mock, mock_client: Client, tmp_path
+    ) -> None:
+        """prompt-sets-upload reads a war-room CSV via getFilePath and POSTs it as multipart.
+
+        Args:
+            mock_get_file: Mocked demisto.getFilePath.
+            mock_token: Mocked Client.get_access_token.
+            mock_http: Mocked Client._http_request.
+            mock_client: Mock client fixture.
+            tmp_path: pytest temp directory.
+        """
+        csv_file = tmp_path / "prompts.csv"
+        csv_file.write_text("prompt,goal\nhello,world")
+
+        mock_get_file.return_value = {"path": str(csv_file), "name": "prompts.csv"}
+        mock_token.return_value = "tok"
+        mock_http.return_value = {"message": "ok", "status": 200}
+
+        result = redteam_prompt_sets_upload_command(mock_client, {"uuid": "ps-1", "entryID": "42"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSetUpload"
+        assert result.outputs_key_field == "prompt_set_uuid"
+        assert result.outputs["prompt_set_uuid"] == "ps-1"
+        # multipart upload uses the files= parameter and the resolved bearer token
+        assert "files" in mock_http.call_args.kwargs
+        assert mock_http.call_args.kwargs["headers"]["Authorization"] == "Bearer tok"
+
+    def test_redteam_prompt_sets_upload_requires_entry_id(self, mock_client: Client) -> None:
+        """prompt-sets-upload raises when entryID is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="entryID is required"):
+            redteam_prompt_sets_upload_command(mock_client, {"uuid": "ps-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-create writes to its own action context, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "p-1", "prompt": "hello"}
+
+        result = redteam_prompts_create_command(mock_client, {"prompt_set_uuid": "ps-1", "prompt": "hello"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "p-1"
+
+    def test_redteam_prompts_create_requires_prompt(self, mock_client: Client) -> None:
+        """prompts-create raises when the prompt text is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="prompt is required"):
+            redteam_prompts_create_command(mock_client, {"prompt_set_uuid": "ps-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-list returns the prompt list keyed by uuid under its own key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"prompts": [{"uuid": "p-1", "prompt": "hello"}], "total": 1}
+
+        result = redteam_prompts_list_command(mock_client, {"prompt_set_uuid": "ps-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPrompts"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-get writes to its own query context, separate from create/update.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "p-1", "prompt": "hello"}
+
+        result = redteam_prompts_get_command(mock_client, {"prompt_set_uuid": "ps-1", "prompt_uuid": "p-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "p-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-update writes to its own action context, separate from create/get.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "p-1", "prompt": "updated"}
+
+        result = redteam_prompts_update_command(
+            mock_client, {"prompt_set_uuid": "ps-1", "prompt_uuid": "p-1", "prompt": "updated"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptUpdate"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-delete writes to its own context, keyed by prompt_uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+
+        result = redteam_prompts_delete_command(mock_client, {"prompt_set_uuid": "ps-1", "prompt_uuid": "p-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptDeleted"
+        assert result.outputs_key_field == "prompt_uuid"
+        assert result.outputs["prompt_uuid"] == "p-1"
+
+    def test_redteam_prompts_delete_requires_prompt_uuid(self, mock_client: Client) -> None:
+        """prompts-delete raises when prompt_uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="prompt_uuid is required"):
+            redteam_prompts_delete_command(mock_client, {"prompt_set_uuid": "ps-1"})
