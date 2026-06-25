@@ -3460,6 +3460,62 @@ def _normalize_mirror_field_value(value: Any) -> Any:
     return value
 
 
+def _mirror_delta_raw_field_value(delta: dict[str, Any], field_name: str) -> Any:
+    """Return the raw delta value for a field without falling back to investigation data."""
+    if not delta:
+        return None
+    custom_fields = _mirror_custom_fields(delta)
+    if field_name in custom_fields:
+        return custom_fields[field_name]
+    if field_name in delta:
+        return delta[field_name]
+    return None
+
+
+def _normalize_outgoing_mirror_compare_value(field_name: str, value: Any, entity_type_suffix: str) -> str:
+    """Normalize a mirror field value for outgoing change comparison."""
+    if value is None:
+        return ""
+    if isinstance(value, dict):
+        value = value.get("value") or value.get("new") or value.get("old")
+    text = str(value or "").strip()
+    if not text or text in ("-", VEGA_EMPTY_FIELD_DISPLAY):
+        if field_name == VEGA_VERDICT_FIELD:
+            return "NA"
+        return ""
+    if field_name in (VEGA_ALERT_STATUS_FIELD, VEGA_INCIDENT_STATUS_FIELD):
+        return _normalize_vega_status_for_api(text, entity_type_suffix)
+    if field_name in (VEGA_ALERT_SEVERITY_FIELD, VEGA_SEVERITY_FIELD):
+        return _normalize_vega_severity_for_display(text)
+    if field_name == VEGA_VERDICT_FIELD:
+        normalized = text.upper()
+        return VERDICT_DISPLAY_TO_API.get(normalized, normalized)
+    return text
+
+
+def _mirror_field_changed_in_delta(field_name: str, delta: dict[str, Any], entity_type_suffix: str) -> bool:
+    """Return True when delta records a meaningful outgoing change for the field."""
+    raw = _mirror_delta_raw_field_value(delta, field_name)
+    if raw is None:
+        return False
+    if isinstance(raw, dict) and ("old" in raw or "new" in raw):
+        old_normalized = _normalize_outgoing_mirror_compare_value(field_name, raw.get("old"), entity_type_suffix)
+        new_normalized = _normalize_outgoing_mirror_compare_value(field_name, raw.get("new"), entity_type_suffix)
+        return old_normalized != new_normalized
+    normalized = _normalize_outgoing_mirror_compare_value(field_name, raw, entity_type_suffix)
+    return bool(normalized)
+
+
+def _mirror_delta_changed_value(field_name: str, delta: dict[str, Any], entity_type_suffix: str) -> Any:
+    """Return the new value for a field that changed in delta, or None when unchanged."""
+    if not _mirror_field_changed_in_delta(field_name, delta, entity_type_suffix):
+        return None
+    raw = _mirror_delta_raw_field_value(delta, field_name)
+    if raw is None:
+        return None
+    return _normalize_mirror_field_value(raw)
+
+
 def _mirror_field_value(field_name: str, delta: dict[str, Any], data: dict[str, Any] | None = None) -> Any:
     """Read a mirrored field from delta and fall back to the investigation data payload."""
     data = data or {}
@@ -3819,6 +3875,9 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
     reasoning = _normalize_verdict_reasoning_for_display(entity)
     if reasoning and reasoning != VEGA_EMPTY_FIELD_DISPLAY:
         custom_fields[VEGA_VERDICT_REASONING_FIELD] = reasoning
+
+    if "comments" in entity:
+        custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
     return custom_fields
 
 
@@ -3858,6 +3917,9 @@ def _build_mirror_sync_object(
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
+
+    if "vegaComments" in raw:
+        sync_object["vegaComments"] = raw["vegaComments"]
 
     demisto.info(f"Built mirrored sync object: entity_type={entity_type_suffix}, remote_id={effective_remote_id}")
     return sync_object
@@ -4306,31 +4368,30 @@ def _build_outgoing_alert_mirror_update(
     inc_status: int | None,
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega alert."""
+    del data
     update_input: dict[str, Any] = {}
-
-    def delta_value(field_name: str) -> Any:
-        return _mirror_field_value(field_name, delta, data)
+    entity_type_suffix = MIRROR_ENTITY_SUFFIX_ALERT
 
     if inc_status == IncidentStatus.DONE:
         update_input["status"] = "RESOLVED"
     else:
-        status = delta_value(VEGA_ALERT_STATUS_FIELD)
+        status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
         if status is not None and str(status).strip():
             update_input["status"] = _validate_alert_status_value(str(status))
 
-    verdict = delta_value(VEGA_VERDICT_FIELD)
+    verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
     if verdict is not None and str(verdict).strip():
         update_input["verdict"] = _validate_verdict_value(str(verdict))
 
-    severity = delta_value(VEGA_ALERT_SEVERITY_FIELD)
+    severity = _mirror_delta_changed_value(VEGA_ALERT_SEVERITY_FIELD, delta, entity_type_suffix)
     if severity is not None and str(severity).strip():
         update_input["severity"] = _validate_severity_value(str(severity))
 
-    verdict_reasoning = delta_value(VEGA_VERDICT_REASONING_FIELD)
+    verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
     if verdict_reasoning is not None and str(verdict_reasoning).strip():
         update_input["verdictReasoning"] = str(verdict_reasoning).strip()
 
-    comment = delta_value(VEGA_NEW_COMMENT_FIELD)
+    comment = _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
     if comment is not None and str(comment).strip():
         update_input["comment"] = str(comment).strip()
     return update_input
@@ -4343,38 +4404,36 @@ def _build_outgoing_incident_mirror_update(
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega incident."""
     update_input: dict[str, Any] = {}
-
-    def delta_value(field_name: str) -> Any:
-        return _mirror_field_value(field_name, delta, data)
+    entity_type_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT
 
     if inc_status == IncidentStatus.DONE:
         update_input["status"] = "RESOLVED"
     else:
-        status = delta_value(VEGA_INCIDENT_STATUS_FIELD)
+        status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
         if status is None or not str(status).strip():
-            status = delta_value(VEGA_ALERT_STATUS_FIELD)
+            status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
         if status is not None and str(status).strip():
             update_input["status"] = _validate_incident_status_value(str(status))
 
-    severity = delta_value(VEGA_SEVERITY_FIELD)
+    severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
     if severity is not None and str(severity).strip():
         update_input["severity"] = _validate_severity_value(str(severity))
 
-    verdict = delta_value(VEGA_VERDICT_FIELD)
-    verdict_reasoning = delta_value(VEGA_VERDICT_REASONING_FIELD)
+    verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
+    verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
     if verdict is not None and str(verdict).strip():
         update_input["verdict"] = {
             "value": _validate_verdict_value(str(verdict)),
             "reasoning": str(verdict_reasoning or ""),
         }
     elif verdict_reasoning is not None and str(verdict_reasoning).strip():
-        current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, delta, data)
+        current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, {}, data)
         update_input["verdict"] = {
             "value": _validate_verdict_value(str(current_verdict or "NA")),
             "reasoning": str(verdict_reasoning).strip(),
         }
 
-    comment = delta_value(VEGA_NEW_COMMENT_FIELD)
+    comment = _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
     if comment is not None and str(comment).strip():
         update_input["comment"] = str(comment).strip()
     return update_input

@@ -38,6 +38,8 @@ from Vega import (
     MIRROR_ENTITY_SUFFIX_ALERT,
     MIRROR_ENTITY_SUFFIX_INCIDENT,
     VEGA_ALERT_STATUS_FIELD,
+    VEGA_ALERT_SEVERITY_FIELD,
+    VEGA_VERDICT_FIELD,
     VEGA_INCIDENT_STATUS_FIELD,
     _normalize_vega_status_for_display,
     _normalize_entity_id,
@@ -88,6 +90,8 @@ from Vega import (
     _resolve_mirror_updated_to,
     _normalize_mirror_field_value,
     _mirror_field_value,
+    _mirror_field_changed_in_delta,
+    _build_outgoing_alert_mirror_update,
     _collect_outgoing_entry_comments,
     VEGA_NEW_COMMENT_FIELD,
     VEGA_MIRROR_TAG_FROM_VEGA,
@@ -2933,9 +2937,27 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert sync_object["CustomFields"]["vegaseverity"] == "MEDIUM"
     assert sync_object["CustomFields"]["vegaverdict"] == "BENIGN"
     assert sync_object["CustomFields"]["vegaverdictreasoning"] == "Confirmed benign"
+    assert "vegaComments" in sync_object
+    assert "note" in sync_object["vegaComments"]
+    assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
     assert "incidentSummary" not in sync_object
     assert "assignee" not in sync_object
-    assert "vegaComments" not in sync_object
+
+
+def test_build_mirror_sync_object_reflects_removed_comments():
+    incident = {
+        "id": "inc-1",
+        "status": "INVESTIGATING",
+        "severity": 2,
+        "comments": [],
+    }
+
+    sync_object = _build_mirror_sync_object(incident, MIRROR_ENTITY_SUFFIX_INCIDENT)
+
+    assert "vegaComments" in sync_object
+    assert "No comments are available" in sync_object["vegaComments"]
+    assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
+    assert "vegaComments" not in sync_object or "Removed comment" not in sync_object["vegaComments"]
 
 
 def test_resolve_mirror_updated_from_uses_mirror_cursor():
@@ -3498,6 +3520,9 @@ def test_get_remote_data_command_alert_with_comment(mocker):
     assert "type" not in result.mirrored_object
     assert result.mirrored_object["vegaEntityType"] == "Vega Alert"
     assert result.mirrored_object["CustomFields"]["alertid"] == "alert-1"
+    assert "vegaComments" in result.mirrored_object
+    assert "Updated in Vega" in result.mirrored_object["vegaComments"]
+    assert "Updated in Vega" in result.mirrored_object["CustomFields"]["vegacomments"]
     assert len(result.entries) >= 1
     assert result.entries[0]["Contents"].startswith("analyst@example.com")
     assert result.entries[0]["Tags"] == [VEGA_MIRROR_TAG_FROM_VEGA]
@@ -3935,6 +3960,119 @@ def test_update_remote_system_command_updates_alert_from_old_new_delta(mocker):
             "status": "RESOLVED",
         }
     )
+
+
+def test_mirror_field_changed_in_delta_treats_equivalent_values_as_unchanged():
+    delta = {
+        "CustomFields": {
+            VEGA_ALERT_STATUS_FIELD: {"old": "Open", "new": "OPEN"},
+            VEGA_ALERT_SEVERITY_FIELD: {"old": "Critical", "new": "CRITICAL"},
+            VEGA_VERDICT_FIELD: {"old": "N/A", "new": "NA"},
+        }
+    }
+
+    assert _mirror_field_changed_in_delta(VEGA_ALERT_STATUS_FIELD, delta, MIRROR_ENTITY_SUFFIX_ALERT) is False
+    assert _mirror_field_changed_in_delta(VEGA_ALERT_SEVERITY_FIELD, delta, MIRROR_ENTITY_SUFFIX_ALERT) is False
+    assert _mirror_field_changed_in_delta(VEGA_VERDICT_FIELD, delta, MIRROR_ENTITY_SUFFIX_ALERT) is False
+
+
+def test_build_outgoing_alert_mirror_update_skips_unchanged_delta_fields():
+    update_input = _build_outgoing_alert_mirror_update(
+        {
+            "CustomFields": {
+                VEGA_ALERT_STATUS_FIELD: {"old": "Open", "new": "Open"},
+                VEGA_ALERT_SEVERITY_FIELD: {"old": "Critical", "new": "Critical"},
+                VEGA_VERDICT_FIELD: {"old": "N/A", "new": "NA"},
+            }
+        },
+        {
+            "type": "Vega Alert",
+            "CustomFields": {
+                VEGA_ALERT_STATUS_FIELD: "Open",
+                VEGA_ALERT_SEVERITY_FIELD: "Critical",
+                VEGA_VERDICT_FIELD: "N/A",
+            },
+        },
+        None,
+    )
+
+    assert update_input == {}
+
+
+def test_update_remote_system_command_skips_incoming_mirror_echo_updates(mocker):
+    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_for_mirror.return_value = {
+        "id": "alert-1",
+        "status": "OPEN",
+        "severity": "CRITICAL",
+        "verdict": "NA",
+    }
+
+    update_remote_system_command(
+        mock_client,
+        {
+            "remoteId": "alert:alert-1",
+            "incidentChanged": "true",
+            "delta": {
+                "CustomFields": {
+                    VEGA_ALERT_STATUS_FIELD: {"old": "Open", "new": "Open"},
+                    VEGA_ALERT_SEVERITY_FIELD: {"old": "Critical", "new": "Critical"},
+                    VEGA_VERDICT_FIELD: {"old": "N/A", "new": "NA"},
+                }
+            },
+            "data": {
+                "type": "Vega Alert",
+                "CustomFields": {
+                    VEGA_ALERT_STATUS_FIELD: "Open",
+                    VEGA_ALERT_SEVERITY_FIELD: "Critical",
+                    VEGA_VERDICT_FIELD: "N/A",
+                },
+            },
+        },
+    )
+
+    mock_client.update_alerts.assert_not_called()
+
+
+def test_update_remote_system_command_mirrors_war_room_comment_without_field_echo(mocker):
+    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_for_mirror.return_value = {"id": "alert-1", "status": "OPEN", "severity": "CRITICAL"}
+
+    update_remote_system_command(
+        mock_client,
+        {
+            "remoteId": "alert:alert-1",
+            "incidentChanged": "true",
+            "delta": {
+                "CustomFields": {
+                    VEGA_ALERT_STATUS_FIELD: {"old": "Open", "new": "Open"},
+                    VEGA_ALERT_SEVERITY_FIELD: {"old": "Critical", "new": "Critical"},
+                }
+            },
+            "data": {
+                "type": "Vega Alert",
+                "CustomFields": {
+                    VEGA_ALERT_STATUS_FIELD: "Open",
+                    VEGA_ALERT_SEVERITY_FIELD: "Critical",
+                },
+            },
+            "entries": [
+                {
+                    "Type": EntryType.NOTE,
+                    "Contents": "test 1",
+                    "Tags": [],
+                }
+            ],
+        },
+    )
+
+    mock_client.update_alerts.assert_called_once_with({"alertIds": ["alert-1"], "comment": "test 1"})
 
 
 def test_get_incident_for_mirror_uses_lightweight_query(mocker):
