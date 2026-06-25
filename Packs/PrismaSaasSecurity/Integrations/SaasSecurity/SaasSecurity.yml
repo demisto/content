@@ -59,12 +59,18 @@ configuration:
   required: true
   additionalinfo: "Important: The limit value can range from 10 to 200 and must be in multiples of 10."
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Fetch only incidents with matching state'
   additionalinfo: Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used.
   name: state

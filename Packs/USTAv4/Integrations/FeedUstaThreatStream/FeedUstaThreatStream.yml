@@ -72,6 +72,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval

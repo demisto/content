@@ -128,18 +128,27 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   section: Collect
   defaultvalue: '50'
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'

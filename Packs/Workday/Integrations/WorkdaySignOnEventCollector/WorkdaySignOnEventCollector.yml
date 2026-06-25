@@ -59,6 +59,8 @@ configuration:
   type: 0
   section: Collect
   hidden: false
+  supportedModules:
+  - xsiam
 - defaultvalue: 1
   display: Events Fetch Interval
   hidden: false

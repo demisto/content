@@ -40,6 +40,9 @@ configuration:
   additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First fetch
   defaultvalue: 2 days
@@ -47,6 +50,9 @@ configuration:
   additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: incidentType
   display: Incident type
   defaultvalue: SecurityScorecard Alert

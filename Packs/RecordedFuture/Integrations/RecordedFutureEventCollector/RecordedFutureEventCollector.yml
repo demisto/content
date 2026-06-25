@@ -30,12 +30,16 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - defaultvalue: 1000
   display: The maximum number of events per fetch. Default and maximum is 1000.
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector

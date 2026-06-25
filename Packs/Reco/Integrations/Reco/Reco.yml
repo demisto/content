@@ -45,6 +45,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Incidents SaaS Source
   display: Source
   name: source
@@ -75,6 +78,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
 display: Reco
 name: Reco

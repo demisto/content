@@ -46,6 +46,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Limit
   name: max_fetch
   type: 0
@@ -53,6 +56,9 @@ configuration:
   additionalinfo: Max number of alerts per fetch. Default is 50.
   defaultvalue: "50"
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Multi customer
   name: is_multi_customer
   type: 8

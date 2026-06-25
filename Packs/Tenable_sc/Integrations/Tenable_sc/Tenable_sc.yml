@@ -57,6 +57,10 @@ configuration:
   section: Collect
   additionalinfo: The timestamp to start the fetch from.
   required: false
+  supportedModules:
+  - agentix
+  - exposure_management
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval

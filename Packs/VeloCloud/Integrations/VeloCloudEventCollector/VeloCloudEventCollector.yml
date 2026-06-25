@@ -33,6 +33,8 @@ configuration:
     additionalinfo: The time range to consider for the first fetch, for example, 3 days ago
     defaultvalue: 1 day ago
     section: Collect
+    supportedModules:
+      - xsiam
   - display: Limit of events per fetch
     name: limit
     type: 0

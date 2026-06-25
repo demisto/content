@@ -35,6 +35,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Company ID in SOCRadar to fetch incidents.
   display: Company ID
   name: socradar_company_id
@@ -60,6 +63,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetch Incidents by resolution status (All, Resolved, Not Resolved)
   defaultvalue: All
   display: Resolution Status

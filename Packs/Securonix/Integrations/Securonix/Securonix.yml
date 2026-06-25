@@ -86,6 +86,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '200'
   additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
   display: The maximum number of incidents to fetch each time.
@@ -93,6 +96,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions.
   defaultvalue: None
   display: Incident Mirroring Direction

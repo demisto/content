@@ -64,6 +64,9 @@ configuration:
   section: Collect
   required: false
   additionalinfo: The maximum number of incidents to retrieve per fetch cycle. Hard upper limit is 200. Increase if your environment ingests more PagerDuty incidents per fetch interval than the configured default.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident statuses to fetch
   name: incident_statuses
   defaultvalue: triggered,acknowledged

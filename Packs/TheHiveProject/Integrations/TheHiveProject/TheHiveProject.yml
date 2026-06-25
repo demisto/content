@@ -51,12 +51,18 @@ configuration:
   defaultvalue: 7 days
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: The maximum amount of incidents to fetch at once
   name: max_fetch
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Case mirroring
   name: mirror
   type: 15
@@ -95,6 +101,9 @@ configuration:
   advanced: true
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

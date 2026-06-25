@@ -35,6 +35,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -62,6 +65,9 @@ configuration:
   type: 0
   required: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: 'This integration offers organizations the ability to track stolen credit card data across the web, providing comprehensive insight into compromised card information sourced from underground markets, dark web forums, and other malicious platforms.'
 display: USTA Stolen Credit Cards
 name: USTA Stolen Credit Cards

@@ -44,6 +44,9 @@ configuration:
   required: false
   defaultvalue: 12 hours
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   defaultvalue: '1000'
   display: Max Detections to Fetch
@@ -51,6 +54,9 @@ configuration:
   required: false
   additionalinfo: 'Maximum number of detections to fetch per run. Note that XSOAR fetch process has a 5-minute timeout, so fetching large numbers of detections may cause timeouts. Recommended range is 10-1000.'
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: severity
   additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
   display: Detection severities to fetch.

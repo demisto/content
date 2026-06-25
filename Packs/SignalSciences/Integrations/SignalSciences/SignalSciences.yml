@@ -51,6 +51,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: CSV list of sites to fetch from. If no sites are specified, events from all corporation's sites will be fetched.
   name: sites_to_fetch
   defaultvalue: ""

@@ -80,6 +80,8 @@ configuration:
   advanced: true
   defaultvalue: "5000"
   additionalinfo: Maximum number of events to fetch per cycle (default 5000).
+  supportedModules:
+  - xsiam
 script:
   commands:
   - name: sap-btp-get-events

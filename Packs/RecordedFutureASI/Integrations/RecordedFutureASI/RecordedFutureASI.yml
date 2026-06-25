@@ -72,12 +72,18 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: '-'
   type: python

@@ -30,6 +30,8 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
 - defaultvalue: '1'
   display: Events Fetch Interval
   name: eventFetchInterval

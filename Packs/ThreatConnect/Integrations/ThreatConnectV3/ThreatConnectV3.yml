@@ -49,12 +49,18 @@ configuration:
   type: 0
   required: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   display: Maximum number of incidents to fetch
   type: 0
   defaultvalue: '200'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

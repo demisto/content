@@ -54,6 +54,9 @@ configuration:
   required: false
   additionalinfo: The maximum limit is 200.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
@@ -66,6 +69,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
@@ -87,6 +93,9 @@ configuration:
   - investigations
   additionalinfo: The type of Taegis asset to fetch when using fetch-incidents
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

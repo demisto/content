@@ -55,12 +55,18 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"

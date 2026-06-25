@@ -43,12 +43,18 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days)
   defaultvalue: 1 days
   display: Fetch Time
   name: first_fetch
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: On 'Fetch incidents' import all alerts related to the incident
   name: import_alerts

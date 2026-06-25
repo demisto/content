@@ -23,6 +23,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Max fetch limit is 50
   defaultvalue: '10'
   display: Fetch limit
@@ -30,6 +33,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: If not selected, will fetch all incident types.
   display: Fetch incidents from type
   name: fetchIncidentType
