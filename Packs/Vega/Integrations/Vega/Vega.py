@@ -1305,6 +1305,24 @@ def fetch_all_alert_events(
     return events, total
 
 
+def _fetch_alert_events_for_ingest(client: Client, alert_id: str) -> tuple[list[dict], dict[str, Any]]:
+    """Fetch alert events for a Vega alert during incident ingest."""
+    alert_id = str(alert_id).strip()
+    try:
+        all_events, total = fetch_all_alert_events(client, alert_id, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
+        events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
+            all_events,
+            total,
+            offset=0,
+            page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+        )
+        custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
+        return (all_events if has_alert_events else []), custom_fields
+    except Exception as exc:
+        demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+        return [], build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0)
+
+
 def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
     """Merge incident CustomFields with flattened custom-field keys."""
     custom_fields: dict[str, Any] = dict(incident.get("CustomFields") or incident.get("customFields") or {})
@@ -1742,9 +1760,9 @@ def _apply_vega_mitre_attack_format(raw: dict) -> None:
         raw["vegaMitreAttack"] = mitre_attack
 
 
-def _build_vega_alert_custom_fields(raw: dict) -> dict[str, str]:
+def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
     """Build CustomFields for Vega alerts (set directly on ingest, not via mapper)."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     alert_uuid = raw.get("id")
     if alert_uuid is not None and str(alert_uuid).strip():
         custom_fields["alertid"] = str(alert_uuid).strip()
@@ -1754,6 +1772,9 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, str]:
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
+    alert_event_fields = raw.get("_alertEventsCustomFields")
+    if isinstance(alert_event_fields, dict):
+        custom_fields.update(alert_event_fields)
     return custom_fields
 
 
@@ -3001,7 +3022,7 @@ def _build_xsoar_incident_dict(
         "occurred": raw.get("createdAt", ""),
         "severity": severity,
         "type": entity_type,
-        "rawJSON": json.dumps(raw),
+        "rawJSON": json.dumps({key: value for key, value in raw.items() if key != "_alertEventsCustomFields"}),
     }
     mirror_id = raw.get("mirror_id")
     if mirror_id:
@@ -3015,13 +3036,23 @@ def _build_xsoar_incident_dict(
     return xsoar_incident
 
 
-def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
+def alert_to_incident(
+    alert: dict,
+    integration_url: str | None = None,
+    client: Client | None = None,
+) -> dict:
     """Convert a Vega alert to an XSOAR incident."""
     raw = dict(alert)
     raw["vegaEntityType"] = "Vega Alert"
     raw.update(_get_mirroring_fields())
     _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_ALERT)
     _apply_vega_entity_link(raw, integration_url=integration_url)
+    if client is not None:
+        alert_id = _normalize_entity_id(raw)
+        if alert_id:
+            alert_events, event_custom_fields = _fetch_alert_events_for_ingest(client, alert_id)
+            raw["alertEvents"] = alert_events
+            raw["_alertEventsCustomFields"] = event_custom_fields
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Alert", MIRROR_ENTITY_SUFFIX_ALERT, _build_vega_alert_custom_fields)
 
@@ -4737,7 +4768,7 @@ def _ingest_fetched_alerts(
         for alert in alerts:
             if not resuming_offset and not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
                 continue
-            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url))
+            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
             ingested.append(alert)
 
         if ingested:

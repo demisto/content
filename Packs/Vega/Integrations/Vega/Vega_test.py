@@ -56,6 +56,7 @@ from Vega import (
     fetch_alert_events_command,
     fetch_alert_events_page,
     fetch_incidents_command,
+    _fetch_alert_events_for_ingest,
     set_detections_state_command,
     update_detections_command,
     incident_to_xsoar_incident,
@@ -1543,6 +1544,51 @@ def test_alert_to_incident_sets_vega_mitre_attack():
     assert xsoar_incident["CustomFields"]["vegacreatedat"] == TIMESTAMP_T1
 
 
+def test_alert_to_incident_fetches_alert_events_when_client_provided(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [
+            {
+                "actor.user.uid": "arn:aws:iam::890123456789:root",
+                "timeframe": "2026-05-12 00:50:00.000",
+            }
+        ],
+    }
+    alert = {
+        "id": "alert-1",
+        "name": "Test Alert",
+        "severity": "HIGH",
+        "createdAt": TIMESTAMP_T1,
+    }
+
+    xsoar_incident = alert_to_incident(alert, client=mock_client)
+    raw = json.loads(xsoar_incident["rawJSON"])
+
+    assert len(raw["alertEvents"]) == 1
+    assert "Alert Events (1)" in xsoar_incident["CustomFields"]["vegaalertevents"]
+    assert xsoar_incident["CustomFields"]["vegaalerteventsloadedfor"] == "alert-1"
+    assert "_alertEventsCustomFields" not in raw
+
+
+def test_alert_to_incident_skips_alert_events_when_client_fetch_fails(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.side_effect = DemistoException("Gateway Timeout")
+    alert = {
+        "id": "alert-1",
+        "name": "Test Alert",
+        "severity": "HIGH",
+        "createdAt": TIMESTAMP_T1,
+    }
+
+    xsoar_incident = alert_to_incident(alert, client=mock_client)
+
+    assert xsoar_incident["CustomFields"]["vegaalerteventsloadedfor"] == "alert-1"
+    assert "No alert events found" in xsoar_incident["CustomFields"]["vegaalertevents"]
+    assert json.loads(xsoar_incident["rawJSON"])["alertEvents"] == []
+
+
 def test_format_raw_entity_for_xsoar_incident():
     incident = {
         "id": "inc-1",
@@ -2091,6 +2137,20 @@ def test_fetch_alert_events_page(mocker):
     assert total == 2
     assert len(events) == 2
     mock_client.get_alert_events.assert_called_once_with("alert-1", limit=50, offset=0)
+
+
+def test_fetch_alert_events_for_ingest_returns_not_available_for_bad_shape(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [{"cid": "123", "eid": "118", "Name": "Access from IP with bad reputation"}],
+    }
+
+    events, custom_fields = _fetch_alert_events_for_ingest(mock_client, "alert-1")
+
+    assert events == []
+    assert "No alert events found" in custom_fields["vegaalertevents"]
+    assert custom_fields["vegaalerteventsloadedfor"] == "alert-1"
 
 
 def test_alert_events_command_results_use_markdown_readable_output():

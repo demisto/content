@@ -540,18 +540,27 @@
 						"y": 6
 					},
 					{
+						"displayType": "CARD",
 						"h": 6,
+						"hideItemTitleOnlyOne": true,
 						"hideName": true,
 						"i": "kmppymlq3f-alert-events-section",
-						"items": [],
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "vegaalertevents",
+								"height": 106,
+								"id": "vega-alert-events-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
 						"maxW": 3,
 						"minH": 4,
 						"moved": false,
 						"name": "Alert Events",
-						"query": "vega-fetch-alert-events",
-						"queryType": "script",
 						"static": false,
-						"type": "dynamic",
 						"w": 3,
 						"x": 0,
 						"y": 10
