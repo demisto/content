@@ -124,11 +124,28 @@ def test_match_one_regex():
     assert match_one_regex(1, [REGEX_IP]) is False
 
 
-def test_normalize_command_line():
+@pytest.mark.parametrize(
+    "command, expected",
+    [
+        pytest.param("cmd -k IP=1.1.1.1 [1.1.1.1]", "cmd -k ip = IP IP", id="string_with_ip_and_brackets"),
+        pytest.param('powershell "remove_quotes"', "powershell remove_quotes", id="string_with_quotes"),
+        pytest.param(["GET", "POST"], {"get", "post"}, id="list_of_strings"),
+        pytest.param([80, 443, 8080], {"80", "443", "8080"}, id="list_of_integers_regression"),
+        pytest.param(["http", 443], {"http", "443"}, id="mixed_list_str_and_int"),
+        pytest.param("", "", id="empty_string"),
+        pytest.param(None, "", id="none_input"),
+        pytest.param([], "", id="empty_list"),
+    ],
+)
+def test_normalize_command_line(command, expected):
     from DBotFindSimilarIncidents import normalize_command_line
 
-    assert normalize_command_line("cmd -k IP=1.1.1.1 [1.1.1.1]") == "cmd -k ip = IP IP"
-    assert normalize_command_line('powershell "remove_quotes"') == "powershell remove_quotes"
+    result = normalize_command_line(command)
+    # For list inputs the join order is non-deterministic (set), so compare token sets
+    if isinstance(expected, set):
+        assert set(result.split()) == expected
+    else:
+        assert result == expected
 
 
 def test_euclidian_similarity_capped():

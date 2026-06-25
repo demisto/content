@@ -5064,13 +5064,6 @@
             ]
         },
         {
-            "playbookID": "TestIPQualityScorePlaybook",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "IPQualityScore"
-            ]
-        },
-        {
             "integrations": "CrowdStrike Falcon Sandbox V2",
             "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500
