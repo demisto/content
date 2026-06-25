@@ -5517,15 +5517,12 @@ def validate_auth_params(params: dict, connection_type: str) -> None:
     Raises:
         DemistoException: If one or more mandatory parameters for the selected auth type are missing.
     """
-    # Map each configured value to its user-facing display name for clear error messages.
     app_id = params.get("app_id")
     subscription_id = params.get("subscription_id")
     tenant_id = params.get("tenant_id")
     client_secret = (params.get("credentials") or {}).get("password")
     auth_code = (params.get("auth_code") or {}).get("password")
     redirect_uri = params.get("redirect_uri")
-    # Use the resolved Managed Identities client ID so the system-assigned identity (which has no
-    # explicit client ID and resolves to a sentinel value) is treated as configured.
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     required_by_auth_type: dict[str, dict[str, Any]] = {
