@@ -190,7 +190,7 @@ def main():
             subscribe(client, conn, subscription_id, topic_name, queue_name)
 
         elif demisto.command() == "fetch-incidents":
-            subscription_id = demisto.params().get("subscription-id", "1")
+            subscription_id = demisto.params().get("subscription-id")
             queue_name = demisto.params().get("queue_name")
             topic_name = demisto.params().get("topic-name")
 
