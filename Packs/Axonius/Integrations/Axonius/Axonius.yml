@@ -690,7 +690,7 @@ script:
       type: Number
   - arguments:
     - description: >
-        The asset type to fetch (e.g. devices, users, vulnerability_instances, security_findings).
+        The asset type to fetch (e.g. devices, users, vulnerability_instances).
         See axonius-get-asset-types for all supported values.
       name: asset_type
       required: true
@@ -736,8 +736,8 @@ script:
     description: >
       Fetch assets of any type using the Axonius v2 API
       (POST /api/v2/assets/{asset_type}). Supports all asset types including
-      security_findings and vulnerability_instances. Use next_page for
-      pagination. Large responses (>10 MB) may be stored as a downloadable
+      vulnerability_instances. Use next_page for pagination. 
+      Large responses (>10 MB) may be stored as a downloadable
       file by XSOAR instead of being written to the context.
       NOTE: All calls write to the fixed context key Axonius.Assets regardless
       of asset_type. If a playbook calls this command more than once with
