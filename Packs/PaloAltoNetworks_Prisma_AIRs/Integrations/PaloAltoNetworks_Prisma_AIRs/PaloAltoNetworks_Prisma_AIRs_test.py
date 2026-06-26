@@ -1037,9 +1037,7 @@ class TestCommands:
                 "display_name": "Jailbreak",
                 "description": "Jailbreak attacks",
                 "preselect": True,
-                "sub_categories": [
-                    {"id": "sub-1", "display_name": "DAN", "description": "", "preselect": True, "active": True}
-                ],
+                "sub_categories": [{"id": "sub-1", "display_name": "DAN", "description": "", "preselect": True, "active": True}],
             }
         ]
 
@@ -1390,9 +1388,7 @@ class TestCommands:
         """
         mock_http.return_value = {"uuid": "job-1", "name": "scan-1", "status": "RUNNING"}
 
-        result = redteam_scan_create_command(
-            mock_client, {"name": "scan-1", "target_uuid": "t-1", "scan_type": "STATIC"}
-        )
+        result = redteam_scan_create_command(mock_client, {"name": "scan-1", "target_uuid": "t-1", "scan_type": "STATIC"})
 
         assert result.outputs_prefix == "PrismaAIRs.RedTeamScanCreate"
         assert result.outputs_key_field == "uuid"
@@ -1658,9 +1654,7 @@ class TestCommands:
         """
         mock_http.return_value = {"message": "successfully deleted apiKeyName: prod-key"}
 
-        result = runtime_api_keys_delete_command(
-            mock_client, {"api_key_name": "prod-key", "updated_by": "user@example.com"}
-        )
+        result = runtime_api_keys_delete_command(mock_client, {"api_key_name": "prod-key", "updated_by": "user@example.com"})
 
         assert result.outputs_prefix == "PrismaAIRs.ApiKeyDeleted"
         assert result.outputs_key_field == "api_key_name"
@@ -1767,9 +1761,7 @@ class TestCommands:
         """
         mock_http.return_value = {"message": "deleted"}
 
-        result = runtime_customer_apps_delete_command(
-            mock_client, {"app_name": "chatbot", "updated_by": "user@example.com"}
-        )
+        result = runtime_customer_apps_delete_command(mock_client, {"app_name": "chatbot", "updated_by": "user@example.com"})
 
         assert result.outputs_prefix == "PrismaAIRs.CustomerAppDeleted"
         assert result.outputs_key_field == "app_name"
@@ -2095,9 +2087,7 @@ class TestCommands:
         """
         mock_http.return_value = {"id": "dp-1", "name": "pci"}
 
-        result = runtime_dlp_profiles_create_command(
-            mock_client, {"name": "pci", "detection_rules": "[]"}
-        )
+        result = runtime_dlp_profiles_create_command(mock_client, {"name": "pci", "detection_rules": "[]"})
 
         assert result.outputs_prefix == "PrismaAIRs.DlpProfileCreate"
         assert result.outputs_key_field == "id"
@@ -2112,9 +2102,7 @@ class TestCommands:
         """
         mock_http.return_value = {"id": "dp-1", "name": "pci"}
 
-        result = runtime_dlp_profiles_patch_command(
-            mock_client, {"profile_id": "dp-1", "name": "pci", "profile_type": "basic"}
-        )
+        result = runtime_dlp_profiles_patch_command(mock_client, {"profile_id": "dp-1", "name": "pci", "profile_type": "basic"})
 
         assert result.outputs_prefix == "PrismaAIRs.DlpProfilePatch"
         assert result.outputs_key_field == "id"
@@ -2178,9 +2166,7 @@ class TestCommands:
         """
         mock_http.return_value = {"profile_id": "sp-1", "profile_name": "default", "revision": 2}
 
-        result = runtime_profiles_update_command(
-            mock_client, {"profile_id": "sp-1", "profile_name": "default"}
-        )
+        result = runtime_profiles_update_command(mock_client, {"profile_id": "sp-1", "profile_name": "default"})
 
         assert result.outputs_prefix == "PrismaAIRs.SecurityProfileUpdate"
         assert result.outputs_key_field == "id"
@@ -2253,9 +2239,7 @@ class TestCommands:
         """
         mock_http.return_value = {"topic_id": "t-1", "topic_name": "Custom", "revision": 1}
 
-        result = runtime_topics_create_command(
-            mock_client, {"topic_name": "Custom", "description": "desc", "examples": "a,b"}
-        )
+        result = runtime_topics_create_command(mock_client, {"topic_name": "Custom", "description": "desc", "examples": "a,b"})
 
         assert result.outputs_prefix == "PrismaAIRs.TopicCreate"
         assert result.outputs_key_field == "topic_id"
@@ -2271,9 +2255,7 @@ class TestCommands:
         """
         mock_http.return_value = {"topic_id": "t-1", "topic_name": "Custom", "revision": 2}
 
-        result = runtime_topics_update_command(
-            mock_client, {"topic_id": "t-1", "topic_name": "Custom"}
-        )
+        result = runtime_topics_update_command(mock_client, {"topic_id": "t-1", "topic_name": "Custom"})
 
         assert result.outputs_prefix == "PrismaAIRs.TopicUpdate"
         assert result.outputs_key_field == "topic_id"
@@ -2315,9 +2297,7 @@ class TestCommands:
         """
         mock_scanner.return_value = {"scan_id": "s-1", "action": "allow", "category": "benign"}
 
-        result = runtime_bulk_scan_command(
-            mock_client, {"profile_name": "default", "prompts_csv": "prompt\nhello\nworld"}
-        )
+        result = runtime_bulk_scan_command(mock_client, {"profile_name": "default", "prompts_csv": "prompt\nhello\nworld"})
 
         assert result.outputs_prefix == "PrismaAIRs.BulkScan"
         assert result.outputs_key_field == "scan_id"
@@ -2342,9 +2322,7 @@ class TestCommands:
             mock_client: Mock client fixture.
         """
         mock_http.return_value = {
-            "data": [
-                {"scan_id": "s-1", "profile_name": "default", "action": "allow", "category": "benign"}
-            ]
+            "data": [{"scan_id": "s-1", "profile_name": "default", "action": "allow", "category": "benign"}]
         }
 
         result = runtime_scan_logs_command(mock_client, {"interval": "24", "unit": "hours"})
@@ -2380,9 +2358,7 @@ class TestCommands:
         """
         mock_http.return_value = {"uuid": "scan-1", "status": "PENDING"}
 
-        result = model_security_scans_create_command(
-            mock_client, {"model_uri": "hf://bert", "security_group_uuid": "sg-1"}
-        )
+        result = model_security_scans_create_command(mock_client, {"model_uri": "hf://bert", "security_group_uuid": "sg-1"})
 
         assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScanCreate"
         assert result.outputs_key_field == "uuid"
@@ -2478,9 +2454,7 @@ class TestCommands:
         """
         mock_http.return_value = {"uuid": "g-1", "name": "grp"}
 
-        result = model_security_groups_create_command(
-            mock_client, {"name": "grp", "source_type": "HUGGING_FACE"}
-        )
+        result = model_security_groups_create_command(mock_client, {"name": "grp", "source_type": "HUGGING_FACE"})
 
         assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupAdd"
         assert result.outputs_key_field == "uuid"
@@ -2496,9 +2470,7 @@ class TestCommands:
         """
         mock_http.return_value = {"uuid": "g-1", "name": "grp-renamed"}
 
-        result = model_security_groups_update_command(
-            mock_client, {"uuid": "g-1", "name": "grp-renamed"}
-        )
+        result = model_security_groups_update_command(mock_client, {"uuid": "g-1", "name": "grp-renamed"})
 
         assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupUpdate"
         assert result.outputs_key_field == "uuid"

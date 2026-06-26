@@ -1,4 +1,4 @@
-category: Network Security
+category: Cloud Security
 commonfields:
   id: Palo Alto Networks - Prisma AIRs AI Security
   version: -1

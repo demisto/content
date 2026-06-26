@@ -1431,7 +1431,7 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
             "Name": app_info.get("name"),
             "Cloud": app_info.get("cloud"),
             "Source": app_info.get("source"),
-            "Profiles": ", ".join(app_info.get("profiles")) if app_info.get("profiles") else "None",
+            "Profiles": ", ".join(app_info.get("profiles") or []) if app_info.get("profiles") else "None",
             "Time Window": f"{time_interval} {time_unit}",
         }
     ]
@@ -1937,7 +1937,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
             request_body["detection_rules"] = None
         else:
             try:
-                request_body["detection_rules"] = json.loads(rules_value)
+                request_body["detection_rules"] = json.loads(rules_value or "")
             except (json.JSONDecodeError, ValueError) as e:
                 raise ValueError(f"detection_rules must be valid JSON or 'null': {e}")
 
@@ -2420,7 +2420,7 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
     """
     uuid = args.get("uuid")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     if not uuid:
         raise ValueError("uuid is required")
@@ -2513,7 +2513,7 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
         CommandResults: Results to return to XSOAR.
     """
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     # Call Model Security Data API to get label keys
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
@@ -2567,7 +2567,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
     """
     key = args.get("key")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     if not key:
         raise ValueError("key is required")
@@ -2993,7 +2993,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
     """
     scan_uuid = args.get("scan_uuid")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     if not scan_uuid:
         raise ValueError("scan_uuid is required")
@@ -3098,7 +3098,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
     """
     scan_uuid = args.get("scan_uuid")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     if not scan_uuid:
         raise ValueError("scan_uuid is required")
@@ -3671,7 +3671,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
     """
     security_group_uuid = args.get("security_group_uuid")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-    offset = arg_to_number(args.get("offset", 0))
+    offset = arg_to_number(args.get("offset", 0)) or 0
 
     if not security_group_uuid:
         raise ValueError("security_group_uuid is required")
@@ -3792,7 +3792,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
         import json
 
         try:
-            request_body["field_values"] = json.loads(args.get("field_values"))
+            request_body["field_values"] = json.loads(args.get("field_values", ""))
         except json.JSONDecodeError as e:
             raise ValueError(f"field_values must be valid JSON: {e}")
 
@@ -4025,7 +4025,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
     if args.get("connection_params"):
         import json
 
-        request_body["connection_params"] = json.loads(args.get("connection_params"))
+        request_body["connection_params"] = json.loads(args.get("connection_params", ""))
 
     # Optional validation parameter
     validate = argToBoolean(args.get("validate", False))
@@ -4189,7 +4189,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
     if args.get("connection_params"):
         import json
 
-        request_body["connection_params"] = json.loads(args.get("connection_params"))
+        request_body["connection_params"] = json.loads(args.get("connection_params", ""))
 
     # If no fields provided, error
     if not request_body:
@@ -4333,11 +4333,11 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
     if args.get("connection_params"):
         import json
 
-        request_body["connection_params"] = json.loads(args.get("connection_params"))
+        request_body["connection_params"] = json.loads(args.get("connection_params", ""))
 
     # Probe fields - array of fields to probe (e.g., ["multi_turn", "rate_limit"])
     if args.get("probe_fields"):
-        probe_fields_str = args.get("probe_fields")
+        probe_fields_str = args.get("probe_fields") or ""
         request_body["probe_fields"] = [field.strip() for field in probe_fields_str.split(",")]
 
     # Call Red Team target probe endpoint
@@ -4402,7 +4402,8 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/red-team/targets-client.ts (lines 272-282)
     # SDK: TargetsClient.getProfile(uuid)
     # Endpoint: GET /v1/target/{uuid}/profile
-    # Response: TargetProfileResponseSchema - { target_id, target_version, status, profiling_status, target_background, additional_context, ai_generated_fields, other_details }
+    # Response: TargetProfileResponseSchema - { target_id, target_version, status, profiling_status,
+    #   target_background, additional_context, ai_generated_fields, other_details }
     url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/{target_uuid}/profile"
     response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_mgmt=True)
 
@@ -4936,7 +4937,8 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
     # Parse response - returns array of CategoryModel
     # Fields: id, display_name, description, preselect, sub_categories
     categories = []
-    for category in response:
+    categories_response: list = response if isinstance(response, list) else []
+    for category in categories_response:
         category_info = {
             "id": category.get("id"),
             "display_name": category.get("display_name"),
@@ -5026,7 +5028,8 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
         )
 
     else:
-        # StaticJobReportSchema fields: severity_report, asr, score, security_report, safety_report, brand_report, compliance_report, report_summary, recommendations
+        # StaticJobReportSchema fields: severity_report, asr, score, security_report, safety_report,
+        #   brand_report, compliance_report, report_summary, recommendations
         severity_report = response.get("severity_report", {})
         severity_stats = severity_report.get("stats", [])
 
@@ -5185,7 +5188,10 @@ def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> Comman
             f"\n\n... (truncated, {len(eula_content) - 1000} more characters)\n\nFull content available in context output."
         )
 
-    readable_output = f"## Red Team EULA Content\n\n**Length:** {len(eula_content)} characters\n\n**Content Preview:**\n\n```\n{display_content}\n```"
+    readable_output = (
+        f"## Red Team EULA Content\n\n**Length:** {len(eula_content)} characters\n\n"
+        f"**Content Preview:**\n\n```\n{display_content}\n```"
+    )
 
     return CommandResults(
         # Own key, separate from the acceptance record (RedTeamEula) written by status/accept.
@@ -5430,7 +5436,10 @@ def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> Comman
             prompt_text = prompt.get("prompt", "N/A")
             # Truncate long prompts for table display
             prompt_preview = prompt_text[:50] + "..." if len(prompt_text) > 50 else prompt_text
-            readable_output += f"| {prompt.get('uuid', 'N/A')} | {prompt.get('status', 'N/A')} | {prompt.get('active', 'N/A')} | {prompt.get('user_defined_goal', 'N/A')} | {prompt_preview} |\n"
+            readable_output += (
+                f"| {prompt.get('uuid', 'N/A')} | {prompt.get('status', 'N/A')} "
+                f"| {prompt.get('active', 'N/A')} | {prompt.get('user_defined_goal', 'N/A')} | {prompt_preview} |\n"
+            )
     else:
         readable_output = "## No prompts found in this prompt set"
 
@@ -5859,7 +5868,10 @@ def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> Co
             description = ps.get("description", "N/A")
             # Truncate long descriptions for table display
             desc_preview = str(description)[:30] + "..." if len(str(description)) > 30 else str(description)
-            readable_output += f"| {ps.get('uuid', 'N/A')} | {ps.get('name', 'N/A')} | {ps.get('status', 'N/A')} | {ps.get('active', 'N/A')} | {ps.get('archive', 'N/A')} | {desc_preview} |\n"
+            readable_output += (
+                f"| {ps.get('uuid', 'N/A')} | {ps.get('name', 'N/A')} | {ps.get('status', 'N/A')} "
+                f"| {ps.get('active', 'N/A')} | {ps.get('archive', 'N/A')} | {desc_preview} |\n"
+            )
     else:
         readable_output = "## No prompt sets found"
 
@@ -6175,7 +6187,7 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
 
     # Create readable output
     # Truncate token for security (show only first and last 8 characters)
-    token_display = credentials_info.get("token", "")
+    token_display = str(credentials_info.get("token") or "")
     if len(token_display) > 20:
         token_truncated = f"{token_display[:8]}...{token_display[-8:]}"
     else:
@@ -6919,7 +6931,16 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     readable_output = tableToMarkdown(
         "Topic Applied to Profile",
         context_output,
-        headers=["profile_name", "profile_id", "topic_name", "topic_id", "topic_revision", "action", "guardrail_action", "applied"],
+        headers=[
+            "profile_name",
+            "profile_id",
+            "topic_name",
+            "topic_id",
+            "topic_revision",
+            "action",
+            "guardrail_action",
+            "applied",
+        ],
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True,
     )
@@ -6989,7 +7010,7 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     demisto.debug(f"Starting bulk scan of {total_prompts} prompts in batches of {batch_size}")
 
     for i in range(0, total_prompts, batch_size):
-        batch = prompts[i: i + batch_size]
+        batch = prompts[i : i + batch_size]
 
         for prompt in batch:
             # Use scanner_request for each prompt
@@ -7488,7 +7509,10 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
         )
     else:
         # 204 No Content response
-        readable_output = f"## Prisma AIRs DLP Dictionary Replaced\n\nDictionary ID `{dictionary_id}` has been successfully replaced (204 No Content)."
+        readable_output = (
+            f"## Prisma AIRs DLP Dictionary Replaced\n\n"
+            f"Dictionary ID `{dictionary_id}` has been successfully replaced (204 No Content)."
+        )
         return CommandResults(readable_output=readable_output)
 
 
@@ -7702,7 +7726,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     if args.get("matching_rules"):
         matching_rules_str = args.get("matching_rules")
         try:
-            matching_rules = json.loads(matching_rules_str)
+            matching_rules = json.loads(matching_rules_str or "")
             request_body["matching_rules"] = matching_rules
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(f"matching_rules must be valid JSON: {e}")
@@ -7711,7 +7735,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     if args.get("tags"):
         tags_str = args.get("tags")
         try:
-            tags = json.loads(tags_str)
+            tags = json.loads(tags_str or "")
             request_body["tags"] = tags
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(f"tags must be valid JSON: {e}")
@@ -7808,7 +7832,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
             request_body["matching_rules"] = None
         else:
             try:
-                request_body["matching_rules"] = json.loads(matching_rules_str)
+                request_body["matching_rules"] = json.loads(matching_rules_str or "")
             except (json.JSONDecodeError, ValueError) as e:
                 raise ValueError(f"matching_rules must be valid JSON or 'null': {e}")
 
@@ -7819,7 +7843,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
             request_body["tags"] = None
         else:
             try:
-                request_body["tags"] = json.loads(tags_str)
+                request_body["tags"] = json.loads(tags_str or "")
             except (json.JSONDecodeError, ValueError) as e:
                 raise ValueError(f"tags must be valid JSON or 'null': {e}")
 
@@ -7917,7 +7941,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     if args.get("matching_rules"):
         matching_rules_str = args.get("matching_rules")
         try:
-            request_body["matching_rules"] = json.loads(matching_rules_str)
+            request_body["matching_rules"] = json.loads(matching_rules_str or "")
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(f"matching_rules must be valid JSON: {e}")
 
@@ -7925,7 +7949,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     if args.get("tags"):
         tags_str = args.get("tags")
         try:
-            request_body["tags"] = json.loads(tags_str)
+            request_body["tags"] = json.loads(tags_str or "")
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(f"tags must be valid JSON: {e}")
 

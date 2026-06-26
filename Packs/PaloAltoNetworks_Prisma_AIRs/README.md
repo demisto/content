@@ -65,6 +65,15 @@ The integration requires:
 4. Test connectivity using the Test button
 5. Start using AI security commands in your playbooks
 
+## Known Limitations
+
+The following DLP configuration operations are currently constrained by the upstream Prisma AIRs DLP API (`https://api.dlp.paloaltonetworks.com`). The integration sends spec-compliant requests; the limitations are server-side:
+
+- **DLP dictionary create/replace** (`prisma-airs-runtime-dlp-dictionaries-create` / `-replace`): the multipart upload returns a generic `HTTP 400` against live tenants even with a correctly formed request. Tracking the upstream fix.
+- **DLP data-profile update/delete** (`prisma-airs-runtime-dlp-profiles-patch` / `-replace` / `-delete`): the DLP API exposes no `DELETE` endpoint for data profiles, and `PATCH`/`PUT` currently return `HTTP 500`. As a result, data profiles can be listed, created, and retrieved, but not updated or removed via the API. Delete is implemented as a soft-delete (`profile_status: "deleted"` via merge-patch), which the API does not yet accept.
+
+`list`, `create`, and `get` operations for dictionaries, patterns, and data profiles work as expected, as do all DLP **pattern** CRUD operations.
+
 ## Support
 
 For support, please contact Palo Alto Networks support or visit the [Cortex XSOAR portal](https://www.paloaltonetworks.com/cortex).
@@ -73,5 +82,5 @@ For support, please contact Palo Alto Networks support or visit the [Cortex XSOA
 
 - **Support Level**: XSOAR Official Support
 - **Author**: Cortex XSOAR
-- **Categories**: Cloud Security, CI/CD
+- **Categories**: Cloud Security
 - **Supported Modules**: cloud_runtime_security, xsiam, cloud
