@@ -467,7 +467,7 @@ def get_custom_data(args: dict) -> CommandResults:
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    entries: list = data.get("data") or (data if isinstance(data, list) else [])
+    entries: list = data.get("custom_fields") or []
 
     readable_output = tableToMarkdown(
         "Axonius Custom Data",
@@ -539,7 +539,7 @@ def get_enforcements(args: dict) -> CommandResults:
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    enforcements: list = data.get("data") or (data if isinstance(data, list) else [])
+    enforcements: list = data.get("enforcements") or []
 
     readable_output = tableToMarkdown(
         "Axonius Enforcements",
@@ -591,7 +591,7 @@ def get_queries(args: dict) -> CommandResults:
     response = make_api_call(endpoint=endpoint, method="GET", query_params=qp)
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    queries: list = data.get("data") or (data if isinstance(data, list) else [])
+    queries: list = data.get("queries") or []
 
     readable_output = tableToMarkdown(
         "Axonius Queries",
