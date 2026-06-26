@@ -502,9 +502,7 @@ def _resolve_outgoing_mirror_fields(params: dict[str, Any] | None = None) -> set
         return set(OUTGOING_MIRROR_FIELD_LABELS)
 
     enabled = {
-        str(value).strip()
-        for value in selected
-        if value is not None and str(value).strip() in VALID_OUTGOING_MIRROR_FIELD_LABELS
+        str(value).strip() for value in selected if value is not None and str(value).strip() in VALID_OUTGOING_MIRROR_FIELD_LABELS
     }
     return enabled if enabled else set(OUTGOING_MIRROR_FIELD_LABELS)
 
@@ -4469,9 +4467,7 @@ def _build_outgoing_alert_mirror_update(
             update_input["verdictReasoning"] = str(verdict_reasoning).strip()
 
     if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
-        comment = _outgoing_mirror_comment_value(
-            _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
-        )
+        comment = _outgoing_mirror_comment_value(_mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix))
         if comment is not None:
             update_input["comment"] = comment
     return update_input
@@ -4521,9 +4517,7 @@ def _build_outgoing_incident_mirror_update(
             }
 
     if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
-        comment = _outgoing_mirror_comment_value(
-            _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
-        )
+        comment = _outgoing_mirror_comment_value(_mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix))
         if comment is not None:
             update_input["comment"] = comment
     return update_input
