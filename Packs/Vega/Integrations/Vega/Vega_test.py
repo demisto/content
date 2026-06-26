@@ -21,6 +21,7 @@ from Vega import (
     _suppress_noisy_http_integration_logs,
     _build_fetch_filter_fingerprint,
     _build_vega_alert_custom_fields,
+    _build_vega_incident_custom_fields,
     _fetch_paginated_entities,
     _is_retryable_http_error,
     _format_bullet_list,
@@ -93,7 +94,9 @@ from Vega import (
     _mirror_field_changed_in_delta,
     _build_outgoing_alert_mirror_update,
     _collect_outgoing_entry_comments,
+    _outgoing_mirror_comment_value,
     VEGA_NEW_COMMENT_FIELD,
+    VEGA_NEW_COMMENT_LAYOUT_DEFAULT,
     VEGA_MIRROR_TAG_FROM_VEGA,
     VEGA_MIRROR_TAG_TO_VEGA,
     RATE_LIMIT_INITIAL_WAIT_SECONDS,
@@ -2114,6 +2117,18 @@ def test_build_vega_alert_custom_fields_sets_mitre_attack_and_alert_id():
     assert fields["alertid"] == "alert-1"
     assert "vegaalertid" not in fields
     assert fields["vegamitreattack"] == "T1059"
+    assert fields[VEGA_NEW_COMMENT_FIELD] == VEGA_NEW_COMMENT_LAYOUT_DEFAULT
+
+
+def test_build_vega_incident_custom_fields_sets_layout_default_comment():
+    fields = _build_vega_incident_custom_fields({"id": "inc-1"})
+    assert fields["vegaincidentid"] == "inc-1"
+    assert fields[VEGA_NEW_COMMENT_FIELD] == VEGA_NEW_COMMENT_LAYOUT_DEFAULT
+
+
+def test_outgoing_mirror_comment_value_skips_layout_default():
+    assert _outgoing_mirror_comment_value(VEGA_NEW_COMMENT_LAYOUT_DEFAULT) is None
+    assert _outgoing_mirror_comment_value("Reviewed in XSOAR") == "Reviewed in XSOAR"
 
 
 def test_fetch_alert_events_page(mocker):
@@ -2982,6 +2997,34 @@ def test_normalize_verdict_reasoning_from_user_verdict():
     raw = {"userVerdict": {"value": "BENIGN", "reasoning": "Reviewed by analyst"}}
     assert _normalize_verdict_reasoning_for_display(raw) == "N/A"
     assert _extract_verdict_reasoning_from_entity(raw) is None
+
+
+def test_build_mirror_sync_object_refreshes_mirror_direction_each_cycle(mocker):
+    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
+
+    sync_object = _build_mirror_sync_object(
+        {"id": "alert-1", "status": "OPEN", "severity": "HIGH"},
+        MIRROR_ENTITY_SUFFIX_ALERT,
+    )
+
+    assert sync_object["dbotMirrorDirection"] == "Both"
+    assert sync_object["mirror_direction"] == "Both"
+    assert sync_object["dbotMirrorInstance"] == "Vega_instance_1"
+    assert sync_object["dbotMirrorId"] == "alert:alert-1"
+
+
+def test_build_mirror_sync_object_sets_in_direction_when_outgoing_mirror_disabled(mocker):
+    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
+
+    sync_object = _build_mirror_sync_object(
+        {"id": "inc-1", "status": "INVESTIGATING", "severity": "MEDIUM"},
+        MIRROR_ENTITY_SUFFIX_INCIDENT,
+    )
+
+    assert sync_object["dbotMirrorDirection"] == "In"
+    assert sync_object["mirror_direction"] == "In"
 
 
 def test_build_mirror_sync_object_includes_alert_severity():

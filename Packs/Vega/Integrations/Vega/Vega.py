@@ -64,6 +64,7 @@ VEGA_SEVERITY_FIELD = "vegaseverity"
 VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
 VEGA_NEW_COMMENT_FIELD = "veganewcomment"
+VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
@@ -97,6 +98,19 @@ VEGA_OUTGOING_MIRROR_FIELDS: dict[str, dict[str, tuple[str, ...]]] = {
         VEGA_NEW_COMMENT_FIELD: ("Comment to add on the Vega incident",),
     },
 }
+OUTGOING_MIRROR_FIELD_STATUS = "Status"
+OUTGOING_MIRROR_FIELD_SEVERITY = "Severity"
+OUTGOING_MIRROR_FIELD_VERDICT = "Verdict"
+OUTGOING_MIRROR_FIELD_VERDICT_REASONING = "Verdict Reasoning"
+OUTGOING_MIRROR_FIELD_COMMENTS = "Comments"
+OUTGOING_MIRROR_FIELD_LABELS: tuple[str, ...] = (
+    OUTGOING_MIRROR_FIELD_STATUS,
+    OUTGOING_MIRROR_FIELD_SEVERITY,
+    OUTGOING_MIRROR_FIELD_VERDICT,
+    OUTGOING_MIRROR_FIELD_VERDICT_REASONING,
+    OUTGOING_MIRROR_FIELD_COMMENTS,
+)
+VALID_OUTGOING_MIRROR_FIELD_LABELS = frozenset(OUTGOING_MIRROR_FIELD_LABELS)
 VEGA_CLOSE_STATUSES = frozenset({"RESOLVED"})
 VEGA_ALERT_OPEN_STATUSES = frozenset({"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "PEER_REVIEW"})
 VEGA_INCIDENT_OPEN_STATUSES = frozenset(
@@ -478,6 +492,21 @@ def filter_alert_verdicts(values: list[str] | None) -> list[str] | None:
 def filter_incident_verdicts(values: list[str] | None) -> list[str] | None:
     """Validate incident verdict filters and return Vega API verdict values."""
     return _filter_fetch_values(values, VALID_VERDICTS, VERDICT_DISPLAY_TO_API)
+
+
+def _resolve_outgoing_mirror_fields(params: dict[str, Any] | None = None) -> set[str]:
+    """Return enabled outgoing mirror field labels. Empty selection mirrors all fields."""
+    params = params or demisto.params()
+    selected = argToList(params.get("outgoing_mirror_fields"))
+    if not selected:
+        return set(OUTGOING_MIRROR_FIELD_LABELS)
+
+    enabled = {
+        str(value).strip()
+        for value in selected
+        if value is not None and str(value).strip() in VALID_OUTGOING_MIRROR_FIELD_LABELS
+    }
+    return enabled if enabled else set(OUTGOING_MIRROR_FIELD_LABELS)
 
 
 def resolve_has_related_incidents(values: list[str] | None) -> bool | None:
@@ -1775,6 +1804,7 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
     alert_event_fields = raw.get("_alertEventsCustomFields")
     if isinstance(alert_event_fields, dict):
         custom_fields.update(alert_event_fields)
+    custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
 
@@ -2101,6 +2131,7 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
+    custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
 
@@ -3120,14 +3151,44 @@ def _apply_xsoar_mirror_metadata(
     mirror_context: dict[str, Any] | None = None,
 ) -> None:
     """Attach top-level mirror metadata required for XSOAR remote sync."""
-    if not xsoar_incident.get("dbotMirrorId"):
+    mirror_id = xsoar_incident.get("dbotMirrorId") or xsoar_incident.get("mirror_id")
+    if not mirror_id:
         return
-    mirror_fields = _get_mirroring_fields(mirror_context=xsoar_incident)
-    if mirror_fields.get("mirror_direction"):
-        xsoar_incident["dbotMirrorDirection"] = mirror_fields["mirror_direction"]
+    _apply_mirror_metadata_fields(xsoar_incident, mirror_context=mirror_context, mirror_id=str(mirror_id).strip())
 
+
+def _apply_mirror_metadata_fields(
+    payload: dict[str, Any],
+    mirror_context: dict[str, Any] | None = None,
+    *,
+    mirror_id: str | None = None,
+) -> None:
+    """Attach mirror direction and instance to an ingest or get-remote-data payload."""
+    effective_mirror_id = mirror_id or payload.get("dbotMirrorId") or payload.get("mirror_id")
+    if not effective_mirror_id:
+        return
+
+    mirror_id_text = str(effective_mirror_id).strip()
+    payload["dbotMirrorId"] = mirror_id_text
+    payload["mirror_id"] = mirror_id_text
+
+    mirror_fields = _get_mirroring_fields(mirror_context=mirror_context or payload)
+    if mirror_fields.get("mirror_direction"):
+        direction = mirror_fields["mirror_direction"]
+        payload["dbotMirrorDirection"] = direction
+        payload["mirror_direction"] = direction
     if mirror_fields.get("mirror_instance"):
-        xsoar_incident["dbotMirrorInstance"] = mirror_fields["mirror_instance"]
+        instance = mirror_fields["mirror_instance"]
+        payload["dbotMirrorInstance"] = instance
+        payload["mirror_instance"] = instance
+
+
+def _apply_mirror_sync_metadata(
+    sync_object: dict[str, Any],
+    mirror_context: dict[str, Any] | None = None,
+) -> None:
+    """Refresh top-level mirror metadata on every incoming mirror sync cycle."""
+    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context)
 
 
 def _normalize_entity_id(entity: dict, id_key: str = "id") -> str:
@@ -3458,6 +3519,16 @@ def _normalize_mirror_field_value(value: Any) -> Any:
         if "old" in value:
             return value.get("old")
     return value
+
+
+def _outgoing_mirror_comment_value(value: Any) -> str | None:
+    """Return a Vega comment to push, skipping empty values and the layout display default."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text or text.casefold() == VEGA_NEW_COMMENT_LAYOUT_DEFAULT.casefold():
+        return None
+    return text
 
 
 def _mirror_delta_raw_field_value(delta: dict[str, Any], field_name: str) -> Any:
@@ -3913,13 +3984,15 @@ def _build_mirror_sync_object(
         "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
-    for key in ("status", "severity", "verdict", "verdictReasoning", "mirror_direction", "mirror_instance"):
+    for key in ("status", "severity", "verdict", "verdictReasoning"):
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
 
     if "vegaComments" in raw:
         sync_object["vegaComments"] = raw["vegaComments"]
+
+    _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
 
     demisto.info(f"Built mirrored sync object: entity_type={entity_type_suffix}, remote_id={effective_remote_id}")
     return sync_object
@@ -4234,12 +4307,11 @@ def _build_not_found_mirror_response(
 
     not_found: dict[str, Any] = {
         "id": mirror_key,
-        "dbotMirrorId": prefixed_mirror_id,
         "mirror_id": prefixed_mirror_id,
     }
     if effective_entity_type:
         not_found["vegaEntityType"] = effective_entity_type
-        not_found.update(_get_mirroring_fields())
+    _apply_mirror_sync_metadata(not_found)
     return GetRemoteDataResponse(mirrored_object=not_found, entries=[])
 
 
@@ -4292,13 +4364,12 @@ def _build_get_remote_data_error_response(remote_id: str, args: dict[str, Any], 
     preferred_entity_type = _mirror_entity_type_from_args(args, remote_id)
     error_object: dict[str, Any] = {
         "id": mirror_key,
-        "dbotMirrorId": mirror_key,
-        "mirror_id": mirror_key,
         "in_mirror_error": str(exc),
     }
     if preferred_entity_type:
         error_object["vegaEntityType"] = preferred_entity_type
-    error_object.update(_get_mirroring_fields())
+    error_object["mirror_id"] = mirror_key
+    _apply_mirror_sync_metadata(error_object)
     return GetRemoteDataResponse(mirrored_object=error_object, entries=[])
 
 
@@ -4366,34 +4437,43 @@ def _build_outgoing_alert_mirror_update(
     delta: dict[str, Any],
     data: dict[str, Any],
     inc_status: int | None,
+    enabled_fields: set[str] | None = None,
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega alert."""
     del data
     update_input: dict[str, Any] = {}
     entity_type_suffix = MIRROR_ENTITY_SUFFIX_ALERT
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
 
-    if inc_status == IncidentStatus.DONE:
-        update_input["status"] = "RESOLVED"
-    else:
-        status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
-        if status is not None and str(status).strip():
-            update_input["status"] = _validate_alert_status_value(str(status))
+    if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
+        if inc_status == IncidentStatus.DONE:
+            update_input["status"] = "RESOLVED"
+        else:
+            status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is not None and str(status).strip():
+                update_input["status"] = _validate_alert_status_value(str(status))
 
-    verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
-    if verdict is not None and str(verdict).strip():
-        update_input["verdict"] = _validate_verdict_value(str(verdict))
+    if OUTGOING_MIRROR_FIELD_VERDICT in active_fields:
+        verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
+        if verdict is not None and str(verdict).strip():
+            update_input["verdict"] = _validate_verdict_value(str(verdict))
 
-    severity = _mirror_delta_changed_value(VEGA_ALERT_SEVERITY_FIELD, delta, entity_type_suffix)
-    if severity is not None and str(severity).strip():
-        update_input["severity"] = _validate_severity_value(str(severity))
+    if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
+        severity = _mirror_delta_changed_value(VEGA_ALERT_SEVERITY_FIELD, delta, entity_type_suffix)
+        if severity is not None and str(severity).strip():
+            update_input["severity"] = _validate_severity_value(str(severity))
 
-    verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
-    if verdict_reasoning is not None and str(verdict_reasoning).strip():
-        update_input["verdictReasoning"] = str(verdict_reasoning).strip()
+    if OUTGOING_MIRROR_FIELD_VERDICT_REASONING in active_fields:
+        verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
+        if verdict_reasoning is not None and str(verdict_reasoning).strip():
+            update_input["verdictReasoning"] = str(verdict_reasoning).strip()
 
-    comment = _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
-    if comment is not None and str(comment).strip():
-        update_input["comment"] = str(comment).strip()
+    if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
+        comment = _outgoing_mirror_comment_value(
+            _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
+        )
+        if comment is not None:
+            update_input["comment"] = comment
     return update_input
 
 
@@ -4401,41 +4481,51 @@ def _build_outgoing_incident_mirror_update(
     delta: dict[str, Any],
     data: dict[str, Any],
     inc_status: int | None,
+    enabled_fields: set[str] | None = None,
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega incident."""
     update_input: dict[str, Any] = {}
     entity_type_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
+    mirror_verdict = OUTGOING_MIRROR_FIELD_VERDICT in active_fields
+    mirror_verdict_reasoning = OUTGOING_MIRROR_FIELD_VERDICT_REASONING in active_fields
 
-    if inc_status == IncidentStatus.DONE:
-        update_input["status"] = "RESOLVED"
-    else:
-        status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
-        if status is None or not str(status).strip():
-            status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
-        if status is not None and str(status).strip():
-            update_input["status"] = _validate_incident_status_value(str(status))
+    if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
+        if inc_status == IncidentStatus.DONE:
+            update_input["status"] = "RESOLVED"
+        else:
+            status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is None or not str(status).strip():
+                status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is not None and str(status).strip():
+                update_input["status"] = _validate_incident_status_value(str(status))
 
-    severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
-    if severity is not None and str(severity).strip():
-        update_input["severity"] = _validate_severity_value(str(severity))
+    if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
+        severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
+        if severity is not None and str(severity).strip():
+            update_input["severity"] = _validate_severity_value(str(severity))
 
-    verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
-    verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
-    if verdict is not None and str(verdict).strip():
-        update_input["verdict"] = {
-            "value": _validate_verdict_value(str(verdict)),
-            "reasoning": str(verdict_reasoning or ""),
-        }
-    elif verdict_reasoning is not None and str(verdict_reasoning).strip():
-        current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, {}, data)
-        update_input["verdict"] = {
-            "value": _validate_verdict_value(str(current_verdict or "NA")),
-            "reasoning": str(verdict_reasoning).strip(),
-        }
+    if mirror_verdict or mirror_verdict_reasoning:
+        verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
+        verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
+        if mirror_verdict and verdict is not None and str(verdict).strip():
+            update_input["verdict"] = {
+                "value": _validate_verdict_value(str(verdict)),
+                "reasoning": str(verdict_reasoning or "") if mirror_verdict_reasoning else "",
+            }
+        elif mirror_verdict_reasoning and verdict_reasoning is not None and str(verdict_reasoning).strip():
+            current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, {}, data)
+            update_input["verdict"] = {
+                "value": _validate_verdict_value(str(current_verdict or "NA")),
+                "reasoning": str(verdict_reasoning).strip(),
+            }
 
-    comment = _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
-    if comment is not None and str(comment).strip():
-        update_input["comment"] = str(comment).strip()
+    if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
+        comment = _outgoing_mirror_comment_value(
+            _mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix)
+        )
+        if comment is not None:
+            update_input["comment"] = comment
     return update_input
 
 
@@ -4468,8 +4558,14 @@ def _mirror_outgoing_war_room_comments(
     entity_type_suffix: str,
     vega_id: str,
     remote_id: str,
+    enabled_fields: set[str] | None = None,
 ) -> None:
     """Mirror eligible War Room comments to Vega."""
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
+    if OUTGOING_MIRROR_FIELD_COMMENTS not in active_fields:
+        demisto.info(f"War Room comments filtered by outgoing mirror field config: remote_id={remote_id}")
+        return
+
     for comment in _collect_outgoing_entry_comments(mirror_entries):
         demisto.info(f"Mirroring War Room comment to Vega: remote_id={remote_id}")
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
@@ -4546,6 +4642,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     mirror_entries = _normalize_mirror_entries(parsed_args.entries)
     vega_id, _ = _parse_mirror_id(remote_id)
     inc_status = _parse_outgoing_mirror_inc_status(parsed_args)
+    enabled_fields = _resolve_outgoing_mirror_fields()
 
     try:
         entity, entity_type_suffix, _ = _resolve_outgoing_mirror_entity(client, args, remote_id, delta, data)
@@ -4555,12 +4652,19 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
         if _mirror_bool(parsed_args.incident_changed):
             if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
-                update_input = _build_outgoing_alert_mirror_update(delta, data, inc_status)
+                update_input = _build_outgoing_alert_mirror_update(delta, data, inc_status, enabled_fields)
             else:
-                update_input = _build_outgoing_incident_mirror_update(delta, data, inc_status)
+                update_input = _build_outgoing_incident_mirror_update(delta, data, inc_status, enabled_fields)
             _push_outgoing_mirror_entity_update(client, entity_type_suffix, vega_id, remote_id, update_input)
 
-        _mirror_outgoing_war_room_comments(client, mirror_entries, entity_type_suffix, vega_id, remote_id)
+        _mirror_outgoing_war_room_comments(
+            client,
+            mirror_entries,
+            entity_type_suffix,
+            vega_id,
+            remote_id,
+            enabled_fields,
+        )
         demisto.info(f"Command finished: remote_id={remote_id}")
     except Exception as exc:
         demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}, error_type={type(exc).__name__}")

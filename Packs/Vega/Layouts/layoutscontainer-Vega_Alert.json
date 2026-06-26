@@ -532,6 +532,35 @@
 					},
 					{
 						"displayType": "CARD",
+						"h": 1,
+						"hideItemTitleOnlyOne": false,
+						"hideName": true,
+						"i": "kmppymlq3f-vega-new-comment-section",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "veganewcomment",
+								"height": 53,
+								"id": "vega-alert-new-comment-field",
+								"index": 0,
+								"listId": "kmppymlq3f-vega-new-comment-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega New Comment",
+						"static": false,
+						"w": 3,
+						"wrapLabels": true,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"displayType": "CARD",
 						"h": 6,
 						"hideItemTitleOnlyOne": true,
 						"hideName": true,
@@ -554,7 +583,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 10
+						"y": 11
 					}
 				],
 				"type": "custom"

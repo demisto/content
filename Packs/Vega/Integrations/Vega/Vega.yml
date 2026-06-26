@@ -79,6 +79,22 @@ configuration:
     section: Autoclosure
     required: false
     defaultvalue: "true"
+  - display: Outgoing fields to mirror
+    additionalinfo: >-
+      Select which investigation fields are mirrored from Cortex XSOAR to Vega when outgoing mirroring is enabled.
+      If empty, all fields are mirrored. War Room comments are included when Comments is selected.
+      Any custom values entered outside the available options are ignored.
+    name: outgoing_mirror_fields
+    type: 16
+    section: Autoclosure
+    required: false
+    options:
+      - Status
+      - Severity
+      - Verdict
+      - Verdict Reasoning
+      - Comments
+    defaultvalue: Status,Severity,Verdict,Verdict Reasoning,Comments
   - display: Alert Severities to fetch
     additionalinfo: >-
       Filter alerts by severity. If empty, all severities are fetched.
