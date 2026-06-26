@@ -128,6 +128,8 @@ class Client(BaseClient):
         use_dlp_base: bool = False,
         resp_type: str = "json",
         return_empty_response: bool = False,
+        headers: dict[str, str] | None = None,
+        files: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Execute HTTP request with OAuth2 authentication for Management API.
 
@@ -150,7 +152,15 @@ class Client(BaseClient):
             dict: API response.
         """
         token = self.get_access_token()
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        # 'service-name: api' is required by some tenants' downstream services (notably the DLP API),
+        # which otherwise return a generic HTTP 400. Sent on every management/DLP request to match the SDK.
+        request_headers: dict[str, str] = {"Authorization": f"Bearer {token}", "service-name": "api"}
+        # For multipart file uploads, let the HTTP layer set the Content-Type (with boundary).
+        if files is None:
+            request_headers["Content-Type"] = "application/json"
+        # Allow callers to override/add headers (e.g., application/merge-patch+json for PATCH).
+        if headers:
+            request_headers.update(headers)
 
         # Determine which API path prefix to use
         # CRITICAL: DLP v2 API uses a completely different base URL
@@ -173,7 +183,8 @@ class Client(BaseClient):
                 url_suffix=url_suffix,
                 params=params,
                 json_data=json_data,
-                headers=headers,
+                files=files,
+                headers=request_headers,
                 resp_type=resp_type,
                 return_empty_response=return_empty_response,
             )
@@ -183,7 +194,8 @@ class Client(BaseClient):
             full_url=full_url,
             params=params,
             json_data=json_data,
-            headers=headers,
+            files=files,
+            headers=request_headers,
             resp_type=resp_type,
             return_empty_response=return_empty_response,
         )
@@ -891,25 +903,25 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
     }
 
     # Create readable output
-    readable_output = f"## Security Profile: {profile_info.get('name')}\n\n"
-    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
-    readable_output += f"**Revision:** {profile_info.get('revision')}\n\n"
-    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
-    readable_output += f"**Created By:** {profile_info.get('created_by', 'N/A')}\n\n"
-    readable_output += f"**Updated By:** {profile_info.get('updated_by', 'N/A')}\n\n"
-    readable_output += f"**Last Modified:** {profile_info.get('last_modified_ts', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        f"Security Profile: {profile_info.get('name')}",
+        profile_info,
+        headers=["id", "name", "revision", "active", "created_by", "updated_by", "last_modified_ts"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add policy summary if present
     if profile_info.get("policy"):
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += "**Policy:**\n\n"
+        readable_output += "\n\n**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileGet",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -975,24 +987,25 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
     }
 
     # Create readable output
-    readable_output = "## ✅ Security Profile Created\n\n"
-    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
-    readable_output += f"**Name:** {profile_info.get('name')}\n\n"
-    readable_output += f"**Revision:** {profile_info.get('revision')}\n\n"
-    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
-    readable_output += f"**Created By:** {profile_info.get('created_by', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        "Security Profile Created",
+        profile_info,
+        headers=["id", "name", "revision", "active", "created_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add policy summary
     if profile_info.get("policy"):
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += "**Policy:**\n\n"
+        readable_output += "\n\n**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileCreate",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -1064,25 +1077,25 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
     }
 
     # Create readable output
-    readable_output = "## ✅ Security Profile Updated\n\n"
-    readable_output += f"**ID:** {profile_info.get('id')}\n\n"
-    readable_output += f"**Name:** {profile_info.get('name')}\n\n"
-    readable_output += f"**Revision:** {profile_info.get('revision')} (incremented)\n\n"
-    readable_output += f"**Active:** {profile_info.get('active')}\n\n"
-    readable_output += f"**Updated By:** {profile_info.get('updated_by', 'N/A')}\n\n"
-    readable_output += f"**Last Modified:** {profile_info.get('last_modified_ts', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        "Security Profile Updated",
+        profile_info,
+        headers=["id", "name", "revision", "active", "updated_by", "last_modified_ts"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add policy summary
     if profile_info.get("policy"):
         policy = profile_info["policy"]
         ai_profiles_count = len(policy.get("ai-security-profiles", []))
         dlp_profiles_count = len(policy.get("dlp-data-profiles", []))
-        readable_output += "**Policy:**\n\n"
+        readable_output += "\n\n**Policy:**\n\n"
         readable_output += f"- AI Security Profiles: {ai_profiles_count}\n"
         readable_output += f"- DLP Data Profiles: {dlp_profiles_count}\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileUpdate",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -1121,13 +1134,17 @@ def runtime_profiles_delete_command(client: Client, args: dict[str, Any]) -> Com
     message = response.get("message", "Security profile deleted successfully") if isinstance(response, dict) else str(response)
 
     # Create readable output
-    readable_output = "## ✅ Security Profile Deleted\n\n"
-    readable_output += f"**Profile ID:** {profile_id}\n\n"
-    readable_output += f"**Status:** {message}\n\n"
-    readable_output += "**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted."
-
     # Context output
     context_output = {"profile_id": profile_id, "message": message, "deleted": True}
+
+    readable_output = tableToMarkdown(
+        "Security Profile Deleted",
+        context_output,
+        headers=["profile_id", "message", "deleted"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += "\n\n**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted."
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}SecurityProfileDeleted",
@@ -1799,7 +1816,7 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfileGet",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -1873,7 +1890,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfileCreate",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -1959,7 +1976,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfilePatch",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -2038,7 +2055,7 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpProfileReplace",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -2266,7 +2283,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScanCreate",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
@@ -2380,7 +2397,7 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
         readable_output += f"\n**Error Message:** {scan_info.get('error_message', 'N/A')}"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScan",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityScanGet",
         outputs_key_field="uuid",
         outputs=scan_info,
         readable_output=readable_output,
@@ -3631,7 +3648,7 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
         )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRule",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityRuleGet",
         outputs_key_field="uuid",
         outputs=rule_info,
         readable_output=readable_output,
@@ -6408,7 +6425,8 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
 
     # Extract topics from response (forward-compatible: capture all fields)
     # Schema: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-topics.ts (TopicSchema)
-    topics_data = response.get("data", [])
+    # API returns custom topics under "custom_topics"; fall back to "data" for compatibility.
+    topics_data = response.get("custom_topics", response.get("data", []))
     topics = []
 
     for topic in topics_data:
@@ -6505,25 +6523,24 @@ def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandR
     }
 
     # Create readable output
-    readable_output = f"## Custom Topic: {topic_info.get('topic_name')}\n\n"
-    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
-    readable_output += f"**Revision:** {topic_info.get('revision')}\n\n"
-    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
-    readable_output += f"**Description:** {topic_info.get('description', 'N/A')}\n\n"
-    readable_output += f"**Created By:** {topic_info.get('created_by', 'N/A')}\n\n"
-    readable_output += f"**Updated By:** {topic_info.get('updated_by', 'N/A')}\n\n"
-    readable_output += f"**Last Modified:** {topic_info.get('last_modified_ts', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        f"Custom Topic: {topic_info.get('topic_name')}",
+        topic_info,
+        headers=["topic_id", "topic_name", "revision", "active", "description", "created_by", "updated_by", "last_modified_ts"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add examples
     if topic_info.get("examples"):
-        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        readable_output += f"\n\n**Examples ({len(topic_info['examples'])}):**\n\n"
         for i, example in enumerate(topic_info["examples"][:5], 1):  # Show first 5
             readable_output += f"{i}. {example}\n"
         if len(topic_info["examples"]) > 5:
             readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicGet",
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
@@ -6582,24 +6599,24 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
     }
 
     # Create readable output
-    readable_output = "## ✅ Custom Topic Created\n\n"
-    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
-    readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
-    readable_output += f"**Revision:** {topic_info.get('revision')}\n\n"
-    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
-    readable_output += f"**Description:** {topic_info.get('description')}\n\n"
-    readable_output += f"**Created By:** {topic_info.get('created_by', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        "Custom Topic Created",
+        topic_info,
+        headers=["topic_id", "topic_name", "revision", "active", "description", "created_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add examples
     if topic_info.get("examples"):
-        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        readable_output += f"\n\n**Examples ({len(topic_info['examples'])}):**\n\n"
         for i, example in enumerate(topic_info["examples"][:5], 1):
             readable_output += f"{i}. {example}\n"
         if len(topic_info["examples"]) > 5:
             readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicCreate",
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
@@ -6665,25 +6682,24 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
     }
 
     # Create readable output
-    readable_output = "## ✅ Custom Topic Updated\n\n"
-    readable_output += f"**ID:** {topic_info.get('topic_id')}\n\n"
-    readable_output += f"**Name:** {topic_info.get('topic_name')}\n\n"
-    readable_output += f"**Revision:** {topic_info.get('revision')} (incremented)\n\n"
-    readable_output += f"**Active:** {topic_info.get('active')}\n\n"
-    readable_output += f"**Description:** {topic_info.get('description')}\n\n"
-    readable_output += f"**Updated By:** {topic_info.get('updated_by', 'N/A')}\n\n"
-    readable_output += f"**Last Modified:** {topic_info.get('last_modified_ts', 'N/A')}\n\n"
+    readable_output = tableToMarkdown(
+        "Custom Topic Updated",
+        topic_info,
+        headers=["topic_id", "topic_name", "revision", "active", "description", "updated_by", "last_modified_ts"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
 
     # Add examples
     if topic_info.get("examples"):
-        readable_output += f"**Examples ({len(topic_info['examples'])}):**\n\n"
+        readable_output += f"\n\n**Examples ({len(topic_info['examples'])}):**\n\n"
         for i, example in enumerate(topic_info["examples"][:5], 1):
             readable_output += f"{i}. {example}\n"
         if len(topic_info["examples"]) > 5:
             readable_output += f"\n... and {len(topic_info['examples']) - 5} more\n"
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}Topic",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicUpdate",
         outputs_key_field="topic_id",
         outputs=topic_info,
         readable_output=readable_output,
@@ -6723,13 +6739,17 @@ def runtime_topics_delete_command(client: Client, args: dict[str, Any]) -> Comma
     message = response.get("message", "Custom topic deleted successfully") if isinstance(response, dict) else str(response)
 
     # Create readable output
-    readable_output = "## ✅ Custom Topic Deleted\n\n"
-    readable_output += f"**Topic ID:** {topic_id}\n\n"
-    readable_output += f"**Status:** {message}\n\n"
-    readable_output += "**⚠️ WARNING:** This action cannot be undone. The custom topic has been permanently deleted."
-
     # Context output
     context_output = {"topic_id": topic_id, "message": message, "deleted": True}
+
+    readable_output = tableToMarkdown(
+        "Custom Topic Deleted",
+        context_output,
+        headers=["topic_id", "message", "deleted"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += "\n\n**⚠️ WARNING:** This action cannot be undone. The custom topic has been permanently deleted."
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicDeleted",
@@ -6778,7 +6798,9 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # SDK: ManagementClient.topics.list()
     # Endpoint: GET /v1/mgmt/topics/tsg/{tsgId}
     url_suffix = f"{MGMT_API_V1_PREFIX}/topics/tsg/{client.tsg_id}"
-    topics_response = client.http_request(method="GET", url_suffix=url_suffix, use_mgmt_base=True)
+    topics_response = client.http_request(
+        method="GET", url_suffix=url_suffix, params={"offset": 0, "limit": 100}, use_mgmt_base=True
+    )
 
     all_topics = topics_response.get("custom_topics", [])
     topic = next((t for t in all_topics if t.get("topic_name") == topic_name), None)
@@ -6796,8 +6818,10 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 102-106)
     # SDK: ManagementClient.profiles.list()
     # Endpoint: GET /v1/mgmt/securityprofiles/tsg/{tsgId}
-    profiles_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/tsg/{client.tsg_id}"
-    profiles_response = client.http_request(method="GET", url_suffix=profiles_url_suffix, use_mgmt_base=True)
+    profiles_url_suffix = f"{MGMT_API_V1_PREFIX}/profiles/tsg/{client.tsg_id}"
+    profiles_response = client.http_request(
+        method="GET", url_suffix=profiles_url_suffix, params={"offset": 0, "limit": 100}, use_mgmt_base=True
+    )
 
     ai_profiles = profiles_response.get("ai_profiles", [])
     profile = next((p for p in ai_profiles if p.get("profile_name") == profile_name), None)
@@ -6872,25 +6896,18 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     # Step 4: Update profile with modified policy
     # Reference: ./knowledge/versions/current/prisma-airs-cli/src/airs/management.ts (lines 169-173)
     # SDK: ManagementClient.profiles.update(profileId, body)
-    # Endpoint: PUT /v1/mgmt/securityprofiles/uuid/{profileId}
-    update_url_suffix = f"{MGMT_API_V1_PREFIX}/securityprofiles/uuid/{profile_id}"
+    # Endpoint: PUT /v1/mgmt/profile/uuid/{profileId}
+    update_url_suffix = f"{MGMT_API_V1_PREFIX}/profile/uuid/{profile_id}"
     update_body = {"profile_name": profile_name, "active": profile.get("active", True), "policy": policy}
 
     update_response = client.http_request(method="PUT", url_suffix=update_url_suffix, json_data=update_body, use_mgmt_base=True)
 
     # Create readable output
-    readable_output = "## ✅ Topic Applied to Profile\n\n"
-    readable_output += f"**Topic:** {topic_name} (ID: {topic_id}, Revision: {topic_revision})\n\n"
-    readable_output += f"**Profile:** {profile_name}\n\n"
-    readable_output += f"**Topic Action:** {action}\n\n"
-    readable_output += f"**Guardrail Default Action:** {guardrail_action}\n\n"
-    readable_output += "**Note:** Topic has been added to the profile. Existing topics were preserved. "
-    readable_output += "The topic's current revision was pinned to ensure consistent detection behavior."
-
-    # Context output
+    # Context output. Applying a topic versions the profile, so the resulting profile_id from the
+    # PUT response is the revision the topic is actually bound to (fall back to the source id).
     context_output = {
         "profile_name": profile_name,
-        "profile_id": profile_id,
+        "profile_id": update_response.get("profile_id", profile_id),
         "topic_name": topic_name,
         "topic_id": topic_id,
         "topic_revision": topic_revision,
@@ -6898,6 +6915,18 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
         "guardrail_action": guardrail_action,
         "applied": True,
     }
+
+    readable_output = tableToMarkdown(
+        "Topic Applied to Profile",
+        context_output,
+        headers=["profile_name", "profile_id", "topic_name", "topic_id", "topic_revision", "action", "guardrail_action", "applied"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    readable_output += (
+        "\n\n**Note:** Topic has been added to the profile (existing topics preserved). "
+        "The topic's current revision was pinned to ensure consistent detection behavior."
+    )
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}TopicApplied",
@@ -7160,7 +7189,7 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionaryGet",
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
@@ -7259,7 +7288,7 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionaryCreate",
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
@@ -7348,7 +7377,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionaryPatch",
         outputs_key_field="id",
         outputs=dict_info,
         readable_output=readable_output,
@@ -7451,7 +7480,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
         )
 
         return CommandResults(
-            outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionary",
+            outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionaryReplace",
             outputs_key_field="id",
             outputs=dict_info,
             readable_output=readable_output,
@@ -7488,9 +7517,23 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
         return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
-    readable_output = f"## Prisma AIRs DLP Dictionary Deleted\n\nDictionary ID `{dictionary_id}` has been successfully deleted."
+    # Action-tracking context so playbooks can confirm the deletion
+    context_output = {"id": dictionary_id, "deleted": True, "status": "Successfully deleted"}
 
-    return CommandResults(readable_output=readable_output)
+    readable_output = tableToMarkdown(
+        "Prisma AIRs DLP Dictionary Deleted",
+        context_output,
+        headers=["id", "status"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpDictionaryDelete",
+        outputs_key_field="id",
+        outputs=context_output,
+        readable_output=readable_output,
+    )
 
 
 def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -7605,7 +7648,7 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPatternGet",
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
@@ -7703,7 +7746,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPatternCreate",
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
@@ -7816,7 +7859,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPatternPatch",
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
@@ -7917,7 +7960,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPattern",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPatternReplace",
         outputs_key_field="id",
         outputs=pattern_info,
         readable_output=readable_output,
@@ -7950,9 +7993,23 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
         return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
     )
 
-    readable_output = f"## Prisma AIRs DLP Pattern Deleted\n\nPattern ID `{pattern_id}` has been successfully archived."
+    # Action-tracking context so playbooks can confirm the deletion (soft-delete / archive)
+    context_output = {"id": pattern_id, "deleted": True, "status": "Successfully archived"}
 
-    return CommandResults(readable_output=readable_output)
+    readable_output = tableToMarkdown(
+        "Prisma AIRs DLP Pattern Deleted",
+        context_output,
+        headers=["id", "status"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpPatternDelete",
+        outputs_key_field="id",
+        outputs=context_output,
+        readable_output=readable_output,
+    )
 
 
 def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -8068,7 +8125,7 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfileGet",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,
@@ -8175,7 +8232,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
     )
 
     return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfile",
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}DlpFilteringProfileReplace",
         outputs_key_field="id",
         outputs=profile_info,
         readable_output=readable_output,

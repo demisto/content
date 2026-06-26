@@ -5,11 +5,17 @@ from PaloAltoNetworks_Prisma_AIRs import (
     Client,
     test_module as run_test_module,
     runtime_scan_command,
+    runtime_bulk_scan_command,
+    runtime_scan_logs_command,
     runtime_api_keys_list_command,
     runtime_api_keys_create_command,
     runtime_api_keys_regenerate_command,
     runtime_api_keys_delete_command,
     runtime_profiles_list_command,
+    runtime_profiles_get_command,
+    runtime_profiles_create_command,
+    runtime_profiles_update_command,
+    runtime_profiles_delete_command,
     runtime_customer_apps_list_command,
     runtime_customer_apps_get_command,
     runtime_customer_apps_update_command,
@@ -19,7 +25,31 @@ from PaloAltoNetworks_Prisma_AIRs import (
     runtime_deployment_profiles_list_command,
     runtime_dlp_profiles_list_command,
     runtime_dlp_profiles_delete_command,
+    runtime_dlp_profiles_get_command,
+    runtime_dlp_profiles_create_command,
+    runtime_dlp_profiles_patch_command,
+    runtime_dlp_profiles_replace_command,
+    runtime_dlp_dictionaries_list_command,
+    runtime_dlp_dictionaries_get_command,
+    runtime_dlp_dictionaries_create_command,
+    runtime_dlp_dictionaries_patch_command,
+    runtime_dlp_dictionaries_replace_command,
+    runtime_dlp_dictionaries_delete_command,
+    runtime_dlp_patterns_list_command,
+    runtime_dlp_patterns_get_command,
+    runtime_dlp_patterns_create_command,
+    runtime_dlp_patterns_patch_command,
+    runtime_dlp_patterns_replace_command,
+    runtime_dlp_patterns_delete_command,
+    runtime_dlp_filtering_profiles_list_command,
+    runtime_dlp_filtering_profiles_get_command,
+    runtime_dlp_filtering_profiles_replace_command,
     runtime_topics_apply_command,
+    runtime_topics_list_command,
+    runtime_topics_get_command,
+    runtime_topics_create_command,
+    runtime_topics_update_command,
+    runtime_topics_delete_command,
     model_security_labels_add_command,
     model_security_labels_set_command,
     model_security_labels_delete_command,
@@ -60,6 +90,17 @@ from PaloAltoNetworks_Prisma_AIRs import (
     model_security_scans_list_command,
     model_security_groups_list_command,
     model_security_rules_list_command,
+    model_security_rules_get_command,
+    model_security_scans_create_command,
+    model_security_scans_get_command,
+    model_security_scans_evaluation_command,
+    model_security_scans_violation_command,
+    model_security_labels_keys_command,
+    model_security_groups_get_command,
+    model_security_groups_create_command,
+    model_security_groups_update_command,
+    model_security_groups_delete_command,
+    model_security_rule_instances_list_command,
     redteam_targets_profile_command,
     redteam_targets_update_profile_command,
     redteam_targets_metadata_command,
@@ -1744,3 +1785,762 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="updated_by is required"):
             runtime_customer_apps_delete_command(mock_client, {"app_name": "chatbot"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-dictionaries-list returns the list under the base DlpDictionary key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"content": [{"id": "d-1", "name": "ssn"}], "total_elements": 1}
+
+        result = runtime_dlp_dictionaries_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionary"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-dictionaries-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "d-1", "name": "ssn"}
+
+        result = runtime_dlp_dictionaries_get_command(mock_client, {"dictionary_id": "d-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "d-1"
+
+    @patch.object(demisto, "getFilePath")
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_create_command(
+        self, mock_http: Mock, mock_get_file: Mock, mock_client: Client, tmp_path
+    ) -> None:
+        """dlp-dictionaries-create writes to its own action context (uploads a keyword file).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_get_file: Mocked demisto.getFilePath.
+            mock_client: Mock client fixture.
+            tmp_path: pytest temp directory.
+        """
+        kw_file = tmp_path / "keywords.txt"
+        kw_file.write_text("term1\nterm2")
+        mock_get_file.return_value = {"path": str(kw_file), "name": "keywords.txt"}
+        mock_http.return_value = {"id": "d-1", "name": "ssn"}
+
+        result = runtime_dlp_dictionaries_create_command(
+            mock_client,
+            {"name": "ssn", "category": "custom", "region_name": "us", "entry_id": "42"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryCreate"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_patch_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-dictionaries-patch writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "d-1", "name": "ssn"}
+
+        result = runtime_dlp_dictionaries_patch_command(
+            mock_client,
+            {"dictionary_id": "d-1", "name": "ssn", "category": "custom", "original_file_name": "ssn.txt"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryPatch"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(demisto, "getFilePath")
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_replace_command(
+        self, mock_http: Mock, mock_get_file: Mock, mock_client: Client, tmp_path
+    ) -> None:
+        """dlp-dictionaries-replace writes to its own action context (uploads a keyword file).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_get_file: Mocked demisto.getFilePath.
+            mock_client: Mock client fixture.
+            tmp_path: pytest temp directory.
+        """
+        kw_file = tmp_path / "keywords.txt"
+        kw_file.write_text("term1\nterm2")
+        mock_get_file.return_value = {"path": str(kw_file), "name": "keywords.txt"}
+        mock_http.return_value = {"id": "d-1", "name": "ssn-v2"}
+
+        result = runtime_dlp_dictionaries_replace_command(
+            mock_client,
+            {"dictionary_id": "d-1", "name": "ssn-v2", "category": "custom", "region_name": "us", "entry_id": "42"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryReplace"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-dictionaries-delete writes a delete-confirmation context and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+
+        result = runtime_dlp_dictionaries_delete_command(mock_client, {"dictionary_id": "d-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryDelete"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "d-1"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_dlp_dictionaries_delete_requires_id(self, mock_client: Client) -> None:
+        """dlp-dictionaries-delete raises when dictionary_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="dictionary_id is required"):
+            runtime_dlp_dictionaries_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-list returns the list under the base DlpPattern key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"content": [{"id": "p-1", "name": "ssn"}], "total_elements": 1}
+
+        result = runtime_dlp_patterns_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPattern"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn"}
+
+        result = runtime_dlp_patterns_get_command(mock_client, {"pattern_id": "p-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "p-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-create writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn"}
+
+        result = runtime_dlp_patterns_create_command(
+            mock_client, {"name": "ssn", "type": "CUSTOM", "detection_technique": "regex"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternCreate"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_patch_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-patch writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn"}
+
+        result = runtime_dlp_patterns_patch_command(
+            mock_client, {"pattern_id": "p-1", "name": "ssn", "type": "CUSTOM", "detection_technique": "regex"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternPatch"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_replace_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-replace writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn-v2"}
+
+        result = runtime_dlp_patterns_replace_command(
+            mock_client, {"pattern_id": "p-1", "name": "ssn-v2", "type": "CUSTOM", "detection_technique": "regex"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternReplace"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-delete writes a delete-confirmation context and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+
+        result = runtime_dlp_patterns_delete_command(mock_client, {"pattern_id": "p-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternDelete"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "p-1"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_dlp_patterns_delete_requires_id(self, mock_client: Client) -> None:
+        """dlp-patterns-delete raises when pattern_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="pattern_id is required"):
+            runtime_dlp_patterns_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_filtering_profiles_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-filtering-profiles-list returns the list under the base DlpFilteringProfile key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"content": [{"id": "fp-1", "name": "filter"}], "total_elements": 1}
+
+        result = runtime_dlp_filtering_profiles_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpFilteringProfile"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_filtering_profiles_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-filtering-profiles-get writes to its own query context, separate from list/replace.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "fp-1", "name": "filter"}
+
+        result = runtime_dlp_filtering_profiles_get_command(mock_client, {"profile_id": "fp-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpFilteringProfileGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "fp-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_filtering_profiles_replace_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-filtering-profiles-replace writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "fp-1", "name": "filter-v2"}
+
+        result = runtime_dlp_filtering_profiles_replace_command(mock_client, {"profile_id": "fp-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpFilteringProfileReplace"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-profiles-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dp-1", "name": "pci"}
+
+        result = runtime_dlp_profiles_get_command(mock_client, {"profile_id": "dp-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfileGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "dp-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-profiles-create writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dp-1", "name": "pci"}
+
+        result = runtime_dlp_profiles_create_command(
+            mock_client, {"name": "pci", "detection_rules": "[]"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfileCreate"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_patch_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-profiles-patch writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dp-1", "name": "pci"}
+
+        result = runtime_dlp_profiles_patch_command(
+            mock_client, {"profile_id": "dp-1", "name": "pci", "profile_type": "basic"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfilePatch"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_replace_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-profiles-replace writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dp-1", "name": "pci-v2"}
+
+        result = runtime_dlp_profiles_replace_command(
+            mock_client, {"profile_id": "dp-1", "name": "pci-v2", "detection_rules": "[]"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfileReplace"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-profiles-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"ai_profiles": [{"profile_id": "sp-1", "profile_name": "default", "revision": 1}]}
+
+        result = runtime_profiles_get_command(mock_client, {"profile_id": "sp-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileGet"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "sp-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-profiles-create writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"profile_id": "sp-1", "profile_name": "default", "revision": 1}
+
+        result = runtime_profiles_create_command(mock_client, {"profile_name": "default"})
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileCreate"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "sp-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-profiles-update writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"profile_id": "sp-1", "profile_name": "default", "revision": 2}
+
+        result = runtime_profiles_update_command(
+            mock_client, {"profile_id": "sp-1", "profile_name": "default"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileUpdate"
+        assert result.outputs_key_field == "id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-profiles-delete writes its own context keyed by profile_id and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "deleted"}
+
+        result = runtime_profiles_delete_command(mock_client, {"profile_id": "sp-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileDeleted"
+        assert result.outputs_key_field == "profile_id"
+        assert result.outputs["profile_id"] == "sp-1"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_profiles_delete_requires_id(self, mock_client: Client) -> None:
+        """runtime-profiles-delete raises when profile_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="profile_id is required"):
+            runtime_profiles_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-list returns the list under the base Topic key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"custom_topics": [{"topic_id": "t-1", "topic_name": "Violence"}], "total": 1}
+
+        result = runtime_topics_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.Topic"
+        assert result.outputs_key_field == "topic_id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"custom_topics": [{"topic_id": "t-1", "topic_name": "Custom", "revision": 1}]}
+
+        result = runtime_topics_get_command(mock_client, {"topic_id": "t-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.TopicGet"
+        assert result.outputs_key_field == "topic_id"
+        assert result.outputs["topic_id"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-create writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"topic_id": "t-1", "topic_name": "Custom", "revision": 1}
+
+        result = runtime_topics_create_command(
+            mock_client, {"topic_name": "Custom", "description": "desc", "examples": "a,b"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.TopicCreate"
+        assert result.outputs_key_field == "topic_id"
+        assert result.outputs["topic_id"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-update writes to its own action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"topic_id": "t-1", "topic_name": "Custom", "revision": 2}
+
+        result = runtime_topics_update_command(
+            mock_client, {"topic_id": "t-1", "topic_name": "Custom"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.TopicUpdate"
+        assert result.outputs_key_field == "topic_id"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-delete writes its own context keyed by topic_id and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "deleted"}
+
+        result = runtime_topics_delete_command(mock_client, {"topic_id": "t-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.TopicDeleted"
+        assert result.outputs_key_field == "topic_id"
+        assert result.outputs["topic_id"] == "t-1"
+        assert result.outputs["deleted"] is True
+        assert "|" in result.readable_output
+
+    def test_runtime_topics_delete_requires_id(self, mock_client: Client) -> None:
+        """runtime-topics-delete raises when topic_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="topic_id is required"):
+            runtime_topics_delete_command(mock_client, {})
+
+    @patch.object(Client, "scanner_request")
+    def test_runtime_bulk_scan_command(self, mock_scanner: Mock, mock_client: Client) -> None:
+        """runtime-bulk-scan scans each CSV prompt and writes results keyed by scan_id.
+
+        Args:
+            mock_scanner: Mocked scanner_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_scanner.return_value = {"scan_id": "s-1", "action": "allow", "category": "benign"}
+
+        result = runtime_bulk_scan_command(
+            mock_client, {"profile_name": "default", "prompts_csv": "prompt\nhello\nworld"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.BulkScan"
+        assert result.outputs_key_field == "scan_id"
+        # one scanner call per CSV prompt
+        assert mock_scanner.call_count == 2
+
+    def test_runtime_bulk_scan_requires_args(self, mock_client: Client) -> None:
+        """runtime-bulk-scan raises when required args are missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="profile_name and prompts_csv are required"):
+            runtime_bulk_scan_command(mock_client, {"profile_name": "default"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_scan_logs_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-scan-logs returns logs keyed by scan_id under RuntimeScanLog.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "data": [
+                {"scan_id": "s-1", "profile_name": "default", "action": "allow", "category": "benign"}
+            ]
+        }
+
+        result = runtime_scan_logs_command(mock_client, {"interval": "24", "unit": "hours"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RuntimeScanLog"
+        assert result.outputs_key_field == "scan_id"
+
+    # ----- model-security: rules -----
+    @patch.object(Client, "http_request")
+    def test_model_security_rules_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-rules-get writes to its own query context, separate from list.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "r-1", "name": "PII Rule"}
+
+        result = model_security_rules_get_command(mock_client, {"uuid": "r-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityRuleGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "r-1"
+
+    # ----- model-security: scans core -----
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-create writes to its own action context, separate from list/get.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "scan-1", "status": "PENDING"}
+
+        result = model_security_scans_create_command(
+            mock_client, {"model_uri": "hf://bert", "security_group_uuid": "sg-1"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScanCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "scan-1"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-get writes to its own query context, separate from list/create.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "scan-1", "status": "DONE"}
+
+        result = model_security_scans_get_command(mock_client, {"uuid": "scan-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScanGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "scan-1"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_evaluation_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-evaluation returns a single evaluation keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "e-1", "result": "PASS"}
+
+        result = model_security_scans_evaluation_command(mock_client, {"uuid": "e-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityEvaluation"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_violation_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-violation returns a single violation keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "v-1", "severity": "HIGH"}
+
+        result = model_security_scans_violation_command(mock_client, {"uuid": "v-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityViolationDetail"
+        assert result.outputs_key_field == "uuid"
+
+    # ----- model-security: labels -----
+    @patch.object(Client, "http_request")
+    def test_model_security_labels_keys_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-labels-keys returns the global key snapshot (no key field).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"keys": ["env", "team"], "pagination": {"total_items": 2}}
+
+        result = model_security_labels_keys_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityLabelKeys"
+        assert result.outputs_key_field is None
+        assert result.outputs["keys"] == ["env", "team"]
+
+    # ----- model-security: groups CRUD -----
+    @patch.object(Client, "http_request")
+    def test_model_security_groups_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-groups-get writes to its own query context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "g-1", "name": "grp"}
+
+        result = model_security_groups_get_command(mock_client, {"uuid": "g-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupGet"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "g-1"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_groups_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-groups-create writes to the Add action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "g-1", "name": "grp"}
+
+        result = model_security_groups_create_command(
+            mock_client, {"name": "grp", "source_type": "HUGGING_FACE"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupAdd"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "g-1"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_groups_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-groups-update writes to the Update action context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "g-1", "name": "grp-renamed"}
+
+        result = model_security_groups_update_command(
+            mock_client, {"uuid": "g-1", "name": "grp-renamed"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupUpdate"
+        assert result.outputs_key_field == "uuid"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_groups_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-groups-delete writes the Delete confirmation context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+
+        result = model_security_groups_delete_command(mock_client, {"uuid": "g-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityGroupDelete"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "g-1"
+        assert result.outputs["deleted"] is True
+
+    def test_model_security_groups_delete_requires_uuid(self, mock_client: Client) -> None:
+        """model-security-groups-delete raises when uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="uuid is required"):
+            model_security_groups_delete_command(mock_client, {})
+
+    # ----- model-security: rule-instances list -----
+    @patch.object(Client, "http_request")
+    def test_model_security_rule_instances_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-rule-instances-list returns instances under the base key.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"rule_instances": [{"uuid": "ri-1"}], "pagination": {"total_items": 1}}
+
+        result = model_security_rule_instances_list_command(mock_client, {"security_group_uuid": "sg-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityRuleInstance"
+        assert result.outputs_key_field == "uuid"
