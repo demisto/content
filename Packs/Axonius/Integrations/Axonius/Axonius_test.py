@@ -269,7 +269,7 @@ def test_get_asset_types():
 
 
 def test_get_custom_data():
-    body = {"data": DUMMY_CUSTOM_DATA}
+    body = {"custom_fields": DUMMY_CUSTOM_DATA}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(body)):
         result = get_custom_data({})
     assert len(result.outputs) == 2
@@ -314,7 +314,7 @@ def test_delete_custom_data_no_id_raises():
 
 
 def test_get_enforcements():
-    body = {"data": DUMMY_ENFORCEMENTS}
+    body = {"enforcements": DUMMY_ENFORCEMENTS}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(body)):
         result = get_enforcements({})
     assert len(result.outputs) == 2
@@ -339,7 +339,7 @@ def test_run_enforcement_no_id_raises():
 
 
 def test_get_queries():
-    body = {"data": DUMMY_QUERIES}
+    body = {"queries": DUMMY_QUERIES}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(body)):
         result = get_queries({})
     assert len(result.outputs) == 2
