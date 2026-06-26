@@ -2297,11 +2297,11 @@ Query runtime scan logs for a specified time period.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interval | Time interval (e.g., 1, 24, 7, 30). | Required |
-| unit | Time unit (hours or days). Default is hours. | Required |
-| filter | Filter logs by type (all, benign, threat). Default is all. | Optional |
+| time_range | The time window to query scan logs for. The API supports only these preset ranges. Possible values are: 24 hours, 7 days, 30 days. Default is 24 hours. | Optional |
+| filter | Filter logs by type. "all" returns every log, "benign" only benign verdicts, "threat" only logs where a threat was detected. Possible values are: all, benign, threat. Default is all. | Optional |
 | page | Page number for pagination. Default is 1. | Optional |
 | page_size | Number of results per page. Default is 50. | Optional |
+| page_token | Encrypted page token from a previous response, used to fetch the next page. | Optional |
 
 #### Context Output
 

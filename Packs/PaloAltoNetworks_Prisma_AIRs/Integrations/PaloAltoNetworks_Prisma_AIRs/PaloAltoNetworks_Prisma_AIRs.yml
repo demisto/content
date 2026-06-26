@@ -2104,17 +2104,24 @@ script:
   - name: prisma-airs-runtime-scan-logs
     description: Query runtime scan logs for a specified time period.
     arguments:
-    - name: interval
-      required: true
-      description: Time interval (e.g., 1, 24, 7, 30).
-    - name: unit
-      required: true
-      description: Time unit (hours or days).
-      defaultValue: 'hours'
+    - name: time_range
+      required: false
+      description: The time window to query scan logs for. The API supports only these preset ranges.
+      defaultValue: '24 hours'
+      auto: PREDEFINED
+      predefined:
+      - '24 hours'
+      - '7 days'
+      - '30 days'
     - name: filter
       required: false
-      description: Filter logs by type (all, benign, threat).
+      description: Filter logs by type. "all" returns every log, "benign" only benign verdicts, "threat" only logs where a threat was detected.
       defaultValue: 'all'
+      auto: PREDEFINED
+      predefined:
+      - 'all'
+      - 'benign'
+      - 'threat'
     - name: page
       required: false
       description: Page number for pagination.
@@ -2123,6 +2130,9 @@ script:
       required: false
       description: Number of results per page.
       defaultValue: '50'
+    - name: page_token
+      required: false
+      description: Encrypted page token from a previous response, used to fetch the next page.
     outputs:
     - contextPath: PrismaAIRs.RuntimeScanLog.scan_id
       description: Scan ID.
@@ -2130,26 +2140,73 @@ script:
     - contextPath: PrismaAIRs.RuntimeScanLog.report_id
       description: Report ID.
       type: String
-    - contextPath: PrismaAIRs.RuntimeScanLog.timestamp
-      description: Scan timestamp.
-      type: Date
+    - contextPath: PrismaAIRs.RuntimeScanLog.transaction_id
+      description: Transaction ID correlating prompt and response.
+      type: String
     - contextPath: PrismaAIRs.RuntimeScanLog.profile_name
       description: Security profile name used.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.app_name
+      description: AI application name.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.api_key_name
+      description: Runtime API key name that submitted the scan.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.model_name
+      description: AI model name.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanLog.verdict
+      description: Overall scan verdict (benign or malicious).
       type: String
     - contextPath: PrismaAIRs.RuntimeScanLog.action
       description: Action taken (allow or block).
       type: String
-    - contextPath: PrismaAIRs.RuntimeScanLog.category
-      description: Threat category.
+    - contextPath: PrismaAIRs.RuntimeScanLog.status
+      description: Scan status.
       type: String
-    - contextPath: PrismaAIRs.RuntimeScanLog.detected
-      description: Whether threats were detected.
+    - contextPath: PrismaAIRs.RuntimeScanLog.tokens
+      description: Number of tokens processed.
+      type: Number
+    - contextPath: PrismaAIRs.RuntimeScanLog.text_records
+      description: Number of text records processed.
+      type: Number
+    - contextPath: PrismaAIRs.RuntimeScanLog.received_ts
+      description: Timestamp when the scan request was received.
+      type: Date
+    - contextPath: PrismaAIRs.RuntimeScanLog.completed_ts
+      description: Timestamp when the scan completed.
+      type: Date
+    - contextPath: PrismaAIRs.RuntimeScanLog.content_masked
+      description: Whether sensitive content was masked in the log.
       type: Boolean
-    - contextPath: PrismaAIRs.RuntimeScanLog.prompt
-      description: Scanned prompt.
+  - name: prisma-airs-runtime-scan-content-get
+    description: Retrieve the captured prompt and response content for a scan by its scan ID.
+    arguments:
+    - name: scan_id
+      required: true
+      description: The scan ID to retrieve the prompt/response content for.
+    - name: scan_sub_req_id
+      required: false
+      description: Sub scan request ID (for batched/async scans). Defaults to 0.
+      defaultValue: '0'
+    outputs:
+    - contextPath: PrismaAIRs.RuntimeScanContent.scan_id
+      description: Scan ID.
       type: String
-    - contextPath: PrismaAIRs.RuntimeScanLog.response
-      description: Scanned response.
+    - contextPath: PrismaAIRs.RuntimeScanContent.report_id
+      description: Report ID associated with the scan.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanContent.sub_scan_req_id
+      description: Sub scan request ID.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanContent.transaction_id
+      description: Transaction ID correlating prompt and response.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanContent.scan_contents.prompt
+      description: The captured prompt content that was scanned.
+      type: String
+    - contextPath: PrismaAIRs.RuntimeScanContent.scan_contents.response
+      description: The captured response content that was scanned.
       type: String
   - name: prisma-airs-runtime-topics-list
     description: List custom topic guardrails.

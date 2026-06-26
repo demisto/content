@@ -6359,54 +6359,160 @@ def runtime_scan_logs_command(client: Client, args: dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: Results to return to XSOAR.
     """
-    interval = arg_to_number(args.get("interval"), required=True)
-    unit = args.get("unit", "hours")
+    # The API only accepts a fixed set of preset time ranges; other interval/unit
+    # combinations return HTTP 400 "invalid time duration specified".
+    time_range = args.get("time_range", "24 hours")
+    range_map = {
+        "24 hours": (24, "hours"),
+        "7 days": (7, "days"),
+        "30 days": (30, "days"),
+    }
+    if time_range not in range_map:
+        raise ValueError(f"Unsupported time_range '{time_range}'. Supported values: {', '.join(range_map)}.")
+    interval, unit = range_map[time_range]
+
     filter_type = args.get("filter", "all")
     page = arg_to_number(args.get("page")) or 1
     page_size = arg_to_number(args.get("page_size")) or 50
+    page_token = args.get("page_token")
 
-    # Build query parameters
-    # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts (MGMT_SCAN_LOGS_PATH)
-    params: dict[str, Any] = {"interval": interval, "unit": unit, "filter": filter_type, "page": page, "page_size": page_size}
+    # Scan logs is a POST to /v1/mgmt/scanlogs (SCM dashboard query) - there is no tsg path segment.
+    # SDK: ManagementClient.scanLogs.query()
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk-main/src/management/scan-logs.ts
+    params: dict[str, Any] = {
+        "time_interval": interval,
+        "time_unit": unit,
+        "pageNumber": page,
+        "pageSize": page_size,
+        "filter": filter_type,
+    }
+    # Optional encrypted page token for pagination continuation is sent in the request body.
+    json_data = {"page_token": page_token} if page_token else None
 
-    # Add TSG ID to URL suffix
-    url_suffix = f"{MGMT_API_V1_PREFIX}/scanlogs/tsg/{client.tsg_id}"
+    # The scanlogs endpoint returns an empty 200 body when there are no logs in the time range.
+    # Request the raw response so the empty body does not trigger a JSON-parse error, then parse it.
+    raw_response = client.http_request(
+        method="POST",
+        url_suffix=f"{MGMT_API_V1_PREFIX}/scanlogs",
+        params=params,
+        json_data=json_data,
+        use_mgmt_base=True,
+        resp_type="response",
+    )
+    raw_text = getattr(raw_response, "text", "") or ""
+    response = json.loads(raw_text) if raw_text.strip() else {}
 
-    # Call scan logs endpoint
-    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_mgmt_base=True)
+    # Response shape: { scan_result_for_dashboard: { scan_result_entries: [...] },
+    #   total_pages, page_number, page_size, page_token }
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk-main/src/models/mgmt-scan-log.ts
+    dashboard = response.get("scan_result_for_dashboard") or {}
+    entries = dashboard.get("scan_result_entries") or []
 
-    # Extract scan logs from response (forward-compatible: capture all fields)
-    logs_data = response.get("data", []) or response.get("logs", [])
     scan_logs = []
-
-    for log in logs_data:
-        log_info = {
-            "scan_id": log.get("scan_id"),
-            "report_id": log.get("report_id"),
-            "timestamp": log.get("timestamp"),
-            "profile_name": log.get("profile_name"),
-            "action": log.get("action"),
-            "category": log.get("category"),
-            "detected": log.get("detected"),
-            "prompt": log.get("prompt"),
-            "response": log.get("response"),
-        }
-        scan_logs.append(log_info)
+    for log in entries:
+        scan_logs.append(
+            {
+                "scan_id": log.get("scan_id"),
+                "report_id": log.get("report_id"),
+                "transaction_id": log.get("transaction_id"),
+                "profile_name": log.get("profile_name"),
+                "app_name": log.get("app_name"),
+                "api_key_name": log.get("api_key_name"),
+                "model_name": log.get("model_name"),
+                "verdict": log.get("verdict"),
+                "action": log.get("action"),
+                "status": log.get("status"),
+                "tokens": log.get("tokens"),
+                "text_records": log.get("text_records"),
+                "received_ts": log.get("received_ts"),
+                "completed_ts": log.get("completed_ts"),
+                "content_masked": log.get("content_masked"),
+            }
+        )
 
     if not scan_logs:
         readable_output = "No scan logs found."
     else:
-        readable_output = tableToMarkdown(
+        summary = (
+            f"**Transactions:** {dashboard.get('all_transactions_count', 'N/A')} | "
+            f"**Threats:** {dashboard.get('threats_count', 'N/A')} | "
+            f"**Text Records:** {dashboard.get('text_records_count', 'N/A')} | "
+            f"**Page:** {response.get('page_number', page)}/{response.get('total_pages', 'N/A')}"
+        )
+        table = tableToMarkdown(
             f"Prisma AIRs Runtime Scan Logs ({len(scan_logs)} results)",
             scan_logs,
-            headers=["scan_id", "timestamp", "profile_name", "action", "category", "detected"],
+            headers=["scan_id", "received_ts", "profile_name", "app_name", "verdict", "action", "status"],
             headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
         )
+        readable_output = f"{summary}\n\n{table}"
 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RuntimeScanLog",
         outputs_key_field="scan_id",
         outputs=scan_logs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def runtime_scan_content_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the captured prompt/response content for a scan.
+
+    Retrieves the stored prompt and response payloads for a scan_id from the SCM
+    reports API so analysts can review exactly what content was scanned.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    scan_id = args.get("scan_id")
+    if not scan_id:
+        raise ValueError("scan_id is required")
+    scan_sub_req_id = arg_to_number(args.get("scan_sub_req_id")) or 0
+
+    # SCM reports API: GET /aisec/v1/mgmt/reports/scancontent (use_mgmt_base adds the /aisec prefix).
+    params: dict[str, Any] = {"scan_id": scan_id, "scan_sub_req_id": scan_sub_req_id}
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{MGMT_API_V1_PREFIX}/reports/scancontent",
+        params=params,
+        use_mgmt_base=True,
+    )
+
+    # The response carries scan metadata plus the captured prompt/response content.
+    metadata = {
+        "scan_id": response.get("scan_id", scan_id),
+        "report_id": response.get("report_id"),
+        "sub_scan_req_id": response.get("sub_scan_req_id"),
+        "transaction_id": response.get("transaction_id"),
+    }
+    metadata_table = tableToMarkdown(
+        "Prisma AIRs Scan Content",
+        metadata,
+        headers=["scan_id", "report_id", "sub_scan_req_id", "transaction_id"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    scan_contents = response.get("scan_contents") or {}
+    content_rows = []
+    if isinstance(scan_contents, dict):
+        if scan_contents.get("prompt") is not None:
+            content_rows.append({"Type": "Prompt", "Content": scan_contents.get("prompt")})
+        if scan_contents.get("response") is not None:
+            content_rows.append({"Type": "Response", "Content": scan_contents.get("response")})
+    content_table = tableToMarkdown("Scanned Content", content_rows, headers=["Type", "Content"]) if content_rows else ""
+    readable_output = f"{metadata_table}\n{content_table}" if content_table else metadata_table
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RuntimeScanContent",
+        outputs_key_field="scan_id",
+        outputs=response,
         readable_output=readable_output,
         raw_response=response,
     )
@@ -8420,6 +8526,9 @@ def main() -> None:
 
         elif command == "prisma-airs-runtime-scan-logs":
             return_results(runtime_scan_logs_command(client, args))
+
+        elif command == "prisma-airs-runtime-scan-content-get":
+            return_results(runtime_scan_content_get_command(client, args))
 
         elif command == "prisma-airs-runtime-topics-list":
             return_results(runtime_topics_list_command(client, args))
