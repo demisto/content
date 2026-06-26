@@ -278,8 +278,9 @@ alter
 alter
     event_name_clean = trim(parsed_fields -> type, "["),
     syscall_id = to_integer(parsed_fields -> syscall),
-    pid = parsed_fields -> pid,
+    pid = coalesce(parsed_fields -> pid, arrayindex(regextract(_raw_log, "(?:^| )pid=([0-9]+)"), 0)),
     ppid = parsed_fields -> ppid,
+    comm = parsed_fields -> comm,
     uid = parsed_fields -> uid,
     success = parsed_fields -> success,
     res = parsed_fields -> res
@@ -289,7 +290,7 @@ alter
     xdm.event.log_level = if(to_string(syslog_priority) in ("14", "134", "*INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
     xdm.event.type = if(syscall_id in (59,322), "Command Execution", 
                         syscall_id in (2,3,85,22,257,292,0,1,17,18,19,20,295,296,82,87,263,264,79,83,84,86,88,89,217,258,260,266,4,5,6,9,11,21,76,90,91,92,93,133), "File/Datastore Event"),
-    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.event.operation = if(event_name_clean = "SYSCALL", event_name_clean, XDM_CONST.OPERATION_TYPE_AUDIT),
     xdm.event.operation_sub_type = coalesce(to_string(syscall_id), event_name_clean),
     xdm.alert.name = event_name_clean,
     xdm.alert.description = parsed_fields -> msg,
@@ -298,11 +299,14 @@ alter
                            success = "no" or res = "0", XDM_CONST.OUTCOME_FAILED,
                            XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = parsed_fields -> exit,
+    xdm.source.process.pid = to_number(ppid),
+    xdm.target.user.username = uid,
     xdm.target.user.identifier = uid,
-    xdm.target.process.parent_id = ppid,
+    xdm.target.process.name = comm,
+    xdm.target.process.parent_id = if(event_name_clean = "SYSCALL", null, ppid),
     xdm.target.process.executable.path = parsed_fields -> exe,
     xdm.target.process.pid = to_number(pid),
-    xdm.target.process.command_line = parsed_fields -> comm;
+    xdm.target.process.command_line = if(event_name_clean = "SYSCALL", null, comm);
 
 // Virtualization Story general field mapping
 [RULE: vmware_vcenter_common_fields]
