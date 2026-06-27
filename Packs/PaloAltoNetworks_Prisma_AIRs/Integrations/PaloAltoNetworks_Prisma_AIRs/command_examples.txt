@@ -1,6 +1,6 @@
 # Prisma AIRs Integration - Command Examples
 # Curated, safe set for `demisto-sdk generate-docs --examples`.
-# - Read-only commands (list/scan/scan-logs/eula/categories) are non-mutating.
+# - Read-only commands (list/scan/eula/categories) are non-mutating.
 # - The profiles, topics, and DLP patterns blocks are self-cleaning lifecycles:
 #   they create a resource, exercise get/update, then delete it in the same run.
 # Excluded on purpose: api-keys create/regenerate/delete (require elevated SCM

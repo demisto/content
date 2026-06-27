@@ -1,4 +1,3 @@
-import json
 import pytest
 import demistomock as demisto
 from unittest.mock import Mock, patch
@@ -8,7 +7,6 @@ from PaloAltoNetworks_Prisma_AIRs import (
     runtime_scan_command,
     runtime_bulk_scan_command,
     runtime_scan_content_get_command,
-    runtime_scan_logs_command,
     runtime_api_keys_list_command,
     runtime_api_keys_create_command,
     runtime_api_keys_regenerate_command,
@@ -2314,45 +2312,6 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="profile_name and prompts_csv are required"):
             runtime_bulk_scan_command(mock_client, {"profile_name": "default"})
-
-    @patch.object(Client, "http_request")
-    def test_runtime_scan_logs_command(self, mock_http: Mock, mock_client: Client) -> None:
-        """runtime-scan-logs returns logs keyed by scan_id under RuntimeScanLog.
-
-        Args:
-            mock_http: Mocked http_request method.
-            mock_client: Mock client fixture.
-        """
-        payload = {
-            "scan_result_for_dashboard": {
-                "all_transactions_count": 1,
-                "threats_count": 0,
-                "scan_result_entries": [{"scan_id": "s-1", "profile_name": "default", "action": "allow", "verdict": "benign"}],
-            },
-            "total_pages": 1,
-            "page_number": 1,
-        }
-        # The command requests resp_type="response" and parses .text itself (the endpoint
-        # returns an empty body when there are no logs), so the mock returns a response-like object.
-        mock_response = Mock()
-        mock_response.text = json.dumps(payload)
-        mock_http.return_value = mock_response
-
-        result = runtime_scan_logs_command(mock_client, {"time_range": "24 hours"})
-
-        # Verify it POSTs to /v1/mgmt/scanlogs (no tsg path segment) with SDK-style params.
-        _, kwargs = mock_http.call_args
-        assert kwargs["method"] == "POST"
-        assert kwargs["url_suffix"] == "/v1/mgmt/scanlogs"
-        assert kwargs["resp_type"] == "response"
-        assert kwargs["params"]["time_interval"] == 24
-        assert kwargs["params"]["time_unit"] == "hours"
-        assert kwargs["params"]["pageNumber"] == 1
-
-        assert result.outputs_prefix == "PrismaAIRs.RuntimeScanLog"
-        assert result.outputs_key_field == "scan_id"
-        assert result.outputs[0]["scan_id"] == "s-1"
-        assert result.outputs[0]["verdict"] == "benign"
 
     @patch.object(Client, "http_request")
     def test_runtime_scan_content_get_command(self, mock_http: Mock, mock_client: Client) -> None:

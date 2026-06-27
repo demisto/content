@@ -2284,38 +2284,66 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 | PrismaAIRs.DlpFilteringProfileReplace.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpFilteringProfileReplace.updated_by | String | User who last updated the profile. |
 
-### prisma-airs-runtime-scan-logs
+### prisma-airs-runtime-scan-content-get
 
 ***
-Query runtime scan logs for a specified time period.
+Retrieve the captured prompt and response content for a scan by its scan ID.
 
 #### Base Command
 
-`prisma-airs-runtime-scan-logs`
+`prisma-airs-runtime-scan-content-get`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_range | The time window to query scan logs for. The API supports only these preset ranges. Possible values are: 24 hours, 7 days, 30 days. Default is 24 hours. | Optional |
-| filter | Filter logs by type. "all" returns every log, "benign" only benign verdicts, "threat" only logs where a threat was detected. Possible values are: all, benign, threat. Default is all. | Optional |
-| page | Page number for pagination. Default is 1. | Optional |
-| page_size | Number of results per page. Default is 50. | Optional |
-| page_token | Encrypted page token from a previous response, used to fetch the next page. | Optional |
+| scan_id | The scan ID to retrieve the prompt/response content for. | Required |
+| scan_sub_req_id | Sub scan request ID (for batched/async scans). Defaults to 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RuntimeScanLog.scan_id | String | Scan ID. |
-| PrismaAIRs.RuntimeScanLog.report_id | String | Report ID. |
-| PrismaAIRs.RuntimeScanLog.timestamp | Date | Scan timestamp. |
-| PrismaAIRs.RuntimeScanLog.profile_name | String | Security profile name used. |
-| PrismaAIRs.RuntimeScanLog.action | String | Action taken \(allow or block\). |
-| PrismaAIRs.RuntimeScanLog.category | String | Threat category. |
-| PrismaAIRs.RuntimeScanLog.detected | Boolean | Whether threats were detected. |
-| PrismaAIRs.RuntimeScanLog.prompt | String | Scanned prompt. |
-| PrismaAIRs.RuntimeScanLog.response | String | Scanned response. |
+| PrismaAIRs.RuntimeScanContent.scan_id | String | Scan ID. |
+| PrismaAIRs.RuntimeScanContent.report_id | String | Report ID associated with the scan. |
+| PrismaAIRs.RuntimeScanContent.sub_scan_req_id | String | Sub scan request ID. |
+| PrismaAIRs.RuntimeScanContent.transaction_id | String | Transaction ID correlating prompt and response. |
+| PrismaAIRs.RuntimeScanContent.scan_contents.prompt | String | The captured prompt content that was scanned. |
+| PrismaAIRs.RuntimeScanContent.scan_contents.response | String | The captured response content that was scanned. |
+
+#### Command example
+
+```
+!prisma-airs-runtime-scan-content-get scan_id="11111111-1111-1111-1111-111111111111"
+```
+
+#### Context Example
+
+```json
+{
+    "scan_id": "11111111-1111-1111-1111-111111111111",
+    "report_id": "R11111111-1111-1111-1111-111111111111",
+    "sub_scan_req_id": 0,
+    "transaction_id": "pan_00000000-0000-0000-0000-000000000000",
+    "scan_contents": {
+        "prompt": "example prompt content"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Scan Content
+>
+>|Scan Id|Report Id|Sub Scan Req Id|Transaction Id|
+>|---|---|---|---|
+>| 11111111-1111-1111-1111-111111111111 | R11111111-1111-1111-1111-111111111111 | 0 | pan_00000000-0000-0000-0000-000000000000 |
+>
+>### Scanned Content
+>
+>|Type|Content|
+>|---|---|
+>| Prompt | example prompt content |
 
 ### prisma-airs-runtime-topics-list
 
