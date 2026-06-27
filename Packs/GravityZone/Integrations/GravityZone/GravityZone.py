@@ -299,7 +299,7 @@ class Client(BaseClient):
             Any: The response containing the live search query task results.
         """
         return self.call(
-            "/v1.0/jsonrpc/internal",
+            "/v1.2/jsonrpc/incidents",
             "getLiveSearchQueryTaskResult",
             {"taskId": task_id, "page": page, "perPage": per_page},
         )
@@ -466,7 +466,7 @@ class Client(BaseClient):
             Any: The response containing the live search query information.
         """
         return self.call(
-            "/v1.0/jsonrpc/internal",
+            "/v1.2/jsonrpc/incidents",
             "runPredefinedLiveSearchQuery",
             {
                 "endpoints": endpoints,
@@ -486,7 +486,7 @@ class Client(BaseClient):
             Any: The response containing the live search query information.
         """
         return self.call(
-            "/v1.0/jsonrpc/internal",
+            "/v1.2/jsonrpc/incidents",
             "runPredefinedLiveSearchQuery",
             {
                 "endpoints": endpoints,
