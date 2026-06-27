@@ -2,7 +2,7 @@
     "name": "Analyst1",
     "description": "Enriches indicators with Analyst1 threat intelligence including actor, malware, and evidence data.",
     "support": "partner",
-    "currentVersion": "1.1.16",
+    "currentVersion": "1.1.17",
     "author": "Analyst1",
     "url": "",
     "email": "support@analyst1.com",
@@ -22,13 +22,5 @@
         "xsoar",
         "marketplacev2",
         "platform"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix",
-        "xsiam"
     ]
 }
