@@ -42,8 +42,8 @@ RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
 # -----------------------------
 # Git utilities
 # -----------------------------
-def run_git_command(cmd, raise_on_error=True):
-    log_cmd = [c.replace(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), "***") for c in cmd]
+def run_git_command(cmd, github_token, raise_on_error=True):
+    log_cmd = [c.replace(github_token, "***") for c in cmd]
     print(f"Running: {' '.join(log_cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -57,20 +57,25 @@ def run_git_command(cmd, raise_on_error=True):
 def prepare_git(head_branch: str):
     token = get_env_var("CONTENTBOT_GH_ADMIN_TOKEN")
 
-    run_git_command(["git", "config", "--global", "user.name", "content-bot"], raise_on_error=False)
-    run_git_command(["git", "config", "--global", "user.email", "content-bot@users.noreply.github.com"], raise_on_error=False)
+    run_git_command(["git", "config", "--global", "user.name", "content-bot"], token, raise_on_error=False)
+    run_git_command(
+        ["git", "config", "--global", "user.email", "content-bot@users.noreply.github.com"], token, raise_on_error=False
+    )
 
     remote_url = f"https://x-access-token:{token}@github.com/demisto/content.git"  # disable-secrets-detection
-    run_git_command(["git", "remote", "set-url", "origin", remote_url])
+    run_git_command(
+        ["git", "remote", "set-url", "origin", remote_url],
+        token,
+    )
 
-    run_git_command(["git", "fetch", "origin", "master"])
-    run_git_command(["git", "fetch", "origin", head_branch])
+    run_git_command(["git", "fetch", "origin", "master"], token)
+    run_git_command(["git", "fetch", "origin", head_branch], token)
 
 
 # -----------------------------
 # File separation
 # -----------------------------
-def seperate_pr_files(pr_files: dict):
+def separate_pr_files(pr_files: dict):
     xsoar_files = []
     xsiam_files = []
     release_notes_files = []
@@ -94,61 +99,67 @@ def seperate_pr_files(pr_files: dict):
 # -----------------------------
 # Branch splitting
 # -----------------------------
-def split_branch_with_git(head_branch, xsoar_files, xsiam_files):
+def split_branch_with_git(head_branch: str, xsoar_files: list, xsiam_files: list, token: str):
     prepare_git(head_branch)
 
     main_branch = f"{head_branch}-main"
     mapping_branch = f"{head_branch}-mapping"
 
     # ---------------- mapping branch ----------------
-    run_git_command(["git", "checkout", "-b", mapping_branch, f"origin/{head_branch}"])
+    run_git_command(["git", "checkout", "-b", mapping_branch, f"origin/{head_branch}"], token)
 
     for file in xsoar_files:
         filename = file.filename
         if file.status == "added":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+            run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
         elif file.status == "renamed":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+            run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
             if hasattr(file, "previous_filename") and file.previous_filename:
-                res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
+                res = run_git_command(
+                    ["git", "checkout", "origin/master", "--", file.previous_filename], token, raise_on_error=False
+                )
                 if res.returncode != 0:
-                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
+                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], token, raise_on_error=False)
         else:
             res = run_git_command(
                 ["git", "checkout", "origin/master", "--", filename],
+                token,
                 raise_on_error=False,
             )
             if res.returncode != 0:
-                run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+                run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
 
-    if run_git_command(["git", "status", "--porcelain"]).stdout.strip():
-        run_git_command(["git", "commit", "-m", "Remove XSOAR files from mapping PR"])
-        run_git_command(["git", "push", "origin", mapping_branch])
+    if run_git_command(["git", "status", "--porcelain"], token).stdout.strip():
+        run_git_command(["git", "commit", "-m", "Remove XSOAR files from mapping PR"], token)
+    run_git_command(["git", "push", "origin", mapping_branch], token)
 
     # ---------------- main branch ----------------
-    run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"])
+    run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"], token)
 
     for file in xsiam_files:
         filename = file.filename
         if file.status == "added":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+            run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
         elif file.status == "renamed":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+            run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
             if hasattr(file, "previous_filename") and file.previous_filename:
-                res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
+                res = run_git_command(
+                    ["git", "checkout", "origin/master", "--", file.previous_filename], token, raise_on_error=False
+                )
                 if res.returncode != 0:
-                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
+                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], token, raise_on_error=False)
         else:
             res = run_git_command(
                 ["git", "checkout", "origin/master", "--", filename],
+                token,
                 raise_on_error=False,
             )
             if res.returncode != 0:
-                run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
+                run_git_command(["git", "rm", "--ignore-unmatch", filename], token, raise_on_error=False)
 
-    if run_git_command(["git", "status", "--porcelain"]).stdout.strip():
-        run_git_command(["git", "commit", "-m", "Remove XSIAM files from main PR"])
-        run_git_command(["git", "push", "origin", main_branch])
+    if run_git_command(["git", "status", "--porcelain"], token).stdout.strip():
+        run_git_command(["git", "commit", "-m", "Remove XSIAM files from main PR"], token)
+    run_git_command(["git", "push", "origin", main_branch], token)
 
     return main_branch, mapping_branch
 
@@ -231,7 +242,7 @@ def prepare_reviewers(pr: PullRequest):
     reviewers, _ = pr.get_review_requests()
     reviewer_logins = [r.login for r in reviewers]
 
-    return reviewer_logins or ([merged_by] if merged_by else [])
+    return [merged_by] if merged_by else reviewer_logins
 
 
 def remove_doc_reviewers(assignees: list, content_roles):
@@ -239,8 +250,8 @@ def remove_doc_reviewers(assignees: list, content_roles):
         doc_reviewer = get_doc_reviewer(content_roles)
         if doc_reviewer in assignees:
             assignees.remove(doc_reviewer)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Failed removing doc reviewers. Error: {e}")
 
 
 # -----------------------------
@@ -270,13 +281,14 @@ def main():
 
     org_name = "demisto"
     repo_name = "content"
-    gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
+    github_token = get_env_var("CONTENTBOT_GH_ADMIN_TOKEN")
+    gh = Github(github_token, verify=False)
     content_repo = gh.get_repo(f"{org_name}/{repo_name}")
     pr_number = payload.get("pull_request", {}).get("number")
     merged_pr = content_repo.get_pull(pr_number)
 
     pr_files = {f.filename: f for f in merged_pr.get_files()}
-    xsoar_files, xsiam_files = seperate_pr_files(pr_files)
+    xsoar_files, xsiam_files = separate_pr_files(pr_files)
 
     body = prepare_body(merged_pr)
     labels = prepare_labels(merged_pr)
@@ -296,7 +308,7 @@ def main():
     mapping_branch = None
 
     if xsiam_files and xsoar_files:
-        main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files)
+        main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files, github_token)
 
     elif xsiam_files and not xsoar_files:
         print(f"{t.cyan}Only XSIAM items files → one pr only{t.normal}")
