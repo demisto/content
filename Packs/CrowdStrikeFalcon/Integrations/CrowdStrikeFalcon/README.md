@@ -1,4 +1,4 @@
-The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
+The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API) enables you to fetch and resolve detections, search devices, get behaviors by ID, contain hosts, and lift host containment.
 
 ## Configure CrowdStrike Falcon in Cortex
 
