@@ -211,6 +211,8 @@ configuration:
     defaultvalue: 1000
     section: Collect
     required: false
+    supportedModules:
+      - xsiam
   - name: isFetchEvents
     section: Collect
     display: Fetch Events
