@@ -170,6 +170,9 @@ configuration:
   type: 0
   required: false
   additionalinfo: Number of items requested per API page. Larger values reduce API round-trips but may increase response size. Server-side caps may apply.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   section: Collect
