@@ -2455,7 +2455,7 @@ script:
 
 # gcp-compute-image-get
   - arguments:
-    - description: Project ID for this request. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The project ID for this request. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
