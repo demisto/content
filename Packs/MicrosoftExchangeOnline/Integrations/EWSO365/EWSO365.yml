@@ -188,6 +188,9 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Skip unparsable emails during fetch incidents
   name: skip_unparsable_emails
   section: Collect
