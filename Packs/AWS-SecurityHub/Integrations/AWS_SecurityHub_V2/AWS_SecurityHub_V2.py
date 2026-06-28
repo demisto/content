@@ -39,11 +39,34 @@ def validate_aws_params(
         raise DemistoException("Role session name is required when using a role ARN.")
 
 
+def parse_tag_field(tags_str: str) -> list:
+    """Parse a string of key/value pairs into a list of tag dictionaries.
+
+    The expected format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
+
+    Args:
+        tags_str (str): The keys and values string.
+
+    Returns:
+        list: A list of dicts with the form ``{"Key": <key>, "Value": <value>}``.
+    """
+    tags = []
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    regex_parse_result = regex.findall(tags_str)
+    for key, value in regex_parse_result:
+        tags.append({"Key": key, "Value": value})
+    return tags
+
+
 def build_client(params: dict) -> BotoClient:
     """Build and return a boto3 Security Hub client based on the integration parameters.
 
-    The client is created through the shared ``AWSClient`` (AWSApiModule), which handles
-    STS role assumption, credentials, certificate verification, timeouts and retries.
+    The client is created through the shared ``AWSClient`` (AWSApiModule), which centrally
+    handles STS role assumption, credentials, certificate (SSL) verification, request
+    timeouts, retries and proxy resolution. Proxy support is wired automatically: the
+    ``AWSClient`` constructor calls ``handle_proxy(proxy_param_name="proxy", ...)``
+    internally, so the integration's ``proxy`` parameter is honored without any extra
+    handling here.
 
     Args:
         params (dict): The integration parameters (``demisto.params()``).
@@ -58,9 +81,11 @@ def build_client(params: dict) -> BotoClient:
     aws_role_policy = None
     aws_access_key_id = params.get("credentials", {}).get("identifier")
     aws_secret_access_key = params.get("credentials", {}).get("password")
-    verify_certificate = not params.get("insecure", True)
+    # SSL verification is enabled by default; disabled only when the user checks
+    # the "Trust any certificate (not secure)" box.
+    verify_certificate = not argToBoolean(params.get("insecure", False))
     timeout = params.get("timeout")
-    retries = params.get("retries") or DEFAULT_RETRIES
+    retries = arg_to_number(params.get("retries")) or DEFAULT_RETRIES
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
 
@@ -116,6 +141,55 @@ def test_module(client: BotoClient) -> str:
     return "ok"
 
 
+def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
+    """Enable AWS Security Hub V2 for the configured account and region.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. Optional ``tags`` - a string of key/value pairs in the
+            format ``key=key1,value=value1;key=key2,value=value2`` to assign to the resource.
+
+    Returns:
+        CommandResults: The ARN of the enabled Security Hub V2 resource.
+    """
+    # Security Hub V2 expects Tags as a flat {key: value} mapping, unlike V1's list of {Key, Value}.
+    parsed_tags = parse_tag_field(args.get("tags", ""))
+    tags = {tag["Key"]: tag["Value"] for tag in parsed_tags}
+    kwargs = remove_empty_elements({"Tags": tags})
+
+    demisto.debug(f"[AWS_Security_Hub_V2] Enabling Security Hub V2 with tag keys: {list(tags.keys())}")
+    response = client.enable_security_hub_v2(**kwargs)
+
+    security_hub_arn = response.get("SecurityHubV2Arn")
+    outputs = {"SecurityHubV2Arn": security_hub_arn}
+    return CommandResults(
+        outputs_prefix="AWS.SecurityHub.Hub",
+        outputs_key_field="SecurityHubV2Arn",
+        outputs=outputs,
+        readable_output=tableToMarkdown("AWS Security Hub V2 Enabled", outputs, removeNull=True),
+        raw_response=response,
+    )
+
+
+def disable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
+    """Disable AWS Security Hub V2 for the configured account and region.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. No arguments are required.
+
+    Returns:
+        CommandResults: A confirmation message that Security Hub V2 was disabled.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Disabling Security Hub V2")
+    response = client.disable_security_hub_v2()
+
+    return CommandResults(
+        readable_output="AWS Security Hub V2 was successfully disabled.",
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
@@ -128,6 +202,10 @@ def main():  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client))
+        elif command == "aws-securityhub-security-hub-enable":
+            return_results(enable_security_hub_command(client, args))
+        elif command == "aws-securityhub-security-hub-disable":
+            return_results(disable_security_hub_command(client, args))
 
         # elif command == "aws-securityhub-get-findings":
         #     return_results(get_findings_command(client, args))
