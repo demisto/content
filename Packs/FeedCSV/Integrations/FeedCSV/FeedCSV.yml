@@ -95,6 +95,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: URL
   name: url
   required: true
