@@ -5,6 +5,7 @@ import sys
 import time
 from datetime import datetime
 from typing import Any
+from uuid import NAMESPACE_DNS, uuid5
 
 import demistomock as demisto  # noqa: F401
 import pytz
@@ -3174,12 +3175,67 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
     return results
 
 
+def generate_deterministic_uuid(fields: list[Any]) -> str:
+    """
+    Generate a deterministic UUID (UUIDv5) from the given ordered fields.
+
+    The same combination of field values always produces the same UUID, so records
+    that represent the same host/vulnerability are assigned a stable identifier even
+    when Tenable.sc does not provide a native one.
+
+    Args:
+        fields: Ordered list of field values to concatenate into the uniqueness key.
+
+    Returns:
+        str: A deterministic UUID string derived from the concatenated fields.
+    """
+    # Normalize to strings and join with a delimiter to avoid accidental collisions
+    # between different field boundaries (e.g. "1" + "23" vs "12" + "3").
+    uniqueness_key = "|".join("" if value is None else str(value) for value in fields)
+    return str(uuid5(NAMESPACE_DNS, uniqueness_key))
+
+
+def populate_missing_uuids(vuln: dict) -> None:
+    """
+    Populate hostUUID and vulnUUID on a vulnerability record when they are missing.
+
+    Tenable.sc may return records without a native hostUUID / vulnUUID. In that case a
+    deterministic UUID is generated from the uniqueness fields so the same host /
+    vulnerability is consistently identified across fetches:
+        - hostUUID  <- repositoryID, ip, dnsName
+        - vulnUUID  <- repositoryID, ip, port, protocol, pluginID
+
+    Modifies the given vuln dict in place.
+
+    Args:
+        vuln: A single raw vulnerability record from the analysis API.
+    """
+    # repositoryID is exposed as a nested object (repository.id) in the analysis results.
+    repository_id = (vuln.get("repository") or {}).get("id")
+
+    if not vuln.get("hostUUID"):
+        host_fields = [repository_id, vuln.get("ip"), vuln.get("dnsName")]
+        vuln["hostUUID"] = generate_deterministic_uuid(host_fields)
+        demisto.debug(f"Generated deterministic hostUUID {vuln['hostUUID']} from {host_fields}")
+
+    if not vuln.get("vulnUUID"):
+        vuln_fields = [
+            repository_id,
+            vuln.get("ip"),
+            vuln.get("port"),
+            vuln.get("protocol"),
+            vuln.get("pluginID"),
+        ]
+        vuln["vulnUUID"] = generate_deterministic_uuid(vuln_fields)
+        demisto.debug(f"Generated deterministic vulnUUID {vuln['vulnUUID']} from {vuln_fields}")
+
+
 def parse_vulnerabilities(vulns: list) -> list:
     """
     Parse and prepare vulnerabilities for XSIAM ingestion.
 
-    Adds _time field, truncates oversized entries, and marks truncation status.
-    Mirrors the Tenable_io parse_vulnerabilities pattern.
+    Adds _time field, populates missing hostUUID/vulnUUID, truncates oversized entries,
+    and marks truncation status. Mirrors the Tenable_io parse_vulnerabilities pattern.
 
     Args:
         vulns: List of raw vulnerability records from the analysis API.
@@ -3196,6 +3252,9 @@ def parse_vulnerabilities(vulns: list) -> list:
         # vulnerabilities keep a recent _time and are not aged out by the findings
         # retention window. Prefer lastSeen (latest observation) and fall back to firstSeen.
         vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
+        # Ensure hostUUID / vulnUUID are always present so findings can be correlated,
+        # generating deterministic UUIDs from the uniqueness fields when missing.
+        populate_missing_uuids(vuln)
         vuln_str = json.dumps(vuln)
         if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             demisto.debug(f"found oversized vulnerability object: {sys.getsizeof(vuln_str)} bytes")
