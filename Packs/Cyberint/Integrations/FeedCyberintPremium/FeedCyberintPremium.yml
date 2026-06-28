@@ -96,6 +96,9 @@ configuration:
   required: true
   type: 16
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Filter by activity classification
   defaultvalue: All
   display: Activity
