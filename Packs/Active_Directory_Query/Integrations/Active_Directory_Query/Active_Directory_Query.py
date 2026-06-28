@@ -1830,7 +1830,7 @@ def main():
     default_base_dn = params.get("base_dn", "")
     secure_connection = params.get("secure_connection")
     ssl_version = params.get("ssl_version", "None")
-    default_page_size = int(params.get("page_size"))
+    default_page_size = int(params.get("page_size") or 100)
     ntlm_auth = params.get("ntlm")
     insecure = params.get("unsecure", False)
     port = params.get("port")
