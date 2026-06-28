@@ -63,6 +63,9 @@ configuration:
   - high
   - critical
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Tags
   name: feedTags
   type: 0
@@ -77,6 +80,9 @@ configuration:
   additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
