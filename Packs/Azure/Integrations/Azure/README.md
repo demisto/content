@@ -736,8 +736,6 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 
 ### azure-sql-db-transparent-data-encryption-set
 
-### azure-sql-db-transparent-data-encryption-set
-
 ***
 Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
@@ -758,71 +756,6 @@ Updates a logical database's transparent data encryption configuration. Required
 #### Context Output
 
 There is no context output for this command.
-
-***
-Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
-
-#### Base Command
-
-`azure-cosmos-db-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_name | Cosmos DB database account name. | Required |
-| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.CosmosDB.id | String | The unique resource identifier of the ARM resource. |
-| Azure.CosmosDB.name | String | The name of the ARM resource. |
-| Azure.CosmosDB.location | String | The location of the resource group to which the resource belongs. |
-| Azure.CosmosDB.kind | String | The database account type. |
-| Azure.CosmosDB.identity.type | String | The type of identity used for the resource. |
-| Azure.CosmosDB.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
-| Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
-| Azure.CosmosDB.properties.apiProperties | Dictionary | API specific properties. |
-| Azure.CosmosDB.properties.backupPolicy | unknown | The policy for taking backups on an account. |
-| Azure.CosmosDB.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
-| Azure.CosmosDB.properties.capacity | Integer | Properties related to capacity enforcement on an account. |
-| Azure.CosmosDB.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.cors | List | The CORS policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.createMode | String | The mode of account creation. |
-| Azure.CosmosDB.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
-| Azure.CosmosDB.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. |
-| Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. |
-| Azure.CosmosDB.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. |
-| Azure.CosmosDB.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. |
-| Azure.CosmosDB.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. |
-| Azure.CosmosDB.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. |
-| Azure.CosmosDB.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. |
-| Azure.CosmosDB.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. |
-| Azure.CosmosDB.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
-| Azure.CosmosDB.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
-| Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
-| Azure.CosmosDB.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
-| Azure.CosmosDB.properties.instanceId | String | A unique identifier assigned to the database account. |
-| Azure.CosmosDB.properties.ipRules | List | List of IP rules. |
-| Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
-| Azure.CosmosDB.properties.keyVaultKeyUri | String | The URI of the key vault. |
-| Azure.CosmosDB.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
-| Azure.CosmosDB.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
-| Azure.CosmosDB.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.privateEndpointConnections | List | List of private endpoint connections. |
-| Azure.CosmosDB.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |
-| Azure.CosmosDB.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
-| Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
 ### azure-vm-instance-details-get
 
@@ -1713,8 +1646,6 @@ There is no context output for this command.
 
 ### azure-storage-container-public-access-block
 
-### azure-storage-container-public-access-block
-
 ***
 Blocks public access to a container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
@@ -1734,36 +1665,6 @@ Blocks public access to a container. Required permission: Microsoft.Storage/stor
 #### Context Output
 
 There is no context output for this command.
-***
-Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
-
-#### Base Command
-
-`azure-nsg-security-rules-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource group name. | Required |
-| network_security_group_name | The name of the network security group. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. |
-| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. |
-| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
-| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
 ### azure-storage-blob-property-get
 
