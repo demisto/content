@@ -10,4 +10,4 @@ filebeat.inputs:
         vendor: hashicorp
         product: vault
 supportedModules:
-- agentix
+- xsiam
