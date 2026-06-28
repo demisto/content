@@ -121,6 +121,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First Fetch Time
   name: initial_interval
   defaultvalue: 1 year
