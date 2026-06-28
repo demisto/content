@@ -237,7 +237,7 @@ script:
       - description: The name of S3 bucket.
         name: bucket
         required: true
-      - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         name: account_id
         required: false
         required:platform: true
@@ -288,7 +288,7 @@ script:
       - description: The name of S3 bucket.
         name: bucket
         required: true
-      - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         name: account_id
         required: false
         required:platform: true
@@ -370,7 +370,7 @@ script:
   - name: aws-s3-bucket-acl-put
     description: "Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets block ACLs by default for better security. Required IAM permission: s3:PutBucketAcl."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -463,7 +463,7 @@ script:
   - name: aws-s3-bucket-logging-put
     description: "Configures logging settings for an AWS S3 bucket, enabling monitoring bucket access via logs delivered to a designated target bucket. Required IAM permission: s3:PutBucketLogging."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -556,7 +556,7 @@ script:
   - name: aws-s3-bucket-versioning-put
     description: "Sets the versioning state of an existing bucket. Required IAM permission: s3:PutBucketVersioning."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -650,7 +650,7 @@ script:
     description: "Applies an Amazon S3 bucket policy to an Outposts bucket. Required IAM permission: s3:PutBucketPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -736,7 +736,7 @@ script:
     description: "Removes the website configuration for a bucket. Required IAM permission: s3:DeleteBucketWebsite."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -815,7 +815,7 @@ script:
     description: "Creates or modifies ownership controls for an Amazon S3 bucket. Required IAM permission: s3:PutBucketOwnershipControls."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -906,7 +906,7 @@ script:
     description: "Retrieves the website configuration for a bucket. Required IAM permission: s3:GetBucketWebsite."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -970,7 +970,7 @@ script:
     description: "Retrieves the access control list (ACL) of a bucket. Required IAM permission: s3:GetBucketAcl."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -1027,7 +1027,7 @@ script:
   - name: aws-iam-account-password-policy-get
     description: "Retrieves the AWS account password policy. Required IAM permission: iam:GetAccountPasswordPolicy."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -1106,7 +1106,7 @@ script:
     description: "Creates or updates AWS account password policy. Required IAM permission: iam:UpdateAccountPasswordPolicy."
     execution: true
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -1197,7 +1197,7 @@ script:
     description: "Adds or updates an inline policy document that is embedded in the specified IAM role. Required IAM permission: iam:PutRolePolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1253,7 +1253,7 @@ script:
     description: "Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console. Required IAM permission: iam:DeleteLoginProfile."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1302,7 +1302,7 @@ script:
     description: "Adds or updates an inline policy document that is embedded in the specified IAM user. Required IAM permission: iam:PutUserPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1357,7 +1357,7 @@ script:
     description: "Removes the specified IAM role from the specified EC2 instance profile. Required IAM permission: iam:RemoveRoleFromInstanceProfile."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1409,7 +1409,7 @@ script:
     description: "Changes the status of the specified access key from Active to Inactive, or vice versa. Can be used to disable a user's access key as part of a key rotation workflow. Required IAM permission: iam:UpdateAccessKey."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1468,7 +1468,7 @@ script:
     description: 'Updates an Amazon EKS cluster configuration. Only one type of update is allowed per call (logging or resources_vpc_config). Required IAM permission: eks:UpdateClusterConfig.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1588,7 +1588,7 @@ script:
     description: "Returns details for an Amazon EKS cluster. Required IAM permission: eks:DescribeCluster."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: cluster_name
@@ -1751,7 +1751,7 @@ script:
     description: "Associates an access policy and its scope to an access entry. Required IAM permission: eks:AssociateAccessPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: cluster_name
@@ -1840,7 +1840,7 @@ script:
     description: "Updates an existing Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:UpdateAccessEntry."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -1931,7 +1931,7 @@ script:
     description: "Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:CreateAccessEntry."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -2034,7 +2034,7 @@ script:
     description: "Returns a list of EKS clusters. Required IAM Permission: eks:ListClusters."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -2099,7 +2099,7 @@ script:
     description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options. Required IAM Permission: rds:ModifyDBCluster."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -2194,7 +2194,7 @@ script:
     description: "Modifies the attributes associated with a DB cluster snapshot. Required IAM permission: rds:ModifyDBClusterSnapshotAttribute."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -2323,7 +2323,7 @@ script:
     description: "Modifies an existing Amazon RDS DB instance. Enables updating the instance class, storage capacity, security groups, and other configuration parameters without the need to create a new instance. Required IAM permission: rds:ModifyDBInstance."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -2675,7 +2675,7 @@ script:
     description: "Returns information about provisioned RDS instances. Required IAM Permission: rds:DescribeDBInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -3171,7 +3171,7 @@ script:
     description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot. Required IAM permission: rds:ModifyDBSnapshotAttribute.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -3234,7 +3234,7 @@ script:
     description: "Modifies an existing RDS event notification subscription. Required IAM permission: rds:ModifyEventSubscription."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -3423,7 +3423,7 @@ script:
     description: "Modifies the settings of a cluster. Required IAM Permission: redshift:ModifyCluster."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -3903,7 +3903,7 @@ script:
     description: 'Revokes ingress rules in a security group. Required IAM permission: ec2:RevokeSecurityGroupIngress.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -3973,7 +3973,7 @@ script:
     description: 'Adds specified inbound (ingress) rules to a security group. Required IAM permission: ec2:AuthorizeSecurityGroupIngress.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4043,7 +4043,7 @@ script:
     description: 'Removes specified outbound (egress) rules from a security group. Required IAM permission: ec2:RevokeSecurityGroupEgress.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4114,7 +4114,7 @@ script:
     description: 'Adds the specified inbound (egress) rules to a security group. Required IAM Permission: ec2:AuthorizeSecurityGroupEgress.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4181,7 +4181,7 @@ script:
     description: 'Adds or removes permission settings for a specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications. Required IAM permission: ec2:ModifySnapshotAttribute.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4254,7 +4254,7 @@ script:
   - name: aws-ec2-instance-attribute-modify
     description: "Modifies a specific attribute for a specific instance. You can define only one attribute at a time. Required IAM permission: ec2:ModifyInstanceAttribute."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -4362,7 +4362,7 @@ script:
     description: 'Modifies a specific attribute of the specified AMI. Required IAM permission: ec2:ModifyImageAttribute.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4474,7 +4474,7 @@ script:
     description: "Modifes the EC2 instance metadata parameters on a running or stopped instance. Required IAM permission: ec2:ModifyInstanceMetadataOptions."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -4536,7 +4536,7 @@ script:
   - name: aws-ec2-snapshot-create
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - description: The ID of the EBS volume.
@@ -4640,7 +4640,7 @@ script:
   - name: aws-ec2-snapshot-permission-modify
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - description: The ID of the EBS snapshot.
@@ -4744,7 +4744,7 @@ script:
   - name: aws-ecs-cluster-settings-update
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - description: The name of the cluster.
@@ -4803,7 +4803,7 @@ script:
   - name: aws-ec2-subnet-attribute-modify
     description: "Modifies a subnet attribute. Required IAM permission: ec2:ModifySubnetAttribute."
     arguments:
-      - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         name: account_id
         required: false
         required:platform: true
@@ -4876,7 +4876,7 @@ script:
       name: filters
     - description: A comma-separated list of VPC IDs.
       name: vpc_ids
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -4980,7 +4980,7 @@ script:
       name: filters
     - description: A comma-separated list of subnet IDs.
       name: subnet_ids
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -5088,7 +5088,7 @@ script:
       name: next_token
     - description: The Amazon Web Services region for the IP address.
       name: address_region
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -5160,7 +5160,7 @@ script:
       name: next_token
     - description: The Amazon Web Services region for the IP address.
       name: address_region
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -5224,7 +5224,7 @@ script:
     description: 'Updates trail settings for event logging and log file handling. Designates an existing bucket for log delivery without requiring a service restart. Note: This must be executed from the region where the trail was created. Required IAM permission: cloudtrail:UpdateTrail.'
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -5444,7 +5444,7 @@ script:
     description: "Starts recording AWS API calls and log file delivery for a trail. For trails enabled in all regions, this must be executed from the region where the trail was created. Cannot be executed on shadow trails (replicated trails in other regions). Required IAM permission: cloudtrail:StartLogging."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -5523,7 +5523,7 @@ script:
     description: "Returns details for specific instances or all instances. Required IAM permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -5870,7 +5870,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -5923,7 +5923,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -5991,7 +5991,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -6044,7 +6044,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -6484,7 +6484,7 @@ script:
     description: "Retrieves the latest AMI. Required IAM permission: ec2:DescribeImages."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -6664,7 +6664,7 @@ script:
     description: "Creates a network ACL in the defined VPC, providing an optional layer of security (in addition to security groups) for the instances in your VPC. Required IAM permission: ec2:CreateNetworkAcl."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -6777,7 +6777,7 @@ script:
     description: "Retrieves the public IP addresses that have been discovered by IPAM, the Amazon VPC IP Address Manager. Required IAM permission: ec2:GetIpamDiscoveredPublicAddresses."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -6859,7 +6859,7 @@ script:
     description: "Adds or overwrites one or more tags for specific Amazon EC2 resources. When you specify an existing tag key, the value is overwritten with the new value. Required IAM permission: ec2:CreateTags."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -6922,7 +6922,7 @@ script:
       - 'false'
       defaultValue: 'true'
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -7015,7 +7015,7 @@ script:
     description: "Deletes the bucket policy from an Amazon S3 bucket, removing all policy-based access controls from the bucket and potentially changing access permissions. Required IAM permission: s3:DeleteBucketPolicy."
     execution: true
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -7066,7 +7066,7 @@ script:
   - name: aws-s3-public-access-block-get
     description: "Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects. Required IAM permission: s3:GetBucketPublicAccessBlock."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -7136,7 +7136,7 @@ script:
     description: "Describes the specified images (AMIs, AKIs, and ARIs) available to you or all of the images available to you. Required IAM Permission: ec2:DescribeImages."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -7347,7 +7347,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -7431,7 +7431,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -7483,7 +7483,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -7572,7 +7572,7 @@ script:
     description: "Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached. Required IAM Permission: ec2:DescribeImages."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -7643,7 +7643,7 @@ script:
     description: "Describes the EBS snapshots available to you or all snapshots accessible in your environment. Required IAM Permission: ec2:DescribeSnapshots."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -7768,7 +7768,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -7819,7 +7819,7 @@ script:
     description: "Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy a snapshot within the same Region, from one Region to another, or from a Region to an Outpost. Required IAM Permission: ec2:CopySnapshot."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -7900,7 +7900,7 @@ script:
     description: "A waiter function that waits until the snapshot is complete. Required IAM Permission: ec2:DescribeSnapshots."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -7964,7 +7964,7 @@ script:
   - name: aws-s3-bucket-encryption-get
     description: "Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket. Required IAM permission: s3:GetEncryptionConfiguration."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -8022,7 +8022,7 @@ script:
   - name: aws-s3-bucket-policy-get
     description: "Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists. Required IAM permission: s3:GetBucketPolicy."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -8102,7 +8102,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8318,7 +8318,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8408,7 +8408,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8494,7 +8494,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8584,7 +8584,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8706,7 +8706,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8820,7 +8820,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -8957,7 +8957,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9036,7 +9036,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9112,7 +9112,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9259,7 +9259,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9315,7 +9315,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9477,7 +9477,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9563,7 +9563,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9617,7 +9617,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9671,7 +9671,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -9763,7 +9763,7 @@ script:
     - name: account_id
       required: false
       required:platform: true
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -10021,7 +10021,7 @@ script:
       type: Unknown
 
   - arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -10078,7 +10078,7 @@ script:
     name: aws-s3-file-upload
     outputs: []
   - arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
@@ -10165,7 +10165,7 @@ script:
     description: "Retrieves actual cost and usage data for a given time range and optional service filter. Required IAM permission: ce:GetCostAndUsage."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10317,7 +10317,7 @@ script:
     description: "Forecasts AWS spending over a given future time period using historical trends. Required IAM permission: ce:GetCostForecast."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10443,7 +10443,7 @@ script:
     description: "Lists configured budgets for a given AWS account. Required IAM permission: budgets:DescribeBudgets."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10568,7 +10568,7 @@ script:
     description: "Lists the notifications associated with a budget. Required IAM permission: budgets:DescribeNotificationsForBudget."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10654,7 +10654,7 @@ script:
     description: "Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores. Default is us-east-1. Required IAM permission: kms:EnableKeyRotation."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10709,7 +10709,7 @@ script:
     description: "Modifies attributes for a Classic Elastic Load Balancer. Required IAM permission: elasticloadbalancing:ModifyLoadBalancerAttributes."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10926,7 +10926,7 @@ script:
     description: "Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED). Required IAM permission: acm:UpdateCertificateOptions."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -10984,7 +10984,7 @@ script:
     description: "Modifies a specific network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance. Required IAM permission: ec2:ModifyNetworkInterfaceAttribute."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11113,7 +11113,7 @@ script:
     description: "Returns details for the regions enabled for your account, or for all regions. Required IAM permission: ec2:DescribeRegions."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11182,7 +11182,7 @@ script:
     description: "Creates a new S3 bucket. Required IAM permission: s3:CreateBucket."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11305,7 +11305,7 @@ script:
     description: "Returns a list of all buckets owned by the authenticated sender of the request. Required IAM permission: s3:ListAllMyBuckets."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11425,7 +11425,7 @@ script:
     description: "Returns a list of inventory items. Required IAM permission: ssm:ListInventoryEntries."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11508,7 +11508,7 @@ script:
     polling: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -11693,7 +11693,7 @@ script:
     description: "Creates a security group. Required IAM permission: ec2:CreateSecurityGroup."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -11750,7 +11750,7 @@ script:
     description: "Deletes a security group. Required IAM permission: ec2:DeleteSecurityGroup."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -11801,7 +11801,7 @@ script:
     description: "Returns details for a specific security group or all of your security groups, including their rules, tags, and associated VPC information. Required IAM permission: ec2:DescribeSecurityGroups."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -11899,7 +11899,7 @@ script:
     description: "Describes one or more of your Elastic IP addresses. Required IAM Permission: ec2:DescribeAddresses."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12005,7 +12005,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12094,7 +12094,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12169,7 +12169,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12221,7 +12221,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12276,7 +12276,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12336,7 +12336,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12396,7 +12396,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12448,7 +12448,7 @@ script:
     description: "Waits until the specified EC2 instances reach the 'running' state. Checks the status every `waiter_delay` seconds until successful or until `waiter_max_attempts` is reached (default maximum attempts: `waiter_max_attempts`). Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12507,7 +12507,7 @@ script:
     description: "Waits until EC2 instance status checks pass. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstanceStatus."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12573,7 +12573,7 @@ script:
     description: "Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12632,7 +12632,7 @@ script:
     description: "Waits until the specified EC2 instances reach the 'terminated' state. Checks every `waiter_delay` seconds until successful or until the maximum number of attempts (`waiter_max_attempts`) is reached. Required IAM Permission: ec2:DescribeInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12691,7 +12691,7 @@ script:
     description: "Describes IAM instance profile associations. Required IAM Permission: ec2:DescribeIamInstanceProfileAssociations."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12769,7 +12769,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12833,7 +12833,7 @@ script:
     description: "Describes one or more of the Reserved Instances that you purchased. Required IAM Permission: ec2:DescribeReservedInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -12962,7 +12962,7 @@ script:
     description: "Describes the specified EBS volumes or all of your EBS volumes. Required IAM Permission: ec2:DescribeVolumes."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13095,7 +13095,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13222,7 +13222,7 @@ script:
     description: "Creates an EBS volume that can be attached to an instance in the same Availability Zone. Required IAM Permission: ec2:CreateVolume."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13394,7 +13394,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13480,7 +13480,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13573,7 +13573,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13625,7 +13625,7 @@ script:
     description: "Describes one or more launch templates. Required IAM Permission: ec2:DescribeLaunchTemplates."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13719,7 +13719,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -13994,7 +13994,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -14076,7 +14076,7 @@ script:
     description: "Launches an EC2 Fleet. Required IAM Permission: ec2:CreateFleet."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -14372,7 +14372,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -14447,7 +14447,7 @@ script:
     description: "Describes one or more of your EC2 Fleets. Required IAM Permission: ec2:DescribeFleets."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -14599,7 +14599,7 @@ script:
     description: "Describes the running instances for the specified EC2 Fleet. Required IAM Permission: ec2:DescribeFleetInstances."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -14679,7 +14679,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -14852,7 +14852,7 @@ script:
     description: "Describes the specified key pairs or all of your key pairs. Required IAM Permission: ec2:DescribeKeyPairs."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -14940,7 +14940,7 @@ script:
     description: "Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate. Required IAM Permission: ec2:AllocateHosts."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -15041,7 +15041,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -15101,7 +15101,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -15208,7 +15208,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15259,7 +15259,7 @@ script:
     description: "Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service. Required IAM Permission: ec2:CreateVpcEndpoint."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15500,7 +15500,7 @@ script:
     description: "A description of one or more of your internet gateways. Required IAM Permission: ec2:DescribeInternetGateways."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15584,7 +15584,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15639,7 +15639,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15691,7 +15691,7 @@ script:
     execution: true
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15742,7 +15742,7 @@ script:
     description: "Creates an entry (a rule) in a network ACL with the specified rule number. Required IAM Permission: ec2:CreateNetworkAclEntry."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -15879,7 +15879,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -15947,7 +15947,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16002,7 +16002,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16054,7 +16054,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16108,7 +16108,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16201,7 +16201,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name_prefix
@@ -16299,7 +16299,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16401,7 +16401,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16475,7 +16475,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16527,7 +16527,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16599,7 +16599,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16712,7 +16712,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16766,7 +16766,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: log_group_name
@@ -16814,7 +16814,7 @@ script:
     description: "Retrieves all versions of an association for a specific association ID. Required IAM permission: ssm:ListAssociationVersions."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -16944,7 +16944,7 @@ script:
     description: "Describes the association for the specified target or managed node. Must provide either association_id, or both instance_id and document_name. Required IAM Permission: ssm:DescribeAssociation."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17107,7 +17107,7 @@ script:
     description: "Returns all State Manager associations in the current AWS account and Region. An association is a binding between a document and a set of targets with a schedule. Required IAM Permission: ssm:ListAssociations."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17216,7 +17216,7 @@ script:
     description: "Queries SSM inventory information for managed nodes. Required IAM Permission: ssm:GetInventory."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17334,7 +17334,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17402,7 +17402,7 @@ script:
     description: "Returns a list of the tags assigned to the specified resource. Required IAM Permission: ssm:ListTagsForResource."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17477,7 +17477,7 @@ script:
     description: "Returns all Systems Manager (SSM) documents in the current AWS account and Region. Required IAM Permission: ssm:ListDocuments."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17592,7 +17592,7 @@ script:
     description: "Describes the specified SSM document. Required IAM Permission: ssm:DescribeDocument."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17764,7 +17764,7 @@ script:
     description: "Provides details about all active and terminated Automation executions. Required IAM Permission: ssm:DescribeAutomationExecutions."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -17923,7 +17923,7 @@ script:
     polling: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -18145,7 +18145,7 @@ script:
     polling: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -18292,7 +18292,7 @@ script:
     description: "Lists the commands requested by users of the AWS account. Required IAM Permission: ssm:ListCommands."
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -18442,7 +18442,7 @@ script:
     polling: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -18513,7 +18513,7 @@ script:
     execution: true
     arguments:
       - name: account_id
-        description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
       - name: region
@@ -18581,7 +18581,7 @@ script:
     description: "Returns the data objects for the specified firewall. Required permissions: network-firewall:DescribeFirewall."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -18714,7 +18714,7 @@ script:
     description: "Retrieves the metadata for the firewalls that you have defined. Required permissions: network-firewall:ListFirewalls."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -18783,7 +18783,7 @@ script:
     description: "Creates an AWS Network Firewall firewall for your VPC. Required permissions: network-firewall:CreateFirewall, network-firewall:TagResource, ec2:DescribeSubnets, ec2:DescribeVpcs, network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -18964,7 +18964,7 @@ script:
     description: "Deletes the specified firewall and its status. Requires the firewall deletion protection flag to be 'false'. This operation is irreversible. Required permissions: network-firewall:DeleteFirewall."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -19014,7 +19014,7 @@ script:
     description: "Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall. Requires permissions: network-firewall:UpdateFirewallDeleteProtection."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
@@ -19073,7 +19073,7 @@ script:
     description: "Modifies the description for the specified firewall. Required permissions: network-firewall:UpdateFirewallDescription."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
