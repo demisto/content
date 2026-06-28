@@ -31,7 +31,7 @@ SCHEMA = PARAMS.get("schema")
 ROLE = PARAMS.get("role")
 INSECURE = PARAMS.get("insecure", False)
 OAUTH_CLIENT_ID = PARAMS.get("oauth_client_id")
-OAUTH_CLIENT_SECRET = PARAMS.get("oauth_client_secret")
+OAUTH_CLIENT_SECRET = PARAMS.get("oauth_client_secret", {}).get("password")
 OAUTH_TOKEN_URL = PARAMS.get("oauth_token_url")
 OAUTH_SCOPE = PARAMS.get("oauth_scope")
 # How much time before the first fetch to retrieve incidents
@@ -219,7 +219,7 @@ def get_connection_params(args):  # pylint: disable=W9014
         Snowflake connection params
     """
     params: dict = {}
-    set_provided(params, "user", USER) # user value is required for all authentication methods
+    set_provided(params, "user", USER)  # user value is required for all authentication methods
     set_provided(params, "account", ACCOUNT)
     set_provided(params, "region", REGION)
     set_provided(params, "insecure_mode", INSECURE)
@@ -250,7 +250,7 @@ def get_connection_params(args):  # pylint: disable=W9014
         )
         params["private_key"] = pkb
 
-    else: # Username + Password
+    else:  # Username + Password
         set_provided(params, "authenticator", AUTHENTICATOR)
         set_provided(params, "password", PASSWORD)
 

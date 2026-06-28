@@ -63,9 +63,10 @@ configuration:
   required: false
   section: Connect
   additionalinfo: OAuth client ID issued by the IdP (e.g. Okta, Entra ID). Required when using External OAuth authentication.
-- display: OAuth Client Secret
+- displaypassword: OAuth Client Secret
   name: oauth_client_secret
-  type: 4
+  hiddenusername: true
+  type: 9
   required: false
   section: Connect
   additionalinfo: OAuth client secret issued by the IdP. Required when using External OAuth authentication.
@@ -174,7 +175,7 @@ script:
     description: Makes a DML change in the database.
     execution: true
     name: snowflake-update
-  dockerimage: demisto/snowflake:1.0.0.3563487
+  dockerimage: demisto/snowflake:1.0.0.10238860
   isfetch: true
   script: '-'
   type: python
