@@ -83,6 +83,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
