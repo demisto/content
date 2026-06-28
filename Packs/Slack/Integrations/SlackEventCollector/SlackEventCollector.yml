@@ -26,6 +26,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days ago
   display: First fetch time interval
   name: oldest
