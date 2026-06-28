@@ -19,7 +19,7 @@ configuration:
   type: 0
   section: Connect
   required: false
-  additionalinfo: "The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration on Cortex XSOAR or Cortex XSIAM marketplaces (not required when running through a Cortex Platform connector)."
+  additionalinfo: "The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration in Cortex XSOAR or Cortex XSIAM Marketplaces (not required when running through a Cortex Platform connector)."
 - display: Role Session Name
   name: role_session_name
   type: 0
@@ -158,7 +158,7 @@ script:
   - name: aws-s3-public-access-block-update
     description: "Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket. Required IAM permission: s3:PutBucketPublicAccessBlock."
     arguments:
-    - description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
