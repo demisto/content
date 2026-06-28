@@ -33,7 +33,6 @@ XSIAM_CONTENT = [
     "ModelingRules",
     "ParsingRules",
     "CorrelationRules",
-    "Dashboards",
     "XSIAMDashboards",
 ]
 RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
@@ -67,7 +66,8 @@ def prepare_git(head_branch: str):
         ["git", "remote", "set-url", "origin", remote_url],
         token,
     )
-
+    run_git_command(["git", "remote", "-v"], token)
+    print(f"Token exists: {bool(token)}")
     run_git_command(["git", "fetch", "origin", "master"], token)
     run_git_command(["git", "fetch", "origin", head_branch], token)
 
