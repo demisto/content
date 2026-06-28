@@ -463,6 +463,416 @@
           }
         }
       }
+    },
+    "Rubrik IR Violation": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Display Name": {
+          "complex": {
+            "accessor": "displayName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Incident Link": {
+          "complex": {
+            "filters": [],
+            "root": "incident_link",
+            "transformers": []
+          }
+        },
+        "Last Update Time": {
+          "complex": {
+            "filters": [],
+            "root": "lastUpdatedAt",
+            "transformers": []
+          }
+        },
+        "occurred": {
+          "complex": {
+            "filters": [],
+            "root": "createdAt",
+            "transformers": []
+          }
+        },
+        "Policy Description": {
+          "complex": {
+            "accessor": "description",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Policy ID": {
+          "complex": {
+            "accessor": "policyId",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Policy Severity": {
+          "complex": {
+            "accessor": "policySeverity",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Policy Type": {
+          "complex": {
+            "accessor": "policyType",
+            "filters": [],
+            "root": "policy",
+            "transformers": [
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false
+                  },
+                  "replaceWith": {
+                    "isContext": false
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "simple": "POLICY_TYPE_"
+                    }
+                  }
+                },
+                "operator": "replace"
+              }
+            ]
+          }
+        },
+        "Resource ID": {
+          "complex": {
+            "filters": [],
+            "root": "resourceId",
+            "transformers": []
+          }
+        },
+        "Rubrik Actor ID": {
+          "complex": {
+            "accessor": "actorIdentityId",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Actor Name": {
+          "complex": {
+            "accessor": "actorIdentityName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Actor Privilege Type": {
+          "complex": {
+            "accessor": "actorPrivilegeType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Actor State": {
+          "complex": {
+            "accessor": "actorState",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Actor Type": {
+          "complex": {
+            "accessor": "actorIdentityType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Detection Time": {
+          "complex": {
+            "accessor": "detectionTime",
+            "filters": [],
+            "root": "details",
+            "transformers": []
+          }
+        },
+        "Rubrik Domain ID": {
+          "complex": {
+            "accessor": "domainUniqueId",
+            "filters": [],
+            "root": "details",
+            "transformers": []
+          }
+        },
+        "Rubrik Domain Name": {
+          "complex": {
+            "accessor": "domainName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Entity ID": {
+          "complex": {
+            "accessor": "entityId",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Entity Name": {
+          "complex": {
+            "accessor": "entityName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Event Time": {
+          "complex": {
+            "accessor": "eventTime",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik IR Violation Status": {
+          "complex": {
+            "filters": [],
+            "root": "status",
+            "transformers": [
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false
+                  },
+                  "replaceWith": {
+                    "isContext": false
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "simple": "POLICY_VIOLATION_STATUS_"
+                    }
+                  }
+                },
+                "operator": "replace"
+              }
+            ]
+          }
+        },
+        "Rubrik Identity Provider": {
+          "complex": {
+            "accessor": "idpType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Identity Tags": {
+          "complex": {
+            "accessor": "identityTags",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Manual Remediation Process": {
+          "complex": {
+            "accessor": "manualRemediationProcess",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Rubrik Mitre Tactic": {
+          "complex": {
+            "accessor": "mitreTactic",
+            "filters": [],
+            "root": "details",
+            "transformers": []
+          }
+        },
+        "Rubrik Native Type": {
+          "complex": {
+            "accessor": "nativeType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Policy Category": {
+          "complex": {
+            "accessor": "policyCategory",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Rubrik Policy Frameworks": {
+          "complex": {
+            "accessor": "frameworks",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Rubrik Policy Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "policy",
+            "transformers": []
+          }
+        },
+        "Rubrik Principal Type": {
+          "complex": {
+            "accessor": "principalType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Privilege Type": {
+          "complex": {
+            "accessor": "privilegeType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Resource Source": {
+          "complex": {
+            "accessor": "source",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Resource Status": {
+          "complex": {
+            "accessor": "status",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Resource Unique ID": {
+          "complex": {
+            "accessor": "uniqueId",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Root Domain ID": {
+          "complex": {
+            "accessor": "rootDomainId",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Root Domain Name": {
+          "complex": {
+            "accessor": "rootDomainName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target ID": {
+          "complex": {
+            "accessor": "targetIdentityUniqueIdentifier",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Identity Provider": {
+          "complex": {
+            "accessor": "targetIdpType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Name": {
+          "complex": {
+            "accessor": "targetIdentityName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Privilege Type": {
+          "complex": {
+            "accessor": "targetPrivilegeType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Source": {
+          "complex": {
+            "accessor": "targetIdentitySource",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Status": {
+          "complex": {
+            "accessor": "targetIdentityStatus",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Target Type": {
+          "complex": {
+            "accessor": "targetIdentityType",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik User Principal Name": {
+          "complex": {
+            "accessor": "userPrincipalName",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        },
+        "Rubrik Violation ID": {
+          "complex": {
+            "filters": [],
+            "root": "policyViolationId",
+            "transformers": []
+          }
+        },
+        "Rubrik Violation Name": {
+          "complex": {
+            "filters": [],
+            "root": "name",
+            "transformers": []
+          }
+        },
+        "Title": {
+          "complex": {
+            "accessor": "title",
+            "filters": [],
+            "root": "resourceMetadata.metadata",
+            "transformers": []
+          }
+        }
+      }
     }
   },
   "name": "Rubrik Polaris Radar - Mapping",
