@@ -18168,7 +18168,7 @@ def test_delete_firewall_policy_command_success_with_name(mocker):
     result = NetworkFirewall.delete_firewall_policy_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall policy was deleted successfully." in result.readable_output
+    assert "The command was executed successfully. The current firewall policy status is DELETING." in result.readable_output
     mock_client.delete_firewall_policy.assert_called_once_with(FirewallPolicyName="test-policy")
 
 
@@ -18199,7 +18199,7 @@ def test_delete_firewall_policy_command_success_with_arn(mocker):
     result = NetworkFirewall.delete_firewall_policy_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall policy was deleted successfully." in result.readable_output
+    assert "The command was executed successfully. The current firewall policy status is DELETING." in result.readable_output
     mock_client.delete_firewall_policy.assert_called_once_with(
         FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
     )
@@ -18360,7 +18360,7 @@ def test_update_firewall_policy_command_success_with_full_policy(mocker):
         "Priority=1",
         "stateless_default_actions": "aws:pass",
         "stateless_fragment_default_actions": "aws:drop",
-        "stateful_rule_group_references": '[{"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}]',
+        "stateful_rule_group_references": "ResourceArn=arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2",
         "stateful_default_actions": "aws:drop_strict",
         "stateful_engine_options_rule_order": "STRICT_ORDER",
         "stateful_engine_options_stream_exception_policy": "DROP",
@@ -18537,7 +18537,7 @@ def test_update_firewall_policy_change_protection_command_with_update_token(mock
 def test_update_firewall_policy_change_protection_command_missing_arguments(mocker):
     """
     Given: A mocked boto3 NetworkFirewall client and no firewall policy identifier arguments.
-    When: update_firewall_policy_change_protection_command is called without firewall_policy_name or firewall_policy_arn.
+    When: update_firewall_policy_change_protection_command is called without firewall_name or firewall_arn.
     Then: It should raise a DemistoException asking for at least one identifier argument.
     """
     from AWS import NetworkFirewall
@@ -18874,7 +18874,7 @@ def test_create_firewall_policy_command_success(mocker):
     }
     client.create_firewall_policy.return_value = mock_response
 
-    built_policy = {"StatelessDefaultActions": ["aws:pass"]}
+    built_policy = {"StatelessDefaultActions": ["aws:pass"], "EnableTLSSessionHolding": True}
     mocker.patch("AWS.create_network_firewall_policy_obj", return_value=built_policy)
     mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
     mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
@@ -18901,7 +18901,6 @@ def test_create_firewall_policy_command_success(mocker):
         Description="my policy",
         Tags=[{"Key": "Environment", "Value": "Production"}],
         EncryptionConfiguration={"KeyId": "key-123", "Type": "CUSTOMER_KMS"},
-        EnableTLSSessionHolding=True,
     )
 
 
@@ -19303,13 +19302,15 @@ def test_create_network_firewall_policy_obj_simple_list_fields():
 def test_create_network_firewall_policy_obj_json_string_fields():
     """
     Given:
-        - args containing JSON-encoded strings for stateless_custom_actions,
-          stateful_rule_group_references, and policy_rule_variables.
+        - args containing JSON-encoded strings for stateless_custom_actions and
+          policy_rule_variables, and a key=value string for
+          stateful_rule_group_references.
     When:
         - create_network_firewall_policy_obj is called.
     Then:
         - Each JSON string should be parsed into its corresponding Python
-          structure and placed under the correct key.
+          structure and the stateful references parsed into AWS API shape,
+          placed under the correct key.
     """
     from AWS import create_network_firewall_policy_obj
 
@@ -19326,11 +19327,11 @@ def test_create_network_firewall_policy_obj_json_string_fields():
             },
         }
     ]
-    stateful_refs = [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"}]
+    stateful_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"
     rule_variables = {"IP_SET": {"Definition": ["10.0.0.0/16"]}}
     args = {
         "stateless_custom_actions": json.dumps(custom_actions),
-        "stateful_rule_group_references": json.dumps(stateful_refs),
+        "stateful_rule_group_references": f"ResourceArn={stateful_arn}",
         "policy_rule_variables": json.dumps(rule_variables),
     }
 
@@ -19339,7 +19340,7 @@ def test_create_network_firewall_policy_obj_json_string_fields():
 
     # Then
     assert result["StatelessCustomActions"] == custom_actions
-    assert result["StatefulRuleGroupReferences"] == stateful_refs
+    assert result["StatefulRuleGroupReferences"] == [{"ResourceArn": stateful_arn}]
     assert result["PolicyVariables"] == {"RuleVariables": rule_variables}
 
 
@@ -19394,3 +19395,171 @@ def test_create_network_firewall_policy_obj_invalid_rule_group_reference_raises(
     # When / Then
     with pytest.raises(ValueError, match="Could not parse field"):
         create_network_firewall_policy_obj(args)
+
+
+def test_parse_stateful_rule_group_references_field_single_full_reference():
+    """
+    Given:
+        - A single stateful rule group reference string containing all fields
+          (ResourceArn, Priority, Override and DeepThreatInspection).
+    When:
+        - parse_stateful_rule_group_references_field is called with the string.
+    Then:
+        - It should return a list with one dict where Priority is an int and
+          Override is nested under {"Action": ...}.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,"
+        "Priority=100,Override=DROP_TO_ALERT,DeepThreatInspection=True"
+    )
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
+            "Priority": 100,
+            "Override": {"Action": "DROP_TO_ALERT"},
+            "DeepThreatInspection": "True",
+        }
+    ]
+
+
+def test_parse_stateful_rule_group_references_field_multiple_references_with_optional_fields():
+    """
+    Given:
+        - A semicolon-separated string with one full reference and one
+          containing only the required ResourceArn plus Priority.
+    When:
+        - parse_stateful_rule_group_references_field is called with the string.
+    Then:
+        - It should return a list of two dicts where the optional fields absent
+          from the second reference are omitted.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,"
+        "Priority=100,Override=DROP_TO_ALERT,DeepThreatInspection=True;"
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg2,Priority=200"
+    )
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
+            "Priority": 100,
+            "Override": {"Action": "DROP_TO_ALERT"},
+            "DeepThreatInspection": "True",
+        },
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg2",
+            "Priority": 200,
+        },
+    ]
+
+
+def test_parse_stateful_rule_group_references_field_only_resource_arn():
+    """
+    Given:
+        - A reference string containing only the required ResourceArn field.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should return a list with a single dict containing only ResourceArn.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"}]
+
+
+@pytest.mark.parametrize("refs_string", [None, ""])
+def test_parse_stateful_rule_group_references_field_empty_input_returns_empty_list(refs_string):
+    """
+    Given:
+        - An empty or None references string.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == []
+
+
+def test_parse_stateful_rule_group_references_field_missing_resource_arn_raises():
+    """
+    Given:
+        - A reference string that omits the required ResourceArn field.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError indicating ResourceArn is required.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "Priority=100,Override=DROP_TO_ALERT"
+
+    # When / Then
+    with pytest.raises(ValueError, match="ResourceArn is required"):
+        parse_stateful_rule_group_references_field(refs_string)
+
+
+def test_parse_stateful_rule_group_references_field_malformed_field_raises():
+    """
+    Given:
+        - A reference string containing a field without a '=' value.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError because the field cannot be parsed.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,Priority"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_stateful_rule_group_references_field(refs_string)
+
+
+def test_parse_stateful_rule_group_references_field_invalid_arn_raises():
+    """
+    Given:
+        - A reference string whose ResourceArn value is not a valid 'arn:aws' ARN.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError indicating the ARN is invalid.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=not-an-arn,Priority=100"
+
+    # When / Then
+    with pytest.raises(ValueError, match="ResourceArn must be a valid ARN"):
+        parse_stateful_rule_group_references_field(refs_string)
