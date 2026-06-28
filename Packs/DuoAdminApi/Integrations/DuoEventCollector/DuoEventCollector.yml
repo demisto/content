@@ -21,6 +21,8 @@ configuration:
   required: true
   defaultvalue: 1 day
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Integration key
   name: integration_key
   type: 0
@@ -38,6 +40,8 @@ configuration:
   defaultvalue: 1000
   required: true
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Request retries
   name: retries
   type: 0
