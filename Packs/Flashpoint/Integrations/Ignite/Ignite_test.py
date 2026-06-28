@@ -2,15 +2,16 @@
 
 import json
 import os.path
+import re
 from datetime import timedelta
 from unittest.mock import patch
 
-import pytest
-
 import Ignite
+import pytest
 from CommonServerPython import DemistoException, get_current_time
 from Ignite import (
     DATE_FORMAT,
+    LIBRARY_AND_PACKAGE_SORT_VALUES,
     MESSAGES,
     URL_SUFFIX,
     Client,
@@ -29,6 +30,12 @@ from Ignite import (
     ALERT_STATUS_VALUES,
     ALERT_ORIGIN_VALUES,
     OUTPUT_KEY_FIELD,
+    VULNERABILITY_SORT_MAPPING,
+    vulnerability_get_command,
+    vendor_list_command,
+    product_list_command,
+    vulnerability_list_command,
+    cve_command,
     DEFAULT_REPUTATION_CONTEXT_LIMIT,
     create_relationships_list_for_community_search,
     ip_lookup_command,
@@ -181,6 +188,8 @@ def test_test_module_invalid_response(requests_mock, mock_client, status_code, e
         test_module(mock_client)
 
     err_msg = err_msg + response.get("message") if status_code == 400 else err_msg
+    if status_code in (403, 521):
+        err_msg += json.dumps(response)
     assert MESSAGES["STATUS_CODE"].format(status_code, err_msg) == str(err.value)
 
 
@@ -1216,6 +1225,97 @@ def test_filename_empty_response(mock_return, requests_mock, mocker):
 
 @patch("demistomock.results")
 @pytest.mark.parametrize("exact_match", [True, False])
+def test_email_ignores_exact_match(mock_return, requests_mock, mocker, exact_match):
+    """
+    Test that exact_match argument has no effect on the email command.
+
+    Given:
+       - exact_match is True or False in command args
+    When:
+       - Calling `email_lookup_command` via main function
+    Then:
+       - The outbound query value is not double-wrapped in quotes and the
+         response/context is unchanged regardless of exact_match.
+    """
+    email_reputation = util_load_json("test_data/email_reputation.json")
+    email_reputation_context = util_load_json("test_data/email_reputation_context.json")
+    with open("test_data/hr_output_for_email_reputation.md") as file:
+        hr_output_for_email_reputation = file.read()
+
+    email_value = "dummy@dummy.com"
+    requests_mock.get(
+        f"{MOCK_URL}/technical-intelligence/v1/simple?query=%2Btype%3A%28%22email-dst%22%2C%20"
+        f"%22email-src%22%2C%20%22email-src-display-name%22%2C%20%22email-subject%22%2C%20"
+        f"%22email%22%29%20%2Bvalue.%5C%2A.keyword%3A%22dummy%40dummy.com%22",
+        json=email_reputation,
+        status_code=200,
+    )
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"email": email_value, "exact_match": exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="email")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    last_request = requests_mock.last_request
+    query = last_request.qs["query"][0]
+    # The guard must drop exact_match for email; value must appear with exactly one layer of quotes
+    assert f'keyword:"{email_value}"' in query
+    assert f'keyword:""{email_value}' not in query
+
+    assert hr_output_for_email_reputation == mock_return.call_args.args[0].get("HumanReadable")
+    assert email_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert email_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_filename_ignores_exact_match(mock_return, requests_mock, mocker, exact_match):
+    """
+    Test that exact_match argument has no effect on the filename command.
+
+    Given:
+       - exact_match is True or False in command args
+    When:
+       - Calling `filename_lookup_command` via main function
+    Then:
+       - The outbound query value is not double-wrapped in quotes and the
+         response/context is unchanged regardless of exact_match.
+    """
+    filename_reputation = util_load_json("test_data/filename_reputation.json")
+    filename_reputation_context = util_load_json("test_data/filename_reputation_context.json")
+    with open("test_data/filename_reputation_hr.md") as file:
+        filename_reputation_hr = file.read()
+
+    filename_value = "dummy.log"
+    requests_mock.get(
+        f"{MOCK_URL}/technical-intelligence/v1/simple?query="
+        f"%2Btype%3A%28%22filename%22%29%20%2Bvalue.%5C%2A.keyword%3A%22dummy.log%22",
+        json=filename_reputation,
+        status_code=200,
+    )
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"filename": filename_value, "exact_match": exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="filename")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    last_request = requests_mock.last_request
+    query = last_request.qs["query"][0]
+    # The guard must drop exact_match for filename; value must appear with exactly one layer of quotes
+    assert f'keyword:"{filename_value}"' in query
+    assert f'keyword:""{filename_value}' not in query
+
+    assert filename_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
+    assert filename_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert filename_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize("exact_match", [True, False])
 def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of domain look up command through main function
@@ -1253,6 +1353,50 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert domain_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert domain_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_domain_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `domain_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    domain_lookup_reputation = util_load_json("test_data/domain_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
+
+    domain_value = "dummy_domain.com"
+    args: dict = {"domain": domain_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="domain")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{domain_value}"' if expected_quoted else domain_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -1352,6 +1496,51 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker, exact_mat
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert ip_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_ip_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `ip_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    ip_lookup_reputation = util_load_json("test_data/ip_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
+
+    ip_value = "0.0.0.1"
+    args: dict = {"ip": ip_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="ip")
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+
+    main()
+
+    expected_value = f'"{ip_value}"' if expected_quoted else ip_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -1815,6 +2004,50 @@ def test_url_lookup_command_success(mock_return, requests_mock, mocker, exact_ma
 
 
 @patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_url_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `url_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    url_reputation = util_load_json("test_data/url_reputation.json")
+    mock_url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(mock_url, json=url_reputation, status_code=200)
+
+    url_value = "https://dummy_url.com"
+    args: dict = {"url": url_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="url")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{url_value}"' if expected_quoted else url_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
+
+
+@patch("demistomock.results")
 def test_url_lookup_command_success_when_empty_response(mock_return, requests_mock, mocker):
     """
     Test case for successful execution of url lookup command through main function
@@ -1909,6 +2142,50 @@ def test_file_lookup_command_success(mock_return, requests_mock, mocker, exact_m
     assert file_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_file_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `file_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    file_reputation = util_load_json("test_data/file_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=file_reputation, status_code=200)
+
+    file_value = "00000000000000000000000000000001"
+    args: dict = {"file": file_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="file")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{file_value}"' if expected_quoted else file_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -2399,6 +2676,981 @@ def test_fetch_incidents_when_invalid_password_complexity_filter_params_passed(m
         fetch_incidents(client=mock_client, last_run={}, params=params)
 
     assert str(error.value) == MESSAGES["INVALID_PASSWORD_LENGTH"]
+
+
+def test_vulnerability_get_command_success(mock_client, requests_mock):
+    """
+    Test case for successful execution of flashpoint-ignite-vulnerability-get command
+    when it returns vulnerability details for given ID.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `vulnerability_get_command` function
+    Then:
+       - Returns command results with vulnerability details and indicator results.
+    """
+    vulnerability_response = util_load_json("test_data/vulnerability_response.json")
+    vulnerability_context = util_load_json("test_data/vulnerability_context.json")
+    with open("test_data/hr_output_for_vulnerability.md") as file:
+        hr_output_for_vulnerability = file.read()
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['VULNERABILITY_GET']}/123456", json=vulnerability_response, status_code=200)
+    args = {"id": "123456"}
+
+    results = vulnerability_get_command(mock_client, args)
+
+    # Verify we got multiple results (main result + indicator results)
+    assert len(results) >= 1
+
+    # First result should contain vulnerability outputs
+    assert results[0].readable_output == hr_output_for_vulnerability
+    assert results[0].outputs == vulnerability_context
+    assert results[0].raw_response == vulnerability_response
+
+    # Additional results should be indicator results for CVEs
+    if len(results) > 1:
+        for i in range(1, len(results)):
+            assert results[i].indicator is not None
+            assert "Created Indicator for" in results[i].readable_output  # type: ignore
+
+
+@patch("demistomock.results")
+def test_vulnerability_get_command_when_empty_response(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of flashpoint-ignite-vulnerability-get command through main function
+    when it returns empty response for given ID.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `vulnerability_get_command` function with non-existent ID
+    Then:
+       - Returns no records found message.
+    """
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['VULNERABILITY_GET']}/999999", json={}, status_code=200)
+    params = {**BASIC_PARAMS}
+    args = {"id": "999999"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-vulnerability-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert mock_return.call_args.args[0].get("HumanReadable") == MESSAGES["NO_RECORDS_FOUND"].format("vulnerability")
+    assert mock_return.call_args.args[0].get("EntryContext") == {}
+    assert mock_return.call_args.args[0].get("Contents") == {}
+
+
+def test_vulnerability_get_command_when_id_not_provided(mocker):
+    """
+    Test case for execution of flashpoint-ignite-vulnerability-get command through main function
+    when vulnerability ID is not provided.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `vulnerability_get_command` function without ID
+    Then:
+       - Raises error for missing required argument.
+    """
+    params = {**BASIC_PARAMS}
+    args: dict = {}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-vulnerability-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("id") in return_error.call_args[0][0]
+
+
+def test_vulnerability_get_command_when_blank_id_provided(mocker):
+    """
+    Test case for execution of flashpoint-ignite-vulnerability-get command through main function
+    when vulnerability ID is blank.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `vulnerability_get_command` function with blank ID
+    Then:
+       - Raises error for missing required argument.
+    """
+    params = {**BASIC_PARAMS}
+    args = {"id": ""}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-vulnerability-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("id") in return_error.call_args[0][0]
+
+
+def test_vulnerability_list_command_success(mock_client, requests_mock):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-vulnerability-list command with filters.
+
+    Given:
+       - command arguments including severities, size, from, sort_by, sort_order
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Returns a valid output and verifies request parameters are sent correctly.
+    """
+    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+
+    hr_output = open("test_data/vulnerability_list_hr.md").read()
+    expected_outputs = util_load_json("test_data/vulnerability_list_context.json")
+
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
+
+    args = {
+        "severities": "high,medium",
+        "size": "2",
+        "from": "0",
+        "sort_by": "published at",
+        "sort_order": "desc",
+        "tags": "oss",
+        "products": "dummy product",
+        "vendors": "dummy vendor",
+    }
+
+    results = vulnerability_list_command(mock_client, args=args)
+
+    assert results[0].outputs_prefix == OUTPUT_PREFIX["VULNERABILITY"]
+    assert results[0].raw_response == mock_response
+    assert results[0].readable_output == hr_output
+    assert results[0].outputs == expected_outputs
+
+
+def test_vulnerability_list_command_with_pagination(mock_client, requests_mock):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-list command with pagination hint.
+
+    Given:
+       - command arguments with size=2 and from=0, total=4 (next_index=2 < 4)
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Returns a valid output that includes a pagination hint in the human-readable output.
+    """
+    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
+
+    results = vulnerability_list_command(mock_client, args={"size": "2", "from": "1"})
+
+    assert len(results) == 1
+    assert results[0].outputs_prefix == OUTPUT_PREFIX["VULNERABILITY"]
+    assert "#### To retrieve the next set of result use," in results[0].readable_output
+    assert "from = 3, size = 2" in results[0].readable_output
+
+
+def test_vulnerability_list_command_when_empty_response(mock_client, requests_mock):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-list command when no results are returned.
+
+    Given:
+       - mocked client returning empty results
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Returns no records found message.
+    """
+    mock_response = {"total": 0, "results": []}
+
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
+
+    results = vulnerability_list_command(mock_client, args={})
+
+    assert len(results) == 1
+    assert results[0].readable_output == MESSAGES["NO_RECORDS_FOUND"].format("vulnerabilities")
+    assert results[0].raw_response == mock_response
+
+
+@pytest.mark.parametrize(
+    "args, error_message",
+    [
+        (
+            {"size": "0"},
+            MESSAGES["INVALID_LIMIT_PROVIDED"].format("0", MAX_PAGE_SIZE),
+        ),
+        (
+            {"size": "1001"},
+            MESSAGES["INVALID_LIMIT_PROVIDED"].format("1001", MAX_PAGE_SIZE),
+        ),
+        (
+            {"from": "-1"},
+            MESSAGES["INVALID_FROM_PROVIDED"].format("-1"),
+        ),
+        (
+            {"sort_by": "invalid_sort"},
+            MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format("invalid_sort", "sort_by", VULNERABILITY_SORT_MAPPING.keys()),
+        ),
+        (
+            {"sort_order": "invalid_order"},
+            MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format("invalid_order", "sort_order", SORT_ORDER_VALUES),
+        ),
+        (
+            {"severities": "invalid_severity"},
+            MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
+                ["invalid_severity"], "Severity", ["Critical", "High", "Medium", "Low", "Informational"]
+            ),
+        ),
+        (
+            {"ransomware_scores": "invalid_score"},
+            MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
+                ["invalid_score"], "Ransomware Scores", ["Critical", "High", "Medium", "Low"]
+            ),
+        ),
+        (
+            {"cwe_ids": "abc"},
+            MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc"], "CWE IDs"),
+        ),
+        (
+            {"updated_after": "2024-06-01T00:00:00Z", "updated_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "updated_after", "updated_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"disclosed_after": "2024-06-01T00:00:00Z", "disclosed_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "disclosed_after", "disclosed_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"published_after": "2024-06-01T00:00:00Z", "published_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "published_after", "published_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"last_touched_after": "2024-06-01T00:00:00Z", "last_touched_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "last_touched_after", "last_touched_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"min_cvssv3_score": "-1"},
+            MESSAGES["INVALID_CVSS_SCORE"].format("Minimum CVSS v3 Score"),
+        ),
+        (
+            {"max_cvssv3_score": "11"},
+            MESSAGES["INVALID_CVSS_SCORE"].format("Maximum CVSS v3 Score"),
+        ),
+        (
+            {"min_cvssv3_score": "5", "max_cvssv3_score": "3"},
+            MESSAGES["INVALID_SCORE_RANGE"].format("Minimum CVSS v3 Score", "Maximum CVSS v3 Score"),
+        ),
+        (
+            {"min_epss_score": "-0.1"},
+            MESSAGES["INVALID_EPSS_SCORE"].format("Minimum EPSS Score"),
+        ),
+        (
+            {"max_epss_score": "1.1"},
+            MESSAGES["INVALID_EPSS_SCORE"].format("Maximum EPSS Score"),
+        ),
+        (
+            {"min_epss_score": "0.8", "max_epss_score": "0.2"},
+            MESSAGES["INVALID_SCORE_RANGE"].format("Minimum EPSS Score", "Maximum EPSS Score"),
+        ),
+    ],
+)
+def test_vulnerability_list_command_with_invalid_args(mock_client, args, error_message):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-list command with invalid arguments.
+
+    Given:
+       - Invalid command arguments for vulnerability_list_command
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Raises a DemistoException with the appropriate error message.
+    """
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException) as error:
+        vulnerability_list_command(mock_client, args=args)
+
+    assert str(error.value) == error_message
+
+
+def test_cve_command_success(mock_client, requests_mock):
+    """
+    Test case for successful execution of cve command through main function
+    when it returns vulnerability details for given CVE.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `cve_command` function with valid CVE
+    Then:
+       - Returns command results with vulnerability details.
+    """
+    vulnerability_response = util_load_json("test_data/vulnerability_response.json")
+    cve_response = {"results": [vulnerability_response]}
+    cve_context = util_load_json("test_data/cve_context.json")
+    with open("test_data/hr_output_for_cve.md") as file:
+        hr_output_for_cve = file.read()
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['VULNERABILITY_GET']}", json=cve_response, status_code=200)
+    args = {"cve": "CVE-2024-0001"}
+
+    results = cve_command(mock_client, args)
+
+    # Verify we got multiple results (main result + indicator results)
+    assert len(results) >= 1
+
+    # First result should contain vulnerability outputs
+    assert results[0].readable_output == hr_output_for_cve
+    assert results[0].outputs == cve_context
+    assert results[0].raw_response == cve_response
+
+    # Additional results should be indicator results for CVEs
+    if len(results) > 1:
+        for i in range(1, len(results)):
+            assert results[i].indicator is not None
+            assert "Created Indicator for" in results[i].readable_output  # type: ignore
+
+
+@patch("demistomock.results")
+def test_cve_command_when_empty_response(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of cve command through main function
+    when it returns empty response for given CVE.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `cve_command` function with non-existent CVE
+    Then:
+       - Returns no records found message.
+    """
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['VULNERABILITY_GET']}", json={"results": []}, status_code=200)
+    params = {**BASIC_PARAMS}
+    args = {"cve": "CVE-9999-9999"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="cve")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert mock_return.call_args.args[0].get("HumanReadable") == MESSAGES["NO_RECORDS_FOUND"].format("cve")
+
+
+def test_cve_command_when_cve_not_provided(mocker):
+    """
+    Test case for execution of cve command through main function
+    when CVE is not provided.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `cve_command` function without CVE
+    Then:
+       - Raises error for missing required argument.
+    """
+    params = {**BASIC_PARAMS}
+    args: dict = {}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="cve")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("cve") in return_error.call_args[0][0]
+
+
+def test_cve_command_when_blank_cve_provided(mocker):
+    """
+    Test case for execution of cve command through main function
+    when CVE is blank.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `cve_command` function with blank CVE
+    Then:
+       - Raises error for missing required argument.
+    """
+    params = {**BASIC_PARAMS}
+    args = {"cve": ""}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="cve")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("cve") in return_error.call_args[0][0]
+
+
+def test_cve_command_with_multiple_cves(mock_client, requests_mock):
+    """
+    Test case for successful execution of cve command through main function
+    when multiple CVEs are provided.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `cve_command` function with multiple CVEs
+    Then:
+       - Returns command results with vulnerability details for each CVE.
+    """
+    vulnerability_response = util_load_json("test_data/vulnerability_response.json")
+    cve_response = {"results": [vulnerability_response]}
+    cve_context = util_load_json("test_data/cve_context.json")
+    with open("test_data/hr_output_for_cve.md") as file:
+        hr_output_for_cve = file.read()
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['VULNERABILITY_GET']}", json=cve_response, status_code=200)
+    args = {"cve": "CVE-2024-0001,CVE-2024-0002"}
+
+    results = cve_command(mock_client, args)
+
+    # Verify we got multiple results (main result + indicator results)
+    assert len(results) >= 1
+
+    # First result should contain vulnerability outputs
+    assert results[0].readable_output == hr_output_for_cve
+    assert results[0].outputs == cve_context
+    assert results[0].raw_response == cve_response
+
+    # Additional results should be indicator results for CVEs
+    if len(results) > 1:
+        for i in range(1, len(results)):
+            assert results[i].indicator is not None
+            assert "Created Indicator for" in results[i].readable_output  # type: ignore
+
+
+def test_cve_command_with_invalid_cve_format(mock_client, mocker):
+    """
+    Test case for execution of cve command when all provided CVEs have invalid format.
+
+    Given:
+    - An invalid CVE format (INVALID-CVE-FORMAT)
+
+    When:
+    - Running the !cve command
+
+    Then:
+    - Display warning message and exit when all CVEs are invalid
+    """
+    cve = {"cve": "INVALID-CVE-FORMAT"}
+
+    # Mock return_warning to raise SystemExit when exit=True (simulating actual behavior)
+    def mock_return_warning_side_effect(message, exit=False):
+        if exit:
+            raise SystemExit(0)
+
+    mock_return_warning = mocker.patch("Ignite.return_warning", side_effect=mock_return_warning_side_effect)
+
+    # Expect SystemExit to be raised when all CVEs are invalid
+    with pytest.raises(SystemExit):
+        cve_command(mock_client, args=cve)
+
+    # Verify warning was called with correct message and exit=True
+    mock_return_warning.assert_called_once_with("The following CVEs were found invalid: INVALID-CVE-FORMAT", exit=True)
+
+
+def test_vulnerability_library_list_command_success(requests_mock, mock_client):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-vulnerability-library-list command.
+
+    Given:
+       - command arguments for vulnerability_library_list_command
+    When:
+       - Calling `vulnerability_library_list_command` function
+    Then:
+       - Returns a valid output.
+    """
+    from Ignite import vulnerability_library_list_command
+
+    response = util_load_json("test_data/vulnerability_libraries.json")
+
+    with open("test_data/vulnerability_libraries_hr.md") as file:
+        vulnerability_libraries_hr = file.read()
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIBRARIES"].format("101010")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {
+        "vulnerability_id": "101010",
+        "size": "2",
+        "sort_by": "Name",
+        "sort_order": "asc",
+        "from": "2",
+        "library_name": "dummy_name",
+    }
+    actual_response = vulnerability_library_list_command(mock_client, args)
+
+    assert actual_response.outputs_prefix == OUTPUT_PREFIX["VULNERABILITY_LIBRARY"]
+    assert actual_response.outputs_key_field == "id"
+    assert actual_response.raw_response == response
+    assert len(actual_response.outputs) == 2
+    assert actual_response.outputs[0]["id"] == 1010
+    assert actual_response.outputs[1]["id"] == 101010
+    assert actual_response.readable_output == vulnerability_libraries_hr
+
+
+def test_vulnerability_library_list_command_empty_response(requests_mock, mock_client):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-library-list command when empty response.
+
+    Given:
+       - command arguments for vulnerability_library_list_command
+    When:
+       - Calling `vulnerability_library_list_command` function
+    Then:
+       - Returns no records found message.
+    """
+    from Ignite import vulnerability_library_list_command
+
+    response = {"total": 0, "next": None, "previous": None, "size": 25, "from": 0, "results": []}
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIBRARIES"].format("999999")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {"vulnerability_id": "999999"}
+    actual_response = vulnerability_library_list_command(mock_client, args)
+
+    assert actual_response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("vulnerability libraries")
+
+
+def test_vulnerability_library_list_command_with_pagination(requests_mock, mock_client):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-library-list command with pagination.
+
+    Given:
+       - command arguments with from and size for vulnerability_library_list_command
+    When:
+       - Calling `vulnerability_library_list_command` function
+    Then:
+       - Returns a valid output with pagination hint.
+    """
+    from Ignite import PAGINATION_HR, vulnerability_library_list_command
+
+    response = util_load_json("test_data/vulnerability_libraries.json")
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIBRARIES"].format("101010")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {"vulnerability_id": "101010", "from": "0", "size": "2"}
+    actual_response = vulnerability_library_list_command(mock_client, args)
+
+    assert f"{PAGINATION_HR} from = 4, size = 2" in actual_response.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, error_msg",
+    [
+        (
+            {"vulnerability_id": ""},
+            MESSAGES["MISSING_REQUIRED_ARGS"].format("vulnerability_id"),
+        ),
+        (
+            {"vulnerability_id": "101010", "size": "0"},
+            MESSAGES["SIZE_ERROR"].format(0, MAX_PAGE_SIZE),
+        ),
+        (
+            {"vulnerability_id": "101010", "size": "1001"},
+            MESSAGES["SIZE_ERROR"].format(1001, MAX_PAGE_SIZE),
+        ),
+        (
+            {"vulnerability_id": "101010", "sort_by": "invalid_sort"},
+            MESSAGES["INVALID_SINGLE_SELECT_PARAM"].format("invalid_sort", "sort_by", LIBRARY_AND_PACKAGE_SORT_VALUES),
+        ),
+        (
+            {"vulnerability_id": "101010", "sort_order": "invalid_order"},
+            MESSAGES["INVALID_SINGLE_SELECT_PARAM"].format("invalid_order", "sort_order", SORT_ORDER_VALUES),
+        ),
+    ],
+)
+def test_vulnerability_library_list_command_invalid_args(mock_client, args, error_msg):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-library-list command when invalid argument provided.
+
+    Given:
+       - command arguments for vulnerability_library_list_command
+    When:
+       - Calling `vulnerability_library_list_command` function
+    Then:
+       - Returns a valid error message.
+    """
+    from Ignite import vulnerability_library_list_command
+
+    with pytest.raises(ValueError) as error:
+        vulnerability_library_list_command(mock_client, args)
+
+    assert str(error.value) == error_msg
+
+
+def test_vulnerability_package_list_command_success(requests_mock, mock_client):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-vulnerability-package-list command.
+
+    Given:
+       - command arguments for vulnerability_package_list_command
+    When:
+       - Calling `vulnerability_package_list_command` function
+    Then:
+       - Returns a valid output.
+    """
+    from Ignite import vulnerability_package_list_command
+
+    response = util_load_json("test_data/vulnerability_packages.json")
+
+    with open("test_data/vulnerability_packages_hr.md") as file:
+        vulnerability_packages_hr = file.read()
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_PACKAGES"].format("101010")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {
+        "vulnerability_id": "101010",
+        "size": "2",
+        "sort_by": "Name",
+        "sort_order": "asc",
+        "from": "0",
+        "package_name": "dummy_package_1",
+    }
+    actual_response = vulnerability_package_list_command(mock_client, args)
+
+    assert actual_response.outputs_prefix == OUTPUT_PREFIX["VULNERABILITY_PACKAGE"]
+    assert actual_response.outputs_key_field == "id"
+    assert actual_response.raw_response == response
+    assert len(actual_response.outputs) == 2
+    assert actual_response.outputs[0]["id"] == 10000
+    assert actual_response.outputs[1]["id"] == 10001
+    assert actual_response.readable_output == vulnerability_packages_hr
+
+
+def test_vulnerability_package_list_command_empty_response(requests_mock, mock_client):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-package-list command when empty response.
+
+    Given:
+       - command arguments for vulnerability_package_list_command
+    When:
+       - Calling `vulnerability_package_list_command` function
+    Then:
+       - Returns no records found message.
+    """
+    from Ignite import vulnerability_package_list_command
+
+    response = {"total": 0, "next": None, "previous": None, "size": 25, "from": 0, "results": []}
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_PACKAGES"].format("999999")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {"vulnerability_id": "999999"}
+    actual_response = vulnerability_package_list_command(mock_client, args)
+
+    assert actual_response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("vulnerability packages")
+
+
+def test_vulnerability_package_list_command_with_pagination(requests_mock, mock_client):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-package-list command with pagination.
+
+    Given:
+       - command arguments with from and size for vulnerability_package_list_command
+    When:
+       - Calling `vulnerability_package_list_command` function
+    Then:
+       - Returns a valid output with pagination hint.
+    """
+    from Ignite import PAGINATION_HR, vulnerability_package_list_command
+
+    response = util_load_json("test_data/vulnerability_packages.json")
+
+    requests_mock.get(
+        f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_PACKAGES"].format("101010")}',
+        json=response,
+        status_code=200,
+    )
+
+    args = {"vulnerability_id": "101010", "from": "0", "size": "2"}
+    actual_response = vulnerability_package_list_command(mock_client, args)
+
+    assert f"{PAGINATION_HR} from = 2, size = 2" in actual_response.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, error_msg",
+    [
+        (
+            {"vulnerability_id": ""},
+            MESSAGES["MISSING_REQUIRED_ARGS"].format("vulnerability_id"),
+        ),
+        (
+            {"vulnerability_id": "101010", "size": "0"},
+            MESSAGES["SIZE_ERROR"].format(0, MAX_PAGE_SIZE),
+        ),
+        (
+            {"vulnerability_id": "101010", "size": "1001"},
+            MESSAGES["SIZE_ERROR"].format(1001, MAX_PAGE_SIZE),
+        ),
+        (
+            {"vulnerability_id": "101010", "sort_by": "invalid_sort"},
+            MESSAGES["INVALID_SINGLE_SELECT_PARAM"].format("invalid_sort", "sort_by", LIBRARY_AND_PACKAGE_SORT_VALUES),
+        ),
+        (
+            {"vulnerability_id": "101010", "sort_order": "invalid_order"},
+            MESSAGES["INVALID_SINGLE_SELECT_PARAM"].format("invalid_order", "sort_order", SORT_ORDER_VALUES),
+        ),
+    ],
+)
+def test_vulnerability_package_list_command_invalid_args(mock_client, args, error_msg):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-package-list command when invalid argument provided.
+
+    Given:
+       - command arguments for vulnerability_package_list_command
+    When:
+       - Calling `vulnerability_package_list_command` function
+    Then:
+       - Returns a valid error message.
+    """
+    from Ignite import vulnerability_package_list_command
+
+    with pytest.raises(ValueError) as error:
+        vulnerability_package_list_command(mock_client, args)
+
+    assert str(error.value) == error_msg
+
+
+def test_vendor_list_command_success(requests_mock, mock_client):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-vendor-list command.
+
+    Given:
+       - command arguments with size=2 and from=0, total=5 (pagination expected)
+    When:
+       - Calling `vendor_list_command` function
+    Then:
+       - Returns valid output with vendors and pagination HR.
+    """
+    vendors = util_load_json("test_data/vendor_list_success.json")
+    with open("test_data/vendor_list_success_hr.md") as file:
+        expected_hr = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["VENDORS"]}', json=vendors, status_code=200)
+
+    args = {"size": "2", "from": "0"}
+    actual_response = vendor_list_command(mock_client, args)
+
+    assert len(actual_response) == 1
+    assert actual_response[0].outputs_prefix == OUTPUT_PREFIX["VENDOR"]
+    assert actual_response[0].outputs_key_field == "id"
+    assert actual_response[0].readable_output == expected_hr
+    assert actual_response[0].outputs == vendors["results"]
+    assert actual_response[0].raw_response == vendors
+
+
+def test_vendor_list_command_empty_response(requests_mock, mock_client):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-vendor-list command
+    when no vendors are returned.
+
+    Given:
+       - command arguments for vendor_list_command
+    When:
+       - Calling `vendor_list_command` function and API returns empty results
+    Then:
+       - Returns no records found message.
+    """
+    result = {"total": "0", "next": "null", "previous": "null", "size": "25", "from": "0", "results": []}
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["VENDORS"]}', json=result, status_code=200)
+
+    actual_response = vendor_list_command(mock_client, {})
+
+    assert len(actual_response) == 1
+    assert actual_response[0].readable_output == "No vendors were found for the given argument(s)."
+
+
+@pytest.mark.parametrize(
+    "args, error_msg",
+    [
+        ({"size": "0"}, MESSAGES["SIZE_ERROR"].format("0", MAX_PAGE_SIZE)),
+        ({"size": "1001"}, MESSAGES["SIZE_ERROR"].format("1001", MAX_PAGE_SIZE)),
+        ({"from": "-1"}, MESSAGES["INVALID_FROM_PROVIDED"].format(-1)),
+        (
+            {"updated_after": "2024-06-01T00:00:00Z", "updated_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "updated_after", "updated_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+    ],
+)
+def test_vendor_list_command_invalid_args(mock_client, args, error_msg):
+    """
+    Test case scenario for flashpoint-ignite-vendor-list command when invalid arguments are provided.
+
+    Given:
+       - Invalid command arguments
+    When:
+       - Calling `vendor_list_command` function
+    Then:
+       - Raises ValueError with appropriate error message.
+    """
+    with pytest.raises(ValueError, match=re.escape(error_msg)):
+        vendor_list_command(mock_client, args)
+
+
+def test_vendor_list_command_with_invalid_vendor_ids(requests_mock, mock_client, mocker):
+    """
+    Test case scenario for flashpoint-ignite-vendor-list command when non-integer vendor_ids are provided.
+
+    Given:
+       - command arguments with a mix of valid and non-integer vendor_ids
+    When:
+       - Calling `vendor_list_command` function
+    Then:
+       - A warning is issued for invalid IDs and the command still returns results.
+    """
+    vendors = util_load_json("test_data/vendor_list_success.json")
+    return_warning_mock = mocker.patch.object(Ignite, "return_warning")
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["VENDORS"]}', json=vendors, status_code=200)
+
+    args = {"vendor_ids": "1001,abc,1002"}
+    actual_response = vendor_list_command(mock_client, args)
+
+    assert return_warning_mock.called
+    warning_msg = return_warning_mock.call_args[0][0]
+    assert "abc" in warning_msg
+    assert len(actual_response) == 1
+
+
+def test_product_list_command_success(requests_mock, mock_client):
+    """
+    Test case scenario for successful execution of flashpoint-ignite-product-list command.
+
+    Given:
+       - command arguments with size=2 and from=0, total=5 (pagination expected)
+    When:
+       - Calling `product_list_command` function
+    Then:
+       - Returns valid output with products and pagination HR.
+    """
+    products = util_load_json("test_data/product_list_success.json")
+    with open("test_data/product_list_success_hr.md") as file:
+        expected_hr = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["PRODUCTS"]}', json=products, status_code=200)
+
+    args = {"size": "2", "from": "0"}
+    actual_response = product_list_command(mock_client, args)
+
+    assert len(actual_response) == 1
+    assert actual_response[0].outputs_prefix == OUTPUT_PREFIX["PRODUCT"]
+    assert actual_response[0].outputs_key_field == "id"
+    assert actual_response[0].readable_output == expected_hr
+    assert actual_response[0].outputs == products["results"]
+    assert actual_response[0].raw_response == products
+
+
+def test_product_list_command_empty_response(requests_mock, mock_client):
+    """
+    Test case scenario for flashpoint-ignite-product-list command when no results are returned.
+
+    Given:
+       - mocked client returning empty results
+    When:
+       - Calling `product_list_command` function
+    Then:
+       - Returns no records found message.
+    """
+    result = {"total": 0, "next": None, "previous": None, "size": 10, "from": 0, "results": []}
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["PRODUCTS"]}', json=result, status_code=200)
+
+    actual_response = product_list_command(mock_client, {})
+
+    assert len(actual_response) == 1
+    assert actual_response[0].readable_output == MESSAGES["NO_RECORDS_FOUND"].format("products")
+
+
+@pytest.mark.parametrize(
+    "args, error_msg",
+    [
+        ({"size": "0"}, MESSAGES["SIZE_ERROR"].format("0", MAX_PAGE_SIZE)),
+        ({"size": "1001"}, MESSAGES["SIZE_ERROR"].format("1001", MAX_PAGE_SIZE)),
+        ({"from": "-1"}, MESSAGES["INVALID_FROM_PROVIDED"].format(-1)),
+        (
+            {"updated_after": "2024-06-01T00:00:00Z", "updated_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "updated_after", "updated_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+    ],
+)
+def test_product_list_command_invalid_args(mock_client, args, error_msg):
+    """
+    Test case scenario for flashpoint-ignite-product-list command when invalid arguments are provided.
+
+    Given:
+       - Invalid command arguments
+    When:
+       - Calling `product_list_command` function
+    Then:
+       - Raises ValueError with appropriate error message.
+    """
+    with pytest.raises(ValueError, match=re.escape(error_msg)):
+        product_list_command(mock_client, args)
+
+
+@pytest.mark.parametrize(
+    "args, invalid_id",
+    [
+        ({"product_ids": "10001,invalid_id,10002"}, "invalid_id"),
+        ({"vendor_ids": "1,bad_id"}, "bad_id"),
+    ],
+)
+def test_product_list_command_with_invalid_ids(requests_mock, mock_client, mocker, args, invalid_id):
+    """
+    Test case scenario for flashpoint-ignite-product-list command when non-integer IDs are provided.
+
+    Given:
+       - command arguments with a mix of valid and non-integer product_ids or vendor_ids
+    When:
+       - Calling `product_list_command` function
+    Then:
+       - A warning is issued for invalid IDs and the command still returns results.
+    """
+    products = util_load_json("test_data/product_list_success.json")
+    return_warning_mock = mocker.patch.object(Ignite, "return_warning")
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["PRODUCTS"]}', json=products, status_code=200)
+
+    actual_response = product_list_command(mock_client, args)
+
+    assert return_warning_mock.called
+    warning_msg = return_warning_mock.call_args[0][0]
+    assert invalid_id in warning_msg
+    assert len(actual_response) == 1
 
 
 def test_community_search_relationships_truncated_when_over_limit(mock_client):

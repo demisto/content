@@ -27,3 +27,5 @@ sentinelone-endpoint-fetch-logs agent_ids=1609164191942354900 agents_logs=true c
 sentinelone-threat-analysis threat_id=134264860000354262
 sentinelone-create-bulk-ioc account_ids=2123522726049615473 entry_id=33@9bd41b3f-a0f4-472f-83bf-69161007c588
 sentinelone-abort-endpoint-scan agent_ids=1609164191942354900
+sentinelone-update-uam-alert-verdict alert_ids=123c4ef5-6fb7-8b9e-0fff-a6c89e88ba89 analyst_verdict="True positive - Undefined"
+sentinelone-update-uam-alert-status alert_ids=123c4ef5-6fb7-8b9e-0fff-a6c89e88ba89 status=New

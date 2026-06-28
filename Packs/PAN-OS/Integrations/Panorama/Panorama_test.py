@@ -2108,9 +2108,9 @@ class TestPanoramaCommitCommand:
 
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         "action": "partial",
-        "cmd": "<commit><device-group><entry "
-        'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
-        "<member>some_admin_name</member></admin></partial></commit>",
+        "cmd": "<commit><description>a simple commit</description>"
+        "<partial><device-group><member>some_device</member></device-group>"
+        "<admin><member>some_admin_name</member></admin></partial></commit>",
         "key": "APIKEY",
         "type": "commit",
     }
@@ -2162,10 +2162,9 @@ class TestPanoramaCommitCommand:
                 },
                 {
                     "action": "partial",
-                    "cmd": "<commit><device-group><entry "
-                    'name="some_device"/></device-group><description>a simple commit</description>'
-                    "<partial><admin>"
-                    "<member>some_admin_name</member></admin></partial></commit>",
+                    "cmd": "<commit><description>a simple commit</description>"
+                    "<partial><device-group><member>some_device</member></device-group>"
+                    "<admin><member>some_admin_name</member></admin></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2176,13 +2175,21 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "a simple commit", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "a simple commit",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; admin=some_admin_name",
+                },
                 id="only admin changes commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "force_commit": "true", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group><force></force></commit>',
+                    "action": "partial",
+                    "cmd": "<commit><force></force>"
+                    "<partial><device-group><member>some_device</member></device-group></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2193,16 +2200,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="force commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_device_network_configuration": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><device-and-network>excluded</"
-                    "device-and-network></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<device-and-network>excluded</device-and-network>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2213,16 +2227,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_device_network_configuration=true",
+                },
                 id="device and network excluded",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_shared_objects": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><shared-object>excluded"
-                    "</shared-object></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<shared-object>excluded</shared-object>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2233,13 +2254,20 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_shared_objects=true",
+                },
                 id="exclude shared objects",
             ),
             pytest.param(
                 {"device-group": "some_device", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group></commit>',
+                    "action": "partial",
+                    "cmd": "<commit>" "<partial><device-group><member>some_device</member></device-group></partial>" "</commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2250,7 +2278,13 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="no args",
             ),
         ],
@@ -2339,7 +2373,17 @@ class TestPanoramaCommitCommand:
         assert called_request_params == expected_commit_request_url_params  # check that the URL is sent as expected.
         assert command_result.readable_output == f'Waiting for commit "{description}" with job ID 123 to finish...'
 
-        polling_args = {"commit_job_id": "123", "description": description, "hide_polling_output": True, "polling": True}
+        polling_args = {
+            "commit_job_id": "123",
+            "description": description,
+            "hide_polling_output": True,
+            "polling": True,
+            "device-group": args.get("device-group"),
+            "admin_name": args.get("admin_name"),
+            "template": args.get("template"),
+            "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+            "exclude_shared_objects": args.get("exclude_shared_objects"),
+        }
 
         command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
@@ -2348,7 +2392,13 @@ class TestPanoramaCommitCommand:
             command_result = panorama_commit_command(polling_args)
 
         # last response of the command should be job status and the commit description
-        assert command_result.outputs == {"JobID": "123", "Description": description, "Status": "Success"}
+        assert command_result.outputs == {
+            "JobID": "123",
+            "Description": description,
+            "Status": "Success",
+            "Scope": "Partial",
+            "Details": "device-group=some_device; admin=some_admin_name",
+        }
 
 
 class TestPanoramaPushToDeviceGroupCommand:
@@ -9496,6 +9546,112 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
             assert last_hit_dt <= no_new_hits_since
 
 
+@pytest.mark.parametrize(
+    "pre_post, expected_names",
+    [
+        # No filter -> every rule comes back: pre-pushed, post-pushed and local.
+        (None, {"PreRule", "PostRule", "LocalRule"}),
+        # pre_rulebase -> only the Panorama-pushed pre-rulebase rule.
+        ("pre_rulebase", {"PreRule"}),
+        # post_rulebase -> only the Panorama-pushed post-rulebase rule.
+        ("post_rulebase", {"PostRule"}),
+    ],
+)
+def test_get_hitcounts_pre_post_filter(pre_post, expected_names, mocker):
+    """Validate the new ``pre_post`` filter in ``FirewallCommand.get_hitcounts``.
+
+    Given:
+        - A topology with one firewall and one vsys.
+        - The Panorama-pushed policy enrichment returns one rule in ``pre-rulebase`` ("PreRule")
+          and one rule in ``post-rulebase`` ("PostRule"); these populate ``result.position``
+          with the underscore form ("pre_rulebase" / "post_rulebase").
+        - The ``show rule-hit-count`` response contains those two pushed rules plus a local
+          firewall rule ("LocalRule") that is NOT present in the pushed-policy map.
+
+    When:
+        - Calling ``get_hitcounts`` with the ``pre_post`` kwarg unset / "pre_rulebase" / "post_rulebase".
+
+    Then:
+        - With no filter, all three rules are returned.
+        - With a ``pre_post`` value set, only the matching Panorama-pushed rule is returned;
+          the rule from the other position AND the local rule are both excluded.
+    """
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand, PushedSharedPolicy
+
+    # Topology with a single firewall and a single vsys.
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+    mock_firewall.serial = "111111111111111"
+    mock_firewall.hostname = None
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=["vsys1"])
+
+    # Stub the pushed-policy lookup directly with the underscore-position form that the real
+    # code stores on ``result.position``. This avoids re-asserting XML-parsing behavior and
+    # isolates the test to the pre_post filter logic.
+    pushed_map = {
+        "PreRule": PushedSharedPolicy(hostid="FW1", name="PreRule", policy_type="security", position="pre_rulebase", loc="DG-1"),
+        "PostRule": PushedSharedPolicy(
+            hostid="FW1", name="PostRule", policy_type="security", position="post_rulebase", loc="DG-1"
+        ),
+    }
+    mocker.patch.object(FirewallCommand, "get_pushed_shared_policy_rules", return_value=pushed_map)
+
+    # Fake ``show rule-hit-count`` response containing all three rules (pre, post, local).
+    def fake_run_op(firewall, cmd, cmd_xml=False):
+        xml_root = ET.Element("show")
+        rhc = ET.SubElement(xml_root, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name="vsys1")
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        for name in ("PreRule", "PostRule", "LocalRule"):
+            rule = ET.SubElement(rules_elem, "entry", name=name)
+            ET.SubElement(rule, "hit_count").text = "10"
+            ET.SubElement(rule, "last_hit_timestamp").text = "1742482324"
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        return xml_root
+
+    mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    results = FirewallCommand.get_hitcounts(
+        mock_topology,
+        "security",
+        "vsys1",
+        "all",
+        no_new_hits_since=None,
+        device_filter_string=None,
+        target=None,
+        unused_only="false",
+        pre_post=pre_post,
+    )
+
+    returned_names = {r.name for r in results}
+    assert returned_names == expected_names
+
+    # When the filter is set, every returned row must come from Panorama at the requested position
+    # — local rules and rules from the other rulebase must be excluded.
+    if pre_post is not None:
+        for r in results:
+            assert r.is_from_panorama is True
+            assert r.position == pre_post
+
+
 def test_get_hitcounts_vsys_specific_enrichment(mocker):
     """
     Test that get_hitcounts performs per-vsys enrichment and uses the updated XPath logic.
@@ -9656,3 +9812,36 @@ def test_get_hitcounts_vsys_specific_enrichment(mocker):
     # PanoramaRule_v2 should NOT appear in vsys1 results
     vsys1_rule_names = {r.name for r in vsys1_results}
     assert "PanoramaRule_v2" not in vsys1_rule_names
+
+
+def test_panorama_upload_content_update_file_command_uses_basename(mocker):
+    """
+    Given: A file entry whose name contains directory components (e.g. 'subdir/firmware.bin').
+    When: panorama_upload_content_update_file_command is called.
+    Then: Only the basename is used for the local copy destination and os.remove is called for cleanup.
+    """
+    import Panorama
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/fake_path/firmware.bin", "name": "subdir/firmware.bin"},
+    )
+    copy_mock = mocker.patch("shutil.copy")
+    mock_file = mocker.mock_open(read_data=b"fake content")
+    mocker.patch("builtins.open", mock_file)
+    mocker.patch(
+        "Panorama.http_request",
+        return_value={"response": {"@status": "success", "msg": "upload succeeded"}},
+    )
+    remove_mock = mocker.patch("os.remove")
+    mocker.patch("os.path.isfile", return_value=True)
+    mocker.patch.object(Panorama, "API_KEY", "test_key")
+    mocker.patch.object(Panorama, "URL", "https://test.example.com")
+
+    Panorama.panorama_upload_content_update_file_command({"category": "content", "entryID": "entry123"})
+
+    # Assert shutil.copy was called with basename only (not the full subdir/firmware.bin)
+    assert copy_mock.call_args[0][1] == "firmware.bin"
+    # Assert os.remove was called
+    remove_mock.assert_called_once_with("firmware.bin")
