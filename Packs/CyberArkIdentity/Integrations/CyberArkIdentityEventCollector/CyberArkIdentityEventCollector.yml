@@ -37,6 +37,8 @@ configuration:
   defaultvalue: 1000
   required: true
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
