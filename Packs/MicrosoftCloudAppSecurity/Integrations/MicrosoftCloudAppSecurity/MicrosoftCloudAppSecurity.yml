@@ -99,6 +99,9 @@ configuration:
   - Medium
   - High
   - All
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum alerts to fetch
   name: max_fetch
   section: Collect
