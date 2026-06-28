@@ -4906,8 +4906,7 @@ async def await_and_aggregate_severity_results(
                 )
                 save_spotlight_state(context_store, spotlight_state)
                 log_falcon_assets(
-                    f"[{severity}] Saved completion state to context "
-                    f"(withheld_records so far: {len(all_withheld_records)})",
+                    f"[{severity}] Saved completion state to context (withheld_records so far: {len(all_withheld_records)})",
                     "info",
                 )
 
