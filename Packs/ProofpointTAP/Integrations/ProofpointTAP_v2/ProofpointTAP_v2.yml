@@ -86,6 +86,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
   defaultvalue: 1 hour
   display: First fetch time range
