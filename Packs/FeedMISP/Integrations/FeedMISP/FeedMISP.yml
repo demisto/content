@@ -132,6 +132,9 @@ configuration:
   type: 12
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
