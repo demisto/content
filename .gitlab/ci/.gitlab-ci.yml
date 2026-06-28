@@ -1,5 +1,6 @@
 variables:
   CURRENT_BRANCH_NAME: build_managed_content
+  INFRA_BRANCH: build_managed_content
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
