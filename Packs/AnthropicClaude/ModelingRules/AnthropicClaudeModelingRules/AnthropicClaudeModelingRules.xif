@@ -1,5 +1,8 @@
 [MODEL: dataset="anthropic_claude_raw"]
 alter
+    get_actor_type               = json_extract_scalar(actor, "$.type"),
+    get_status                   = to_integer(status_code)
+| alter
     xdm.event.id                 = id,
     xdm.event.original_event_type = type,
     xdm.network.http.url         = url,
@@ -7,9 +10,7 @@ alter
     xdm.source.ipv4              = json_extract_scalar(actor, "$.ip_address"),
     xdm.source.user_agent        = json_extract_scalar(actor, "$.user_agent"),
     xdm.source.user.identifier   = json_extract_scalar(actor, "$.api_key_id"),
-    get_actor_type               = json_extract_scalar(actor, "$.type"),
     xdm.source.user.user_type    = if(get_actor_type = "api_actor", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, null),
-    get_status                   = to_integer(status_code),
     xdm.event.outcome            = if(get_status >= 200 and get_status < 300, XDM_CONST.OUTCOME_SUCCESS,
                                       get_status = null, XDM_CONST.OUTCOME_UNKNOWN,
                                       XDM_CONST.OUTCOME_FAILED),
