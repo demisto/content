@@ -1375,7 +1375,7 @@ def main():  # pragma: no cover
     client = Client(
         base_url=urljoin(params.get("host"), "/siem/v1/configs"),
         verify=not params.get("insecure", False),
-        proxy=params.get("proxy"),
+        proxy=params.get("proxy", False),
         auth=EdgeGridAuth(
             client_token=params.get("clienttoken_creds", {}).get("password") or params.get("clientToken"),
             access_token=params.get("accesstoken_creds", {}).get("password") or params.get("accessToken"),
@@ -1391,14 +1391,14 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
 
     try:
-        if params.get("isFetch") and not (0 < (arg_to_number(params.get("fetchLimit")) or 20) <= 2000):
+        if params.get("isFetch") and not (0 < (arg_to_number(params.get("fetchLimit", 20)) or 20) <= 2000):
             raise DemistoException("Fetch limit must be an integer between 1 and 2000")
 
         if command == "fetch-incidents":
             incidents, new_last_run = fetch_incidents_command(
                 client,
-                fetch_time=params.get("fetchTime"),
-                fetch_limit=params.get("fetchLimit"),
+                fetch_time=params.get("fetchTime", "1 hours"),
+                fetch_limit=params.get("fetchLimit", 20),
                 config_ids=config_ids,
                 last_run=demisto.getLastRun().get("lastRun"),
             )
