@@ -210,26 +210,52 @@ def list_quarantined_messages(client: Client, args: dict[str, Any]) -> CommandRe
         raise ValueError("At least one of the following arguments must be specified: sender, recipient, subject.")
     assert (start_time := parse(args.get("start_time", "24 hours"))), f"Failed parsing start time: {args.get('start_time')}"
     assert (end_time := parse(args.get("end_time", "now"))), f"Failed parsing end time: {args.get('end_time')}"
-    result = client.list_quarantined_messages_request(
-        from_=sender,
-        rcpt=recipient,
-        startdate=start_time.strftime("%Y-%m-%d %H:%M:%S"),
-        enddate=end_time.strftime("%Y-%m-%d %H:%M:%S"),
-        subject=subject,
-        folder=args.get("folder_name"),
-    )
-    if isinstance(result, dict) and result.get("records"):
-        records = result.get("records")
-        command_results_args = {
+
+    folder_name_arg = args.get("folder_name")
+    # Support comma-separated or JSON-array list of folder names to avoid engine-level
+    # parallel fan-out which can hit the 5-minute engine timeout when multiple folders
+    # are queried concurrently. We iterate sequentially and aggregate results instead.
+    folders: list[str | None]
+    if folder_name_arg:
+        try:
+            parsed = json.loads(folder_name_arg)
+            if isinstance(parsed, list):
+                folders = [str(f) for f in parsed]
+            else:
+                folders = argToList(folder_name_arg)
+        except (json.JSONDecodeError, ValueError):
+            folders = argToList(folder_name_arg)
+    else:
+        folders = [None]
+
+    all_records: list[dict] = []
+    raw_responses: list[dict] = []
+
+    for folder in folders:
+        result = client.list_quarantined_messages_request(
+            from_=sender,
+            rcpt=recipient,
+            startdate=start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            enddate=end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            subject=subject,
+            folder=folder,
+        )
+        if isinstance(result, dict):
+            raw_responses.append(result)
+            if result.get("records"):
+                all_records.extend(result["records"])
+
+    if all_records:
+        command_results_args: dict[str, Any] = {
             "readable_output": tableToMarkdown(
                 "Proofpoint Protection Server Quarantined Messages",
-                records,
+                all_records,
                 ["localguid", "folder", "spamscore", "from", "rcpts", "date", "subject", "size", "host_ip"],
             ),
             "outputs_prefix": "Proofpoint.QuarantinedMessage",
             "outputs_key_field": "guid",
-            "outputs": records,
-            "raw_response": result,
+            "outputs": all_records,
+            "raw_response": raw_responses,
         }
     else:
         command_results_args = {"readable_output": "No results found."}
