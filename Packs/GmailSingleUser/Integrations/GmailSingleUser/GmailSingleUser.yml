@@ -95,6 +95,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
@@ -121,6 +124,9 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+  supportedModules:
+  - agentix
+  - xsiam
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User
 name: Gmail Single User
