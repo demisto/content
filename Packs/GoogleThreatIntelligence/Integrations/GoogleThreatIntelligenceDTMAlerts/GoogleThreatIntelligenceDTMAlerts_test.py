@@ -1,4 +1,5 @@
 from GoogleThreatIntelligenceDTMAlerts import (
+    DEFAULT_MAX_FETCH,
     MAX_FETCH,
     Client,
     BASE_URL,
@@ -332,8 +333,8 @@ def test_gti_dtm_alerts_list_command_success(mock_client, requests_mock):
 @pytest.mark.parametrize(
     "args, exception, error",
     [
-        ({"page_size": "-1"}, ValueError, ERROR_MESSAGES["INVALID_PAGE_SIZE"].format("-1", MAX_FETCH)),
-        ({"page_size": "26"}, ValueError, ERROR_MESSAGES["INVALID_PAGE_SIZE"].format("26", MAX_FETCH)),
+        ({"page_size": "-1"}, ValueError, ERROR_MESSAGES["INVALID_PAGE_SIZE"].format("-1", DEFAULT_MAX_FETCH)),
+        ({"page_size": "26"}, ValueError, ERROR_MESSAGES["INVALID_PAGE_SIZE"].format("26", DEFAULT_MAX_FETCH)),
         ({"order": "test"}, ValueError, ERROR_MESSAGES["INVALID_ARGUMENT"].format("test", "order", ALERTS_ORDER_HR_LIST)),
         ({"sort": "test"}, ValueError, ERROR_MESSAGES["INVALID_ARGUMENT"].format("test", "sort", ALERTS_SORT_HR_LIST)),
         (
@@ -549,7 +550,6 @@ def test_fetch_incidents_dtm_alerts_success_with_last_run(mock_client, requests_
     last_run = {
         "alert_ids": ["dummy_001"],
         "last_alert_created_at": "2025-01-01T14:26:37Z",
-        "next_page_link": "dummy_next_page_link",
     }
 
     mock_response = util_load_json(
@@ -614,12 +614,145 @@ def test_fetch_incidents_dtm_alerts_skip_duplicate_alerts(mock_client, requests_
     assert alert_incidents == alert_skip_dup_incidents
 
 
+def test_fetch_incidents_large_fetch_with_pagination_token(mock_client, requests_mock, mocker):
+    """Test large fetch using pagination token from previous run."""
+    from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
+
+    params = {
+        "isFetch": False,
+        "first_fetch": "1 days",
+        "max_fetch": 50,
+        "mirror_direction": "Outgoing",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    last_run = {
+        "alert_ids": ["alert_0"],
+        "last_alert_created_at": "2025-08-19T14:30:00.97Z",
+    }
+
+    mock_response_1 = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dtm_alert_large_fetch_response.json")
+    )
+
+    requests_mock.get(
+        f"{BASE_URL}/{ENDPOINTS['alert_list']}",
+        [
+            {"json": mock_response_1, "headers": {"link": '<url?page=token2>; rel="next"'}},
+            {"json": mock_response_1, "headers": {}},
+        ],
+    )
+
+    alert_incidents, next_run_params = fetch_incidents(client=mock_client, params=params, last_run=last_run)
+
+    assert len(alert_incidents) == 48
+    assert next_run_params["last_alert_created_at"] == "2025-08-19T14:30:24.97Z"
+
+
+def test_fetch_incidents_large_fetch_no_alerts_stops_pagination(mock_client, requests_mock, mocker):
+    """Test large fetch stops when API returns no alerts."""
+    from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
+
+    params = {
+        "isFetch": False,
+        "first_fetch": "1 days",
+        "max_fetch": 100,
+        "mirror_direction": "Outgoing",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    mock_response_1 = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dtm_alert_large_fetch_response.json")
+    )
+    mock_response_2 = {"alerts": []}  # No alerts returned
+
+    requests_mock.get(
+        f"{BASE_URL}/{ENDPOINTS['alert_list']}",
+        [
+            {"json": mock_response_1, "headers": {"link": '<url?page=token2>; rel="next"'}},
+            {"json": mock_response_2, "headers": {}},
+        ],
+    )
+
+    alert_incidents, next_run_params = fetch_incidents(client=mock_client, params=params, last_run={})
+
+    # Should stop after first call when second returns no alerts
+    assert len(alert_incidents) == 25
+    assert next_run_params["last_alert_created_at"] == "2025-08-19T14:30:24.97Z"
+    assert next_run_params["alert_ids"] == [alert["id"] for alert in mock_response_1["alerts"]]
+
+
+def test_fetch_incidents_large_fetch_test_connectivity(mock_client, requests_mock, mocker):
+    """Test large fetch exits after first call during test connectivity."""
+    from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
+
+    params = {
+        "isFetch": False,
+        "first_fetch": "1 days",
+        "max_fetch": 50,
+        "mirror_direction": "Outgoing",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    mock_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dtm_alert_large_fetch_response.json")
+    )
+
+    requests_mock.get(
+        f"{BASE_URL}/{ENDPOINTS['alert_list']}",
+        json=mock_response,
+        headers={"link": '<url?page=token2>; rel="next"'},
+    )
+
+    alert_incidents, next_run_params = fetch_incidents(client=mock_client, params=params, last_run={}, is_test=True)
+
+    # Should exit after first call in test mode
+    assert len(alert_incidents) == 0  # is_test returns before creating incidents
+    # In test mode, next_run_params should be empty since we return early
+    assert next_run_params == {}
+
+
+def test_fetch_incidents_large_fetch_timeout(mock_client, requests_mock, mocker):
+    """Test large fetch handles timeout after 4 minutes."""
+    from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
+
+    params = {
+        "isFetch": False,
+        "first_fetch": "1 days",
+        "max_fetch": 100,
+        "mirror_direction": "Outgoing",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    # Mock has_passed_time_threshold to simulate timeout after first iteration
+    mocker.patch(
+        "GoogleThreatIntelligenceDTMAlerts.has_passed_time_threshold",
+        side_effect=[False, True],  # First call: no timeout, Second call: timeout
+    )
+
+    mock_response = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/dtm_alert_large_fetch_response.json")
+    )
+
+    requests_mock.get(
+        f"{BASE_URL}/{ENDPOINTS['alert_list']}",
+        json=mock_response,
+        headers={"link": '<url?page=token2>; rel="next"'},
+    )
+
+    alert_incidents, next_run_params = fetch_incidents(client=mock_client, params=params, last_run={})
+
+    # Should have fetched alerts from first call before timeout
+    assert len(alert_incidents) == 25  # Should have alerts from first call only
+    assert next_run_params["last_alert_created_at"] == "2025-08-19T14:30:24.97Z"
+
+
 @pytest.mark.parametrize(
     "params, exception, error",
     [
-        ({"max_fetch": "-1"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("-1")),
-        ({"max_fetch": "0"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("0")),
-        ({"max_fetch": "26"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("26")),
+        ({"max_fetch": "-1"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("-1", MAX_FETCH)),
+        ({"max_fetch": "0"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("0", MAX_FETCH)),
+        ({"max_fetch": "101"}, ValueError, ERROR_MESSAGES["INVALID_MAX_FETCH"].format("101", MAX_FETCH)),
         ({"alert_mscore_gte": "-1"}, ValueError, ERROR_MESSAGES["INVALID_MSCORE_GTE"].format("-1")),
         ({"alert_mscore_gte": "101"}, ValueError, ERROR_MESSAGES["INVALID_MSCORE_GTE"].format("101")),
         (

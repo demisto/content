@@ -7,10 +7,11 @@ sectionorder:
 - Connect
 - Collect
 configuration:
-- display: API Key
+- displaypassword: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
   additionalinfo: Your SOCRadar API key from platform.socradar.com
 - display: Company ID
@@ -33,15 +34,22 @@ configuration:
 - display: Fetch Interval (Minutes)
   name: fetch_interval_minutes
   type: 0
-  defaultvalue: '1'
+  defaultvalue: "1"
   section: Collect
-  additionalinfo: 'Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle.'
+  additionalinfo: "Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle."
 - display: Max incidents per fetch
   name: max_fetch
   type: 0
-  defaultvalue: '200'
+  defaultvalue: "200"
   section: Collect
-  additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
+  additionalinfo: "Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms."
+- display: Show Alarm Content
+  name: show_content
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, alarm content will be appended to incident details field (may increase incident size).
 - display: Status Filter
   name: status
   type: 16
@@ -100,6 +108,62 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
+- display: Include Company ID
+  name: include_company_id
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, the SOCRadar Company ID will be stored as a custom field on each fetched incident. Also adds company_id to rawJSON labels. Useful for multi-tenant environments to identify which company an incident belongs to.
+- display: Include Incident Link
+  name: include_incident_link
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, adds the SOCRadar platform incident link and incident content as custom fields on each fetched incident. Also adds incident_link to rawJSON labels.
+- display: Include Mitigation
+  name: include_mitigation
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes the default mitigation plan provided by SOCRadar for each alarm type. Contains actionable remediation steps such as credential rotation, domain takedown procedures, and vulnerability patching guidance.
+- display: Include Response
+  name: include_response
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes recommended response actions for the alarm. Contains step-by-step incident response procedures such as CVE identification, system isolation, evidence collection, and stakeholder communication.
+- display: Include Detection And Analysis
+  name: include_detection_and_analysis
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes detection and analysis guidance for the alarm. Describes how to integrate alarm output into security systems, set up alerts, and perform initial triage and investigation.
+- display: Include Post Incident Analysis
+  name: include_post_incident_analysis
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes post-incident analysis recommendations. Contains lessons learned guidance such as reviewing incident response processes, updating security policies, and monitoring for recurrence. Available for select alarm types (e.g., Vulnerability Intelligence).
+- display: Include Related Assets
+  name: include_related_assets
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes related assets associated with the alarm such as CPE identifiers, websites, hostnames, and IP addresses. Helps identify the scope and blast radius of the incident.
+- display: Include Related Entities
+  name: include_related_entities
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes related entities extracted from the alarm such as domains, CVE IDs, IP addresses, email addresses, and URLs. Provides context for threat hunting and correlation with other incidents.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -146,6 +210,16 @@ script:
       required: false
     - name: company_id
       description: Optional company_id to specify company.
+      required: false
+    - name: update_related_finding_status
+      description: Decide whether to update related finding status.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      required: false
+    - name: email
+      description: Email of action owner (required if update_related_finding_status is True).
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
@@ -284,11 +358,11 @@ script:
     - name: limit
       description: Number of incidents to test fetch (default 5).
       required: false
-      defaultValue: '5'
+      defaultValue: "5"
     - name: first_fetch
       description: 'Test date range (e.g., "3 days", "7 days").'
       required: false
-      defaultValue: '3 days'
+      defaultValue: "3 days"
     outputs:
     - contextPath: SOCRadar.TestFetch.TotalCount
       description: Total number of incidents found.
@@ -300,9 +374,9 @@ script:
       description: Parsed start date used for the test.
       type: String
 
-  dockerimage: demisto/python3:3.12.12.6796194
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 fromversion: 6.10.0

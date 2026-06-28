@@ -176,6 +176,17 @@ class TabLifecycleManager:
         except Exception as ex:
             demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable a new tab due to {ex}")
             raise ex
+
+        if BLOCKED_URLS:
+            try:
+                patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
+                self.tab.Fetch.enable(patterns=patterns)
+            except Exception as ex:
+                demisto.info(
+                    f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}"
+                )
+                raise ex
+
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: F841
@@ -377,19 +388,19 @@ class PychromeEventHandler:
             demisto.info(
                 f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
             )
-            self.tab.Fetch.enable()
-            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
-        request_url = kwargs.get("request", {}).get("url")
+        request_url = kwargs.get("request", {}).get("url") or ""
 
         # abort the request if the url inside blocked_urls param and its redirect request
-        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
+        if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
-            self.tab.Fetch.disable()
-            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
+            demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+        else:
+            # Safety check in case the fetch enable patterns paused requests that shouldn't be blocked
+            demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            self.tab.Fetch.continueRequest(requestId=request_id)
 
 
 # endregion
@@ -1606,23 +1617,40 @@ def perform_rasterize(
         chrome_options = demisto.params().get("chrome_options", "None")
         chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
-        ps_aux_output = "\n".join(
-            subprocess.check_output(  # noqa: S602
-                "ps aux | grep chrom | grep port= | grep -- --headless",
-                shell=True,
-                text=True,
-                stderr=subprocess.STDOUT,
-            ).splitlines()
-        )
-        chrome_headless_content = "\n".join(
-            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
-        )
-        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
-        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        # Get all Chrome headless processes for diagnostic purposes
+        # Using get_chrome_processes("") to match any port (equivalent to grep port=)
+        chrome_processes = get_chrome_processes("")
+        ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
+        try:
+            with open(CHROME_LOG_FILE_PATH) as f:
+                chrome_headless_content = f.read().strip()
+        except (FileNotFoundError, PermissionError, OSError):
+            chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
 
-        get_chrome_processes(chrome_port)
+        try:
+            df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
+        except subprocess.CalledProcessError:
+            df_output = "Could not get disk usage information"
+
+        try:
+            free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        except subprocess.CalledProcessError:
+            free_output = "Could not get memory information"
+
+        try:
+            chromedriver = subprocess.check_output(
+                ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
+            ).splitlines()
+        except subprocess.CalledProcessError:
+            chromedriver = ["chromedriver not found or not executable"]
+
+        try:
+            chrome_version = subprocess.check_output(
+                ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
+            ).splitlines()
+        except subprocess.CalledProcessError:
+            chrome_version = ["google-chrome not found or not executable"]
+
         demisto.debug(f"{chrome_instances_contents=}")
         demisto.debug(f"ps aux command result:\n{ps_aux_output}")
         demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")

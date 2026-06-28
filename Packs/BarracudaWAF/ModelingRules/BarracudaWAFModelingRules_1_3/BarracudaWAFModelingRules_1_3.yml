@@ -4,3 +4,5 @@ name: Barracuda WAF
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

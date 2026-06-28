@@ -25,6 +25,7 @@ to learn about configuring SlackV3 using the app manifest.
 | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
 | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
 | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
+| `Enabled AI assistant` | Enable Cortex Assistant AI integration in Slack. When enabled, users can mention the bot to interact with AI agents for security analysis, threat intelligence, and automated responses. | False |
 | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds. | False |
 | `paginated_count` | Number of objects to return in each paginated call. | False |
 | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
@@ -141,7 +142,88 @@ messages and the steady flow of the integration.**
 2. Navigate to your Instance Settings page in Cortex XSOAR and click **Test**. A message should appear in the channel
    from your app.
 
-## Backwards Compatibility with Slack V2
+## Cortex Agentic Assistant in Slack
+
+The Slack integration allows users to interact with the **Cortex Agentic Assistant** directly from Slack. Users can mention the bot in any channel or thread to ask security questions, run investigations, and receive AI-powered responses, all without leaving Slack.
+
+![Cortex AI Assistant in Slack](../../doc_files/slack_ai_assistant_demo.png)
+
+### Prerequisites
+
+Before you begin, ensure the following requirements are met:
+
+1. **Supported Cortex product version** — The tenant must be running one of the following versions (or later), depending on your product:
+
+   | Product | Minimum Version |
+   |---------|-----------------|
+   | Cortex AGENTIX | V1.3 |
+   | Cortex Platform | 1.5 |
+   | Cortex CLOUD | 2.1 |
+   | Cortex XDR | 3.18 / 5.1 |
+   | Cortex XSIAM | 2.10 / 3.5 |
+
+2. **Slack App installed** — The Slack app must be created and installed in your workspace as described in [Creating a Custom App](#creating-a-custom-app) and [Installing the App to Your Workspace](#installing-the-app-to-your-workspace).
+3. **Slack content pack version 3.6.0 or later** — This includes the SlackV3 integration.
+4. **User permissions** — Each Slack user who interacts with the Cortex Agentic Assistant must have the appropriate permissions to use the Cortex Agentic Assistant in the Cortex platform. Users without the required permissions will receive an error message when attempting to interact with the bot. Contact your Cortex administrator to ensure the relevant roles and permissions are assigned.
+
+### How to Enable
+  
+To enable this feature, configure the following in the integration instance settings.
+
+1. Check **Enabled AI assistant**.
+2. **Long running instance** — The **Long running instance** checkbox must be enabled in the instance settings (required for listening to bot mentions in real time).
+
+### How It Works
+
+Once the prerequisites are met, users can interact with the Cortex Agentic Assistant by mentioning the bot (for example, `@YourBotName <your question>`) in any Slack channel or thread where the bot has been added.
+
+> **Note:** Only users with the appropriate Cortex Agentic Assistant permissions can interact with the bot. Users without the required permissions will receive an error message prompting them to contact their administrator.
+
+#### Conversation Flow
+
+1. **Mention the bot** — Type `@YourBotName` followed by your question or request in a channel or thread.
+2. **Agent selection** — On the first interaction, the assistant presents a dropdown menu of available AI agents (e.g., Case Investigation, Threat Intel). Select the agent best suited for your query.
+3. **AI response** — The assistant replies in the same thread with the AI-generated response.
+4. **Follow-up questions** — Continue the conversation in the same thread by mentioning the bot again. The assistant maintains context from previous messages in the thread (up to the last 5 messages).
+
+#### Sensitive Action Approval
+
+When the AI agent needs to perform a sensitive action (e.g., blocking an IP, isolating an endpoint), it will:
+
+1. Display the action details with an **⚠️ Sensitive action detected** warning.
+2. Present **Proceed** and **Cancel** buttons.
+3. Wait for the conversation owner to approve or reject the action before continuing.
+
+> **Note:** Only the user who started the conversation can approve or reject sensitive actions.
+
+#### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `@BotName <question>` | Send a question or request to the AI assistant. |
+| `@BotName !help` | Display help information about the assistant, including usage tips. |
+| `@BotName !reset` | Reset the current session and release the thread lock, allowing a new conversation to start. |
+
+#### Feedback
+
+Each AI response includes feedback buttons:
+
+- **Good response** 👍 — Mark the response as helpful.
+- **Bad response** 👎 — Opens a feedback modal where you can select specific issues (e.g., *Factually incorrect*, *Unhelpful*, *Answered another question*) and provide additional comments.
+
+Feedback is sent back to the platform to help improve AI responses over time.
+
+#### Thread Locking
+
+- Each thread is locked to the user who started the conversation. Other users cannot interact with the assistant in the same thread.
+- Other users will see a message indicating the thread is locked and can start their own conversation in a different thread.
+- To release a locked thread, any Cortex user can type `@BotName !reset`.
+
+#### Session Management
+
+Conversations automatically expire after 14 days of inactivity. After this period, the thread is unlocked, and a new conversation can begin.
+
+## Backward Compatibility with Slack V2
 
 Slack V3 contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This
 version is intended to provide customers with more granular control over the Slack integration by enabling the
@@ -516,6 +598,7 @@ Get details about a specified user.
 | Slack.User.Name        | String   | The actual name of the user.   |
 | Slack.User.DisplayName | String   | The display name of the user.  |
 | Slack.User.Email       | String   | The email address of the user. |
+| Slack.User.StatusText  | String   | The status text of the user.   |
 
 #### Command Example
 
@@ -529,7 +612,8 @@ Get details about a specified user.
         "User": {
             "ID": "U0XXXXXXXX",
             "Name": "cortex_xsoar",
-            "Username": "demisto_integration"
+            "Username": "demisto_integration",
+            "StatusText": "In a meeting"
         }
     }
 }
@@ -539,9 +623,9 @@ Get details about a specified user.
 
 > ### Details for Slack user: cortex_xsoar
 >
->|ID|Username|Name|
->|---|---|---|
->| U0XXXXXXXX | demisto_integration | cortex_xsoar |
+>|ID|Username|Name|Status Text|
+>|---|---|---|---|
+>| U0XXXXXXXX | demisto_integration | cortex_xsoar | In a meeting |
 
 ### slack-edit-message
 
@@ -706,10 +790,68 @@ Fetches a conversation's history of messages and events
 | conversation_id   | The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.                                        | Optional     |
 | limit             | Set this argument to specify how many results to return.                                                                                                                     | Optional     |
 | from_time         | Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order. | Optional     |
+| page_token        | Token to retrieve the next page of results.                                                                                                                                  | Optional     |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**                          | **Type** | **Description**                                      |
+|-----------------------------------|----------|------------------------------------------------------|
+| Slack.Messages.Type               | string   | The type of the message (e.g., message, file_share, etc.). |
+| Slack.Messages.Text               | string   | The text content of the message.                     |
+| Slack.Messages.UserId             | string   | The user ID of the message sender.                   |
+| Slack.Messages.Name               | string   | The username of the message sender.                  |
+| Slack.Messages.FullName           | string   | The full name of the message sender.                 |
+| Slack.Messages.TimeStamp          | string   | The timestamp of the message.                        |
+| Slack.Messages.HasReplies         | string   | Whether the message has replies.                     |
+| Slack.Messages.ThreadTimeStamp    | string   | The thread timestamp of the message.                 |
+| SlackConversationHistory.NextPageToken   | string   | Token to retrieve the next page of results.          |
+
+#### Command Example
+
+```!slack-get-conversation-history conversation_name="general" limit="2"```
+
+#### Context Example
+
+```json
+{
+    "Slack": {
+        "Messages": [
+            {
+                "Type": "message",
+                "Text": "Hello team, please review the latest security report.",
+                "UserId": "U0XXXXXXXX",
+                "Name": "exampleUser1",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448123.000100",
+                "HasReplies": "false",
+                "ThreadTimeStamp": "1727448123.000100"
+            },
+            {
+                "Type": "message",
+                "Text": "Incident #1234 has been resolved.",
+                "UserId": "U0YYYYYYYY",
+                "Name": "exampleUser2",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448000.000200",
+                "HasReplies": "true",
+                "ThreadTimeStamp": "1727448000.000200"
+            }
+        ]
+    },
+    "SlackConversationHistory": {
+        "NextPageToken": "exampleToken"
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Conversation History for general
+>
+>|Type|Text|UserId|Name|FullName|TimeStamp|HasReplies|ThreadTimeStamp|
+>|---|---|---|---|---|---|---|---|
+>| message | Hello team, please review the latest security report. | U0XXXXXXXX | exampleUser1 | exampleUser1 | 1727448123.000100 | false | 1727448123.000100 |
+>| message | Incident #1234 has been resolved. | U0YYYYYYYY | exampleUser2 | exampleUser2 | 1727448000.000200 | true | 1727448000.000200 |
 
 ### slack-get-conversation-replies
 

@@ -2,20 +2,22 @@
     "name": "GCP",
     "description": "Google Cloud Platform Services",
     "support": "xsoar",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2025-07-08T00:00:00Z",
     "categories": [
         "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "GCP",
+        "Google Cloud Platform"
+    ],
     "supportedModules": [
-        "C1",
-        "C3",
-        "X5",
         "cloud_posture",
         "cloud",
         "cloud_runtime_security",
@@ -23,6 +25,8 @@
         "xsiam"
     ],
     "marketplaces": [
-        "platform"
+        "platform",
+        "xsoar",
+        "marketplacev2"
     ]
 }

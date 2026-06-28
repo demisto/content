@@ -88,7 +88,7 @@ Manual command to fetch events and display them.
                 "source": null,
                 "user": {
                     "archived": false,
-                    "email": "example@paloaltonetworks.com",
+                    "email": "example@example.com",
                     "id": 38651943
                 }
             }
@@ -103,6 +103,6 @@ Manual command to fetch events and display them.
 >
 >|AccountId|Description|EventType|Id|OccurredDate|Risk|User|
 >|---|---|---|---|---|---|---|
->| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
->| 52306 | My description lkjhy khl lgf | id: 420894024<br/>name: event_type_2<br/>description: null | c3081dfc-1bf9-4c56-b6ff-f364f0c13d39 | 2022-08-09T10:01:45.862Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
->| 52306 | My description | id: 418927900<br/>name: my_custom_event<br/>description: null | 2b265035-1a12-4e76-bcb1-6c681b86333e | 2022-08-04T14:14:50.917Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |
+>| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@example.com<br/>id: 38651943<br/>archived: false |
+>| 52306 | My description lkjhy khl lgf | id: 420894024<br/>name: event_type_2<br/>description: null | c3081dfc-1bf9-4c56-b6ff-f364f0c13d39 | 2022-08-09T10:01:45.862Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@example.com<br/>id: 38651943<br/>archived: false |
+>| 52306 | My description | id: 418927900<br/>name: my_custom_event<br/>description: null | 2b265035-1a12-4e76-bcb1-6c681b86333e | 2022-08-04T14:14:50.917Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@example.com<br/>id: 38651943<br/>archived: false |

@@ -6,21 +6,25 @@ Cyberint provides intelligence-driven digital risk protection. This integration 
 2. Search for Cyberint.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                    | **Description** | **Required** |
-    |----------------------------------------------------------------------------------| --- | --- |
-    | Incident type                                                                    |  | False |
-    | Cyberint Access Token                                                            | Cyberint API access token. | True |
-    | Cyberint API URL                                                                 | Cyberint environment on which the services run \(Example: https://yourcompany.cyberint.io) | True |
-    | Fetch incidents                                                                  |  | False |
-    | Create an incident per CSV record                                                | An incident will be created with the originated Alert details per CSV file record | False |
-    | Fetch Severity                                                                   | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
-    | Fetch Status                                                                     | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
-    | Fetch Environment                                                                | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
-    | Fetch Types                                                                      | Types to fetch. If none is chosen, all types will be returned. | False |
-    | Fetch Limit                                                                      | Max number of alerts per fetch. Defaults to  the minimum 10, max is 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Trust any certificate (not secure)                                               |  | False |
-    | Use system proxy settings                                                        |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Company Name | Company \(client\) name associated with Cyberint instance. | True |
+| Cyberint Access Token | Cyberint API access token. | True |
+| Cyberint API URL | Cyberint API URL on which the services run \(i.e https://your-company.cyberint.io\) | True |
+| Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record. | False |
+| Fetch incidents |  | False |
+| Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
+| Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
+| Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Cyberint to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Cyberint\), or Incoming and Outgoing \(from/to Cortex XSOAR and Cyberint\). Cortex XSOAR only parameter. | False |
+| Incident type |  | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Cyberint alert is mirrored in Cortex XSOAR. Cortex XSOAR only parameter. | False |
+| Close Mirrored Cyberint Alert | When selected, closing the Cortex XSOAR incident is mirrored in Cyberint. | False |
+| Fetch Types | Types to fetch. If none is chosen, all types will be returned. | False |
+| Fetch Limit | Max number of alerts per fetch. Defaults to the minimum 10, max is 100. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

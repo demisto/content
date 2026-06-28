@@ -4,3 +4,5 @@ fromversion: 8.6.0   # Will be updated with XSIAM version updates
 tags: []
 rules: ''
 samples: ''
+supportedModules:
+- xsiam

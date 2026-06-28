@@ -1119,19 +1119,36 @@ def azure_ad_identity_protection_risk_detection_list(ms_client: Client, args: di
 
 
 def ms_ip_string_to_list(ips: str) -> list:
+    """Convert a comma-separated string of IP ranges into the ipRanges payload Graph expects.
+
+    The Microsoft Graph ipNamedLocation API requires every range to be in CIDR notation
+    (e.g. "12.34.221.11/22" or "2001:0:9d38:90d6:0:0:0:0/63"); bare addresses such as
+    "0.0.0.0" are rejected. See
+    https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations.
+
+    Raises:
+        DemistoException: If a value is not valid CIDR notation, or no valid range is provided.
+    """
+    odata_type_by_indicator = {
+        FeedIndicatorType.CIDR: "#microsoft.graph.iPv4CidrRange",
+        FeedIndicatorType.IPv6CIDR: "#microsoft.graph.iPv6CidrRange",
+    }
     ips_arr = []
-    ips = ips.split(",")
-    for ip in ips:
-        temp = {"cidrAddress": ip}
-        # ipv4 check
-        if "." in ip:
-            temp["@odata.type"] = "#microsoft.graph.iPv4CidrRange"
-        # ipv6 check
-        elif ":" in ip:
-            temp["@odata.type"] = "#microsoft.graph.iPv6CidrRange"
-        else:
+    for ip in argToList(ips):
+        if not ip:
             continue
-        ips_arr.append(temp)
+        indicator_type = FeedIndicatorType.ip_to_indicator_type(ip) or ""
+        odata_type = odata_type_by_indicator.get(indicator_type)
+        if not odata_type:
+            raise DemistoException(
+                f'Invalid IP range "{ip}". IP ranges must be in CIDR notation, for example '
+                f'"12.34.221.11/22" (IPv4) or "2001:0:9d38:90d6:0:0:0:0/63" (IPv6).'
+            )
+        ips_arr.append({"@odata.type": odata_type, "cidrAddress": ip})
+    if not ips_arr:
+        raise DemistoException(
+            'No valid IP ranges provided. Provide at least one IP range in CIDR notation, e.g. "12.34.221.11/22".'
+        )
     return ips_arr
 
 
@@ -1328,7 +1345,7 @@ def detection_to_incident(detection: dict, detection_date: str, severity_overrid
 
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
-    detection_upn: str = detection.get("userPrincipalName", "")
+    detection_upn: str = detection.get("userPrincipalName", "") or ""
 
     risk = sign_in_risk_mapping.get(detection_type, {})
 
@@ -1376,7 +1393,7 @@ def detections_to_incidents(
 
 
 def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
-    riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
+    riskyuser_upn: str = riskyuser.get("userPrincipalName", "") or ""
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
 

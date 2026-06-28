@@ -1,0 +1,28 @@
+{
+    "name": "Upload investigation files 2025-12-18 18:26:00",
+    "startDate": "2025-12-18T20:26:00",
+    "status": 3,
+    "type": 24,
+    "owner": {
+        "id": "6941466eda1158ec9f0ecb5d",
+        "userName": "USER_EMAIL"
+    },
+    "company": {
+        "id": "COMPANY_ID",
+        "name": "COMPANY_NAME"
+    },
+    "hasMoreSubtasks": false,
+    "subtasks": [
+        {
+            "endpointId": "6942a43afe8d4e463ca5c197",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-18T20:26:00",
+            "status": 2,
+            "endDate": "2025-12-18T20:26:40",
+            "errorCode": "2",
+            "errorMessage": "Task failed! [2]"
+        }
+    ],
+    "totalTargetsCount": 1
+}

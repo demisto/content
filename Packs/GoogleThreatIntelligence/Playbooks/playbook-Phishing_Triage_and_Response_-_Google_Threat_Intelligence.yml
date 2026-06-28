@@ -351,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 2500
+          "x": -90,
+          "y": 2960
         }
       }
     note: false
@@ -619,7 +619,9 @@ tasks:
       - "10"
     scriptarguments:
       EmailToBlock:
-        simple: ${email_output_list}
+        complex:
+          root: ${Select Emails to Block.Answers
+          accessor: 0}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -632,7 +634,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2320
+          "y": 2680
         }
       }
     note: false
@@ -738,14 +740,14 @@ tasks:
       id: 4e0484b5-4b0b-4185-809b-b357ac5965b1
       version: -1
       name: Email Collection by Enriched Domain - Google Threat Intelligence
+      description: This playbook accepts a domain as input, filters the email list to identify addresses containing the specified domain, and outputs the extracted email addresses for further processing.
       playbookName: Email Collection by Enriched Domain - Google Threat Intelligence
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - "21"
     scriptarguments:
       domain:
         complex:
@@ -823,17 +825,135 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ab6f3366-f551-41c7-8572-f861983a9f7d
+    type: collection
+    task:
+      id: ab6f3366-f551-41c7-8572-f861983a9f7d
+      version: -1
+      name: Analyst Verification Prompt to Block Email
+      description: Analyst verification prompt to block the emails using XSOAR Generic Playbook.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Block Email Playbook - Analyst's Verification
+      body:
+        simple: |-
+          Dear XSOAR User,
+          This notification informs you that the following list of emails will be blocked using the XSOAR generic playbook Block Email.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select Malicious Emails to Block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${email_output_list}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select Emails to Block
+      description: 'Note: To proceed without blocking any emails, click "Submit Answers" without selecting any options.'
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 20c027ec-ba50-4722-8fef-2f7d67a25093
+    type: condition
+    task:
+      id: 20c027ec-ba50-4722-8fef-2f7d67a25093
+      version: -1
+      name: Check whether the user has selected any emails for blocking?
+      description: |
+        Check whether the user has selected any Emails to block using the XSOAR generic playbook "Block Email".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Select Emails to Block.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "14_10_#default#": 0.13,
       "1_10_#default#": 0.21,
-      "6_10_#default#": 0.21
+      "22_10_#default#": 0.21,
+      "6_10_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2515,
-        "width": 1200,
-        "x": -80,
+        "height": 2975,
+        "width": 1210,
+        "x": -90,
         "y": 50
       }
     }

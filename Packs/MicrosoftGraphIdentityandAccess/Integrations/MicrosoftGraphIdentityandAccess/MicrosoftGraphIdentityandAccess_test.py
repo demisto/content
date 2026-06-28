@@ -30,6 +30,71 @@ def test_ms_ip_string_to_list(ips, expected):
     assert MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips) == expected
 
 
+@pytest.mark.parametrize(
+    "ips",
+    [
+        "0.0.0.0",  # bare IPv4 without CIDR suffix (XSUP-71053)
+        "192.168.0.1",  # bare IPv4 without CIDR suffix
+        "2001:0:9d38:90d6:0:0:0:0",  # bare IPv6 without CIDR suffix
+        "12.34.221.11/22,0.0.0.0",  # one valid, one invalid
+        "not-an-ip",  # not an IP / not CIDR at all
+        "12.34.221.11/40",  # invalid prefix length for IPv4
+    ],
+)
+def test_ms_ip_string_to_list_invalid_cidr_raises(ips):
+    """
+    Given:
+    -   An ips string that contains a value which is not valid CIDR notation.
+        The Microsoft Graph ipNamedLocation API requires every cidrAddress to be
+        an IPv4 or IPv6 address range in CIDR notation
+        (https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure a DemistoException is raised mentioning CIDR notation, instead of
+      silently forwarding the invalid value to the Graph API (XSUP-71053).
+    """
+    with pytest.raises(DemistoException, match="CIDR"):
+        MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips)
+
+
+def test_ms_ip_string_to_list_empty_raises():
+    """
+    Given:
+    -   An ips string that produces no valid ranges (empty / whitespace only).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure a DemistoException is raised, since the ipNamedLocation API requires
+      the ipRanges collection to contain at least one range.
+    """
+    with pytest.raises(DemistoException, match="CIDR"):
+        MicrosoftGraphIdentityandAccess.ms_ip_string_to_list("   ")
+
+
+def test_ms_ip_string_to_list_host_bits_allowed():
+    """
+    Given:
+    -   CIDR values where host bits are set (e.g. 0.0.0.0/0 or 12.34.221.11/24).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure the values are accepted and trimmed, since Graph accepts CIDR ranges
+      with host bits set.
+    """
+    result = MicrosoftGraphIdentityandAccess.ms_ip_string_to_list("0.0.0.0/0, 12.34.221.11/24")
+    assert result == [
+        {"@odata.type": "#microsoft.graph.iPv4CidrRange", "cidrAddress": "0.0.0.0/0"},
+        {"@odata.type": "#microsoft.graph.iPv4CidrRange", "cidrAddress": "12.34.221.11/24"},
+    ]
+
+
 @pytest.mark.parametrize("last,expected", [({"latest_detection_found": "2022-06-06"}, "2022-06-06")])
 def test_get_last_fetch_time(last, expected):
     """
@@ -242,6 +307,86 @@ def test_detection_to_incident_with_severity_override(incident, expected):
 @pytest.mark.parametrize(
     "incident,expected",
     [
+        # Test with None userPrincipalName and unknown risk type
+        (
+            {
+                "riskEventType": "unknownRiskType",
+                "riskDetail": "someDetail",
+                "riskLevel": "medium",
+                "id": "test-id-123",
+                "userPrincipalName": None,
+            },
+            {
+                "name": "Azure AD: test-id-123 unknownRiskType someDetail",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "unknownRiskType", "riskDetail": "someDetail", "riskLevel": "medium", '
+                '"id": "test-id-123", "userPrincipalName": null}',
+                "details": "",
+            },
+        ),
+        # Test with missing userPrincipalName field and known risk type
+        (
+            {
+                "riskEventType": "anomalousToken",
+                "riskDetail": "someDetail",
+                "riskLevel": "high",
+                "id": "test-id-456",
+            },
+            {
+                "name": "Azure AD: test-id-456 anomalousToken someDetail",
+                "occurred": "2022-06-06Z",
+                "severity": 3,
+                "rawJSON": '{"riskEventType": "anomalousToken", "riskDetail": "someDetail", '
+                '"riskLevel": "high", "id": "test-id-456"}',
+                "details": (
+                    "Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime "
+                    "or a token played from an unfamiliar location, for user . "
+                    "This detection covers 'Session Tokens' "
+                    "and 'Refresh Tokens.' If the location, application, IP address, User Agent, or other characteristics "
+                    "are unexpected for the user, the administrator should consider "
+                    "this risk as an indicator of potential token replay."
+                ),
+            },
+        ),
+        # Test with None userPrincipalName and known risk type
+        (
+            {
+                "riskEventType": "leakedCredentials",
+                "riskDetail": "userPerformedSecuredPasswordChange",
+                "riskLevel": "high",
+                "id": "test-id-789",
+                "userPrincipalName": None,
+            },
+            {
+                "name": "Azure AD: test-id-789 leakedCredentials userPerformedSecuredPasswordChange",
+                "occurred": "2022-06-06Z",
+                "severity": 3,
+                "rawJSON": '{"riskEventType": "leakedCredentials", "riskDetail": "userPerformedSecuredPasswordChange", '
+                '"riskLevel": "high", "id": "test-id-789", "userPrincipalName": null}',
+                "details": "Credentials for user  found in known data breaches.",
+            },
+        ),
+    ],
+)
+def test_detection_to_incident_with_none_or_missing_upn(incident, expected):
+    """
+    Given:
+    - A detection dict with None or missing userPrincipalName.
+
+    When:
+    - Converting detection to incident.
+
+    Then:
+    - Ensure no error is raised and empty string is used for missing user.
+    - Verify the incident is created successfully with empty user in details.
+    """
+    assert MicrosoftGraphIdentityandAccess.detection_to_incident(incident, "2022-06-06", False, "") == expected
+
+
+@pytest.mark.parametrize(
+    "incident,expected",
+    [
         (
             {},
             {
@@ -323,6 +468,56 @@ def test_risky_user_to_incident_with_severity_override(incident, expected):
     - Ensure that the dict is what we expected.
     """
     assert MicrosoftGraphIdentityandAccess.risky_user_to_incident(incident, "2025-05-06", True, "medium") == expected
+
+
+@pytest.mark.parametrize(
+    "incident,expected",
+    [
+        # Test with None userPrincipalName
+        (
+            {"userPrincipalName": None, "riskLevel": "high", "riskState": "atRisk"},
+            {
+                "name": "Azure User at Risk:  - atRisk - high",
+                "severity": 3,
+                "details": (
+                    "High-risk of  Entra ID account compromise. "
+                    "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+                    "and known attack patterns factor into the confidence level of the risk detection"
+                ),
+                "occurred": "2025-05-06Z",
+                "rawJSON": '{"userPrincipalName": null, "riskLevel": "high", "riskState": "atRisk"}',
+            },
+        ),
+        # Test with missing userPrincipalName field
+        (
+            {"riskLevel": "medium", "riskState": "atRisk"},
+            {
+                "name": "Azure User at Risk:  - atRisk - medium",
+                "severity": 2,
+                "details": (
+                    "One or more medium-severity anomalies were detected "
+                    "by Microsoft on  Entra ID account. "
+                    "Sign-in patterns, behaviors, and other signals factor into the confidence level of the risk detection."
+                ),
+                "occurred": "2025-05-06Z",
+                "rawJSON": '{"riskLevel": "medium", "riskState": "atRisk"}',
+            },
+        ),
+    ],
+)
+def test_risky_user_to_incident_with_none_or_missing_upn(incident, expected):
+    """
+    Given:
+    - A risky user dict with None or missing userPrincipalName.
+
+    When:
+    - Converting risky user to incident.
+
+    Then:
+    - Ensure no error is raised and empty string is used for missing user.
+    - Verify the incident is created successfully with empty user in details.
+    """
+    assert MicrosoftGraphIdentityandAccess.risky_user_to_incident(incident, "2025-05-06", False, "") == expected
 
 
 @pytest.mark.parametrize(

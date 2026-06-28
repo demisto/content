@@ -754,6 +754,44 @@ def test_vulnerabilities_process(mocker, requests_mock):
     assert len(vulnerabilities) == 1
 
 
+def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
+    """
+    Given:
+        - A last_run dict with snapshot_id and total_assets set (from the assets fetch flow).
+        - Vulnerability chunks that are ready to be downloaded.
+    When:
+        - handle_vulns_chunks completes downloading all vuln chunks.
+    Then:
+        - Verify that snapshot_id and total_assets are NOT removed from last_run.
+        - These fields belong to the assets snapshot lifecycle and must only be cleaned up
+          in main() after the snapshot has been sealed, not in handle_vulns_chunks().
+    """
+    from Tenable_io import Client, handle_vulns_chunks
+
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/1", json=MOCK_CHUNK_CONTENT)
+
+    original_snapshot_id = "1234567890"
+    original_total_assets = 50000
+    last_run = {
+        "vuln_export_uuid": "123",
+        "vulns_available_chunks": [1],
+        "snapshot_id": original_snapshot_id,
+        "total_assets": original_total_assets,
+    }
+
+    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
+
+    assert len(vulnerabilities) == 1
+    # Verify vuln state is cleaned up
+    assert "vuln_export_uuid" not in last_run
+    assert "vulns_available_chunks" not in last_run
+    # Verify snapshot state is PRESERVED (not popped)
+    assert last_run.get("snapshot_id") == original_snapshot_id
+    assert last_run.get("total_assets") == original_total_assets
+
+
 def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     """
 

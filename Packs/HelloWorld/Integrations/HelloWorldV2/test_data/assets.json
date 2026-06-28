@@ -1,0 +1,19 @@
+{   
+    "has_more": false,
+    "data": [
+        {
+            "id": 1,
+            "name": "Server-01",
+            "type": "server",
+            "status": "active",
+            "created": "2026-01-15T10:00:00"
+        },
+        {
+            "id": 2,
+            "name": "Database-01",
+            "type": "database",
+            "status": "active",
+            "created": "2026-01-16T11:30:00"
+        }
+    ]
+}

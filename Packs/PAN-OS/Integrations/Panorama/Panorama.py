@@ -204,7 +204,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "home-and-garden",
     "hunting-and-fishing",
     "insufficient-content",
-    "internet-Communications-and-telephony",
+    "internet-communications-and-telephony",
     "internet-portals",
     "job-search",
     "legal",
@@ -1170,7 +1170,13 @@ def panorama_commit(args):
     partial_command: str = ""
     is_partial = False
     if device_group := args.get("device-group"):
-        command += f'<device-group><entry name="{device_group}"/></device-group>'
+        is_partial = True
+        partial_command += f"<device-group><member>{device_group}</member></device-group>"
+
+    if templates := argToList(args.get("template")):
+        is_partial = True
+        templates_command = "".join(f"<member>{t}</member>" for t in templates)
+        partial_command += f"<template>{templates_command}</template>"
 
     admin_name = args.get("admin_name")
     if admin_name:
@@ -1209,6 +1215,36 @@ def panorama_commit(args):
     return result
 
 
+def _build_commit_scope_and_details(args: dict) -> tuple[str, str]:
+    """Compute Panorama.Commit.Scope ('Partial' / 'Full') and a human-readable Panorama.Commit.Details
+    summary string from the commit args.
+
+    The 'Partial' classification mirrors the same logic used by panorama_commit() when building
+    the <partial> XML element, so the context value always agrees with what was actually sent
+    on the wire.
+    """
+    parts: list[str] = []
+
+    if device_group := args.get("device-group"):
+        parts.append(f"device-group={device_group}")
+
+    if templates := argToList(args.get("template")):
+        parts.append(f"template={', '.join(templates)}")
+
+    if admin_name := args.get("admin_name"):
+        parts.append(f"admin={admin_name}")
+
+    if argToBoolean(args.get("exclude_device_network_configuration") or False):
+        parts.append("exclude_device_network_configuration=true")
+
+    if argToBoolean(args.get("exclude_shared_objects") or False):
+        parts.append("exclude_shared_objects=true")
+
+    if parts:
+        return "Partial", "; ".join(parts)
+    return "Full", "Full commit"
+
+
 @polling_function(
     name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)),
@@ -1221,6 +1257,7 @@ def panorama_commit_command(args: dict):
     Supports polling as well.
     """
     commit_description = args.get("description", "")
+    commit_scope, commit_details = _build_commit_scope_and_details(args)
 
     if job_id := args.get("commit_job_id"):
         commit_status = panorama_commit_status({"job_id": job_id}).get("response", {}).get("result", {})
@@ -1229,6 +1266,8 @@ def panorama_commit_command(args: dict):
             "JobID": job_id,
             "Description": commit_description,
             "Status": "Success" if job_result == "OK" else "Failure",
+            "Scope": commit_scope,
+            "Details": commit_details,
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
@@ -1243,7 +1282,13 @@ def panorama_commit_command(args: dict):
         result = panorama_commit(args)
         job_id = result.get("response", {}).get("result", {}).get("job", "")
         if job_id:
-            context_output = {"JobID": job_id, "Description": commit_description, "Status": "Pending"}
+            context_output = {
+                "JobID": job_id,
+                "Description": commit_description,
+                "Status": "Pending",
+                "Scope": commit_scope,
+                "Details": commit_details,
+            }
             continue_to_poll = True
             commit_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix="Panorama.Commit",
@@ -1264,6 +1309,11 @@ def panorama_commit_command(args: dict):
                 "polling": argToBoolean(args.get("polling")),
                 "interval_in_seconds": arg_to_number(args.get("interval_in_seconds")),
                 "timeout": arg_to_number(args.get("timeout")),
+                "device-group": args.get("device-group"),
+                "template": args.get("template"),
+                "admin_name": args.get("admin_name"),
+                "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+                "exclude_shared_objects": args.get("exclude_shared_objects"),
             },
             partial_result=CommandResults(
                 readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
@@ -9093,23 +9143,26 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 def panorama_upload_content_update_file_command(args: dict):
     category = args.get("category")
     entry_id = args.get("entryID")
-    file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
-    shutil.copy(file_path, file_name)
-    with open(file_name, "rb") as file:
-        params = {"type": "import", "category": category, "key": API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
-        human_readble = tableToMarkdown("Results", t=response.get("response"))
-        content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
-        results = CommandResults(
-            raw_response=response,
-            readable_output=human_readble,
-            outputs_prefix="Panorama.Content.Upload",
-            outputs_key_field="Status",
-            outputs=content_upload_info,
-        )
-
-    shutil.rmtree(file_name, ignore_errors=True)
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = os.path.basename(file_info["name"])
+    try:
+        shutil.copy(file_path, file_name)
+        with open(file_name, "rb") as file:
+            params = {"type": "import", "category": category, "key": API_KEY}
+            response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
+            human_readble = tableToMarkdown("Results", t=response.get("response"))
+            content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
+            results = CommandResults(
+                raw_response=response,
+                readable_output=human_readble,
+                outputs_prefix="Panorama.Content.Upload",
+                outputs_key_field="Status",
+                outputs=content_upload_info,
+            )
+    finally:
+        if os.path.isfile(file_name):
+            os.remove(file_name)
     return results
 
 
@@ -9604,12 +9657,13 @@ class Topology:
         if self.panorama_objects:
             for value in self.panorama_devices():
                 yield value
-
+            demisto.debug("[top_level_devices] Panorama instances returned")
             return
 
         if self.firewall_objects:
             for value in self.firewall_devices():
                 yield value
+            demisto.debug("[top_level_devices] Firewall instances returned")
 
     def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
@@ -9649,13 +9703,14 @@ class Topology:
         :param devices: The list of PanDevice instances to filter by the filter string
         :param filter_str: The filter string to filter the devices on
         """
-        # Exact match based on device serial number
         if not filter_str:
             return devices
 
+        # Exact match based on device serial number
         if filter_str in devices:
             return {filter_str: devices.get(filter_str)}
 
+        # Exact match based on hostname
         for serial, device in devices.items():
             if device.hostname == filter_str:
                 return {serial: device}
@@ -11677,16 +11732,25 @@ class PanoramaCommand:
         """
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
+            demisto.debug(f"[get_device_groups] start running on Panorama instance {device.id=}, {device.hostname=}.")
             if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
-                for device_group_xml in response.findall("./result/devicegroups/entry"):
+                device_groups = response.findall("./result/devicegroups/entry")
+                demisto.debug(f"[get_device_groups] total device groups {len(device_groups)}.")
+
+                for device_group_xml in device_groups:
                     dg_name = get_element_attribute(device_group_xml, "name")
-                    for device_xml in device_group_xml.findall("./devices/entry"):
+                    devices_per_group = device_group_xml.findall("./devices/entry")
+                    demisto.debug(f"[get_device_groups] Total devices in group {dg_name}: {len(devices_per_group)}.")
+
+                    for device_xml in devices_per_group:
                         device_group_information: DeviceGroupInformation = dataclass_from_element(
                             device, DeviceGroupInformation, device_xml
                         )
                         device_group_information.name = dg_name
                         result.append(device_group_information)
+            else:
+                demisto.debug("[get_device_groups] Skipping running. The command must run from Panorama instance.")
 
         return result
 
@@ -12155,32 +12219,33 @@ class FirewallCommand:
         return vsys_to_query
 
     @staticmethod
-    def get_pushed_shared_policy_rules(
-        firewall,
-        rulebase_type: str,
-    ) -> dict[str, PushedSharedPolicy]:
+    def get_pushed_shared_policy_rules(firewall, rulebase_type: str, vsys_name: str) -> dict[str, PushedSharedPolicy]:
         """
         Retrieve Panorama pushed shared policies (pre-rulebase and post-rulebase)
         and map them by rule name for fast lookup.
         """
+        # Map by rule name for quick lookup
         pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
 
-        # Operational command to retrieve the full configuration of policies pushed from Panorama
-        pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
+        # Returns the complete set of policies that Panorama has "shared" with that specific vsys (Shared Rules and Device Group Rules)
+        pushed_config_cmd = f"<show><config><pushed-shared-policy><vsys>{vsys_name}</vsys></pushed-shared-policy></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
 
         # Panorama rules can exist in pre-rulebase or post-rulebase
         for position in ["pre-rulebase", "post-rulebase"]:
-            xpath = f"./result/policy/panorama/{position}/{rulebase_type}/rules/entry"
-            pushed_rules = pushed_config_response.findall(xpath)
+            panorama_xpath = f".//panorama/{position}/{rulebase_type}/rules/entry"
+            pushed_rules = pushed_config_response.findall(panorama_xpath)
+            if not pushed_rules:
+                demisto.debug(
+                    f"[get_pushed_shared_policy_rules] No {position} found for vsys: {vsys_name}, path: {panorama_xpath}"
+                )
 
             for pushed_rule in pushed_rules:
-                pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
-                pushed_rulebase_entry.policy_type = rulebase_type
-                pushed_rulebase_entry.position = position.replace("-", "_")
-
-                # Map by rule name for quick lookup
-                pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+                entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                if entry:
+                    entry.policy_type = rulebase_type
+                    entry.position = position.replace("-", "_")
+                    pushed_rulebase_results[entry.name] = entry
 
         return pushed_rulebase_results
 
@@ -12212,6 +12277,7 @@ class FirewallCommand:
         device_filter_string: Optional[str] = None,
         target: Optional[str] = None,
         unused_only: str = "false",
+        pre_post: Optional[str] = None,
     ) -> List[ShowRuleHitCountResult]:
         """
         Runs the `show rule-hit-count` command with VSYS support.
@@ -12224,6 +12290,7 @@ class FirewallCommand:
         :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial number.
         :param target: Single serial number to target with this command.
         :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
+        :param pre_post: If set ("pre_rulebase" or "post_rulebase"), only return rules pushed from Panorama at that position.
         """
         debug_prefix = "[get_hitcounts]"
         result_data = []
@@ -12231,7 +12298,8 @@ class FirewallCommand:
         instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
 
         demisto.debug(
-            f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} {device_filter_string=} {target=} {unused_only=}"
+            f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} "
+            f"{device_filter_string=} {target=} {unused_only=} {pre_post=}"
         )
 
         # Run operational command on each firewall using the given XML command to get rule hitcounts
@@ -12246,21 +12314,20 @@ class FirewallCommand:
             else:
                 vsys_to_query = FirewallCommand.get_vsys_list(firewall, f"{debug_prefix} Step 1: ")
 
-            """
-            STEP 2: Data enrichment.
-            Pre-fetch Panorama pushed policies (shared) once per firewall. (if any)
-            This is necessary because the hitcount response itself doesn't contain rule metadata 
-            (whether a rule is from Panorama or which Device Group it belongs to...)
-            """
-            demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment")
-            pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
-            try:
-                pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type)
-            except Exception as e:
-                demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
-
-            # STEP 3: Iterate through vsys and perform hitcount queries
             for vsys_name in vsys_to_query:
+                """
+                STEP 2: Data enrichment.
+                For each vsys, Pre-fetch Panorama Shared Rules and Device Group Rules. (if any)
+                This is necessary because the hitcount response itself doesn't contain rule metadata.
+                """
+                demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment for vsys: {vsys_name}")
+                pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+                try:
+                    pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type, vsys_name)
+                except Exception as e:
+                    demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
+
+                # STEP 3: Iterate through vsys and perform hitcount queries
                 demisto.debug(f"{debug_prefix} Step 3 Starting: Iterate through vsys: {vsys_name}")
                 xml_root = FirewallCommand.build_rule_hit_count_xml(vsys_name, rulebase_type, rules_arg)
                 try:
@@ -12304,6 +12371,11 @@ class FirewallCommand:
                             result.is_from_panorama = True
                             result.position = pushed_rule_entry.position
                             result.from_dg_name = pushed_rule_entry.loc
+
+                        # When pre_post is requested, only keep Panorama-pushed rules at the matching position.
+                        if pre_post and result.position != pre_post:
+                            demisto.debug(f"{debug_prefix} Skipping {result.name} (position={result.position!r} != {pre_post!r})")
+                            continue
 
                         result_data.append(result)
 
@@ -12554,6 +12626,7 @@ def get_rule_hitcounts(
     rules: str = "all",
     unused_only: str = "false",
     no_new_hits_since: Optional[str] = None,
+    pre_post: Optional[str] = None,
 ):
     """
     Retrieves hit counts for policy rules from the specified firewall or device.
@@ -12565,6 +12638,8 @@ def get_rule_hitcounts(
     :param rules: Comma-separated list of rule names to check, or "all" for all rules.
     :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
     :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+    :param pre_post: Panorama-only filter. When set to "pre-rulebase" or "post-rulebase", only Panorama-pushed rules at
+        that position are returned. Local firewall rules (not pushed from Panorama) are excluded when this filter is set.
 
     """
     no_new_hits_since_dt = None
@@ -12576,9 +12651,19 @@ def get_rule_hitcounts(
             demisto.debug(f"[get_rule_hitcounts] {message}")
             raise DemistoException(message)
 
+    pre_post_normalized = pre_post.replace("-", "_") if pre_post else None
+
     # Execute command, passing raw arguments to allow per-device XML construction.
     return FirewallCommand.get_hitcounts(
-        topology, rulebase, vsys, rules, no_new_hits_since_dt, device_filter_string, target, unused_only
+        topology,
+        rulebase,
+        vsys,
+        rules,
+        no_new_hits_since_dt,
+        device_filter_string,
+        target,
+        unused_only,
+        pre_post_normalized,
     )
 
 

@@ -136,14 +136,13 @@ configuration:
   display: Issue severity
   name: issue_severity
   options:
-    - critical
-    - high
-    - medium
-    - low
+  - critical
+  - high
+  - medium
+  - low
   defaultvalue: medium
   type: 15
-  additionalinfo: "Severity of the Cortex XSOAR/XSIAM issue to be created if Microsoft Entra ID Protection risk level override has been selected.
-    Severity will be the same for all Microsoft Entra ID Protection alerts."
+  additionalinfo: "Severity of the Cortex XSOAR/XSIAM issue to be created if Microsoft Entra ID Protection risk level override has been selected. Severity will be the same for all Microsoft Entra ID Protection alerts."
   advanced: true
   hidden: false
   required: false
@@ -286,11 +285,13 @@ script:
     name: msgraph-identity-ip-named-locations-create
     arguments:
     - name: ips
-      description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
+      description: 'A comma-separated list of IP ranges to add to the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).'
+      isArray: true
     - name: is_trusted
-      description: Boolean that indicates if the ip can be trusted.
+      description: Whether the IPs can be trusted.
+      defaultValue: 'false'
     - name: display_name
-      description: The disply name for the named ip location.
+      description: The display name for the IP location.
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
       description: The time when an ip named location was created.
@@ -317,11 +318,12 @@ script:
       description: The id of the named ip location to get from the api.
       required: true
     - name: ips
-      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: 'A comma-separated list of IP ranges to set on the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).'
+      isArray: true
     - name: is_trusted
-      description: Boolean that indicates if the ip can be trusted.
+      description: Whether the IPs can be trusted.
     - name: display_name
-      description: The disply name for the named ip location.
+      description: The display name for the IP location.
   - description: Retrieve all the detected risks.
     name: msgraph-identity-protection-risks-list
     arguments:
@@ -478,7 +480,7 @@ script:
     - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
       description: Unique ID of the risky user.
       type: string
-  - description: Retrieve Microsoft Entra ID sign-in event
+  - description: Retrieve Microsoft Entra ID sign-in event.
     name: msgraph-identity-audit-signin-event-get
     arguments:
     - name: id
@@ -927,7 +929,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.10120494
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier

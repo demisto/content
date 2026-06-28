@@ -450,3 +450,55 @@ def test_duplicated_incident(mocker):
 
     assert len(incident_report) == 1
     assert new_last_run.get("lastIds") == ["6"]
+
+
+def test_get_incident_by_id_command(mocker):
+    """Tests the get_incident_by_id_command function.
+
+    Given: An incident ID and a retry_count in the args dict.
+    When: Running get_incident_by_id_command with the new args-based signature.
+    Then: Assert the command returns the expected human readable, context, and raw response.
+    """
+    from PhishLabsIOC_EIR import Client, get_incident_by_id_command
+
+    client = Client(base_url="https://test.com/api/v1", verify=False, reliability="B - Usually reliable")
+
+    mock_response = {
+        "incidents": [
+            {
+                "id": "INC0660360",
+                "service": "EIR",
+                "title": "Test incident title",
+                "description": "",
+                "status": "Closed",
+                "details": {
+                    "caseType": "Response",
+                    "classification": "Malicious",
+                    "subClassification": "Response - 419 Scam",
+                    "severity": "Low",
+                    "emailReportedBy": "Test User <test@domain.com>",
+                    "submissionMethod": "Attachment",
+                    "sender": "<sender@domain.com>",
+                    "emailBody": "Test body",
+                    "urls": [],
+                    "attachments": [],
+                    "furtherReviewReason": "null",
+                    "offlineUponReview": "false",
+                },
+                "created": "2019-11-01T20:55:33Z",
+                "modified": "2019-11-01T21:39:57Z",
+                "closed": "2019-11-01T21:39:57Z",
+                "duration": 2665,
+            }
+        ]
+    }
+
+    mocker.patch.object(Client, "get_incident_by_id", return_value=mock_response)
+
+    args = {"incident_id": "INC0660360", "retry_count": "3"}
+    human_readable, context_entry, raw_response = get_incident_by_id_command(client, args)
+
+    assert "INC0660360" in str(human_readable)
+    assert raw_response == mock_response
+    assert context_entry is not None
+    Client.get_incident_by_id.assert_called_once_with("INC0660360")

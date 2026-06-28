@@ -33,15 +33,22 @@ configuration:
 - display: Fetch Interval (Minutes)
   name: fetch_interval_minutes
   type: 0
-  defaultvalue: '1'
+  defaultvalue: "1"
   section: Collect
-  additionalinfo: 'Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle.'
+  additionalinfo: "Time window for subsequent fetches in minutes. Default: 1 minute. Integration will fetch alarms from last N minutes. Example: If set to 1, it fetches alarms from last 1 minute each cycle."
 - display: Max incidents per fetch
   name: max_fetch
   type: 0
-  defaultvalue: '200'
+  defaultvalue: "200"
   section: Collect
-  additionalinfo: 'Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms.'
+  additionalinfo: "Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms."
+- display: Show Alarm Content
+  name: show_content
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, alarm content will be appended to incident details field (may increase incident size).
 - display: Status Filter
   name: status
   type: 16
@@ -146,6 +153,16 @@ script:
       required: false
     - name: company_id
       description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
+      required: false
+    - name: update_related_finding_status
+      description: Decide whether to update related finding status.
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      required: false
+    - name: email
+      description: Email of action owner (required if update_related_finding_status is True).
       required: false
     outputs:
     - contextPath: SOCRadar.Alarm.ID
@@ -263,11 +280,11 @@ script:
     - name: limit
       description: Number of incidents to test fetch (default 5).
       required: false
-      defaultValue: '5'
+      defaultValue: "5"
     - name: first_fetch
       description: 'Test date range (e.g., "3 days", "7 days").'
       required: false
-      defaultValue: '3 days'
+      defaultValue: "3 days"
     outputs:
     - contextPath: SOCRadar.TestFetch.TotalCount
       description: Total number of incidents found.
@@ -285,9 +302,9 @@ script:
       description: Total number of pages of incidents from service.
       type: Number
 
-  dockerimage: demisto/python3:3.12.12.6796194
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 fromversion: 6.10.0

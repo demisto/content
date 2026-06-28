@@ -131,7 +131,7 @@ class TestNormalCommands:
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
         client.account.walk_res = raw_response
-        res = find_folders(client)
+        res = find_folders(client, {})
         actual_ec = res[1]
         assert expected == actual_ec
 
@@ -156,7 +156,7 @@ class TestNormalCommands:
         mocker.patch.object(GetSearchableMailboxes, "__init__", return_value=None)
         mocker.patch.object(GetSearchableMailboxes, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_searchable_mailboxes(client)
+        res = get_searchable_mailboxes(client, {})
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 
@@ -181,7 +181,8 @@ class TestNormalCommands:
         mocker.patch.object(ExpandGroup, "__init__", return_value=None)
         mocker.patch.object(ExpandGroup, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_expanded_group(client, email_address="testgroup-1@demistodev.onmicrosoft.com")
+        args = {"email_address": "testgroup-1@demistodev.onmicrosoft.com"}
+        res = get_expanded_group(client, args)
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 
@@ -962,7 +963,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
 
     mock_file_result = mocker.patch("EWSO365.fileResult")
 
-    get_item_as_eml(MockEWSClient(), "item", "account@test.com")
+    get_item_as_eml(MockEWSClient(), {"item_id": "item", "target_mailbox": "account@test.com"})
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
 
@@ -1364,6 +1365,70 @@ def test_fetch_attachments_for_message_output(mocker):
             False,
             id="empty_exclude_ids_not_duplicate",
         ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_right_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_left_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_right_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_left_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_right_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_left_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T13:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_right_bracket_item_newer_not_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T13:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_left_bracket_item_newer_not_duplicate",
+        ),
     ],
 )
 def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, expected_result):
@@ -1389,6 +1454,7 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
         6. No ID match - not duplicate
         7. Modified-time filter behavior
         8. Edge cases (no message_id, empty exclude_ids)
+        9. Partial bracket forms (right-only, left-only) - duplicate detection
     """
     item_datetime = EWSDateTime.from_string(item_time)
     msg = Message(

@@ -134,7 +134,7 @@ List workers command - Returns information for specified workers.
                 {
                     "Address_ID": "ADDRESS_REFERENCE-6-107",
                     "Country": "SA",
-                    "Formatted_Address": "King Faisal District&#xa;Riyadh 13215&#xa;Saudi Arabia",
+                    "Formatted_Address": "King Testname District&#xa;Riyadh 13215&#xa;Saudi Arabia",
                     "Postal_Code": "112345",
                     "Region": "",
                     "Region_Descriptor": "",

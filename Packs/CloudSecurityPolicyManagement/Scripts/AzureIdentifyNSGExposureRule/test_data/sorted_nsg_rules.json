@@ -1,0 +1,90 @@
+[
+        {
+            "properties": {
+                "sourceAddressPrefixes": [],
+                "priority": 102,
+                "direction": "Inbound",
+                "protocol": "TCP",
+                "destinationPortRanges": [],
+                "access": "Allow",
+                "destinationAddressPrefixes": [],
+                "destinationPortRange": "22",
+                "sourcePortRange": "*",
+                "sourcePortRanges": [],
+                "destinationAddressPrefix": "*",
+                "sourceAddressPrefix": "*",
+                "provisioningState": "Succeeded"
+            },
+            "name": "AllowSshToAll"
+        },
+        {
+            "properties": {
+                "sourceAddressPrefixes": [],
+                "priority": 103,
+                "direction": "Inbound",
+                "protocol": "TCP",
+                "destinationPortRanges": [],
+                "access": "Allow",
+                "destinationAddressPrefixes": ["1.2.3.4", "1.2.3.5"],
+                "destinationPortRange": "3389",
+                "sourcePortRange": "*",
+                "sourcePortRanges": [],
+                "sourceAddressPrefix": "*",
+                "provisioningState": "Succeeded"
+            },
+            "name": "AllowRDPtoJumpBoxes"
+        },
+        {
+            "properties": {
+                "sourceAddressPrefixes": [],
+                "priority": 105,
+                "direction": "Inbound",
+                "protocol": "TCP",
+                "destinationPortRanges": ["80", "443"],
+                "access": "Allow",
+                "destinationAddressPrefixes": [],
+                "sourcePortRange": "*",
+                "sourcePortRanges": [],
+                "destinationAddressPrefix": "1.2.3.0/24",
+                "sourceAddressPrefix": "*",
+                "provisioningState": "Succeeded"
+            },
+            "name": "AllowHTTPServices"
+        },
+        {
+            "properties": {
+                "sourceAddressPrefixes": [],
+                "priority": 107,
+                "direction": "Inbound",
+                "protocol": "TCP",
+                "destinationPortRanges": [],
+                "access": "Allow",
+                "destinationAddressPrefixes": [],
+                "destinationPortRange": "465",
+                "sourcePortRange": "*",
+                "sourcePortRanges": [],
+                "destinationAddressPrefix": "1.2.3.10",
+                "sourceAddressPrefix": "*",
+                "provisioningState": "Succeeded"
+            },
+            "name": "AllowSMTPStoMailServer"
+        },
+        {
+            "properties": {
+                "sourceAddressPrefixes": [],
+                "priority": 117,
+                "direction": "Inbound",
+                "protocol": "TCP",
+                "destinationPortRanges": [],
+                "access": "Allow",
+                "destinationAddressPrefixes": [],
+                "destinationPortRange": "20-21",
+                "sourcePortRange": "*",
+                "sourcePortRanges": [],
+                "destinationAddressPrefix": "*",
+                "sourceAddressPrefix": "*",
+                "provisioningState": "Succeeded"
+            },
+            "name": "AllowFTPToAll"
+        }
+    ]
