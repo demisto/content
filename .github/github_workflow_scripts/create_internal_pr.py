@@ -33,7 +33,6 @@ XSIAM_CONTENT = [
     "ModelingRules",
     "ParsingRules",
     "CorrelationRules",
-    "Dashboards",
     "XSIAMDashboards",
 ]
 RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
