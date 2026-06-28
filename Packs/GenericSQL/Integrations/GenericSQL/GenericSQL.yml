@@ -52,6 +52,9 @@ configuration:
   additionalinfo: The Generic SQL query/procedure.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Column
   name: column_name
   type: 0
