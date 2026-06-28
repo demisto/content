@@ -55,6 +55,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Number of alerts for each fetch.
   name: limit
   type: 0
@@ -62,6 +64,8 @@ configuration:
   required: false
   defaultvalue: '100'
   additionalinfo: Due to API limitations, the maximum is 100.
+  supportedModules:
+  - xsiam
 - display: Fetch events
   name: isFetchEvents
   type: 8
