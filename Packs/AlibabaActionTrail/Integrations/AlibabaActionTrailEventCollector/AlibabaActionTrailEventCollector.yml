@@ -37,12 +37,16 @@ configuration:
   required: true
   defaultvalue: "*| select * from actiontrail_pa_trail"
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Number of incidents to fetch per fetch.
   name: limit
   type: 0
   defaultvalue: 1000
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: First fetch time interval
   name: from
   type: 0
