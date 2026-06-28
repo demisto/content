@@ -86,6 +86,9 @@ configuration:
   required: true
   type: 16
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Feed Name
   name: feed_name
   defaultvalue: All
