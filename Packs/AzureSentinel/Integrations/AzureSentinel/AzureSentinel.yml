@@ -29,6 +29,9 @@ configuration:
   required: false
   defaultvalue: '20'
   display: Maximum number of incidents per fetch.
+  supportedModules:
+  - agentix
+  - xsiam
 - name: creds_tenant_id
   type: 9
   section: Connect
