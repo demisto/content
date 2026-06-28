@@ -1,6 +1,6 @@
 {
-    "name": "Trend Micro Apex One",
-    "description": "Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects",
+    "name": "TrendAI™ Apex One",
+    "description": "TrendAI™ Apex One central automation to manage agents and User-Defined Suspicious Objects",
     "support": "xsoar",
     "currentVersion": "2.0.20",
     "author": "Cortex XSOAR",
