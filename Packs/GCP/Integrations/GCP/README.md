@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). On Cortex XSIAM \(version &amp;gt;= 3.0\) and Cortex Platform, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | True |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). On Cortex Platform \(Cortex XSIAM \(version &amp;gt;= 3.0\) and Cortex Cloud\), authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | True |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -780,6 +780,11 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
 | GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | Name of the bucket to set IAM policy on. | Required |
+
 ### gcp-storage-bucket-policy-set
 
 ***
@@ -805,6 +810,25 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 | GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
 | GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+
+| object_name | Name of the object to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 
 ### gcp-storage-bucket-object-policy-list
 
@@ -858,6 +882,21 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 | GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
 | GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
 
 ### gcp-compute-snapshot-get
 
@@ -1444,179 +1483,6 @@ Returns the specified network.
 | GCP.Compute.Networks.routingConfig.routingMode | string | The network-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
 
-### gcp-compute-firewall-insert
-
-***
-Creates a new firewall rule in a specific project. Required permission: compute.firewalls.create.
-
-#### Base Command
-
-`gcp-compute-firewall-insert`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_name | Name of the firewall rule to create. | Required |
-| description | An optional description for the firewall rule. | Optional |
-| network | URL of the network, e.g., global/networks/default. | Optional |
-| priority | Priority 0-65535. Default 1000. | Optional |
-| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
-| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
-| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
-| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
-| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
-| source_tags | Comma-separated instance tags to match as source. | Optional |
-| target_tags | Comma-separated tags to apply this rule to. | Optional |
-| source_service_accounts | Comma-separated service accounts for source. | Optional |
-| target_service_accounts | Comma-separated service accounts to target. | Optional |
-| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
-| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
-| GCP.Compute.Operations.name | String | Name of the operation resource. |
-| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
-| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.status | String | Current status of the operation. |
-| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
-| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
-| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
-| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
-| GCP.Compute.Operations.user | String | The user account that performed the operation. |
-
-### gcp-compute-firewall-list
-
-***
-Lists the firewall rules in a specific project. Required permission: compute.firewalls.list.
-
-#### Base Command
-
-`gcp-compute-firewall-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
-| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
-| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
-| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
-| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
-| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
-| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
-| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
-| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
-| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
-| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
-| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
-| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
-| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
-| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
-
-### gcp-compute-firewall-get
-
-***
-Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get.
-
-#### Base Command
-
-`gcp-compute-firewall-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_name | Firewall rule name. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Firewall.name | string | Firewall rule name. |
-| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
-| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
-| GCP.Compute.Firewall.priority | number | Priority of the rule. |
-| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
-| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
-| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
-
-### gcp-compute-snapshots-list
-
-***
-Lists snapshots in a specific project. Required permission: compute.snapshots.list.
-
-#### Base Command
-
-`gcp-compute-snapshots-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
-| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
-| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
-
-### gcp-bq-dataset-policy-remove
-
-***
-Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy.
-
-#### Base Command
-
-`gcp-bq-dataset-policy-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| dataset_id | The dataset ID of the requested dataset. | Required |
 | email | The email address to remove from the dataset access list. | Required |
 
 #### Context Output
