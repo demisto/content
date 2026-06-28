@@ -21,7 +21,7 @@ def format_messages(messages: list):
         1. change the toAddresses value to a list.
 
     Args:
-      messages(list): the messages list to check.
+      messages(list): the messages list to check. test
 
     Returns:
       list: the reorganised messages.
