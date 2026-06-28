@@ -3780,6 +3780,9 @@ script:
       description: "The resource group name."
       type: String
       required: true
+    - name: test_arg
+      description: a test arg
+      required: true
     outputs:
     - contextPath: Azure.VirtualNetworks.SecurityGroups.name
       description: The security group's name.
