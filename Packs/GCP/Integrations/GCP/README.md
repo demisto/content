@@ -1177,7 +1177,7 @@ Returns a specific image. Required permission: compute.images.get.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID for this request. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The project ID for this request. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Platform; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | image | Name of the image resource to return. | Required |
 
 #### Context Output
