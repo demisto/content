@@ -39,23 +39,19 @@ def validate_aws_params(
         raise DemistoException("Role session name is required when using a role ARN.")
 
 
-def parse_tag_field(tags_str: str) -> list:
-    """Parse a string of key/value pairs into a list of tag dictionaries.
+def parse_tags(tags_str: str) -> dict:
+    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
 
-    The expected format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
+    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
 
     Args:
         tags_str (str): The keys and values string.
 
     Returns:
-        list: A list of dicts with the form ``{"Key": <key>, "Value": <value>}``.
+        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
     """
-    tags = []
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
-    regex_parse_result = regex.findall(tags_str)
-    for key, value in regex_parse_result:
-        tags.append({"Key": key, "Value": value})
-    return tags
+    return {key: value for key, value in regex.findall(tags_str)}
 
 
 def build_client(params: dict) -> BotoClient:
@@ -152,9 +148,7 @@ def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResult
     Returns:
         CommandResults: The ARN of the enabled Security Hub V2 resource.
     """
-    # Security Hub V2 expects Tags as a flat {key: value} mapping, unlike V1's list of {Key, Value}.
-    parsed_tags = parse_tag_field(args.get("tags", ""))
-    tags = {tag["Key"]: tag["Value"] for tag in parsed_tags}
+    tags = parse_tags(args.get("tags", ""))
     kwargs = remove_empty_elements({"Tags": tags})
 
     demisto.debug(f"[AWS_Security_Hub_V2] Enabling Security Hub V2 with tag keys: {list(tags.keys())}")

@@ -2,32 +2,29 @@ import pytest
 from AWS_SecurityHub_V2 import (
     disable_security_hub_command,
     enable_security_hub_command,
-    parse_tag_field,
+    parse_tags,
     validate_aws_params,
 )
 from CommonServerPython import DemistoException
 
 
-def test_parse_tag_field():
+def test_parse_tags():
     """
     Given: A string of key/value tag pairs separated by ';'.
-    When: parse_tag_field is called.
-    Then: It returns a list of {'Key': ..., 'Value': ...} dicts.
+    When: parse_tags is called.
+    Then: It returns a flat {key: value} mapping as required by the Security Hub V2 API.
     """
-    result = parse_tag_field("key=env,value=prod;key=team,value=security")
-    assert result == [
-        {"Key": "env", "Value": "prod"},
-        {"Key": "team", "Value": "security"},
-    ]
+    result = parse_tags("key=env,value=prod;key=team,value=security")
+    assert result == {"env": "prod", "team": "security"}
 
 
-def test_parse_tag_field_empty():
+def test_parse_tags_empty():
     """
     Given: An empty tags string.
-    When: parse_tag_field is called.
-    Then: It returns an empty list.
+    When: parse_tags is called.
+    Then: It returns an empty dict.
     """
-    assert parse_tag_field("") == []
+    assert parse_tags("") == {}
 
 
 def test_validate_aws_params_missing_region():
