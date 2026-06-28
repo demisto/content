@@ -14,7 +14,7 @@ configuration:
   section: Connect
 - display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
   section: Connect
 - display: Region (only if you are not US West)
@@ -57,6 +57,30 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: OAuth Client ID
+  name: oauth_client_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: OAuth client ID issued by the IdP (e.g. Okta, Entra ID). Required when using External OAuth authentication.
+- display: OAuth Client Secret
+  name: oauth_client_secret
+  type: 4
+  required: false
+  section: Connect
+  additionalinfo: OAuth client secret issued by the IdP. Required when using External OAuth authentication.
+- display: OAuth Token URL
+  name: oauth_token_url
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: "IdP token endpoint URL, e.g. https://<tenant>.okta.com/oauth2/<authServerId>/v1/token. Required when using External OAuth authentication."
+- display: OAuth Scope
+  name: oauth_scope
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: "Snowflake OAuth scope, e.g. session:role:analyst. See https://docs.snowflake.com/en/user-guide/oauth-ext-overview#scopes for details."
 - display: Fetch incidents
   name: isFetch
   type: 8

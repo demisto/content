@@ -30,6 +30,10 @@ DATABASE = PARAMS.get("database")
 SCHEMA = PARAMS.get("schema")
 ROLE = PARAMS.get("role")
 INSECURE = PARAMS.get("insecure", False)
+OAUTH_CLIENT_ID = PARAMS.get("oauth_client_id")
+OAUTH_CLIENT_SECRET = PARAMS.get("oauth_client_secret")
+OAUTH_TOKEN_URL = PARAMS.get("oauth_token_url")
+OAUTH_SCOPE = PARAMS.get("oauth_scope")
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get("isFetch")
 FETCH_TIME = PARAMS.get("fetch_time")
@@ -215,17 +219,29 @@ def get_connection_params(args):  # pylint: disable=W9014
         Snowflake connection params
     """
     params: dict = {}
-    set_provided(params, "user", USER)
-    set_provided(params, "password", PASSWORD)
+    set_provided(params, "user", USER) # user value is required for all authentication methods
     set_provided(params, "account", ACCOUNT)
-    set_provided(params, "authenticator", AUTHENTICATOR)
     set_provided(params, "region", REGION)
     set_provided(params, "insecure_mode", INSECURE)
     set_provided(params, "warehouse", args.get("warehouse"), WAREHOUSE)
     set_provided(params, "database", args.get("database"), DATABASE)
     set_provided(params, "schema", args.get("schema"), SCHEMA)
     set_provided(params, "role", args.get("role"), ROLE)
-    if CERTIFICATE:
+
+    if OAUTH_CLIENT_ID and OAUTH_TOKEN_URL and OAUTH_CLIENT_SECRET:
+        # ── OAuth (External OAuth, Client Credentials grant) ──
+        # The snowflake-connector-python natively supports the client credentials flow.
+        # Override the authenticator with the OAuth-specific value.
+        set_provided(params, "authenticator", "OAUTH_CLIENT_CREDENTIALS")
+        set_provided(params, "oauth_client_id", OAUTH_CLIENT_ID)
+        set_provided(params, "oauth_client_secret", OAUTH_CLIENT_SECRET)
+        set_provided(params, "oauth_token_request_url", OAUTH_TOKEN_URL)
+        if OAUTH_SCOPE:
+            set_provided(params, "oauth_scope", OAUTH_SCOPE)
+
+    elif CERTIFICATE:
+        set_provided(params, "authenticator", AUTHENTICATOR)
+        # ── Key Pair authentication ──
         p_key = serialization.load_pem_private_key(CERTIFICATE, password=CERT_PASSWORD, backend=default_backend())
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
@@ -233,6 +249,11 @@ def get_connection_params(args):  # pylint: disable=W9014
             encryption_algorithm=serialization.NoEncryption(),
         )
         params["private_key"] = pkb
+
+    else: # Username + Password
+        set_provided(params, "authenticator", AUTHENTICATOR)
+        set_provided(params, "password", PASSWORD)
+
     return params
 
 
