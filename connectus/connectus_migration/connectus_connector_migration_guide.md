@@ -1644,13 +1644,10 @@ This document; the connector (provider) name; the XSOAR Pack content (integratio
 
 Open items are tracked in [this spreadsheet](https://docs.google.com/spreadsheets/d/1C1nZ70rJlBWB0vdH_rc_xe5RFk22CiA9Z2yBtSLgJg4/edit?gid=0#gid=0) (authoritative status + Jira links). Remaining unresolved opens:
 
-- 🔴 **Credentials vaults** — support in progress.
 - 🔴 **`advanced: true`** — legacy per-parameter collapsible "Advanced" sections have no manifest equivalent. Emit such fields as regular fields and note them in Gap Analysis.
 - 🟡 **Per-integration action `display`/`description` overrides** — migration omits both (platform defaults); track integrations needing custom wording (e.g. EWS "Reset Mailbox Last Sync").
 - 🟡 **`metadata.documentation`** and **`help` generation** — tooling TBD by the tech team.
-- 🟡 **Skip the connection screen** for integrations that have no auth/connection — there will be an option to skip the connection screen (no block).
 - 🟡 **`allow_skip_verification` / skip-verify** — **deferred to October** (not in this release). Option to skip the connection test will be `settings.allow_skip_verification` (§2.1).
-- 🔴 **Serializer ID change on a profile field (e.g. `engine`)** — we don't know whether the serializer can change/remap the **ID** of a field that lives in the **connection profile** (e.g. `engine`/`engine_group`). Serializer `field_mappings` are documented for configuration fields; whether profile-level (connection.yaml) field IDs can be remapped via the serializer is undetermined. Confirm with engineering.
 
 ---
 
