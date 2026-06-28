@@ -60,6 +60,9 @@ configuration:
   - High
   - Critical
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Site ID to fetch by
   name: site_id
   type: 0
@@ -71,6 +74,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Exclude resolved alerts
   name: exclude_resolved_alerts
   type: 8
