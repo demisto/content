@@ -85,6 +85,9 @@ configuration:
   required: false
   defaultvalue: 'true'
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: Save intrusion sets as threat actor indicator types
   name: switch_intrusion_set_to_threat_actor
