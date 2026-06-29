@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: sk_gr109
+  CURRENT_BRANCH_NAME: master
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: sk_gr109
+    ref: master
     project: "${CI_PROJECT_NAMESPACE}/infra"
