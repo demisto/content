@@ -17,7 +17,6 @@ alter
     xdm.source.user.username = user,
     xdm.source.user.identifier = user,
     xdm.source.user.upn = tmp_upn,
-    xdm.source.user.email = tmp_email,
     xdm.source.user.domain = tmp_email_domain,
     xdm.source.location.city = tmp_location,
     xdm.event.id = to_string(task_id),
