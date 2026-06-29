@@ -1,5 +1,6 @@
 sectionorder:
 - Connect
+- Collect
 commonfields:
   id: SpecterOpsBloodHoundEnterprise
   version: -1
@@ -10,7 +11,8 @@ provider: SpecterOps
 description: Use the SpecterOpsBloodHoundEnterprise integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
 detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBloodHoundEnterprise integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
 configuration:
-- display: BloodHound Enterprise Domain
+- section: Connect
+  display: BloodHound Enterprise Domain
   name: url
   type: 0
   required: true
@@ -22,44 +24,61 @@ configuration:
   type: 9
   required: true
   additionalinfo: BloodHound Enterprise API token ID
-- display: Proxy URL
+- section: Connect
+  display: Proxy URL
   name: proxy_url
   type: 0
   required: false
-- display: Proxy URL Username
+- section: Connect
+  display: Proxy URL Username
   name: proxy_username
   type: 0
   required: false
-- display: Proxy URL Password
+- section: Connect
+  display: Proxy URL Password
   name: proxy_password
   type: 4
   required: false
-- display: Finding Environment
+- section: Connect
+  display: Finding Environment
   name: finding_domain
   defaultvalue: all
   type: 0
   required: false
   additionalinfo: The environment from which to fetch attack paths. Default is all.
-- display: Finding Category
+- section: Connect
+  display: Finding Category
   name: finding_category
   defaultvalue: all
   type: 0
   required: false
   additionalinfo: The category of attack paths to fetch. Default is all.
-- display: Fetch incidents
+- section: Collect
+  display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-- display: Incidents Fetch Interval
+  supportedModules:
+  - agentix
+  - xsiam
+- section: Collect
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "10"
   type: 19
   required: false
-  additionalinfo: The interval for fetching attack paths
-- display: Incident type
+  additionalinfo: The interval for fetching attack paths.
+  supportedModules:
+  - agentix
+  - xsiam
+- section: Collect
+  display: Incident type
   name: incidentType
   type: 13
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: '-'
   commands:
