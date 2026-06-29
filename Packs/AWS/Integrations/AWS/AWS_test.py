@@ -14877,8 +14877,6 @@ def test_update_function_configuration_command_error(mocker):
 
     mocker.patch("AWS.AWSErrorHandler.handle_response_error", side_effect=Exception("Bad Request"))
 
-    import pytest
-
     with pytest.raises(Exception, match="Bad Request"):
         Lambda.update_function_configuration_command(mock_client, args)
 
@@ -17603,7 +17601,7 @@ def test_describe_firewall_command_missing_args(mocker):
     client = mocker.MagicMock()
     args = {}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.describe_firewall_command(client, args)
 
 
@@ -18026,7 +18024,7 @@ def test_delete_firewall_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.delete_firewall_command(mock_client, args)
 
 
@@ -18155,7 +18153,7 @@ def test_update_firewall_delete_protection_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"delete_protection": "true"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
 
 
@@ -18284,7 +18282,7 @@ def test_update_firewall_description_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"description": "New description"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_description_command(mock_client, args)
 
 
@@ -18312,3 +18310,2361 @@ def test_update_firewall_description_command_api_error(mocker):
         NetworkFirewall.update_firewall_description_command(mock_client, args)
 
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_associate_firewall_policy_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name and firewall policy ARN.
+    When: associate_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "UpdateToken": "token-123",
+    }
+    mock_client.associate_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+    }
+
+    result = NetworkFirewall.associate_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall policy was associated with the firewall successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["FirewallPolicyArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    mock_client.associate_firewall_policy.assert_called_once_with(
+        FirewallName="test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+    )
+
+
+def test_associate_firewall_policy_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN and firewall policy ARN.
+    When: associate_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "UpdateToken": "token-123",
+    }
+    mock_client.associate_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+    }
+
+    result = NetworkFirewall.associate_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall policy was associated with the firewall successfully." in result.readable_output
+    mock_client.associate_firewall_policy.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+    )
+
+
+def test_associate_firewall_policy_command_success_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name, firewall policy ARN, and update token.
+    When: associate_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with success message and updated firewall details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "UpdateToken": "token-456",
+    }
+    mock_client.associate_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "update_token": "token-123",
+    }
+
+    result = NetworkFirewall.associate_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The firewall policy was associated with the firewall successfully." in result.readable_output
+    mock_client.associate_firewall_policy.assert_called_once_with(
+        FirewallName="test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        UpdateToken="token-123",
+    )
+
+
+def test_associate_firewall_policy_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier arguments.
+    When: associate_firewall_policy_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.associate_firewall_policy_command(mock_client, args)
+
+
+def test_associate_firewall_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: associate_firewall_policy_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.associate_firewall_policy.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "account_id": "123456789012",
+    }
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.associate_firewall_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_delete_firewall_policy_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy name.
+    When: delete_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with success message and firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyId": "12345678-1234-1234-1234-123456789012",
+            "Description": "Test firewall policy",
+            "FirewallPolicyStatus": "DELETING",
+            "NumberOfAssociations": 0,
+        },
+    }
+    mock_client.delete_firewall_policy.return_value = mock_response
+
+    args = {"firewall_policy_name": "test-policy"}
+
+    result = NetworkFirewall.delete_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall policy was deleted successfully." in result.readable_output
+    mock_client.delete_firewall_policy.assert_called_once_with(FirewallPolicyName="test-policy")
+
+
+def test_delete_firewall_policy_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy ARN.
+    When: delete_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with success message and firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyId": "12345678-1234-1234-1234-123456789012",
+            "Description": "Test firewall policy",
+            "FirewallPolicyStatus": "DELETING",
+            "NumberOfAssociations": 0,
+        },
+    }
+    mock_client.delete_firewall_policy.return_value = mock_response
+
+    args = {"firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"}
+
+    result = NetworkFirewall.delete_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall policy was deleted successfully." in result.readable_output
+    mock_client.delete_firewall_policy.assert_called_once_with(
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    )
+
+
+def test_delete_firewall_policy_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: delete_firewall_policy_command is called without firewall_policy_name or firewall_policy_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.delete_firewall_policy_command(mock_client, args)
+
+
+def test_delete_firewall_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: delete_firewall_policy_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.delete_firewall_policy.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_policy_name": "test-policy", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.delete_firewall_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_firewall_policy_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy name, update token, and policy body.
+    When: update_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with the updated firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "token-456",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyId": "12345678-1234-1234-1234-123456789012",
+            "Description": "Updated description",
+            "FirewallPolicyStatus": "ACTIVE",
+            "NumberOfAssociations": 0,
+        },
+    }
+    mock_client.update_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_policy_name": "test-policy",
+        "update_token": "token-123",
+        "stateless_default_actions": "aws:pass",
+        "stateless_fragment_default_actions": "aws:drop",
+        "description": "Updated description",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "The firewall policy was updated successfully."
+    mock_client.update_firewall_policy.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallPolicyName="test-policy",
+        FirewallPolicy={
+            "StatelessDefaultActions": ["aws:pass"],
+            "StatelessFragmentDefaultActions": ["aws:drop"],
+        },
+        Description="Updated description",
+    )
+
+
+def test_update_firewall_policy_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy ARN, update token, and policy body.
+    When: update_firewall_policy_command is called successfully.
+    Then: It should return CommandResults with the updated firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "token-456",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyStatus": "ACTIVE",
+        },
+    }
+    mock_client.update_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "update_token": "token-123",
+        "stateless_default_actions": "aws:pass",
+        "stateless_fragment_default_actions": "aws:drop",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        FirewallPolicy={
+            "StatelessDefaultActions": ["aws:pass"],
+            "StatelessFragmentDefaultActions": ["aws:drop"],
+        },
+    )
+
+
+def test_update_firewall_policy_command_success_with_full_policy(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a full set of policy arguments including JSON fields,
+        rule group references, engine options, encryption configuration.
+    When: update_firewall_policy_command is called successfully.
+    Then: It should return CommandResults and call the API with the correctly structured FirewallPolicy.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "token-789",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyStatus": "ACTIVE",
+        },
+    }
+    mock_client.update_firewall_policy.return_value = mock_response
+
+    args = {
+        "firewall_policy_name": "test-policy",
+        "update_token": "token-123",
+        "stateless_rule_group_references": "ResourceArn=arn:aws:network-firewall:us-east-1:123:stateless-rulegroup/rg1,"
+        "Priority=1",
+        "stateless_default_actions": "aws:pass",
+        "stateless_fragment_default_actions": "aws:drop",
+        "stateful_rule_group_references": '[{"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}]',
+        "stateful_default_actions": "aws:drop_strict",
+        "stateful_engine_options_rule_order": "STRICT_ORDER",
+        "stateful_engine_options_stream_exception_policy": "DROP",
+        "stateful_engine_options_tcp_idle_timeout": "300",
+        "policy_rule_variables": '{"HOME_NET": {"Definition": ["10.0.0.0/16"]}}',
+        "description": "Updated full policy",
+        "encryption_configuration_key_id": "alias/aws/network-firewall",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallPolicyName="test-policy",
+        FirewallPolicy={
+            "StatelessRuleGroupReferences": [
+                {"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateless-rulegroup/rg1", "Priority": 1}
+            ],
+            "StatelessDefaultActions": ["aws:pass"],
+            "StatelessFragmentDefaultActions": ["aws:drop"],
+            "StatefulRuleGroupReferences": [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}],
+            "StatefulDefaultActions": ["aws:drop_strict"],
+            "StatefulEngineOptions": {
+                "RuleOrder": "STRICT_ORDER",
+                "StreamExceptionPolicy": "DROP",
+                "FlowTimeouts": {"TcpIdleTimeoutSeconds": 300},
+            },
+            "PolicyVariables": {"RuleVariables": {"HOME_NET": {"Definition": ["10.0.0.0/16"]}}},
+        },
+        Description="Updated full policy",
+        EncryptionConfiguration={"KeyId": "alias/aws/network-firewall", "Type": "CUSTOMER_KMS"},
+    )
+
+
+def test_update_firewall_policy_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and arguments without firewall_policy_name or firewall_policy_arn.
+    When: update_firewall_policy_command is called.
+    Then: It should raise a DemistoException asking for at least one identifier argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"update_token": "token-123", "description": "Updated description"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.update_firewall_policy_command(mock_client, args)
+
+
+def test_update_firewall_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_firewall_policy_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidTokenException", "Message": "Invalid update token"},
+    }
+    mock_client.update_firewall_policy.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {
+        "firewall_policy_name": "test-policy",
+        "update_token": "token-123",
+        "stateless_default_actions": "aws:pass",
+        "stateless_fragment_default_actions": "aws:drop",
+        "account_id": "123456789012",
+    }
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_firewall_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_firewall_policy_change_protection_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy name and change protection flag.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults with the updated firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": True,
+        "UpdateToken": "token-123",
+    }
+
+    args = {"firewall_name": "test-policy", "firewall_policy_change_protection": "true"}
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "The change protection flag of the firewall was updated successfully."
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        FirewallName="test-policy", FirewallPolicyChangeProtection=True
+    )
+
+
+def test_update_firewall_policy_change_protection_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy ARN and change protection flag.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults and call the API with the firewall policy ARN.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": False,
+        "UpdateToken": "token-123",
+    }
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "firewall_policy_change_protection": "false",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        FirewallPolicyChangeProtection=False,
+    )
+
+
+def test_update_firewall_policy_change_protection_command_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall policy name, change protection flag, and update token.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults and call the API including the update token.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": True,
+        "UpdateToken": "token-456",
+    }
+
+    args = {
+        "firewall_name": "test-policy",
+        "firewall_policy_change_protection": "true",
+        "update_token": "token-123",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        UpdateToken="token-123", FirewallName="test-policy", FirewallPolicyChangeProtection=True
+    )
+
+
+def test_update_firewall_policy_change_protection_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall policy identifier arguments.
+    When: update_firewall_policy_change_protection_command is called without firewall_policy_name or firewall_policy_arn.
+    Then: It should raise a DemistoException asking for at least one identifier argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"firewall_policy_change_protection": "true"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+
+def test_update_firewall_policy_change_protection_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_firewall_policy_change_protection_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_firewall_policy_change_protection.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_change_protection": "true",
+        "account_id": "123456789012",
+    }
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_list_firewall_policies_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a list of firewall policies and a NextToken.
+        - No pagination arguments (defaults applied).
+    When:
+        - list_firewall_policies_command is called.
+    Then:
+        - The policy keys are remapped (Name -> FirewallPolicyName, Arn -> FirewallPolicyArn).
+        - The outputs contain the remapped policies and the NextToken.
+        - The client is called once with the default MaxResults.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_firewall_policies.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "token123",
+        "FirewallPolicies": [
+            {
+                "Name": "test-policy-1",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy-1",
+            }
+        ],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_firewall_policies_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)"] == [
+        {
+            "FirewallPolicyName": "test-policy-1",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy-1",
+        }
+    ]
+    assert result.outputs["AWS.NetworkFirewall(true)"]["FirewallPoliciesNextToken"] == "token123"
+    assert "test-policy-1" in result.readable_output
+    client.list_firewall_policies.assert_called_once_with(MaxResults=50)
+
+
+def test_list_firewall_policies_command_no_policies(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning an empty policy list and no NextToken.
+    When:
+        - list_firewall_policies_command is called.
+    Then:
+        - The outputs contain an empty list and a None NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_firewall_policies.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallPolicies": [],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_firewall_policies_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)"] == []
+    assert result.outputs["AWS.NetworkFirewall(true)"]["FirewallPoliciesNextToken"] is None
+    client.list_firewall_policies.assert_called_once_with(MaxResults=50)
+
+
+def test_list_firewall_policies_command_with_pagination(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a policy list.
+        - Pagination arguments (limit and next_token).
+    When:
+        - list_firewall_policies_command is called.
+    Then:
+        - The client is called once with the provided MaxResults and NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_firewall_policies.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "next-token-456",
+        "FirewallPolicies": [
+            {
+                "Name": "test-policy-2",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy-2",
+            }
+        ],
+    }
+    args = {"limit": "1", "next_token": "token000"}
+
+    # When
+    result = NetworkFirewall.list_firewall_policies_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall(true)"]["FirewallPoliciesNextToken"] == "next-token-456"
+    client.list_firewall_policies.assert_called_once_with(MaxResults=1, NextToken="token000")
+
+
+def test_list_firewall_policies_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client that returns a non-OK status code.
+    When:
+        - list_firewall_policies_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+        "FirewallPolicies": [],
+    }
+    client.list_firewall_policies.return_value = mock_response
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.list_firewall_policies_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_describe_firewall_policy_command_success_with_name(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a firewall policy response.
+        - A firewall_policy_name argument.
+    When:
+        - describe_firewall_policy_command is called.
+    Then:
+        - The client is called once with the FirewallPolicyName kwarg.
+        - The outputs merge FirewallPolicyResponse, UpdateToken, and FirewallPolicy.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "FirewallPolicyStatus": "ACTIVE",
+        },
+        "FirewallPolicy": {
+            "StatelessDefaultActions": ["aws:pass"],
+        },
+    }
+    client.describe_firewall_policy.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"firewall_policy_name": "test-policy"}
+
+    # When
+    result = NetworkFirewall.describe_firewall_policy_command(client, args)
+
+    # Then
+    assert result.outputs["FirewallPolicyName"] == "test-policy"
+    assert result.outputs["FirewallPolicyArn"] == ("arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy")
+    assert result.outputs["FirewallPolicyStatus"] == "ACTIVE"
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    assert result.outputs["StatelessDefaultActions"] == ["aws:pass"]
+    client.describe_firewall_policy.assert_called_once_with(FirewallPolicyName="test-policy")
+
+
+def test_describe_firewall_policy_command_success_with_arn(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a firewall policy response.
+        - A firewall_policy_arn argument.
+    When:
+        - describe_firewall_policy_command is called.
+    Then:
+        - The client is called once with the FirewallPolicyArn kwarg only.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    policy_arn = "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-456",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": policy_arn,
+        },
+        "FirewallPolicy": {},
+    }
+    client.describe_firewall_policy.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"firewall_policy_arn": policy_arn}
+
+    # When
+    result = NetworkFirewall.describe_firewall_policy_command(client, args)
+
+    # Then
+    assert result.outputs["FirewallPolicyArn"] == policy_arn
+    assert result.outputs["UpdateToken"] == "update-token-456"
+    client.describe_firewall_policy.assert_called_once_with(FirewallPolicyArn=policy_arn)
+
+
+def test_describe_firewall_policy_command_missing_arguments(mocker):
+    """
+    Given:
+        - No firewall_policy_name or firewall_policy_arn arguments.
+    When:
+        - describe_firewall_policy_command is called.
+    Then:
+        - A DemistoException is raised by the identifier validation and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    args = {}
+
+    # When / Then
+    with pytest.raises(DemistoException):
+        NetworkFirewall.describe_firewall_policy_command(client, args)
+
+    client.describe_firewall_policy.assert_not_called()
+
+
+def test_describe_firewall_policy_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - describe_firewall_policy_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "ResourceNotFoundException", "Message": "Not found"},
+        "FirewallPolicyResponse": {},
+        "FirewallPolicy": {},
+    }
+    client.describe_firewall_policy.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"firewall_policy_name": "test-policy", "account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.describe_firewall_policy_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_create_firewall_policy_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created firewall policy response.
+        - Arguments with a policy name, description, tags, and encryption configuration.
+    When:
+        - create_firewall_policy_command is called.
+    Then:
+        - The client is called once with the assembled kwargs.
+        - The outputs merge FirewallPolicyResponse and UpdateToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    policy_arn = "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "FirewallPolicyResponse": {
+            "FirewallPolicyName": "test-policy",
+            "FirewallPolicyArn": policy_arn,
+            "FirewallPolicyStatus": "ACTIVE",
+            "Description": "my policy",
+        },
+    }
+    client.create_firewall_policy.return_value = mock_response
+
+    built_policy = {"StatelessDefaultActions": ["aws:pass"]}
+    mocker.patch("AWS.create_network_firewall_policy_obj", return_value=built_policy)
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "firewall_policy_name": "test-policy",
+        "description": "my policy",
+        "tags": "key=Environment,value=Production",
+        "encryption_configuration_key_id": "key-123",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+        "enable_tls_session_holding": "true",
+    }
+
+    # When
+    result = NetworkFirewall.create_firewall_policy_command(client, args)
+
+    # Then
+    assert result.outputs["FirewallPolicyName"] == "test-policy"
+    assert result.outputs["FirewallPolicyArn"] == policy_arn
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    client.create_firewall_policy.assert_called_once_with(
+        FirewallPolicyName="test-policy",
+        FirewallPolicy=built_policy,
+        Description="my policy",
+        Tags=[{"Key": "Environment", "Value": "Production"}],
+        EncryptionConfiguration={"KeyId": "key-123", "Type": "CUSTOMER_KMS"},
+        EnableTLSSessionHolding=True,
+    )
+
+
+def test_create_firewall_policy_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - create_firewall_policy_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    client.create_firewall_policy.return_value = mock_response
+
+    mocker.patch("AWS.create_network_firewall_policy_obj", return_value={"StatelessDefaultActions": ["aws:pass"]})
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"firewall_policy_name": "test-policy", "account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.create_firewall_policy_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_parse_resource_arn_priority_field_single_reference():
+    """
+    Given:
+        - A single, well-formed reference string of the form
+          'ResourceArn=<arn>,Priority=<priority>'.
+    When:
+        - parse_resource_arn_priority_field is called with the string.
+    Then:
+        - It should return a list with one dict containing the ARN and the
+          priority parsed as an int.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100"
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+            "Priority": 100,
+        }
+    ]
+
+
+def test_parse_resource_arn_priority_field_multiple_references():
+    """
+    Given:
+        - A semicolon-separated string containing several well-formed
+          reference entries.
+    When:
+        - parse_resource_arn_priority_field is called with the string.
+    Then:
+        - It should return a list of dicts preserving order, each with the
+          parsed ARN and integer priority.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100;"
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg2,Priority=200"
+    )
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+            "Priority": 100,
+        },
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg2",
+            "Priority": 200,
+        },
+    ]
+
+
+@pytest.mark.parametrize("refs_string", [None, ""])
+def test_parse_resource_arn_priority_field_empty_input_returns_empty_list(refs_string):
+    """
+    Given:
+        - A None value or an empty string.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should return an empty list without raising an exception.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == []
+
+
+def test_parse_resource_arn_priority_field_priority_converted_to_int():
+    """
+    Given:
+        - A reference string whose priority is provided as digits.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - The Priority value in the resulting dict should be an int, not a str.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=007"
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result[0]["Priority"] == 7
+    assert isinstance(result[0]["Priority"], int)
+
+
+@pytest.mark.parametrize(
+    "refs_string",
+    [
+        "ResourceArn=not-an-arn,Priority=100",  # ARN does not start with arn:aws
+        "ResourceArn=arn:aws:network-firewall:rg1,Priority=abc",  # non-numeric priority
+        "ResourceArn=arn:aws:network-firewall:rg1",  # missing Priority part
+        "Priority=100",  # missing ResourceArn part
+        "arn:aws:network-firewall:rg1,Priority=100",  # missing ResourceArn= key
+        "ResourceArn=arn:aws:network-firewall:rg1,Priority=100,extra=field",  # trailing content
+    ],
+)
+def test_parse_resource_arn_priority_field_invalid_input_raises_value_error(refs_string):
+    """
+    Given:
+        - A malformed reference string that does not match the expected
+          'ResourceArn=<arn>,Priority=<priority>' format.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should raise a ValueError describing the expected format.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_resource_arn_priority_field(refs_string)
+
+
+def test_parse_resource_arn_priority_field_one_invalid_among_valid_raises():
+    """
+    Given:
+        - A semicolon-separated string where one entry is valid and another
+          is malformed.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should raise a ValueError because not every entry can be parsed.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100;"
+        "ResourceArn=invalid,Priority=200"
+    )
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_resource_arn_priority_field(refs_string)
+
+
+def test_validate_network_firewall_identifier_with_name_only():
+    """
+    Given:
+        - A kwargs dict containing only the '<obj>Name' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {"firewall_name": "my-firewall"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(args, "firewall")
+
+
+def test_validate_network_firewall_identifier_with_arn_only():
+    """
+    Given:
+        - A kwargs dict containing only the '<obj>Arn' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {"firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(args, "firewall")
+
+
+def test_validate_network_firewall_identifier_with_both_identifiers():
+    """
+    Given:
+        - A kwargs dict containing both the '<obj>Name' and '<obj>Arn' identifiers.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {
+        "firewall_name": "my-firewall",
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall",
+    }
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(args, "firewall")
+
+
+def test_validate_network_firewall_identifier_custom_obj_prefix():
+    """
+    Given:
+        - A kwargs dict whose identifier keys use a non-'Firewall' object
+          prefix (e.g. 'FirewallPolicy').
+    When:
+        - validate_network_firewall_identifier is called with that prefix.
+    Then:
+        - It should not raise an exception because the matching '<obj>Name'
+          key is present.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {"firewall_policy_name": "my-policy"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(args, "firewall_policy")
+
+
+def test_validate_network_firewall_identifier_missing_both_raises():
+    """
+    Given:
+        - A kwargs dict that contains neither the '<obj>Name' nor the
+          '<obj>Arn' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException prompting for at least one
+          identifier.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {"SomeOtherKey": "value"}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the network firewall identifier arguments.",
+    ):
+        validate_network_firewall_identifier(args, "firewall")
+
+
+def test_validate_network_firewall_identifier_empty_kwargs_raises():
+    """
+    Given:
+        - An empty kwargs dict.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException because no identifier is present.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args: dict = {}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the network firewall identifier arguments.",
+    ):
+        validate_network_firewall_identifier(args, "firewall")
+
+
+def test_validate_network_firewall_identifier_wrong_obj_prefix_raises():
+    """
+    Given:
+        - A kwargs dict containing 'FirewallName' but the function is called
+          with a mismatched object prefix ('FirewallPolicy').
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException because no key matches the
+          requested prefix.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    args = {"firewall_name": "my-firewall"}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the network firewall identifier arguments.",
+    ):
+        validate_network_firewall_identifier(args, "firewall_policy")
+
+
+def test_create_network_firewall_policy_obj_empty_args_raises():
+    """
+    Given:
+        - An empty args dict (no policy fields supplied).
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - It should raise a DemistoException because remove_empty_elements strips
+          all empty/None values, leaving an empty policy object.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args: dict = {}
+
+    # When / Then
+    with pytest.raises(DemistoException, match="Please specify at least one of the characterize firewall policy arguments."):
+        create_network_firewall_policy_obj(args)
+
+
+def test_create_network_firewall_policy_obj_simple_list_fields():
+    """
+    Given:
+        - args containing comma-separated default-action lists and a
+          stateless rule group reference string.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - The returned dict should contain the parsed lists and the parsed
+          stateless rule group references, with empty fields omitted.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {
+        "stateless_rule_group_references": (
+            "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100"
+        ),
+        "stateless_default_actions": "aws:pass,aws:drop",
+        "stateless_fragment_default_actions": "aws:forward_to_sfe",
+        "stateful_default_actions": "aws:drop_strict",
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result == {
+        "StatelessRuleGroupReferences": [
+            {
+                "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+                "Priority": 100,
+            }
+        ],
+        "StatelessDefaultActions": ["aws:pass", "aws:drop"],
+        "StatelessFragmentDefaultActions": ["aws:forward_to_sfe"],
+        "StatefulDefaultActions": ["aws:drop_strict"],
+    }
+
+
+def test_create_network_firewall_policy_obj_json_string_fields():
+    """
+    Given:
+        - args containing JSON-encoded strings for stateless_custom_actions,
+          stateful_rule_group_references, and policy_rule_variables.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - Each JSON string should be parsed into its corresponding Python
+          structure and placed under the correct key.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    custom_actions = [
+        {
+            "ActionName": "CustomAction",
+            "ActionDefinition": {
+                "PublishMetricAction": {
+                    "Dimensions": [
+                        {"Value": "string"},
+                    ]
+                }
+            },
+        }
+    ]
+    stateful_refs = [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"}]
+    rule_variables = {"IP_SET": {"Definition": ["10.0.0.0/16"]}}
+    args = {
+        "stateless_custom_actions": json.dumps(custom_actions),
+        "stateful_rule_group_references": json.dumps(stateful_refs),
+        "policy_rule_variables": json.dumps(rule_variables),
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result["StatelessCustomActions"] == custom_actions
+    assert result["StatefulRuleGroupReferences"] == stateful_refs
+    assert result["PolicyVariables"] == {"RuleVariables": rule_variables}
+
+
+def test_create_network_firewall_policy_obj_stateful_engine_options():
+    """
+    Given:
+        - args containing stateful engine option values, including a numeric
+          TCP idle timeout.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - The StatefulEngineOptions structure should be populated with the
+          rule order, stream exception policy, and integer-converted timeout.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {
+        "stateful_engine_options_rule_order": "STRICT_ORDER",
+        "stateful_engine_options_stream_exception_policy": "DROP",
+        "stateful_engine_options_tcp_idle_timeout": "120",
+        "tls_inspection_configuration_arn": ("arn:aws:network-firewall:us-east-1:123456789012:tls-configuration/tls1"),
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result["StatefulEngineOptions"] == {
+        "RuleOrder": "STRICT_ORDER",
+        "StreamExceptionPolicy": "DROP",
+        "FlowTimeouts": {"TcpIdleTimeoutSeconds": 120},
+    }
+    assert result["TLSInspectionConfigurationArn"] == ("arn:aws:network-firewall:us-east-1:123456789012:tls-configuration/tls1")
+
+
+def test_create_network_firewall_policy_obj_invalid_rule_group_reference_raises():
+    """
+    Given:
+        - args containing a malformed stateless_rule_group_references string.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - It should propagate the ValueError raised by
+          parse_resource_arn_priority_field.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {"stateless_rule_group_references": "ResourceArn=not-an-arn,Priority=100"}
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        create_network_firewall_policy_obj(args)
+
+
+def test_create_rule_group_command_success_with_rules_source(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with a rule group name, type, capacity, a JSON rules_source object, description, tags,
+          and encryption configuration.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The client is called once with the assembled kwargs, where the RuleGroup contains only the parsed
+          RulesSource (empty nested structures are removed).
+        - The outputs merge RuleGroupResponse and UpdateToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 100,
+            "Description": "my rule group",
+            "RuleGroupStatus": "ACTIVE",
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    rules_source_obj = {"RulesString": "pass tcp any any -> any any (sid:1;)"}
+    mocker.patch("AWS.parse_json_string", return_value=rules_source_obj)
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "100",
+        "rules_source": '{"RulesString": "pass tcp any any -> any any (sid:1;)"}',
+        "description": "my rule group",
+        "tags": "key=Environment,value=Production",
+        "encryption_configuration_key_id": "key-123",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+    }
+
+    # When
+    result = NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupName"] == "test-rg"
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=100,
+        RuleGroup={"RulesSource": rules_source_obj},
+        Description="my rule group",
+        Tags=[{"Key": "Environment", "Value": "Production"}],
+        EncryptionConfiguration={"KeyId": "key-123", "Type": "CUSTOMER_KMS"},
+    )
+
+
+def test_create_rule_group_command_success_with_rules_string(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with a rule group name, type, capacity, and a Suricata-compatible rules string only.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The client is called once with the Rules string and without a RuleGroup key,
+          since all RuleGroup sub-structures are empty and removed.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-456",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "Capacity": 50,
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+    }
+
+    # When
+    result = NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["UpdateToken"] == "update-token-456"
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=50,
+        Rules="pass tcp any any -> any any (sid:1;)",
+    )
+
+
+def test_create_rule_group_command_with_rule_variables_and_options(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with ip_sets, port_sets, and a stateful rule order option.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The RuleGroup is assembled with RuleVariables (IPSets/PortSets) and StatefulRuleOptions only.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-789",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    ip_sets = {"HOME_NET": {"Definition": ["10.0.0.0/16"]}}
+    port_sets = {"HTTP_PORTS": {"Definition": ["80", "443"]}}
+    mocker.patch("AWS.parse_json_string", side_effect=[ip_sets, port_sets])
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "ip_sets": '{"HOME_NET": {"Definition": ["10.0.0.0/16"]}}',
+        "port_sets": '{"HTTP_PORTS": {"Definition": ["80", "443"]}}',
+        "stateful_rule_options_rule_order": "STRICT_ORDER",
+    }
+
+    # When
+    NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=50,
+        RuleGroup={
+            "RuleVariables": {"IPSets": ip_sets, "PortSets": port_sets},
+            "StatefulRuleOptions": {"RuleOrder": "STRICT_ORDER"},
+        },
+    )
+
+
+def test_create_rule_group_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - create_rule_group_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    client.create_rule_group.return_value = mock_response
+
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+        "account_id": "123456789012",
+    }
+
+    # When
+    NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_delete_rule_group_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid rule group name and type.
+    When: delete_rule_group_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "RuleGroupStatus": "DELETING",
+        },
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL"}
+
+    result = NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    mock_client.delete_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATEFUL")
+
+
+def test_delete_rule_group_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid rule group ARN.
+    When: delete_rule_group_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "RuleGroupStatus": "DELETING",
+        },
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    args = {"rule_group_arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"}
+
+    result = NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    mock_client.delete_rule_group.assert_called_once_with(
+        RuleGroupArn="arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    )
+
+
+def test_delete_rule_group_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: delete_rule_group_command is called without rule_group_name or rule_group_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+
+def test_delete_rule_group_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: delete_rule_group_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_describe_rule_group_command_success_with_name(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_name and type argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the RuleGroupName and Type kwargs.
+        - The outputs merge RuleGroupResponse, UpdateToken, and RuleGroup.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 100,
+            "RuleGroupStatus": "ACTIVE",
+        },
+        "RuleGroup": {
+            "RulesSource": {"RulesString": "pass tcp any any -> any any (sid:1;)"},
+        },
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL"}
+
+    # When
+    result = NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupName"] == "test-rg"
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["Type"] == "STATEFUL"
+    assert result.outputs["RuleGroupStatus"] == "ACTIVE"
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    assert result.outputs["RulesSource"] == {"RulesString": "pass tcp any any -> any any (sid:1;)"}
+    client.describe_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATEFUL")
+
+
+def test_describe_rule_group_command_success_with_arn(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_arn argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the RuleGroupArn kwarg only.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-456",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+        },
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_arn": rule_group_arn}
+
+    # When
+    result = NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["UpdateToken"] == "update-token-456"
+    client.describe_rule_group.assert_called_once_with(RuleGroupArn=rule_group_arn)
+
+
+def test_describe_rule_group_command_with_analyze_rule_group(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group response.
+        - A rule_group_name, type, and analyze_rule_group argument.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - The client is called once with the AnalyzeRuleGroup kwarg set to True.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-789",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/test-rg",
+        },
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    args = {"rule_group_name": "test-rg", "type": "STATELESS", "analyze_rule_group": "true"}
+
+    # When
+    NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    client.describe_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATELESS", AnalyzeRuleGroup=True)
+
+
+def test_describe_rule_group_command_missing_arguments(mocker):
+    """
+    Given:
+        - No rule_group_name or rule_group_arn arguments.
+    When:
+        - describe_rule_group_command is called.
+    Then:
+        - A DemistoException is raised by the identifier validation and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    args = {}
+
+    # When / Then
+    with pytest.raises(DemistoException):
+        NetworkFirewall.describe_rule_group_command(client, args)
+
+    client.describe_rule_group.assert_not_called()
+
+
+def test_describe_rule_group_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - describe_rule_group_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "ResourceNotFoundException", "Message": "Not found"},
+        "RuleGroupResponse": {},
+        "RuleGroup": {},
+    }
+    client.describe_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL", "account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.describe_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_list_rule_groups_command_success(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a list of rule groups and a NextToken.
+        - No pagination arguments (defaults applied).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The rule group keys are remapped (Name -> RuleGroupName, Arn -> RuleGroupArn).
+        - The outputs contain the remapped rule groups and the NextToken.
+        - The client is called once with the default MaxResults.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "token123",
+        "RuleGroups": [
+            {
+                "Name": "test-rg-1",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-1",
+                "VendorName": "VendorNameString",
+            }
+        ],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.RuleGroups(val.RuleGroupArn == obj.RuleGroupArn)"] == [
+        {
+            "RuleGroupName": "test-rg-1",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-1",
+            "VendorName": "VendorNameString",
+        }
+    ]
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] == "token123"
+    assert "test-rg-1" in result.readable_output
+    client.list_rule_groups.assert_called_once_with(MaxResults=50)
+
+
+def test_list_rule_groups_command_no_rule_groups(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning an empty rule group list and no NextToken.
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The outputs contain an empty list and a None NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroups": [],
+    }
+    args = {}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall.RuleGroups(val.RuleGroupArn == obj.RuleGroupArn)"] == []
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] is None
+    client.list_rule_groups.assert_called_once_with(MaxResults=50)
+
+
+def test_list_rule_groups_command_with_pagination(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group list.
+        - Pagination arguments (limit and next_token).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The client is called once with the provided MaxResults and NextToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NextToken": "next-token-456",
+        "RuleGroups": [
+            {
+                "Name": "test-rg-2",
+                "Arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg-2",
+                "VendorName": "VendorNameString",
+            }
+        ],
+    }
+    args = {"limit": "1", "next_token": "token000"}
+
+    # When
+    result = NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    assert result.outputs["AWS.NetworkFirewall(true)"]["RuleGroupsNextToken"] == "next-token-456"
+    client.list_rule_groups.assert_called_once_with(MaxResults=1, NextToken="token000")
+
+
+def test_list_rule_groups_command_with_filters(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a rule group list.
+        - Filter arguments (scope, managed_type, type, subscription_status).
+    When:
+        - list_rule_groups_command is called.
+    Then:
+        - The client is called once with the provided Scope, ManagedType, Type, and SubscriptionStatus.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    client.list_rule_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroups": [],
+    }
+    args = {
+        "scope": "MANAGED",
+        "managed_type": "AWS_MANAGED_THREAT_SIGNATURES",
+        "type": "STATEFUL",
+    }
+
+    # When
+    NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    client.list_rule_groups.assert_called_once_with(
+        Scope="MANAGED",
+        ManagedType="AWS_MANAGED_THREAT_SIGNATURES",
+        Type="STATEFUL",
+        MaxResults=50,
+    )
+
+
+def test_list_rule_groups_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client that returns a non-OK status code.
+    When:
+        - list_rule_groups_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+        "RuleGroups": [],
+    }
+    client.list_rule_groups.return_value = mock_response
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"account_id": "123456789012"}
+
+    # When
+    NetworkFirewall.list_rule_groups_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_rule_group_command_success_with_rules_source(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning an updated rule group response.
+        - Arguments with an update token, rule group name, type, a JSON rules_source object, a description,
+          and encryption configuration.
+    When:
+        - update_rule_group_command is called.
+    Then:
+        - The client is called once with the assembled kwargs, where the RuleGroup contains only the parsed
+          RulesSource (empty nested structures are removed).
+        - The outputs merge RuleGroupResponse and UpdateToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-789",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 100,
+            "Description": "updated rule group",
+            "RuleGroupStatus": "ACTIVE",
+        },
+    }
+    client.update_rule_group.return_value = mock_response
+
+    rules_source_obj = {"RulesString": "pass tcp any any -> any any (sid:2;)"}
+    mocker.patch("AWS.parse_json_string", return_value=rules_source_obj)
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "update_token": "update-token-456",
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "rules_source": '{"RulesString": "pass tcp any any -> any any (sid:2;)"}',
+        "description": "updated rule group",
+        "encryption_configuration_key_id": "key-123",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+    }
+
+    # When
+    result = NetworkFirewall.update_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupName"] == "test-rg"
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["UpdateToken"] == "update-token-789"
+    client.update_rule_group.assert_called_once_with(
+        UpdateToken="update-token-456",
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        RuleGroup={"RulesSource": rules_source_obj},
+        Description="updated rule group",
+        EncryptionConfiguration={"KeyId": "key-123", "Type": "CUSTOMER_KMS"},
+    )
+
+
+def test_update_rule_group_command_success_with_rules_string(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning an updated rule group response.
+        - Arguments with an update token, rule group ARN, type, and a Suricata-compatible rules string only.
+    When:
+        - update_rule_group_command is called.
+    Then:
+        - The client is called once with the Rules string and without a RuleGroup key,
+          since all RuleGroup sub-structures are empty and removed.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-abc",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 50,
+        },
+    }
+    client.update_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "update_token": "update-token-123",
+        "rule_group_arn": rule_group_arn,
+        "type": "STATEFUL",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+    }
+
+    # When
+    result = NetworkFirewall.update_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["UpdateToken"] == "update-token-abc"
+    client.update_rule_group.assert_called_once_with(
+        UpdateToken="update-token-123",
+        RuleGroupArn=rule_group_arn,
+        Type="STATEFUL",
+        Rules="pass tcp any any -> any any (sid:1;)",
+    )
+
+
+def test_update_rule_group_command_missing_arguments(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client and arguments without rule_group_name or rule_group_arn.
+    When:
+        - update_rule_group_command is called.
+    Then:
+        - It should raise a DemistoException asking for at least one identifier argument.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    args = {"update_token": "update-token-123", "type": "STATEFUL"}
+
+    # When / Then
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.update_rule_group_command(client, args)
+
+
+def test_update_rule_group_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - update_rule_group_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidTokenException", "Message": "Invalid token"},
+    }
+    client.update_rule_group.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "update_token": "update-token-123",
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+        "account_id": "123456789012",
+    }
+
+    # When
+    NetworkFirewall.update_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_create_rule_group_common_kwargs_json_string_fields():
+    """
+    Given:
+        - args containing JSON-encoded strings for ip_sets, port_sets,
+          ip_sets_references, and rules_source.
+    When:
+        - create_rule_group_common_kwargs is called.
+    Then:
+        - Each JSON string should be parsed into its corresponding Python
+          structure and placed under the correct key in the RuleGroup.
+    """
+    from AWS import create_rule_group_common_kwargs
+
+    # Given
+    ip_sets = {"IP_SET": {"Definition": ["10.0.0.0/16"]}}
+    port_sets = {"HTTP_PORTS": {"Definition": ["80", "443"]}}
+    ip_sets_references = {"REF_SET": {"ReferenceArn": "arn:aws:ec2:us-east-1:123456789012:prefix-list/pl-1"}}
+    rules_source = {"RulesString": "pass tcp any any -> any any (sid:1;)"}
+    args = {
+        "ip_sets": json.dumps(ip_sets),
+        "port_sets": json.dumps(port_sets),
+        "ip_sets_references": json.dumps(ip_sets_references),
+        "rules_source": json.dumps(rules_source),
+    }
+
+    # When
+    result = create_rule_group_common_kwargs(args)
+
+    # Then
+    assert result["RuleGroup"]["RuleVariables"]["IPSets"] == ip_sets
+    assert result["RuleGroup"]["RuleVariables"]["PortSets"] == port_sets
+    assert result["RuleGroup"]["ReferenceSets"]["IPSetReferences"] == ip_sets_references
+    assert result["RuleGroup"]["RulesSource"] == rules_source
+
+
+def test_create_rule_group_common_kwargs_scalar_fields():
+    """
+    Given:
+        - args containing scalar rule group fields (name, type, description,
+          rules, encryption configuration, source metadata, and rule order).
+    When:
+        - create_rule_group_common_kwargs is called.
+    Then:
+        - The scalar values should be mapped to their corresponding keys.
+    """
+    from AWS import create_rule_group_common_kwargs
+
+    # Given
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+        "description": "my rule group",
+        "encryption_configuration_key_id": "key-123",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+        "source_metadata_arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/src",
+        "source_metadata_update_token": "token-abc",
+        "stateful_rule_options_rule_order": "STRICT_ORDER",
+    }
+
+    # When
+    result = create_rule_group_common_kwargs(args)
+
+    # Then
+    assert result["RuleGroupName"] == "test-rg"
+    assert result["Type"] == "STATEFUL"
+    assert result["Rules"] == "pass tcp any any -> any any (sid:1;)"
+    assert result["Description"] == "my rule group"
+    assert result["EncryptionConfiguration"] == {"KeyId": "key-123", "Type": "CUSTOMER_KMS"}
+    assert result["SourceMetadata"] == {
+        "SourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/src",
+        "SourceUpdateToken": "token-abc",
+    }
+    assert result["RuleGroup"]["StatefulRuleOptions"] == {"RuleOrder": "STRICT_ORDER"}
+
+
+def test_create_rule_group_common_kwargs_type_conversions():
+    """
+    Given:
+        - args containing analyze_rule_group as a boolean-like string and
+          summary_configuration_rule_options as a comma-separated list.
+    When:
+        - create_rule_group_common_kwargs is called.
+    Then:
+        - analyze_rule_group should be converted to a bool and the rule
+          options should be converted to a list.
+    """
+    from AWS import create_rule_group_common_kwargs
+
+    # Given
+    args = {
+        "analyze_rule_group": "true",
+        "summary_configuration_rule_options": "Sid,RuleId",
+    }
+
+    # When
+    result = create_rule_group_common_kwargs(args)
+
+    # Then
+    assert result["AnalyzeRuleGroup"] is True
+    assert result["SummaryConfiguration"] == {"RuleOptions": ["Sid", "RuleId"]}
+
+
+def test_create_rule_group_common_kwargs_empty_args():
+    """
+    Given:
+        - an empty args dictionary.
+    When:
+        - create_rule_group_common_kwargs is called.
+    Then:
+        - The full kwargs structure should be returned with None/empty values,
+          since the function does not strip empty elements.
+    """
+    from AWS import create_rule_group_common_kwargs
+
+    # Given
+    args: dict = {}
+
+    # When
+    result = create_rule_group_common_kwargs(args)
+
+    # Then
+    assert result["RuleGroupName"] is None
+    assert result["Type"] is None
+    assert result["RuleGroup"]["RuleVariables"] == {"IPSets": None, "PortSets": None}
+    assert result["RuleGroup"]["ReferenceSets"] == {"IPSetReferences": None}
+    assert result["RuleGroup"]["RulesSource"] is None
+    assert result["Rules"] is None
+    assert result["AnalyzeRuleGroup"] is None
+    assert result["SummaryConfiguration"] == {"RuleOptions": []}
