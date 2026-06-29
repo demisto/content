@@ -2954,6 +2954,8 @@ tasks:
       '#none#':
       - "90"
     scriptarguments:
+      execution-timeout:
+        simple: "600"
       incident_id:
         simple: ${XDRIncidentID}
       manual_severity:
