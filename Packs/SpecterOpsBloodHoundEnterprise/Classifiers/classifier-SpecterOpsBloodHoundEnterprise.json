@@ -1,0 +1,15 @@
+{
+    "id": "SpecterOpsBloodHoundEnterprise - Classifier",
+    "name": "SpecterOpsBloodHoundEnterprise - Classifier",
+    "type": "classification",
+    "description": "Classifies incoming BloodHound Enterprise attack path findings.",
+    "version": -1,
+    "defaultIncidentType": "SpecterOpsBloodHoundEnterprise Attack Path",
+    "transformer": {},
+    "keyTypeMap": {},
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
