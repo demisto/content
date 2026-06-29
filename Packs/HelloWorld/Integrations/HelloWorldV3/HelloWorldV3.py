@@ -30,6 +30,7 @@ class HelloWorldV3AuthHandler(APIKeyAuthHandler):
     `APIKeyAuthHandler`, defined in `ContentClientApiModule`.
     """
 
+    @logger
     def __init__(self, api_key: str):
         """Initialize the authentication handler.
 
@@ -92,11 +93,16 @@ class HelloWorldV3Client(ContentClient):
         """Return a single mocked alert by its ID."""
         # In a real implementation:
         # return self.get(url_suffix=f"/api/v1/alerts/{alert_id}", resp_type="json")
+        now = datetime.now()
+        epoch_float = now.timestamp()
+        epoch_int = int(epoch_float)
+        demisto.debug("HERE")
         return {
             "id": MOCK_ALERT["id"],
             "name": f"Alert {alert_id}",
             "severity": "high" if alert_id % 2 == 0 else "low",
             "status": "open",
+            "occurred": epoch_int,
         }
 
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
