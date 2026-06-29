@@ -83,6 +83,12 @@ configuration:
   - 'Medium'
   - 'High'
   defaultvalue: 'Low'
+- display: Exclude archived/suppressed findings
+  name: exclude_archived
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: 'When enabled, findings that have been archived in GuardDuty (including those archived by suppression rules) are not fetched. Default is disabled (all findings are fetched).'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
