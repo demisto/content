@@ -1,3 +1,5 @@
+display: Hello World v3
+name: HelloWorldV3
 category: Utilities
 commonfields:
   id: HelloWorldV3
@@ -42,8 +44,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
 description: A dummy Hello World v3 integration used to demonstrate building Cortex integrations.
-display: Hello World v3
-name: HelloWorldV3
 script:
   commands:
   - name: helloworldv3-say-hello
@@ -52,7 +52,7 @@ script:
     - name: name
       description: The name of the person you want to say hello to.
       required: false
-      defaultValue: World
+      defaultvalue: World
     outputs:
     - contextPath: HelloWorldV3.Hello.name
       description: The name that was greeted.
@@ -64,12 +64,14 @@ script:
     description: Lists mocked alerts, optionally filtered by severity.
     arguments:
     - name: limit
-      description: The maximum number of alerts to return. Default is 10.
+      description: The maximum number of alerts to return.
       required: false
-      defaultValue: "10"
+      defaultvalue: "10"
+      type: number
     - name: severity
       description: The severity by which to filter the alerts.
       required: false
+      type: String
       auto: PREDEFINED
       predefined:
       - low
@@ -90,6 +92,7 @@ script:
     - name: alert_id
       description: The ID of the alert to retrieve.
       required: true
+      type: number
     outputs:
     - contextPath: HelloWorldV3.Alert.id
       description: The ID of the alert.
@@ -103,6 +106,9 @@ script:
     - contextPath: HelloWorldV3.Alert.status
       description: The status of the alert.
       type: String
+    - contextPath: HelloWorldV3.Alert.occured
+      description: The date of the alert.
+      type: String
   - name: ip
     description: Returns IP reputation information for the given IP addresses.
     arguments:
@@ -111,8 +117,9 @@ script:
       required: true
       isArray: true
       default: true
+      type: String
     - name: threshold
-      description: If the IP reputation score is greater than or equal to this threshold, the IP is considered malicious. If not specified, the default integration threshold is used.
+      description: The score threshold above which the IP is considered malicious. If not specified, the default integration threshold is used.
       required: false
     outputs: []
   dockerimage: demisto/fastapi:0.125.0.9094740

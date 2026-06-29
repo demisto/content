@@ -16,7 +16,7 @@ from BaseContentApiModule import *  # noqa: F401
 
 ''' CONSTANTS '''
 
-default_limit = 10
+DEFAULT_LIMIT = 10
 DEFAULT_IP_THRESHOLD = 65
 
 
@@ -52,6 +52,7 @@ class HelloWorldV3Client(ContentClient):
     thread safety. The methods below return mocked data for demonstration.
     """
 
+    @logger
     def __init__(self, base_url: str, verify: bool, proxy: bool, api_key: str):
         """Initialize the HelloWorld v3 client.
 
@@ -71,10 +72,36 @@ class HelloWorldV3Client(ContentClient):
         )
 
     def say_hello(self, name: str) -> dict[str, Any]:
-        """Return a greeting payload for the given name."""
-        # In a real implementation:
-        # return self.get(url_suffix="/api/v1/hello", params={"name": name}, resp_type="json")
-        return {"name": name, "message": f"Hello {name}"}
+        """Return a greeting payload for the given name.
+
+        Implements a manual retry mechanism with exponential backoff when the
+        server responds with HTTP 429 (Too Many Requests).
+        """
+        max_retries = 3
+        backoff_factor = 1
+
+        for attempt in range(max_retries + 1):
+            try:
+                return self._http_request(
+                    method="GET",
+                    url_suffix="/api/v1/hello",
+                    params={"name": name},
+                    resp_type="json",
+                )
+            except DemistoException as exc:
+                status_code = exc.res.status_code if exc.res is not None else None
+                if status_code != 429 or attempt == max_retries:
+                    raise
+
+                sleep_seconds = backoff_factor * (2**attempt)
+                demisto.debug(
+                    f"say_hello got HTTP 429, retrying in {sleep_seconds}s "
+                    f"(attempt {attempt + 1}/{max_retries})."
+                )
+                time.sleep(sleep_seconds)
+
+        # Unreachable: loop either returns a result or re-raises the exception.
+        raise DemistoException("say_hello exhausted all retries.")
 
     def list_alerts(self, limit: int, severity: str | None) -> list[dict[str, Any]]:
         """Return a mocked list of alerts, optionally filtered by severity."""
@@ -96,7 +123,6 @@ class HelloWorldV3Client(ContentClient):
         now = datetime.now()
         epoch_float = now.timestamp()
         epoch_int = int(epoch_float)
-        demisto.debug("HERE")
         return {
             "id": MOCK_ALERT["id"],
             "name": f"Alert {alert_id}",
@@ -105,6 +131,7 @@ class HelloWorldV3Client(ContentClient):
             "occurred": epoch_int,
         }
 
+    @logger
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Return a mocked reputation payload for the given IP address."""
         # In a real implementation:
@@ -125,9 +152,9 @@ class HelloWorldV3Client(ContentClient):
 
 OUTPUTS_PREFIX = "HelloWorldV3"
 
-MOCK_ALERT = (
-    '"id": {id}, "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"'
-)
+MOCK_ALERT = {
+    "id": "{id}", "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"
+}
 
 def test_module(client: HelloWorldV3Client) -> str:
     """Validate connectivity by performing a simple client call."""
@@ -141,11 +168,16 @@ def test_module(client: HelloWorldV3Client) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
+def say_hello_command(client: HelloWorldV3Client):
     """Greet a specified person."""
+    args = demisto.args()
     name = args.get("name", "World")
     result = client.say_hello(name)
-    return CommandResults(
+
+    if not result:
+        return_error(str(result))
+
+    command_res =  CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
         outputs_key_field="name",
         outputs=result,
@@ -153,11 +185,12 @@ def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
         ignore_auto_extract=False,
         raw_response=result,
     )
+    return_results(command_res)
 
 
 def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """List mocked alerts with optional severity filtering."""
-    limit = arg_to_number(args.get("limit")) or default_limit
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     severity = args.get("severity")
     alerts = client.list_alerts(limit, severity)
     return CommandResults(
@@ -290,6 +323,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "ip":
             return_results(ip_reputation_command(client, args, ip_threshold, reliability))
+        elif command == "helloworldv3-say-hello":
+            say_hello_command(client)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
@@ -298,7 +333,6 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-        demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
 
 
 ''' ENTRY POINT '''
