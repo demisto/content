@@ -38,7 +38,7 @@
     },
     "dst": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "url": {
       "type": "string",
@@ -61,7 +61,7 @@
       "is_array": false
     },
     "response_code": {
-      "type": "int",
+      "type": "string",
       "is_array": false
     },
     "content_type": {
@@ -78,17 +78,13 @@
     },
     "categories": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "pe_action": {
       "type": "string",
       "is_array": false
     },
     "pe_rulename": {
-      "type": "string",
-      "is_array": true
-    },
-    "pe_reason": {
       "type": "string",
       "is_array": false
     },
@@ -98,11 +94,11 @@
     },
     "threats": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "threat_types": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "filename": {
       "type": "string",
@@ -117,10 +113,6 @@
       "is_array": false
     },
     "document_type": {
-      "type": "string",
-      "is_array": false
-    },
-    "region": {
       "type": "string",
       "is_array": false
     },
@@ -152,10 +144,6 @@
       "type": "int",
       "is_array": false
     },
-    "mime_type": {
-      "type": "string",
-      "is_array": false
-    },
     "file_type": {
       "type": "string",
       "is_array": false
@@ -184,14 +172,6 @@
       "type": "string",
       "is_array": false
     },
-    "src_tls": {
-      "type": "string",
-      "is_array": false
-    },
-    "dst_tls": {
-      "type": "string",
-      "is_array": false
-    },
     "uid": {
       "type": "string",
       "is_array": false
@@ -204,10 +184,6 @@
       "type": "string",
       "is_array": false
     },
-    "rev_id": {
-      "type": "string",
-      "is_array": false
-    },
     "dst_url": {
       "type": "string",
       "is_array": false
@@ -216,15 +192,15 @@
       "type": "string",
       "is_array": false
     },
-    "rule_id": {
+    "ccl_ids": {
       "type": "string",
       "is_array": false
     },
-    "ccl_ids": {
-      "type": "string",
-      "is_array": true
-    },
     "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "delivered_to": {
       "type": "string",
       "is_array": false
     }
