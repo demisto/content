@@ -32,15 +32,15 @@ configuration:
   required: false
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, will default to 5000.
+  additionalinfo: 'Applies only to the manual ''saas-security-get-events'' command. During scheduled ''Fetch Events'', the collector drains as much of the queue as possible per cycle (bounded by ''The maximum number of iterations to retrieve events''), so this value does not throttle live ingestion. Must be divisible by 100 due to SaaS-Security API limitations. Default is 1000.'
   defaultvalue: 1000
   name: max_fetch
   type: 0
   required: false
   section: Collect
 - display: The maximum number of iterations to retrieve events
-  additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts. Increasing this value may cause timeouts.
-  defaultvalue: 50
+  additionalinfo: 'Each iteration retrieves up to 100 events from the SaaS Security queue (the API''s per-request limit). This parameter caps the number of iterations per fetch execution to prevent timeouts; the collector keeps draining across consecutive executions until the queue is empty. Increase this value if ingestion lag builds up under a high event rate. Default is 150.'
+  defaultvalue: 150
   name: max_iterations
   type: 0
   required: false

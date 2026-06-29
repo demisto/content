@@ -287,21 +287,57 @@ class TestFetchEvents:
             assert result == "No events were found."
             assert not send_events_mocker.called
 
-    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
+    # For the main fetch-events flow the collector now drains the queue until a 204 is received
+    # (bounded only by max_iterations), regardless of the configured max_fetch. Each queue below
+    # therefore ends with a 204, and the expected result is the full set of events in the queue.
+    MAIN_FLOW_DATA = [
+        (
+            1000,  # configured max_fetch (must NOT cap the live fetch anymore)
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204),
+            ],
+            create_events(start_id=1, end_id=300, should_dump=False),
+        ),
+        (
+            100,  # small max_fetch must NOT cap live fetch; full queue (500) should be drained
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+                MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+                MockedResponse(status_code=204),
+            ],
+            create_events(start_id=1, end_id=500, should_dump=False),
+        ),
+        (
+            None,  # no max_fetch configured - drain everything until 204
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=150)),
+                MockedResponse(status_code=204),
+            ],
+            create_events(start_id=1, end_id=150, should_dump=False),
+        ),
+    ]
+
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", MAIN_FLOW_DATA)
     def test_main_flow_fetch_events(self, mocker, max_fetch, queue, expected_events):
         """
         Given
-           - a queue of responses to fetch events.
-           - max fetch limit
-           - integration parameters
+           - a queue of responses to fetch events that ends with a 204 (queue drained).
+           - a configured max_fetch (possibly small, possibly None).
+           - integration parameters.
 
         When -
             executing main to fetch events.
 
         Then
-           - make sure the correct events are fetched according to the queue and max fetch.
-           - make sure the send_events_to_xsiam was called with the correct events.
-           - make sure in case max fetch is empty that all available events will be fetched.
+           - make sure ALL available events in the queue are fetched and sent to XSIAM,
+             regardless of the configured max_fetch (max_fetch no longer throttles live fetch).
         """
         import SaasSecurityEventCollector
 
@@ -324,20 +360,21 @@ class TestFetchEvents:
         assert send_events_mocker.called
         assert send_events_mocker.call_args.kwargs.get("events") == expected_events.get("events")
 
-    @pytest.mark.parametrize("max_fetch, queue, expected_events", EVENTS_DATA)
+    @pytest.mark.parametrize("max_fetch, queue, expected_events", MAIN_FLOW_DATA)
     def test_main_flow_fetch_events_saved_in_integration_context(self, mocker, max_fetch, queue, expected_events):
         """
         Given
-           - a queue of responses to fetch events.
-           - max fetch limit
-           - integration parameters
+           - a queue of responses to fetch events that ends with a 204.
+           - integration parameters.
 
         When
            - executing main to fetch events.
-           - send_events_to_xsiam raised an exception
+           - send_events_to_xsiam raised an exception (destructive-read safety: events already pulled
+             from the queue must not be lost).
 
         Then
-           - make sure all the events are saved in the integration context in such case.
+           - make sure ALL the events pulled from the queue are saved in the integration context,
+             so they are re-sent on the next run instead of being dropped.
         """
         import SaasSecurityEventCollector
 
@@ -360,7 +397,7 @@ class TestFetchEvents:
         mocker.patch.object(demisto, "command", return_value="fetch-events")
         SaasSecurityEventCollector.main()
 
-        assert expected_events == set_integration_context_mock.call_args.args[0]
+        assert set_integration_context_mock.call_args.args[0] == {"events": expected_events.get("events")}
 
     def test_main_flow_fetch_events_with_max_iterations(self, mocker):
         """
@@ -500,3 +537,208 @@ def test_max_fetch_negative_number():
 
     with pytest.raises(DemistoException):
         get_max_fetch(-1)
+
+
+def test_default_constants_match_api_reality():
+    """
+    Given
+      - the SaaS Security /log_events_bulk API returns at most 100 events per call (verified against the API).
+
+    When
+      - inspecting the module-level constants.
+
+    Then
+      - MAX_EVENTS_PER_REQUEST reflects the real per-call cap (100), not the previous misleading 1000.
+      - MAX_ITERATIONS default is raised to 150 so a single execution can drain up to 15,000 events,
+        which (together with nextTrigger) keeps the collector ahead of high upstream rates.
+    """
+    import SaasSecurityEventCollector
+
+    assert SaasSecurityEventCollector.MAX_EVENTS_PER_REQUEST == 100
+    assert SaasSecurityEventCollector.MAX_ITERATIONS == 150
+
+
+def test_get_events_request_uses_per_call_cap(mocker, mock_client):
+    """
+    Given
+      - the client.
+
+    When
+      - calling get_events_request without an explicit size.
+
+    Then
+      - the request is sent with size equal to the real per-call cap (100).
+    """
+    from SaasSecurityEventCollector import MAX_EVENTS_PER_REQUEST
+
+    http_mock = mocker.patch.object(Client, "http_request", return_value=MockedResponse(status_code=204))
+    mock_client.get_events_request()
+    assert http_mock.call_args.kwargs.get("params") == {"size": MAX_EVENTS_PER_REQUEST}
+
+
+def test_fetch_drains_until_204_ignoring_small_max_fetch(mocker, mock_client):
+    """
+    Given
+      - a queue with 500 events followed by a 204.
+
+    When
+      - fetching events with max_fetch=None (the live-fetch behavior).
+
+    Then
+      - all 500 events are drained until the 204, and queue_drained is True.
+    """
+    from SaasSecurityEventCollector import fetch_events_from_saas_security
+
+    queue = [
+        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+        MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+        MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+        MockedResponse(status_code=204),
+    ]
+    mocker.patch.object(Client, "http_request", side_effect=queue)
+    events, exception, queue_drained = fetch_events_from_saas_security(client=mock_client, max_fetch=None)
+
+    assert exception is None
+    assert queue_drained is True
+    assert events == create_events(start_id=1, end_id=500, should_dump=False).get("events")
+
+
+def test_fetch_not_drained_when_max_iterations_reached(mocker, mock_client):
+    """
+    Given
+      - a queue that never returns 204 (more events than max_iterations can pull).
+
+    When
+      - fetching events with a small max_iterations and no max_fetch.
+
+    Then
+      - the loop stops at max_iterations and reports queue_drained=False
+        (so the caller schedules an immediate nextTrigger follow-up).
+    """
+    from SaasSecurityEventCollector import fetch_events_from_saas_security
+
+    queue = [MockedResponse(status_code=200, text=create_events(start_id=i * 100 + 1, end_id=i * 100 + 100)) for i in range(10)]
+    mocker.patch.object(Client, "http_request", side_effect=queue)
+    events, exception, queue_drained = fetch_events_from_saas_security(client=mock_client, max_fetch=None, max_iterations=3)
+
+    assert exception is None
+    assert queue_drained is False
+    assert len(events) == 300
+
+
+def test_main_sets_next_trigger_when_queue_not_drained(mocker):
+    """
+    Given
+      - a queue that never drains within max_iterations.
+
+    When
+      - executing main to fetch events.
+
+    Then
+      - nextTrigger is set in last run so the next fetch fires immediately,
+      - and the consecutive backlog counter is incremented.
+    """
+    import SaasSecurityEventCollector
+
+    queue = [MockedResponse(status_code=200, text=create_events(start_id=i * 100 + 1, end_id=i * 100 + 100)) for i in range(5)]
+    mocker.patch.object(Client, "http_request", side_effect=queue)
+    mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.com/",
+            "credentials": {"identifier": "1234", "password": "1234"},
+            "max_iterations": 3,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    SaasSecurityEventCollector.main()
+
+    last_run = set_last_run_mock.call_args.args[0]
+    assert last_run.get("nextTrigger") == SaasSecurityEventCollector.NEXT_TRIGGER_VALUE
+    assert last_run.get("consecutive_backlog_cycles") == 1
+
+
+def test_main_clears_next_trigger_when_queue_drained(mocker):
+    """
+    Given
+      - a queue that drains (ends with 204) and a prior backlog counter in last run.
+
+    When
+      - executing main to fetch events.
+
+    Then
+      - nextTrigger and the backlog counter are cleared so the next fetch uses the normal interval.
+    """
+    import SaasSecurityEventCollector
+
+    queue = [
+        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+        MockedResponse(status_code=204),
+    ]
+    mocker.patch.object(Client, "http_request", side_effect=queue)
+    mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "getLastRun", return_value={"nextTrigger": "1", "consecutive_backlog_cycles": 4})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.com/",
+            "credentials": {"identifier": "1234", "password": "1234"},
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    SaasSecurityEventCollector.main()
+
+    last_run = set_last_run_mock.call_args.args[0]
+    assert "nextTrigger" not in last_run
+    assert "consecutive_backlog_cycles" not in last_run
+
+
+def test_main_emits_backlog_warning_after_threshold(mocker):
+    """
+    Given
+      - a queue that never drains within max_iterations.
+      - a prior backlog counter just below the warning threshold.
+
+    When
+      - executing main to fetch events.
+
+    Then
+      - a high-visibility error is emitted so sustained ingestion backlog/lag is observable
+        instead of failing silently.
+    """
+    import SaasSecurityEventCollector
+
+    queue = [MockedResponse(status_code=200, text=create_events(start_id=i * 100 + 1, end_id=i * 100 + 100)) for i in range(5)]
+    mocker.patch.object(Client, "http_request", side_effect=queue)
+    mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+    mocker.patch.object(demisto, "setLastRun")
+    error_mock = mocker.patch.object(demisto, "error")
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"consecutive_backlog_cycles": SaasSecurityEventCollector.BACKLOG_WARNING_THRESHOLD - 1},
+    )
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://test.com/",
+            "credentials": {"identifier": "1234", "password": "1234"},
+            "max_iterations": 3,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    SaasSecurityEventCollector.main()
+
+    assert error_mock.called

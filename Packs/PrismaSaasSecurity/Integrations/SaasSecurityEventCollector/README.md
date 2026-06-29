@@ -20,8 +20,8 @@ This is the default integration for this content pack when configured by the Dat
     | Client Secret | The SaaS Security Secret ID. | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched. | False |
-    | The maximum number of iterations to retrieve events. | In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events. Note - the default value is the recommended value to prevent timeouts. Default is 150. | False |
+    | The maximum number of events per fetch. | Applies only to the manual `saas-security-get-events` command. During scheduled **Fetch Events**, the collector drains as much of the queue as possible per cycle (bounded by **The maximum number of iterations to retrieve events**), so this value does not throttle live ingestion. Must be divisible by 100 due to Saas-Security API limitations. Default is 1000. | False |
+    | The maximum number of iterations to retrieve events. | Each iteration retrieves up to 100 events from the SaaS Security queue (the API's per-request limit). This parameter caps the number of iterations per fetch execution to prevent timeouts; the collector keeps draining across consecutive executions until the queue is empty. Increase this value if ingestion lag builds up under a high event rate. Default is 150. | False |
 
 5. Click **Test** to validate the URLs, token, and connection.
 
@@ -43,14 +43,14 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 ## Limitations
 
-1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
-2) If the ```max_fetch``` is not dividable by 10, it will be rounded down to a number that is dividable by 10 due to SaaS Security api limits.
-3) **reset last fetch** has no effect.
-4) On initial activation this integration will pull events starting from one hour prior.
-5) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
-6) In some rare cases more than ```max_fetch``` events could be fetched.
-7) The maximum recommended max fetch is 5000 to avoid fetch timeouts.
-8) In case not providing the ```max_fetch``` argument, the default will be 1000.
+1) Occurring events expire after one hour in the Saas-Security cache. During scheduled fetch the collector drains the queue continuously (it does not stop early at ```max_fetch```), so under normal operation events are pulled well within the one-hour window. If the upstream event rate is very high and a single instance cannot keep up, increase **The maximum number of iterations to retrieve events** so each cycle drains more, and/or distribute the load across multiple instances.
+2) The SaaS Security ```/log_events_bulk``` API returns at most 100 events per call. Each fetch iteration retrieves one such batch.
+3) If the ```max_fetch``` is not dividable by 10, it will be rounded down to a number that is dividable by 10 due to SaaS Security api limits.
+4) **reset last fetch** has no effect.
+5) On initial activation this integration will pull events starting from one hour prior.
+6) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
+7) The ```max_fetch``` parameter applies only to the manual ```saas-security-get-events``` command; it does not limit the scheduled **Fetch Events** flow, which drains the full queue per cycle (bounded by the maximum number of iterations).
+8) In case not providing the ```max_fetch``` argument to the ```saas-security-get-events``` command, the default will be 1000.
 
 ## Fetch Events
 
