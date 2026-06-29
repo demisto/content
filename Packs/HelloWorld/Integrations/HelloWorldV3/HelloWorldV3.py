@@ -18,7 +18,6 @@ from BaseContentApiModule import *  # noqa: F401
 
 DEFAULT_LIMIT = 10
 DEFAULT_PAGE_SIZE = 50
-DEFAULT_IP_THRESHOLD = 65
 
 
 ''' AUTHENTICATION HANDLER '''
@@ -144,21 +143,6 @@ class HelloWorldV3Client(ContentClient):
             "status": "open",
         }
 
-    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
-        """Return a mocked reputation payload for the given IP address."""
-        # In a real implementation:
-        # return self.get(url_suffix=f"/api/v1/ip/{ip}", resp_type="json")
-        # The mocked score is derived deterministically from the IP so the same
-        # input always yields the same reputation, which keeps demos predictable.
-        score = sum(int(octet) for octet in ip.split(".") if octet.isdigit()) % 100
-        return {
-            "ip": ip,
-            "score": score,
-            "asn": "AS12345",
-            "as_owner": "Dummy AS Owner",
-            "country": "US",
-        }
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -221,75 +205,6 @@ def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
     )
 
 
-def ip_reputation_command(
-    client: HelloWorldV3Client,
-    args: dict[str, Any],
-    threshold: int,
-    reliability: DBotScoreReliability | str,
-) -> list[CommandResults]:
-    """Run the reputation (enrichment) command for one or more IP addresses.
-
-    Args:
-        client (HelloWorldV3Client): The client used to query reputation data.
-        args (dict[str, Any]): The command arguments. Supports a comma-separated
-            ``ip`` argument and an optional ``threshold`` override.
-        threshold (int): The default score above which an IP is considered
-            malicious.
-        reliability (DBotScoreReliability | str): The reliability of the source
-            providing the intelligence data.
-
-    Returns:
-        list[CommandResults]: One CommandResults entry per IP address.
-    """
-    ips = argToList(args.get("ip"))
-    if not ips:
-        raise ValueError("ip is a required argument.")
-    threshold = arg_to_number(args.get("threshold")) or threshold
-
-    command_results: list[CommandResults] = []
-    for ip in ips:
-        ip_data = client.get_ip_reputation(ip)
-        score = ip_data.get("score", 0)
-
-        reputation = Common.DBotScore.NONE
-        if score == 0:
-            reputation = Common.DBotScore.GOOD
-        elif score >= threshold:
-            reputation = Common.DBotScore.BAD
-        elif score >= threshold / 2:
-            reputation = Common.DBotScore.SUSPICIOUS
-
-        dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.IP,
-            integration_name="HelloWorldV3",
-            score=reputation,
-            malicious_description=f"Score above {threshold}" if reputation == Common.DBotScore.BAD else None,
-            reliability=reliability,
-        )
-
-        ip_standard_context = Common.IP(
-            ip=ip,
-            asn=ip_data.get("asn"),
-            geo_country=ip_data.get("country"),
-            dbot_score=dbot_score,
-        )
-
-        command_results.append(
-            CommandResults(
-                outputs_prefix=f"{OUTPUTS_PREFIX}.IP",
-                outputs_key_field="ip",
-                outputs=ip_data,
-                readable_output=tableToMarkdown(f"IP {ip} reputation", ip_data),
-                indicator=ip_standard_context,
-                raw_response=ip_data,
-                ignore_auto_extract=True
-            )
-        )
-
-    return command_results
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -304,8 +219,6 @@ def main() -> None:
     api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    ip_threshold = arg_to_number(params.get("ip_threshold")) or DEFAULT_IP_THRESHOLD
-    reliability = params.get("integrationReliability") or DBotScoreReliability.C
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -324,8 +237,6 @@ def main() -> None:
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "ip":
-            return_results(ip_reputation_command(client, args, ip_threshold, reliability))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
