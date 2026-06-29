@@ -1,6 +1,6 @@
 fromversion: 8.2.0
 id: Trend_Micro_Deep_Security_ModelingRule
-name: Trend Micro Deep Security Modeling Rule
+name: TrendAI™ Deep Security™ Modeling Rule
 rules: ''
 schema: ''
 tags: Trend Micro TrendMicro Deep Security DeepSecurity
