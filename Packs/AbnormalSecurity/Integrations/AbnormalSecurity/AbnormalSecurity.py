@@ -32,7 +32,7 @@ NON_SKIPPABLE_STATUS_CODES = {401, 403, 429}
 def _is_skippable_error(e: DemistoException) -> bool:
     """Check if a DemistoException from an API call is a 4xx error that can be safely skipped.
 
-    Skippable errors are client errors (4xx) that are specific to a single entity
+    Skippable errors are client errors (4xx) that are specific to a single entity test
     (e.g., 404 Not Found, 410 Gone). Non-skippable errors indicate systemic issues
     (401 Unauthorized, 403 Forbidden, 429 Rate Limit) and should be raised.
 
