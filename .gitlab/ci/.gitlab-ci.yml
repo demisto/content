@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "test-build-CIAC-16964"
+  CURRENT_BRANCH_NAME: "CIAC-16964"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "test-build-CIAC-16964"
+    ref: "CIAC-16964"
     project: "${CI_PROJECT_NAMESPACE}/infra"
