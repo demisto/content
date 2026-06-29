@@ -1,3 +1,5 @@
+display: Rubrik Security Cloud
+name: RubrikPolaris
 category: Data Enrichment & Threat Intelligence
 provider: Rubrik
 commonfields:
@@ -33,7 +35,7 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: Event,Threat Monitoring Object,DSPM Violation
+- defaultvalue: Event,Threat Monitoring Object,DSPM Violation,IR Violation
   display: RSC Fetch Types
   additionalinfo: "Select RSC types to fetch as incidents.\n\nNote: Supports the listed options only. If not provided, it will fetch all listed options."
   name: rsc_fetch_types
@@ -41,6 +43,7 @@ configuration:
   - Event
   - Threat Monitoring Object
   - DSPM Violation
+  - IR Violation
   type: 16
   required: false
   section: Collect
@@ -96,7 +99,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations) are selected, the limit is distributed optimally among them to fetch all types."
+- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations, IR Violations) are selected, the limit is distributed optimally among them to fetch all types."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
@@ -219,6 +222,87 @@ configuration:
   type: 16
   required: false
   section: Collect
+- additionalinfo: "Select IR violation policy types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Policy Types
+  name: ir_violation_policy_type
+  options:
+  - IDENTITY
+  - IDP
+  - IDENTITY_EVENT
+  - CROWDSTRIKE
+  - MICROSOFT_DEFENDER
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select IR violation statuses to fetch as incidents. Default is OPEN and IN_PROGRESS.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Statuses
+  name: ir_violation_status
+  options:
+  - OPEN
+  - IN_PROGRESS
+  - REMEDIATED
+  - DISMISSED
+  - CLOSED
+  defaultvalue: "OPEN,IN_PROGRESS"
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select IR violation severity levels to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Severity Levels
+  name: ir_violation_severity
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - SEVERITY_UNSPECIFIED
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select IR violation categories to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Categories
+  name: ir_violation_category
+  options:
+  - CATEGORY_UNSPECIFIED
+  - AUTHENTICATION_AND_SECRET_MANAGEMENT
+  - IDENTITY_HYGIENE
+  - EXCESSIVE_IDENTITY_RIGHTS
+  - IDENTITY_PROVIDER_SECURITY
+  - PRIVILEGED_ACCOUNT_RISK
+  - IDENTITY_RISK
+  - INFRASTRUCTURE_SECURITY
+  - CONFIGURATION_SECURITY
+  - MEMBERSHIP_CHANGE
+  - GPO_CHANGE
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select IR violation identity providers to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Identity Providers
+  name: ir_violation_identity_provider
+  options:
+  - IDP_UNSPECIFIED
+  - ON_PREM_AD
+  - ENTRA_ID
+  - AWS
+  - LOCAL_AD
+  - SHAREPOINT
+  - SYSTEM
+  - OKTA
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select IR violation identity tags to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"IR Violation\"."
+  display: IR Violation Identity Tags
+  name: ir_violation_identity_tag
+  options:
+  - IDENTITY_TAG_UNSPECIFIED
+  - PRIVILEGED
+  - AT_RISK
+  - SENSITIVE
+  type: 16
+  required: false
+  section: Collect
 - name: integration_reliability
   display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -247,8 +331,6 @@ configuration:
   required: false
   section: Connect
 description: The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
-display: Rubrik Security Cloud
-name: RubrikPolaris
 script:
   commands:
   - arguments:
@@ -5682,6 +5764,491 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: string
+  - name: rubrik-identity-resilience-violation-list
+    description: Retrieves the list of Identity Resilience (IR) violations.
+    arguments:
+    - name: policy_type
+      description: Filter the violations by policy type. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - IDENTITY
+      - IDP
+      - IDENTITY_EVENT
+      - CROWDSTRIKE
+      - MICROSOFT_DEFENDER
+      isArray: true
+    - name: detection_start_date
+      description: "Filter the violations detected after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: detection_start_date and detection_end_date both or none of them should be initialized."
+    - name: detection_end_date
+      description: "Filter the violations detected before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: detection_start_date and detection_end_date both or none of them should be initialized."
+    - name: resolved_start_date
+      description: "Filter the violations resolved after this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: resolved_start_date and resolved_end_date both or none of them should be initialized."
+    - name: resolved_end_date
+      description: "Filter the violations resolved before this date.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.\n\nNote: resolved_start_date and resolved_end_date both or none of them should be initialized."
+    - name: category
+      description: Filter the violations by category. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - CATEGORY_UNSPECIFIED
+      - AUTHENTICATION_AND_SECRET_MANAGEMENT
+      - IDENTITY_HYGIENE
+      - EXCESSIVE_IDENTITY_RIGHTS
+      - IDENTITY_PROVIDER_SECURITY
+      - PRIVILEGED_ACCOUNT_RISK
+      - IDENTITY_RISK
+      - INFRASTRUCTURE_SECURITY
+      - CONFIGURATION_SECURITY
+      - MEMBERSHIP_CHANGE
+      - GPO_CHANGE
+      isArray: true
+    - name: status
+      description: Filter the violations by status. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - REMEDIATED
+      - DISMISSED
+      - CLOSED
+      isArray: true
+    - name: severity
+      description: Filter the violations by severity level. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - SEVERITY_UNSPECIFIED
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      isArray: true
+    - name: identity_provider
+      description: Filter the violations by identity provider type. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - IDP_UNSPECIFIED
+      - ON_PREM_AD
+      - ENTRA_ID
+      - AWS
+      - LOCAL_AD
+      - SHAREPOINT
+      - SYSTEM
+      - OKTA
+      isArray: true
+    - name: identity_tag
+      description: Filter the violations by identity tag. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - IDENTITY_TAG_UNSPECIFIED
+      - PRIVILEGED
+      - AT_RISK
+      - SENSITIVE
+      isArray: true
+    - name: limit
+      defaultValue: "50"
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+    - name: next_page_token
+      description: The next page cursor to retrieve the next set of results.
+    - name: sort_by
+      description: Specify the field to use for sorting the response.
+      defaultValue: DETECTION_TIME
+      auto: PREDEFINED
+      predefined:
+      - SEVERITY
+      - HITS
+      - DETECTION_TIME
+      - UPDATE_TIME
+      - IDENTITY_TYPE
+      - TOTAL_HITS
+      - EVENT_TIME
+      - NAME
+      - TYPE
+    - name: sort_order
+      defaultValue: DESC
+      description: Specify the order to sort the data in.
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+    outputs:
+    - contextPath: RubrikPolaris.IRViolation.policyViolationId
+      description: The unique identifier for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.name
+      description: The name of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.violationSeverity
+      description: The severity level of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.status
+      description: The current status of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.createdAt
+      description: The date and time when the policy violation was created.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.lastUpdatedAt
+      description: The date and time when the policy violation was last updated.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.resourceId
+      description: The unique identifier of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceType
+      description: The type of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyId
+      description: The unique identifier of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.name
+      description: The name of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.description
+      description: The description of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policySeverity
+      description: The severity level assigned to the policy.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyCategory
+      description: The category of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyType
+      description: The type of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.frameworks
+      description: The compliance frameworks associated with the policy.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.manualRemediationProcess
+      description: The manual remediation process recommended for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.details.domainUniqueId
+      description: The unique identifier of the domain associated with the violation details.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.details.detectionTime
+      description: The time at which the threat was detected.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.startTime
+      description: The start time of the alert event.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.endTime
+      description: The end time of the alert event.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.mitreTactic
+      description: The MITRE ATT&CK tactic associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.displayName
+      description: The display name of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.domainName
+      description: The domain name of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.domainUniqueId
+      description: The unique identifier of the domain of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.idpType
+      description: The identity provider type of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.principalType
+      description: The principal type of the identity resource (e.g. USER, COMPUTER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.privilegeType
+      description: The privilege type of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.userPrincipalName
+      description: The user principal name of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.status
+      description: The status of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.title
+      description: The job title of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.source
+      description: The source of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.identityTags
+      description: The list of tags associated with the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.uniqueId
+      description: The unique identifier of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.nativeType
+      description: The native type of the identity resource (e.g. User).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainName
+      description: The root domain name of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainId
+      description: The unique identifier of the root domain of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityId
+      description: The unique identifier of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityName
+      description: The name of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityType
+      description: The type of the actor identity involved in the alert (e.g. USER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorPrivilegeType
+      description: The privilege type of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorState
+      description: The state of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.entityName
+      description: The name of the entity associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.entityId
+      description: The unique identifier of the entity associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityUniqueIdentifier
+      description: The unique identifier of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityName
+      description: The name of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentitySource
+      description: The source domain of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityStatus
+      description: The status of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityType
+      description: The type of the target identity involved in the alert (e.g. COMPUTER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdpType
+      description: The identity provider type of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetPrivilegeType
+      description: The privilege type of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.eventTime
+      description: The time at which the identity event occurred.
+      type: Date
+    - contextPath: RubrikPolaris.PageToken.IRViolation.next_page_token
+      description: The next page token.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.IRViolation.name
+      description: The name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.IRViolation.has_next_page
+      description: Whether the result has the next page or not.
+      type: Boolean
+  - arguments:
+    - description: "The ID of the IR violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-identity-resilience-violation-list\" command."
+      name: violation_id
+      required: true
+    - description: "The policy type of the IR violation.\n\nNote: Users can get the policy type by executing the \"rubrik-identity-resilience-violation-list\" command."
+      name: policy_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - IDENTITY
+      - IDP
+      - IDENTITY_EVENT
+      - CROWDSTRIKE
+      - MICROSOFT_DEFENDER
+    description: Retrieves the details of the Identity Resilience (IR) violation based on the provided violation ID.
+    name: rubrik-identity-resilience-violation-get
+    outputs:
+    - contextPath: RubrikPolaris.IRViolation.policyViolationId
+      description: The unique identifier for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.name
+      description: The name of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.violationSeverity
+      description: The severity level of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.status
+      description: The current status of the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.createdAt
+      description: The date and time when the policy violation was created.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.lastUpdatedAt
+      description: The date and time when the policy violation was last updated.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.resourceId
+      description: The unique identifier of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceType
+      description: The type of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyId
+      description: The unique identifier of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.name
+      description: The name of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.description
+      description: The description of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policySeverity
+      description: The severity level assigned to the policy.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyCategory
+      description: The category of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.policyType
+      description: The type of the policy associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.frameworks
+      description: The compliance frameworks associated with the policy.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.policy.manualRemediationProcess
+      description: The manual remediation process recommended for the policy violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.details.domainUniqueId
+      description: The unique identifier of the domain associated with the violation details.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.details.detectionTime
+      description: The time at which the threat was detected.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.startTime
+      description: The start time of the alert event.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.endTime
+      description: The end time of the alert event.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.details.mitreTactic
+      description: The MITRE ATT&CK tactic associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.displayName
+      description: The display name of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.domainName
+      description: The domain name of the resource associated with the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.domainUniqueId
+      description: The unique identifier of the domain of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.idpType
+      description: The identity provider type of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.principalType
+      description: The principal type of the identity resource (e.g. USER, COMPUTER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.privilegeType
+      description: The privilege type of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.userPrincipalName
+      description: The user principal name of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.status
+      description: The status of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.title
+      description: The job title of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.source
+      description: The source of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.identityTags
+      description: The list of tags associated with the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.uniqueId
+      description: The unique identifier of the identity resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.nativeType
+      description: The native type of the identity resource (e.g. User).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainName
+      description: The root domain name of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainId
+      description: The unique identifier of the root domain of the resource.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityId
+      description: The unique identifier of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityName
+      description: The name of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityType
+      description: The type of the actor identity involved in the alert (e.g. USER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorPrivilegeType
+      description: The privilege type of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.actorState
+      description: The state of the actor identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.entityName
+      description: The name of the entity associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.entityId
+      description: The unique identifier of the entity associated with the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityUniqueIdentifier
+      description: The unique identifier of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityName
+      description: The name of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentitySource
+      description: The source domain of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityStatus
+      description: The status of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityType
+      description: The type of the target identity involved in the alert (e.g. COMPUTER).
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdpType
+      description: The identity provider type of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.targetPrivilegeType
+      description: The privilege type of the target identity involved in the alert.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.resourceMetadata.metadata.eventTime
+      description: The time at which the identity event occurred.
+      type: Date
+    - contextPath: RubrikPolaris.IRViolation.sensitiveHits.highRiskHits.violatedHits
+      description: The number of high risk sensitive hits violated by the identity.
+      type: Number
+    - contextPath: RubrikPolaris.IRViolation.sensitiveHits.mediumRiskHits.violatedHits
+      description: The number of medium risk sensitive hits violated by the identity.
+      type: Number
+    - contextPath: RubrikPolaris.IRViolation.sensitiveHits.lowRiskHits.violatedHits
+      description: The number of low risk sensitive hits violated by the identity.
+      type: Number
+    - contextPath: RubrikPolaris.IRViolation.sensitiveHits.noRiskHits.violatedHits
+      description: The number of no risk sensitive hits violated by the identity.
+      type: Number
+    - contextPath: RubrikPolaris.IRViolation.sensitiveHits.totalHits.violatedHits
+      description: The total number of sensitive hits violated by the identity.
+      type: Number
+    - contextPath: RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryName
+      description: The name of the data category associated with the sensitive hits.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryHits.dataCategoryId
+      description: The unique identifier of the data category.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryHits.totalViolatedHits
+      description: The total number of violated hits for the data category.
+      type: Number
+  - name: rubrik-identity-resilience-violation-status-update
+    description: Updates the status of the Identity Resilience (IR) violation.
+    arguments:
+    - name: violation_id
+      description: "The ID of the IR violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-identity-resilience-violation-list\" command."
+      required: true
+    - name: status
+      description: The status to update for the violation.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - REMEDIATED
+      - DISMISSED
+      - CLOSED
+    outputs:
+    - contextPath: RubrikPolaris.IRViolation.policyViolationId
+      description: The ID of the violation.
+      type: String
+    - contextPath: RubrikPolaris.IRViolation.status
+      description: The status of the violation.
+      type: String
   dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.9721466
   isfetch: true
   runonce: false
