@@ -122,6 +122,74 @@ Check email body for possible security issues.
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           |
 | top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 
+### gpt-analyze-email-header
+
+***
+Analyze email headers for potential security issues using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of `gpt-check-email-header` which uses the Chat Completions API).
+
+`!gpt-analyze-email-header entry_id="3@123" additional_instructions="Pay close attention to SPF/DKIM."`
+
+#### Input
+
+| **Argument Name**        | **Description**                                                                                                                                                                                                                                                    | **Required** |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entry_id                 | Entry ID of an uploaded _.eml_ file.                                                                                                                                                                                                                               | Yes          |
+| additional_instructions  | Additional instructions or security issue to focus on. Substituted into the prompt template.                                                                                                                                                                       | No           |
+| max_tokens               | The maximum number of tokens that can be generated for the response. Maps internally to the API body field `max_output_tokens`.                                                                                                                                    | No           |
+| temperature              | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety.                                                                                     | No           |
+| top_p                    | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Range 0–1.                                                                                                                                                              | No           |
+| reasoning_effort         | Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding. Possible values: `low`, `medium`, `high`.                                                                                           | No           |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                        |
+|---------------------------------------|----------|----------------------------------------|
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
+| OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
+| OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
+| OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
+
+#### Human Readable Output
+
+Two war-room entries are produced:
+
+1. A table of the parsed email headers.
+2. The AI verdict followed by a token-usage table. A _Reasoning tokens_ row appears in the usage table when a reasoning model is used.
+
+### gpt-analyze-email-body
+
+***
+Analyze email body for potential security risks using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of `gpt-check-email-body` which uses the Chat Completions API).
+
+`!gpt-analyze-email-body entry_id="3@123"`
+
+#### Input
+
+| **Argument Name**        | **Description**                                                                                                                                                                                                                                                    | **Required** |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entry_id                 | Entry ID of an uploaded _.eml_ file.                                                                                                                                                                                                                               | Yes          |
+| additional_instructions  | Additional instructions or security issue to focus on. Substituted into the prompt template.                                                                                                                                                                       | No           |
+| max_tokens               | The maximum number of tokens that can be generated for the response. Maps internally to the API body field `max_output_tokens`.                                                                                                                                    | No           |
+| temperature              | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety.                                                                                     | No           |
+| top_p                    | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Range 0–1.                                                                                                                                                              | No           |
+| reasoning_effort         | Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding. Possible values: `low`, `medium`, `high`.                                                                                           | No           |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                        |
+|---------------------------------------|----------|----------------------------------------|
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
+| OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
+| OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
+| OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
+
+#### Human Readable Output
+
+Two war-room entries are produced:
+
+1. A table of the parsed email body (text and HTML).
+2. The AI verdict followed by a token-usage table. A _Reasoning tokens_ row appears in the usage table when a reasoning model is used.
+
 ### gpt-create-soc-email-template
 
 ***
@@ -137,6 +205,45 @@ Create an email template out of the conversation context to be sent from the SOC
 | max_tokens             | The maximum number of tokens that can be generated for the response. Overrides text generation setting for the specific message sent.                       | No           |
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           |
 | top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
+
+### gpt-draft-soc-email
+
+***
+Draft a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of `gpt-create-soc-email-template` which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding `gpt-analyze-email-body` call).
+
+#### Cortex XSOAR sequence (typical phishing flow)
+
+```
+!gpt-analyze-email-body entry_id="3@123"
+…assistant returns analysis…
+!gpt-draft-soc-email additional_instructions="Notify the user the email was quarantined."
+```
+
+#### Input
+
+| **Argument Name**        | **Description**                                                                                                                                                                                                                                                    | **Required** |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| additional_instructions  | Specific issue or focus area to weave into the template. Substituted into the prompt template.                                                                                                                                                                     | No           |
+| max_tokens               | The maximum number of tokens that can be generated for the response. Maps internally to the API body field `max_output_tokens`.                                                                                                                                    | No           |
+| temperature              | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety.                                                                                     | No           |
+| top_p                    | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Range 0–1.                                                                                                                                                              | No           |
+| reasoning_effort         | Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding. Possible values: `low`, `medium`, `high`.                                                                                           | No           |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                        |
+|---------------------------------------|----------|----------------------------------------|
+| OpenAiChatGPTV3.Response              | Unknown  | The conversation state including the response_id. |
+| OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
+| OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
+| OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
+
+#### Human Readable Output
+
+Two war-room entries are produced:
+
+1. The SOC email template context output (`replace_existing=True` — running twice overwrites the previous draft).
+2. The AI-generated template followed by a token-usage table. A _Reasoning tokens_ row appears in the usage table when a reasoning model is used.
 
 ### openai-get-events
 
@@ -161,8 +268,8 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 | **Path**                     | **Type** | **Description**                                                  |
 |------------------------------|----------|------------------------------------------------------------------|
 | OpenAI.Event.id              | String   | The unique identifier of the event.                              |
-| OpenAI.Event._event_type     | String   | Upstream `event_type` (Compliance only). Empty for Audit events. |
-| OpenAI.Event.source_log_type | String   | Source log type used by downstream parsing/modeling rules.       |
+| OpenAI.Event._event_type     | String   | The upstream event_type for Compliance events. Left empty for Audit events. |
+| OpenAI.Event.source_log_type | String   | The source log type used by downstream parsing rules.       |
 | OpenAI.Event._time           | Date     | The event timestamp in ISO 8601 format.                          |
 
 #### Human Readable Output
@@ -173,3 +280,85 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 >|---|---|---|---|
 >| FAKE_AUDIT_EVENT_001 |  | openai_audit_logs | 2099-01-01T00:00:00Z |
 >| FAKE_LISTING_002 | AUDIT_LOG | compliance_audit_log | 2099-01-02T00:00:00Z |
+
+### gpt-create-response
+
+***
+Sends a message to the OpenAI Responses API and receives the generated response. This command uses the Responses API which is recommended for all new projects (instead of gpt-send-message which uses the Chat Completions API). Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
+
+#### Base Command
+
+`gpt-create-response`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message | The user message to send. | Required |
+| reset_conversation_history | Whether to discard the existing conversation context and start fresh. Possible values are: yes, no. Default is no. | Optional |
+| max_tokens | The maximum number of output tokens. Falls back to instance config. Maps internally to the API body field max_output_tokens. | Optional |
+| temperature | The randomness level in responses. Falls back to instance config. Range 0-2. Lower values produce more deterministic outputs, while higher values increase variety. | Optional |
+| top_p | The nucleus sampling threshold. Falls back to instance config. Range 0-1. Lower values result in more focused outputs, while higher values increase diversity. | Optional |
+| reasoning_effort | The reasoning effort level. Honored only for reasoning families (o1, o3, o4, gpt-5); silently dropped on others. Default medium. Possible values are: none, minimal, low, medium, high, xhigh. | Optional |
+| background | Whether to run the model response in the background. When true, the command uses polling to wait for the response to complete. Possible values are: true, false. | Optional |
+| compact_threshold | The token threshold at which compaction should be triggered for this entry. Minimum 1000. | Optional |
+| model | The model to use. Use the gpt-list-models command to see available models. Falls back to instance config. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenAiChatGPTV3.Response | Unknown | The conversation state, which includes the response_id for multi-turn continuity. |
+| OpenAiChatGPTV3.Response.user | String | The user message sent. |
+| OpenAiChatGPTV3.Response.assistant | String | The assistant response text. |
+| OpenAiChatGPTV3.Response.response_id | String | The OpenAI response ID used for multi-turn conversation continuity. |
+
+### gpt-list-models
+
+***
+Lists all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
+
+#### Base Command
+
+`gpt-list-models`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenAiChatGPTV3.Model.Id | String | The model identifier \(e.g., gpt-4, gpt-3.5-turbo\). |
+| OpenAiChatGPTV3.Model.Created | Number | The Unix timestamp when the model was created. |
+| OpenAiChatGPTV3.Model.OwnedBy | String | The organization or entity that owns the model. |
+
+### gpt-create-moderation
+
+***
+Runs text or an image through the OpenAI Moderations API and returns per-category flagging results. Exactly one of text, entry_id, or image_url must be provided.
+
+#### Base Command
+
+`gpt-create-moderation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| text | A comma-separated list of text strings to moderate. Exactly one of text, entry_id, or image_url must be provided. | Optional |
+| entry_id | The war-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided. | Optional |
+| image_url | The publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of text, entry_id, or image_url must be provided. | Optional |
+| model | The moderation model to use. Possible values are: omni-moderation-latest, omni-moderation-2024-09-26. Default is omni-moderation-latest. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenAiChatGPTV3.Moderation.Input.input_type | String | The type of input that was moderated (text, image, or image_url). |
+| OpenAiChatGPTV3.Moderation.Input.input_value | String | The value of the input that was moderated. |
+| OpenAiChatGPTV3.Moderation.Flagged | Boolean | Whether the content was flagged by the moderation model. |
+| OpenAiChatGPTV3.Moderation.Categories | Unknown | The object of boolean values indicating which categories were flagged. |
+| OpenAiChatGPTV3.Moderation.CategoryScores | Unknown | The object of float values indicating the confidence score for each category. |
