@@ -71,6 +71,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Filter indicators by their actor tags. Must be exact tag matches. Inclusion of the actor: prefix is optional.\n\nExample: actor:apt37, apt1."
   display: Actor Tags of an indicator
   name: actor_tags
