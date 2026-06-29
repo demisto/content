@@ -27,5 +27,3 @@ Use the **Check Point EM IoC Intelligence Feed** integration to ingest high-fide
 - **Authorization Error: invalid `API Token`** — the token is missing, malformed, expired, or lacks Premium IOC scope. Regenerate it in the Cyberint console and re-save the instance.
 - **Repeated 429 / 503 responses** — the integration retries up to 3 times with exponential backoff (5s → 10s → 20s). Sustained throttling means your tenant is at the Premium API rate limit; reduce **Feed Fetch Interval** frequency or contact Cyberint support.
 - **Fetch appears to take multiple runs to catch up** — by design. The integration caps each execution at ~20 minutes / 100 000 indicators and persists a cursor. After the catch-up window completes, every subsequent run is incremental.
-
-For more details, see the [Cortex XSOAR integration description guidelines](https://xsoar.pan.dev/docs/documentation/integration-description#general).
