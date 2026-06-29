@@ -32,6 +32,45 @@ alter
     xdm.target.host.hostname = if(inSyncDataSourceName = "", null, inSyncDataSourceName),
     xdm.event.log_level = if(severity_str = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity_str = "1", XDM_CONST.LOG_LEVEL_ALERT, severity_str = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity_str = "3", XDM_CONST.LOG_LEVEL_ERROR, severity_str = "4", XDM_CONST.LOG_LEVEL_WARNING, severity_str = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity_str = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity_str = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity_str);
 
+// ── Druva security / admin-event feed (nested 'details{}' envelope) ──
+// These records carry Druva fields under details{} and use top-level 'type'/'feature'
+// as the discriminator (not the top-level 'eventType' column the legacy blocks filter on).
+[RULE: druva_security_common_fields]
+alter
+    det = to_json_string(details)
+| alter
+    sec_email      = json_extract_scalar(det, "$.email"),
+    sec_status     = json_extract_scalar(det, "$.status"),
+    sec_sourceip   = json_extract_scalar(det, "$.sourceIP"),
+    sec_ip         = json_extract_scalar(det, "$.ip"),
+    sec_initiator  = json_extract_scalar(det, "$.initiator"),
+    sec_initiatorid= json_extract_scalar(det, "$.initiatorID"),
+    sec_errmsg     = json_extract_scalar(det, "$.errorMessage"),
+    sec_admin_email= json_extract_scalar(det, "$.adminEmail"),
+    sec_admin_ip   = json_extract_scalar(det, "$.adminIPAddress"),
+    sec_login_res  = json_extract_scalar(det, "$.loginResult"),
+    sec_location   = json_extract_scalar(det, "$.location"),
+    sec_eventstate = json_extract_scalar(det, "$.eventState"),
+    sec_eventdet   = json_extract_scalar(det, "$.eventDetails")
+| alter
+    sec_actor_ip   = coalesce(sec_sourceip, sec_ip, sec_admin_ip),
+    sec_actor_user = coalesce(sec_admin_email, sec_email, sec_initiator),
+    sec_outcome_raw= coalesce(sec_status, sec_login_res, sec_eventstate)
+| alter
+    xdm.event.id                  = to_string(id),
+    xdm.event.type                = type,
+    xdm.event.original_event_type = feature,
+    xdm.event.description         = coalesce(sec_eventdet, sec_errmsg),
+    xdm.source.ipv4               = if(is_ipv4(sec_actor_ip), sec_actor_ip),
+    xdm.source.ipv6               = if(is_ipv6(sec_actor_ip), sec_actor_ip),
+    xdm.source.location.country   = sec_location,
+    xdm.source.user.username      = arrayindex(regextract(sec_actor_user, "(\S+)\@"), 0),
+    xdm.source.user.upn           = if(sec_actor_user contains "@", sec_actor_user),
+    xdm.source.user.identifier    = sec_initiatorid,
+    xdm.event.outcome             = if(sec_outcome_raw contains "Success" or sec_outcome_raw contains "Warning", XDM_CONST.OUTCOME_SUCCESS, sec_outcome_raw contains "Failure" or sec_outcome_raw contains "Failed", XDM_CONST.OUTCOME_FAILED, sec_outcome_raw),
+    xdm.event.outcome_reason      = sec_errmsg,
+    xdm.event.log_level           = if(to_string(syslogSeverity) = "3", XDM_CONST.LOG_LEVEL_ERROR, to_string(syslogSeverity) = "4", XDM_CONST.LOG_LEVEL_WARNING, to_string(syslogSeverity) = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, to_string(syslogSeverity));
+
 [MODEL: dataset="druva_druva_raw"]
 filter eventType = "Alert" //Extraction of fields from 'eventDetails' that are relevant to 'Alert' event types.
 | call druva_common_fields
@@ -49,5 +88,29 @@ filter eventType = "Backup" //Extraction of fields from 'eventDetails' that are 
 | alter
     xdm.target.sent_bytes = to_integer(bytes_sent);
 
+// Druva security / admin-event records (nested details{} envelope, no top-level eventType).
+filter category = "EVENT" and details != null and feature = "Admin Event" and type contains "MFA"
+| call druva_security_common_fields
+| alter
+    sec_mfamode = json_extract_scalar(to_json_string(details), "$.mfaMode")
+| alter
+    xdm.auth.auth_method = "MFA",
+    xdm.auth.mfa.method = sec_mfamode;
+
+filter category = "EVENT" and details != null and feature = "Admin Event" and (type contains "Password" or type = "Admin Login")
+| call druva_security_common_fields
+| alter
+    xdm.auth.auth_method = "PASSWORD";
+
+filter category = "EVENT" and details != null and feature = "Alerts And Notifications"
+| call druva_security_common_fields
+| alter
+    sec_alertname = json_extract_scalar(to_json_string(details), "$.alertName")
+| alter
+    xdm.alert.name = coalesce(sec_alertname, type);
+
 filter eventType not in ("Alert", "Backup")
 | call druva_common_fields;
+
+filter category = "EVENT" and details != null and feature != "Admin Event" or feature != "Alerts And Notifications"
+| call druva_security_common_fields;

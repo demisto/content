@@ -63,6 +63,30 @@
         "inSyncDataSourceName": {
             "type": "string",
             "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "feature": {
+            "type": "string",
+            "is_array": false
+        },
+        "syslogSeverity": {
+            "type": "int",
+            "is_array": false
         }
     }
 }
