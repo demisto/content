@@ -49,6 +49,8 @@ def run_git_command(cmd, github_token, raise_on_error=True):
     if result.returncode != 0 and raise_on_error:
         print(f"Error: {result.stderr}")
         raise Exception(f"Git command failed: {result.stderr}")
+    if result.stdout:
+        print(result.stdout)
 
     return result
 
