@@ -120,13 +120,13 @@ script:
       description: 'String field filters. Each entry: "fieldname=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: fieldname=severity,value=High,comparison=EQUALS;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD.'
       required: false
     - name: date_filters
-      description: 'Date field filters. Each entry must use EITHER an absolute range ("fieldname=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative range ("fieldname=<OCSF field>,days=<number>"). Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,days=7.'
+      description: 'Date field filters. Each entry must use EITHER an absolute range ("fieldname=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("fieldname=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,value=7,unit=DAYS OR fieldname=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
       description: 'Boolean field filters. Each entry: "fieldname=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
       required: false
     - name: number_filters
-      description: 'Number field filters. Each entry: "fieldname=<OCSF field>,operator=<eq|gt|gte|lt|lte>,value=<number>", multiple entries separated by ";". Operator defaults to eq.'
+      description: 'Number field filters. Each entry: "fieldname=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: fieldname=severity_id,gte=4 OR fieldname=severity_id,gte=4,lte=6.'
       required: false
     - name: map_filters
       description: 'Map field filters. Each entry: "fieldname=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'

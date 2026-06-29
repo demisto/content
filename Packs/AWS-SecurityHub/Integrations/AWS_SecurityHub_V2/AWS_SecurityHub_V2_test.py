@@ -6,9 +6,8 @@ from AWS_SecurityHub_V2 import (
     findings_get_command,
     generate_filters_for_get_findings,
     parse_date_filters,
+    parse_filters,
     parse_finding_identifiers,
-    parse_number_filters,
-    parse_string_filters,
     parse_tags,
 )
 from CommonServerPython import DemistoException
@@ -115,27 +114,71 @@ def test_disable_security_hub_command_error(mocker):
         disable_security_hub_command(mock_client, {})
 
 
-def test_parse_string_filters():
+def test_parse_filters_string():
     """
     Given: A string_filters argument with two entries and a custom comparison.
-    When: parse_string_filters is called.
+    When: parse_filters is called for the "string" category.
     Then: It returns the StringFilters API structure with EQUALS as the default comparison.
     """
-    result = parse_string_filters("fieldname=severity,value=High;fieldname=finding_info.title,value=root,comparison=CONTAINS")
+    result = parse_filters(
+        "fieldname=severity,value=High;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD", "string"
+    )
     assert result == [
         {"FieldName": "severity", "Filter": {"Value": "High", "Comparison": "EQUALS"}},
-        {"FieldName": "finding_info.title", "Filter": {"Value": "root", "Comparison": "CONTAINS"}},
+        {"FieldName": "finding_info.title", "Filter": {"Value": "root", "Comparison": "CONTAINS_WORD"}},
     ]
 
 
-def test_parse_number_filters():
+def test_parse_filters_number():
     """
-    Given: A number_filters argument with an operator.
-    When: parse_number_filters is called.
-    Then: It maps the operator to the API key and converts the value to a number.
+    Given: A number_filters argument where the operator is the entry key.
+    When: parse_filters is called for the "number" category.
+    Then: It maps the operator key to the API key and converts the value to a number.
     """
-    result = parse_number_filters("fieldname=severity_id,operator=gte,value=3")
+    result = parse_filters("fieldname=severity_id,gte=3", "number")
     assert result == [{"FieldName": "severity_id", "Filter": {"Gte": 3}}]
+
+
+def test_parse_filters_boolean():
+    """
+    Given: A boolean_filters argument.
+    When: parse_filters is called for the "boolean" category.
+    Then: It returns the BooleanFilters API structure with the value coerced to a bool.
+    """
+    result = parse_filters("fieldname=compliance.assessments.meets_criteria,value=false", "boolean")
+    assert result == [{"FieldName": "compliance.assessments.meets_criteria", "Filter": {"Value": False}}]
+
+
+def test_parse_filters_map():
+    """
+    Given: A map_filters argument with key/value and no explicit comparison.
+    When: parse_filters is called for the "map" category.
+    Then: It returns the MapFilters API structure with EQUALS as the default comparison.
+    """
+    result = parse_filters("fieldname=resources.tags,key=env,value=prod", "map")
+    assert result == [{"FieldName": "resources.tags", "Filter": {"Key": "env", "Value": "prod", "Comparison": "EQUALS"}}]
+
+
+def test_parse_filters_ip():
+    """
+    Given: An ip_filters argument.
+    When: parse_filters is called for the "ip" category.
+    Then: It returns the IpFilters API structure.
+    """
+    result = parse_filters("fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1", "ip")
+    assert result == [{"FieldName": "evidences.src_endpoint.ip", "Filter": {"Cidr": "10.0.0.1"}}]
+
+
+def test_parse_filters_skips_invalid_entries():
+    """
+    Given: Filter entries missing the fieldname or a required key.
+    When: parse_filters is called.
+    Then: Invalid entries are skipped while valid ones are kept.
+    """
+    # Missing fieldname, missing value, and a number entry without any operator are all skipped.
+    assert parse_filters("value=High", "string") == []
+    assert parse_filters("fieldname=severity", "string") == []
+    assert parse_filters("fieldname=severity_id", "number") == []
 
 
 def test_generate_filters_for_get_findings_empty():
@@ -155,7 +198,8 @@ def test_generate_filters_for_get_findings_composite():
     """
     args = {
         "string_filters": "fieldname=severity,value=High",
-        "date_filters": "fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z",
+        "number_filters": "fieldname=severity_id,gte=4",
+        "date_filters": "fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
         "composite_operator": "OR",
     }
     result = generate_filters_for_get_findings(args)
@@ -163,7 +207,10 @@ def test_generate_filters_for_get_findings_composite():
     composite = result["CompositeFilters"][0]
     assert composite["Operator"] == "AND"
     assert composite["StringFilters"] == [{"FieldName": "severity", "Filter": {"Value": "High", "Comparison": "EQUALS"}}]
-    assert composite["DateFilters"] == [{"FieldName": "finding_info.created_time_dt", "Filter": {"Start": "2024-01-01T00:00:00Z"}}]
+    assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
+    assert composite["DateFilters"] == [
+        {"FieldName": "finding_info.created_time_dt", "Filter": {"Start": "2024-01-01T00:00:00Z", "End": "2024-02-01T00:00:00Z"}}
+    ]
 
 
 def test_findings_get_command_success(mocker):
@@ -223,9 +270,7 @@ def test_parse_finding_identifiers():
     When: parse_finding_identifiers is called.
     Then: It returns the FindingIdentifiers API structure.
     """
-    result = parse_finding_identifiers(
-        "cloud_account_uid=123456789012,finding_info_uid=f-1,metadata_product_uid=p-1"
-    )
+    result = parse_finding_identifiers("cloud_account_uid=123456789012,finding_info_uid=f-1,metadata_product_uid=p-1")
     assert result == [{"CloudAccountUid": "123456789012", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}]
 
 
@@ -279,9 +324,7 @@ def test_findings_batch_update_command_with_identifiers(mocker):
     findings_batch_update_command(mock_client, args)
 
     call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert call_kwargs["FindingIdentifiers"] == [
-        {"CloudAccountUid": "123", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}
-    ]
+    assert call_kwargs["FindingIdentifiers"] == [{"CloudAccountUid": "123", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}]
 
 
 def test_findings_batch_update_command_no_target():
@@ -322,15 +365,38 @@ def test_parse_date_filters_absolute():
     ]
 
 
-def test_parse_date_filters_relative():
+def test_parse_date_filters_relative_days_alias():
     """
-    Given: A date_filters entry with days.
+    Given: A date_filters entry using the "days" shorthand.
+    When: parse_date_filters is called.
+    Then: It builds the relative {DateRange: {Value, Unit}} Filter with Unit defaulting to DAYS.
+    """
+    result = parse_date_filters("fieldname=finding_info.modified_time_dt,days=7")
+    assert result == [{"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS"}}}]
+
+
+def test_parse_date_filters_relative_value_unit():
+    """
+    Given: A date_filters entry using the explicit DateRange value/unit keys.
     When: parse_date_filters is called.
     Then: It builds the relative {DateRange: {Value, Unit}} Filter.
     """
-    result = parse_date_filters("fieldname=finding_info.modified_time_dt,days=7")
+    result = parse_date_filters("fieldname=finding_info.modified_time_dt,value=14,unit=DAYS")
+    assert result == [{"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 14, "Unit": "DAYS"}}}]
+
+
+def test_parse_date_filters_relative_with_comparison():
+    """
+    Given: A date_filters entry providing a DateRange comparison.
+    When: parse_date_filters is called.
+    Then: The Comparison is included in the DateRange object.
+    """
+    result = parse_date_filters("fieldname=finding_info.modified_time_dt,value=7,unit=DAYS,comparison=GREATER_THAN")
     assert result == [
-        {"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS"}}}
+        {
+            "FieldName": "finding_info.modified_time_dt",
+            "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS", "Comparison": "GREATER_THAN"}},
+        }
     ]
 
 
@@ -338,17 +404,26 @@ def test_parse_date_filters_only_start_raises():
     """
     Given: A date_filters entry with start but no end.
     When: parse_date_filters is called.
-    Then: It raises a DemistoException (oneOf requires both start and end, or days).
+    Then: It raises a DemistoException (oneOf requires both start and end, or a DateRange).
     """
-    with pytest.raises(DemistoException, match="requires either 'days', or both 'start' and 'end'"):
+    with pytest.raises(DemistoException, match="requires either the relative 'DateRange' form"):
         parse_date_filters("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z")
 
 
-def test_parse_date_filters_days_with_start_raises():
+def test_parse_date_filters_range_with_start_raises():
     """
-    Given: A date_filters entry mixing days with start.
+    Given: A date_filters entry mixing the relative and absolute forms.
     When: parse_date_filters is called.
-    Then: It raises a DemistoException (cannot mix the two modes).
+    Then: It raises a DemistoException (cannot mix the two forms).
     """
-    with pytest.raises(DemistoException, match="use either 'days' or 'start'.*not both"):
+    with pytest.raises(DemistoException, match="not both"):
         parse_date_filters("fieldname=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z")
+
+
+def test_parse_date_filters_skips_entry_without_fieldname():
+    """
+    Given: A date_filters string whose entry has no fieldname.
+    When: parse_date_filters is called.
+    Then: The entry is skipped and an empty list is returned (no exception raised).
+    """
+    assert parse_date_filters("days=7") == []

@@ -10,7 +10,246 @@ urllib3.disable_warnings()
 DEFAULT_RETRIES = 5
 
 
+# Configuration driving the generic ``parse_filters`` helper. For each filter category, ``fields``
+# maps a user-facing entry key to a (API ``Filter`` key, value-coercion callable) tuple, ``required``
+# lists the entry keys that must be present for an entry to be valid, and ``defaults`` provides
+# fallback values applied when the user omits an optional key.
+#   * string  -> Filter {Value, Comparison}
+#   * number  -> Filter {Eq|Gt|Gte|Lt|Lte} (the operator is the entry key, value is numeric)
+#   * boolean -> Filter {Value}
+#   * map     -> Filter {Key, Value, Comparison}
+#   * ip      -> Filter {Cidr}
+FILTER_CONFIGS: dict[str, dict] = {
+    "string": {
+        "fields": {"value": ("Value", str), "comparison": ("Comparison", str)},
+        "required": ["value"],
+        "defaults": {"comparison": "EQUALS"},
+    },
+    "number": {
+        "fields": {
+            "eq": ("Eq", arg_to_number),
+            "gt": ("Gt", arg_to_number),
+            "gte": ("Gte", arg_to_number),
+            "lt": ("Lt", arg_to_number),
+            "lte": ("Lte", arg_to_number),
+        },
+        "required": [],
+        "defaults": {},
+        "require_any": ["eq", "gt", "gte", "lt", "lte"],
+    },
+    "boolean": {
+        "fields": {"value": ("Value", argToBoolean)},
+        "required": ["value"],
+        "defaults": {},
+    },
+    "map": {
+        "fields": {"key": ("Key", str), "value": ("Value", str), "comparison": ("Comparison", str)},
+        "required": ["key", "value"],
+        "defaults": {"comparison": "EQUALS"},
+    },
+    "ip": {
+        "fields": {"cidr": ("Cidr", str)},
+        "required": ["cidr"],
+        "defaults": {},
+    },
+}
+
+
 """ HELPER FUNCTIONS """
+
+
+def parse_filter_entries(filters_str: str) -> list[dict]:
+    """Parse a filter argument into a list of key/value entry dictionaries.
+
+    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
+    For example ``fieldname=severity,value=High,comparison=EQUALS;fieldname=status,value=New``
+    yields two entries, each a dict of its key/value pairs.
+
+    Args:
+        filters_str (str): The raw filter argument string.
+
+    Returns:
+        list[dict]: A list of dictionaries, one per entry.
+    """
+    entries = []
+    for raw_entry in filters_str.split(";"):
+        raw_entry = raw_entry.strip()
+        if not raw_entry:
+            continue
+        entry = {}
+        for pair in raw_entry.split(","):
+            if "=" not in pair:
+                continue
+            key, _, value = pair.partition("=")
+            entry[key.strip().lower()] = value.strip()
+        if entry:
+            entries.append(entry)
+    return entries
+
+
+def parse_filters(filters_str: str, category: str) -> list[dict]:
+    """Generically parse a filter argument into the API ``{FieldName, Filter}`` structure.
+
+    The per-category mapping in ``FILTER_CONFIGS`` controls which user-facing entry keys are
+    accepted, how they map to the API ``Filter`` keys, and how each value is coerced (str/number/
+    bool). This single helper backs the ``string``, ``number``, ``boolean``, ``map`` and ``ip``
+    filter categories (``date`` is handled separately by ``parse_date_filters`` due to its
+    ``oneOf`` structure).
+
+    Each entry requires ``fieldname`` plus the category-specific required keys. Entries missing
+    ``fieldname`` or any required key are skipped.
+
+    Args:
+        filters_str (str): The raw filter argument string.
+        category (str): The filter category key into ``FILTER_CONFIGS``.
+
+    Returns:
+        list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
+    """
+    config = FILTER_CONFIGS[category]
+    fields, required = config["fields"], config["required"]
+    require_any = config.get("require_any")
+    filters = []
+
+    for entry in parse_filter_entries(filters_str):
+        field_name = entry.get("fieldname")
+        if not field_name:
+            continue
+        if any(not entry.get(key) for key in required):
+            continue
+        if require_any and not any(entry.get(key) for key in require_any):
+            continue
+
+        merged = {**config["defaults"], **{key: value for key, value in entry.items() if key in fields}}
+        api_filter = {fields[key][0]: fields[key][1](value) for key, value in merged.items()}
+        filters.append({"FieldName": field_name, "Filter": api_filter})
+
+    return filters
+
+
+def parse_date_filters(filters_str: str) -> list[dict]:
+    """Parse ``date_filters`` arg entries into the API ``DateFilters`` structure.
+
+    The API's date ``Filter`` is a ``oneOf`` of two mutually exclusive forms:
+        * Absolute range: ``Start`` and ``End`` (both required together).
+        * Relative ``DateRange``: ``{Value, Unit, Comparison}`` describing a window relative to now.
+
+    Each entry supports the following keys:
+        * ``fieldname`` (required).
+        * Absolute form: ``start`` + ``end`` (both required together).
+        * Relative form: ``value`` (required) with optional ``unit`` (default ``DAYS``) and
+          optional ``comparison``. ``days`` is accepted as a convenience alias for
+          ``value`` with ``unit=DAYS``.
+
+    Args:
+        filters_str (str): The raw date filters argument string.
+
+    Returns:
+        list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
+
+    Raises:
+        DemistoException: If an entry mixes the absolute and relative forms, provides only one of
+            ``start``/``end``, or provides neither form.
+    """
+    filters = []
+    for e in parse_filter_entries(filters_str):
+        field_name = e.get("fieldname")
+        if not field_name:
+            continue
+        start, end = e.get("start"), e.get("end")
+        # "days" is a convenience alias for the DateRange "value" with Unit=DAYS.
+        value = e.get("value") or e.get("days")
+        has_range = bool(value)
+        has_absolute = bool(start or end)
+
+        if has_range and has_absolute:
+            raise DemistoException(
+                f"Date filter for '{field_name}': use either the absolute form ('start'+'end') "
+                f"or the relative 'DateRange' form ('value'/'days'), not both."
+            )
+        if has_range:
+            date_range = {
+                "Value": arg_to_number(value),
+                "Unit": e.get("unit", "DAYS"),
+                "Comparison": e.get("comparison"),
+            }
+            date_filter = {"DateRange": remove_empty_elements(date_range)}
+        elif start and end:
+            date_filter = {"Start": start, "End": end}
+        else:
+            raise DemistoException(
+                f"Date filter for '{field_name}' requires either the relative 'DateRange' form "
+                f"('value' with optional 'unit'/'comparison', or 'days'), or both 'start' and 'end'."
+            )
+        filters.append({"FieldName": field_name, "Filter": date_filter})
+    return filters
+
+
+def generate_filters_for_get_findings(args: dict) -> dict | None:
+    """Build the Security Hub V2 composite ``Filters`` object from the per-category filter arguments.
+
+    Each filter category (string, date, boolean, number, map, ip) is parsed from its dedicated
+    command argument and placed in a single composite filter, combined using ``composite_operator``.
+
+    Args:
+        args (dict): Demisto command arguments.
+
+    Returns:
+        dict | None: The composite ``Filters`` structure, or ``None`` when no filters were supplied.
+    """
+    composite_filter: dict = {
+        "StringFilters": parse_filters(args.get("string_filters", ""), "string"),
+        "DateFilters": parse_date_filters(args.get("date_filters", "")),
+        "BooleanFilters": parse_filters(args.get("boolean_filters", ""), "boolean"),
+        "NumberFilters": parse_filters(args.get("number_filters", ""), "number"),
+        "MapFilters": parse_filters(args.get("map_filters", ""), "map"),
+        "IpFilters": parse_filters(args.get("ip_filters", ""), "ip"),
+    }
+    # Drop empty filter categories; if no actual conditions remain, there is no filter to apply.
+    composite_filter = {key: value for key, value in composite_filter.items() if value}
+    if not composite_filter:
+        return None
+
+    composite_filter["Operator"] = args.get("filter_operator", "AND")
+    return {"CompositeFilters": [composite_filter], "CompositeOperator": args.get("composite_operator", "AND")}
+
+
+def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
+    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
+
+    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
+    Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
+
+    Args:
+        identifiers_str (str): The raw finding identifiers argument string.
+
+    Returns:
+        list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
+    """
+    return [
+        {
+            "CloudAccountUid": e["cloud_account_uid"],
+            "FindingInfoUid": e["finding_info_uid"],
+            "MetadataProductUid": e["metadata_product_uid"],
+        }
+        for e in parse_filter_entries(identifiers_str)
+        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
+    ]
+
+
+def parse_tags(tags_str: str) -> dict:
+    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
+
+    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
+
+    Args:
+        tags_str (str): The keys and values string.
+
+    Returns:
+        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
+    """
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    return dict(regex.findall(tags_str))
 
 
 def build_client(params: dict) -> BotoClient:
@@ -66,191 +305,6 @@ def build_client(params: dict) -> BotoClient:
         role_session_name=aws_role_session_name,
         role_session_duration=aws_role_session_duration,
     )
-
-
-def parse_tags(tags_str: str) -> dict:
-    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
-
-    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
-
-    Args:
-        tags_str (str): The keys and values string.
-
-    Returns:
-        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
-    """
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
-    return {key: value for key, value in regex.findall(tags_str)}
-
-
-def parse_filter_entries(filters_str: str) -> list[dict]:
-    """Parse a filter argument into a list of key/value entry dictionaries.
-
-    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
-    For example ``fieldname=severity,value=High,comparison=EQUALS;fieldname=status,value=New``
-    yields two entries, each a dict of its key/value pairs.
-
-    Args:
-        filters_str (str): The raw filter argument string.
-
-    Returns:
-        list[dict]: A list of dictionaries, one per entry.
-    """
-    entries = []
-    for raw_entry in filters_str.split(";"):
-        raw_entry = raw_entry.strip()
-        if not raw_entry:
-            continue
-        entry = {}
-        for pair in raw_entry.split(","):
-            if "=" not in pair:
-                continue
-            key, _, value = pair.partition("=")
-            entry[key.strip().lower()] = value.strip()
-        if entry:
-            entries.append(entry)
-    return entries
-
-
-def parse_string_filters(filters_str: str) -> list[dict]:
-    """Parse ``string_filters`` arg entries (``fieldname``, ``value``, ``comparison``)."""
-    return [
-        {"FieldName": e["fieldname"], "Filter": {"Value": e["value"], "Comparison": e.get("comparison", "EQUALS")}}
-        for e in parse_filter_entries(filters_str)
-        if e.get("fieldname") and e.get("value")
-    ]
-
-
-def parse_date_filters(filters_str: str) -> list[dict]:
-    """Parse ``date_filters`` arg entries into the API ``DateFilters`` structure.
-
-    The API's date ``Filter`` is a ``oneOf``: either an absolute range (``Start`` and ``End``
-    together) or a relative range (``DateRange`` with a number of ``days``). Each entry supports:
-        ``fieldname`` (required), and either ``start`` + ``end`` (both required together), or ``days``.
-
-    Args:
-        filters_str (str): The raw date filters argument string.
-
-    Returns:
-        list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
-
-    Raises:
-        DemistoException: If an entry provides only one of ``start``/``end``, or mixes ``days`` with
-            ``start``/``end``, or provides neither.
-    """
-    filters = []
-    for e in parse_filter_entries(filters_str):
-        field_name = e.get("fieldname")
-        if not field_name:
-            continue
-        start, end, days = e.get("start"), e.get("end"), e.get("days")
-
-        if days and (start or end):
-            raise DemistoException(f"Date filter for '{field_name}': use either 'days' or 'start'+'end', not both.")
-        if days:
-            date_filter = {"DateRange": {"Value": arg_to_number(days), "Unit": "DAYS"}}
-        elif start and end:
-            date_filter = {"Start": start, "End": end}
-        else:
-            raise DemistoException(
-                f"Date filter for '{field_name}' requires either 'days', or both 'start' and 'end'."
-            )
-        filters.append({"FieldName": field_name, "Filter": date_filter})
-    return filters
-
-
-def parse_boolean_filters(filters_str: str) -> list[dict]:
-    """Parse ``boolean_filters`` arg entries (``fieldname``, ``value``)."""
-    return [
-        {"FieldName": e["fieldname"], "Filter": {"Value": argToBoolean(e["value"])}}
-        for e in parse_filter_entries(filters_str)
-        if e.get("fieldname") and e.get("value")
-    ]
-
-
-def parse_number_filters(filters_str: str) -> list[dict]:
-    """Parse ``number_filters`` arg entries (``fieldname``, ``operator`` of eq/gt/gte/lt/lte, ``value``)."""
-    operator_map = {"eq": "Eq", "gt": "Gt", "gte": "Gte", "lt": "Lt", "lte": "Lte"}
-    filters = []
-    for e in parse_filter_entries(filters_str):
-        operator = operator_map.get(e.get("operator", "eq").lower())
-        if not (e.get("fieldname") and e.get("value") and operator):
-            continue
-        filters.append({"FieldName": e["fieldname"], "Filter": {operator: arg_to_number(e["value"])}})
-    return filters
-
-
-def parse_map_filters(filters_str: str) -> list[dict]:
-    """Parse ``map_filters`` arg entries (``fieldname``, ``key``, ``value``, ``comparison``)."""
-    return [
-        {
-            "FieldName": e["fieldname"],
-            "Filter": {"Key": e["key"], "Value": e["value"], "Comparison": e.get("comparison", "EQUALS")},
-        }
-        for e in parse_filter_entries(filters_str)
-        if e.get("fieldname") and e.get("key") and e.get("value")
-    ]
-
-
-def parse_ip_filters(filters_str: str) -> list[dict]:
-    """Parse ``ip_filters`` arg entries (``fieldname``, ``cidr``)."""
-    return [
-        {"FieldName": e["fieldname"], "Filter": {"Cidr": e["cidr"]}}
-        for e in parse_filter_entries(filters_str)
-        if e.get("fieldname") and e.get("cidr")
-    ]
-
-
-def generate_filters_for_get_findings(args: dict) -> dict | None:
-    """Build the Security Hub V2 composite ``Filters`` object from the per-category filter arguments.
-
-    Each filter category (string, date, boolean, number, map, ip) is parsed from its dedicated
-    command argument and placed in a single composite filter, combined using ``composite_operator``.
-
-    Args:
-        args (dict): Demisto command arguments.
-
-    Returns:
-        dict | None: The composite ``Filters`` structure, or ``None`` when no filters were supplied.
-    """
-    composite_filter: dict = {
-        "StringFilters": parse_string_filters(args.get("string_filters", "")),
-        "DateFilters": parse_date_filters(args.get("date_filters", "")),
-        "BooleanFilters": parse_boolean_filters(args.get("boolean_filters", "")),
-        "NumberFilters": parse_number_filters(args.get("number_filters", "")),
-        "MapFilters": parse_map_filters(args.get("map_filters", "")),
-        "IpFilters": parse_ip_filters(args.get("ip_filters", "")),
-    }
-    # Drop empty filter categories; if no actual conditions remain, there is no filter to apply.
-    composite_filter = {key: value for key, value in composite_filter.items() if value}
-    if not composite_filter:
-        return None
-
-    composite_filter["Operator"] = args.get("filter_operator", "AND")
-    return {"CompositeFilters": [composite_filter], "CompositeOperator": args.get("composite_operator", "AND")}
-
-
-def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
-    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
-
-    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
-    Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
-
-    Args:
-        identifiers_str (str): The raw finding identifiers argument string.
-
-    Returns:
-        list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
-    """
-    return [
-        {
-            "CloudAccountUid": e["cloud_account_uid"],
-            "FindingInfoUid": e["finding_info_uid"],
-            "MetadataProductUid": e["metadata_product_uid"],
-        }
-        for e in parse_filter_entries(identifiers_str)
-        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
-    ]
 
 
 """ COMMAND FUNCTIONS """
@@ -428,8 +482,7 @@ def test_module(client: BotoClient) -> str:
         )
     except client.exceptions.AccessDeniedException:
         raise DemistoException(
-            "Access denied. Verify the configured role/credentials have the "
-            "'securityhub:DescribeSecurityHubV2' permission."
+            "Access denied. Verify the configured role/credentials have the " "'securityhub:DescribeSecurityHubV2' permission."
         )
     return "ok"
 
@@ -454,21 +507,6 @@ def main():  # pragma: no cover
             return_results(findings_get_command(client, args))
         elif command == "aws-securityhub-findings-batch-update":
             return_results(findings_batch_update_command(client, args))
-
-        # elif command == "aws-securityhub-get-finding-statistics":
-        #     return_results(get_finding_statistics_command(client, args))
-        # elif command == "fetch-incidents":
-        #     fetch_incidents(client, params)
-        #     return
-        # elif command == "get-remote-data":
-        #     return_results(get_remote_data_command(client, args))
-        #     return
-        # elif command == "update-remote-system":
-        #     return_results(update_remote_system_command(client, args))
-        #     return
-        # elif command == "get-mapping-fields":
-        #     return_results(get_mapping_fields_command())
-        #     return
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
