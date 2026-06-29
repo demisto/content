@@ -34,6 +34,8 @@ configuration:
   type: 0
   required: false
   defaultvalue: 7 days
+  supportedModules:
+  - xsiam
 - display: Fetch event types
   name: event_types
   defaultvalue: 'Audit,SIEM'
