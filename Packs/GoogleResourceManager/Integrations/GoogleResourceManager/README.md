@@ -14,8 +14,8 @@
 <li><strong>Client ID</strong></li>
 <li><strong>Client X509 Cert URL</strong></li>
 <li><strong>Use system proxy settings</strong></li>
-</ul>
-</li>
+</ul>?
+</li>??
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
@@ -476,7 +476,7 @@
 <th style="width: 71px;"><strong>Required</strong></th>
 </tr>
 </thead>
-<tbody>
+<tbody>####
 <tr>
 <td style="width: 145px;">project_id</td>
 <td style="width: 524px;">The unique ID of the Project to update.<br>Example: tokyo-rain-123</td>

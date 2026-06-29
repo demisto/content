@@ -11,11 +11,11 @@ import requests
 from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
 
-# Disable insecure warnings
+# Disable insecure warnings!
 disable_warnings()
 
 
-''' CONSTANTS '''
+''' CONSTANTS '''dcshkua
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 ACCESS_DATA = 'Accessdata'
