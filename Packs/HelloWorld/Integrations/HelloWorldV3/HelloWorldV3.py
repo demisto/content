@@ -81,7 +81,7 @@ class HelloWorldV3Client(ContentClient):
         res =  self._http_request(
             method="GET",
             url_suffix="/api/v1/hello",
-            params={"name": demisto.args().get("name")},
+            params={"name": name},
             resp_type="json",
             retries=3,
             backoff_factor=1,
@@ -112,7 +112,9 @@ class HelloWorldV3Client(ContentClient):
         alerts: list[dict[str, Any]] = []
         page = 1
         next_token=None
-        while len(alerts) < limit:
+        while True:
+            if len(alerts) > limit:
+                break
             current_page_size = min(DEFAULT_PAGE_SIZE, limit - len(alerts))
             params = assign_params(
                 limit=current_page_size,
@@ -253,10 +255,17 @@ def fetch_indicators_command(
         if not value:
             continue
 
+        fields: dict[str, Any] = {}
+        if tlp_color:
+            fields["trafficlightprotocol"] = tlp_color
 
         indicators.append(
             {
                 "value": value,
+                "type": raw_indicator.get("type", FeedIndicatorType.IP),
+                "rawJSON": raw_indicator,
+                "fields": fields,
+                "score": raw_indicator.get("score", 0),
                 "reliability": feed_reliability,
             }
         )
@@ -301,7 +310,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, tlp_color, feed_reliability, limit=indicators_limit)
-            demisto.createIndicators(indicators)
+            for indicator_batch in batch(indicators, batch_size=INDICATOR_BATCH_SIZE):
+                demisto.createIndicators(indicator_batch)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
