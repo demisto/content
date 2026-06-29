@@ -1,0 +1,31 @@
+commonfields:
+  id: RubrikPushIRViolationStatus
+  version: -1
+name: RubrikPushIRViolationStatus
+script: ''
+type: python
+tags:
+- field-change-triggered
+comment: Syncs the IR violation status from Cortex XSOAR to RSC.
+enabled: true
+args:
+- name: violation_id
+  description: "The ID of the IR Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: violation_status
+  description: "The status to update for the violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+  auto: PREDEFINED
+  predefined:
+  - OPEN
+  - IN_PROGRESS
+  - REMEDIATED
+  - DISMISSED
+  - CLOSED
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.9059085
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
