@@ -18,6 +18,8 @@ from BaseContentApiModule import *  # noqa: F401
 
 DEFAULT_LIMIT = 10
 DEFAULT_PAGE_SIZE = 50
+DEFAULT_INDICATORS_LIMIT = 100
+
 
 
 ''' AUTHENTICATION HANDLER '''
@@ -143,6 +145,26 @@ class HelloWorldV3Client(ContentClient):
             "status": "open",
         }
 
+    def get_indicators(self, limit: int = DEFAULT_INDICATORS_LIMIT) -> list[dict[str, Any]]:
+        """Return a list of mocked threat-intelligence indicators.
+
+        In a real implementation this would page through the feed endpoint:
+        # return self.get(url_suffix="/api/v1/indicators", resp_type="json")
+
+        Args:
+            limit (int): Maximum number of indicators to return.
+
+        Returns:
+            list[dict[str, Any]]: The collected raw indicators.
+        """
+        return [
+            {
+                "value": f"203.0.113.{index}",
+                "score": index % 100,
+            }
+            for index in range(1, limit + 1)
+        ]
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -205,6 +227,43 @@ def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Comma
     )
 
 
+def fetch_indicators_command(
+    client: HelloWorldV3Client,
+    tlp_color: str | None,
+    feed_reliability: str,
+    limit: int = DEFAULT_INDICATORS_LIMIT,
+) -> list[dict[str, Any]]:
+    """Fetch indicators from the feed and build them for the Threat Intel module.
+
+    Args:
+        client (HelloWorldV3Client): The client used to query the feed.
+        tlp_color (str | None): Optional Traffic Light Protocol color to tag
+            each indicator with.
+        feed_reliability (str): The reliability of the feed source.
+        limit (int): Maximum number of indicators to fetch.
+
+    Returns:
+        list[dict[str, Any]]: The indicators formatted for ``createIndicators``.
+    """
+    raw_indicators = client.get_indicators(limit=limit)
+
+    indicators: list[dict[str, Any]] = []
+    for raw_indicator in raw_indicators:
+        value = raw_indicator.get("value")
+        if not value:
+            continue
+
+
+        indicators.append(
+            {
+                "value": value,
+                "reliability": feed_reliability,
+            }
+        )
+
+    return indicators
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -219,6 +278,9 @@ def main() -> None:
     api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    tlp_color = params.get("tlp_color")
+    feed_reliability = params.get("feedReliability") or DBotScoreReliability.C
+    indicators_limit = arg_to_number(params.get("max_indicator_fetch")) or DEFAULT_INDICATORS_LIMIT
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -237,6 +299,9 @@ def main() -> None:
 
         if command == "test-module":
             return_results(test_module(client))
+        elif command == "fetch-indicators":
+            indicators = fetch_indicators_command(client, tlp_color, feed_reliability, limit=indicators_limit)
+            demisto.createIndicators(indicators)
         elif command in commands:
             return_results(commands[command](client, args))
         else:

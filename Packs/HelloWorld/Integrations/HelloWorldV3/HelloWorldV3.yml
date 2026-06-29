@@ -23,6 +23,41 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
+- name: feed
+  display: Fetch indicators
+  defaultvalue: "true"
+  type: 8
+  required: false
+- name: feedReliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+- name: max_indicator_fetch
+  display: Maximum number of indicators per fetch
+  additionalinfo: The maximum number of indicators to fetch in a single run.
+  defaultvalue: "100"
+  type: 0
+  required: false
 description: A dummy Hello World v3 integration used to demonstrate building Cortex integrations.
 script:
   commands:
@@ -86,7 +121,12 @@ script:
     - contextPath: HelloWorldV3.Alert.status
       description: The status of the alert.
       type: String
+  - name: fetch-indicators
+    description: Fetches indicators from the feed and creates them in Cortex.
+    arguments: []
+    outputs: []
   dockerimage: demisto/fastapi:0.125.0.9094740
+  feed: true
   runonce: false
   script: '-'
   subtype: python3
