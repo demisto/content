@@ -77,31 +77,16 @@ class HelloWorldV3Client(ContentClient):
         Implements a manual retry mechanism with exponential backoff when the
         server responds with HTTP 429 (Too Many Requests).
         """
-        max_retries = 3
-        backoff_factor = 1
+        return self._http_request(
+            method="GET",
+            url_suffix="/api/v1/hello",
+            params={"name": name},
+            resp_type="json",
+            retries=3,
+            backoff_factor=1,
+            status_list=[429],
+        )
 
-        for attempt in range(max_retries + 1):
-            try:
-                return self._http_request(
-                    method="GET",
-                    url_suffix="/api/v1/hello",
-                    params={"name": name},
-                    resp_type="json",
-                )
-            except DemistoException as exc:
-                status_code = exc.res.status_code if exc.res is not None else None
-                if status_code != 429 or attempt == max_retries:
-                    raise
-
-                sleep_seconds = backoff_factor * (2**attempt)
-                demisto.debug(
-                    f"say_hello got HTTP 429, retrying in {sleep_seconds}s "
-                    f"(attempt {attempt + 1}/{max_retries})."
-                )
-                time.sleep(sleep_seconds)
-
-        # Unreachable: loop either returns a result or re-raises the exception.
-        raise DemistoException("say_hello exhausted all retries.")
 
     def list_alerts(self, limit: int, severity: str | None) -> list[dict[str, Any]]:
         """Return a mocked list of alerts, optionally filtered by severity."""
@@ -120,11 +105,11 @@ class HelloWorldV3Client(ContentClient):
         """Return a single mocked alert by its ID."""
         # In a real implementation:
         # return self.get(url_suffix=f"/api/v1/alerts/{alert_id}", resp_type="json")
-        now = datetime.now()
+        now = datetime.now(tz=timezone.utc)
         epoch_float = now.timestamp()
         epoch_int = int(epoch_float)
         return {
-            "id": MOCK_ALERT["id"],
+            "id": alert_id,
             "name": f"Alert {alert_id}",
             "severity": "high" if alert_id % 2 == 0 else "low",
             "status": "open",
@@ -168,9 +153,9 @@ def test_module(client: HelloWorldV3Client) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def say_hello_command(client: HelloWorldV3Client):
+def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]):
     """Greet a specified person."""
-    args = demisto.args()
+
     name = args.get("name", "World")
     result = client.say_hello(name)
 
@@ -324,7 +309,7 @@ def main() -> None:
         elif command == "ip":
             return_results(ip_reputation_command(client, args, ip_threshold, reliability))
         elif command == "helloworldv3-say-hello":
-            say_hello_command(client)
+            say_hello_command(client,args)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
