@@ -9,9 +9,6 @@ display: Argus Managed Detection and Response by mnemonic
 category: Data Enrichment & Threat Intelligence
 provider: mnemonic
 description: Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Fetch incidents
   name: isFetch
@@ -48,7 +45,6 @@ configuration:
   - High
   - Critical
   additionalinfo: "Argus Cases with priority lower than this value will be excluded by fetch incidents."
-  section: Collect
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
@@ -114,7 +110,6 @@ configuration:
   - marketplacev2
   - platform
   required: false
-  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
