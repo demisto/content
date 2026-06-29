@@ -71,6 +71,9 @@ configuration:
   - All
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   display: Maximum incidents to fetch
   defaultvalue: "50"
