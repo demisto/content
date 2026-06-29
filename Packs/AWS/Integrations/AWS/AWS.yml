@@ -19239,7 +19239,7 @@ script:
       type: Boolean
 
   - name: aws-network-firewall-firewall-policy-create
-    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the characterize firewall policy arguments. Required permissions: network-firewall:CreateFirewallPolicy."
+    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the firewall policy characteristic arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
@@ -19558,7 +19558,7 @@ script:
       description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
       isArray: true
     - name: stateless_custom_actions
-      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}].`'
+      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}]`.'
     - name: stateful_rule_group_references
       description: 'A semicolon-separated list of stateful rule group references used in the policy. Each reference is a comma-separated list of fields where only ResourceArn is required; Priority, Override (the action) and DeepThreatInspection are optional. For example: `ResourceArn=arn:aws:1,Priority=1,Override=DROP_TO_ALERT,DeepThreatInspection=True;ResourceArn=arn:aws:2,Priority=2`.'
     - name: stateful_default_actions

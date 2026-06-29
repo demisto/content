@@ -19746,7 +19746,7 @@ def test_parse_stateful_rule_group_references_field_single_full_reference():
             "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
             "Priority": 100,
             "Override": {"Action": "DROP_TO_ALERT"},
-            "DeepThreatInspection": "True",
+            "DeepThreatInspection": True,
         }
     ]
 
@@ -19780,7 +19780,7 @@ def test_parse_stateful_rule_group_references_field_multiple_references_with_opt
             "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
             "Priority": 100,
             "Override": {"Action": "DROP_TO_ALERT"},
-            "DeepThreatInspection": "True",
+            "DeepThreatInspection": True,
         },
         {
             "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg2",

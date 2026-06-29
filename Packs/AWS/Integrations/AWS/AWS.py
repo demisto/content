@@ -490,7 +490,7 @@ def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
             "ResourceArn": fields.get("ResourceArn"),
             "Priority": arg_to_number(fields.get("Priority")),
             "Override": {"Action": fields.get("Override")},
-            "DeepThreatInspection": fields.get("DeepThreatInspection"),
+            "DeepThreatInspection": arg_to_bool_or_none(fields.get("DeepThreatInspection")),
         }
         references.append(remove_empty_elements(reference))
 
@@ -914,7 +914,6 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
     rule_variables_raw = args.get("policy_rule_variables")
 
     stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
-    stateful_rule_group_references = parse_stateful_rule_group_references_field(args.get("stateful_rule_group_references"))
     rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
 
     firewall_policy_object = remove_empty_elements(
@@ -923,7 +922,7 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
             "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
             "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
             "StatelessCustomActions": stateless_custom_actions,
-            "StatefulRuleGroupReferences": stateful_rule_group_references,
+            "StatefulRuleGroupReferences": parse_stateful_rule_group_references_field(args.get("stateful_rule_group_references")),
             "StatefulDefaultActions": argToList(args.get("stateful_default_actions")),
             "StatefulEngineOptions": {
                 "RuleOrder": args.get("stateful_engine_options_rule_order"),
