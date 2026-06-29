@@ -17,7 +17,7 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Threat Monitoring Match Types | Select Threat Monitoring Match Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | Threat Monitoring Object Types | Select Threat Monitoring Object Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
-| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If multiple fetch types \(Events, Threat Monitoring objects, DSPM Violations\) are selected, the limit is distributed optimally among them to fetch all types. | False |
+| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If multiple fetch types \(Events, Threat Monitoring objects, DSPM Violations, IR Violations\) are selected, the limit is distributed optimally among them to fetch all types. | False |
 | Event Critical Severity Level Mapping | When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Event Warning Severity Level Mapping | When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Threat Monitoring Object Severity Level Mapping | When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR. | False |
@@ -26,6 +26,12 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | DSPM Violation Severity Levels | Select DSPM violation severity levels to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
 | DSPM Violation Categories | Select DSPM violation categories to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
 | DSPM Violation Object Types | Select DSPM violation object types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". Values not included in the options can be found in the documentation. | False |
+| IR Violation Policy Types | Select IR violation policy types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
+| IR Violation Statuses | Select IR violation statuses to fetch as incidents. Default is OPEN and IN_PROGRESS.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
+| IR Violation Severity Levels | Select IR violation severity levels to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
+| IR Violation Categories | Select IR violation categories to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
+| IR Violation Identity Providers | Select IR violation identity providers to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
+| IR Violation Identity Tags | Select IR violation identity tags to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "IR Violation". | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
@@ -5481,3 +5487,442 @@ Download remediation logs as CSV file for the specified data security violation.
 #### Human Readable Output
 
 >#### Successfully downloaded the Remediation Log file
+
+### rubrik-identity-resilience-violation-list
+
+***
+Retrieves the list of Identity Resilience (IR) violations.
+
+#### Base Command
+
+`rubrik-identity-resilience-violation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_type | Filter the violations by policy type. Supports comma separated values. Possible values are: IDENTITY, IDP, IDENTITY_EVENT, CROWDSTRIKE, MICROSOFT_DEFENDER. | Optional |
+| detection_start_date | Filter the violations detected after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: detection_start_date and detection_end_date both or none of them should be initialized. | Optional |
+| detection_end_date | Filter the violations detected before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: detection_start_date and detection_end_date both or none of them should be initialized. | Optional |
+| resolved_start_date | Filter the violations resolved after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: resolved_start_date and resolved_end_date both or none of them should be initialized. | Optional |
+| resolved_end_date | Filter the violations resolved before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: resolved_start_date and resolved_end_date both or none of them should be initialized. | Optional |
+| category | Filter the violations by category. Supports comma separated values. Possible values are: CATEGORY_UNSPECIFIED, AUTHENTICATION_AND_SECRET_MANAGEMENT, IDENTITY_HYGIENE, EXCESSIVE_IDENTITY_RIGHTS, IDENTITY_PROVIDER_SECURITY, PRIVILEGED_ACCOUNT_RISK, IDENTITY_RISK, INFRASTRUCTURE_SECURITY, CONFIGURATION_SECURITY, MEMBERSHIP_CHANGE, GPO_CHANGE. | Optional |
+| status | Filter the violations by status. Supports comma separated values. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Optional |
+| severity | Filter the violations by severity level. Supports comma separated values. Possible values are: SEVERITY_UNSPECIFIED, LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| identity_provider | Filter the violations by identity provider type. Supports comma separated values. Possible values are: IDP_UNSPECIFIED, ON_PREM_AD, ENTRA_ID, AWS, LOCAL_AD, SHAREPOINT, SYSTEM, OKTA. | Optional |
+| identity_tag | Filter the violations by identity tag. Supports comma separated values. Possible values are: IDENTITY_TAG_UNSPECIFIED, PRIVILEGED, AT_RISK, SENSITIVE. | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. Default is 50. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+| sort_by | Specify the field to use for sorting the response. Possible values are: SEVERITY, HITS, DETECTION_TIME, UPDATE_TIME, IDENTITY_TYPE, TOTAL_HITS, EVENT_TIME, NAME, TYPE. Default is DETECTION_TIME. | Optional |
+| sort_order | Specify the order to sort the data in. Possible values are: ASC, DESC. Default is DESC. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.IRViolation.policyViolationId | String | The unique identifier for the policy violation. |
+| RubrikPolaris.IRViolation.name | String | The name of the policy violation. |
+| RubrikPolaris.IRViolation.violationSeverity | String | The severity level of the policy violation. |
+| RubrikPolaris.IRViolation.status | String | The current status of the policy violation. |
+| RubrikPolaris.IRViolation.createdAt | Date | The date and time when the policy violation was created. |
+| RubrikPolaris.IRViolation.lastUpdatedAt | Date | The date and time when the policy violation was last updated. |
+| RubrikPolaris.IRViolation.resourceId | String | The unique identifier of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.resourceType | String | The type of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policyId | String | The unique identifier of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.name | String | The name of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.description | String | The description of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policySeverity | String | The severity level assigned to the policy. |
+| RubrikPolaris.IRViolation.policy.policyCategory | String | The category of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policyType | String | The type of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.frameworks | String | The compliance frameworks associated with the policy. |
+| RubrikPolaris.IRViolation.policy.manualRemediationProcess | String | The manual remediation process recommended for the policy violation. |
+| RubrikPolaris.IRViolation.details.domainUniqueId | String | The unique identifier of the domain associated with the violation details. |
+| RubrikPolaris.IRViolation.details.detectionTime | Date | The time at which the threat was detected. |
+| RubrikPolaris.IRViolation.details.startTime | Date | The start time of the alert event. |
+| RubrikPolaris.IRViolation.details.endTime | Date | The end time of the alert event. |
+| RubrikPolaris.IRViolation.details.mitreTactic | String | The MITRE ATT&amp;CK tactic associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.displayName | String | The display name of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.domainName | String | The domain name of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.domainUniqueId | String | The unique identifier of the domain of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.idpType | String | The identity provider type of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.principalType | String | The principal type of the identity resource \(e.g. USER, COMPUTER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.privilegeType | String | The privilege type of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.userPrincipalName | String | The user principal name of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.status | String | The status of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.title | String | The job title of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.source | String | The source of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.identityTags | String | The list of tags associated with the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.uniqueId | String | The unique identifier of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.nativeType | String | The native type of the identity resource \(e.g. User\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainName | String | The root domain name of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainId | String | The unique identifier of the root domain of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityId | String | The unique identifier of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityName | String | The name of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityType | String | The type of the actor identity involved in the alert \(e.g. USER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorPrivilegeType | String | The privilege type of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorState | String | The state of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.entityName | String | The name of the entity associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.entityId | String | The unique identifier of the entity associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityUniqueIdentifier | String | The unique identifier of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityName | String | The name of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentitySource | String | The source domain of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityStatus | String | The status of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityType | String | The type of the target identity involved in the alert \(e.g. COMPUTER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdpType | String | The identity provider type of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetPrivilegeType | String | The privilege type of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.eventTime | Date | The time at which the identity event occurred. |
+| RubrikPolaris.PageToken.IRViolation.next_page_token | String | The next page token. |
+| RubrikPolaris.PageToken.IRViolation.name | String | The name of the command. |
+| RubrikPolaris.PageToken.IRViolation.has_next_page | Boolean | Whether the result has the next page or not. |
+
+#### Command example
+
+```!rubrik-identity-resilience-violation-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "IRViolation": [
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "violationSeverity": "HIGH",
+                "createdAt": "2026-03-25T09:29:55.000Z",
+                "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+                "resourceId": "00000000-0000-0000-0000-000000000101",
+                "resourceType": "RESOURCE_TYPE_IDENTITY",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000201",
+                    "name": "Excessive admin privileges",
+                    "description": "Users with excessive admin privileges pose a risk of privilege escalation.",
+                    "policySeverity": "HIGH",
+                    "policyCategory": "IDENTITY_HYGIENE",
+                    "policyType": "POLICY_TYPE_IDENTITY",
+                    "frameworks": [
+                        "MITRE ATT&CK: TA0006",
+                        "CIS Controls: 14.2, 14.6",
+                        "NIST CSF: PR.AC-1, PR.PT-3",
+                        "NIST SP 800-53: AC-3, AC-6, IA-5",
+                        "Regulations: GDPR, HIPAA, PCI DSS, SOC 2, CMMC"
+                    ],
+                    "manualRemediationProcess": "Disable delegation for privileged identities. For users, it's recommended to assign them to the \"Protected Users\" group. Alternatively, you can enable the setting \"This account is sensitive and can't be delegated\". For computers and service accounts, disable delegation by disabling the setting \"Trust this computer/user for delegation to any service\". If delegation is required, convert to constrained delegation that limits which services an identity can delegate to.",
+                    "__typename": "IRPolicy"
+                },
+                "details": {
+                    "domainUniqueId": "00000000-0000-0000-0000-000000000301",
+                    "__typename": "IdentityViolationDetails"
+                },
+                "resourceMetadata": {
+                    "metadata": {
+                        "displayName": "John Doe",
+                        "domainName": "rubrikdemo.com",
+                        "idpType": "ENTRA_ID",
+                        "principalType": "USER",
+                        "privilegeType": "PRIVILEGED",
+                        "userPrincipalName": "demo@rubrik.com",
+                        "status": "ACTIVE",
+                        "source": "ON_PREM_AD",
+                        "identityTags": [
+                            "PRIVILEGED"
+                        ],
+                        "uniqueId": "00000000-0000-0000-0000-000000000401",
+                        "nativeType": "User",
+                        "__typename": "IdentityMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "__typename": "PolicyViolation"
+            },
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000003",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "name": "",
+                "violationSeverity": "MEDIUM",
+                "createdAt": "2026-03-25T16:45:30.000Z",
+                "lastUpdatedAt": "2026-03-25T18:30:15.000Z",
+                "resourceId": "00000000-0000-0000-0000-000000000103",
+                "resourceType": "RESOURCE_TYPE_IDP",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000203",
+                    "name": "Overly permissive IDP configuration",
+                    "description": "Identity provider with overly permissive configuration.",
+                    "policySeverity": "MEDIUM",
+                    "policyCategory": "IDENTITY_PROVIDER_SECURITY",
+                    "policyType": "POLICY_TYPE_IDP",
+                    "frameworks": [
+                        "MITRE ATT&CK: TA0006",
+                        "CIS Controls: 6.7; NIST CSF: PR.AC-6",
+                        "NIST SP 800-53: IA-5",
+                        "Regulations: GDPR, HIPAA, PCI DSS, SOC 2, CMMC"
+                    ],
+                    "manualRemediationProcess": "Deploy a Conditional Access policy that enforces MFA for all users.",
+                    "__typename": "IRPolicy"
+                },
+                "details": {
+                    "domainUniqueId": "00000000-0000-0000-0000-000000000303",
+                    "__typename": "IdpViolationDetails"
+                },
+                "resourceMetadata": {
+                    "metadata": {
+                        "domainName": "rubrikdemo.com",
+                        "domainUniqueId": "00000000-0000-0000-0000-000000000303",
+                        "idpType": "OKTA",
+                        "rootDomainName": "rubrikdemo.com",
+                        "rootDomainId": "00000000-0000-0000-0000-000000000501",
+                        "__typename": "IdpMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "__typename": "PolicyViolation"
+            }
+        ],
+        "PageToken": {
+            "IRViolation": {
+                "name": "rubrik-identity-resilience-violation-list",
+                "next_page_token": "hash_token_ir",
+                "has_next_page": true
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IR Violations List
+>
+>|ID|Policy Name|Display Name|Domain|Status|Severity|Policy Type|Category|Root Domain|Detected On|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | Excessive admin privileges | John Doe | rubrikdemo.com | Open | High | Identity | Identity Hygiene |  | 2026-03-25T09:29:55.000Z |
+>| 00000000-0000-0000-0000-000000000003 | Overly permissive IDP configuration |  | rubrikdemo.com | Open | Medium | Idp | Identity Provider Security | rubrikdemo.com | 2026-03-25T16:45:30.000Z |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = hash_token_ir
+
+### rubrik-identity-resilience-violation-get
+
+***
+Retrieves the details of the Identity Resilience (IR) violation based on the provided violation ID.
+
+#### Base Command
+
+`rubrik-identity-resilience-violation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the IR violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-identity-resilience-violation-list" command. | Required |
+| policy_type | The policy type of the IR violation. Possible values are: IDENTITY, IDP, IDENTITY_EVENT, CROWDSTRIKE, MICROSOFT_DEFENDER. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.IRViolation.policyViolationId | String | The unique identifier for the policy violation. |
+| RubrikPolaris.IRViolation.name | String | The name of the policy violation. |
+| RubrikPolaris.IRViolation.violationSeverity | String | The severity level of the policy violation. |
+| RubrikPolaris.IRViolation.status | String | The current status of the policy violation. |
+| RubrikPolaris.IRViolation.createdAt | Date | The date and time when the policy violation was created. |
+| RubrikPolaris.IRViolation.lastUpdatedAt | Date | The date and time when the policy violation was last updated. |
+| RubrikPolaris.IRViolation.resourceId | String | The unique identifier of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.resourceType | String | The type of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policyId | String | The unique identifier of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.name | String | The name of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.description | String | The description of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policySeverity | String | The severity level assigned to the policy. |
+| RubrikPolaris.IRViolation.policy.policyCategory | String | The category of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.policyType | String | The type of the policy associated with the violation. |
+| RubrikPolaris.IRViolation.policy.frameworks | String | The compliance frameworks associated with the policy. |
+| RubrikPolaris.IRViolation.policy.manualRemediationProcess | String | The manual remediation process recommended for the policy violation. |
+| RubrikPolaris.IRViolation.details.domainUniqueId | String | The unique identifier of the domain associated with the violation details. |
+| RubrikPolaris.IRViolation.details.detectionTime | Date | The time at which the threat was detected. |
+| RubrikPolaris.IRViolation.details.startTime | Date | The start time of the alert event. |
+| RubrikPolaris.IRViolation.details.endTime | Date | The end time of the alert event. |
+| RubrikPolaris.IRViolation.details.mitreTactic | String | The MITRE ATT&amp;CK tactic associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.displayName | String | The display name of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.domainName | String | The domain name of the resource associated with the violation. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.domainUniqueId | String | The unique identifier of the domain of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.idpType | String | The identity provider type of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.principalType | String | The principal type of the identity resource \(e.g. USER, COMPUTER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.privilegeType | String | The privilege type of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.userPrincipalName | String | The user principal name of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.status | String | The status of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.title | String | The job title of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.source | String | The source of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.identityTags | String | The list of tags associated with the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.uniqueId | String | The unique identifier of the identity resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.nativeType | String | The native type of the identity resource \(e.g. User\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainName | String | The root domain name of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.rootDomainId | String | The unique identifier of the root domain of the resource. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityId | String | The unique identifier of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityName | String | The name of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorIdentityType | String | The type of the actor identity involved in the alert \(e.g. USER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorPrivilegeType | String | The privilege type of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.actorState | String | The state of the actor identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.entityName | String | The name of the entity associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.entityId | String | The unique identifier of the entity associated with the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityUniqueIdentifier | String | The unique identifier of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityName | String | The name of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentitySource | String | The source domain of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityStatus | String | The status of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdentityType | String | The type of the target identity involved in the alert \(e.g. COMPUTER\). |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdpType | String | The identity provider type of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.targetPrivilegeType | String | The privilege type of the target identity involved in the alert. |
+| RubrikPolaris.IRViolation.resourceMetadata.metadata.eventTime | Date | The time at which the identity event occurred. |
+| RubrikPolaris.IRViolation.sensitiveHits.highRiskHits.violatedHits | Number | The number of high risk sensitive hits violated by the identity. |
+| RubrikPolaris.IRViolation.sensitiveHits.mediumRiskHits.violatedHits | Number | The number of medium risk sensitive hits violated by the identity. |
+| RubrikPolaris.IRViolation.sensitiveHits.lowRiskHits.violatedHits | Number | The number of low risk sensitive hits violated by the identity. |
+| RubrikPolaris.IRViolation.sensitiveHits.noRiskHits.violatedHits | Number | The number of no risk sensitive hits violated by the identity. |
+| RubrikPolaris.IRViolation.sensitiveHits.totalHits.violatedHits | Number | The total number of sensitive hits violated by the identity. |
+| RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryName | String | The name of the data category associated with the sensitive hits. |
+| RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryHits.dataCategoryId | String | The unique identifier of the data category. |
+| RubrikPolaris.IRViolation.dataCategoryResults.dataCategoryHits.totalViolatedHits | Number | The total number of violated hits for the data category. |
+
+#### Command example
+
+```!rubrik-identity-resilience-violation-get violation_id="00000000-0000-0000-0000-000000000001" policy_type="IDENTITY"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "IRViolation": {
+            "policyViolationId": "00000000-0000-0000-0000-000000000001",
+            "status": "POLICY_VIOLATION_STATUS_OPEN",
+            "violationSeverity": "HIGH",
+            "createdAt": "2026-03-25T09:29:55.000Z",
+            "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+            "resourceId": "00000000-0000-0000-0000-000000000101",
+            "resourceType": "RESOURCE_TYPE_IDENTITY",
+            "__typename": "PolicyViolation",
+            "policy": {
+                "policyId": "00000000-0000-0000-0000-000000000201",
+                "name": "Excessive admin privileges",
+                "description": "Users with excessive admin privileges pose a risk of privilege escalation.",
+                "policyCategory": "IDENTITY_HYGIENE",
+                "policySeverity": "HIGH",
+                "policyType": "POLICY_TYPE_IDENTITY",
+                "frameworks": [
+                    "NIST",
+                    "CIS"
+                ],
+                "manualRemediationProcess": "Review and revoke excess admin roles.",
+                "__typename": "IRPolicy"
+            },
+            "details": {
+                "domainUniqueId": "00000000-0000-0000-0000-000000000301",
+                "mitreTactic": "Privilege Escalation",
+                "__typename": "IdentityViolationDetails"
+            },
+            "resourceMetadata": {
+                "metadata": {
+                    "displayName": "John Doe",
+                    "domainName": "rubrikdemo.com",
+                    "idpType": "ENTRA_ID",
+                    "principalType": "USER",
+                    "privilegeType": "PRIVILEGED",
+                    "userPrincipalName": "demo@rubrik.com",
+                    "status": "ACTIVE",
+                    "title": "Engineer",
+                    "source": "ON_PREM_AD",
+                    "nativeType": "User",
+                    "__typename": "IdentityMetadata"
+                },
+                "__typename": "ResourceMetadata"
+            },
+            "identityTags": [
+                "PRIVILEGED"
+            ],
+            "sensitiveHits": {
+                "highRiskHits": {
+                    "violatedHits": 5,
+                    "__typename": "SensitiveHits"
+                },
+                "mediumRiskHits": {
+                    "violatedHits": 3,
+                    "__typename": "SensitiveHits"
+                },
+                "lowRiskHits": {
+                    "violatedHits": 2,
+                    "__typename": "SensitiveHits"
+                },
+                "noRiskHits": {
+                    "violatedHits": 10,
+                    "__typename": "SensitiveHits"
+                },
+                "totalHits": {
+                    "violatedHits": 20,
+                    "__typename": "SensitiveHits"
+                },
+                "__typename": "SensitiveHitsInfo"
+            },
+            "dataCategoryResults": [
+                {
+                    "dataCategoryName": "Financial",
+                    "dataCategoryHits": {
+                        "dataCategoryId": "00000000-0000-0000-0000-000000000601",
+                        "totalViolatedHits": 8,
+                        "__typename": "DataCategoryHits"
+                    },
+                    "__typename": "DataCategoryResult"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IR Violation Information
+>
+>|ID|Violation Name|Severity|Violation Status|Detection Time|Last Updated|Policy ID|Policy Name|Policy Type|Policy Description|Policy Category|Policy Severity|Frameworks|Manual Remediation Process|Identity Status|Resource ID|Resource Type|Title|Display Name|Domain Name|Source|Identity Provider|Principal Type|Privilege Type|User Principal Name|Identity Tags|Native Type|Domain Unique ID|MITRE Tactic|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Data Categories|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | Excessive admin privileges | High | Open | 2026-03-25T09:29:55.000Z | 2026-03-25T13:29:54.000Z | 00000000-0000-0000-0000-000000000201 | Excessive admin privileges | Identity | Users with excessive admin privileges pose a risk of privilege escalation. | IDENTITY_HYGIENE | High | NIST,<br/>CIS | Review and revoke excess admin roles. | ACTIVE | 00000000-0000-0000-0000-000000000101 | Identity | Engineer | John Doe | rubrikdemo.com | ON_PREM_AD | ENTRA_ID | USER | PRIVILEGED | demo@rubrik.com | PRIVILEGED | User | 00000000-0000-0000-0000-000000000301 | Privilege Escalation | 20 | 5 | 3 | 2 | 10 | **-** ***id***: 00000000-0000-0000-0000-000000000601<br/> ***name***: Financial<br/> ***totalViolatedHits***: 8 |
+
+### rubrik-identity-resilience-violation-status-update
+
+***
+Updates the status of the Identity Resilience (IR) violation.
+
+#### Base Command
+
+`rubrik-identity-resilience-violation-status-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the IR violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-identity-resilience-violation-list" command. | Required |
+| status | The status to update for the violation. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.IRViolation.policyViolationId | String | The ID of the violation. |
+| RubrikPolaris.IRViolation.status | String | The status of the violation. |
+
+#### Command example
+
+```!rubrik-identity-resilience-violation-status-update violation_id="00000000-0000-0000-0000-000000000001" status="IN_PROGRESS"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "IRViolation": {
+            "policyViolationId": "00000000-0000-0000-0000-000000000001",
+            "status": "POLICY_VIOLATION_STATUS_IN_PROGRESS"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Successfully updated the Identity Resilience violation status to In Progress
