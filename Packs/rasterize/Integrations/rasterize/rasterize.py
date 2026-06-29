@@ -417,14 +417,14 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
     demisto.debug(f"_freeze_tab_for_screenshot: starting freeze sequence, {tab_id=}, {path=}")
 
     # 1a. Make sure the Network domain is enabled before issuing emulateNetworkConditions.
-    _safe_call_cdp_with_args(tab, "Network.enable", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.enable", tab_id=tab_id, path=path)
 
     # 1b. Cut the network at the renderer: every new request fails immediately.
     _safe_call_cdp_with_args(
-        tab,
-        "Network.emulateNetworkConditions",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Network.emulateNetworkConditions",
+        tab_id=tab_id,
+        path=path,
         offline=True,
         latency=0,
         downloadThroughput=0,
@@ -434,42 +434,42 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
     # 1c. Belt-and-braces: enable the Fetch domain with a catch-all blocking pattern so
     #     even requests that slip past the network-conditions layer are intercepted.
     _safe_call_cdp_with_args(
-        tab,
-        "Fetch.enable",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Fetch.enable",
+        tab_id=tab_id,
+        path=path,
         patterns=[{"urlPattern": "*"}],
     )
 
     # 2. Cancel the current navigation's in-flight fetches.
-    _safe_call_cdp_with_args(tab, "Page.stopLoading", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
 
     # 3a. Halt the JS event loop so rAF / setInterval / observers stop allocating.
     _safe_call_cdp_with_args(
-        tab,
-        "Emulation.setScriptExecutionDisabled",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Emulation.setScriptExecutionDisabled",
+        tab_id=tab_id,
+        path=path,
         value=True,
     )
 
     # 3b. Signal the page-lifecycle layer that we are frozen (best-effort; not all
     #     Chrome builds support this CDP method).
     _safe_call_cdp_with_args(
-        tab,
-        "Page.setWebLifecycleState",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Page.setWebLifecycleState",
+        tab_id=tab_id,
+        path=path,
         state="frozen",
     )
 
     # 4. With nothing allocating on top of them, the GC hints can actually shrink
     #    the V8 heap and release renderer-side caches.
-    _safe_call_cdp_with_args(tab, "HeapProfiler.collectGarbage", tab_id, path)
-    _safe_call_cdp_with_args(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="HeapProfiler.collectGarbage", tab_id=tab_id, path=path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Memory.forciblyPurgeJavaScriptMemory", tab_id=tab_id, path=path)
 
     # 5. Drop the browser-level network cache populated by this tab.
-    _safe_call_cdp_with_args(tab, "Network.clearBrowserCache", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.clearBrowserCache", tab_id=tab_id, path=path)
 
     demisto.debug(
         f"_freeze_tab_for_screenshot: freeze sequence complete, "
@@ -542,7 +542,7 @@ def wait_for_page_load_with_memory_guard(
         # Check for timeout.
         if time.monotonic() >= deadline:  # pylint: disable=E9003
             # Stop the still-loading tab so it cannot keep consuming memory after we return.
-            _safe_call_cdp_with_args(tab, "Page.stopLoading", tab_id, path)
+            _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
             )
