@@ -4001,7 +4001,7 @@ class AssetsDeviceHandler:
         current_batch_number = self.asset_batch_counter
 
         log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
-    
+
         try:
             # 1. Enrich the AID batch via ContentClient.
             # /devices/entities/devices/v2 returns HTTP 400 on partial success (valid devices in
