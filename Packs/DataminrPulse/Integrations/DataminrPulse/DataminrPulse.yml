@@ -31,6 +31,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: Include Related Alerts
   additionalinfo: Auto include related alerts for Dataminr Pulse incidents.
@@ -50,6 +53,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
   defaultvalue: '40'
   display: Max Fetch
