@@ -57,10 +57,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Integrates with Zero Networks Segment API to fetch and process audit and network events.
 display: Zero Networks Segment
 name: ZeroNetworksSegmentEventCollector

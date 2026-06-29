@@ -62,11 +62,13 @@ configuration:
 - display: Multi customer
   name: is_multi_customer
   type: 8
+  section: Connect
   required: false
   additionalinfo: Indicates whether the requester has multi-customer access.
 - display: Use API Version 2 by default
   name: is_v2
   type: 8
+  section: Connect
   required: false
   additionalinfo: Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument).
 - display: Trust any certificate (not secure)

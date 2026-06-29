@@ -59,6 +59,7 @@ configuration:
   name: incidentType
   defaultvalue: 'XMCO Serenety Alert'
   type: 13
+  section: Connect
 description: 'Fetch Serenety alert from XMCO.'
 display: Serenety
 name: Serenety
