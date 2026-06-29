@@ -174,6 +174,32 @@ script:
     - contextPath: AWS.SecurityHub.FindingsNextToken
       description: The pagination token to use when requesting the next set of findings.
       type: String
+  - name: aws-securityhub-findings-batch-update
+    description: "Updates one or more AWS Security Hub V2 findings in a single batch request. Findings are targeted by metadata_uids and/or finding_identifiers. Required IAM Permission: securityhub:BatchUpdateFindingsV2."
+    arguments:
+    - name: metadata_uids
+      description: A comma-separated list of OCSF finding metadata UIDs to update.
+      required: false
+      isArray: true
+    - name: finding_identifiers
+      description: 'Composite finding identifiers to update. Each entry: "cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id>", multiple entries separated by ";".'
+      required: false
+    - name: comment
+      description: The reason for updating the findings.
+      required: false
+    - name: severity_id
+      description: The new OCSF severity ID to assign to the findings (e.g., 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal).
+      required: false
+    - name: status_id
+      description: The new OCSF status ID to assign to the findings (e.g., 1=New, 2=In Progress, 3=Suppressed, 4=Resolved).
+      required: false
+    outputs:
+    - contextPath: AWS.SecurityHub.BatchUpdateFindings.ProcessedFindings
+      description: The list of findings that were successfully updated.
+      type: Unknown
+    - contextPath: AWS.SecurityHub.BatchUpdateFindings.UnprocessedFindings
+      description: The list of findings that could not be updated, including the error for each.
+      type: Unknown
   dockerimage: demisto/boto3py3:1.0.0.7704170
   runonce: false
   script: '-'

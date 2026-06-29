@@ -2,12 +2,15 @@ import pytest
 from AWS_SecurityHub_V2 import (
     disable_security_hub_command,
     enable_security_hub_command,
+    findings_batch_update_command,
     findings_get_command,
     generate_filters_for_get_findings,
+    parse_finding_identifiers,
     parse_number_filters,
     parse_string_filters,
     parse_tags,
 )
+from CommonServerPython import DemistoException
 
 
 def test_parse_tags():
@@ -211,3 +214,93 @@ def test_findings_get_command_error(mocker):
 
     with pytest.raises(Exception, match="AccessDenied"):
         findings_get_command(mock_client, {})
+
+
+def test_parse_finding_identifiers():
+    """
+    Given: A finding_identifiers argument with one complete triple.
+    When: parse_finding_identifiers is called.
+    Then: It returns the FindingIdentifiers API structure.
+    """
+    result = parse_finding_identifiers(
+        "cloud_account_uid=123456789012,finding_info_uid=f-1,metadata_product_uid=p-1"
+    )
+    assert result == [{"CloudAccountUid": "123456789012", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}]
+
+
+def test_parse_finding_identifiers_incomplete():
+    """
+    Given: A finding_identifiers entry missing a required key.
+    When: parse_finding_identifiers is called.
+    Then: The incomplete entry is dropped.
+    """
+    result = parse_finding_identifiers("cloud_account_uid=123,finding_info_uid=f-1")
+    assert result == []
+
+
+def test_findings_batch_update_command_success(mocker):
+    """
+    Given: A mocked securityhub client and metadata_uids with update fields.
+    When: findings_batch_update_command is called.
+    Then: It passes MetadataUids/Comment/SeverityId/StatusId and returns processed/unprocessed.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {
+        "ProcessedFindings": [{"metadata": {"uid": "u-1"}}],
+        "UnprocessedFindings": [],
+    }
+    args = {"metadata_uids": "u-1,u-2", "comment": "triage", "severity_id": "4", "status_id": "2"}
+
+    result = findings_batch_update_command(mock_client, args)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["MetadataUids"] == ["u-1", "u-2"]
+    assert call_kwargs["Comment"] == "triage"
+    assert call_kwargs["SeverityId"] == 4
+    assert call_kwargs["StatusId"] == 2
+    assert result.outputs_prefix == "AWS.SecurityHub.BatchUpdateFindings"
+    assert result.outputs["ProcessedFindings"][0]["metadata"]["uid"] == "u-1"
+
+
+def test_findings_batch_update_command_with_identifiers(mocker):
+    """
+    Given: A mocked securityhub client and finding_identifiers targeting.
+    When: findings_batch_update_command is called.
+    Then: It passes the FindingIdentifiers structure to the API.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [], "UnprocessedFindings": []}
+    args = {
+        "finding_identifiers": "cloud_account_uid=123,finding_info_uid=f-1,metadata_product_uid=p-1",
+        "status_id": "4",
+    }
+
+    findings_batch_update_command(mock_client, args)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["FindingIdentifiers"] == [
+        {"CloudAccountUid": "123", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}
+    ]
+
+
+def test_findings_batch_update_command_no_target():
+    """
+    Given: Args with neither metadata_uids nor finding_identifiers.
+    When: findings_batch_update_command is called.
+    Then: It raises a DemistoException requiring a targeting argument.
+    """
+    with pytest.raises(DemistoException, match="metadata_uids.*finding_identifiers"):
+        findings_batch_update_command(None, {"comment": "x"})
+
+
+def test_findings_batch_update_command_error(mocker):
+    """
+    Given: A mocked securityhub client whose batch_update_findings_v2 raises an exception.
+    When: findings_batch_update_command is called.
+    Then: The exception propagates to be handled in main().
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.side_effect = Exception("AccessDenied")
+
+    with pytest.raises(Exception, match="AccessDenied"):
+        findings_batch_update_command(mock_client, {"metadata_uids": "u-1"})

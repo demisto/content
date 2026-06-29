@@ -324,6 +324,85 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
     )
 
 
+def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
+    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
+
+    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
+    Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
+
+    Args:
+        identifiers_str (str): The raw finding identifiers argument string.
+
+    Returns:
+        list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
+    """
+    return [
+        {
+            "CloudAccountUid": e["cloud_account_uid"],
+            "FindingInfoUid": e["finding_info_uid"],
+            "MetadataProductUid": e["metadata_product_uid"],
+        }
+        for e in parse_filter_entries(identifiers_str)
+        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
+    ]
+
+
+def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResults:
+    """Update one or more AWS Security Hub V2 findings in a single batch request.
+
+    Findings can be targeted either by ``metadata_uids`` (a comma-separated list of OCSF metadata
+    UIDs) or by ``finding_identifiers`` (composite identifier triples). At least one targeting
+    argument is required.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. Targeting: ``metadata_uids`` and/or ``finding_identifiers``.
+            Updates: ``comment``, ``severity_id`` (OCSF severity ID), ``status_id`` (OCSF status ID).
+
+    Returns:
+        CommandResults: The processed and unprocessed findings returned by the API.
+
+    Raises:
+        DemistoException: If neither ``metadata_uids`` nor ``finding_identifiers`` is provided.
+    """
+    metadata_uids = argToList(args.get("metadata_uids"))
+    finding_identifiers = parse_finding_identifiers(args.get("finding_identifiers", ""))
+
+    if not metadata_uids and not finding_identifiers:
+        raise DemistoException("You must provide either 'metadata_uids' or 'finding_identifiers' to target findings.")
+
+    kwargs = remove_empty_elements(
+        {
+            "MetadataUids": metadata_uids or None,
+            "FindingIdentifiers": finding_identifiers or None,
+            "Comment": args.get("comment"),
+            "SeverityId": arg_to_number(args.get("severity_id")),
+            "StatusId": arg_to_number(args.get("status_id")),
+        }
+    )
+
+    demisto.debug("[AWS_Security_Hub_V2] Batch updating findings")
+    response = client.batch_update_findings_v2(**kwargs)
+
+    processed = response.get("ProcessedFindings", [])
+    unprocessed = response.get("UnprocessedFindings", [])
+    outputs = {
+        "ProcessedFindings": processed,
+        "UnprocessedFindings": unprocessed,
+    }
+    readable_output = tableToMarkdown(
+        "AWS Security Hub V2 Batch Update Findings",
+        {"Processed": len(processed), "Unprocessed": len(unprocessed)},
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="AWS.SecurityHub.BatchUpdateFindings",
+        outputs=remove_empty_elements(outputs),
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
@@ -342,6 +421,8 @@ def main():  # pragma: no cover
             return_results(disable_security_hub_command(client, args))
         elif command == "aws-securityhub-findings-get":
             return_results(findings_get_command(client, args))
+        elif command == "aws-securityhub-findings-batch-update":
+            return_results(findings_batch_update_command(client, args))
 
         # elif command == "aws-securityhub-get-finding-statistics":
         #     return_results(get_finding_statistics_command(client, args))
