@@ -219,6 +219,20 @@ def get_connection_params(args):  # pylint: disable=W9014
         Snowflake connection params
     """
     params: dict = {}
+
+    # Validate that at least one authentication method is configured
+    has_oauth = any([OAUTH_CLIENT_ID, OAUTH_TOKEN_URL, OAUTH_CLIENT_SECRET, OAUTH_SCOPE])
+    has_certificate = bool(CERTIFICATE)
+    has_password = bool(PASSWORD)
+    if not any([has_oauth, has_certificate, has_password]):
+        raise ValueError(
+            "No authentication method configured. Please provide one of: "
+            "Credentials (username/password), Certificate (key pair), or OAuth parameters."
+        )
+
+    if not USER:
+        raise ValueError("Username is required for all authentication methods (username/password, key pair, and OAuth).")
+
     set_provided(params, "user", USER)  # user value is required for all authentication methods
     set_provided(params, "account", ACCOUNT)
     set_provided(params, "region", REGION)
@@ -228,7 +242,10 @@ def get_connection_params(args):  # pylint: disable=W9014
     set_provided(params, "schema", args.get("schema"), SCHEMA)
     set_provided(params, "role", args.get("role"), ROLE)
 
-    if OAUTH_CLIENT_ID and OAUTH_TOKEN_URL and OAUTH_CLIENT_SECRET:
+    if has_oauth:
+        if not all([OAUTH_CLIENT_ID, OAUTH_TOKEN_URL, OAUTH_CLIENT_SECRET]):
+            raise ValueError("OAuth Client ID, Client Secret, and Token URL must all be provided for OAuth authentication.")
+
         # ── OAuth (External OAuth, Client Credentials grant) ──
         # The snowflake-connector-python natively supports the client credentials flow.
         # Override the authenticator with the OAuth-specific value.
@@ -236,10 +253,9 @@ def get_connection_params(args):  # pylint: disable=W9014
         set_provided(params, "oauth_client_id", OAUTH_CLIENT_ID)
         set_provided(params, "oauth_client_secret", OAUTH_CLIENT_SECRET)
         set_provided(params, "oauth_token_request_url", OAUTH_TOKEN_URL)
-        if OAUTH_SCOPE:
-            set_provided(params, "oauth_scope", OAUTH_SCOPE)
+        set_provided(params, "oauth_scope", OAUTH_SCOPE)
 
-    elif CERTIFICATE:
+    elif has_certificate:
         set_provided(params, "authenticator", AUTHENTICATOR)
         # ── Key Pair authentication ──
         p_key = serialization.load_pem_private_key(CERTIFICATE, password=CERT_PASSWORD, backend=default_backend())

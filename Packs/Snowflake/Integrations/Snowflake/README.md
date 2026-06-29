@@ -66,7 +66,7 @@
 </ol>
 </li>
 <li>
-<p><strong>Authentication via External OAuth</strong><br>
+<p><strong>Authentication via External OAuth</strong><br/>
 To configure External OAuth authentication, please consult the following setup guidelines: <a href="https://docs.snowflake.com/en/user-guide/oauth-ext-overview">Snowflake External OAuth Overview</a>.</p>
 <p>When using External OAuth, fill in the <strong>OAuth Client ID</strong>, <strong>OAuth Client Secret</strong>, <strong>OAuth Token URL</strong>, and optionally the <strong>OAuth Scope</strong> parameters. The <strong>Username</strong> field should still be set to the Snowflake service user that the IdP token maps to. The <strong>Password</strong> field can be left empty.</p>
 <h4>Prerequisites</h4>
