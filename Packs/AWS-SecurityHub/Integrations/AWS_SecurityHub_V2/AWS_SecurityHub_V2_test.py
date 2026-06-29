@@ -5,6 +5,7 @@ from AWS_SecurityHub_V2 import (
     findings_batch_update_command,
     findings_get_command,
     generate_filters_for_get_findings,
+    parse_date_filters,
     parse_finding_identifiers,
     parse_number_filters,
     parse_string_filters,
@@ -304,3 +305,50 @@ def test_findings_batch_update_command_error(mocker):
 
     with pytest.raises(Exception, match="AccessDenied"):
         findings_batch_update_command(mock_client, {"metadata_uids": "u-1"})
+
+
+def test_parse_date_filters_absolute():
+    """
+    Given: A date_filters entry with both start and end.
+    When: parse_date_filters is called.
+    Then: It builds the absolute {Start, End} Filter.
+    """
+    result = parse_date_filters("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z")
+    assert result == [
+        {
+            "FieldName": "finding_info.created_time_dt",
+            "Filter": {"Start": "2024-01-01T00:00:00Z", "End": "2024-02-01T00:00:00Z"},
+        }
+    ]
+
+
+def test_parse_date_filters_relative():
+    """
+    Given: A date_filters entry with days.
+    When: parse_date_filters is called.
+    Then: It builds the relative {DateRange: {Value, Unit}} Filter.
+    """
+    result = parse_date_filters("fieldname=finding_info.modified_time_dt,days=7")
+    assert result == [
+        {"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS"}}}
+    ]
+
+
+def test_parse_date_filters_only_start_raises():
+    """
+    Given: A date_filters entry with start but no end.
+    When: parse_date_filters is called.
+    Then: It raises a DemistoException (oneOf requires both start and end, or days).
+    """
+    with pytest.raises(DemistoException, match="requires either 'days', or both 'start' and 'end'"):
+        parse_date_filters("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z")
+
+
+def test_parse_date_filters_days_with_start_raises():
+    """
+    Given: A date_filters entry mixing days with start.
+    When: parse_date_filters is called.
+    Then: It raises a DemistoException (cannot mix the two modes).
+    """
+    with pytest.raises(DemistoException, match="use either 'days' or 'start'.*not both"):
+        parse_date_filters("fieldname=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z")

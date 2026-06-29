@@ -192,16 +192,41 @@ def parse_string_filters(filters_str: str) -> list[dict]:
 
 
 def parse_date_filters(filters_str: str) -> list[dict]:
-    """Parse ``date_filters`` arg entries (``fieldname``, ``start``, ``end``).
+    """Parse ``date_filters`` arg entries into the API ``DateFilters`` structure.
 
-    Empty ``Start``/``End`` values are not stripped here; ``remove_empty_elements`` is applied
-    once at the top level in the command and recursively cleans these nested values.
+    The API's date ``Filter`` is a ``oneOf``: either an absolute range (``Start`` and ``End``
+    together) or a relative range (``DateRange`` with a number of ``days``). Each entry supports:
+        ``fieldname`` (required), and either ``start`` + ``end`` (both required together), or ``days``.
+
+    Args:
+        filters_str (str): The raw date filters argument string.
+
+    Returns:
+        list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
+
+    Raises:
+        DemistoException: If an entry provides only one of ``start``/``end``, or mixes ``days`` with
+            ``start``/``end``, or provides neither.
     """
-    return [
-        {"FieldName": e["fieldname"], "Filter": {"Start": e.get("start"), "End": e.get("end")}}
-        for e in parse_filter_entries(filters_str)
-        if e.get("fieldname") and (e.get("start") or e.get("end"))
-    ]
+    filters = []
+    for e in parse_filter_entries(filters_str):
+        field_name = e.get("fieldname")
+        if not field_name:
+            continue
+        start, end, days = e.get("start"), e.get("end"), e.get("days")
+
+        if days and (start or end):
+            raise DemistoException(f"Date filter for '{field_name}': use either 'days' or 'start'+'end', not both.")
+        if days:
+            date_filter = {"DateRange": {"Value": arg_to_number(days), "Unit": "DAYS"}}
+        elif start and end:
+            date_filter = {"Start": start, "End": end}
+        else:
+            raise DemistoException(
+                f"Date filter for '{field_name}' requires either 'days', or both 'start' and 'end'."
+            )
+        filters.append({"FieldName": field_name, "Filter": date_filter})
+    return filters
 
 
 def parse_boolean_filters(filters_str: str) -> list[dict]:
