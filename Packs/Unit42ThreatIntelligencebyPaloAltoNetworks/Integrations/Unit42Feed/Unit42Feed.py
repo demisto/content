@@ -596,7 +596,7 @@ def create_relationships_and_tags(
 
         tags.append(threat_name)
 
-        if argToBoolean(demisto.params().get("create_relationships")):
+        if argToBoolean(demisto.params().get("create_relationships") or False):
             reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
 
             # Map threat class to XSOAR threat intel object type
@@ -716,7 +716,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
 
     # Create relationships
     relationships, tags = create_relationships_and_tags(name, threat_class, threat_object.get("related_threat_objects", []))
-    if argToBoolean(demisto.params().get("create_relationships")):
+    if argToBoolean(demisto.params().get("create_relationships") or False):
         relationships += create_campaigns_relationships(threat_object, name, threat_class)
         relationships += create_attack_patterns_relationships(threat_object, name, threat_class)
         relationships += create_malware_relationships(threat_object, name, threat_class)
@@ -1025,7 +1025,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
         total_types += len(set(indicator_types))
 
     # Parse limit from params and calculate limit per type
-    requested_limit = arg_to_number(params.get("limit"))
+    requested_limit = arg_to_number(params.get("limit"))  # noqa: ucp-param-default  (calculate_limit_per_type handles None)
     limit_per_type = calculate_limit_per_type(requested_limit, total_types)
 
     demisto.debug(f"UNIT42FEED: Starting fetch with limit_per_type={limit_per_type}, feed_types={feed_types}")
