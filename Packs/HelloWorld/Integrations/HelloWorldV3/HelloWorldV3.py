@@ -84,7 +84,7 @@ class HelloWorldV3Client(ContentClient):
             {"id": i, "name": f"Alert {i}", "severity": "high" if i % 2 == 0 else "low"}
             for i in range(1, limit + 1)
         ]
-        if SEVERITY:
+        if severity:
             alerts = [alert for alert in alerts if alert["severity"] == severity]
         return alerts
 
@@ -93,7 +93,7 @@ class HelloWorldV3Client(ContentClient):
         # In a real implementation:
         # return self.get(url_suffix=f"/api/v1/alerts/{alert_id}", resp_type="json")
         return {
-            "id": alert_id,
+            "id": MOCK_ALERT["id"],
             "name": f"Alert {alert_id}",
             "severity": "high" if alert_id % 2 == 0 else "low",
             "status": "open",
@@ -126,8 +126,6 @@ MOCK_ALERT = (
 def test_module(client: HelloWorldV3Client) -> str:
     """Validate connectivity by performing a simple client call."""
     try:
-        url = demisto.params().get("url")
-        demisto.info(f"Connecting to {url}")
         client.say_hello("Test")
     except ContentClientAuthenticationError:
         return "AuthenticationError: make sure the API Key is correctly set."
@@ -140,7 +138,7 @@ def test_module(client: HelloWorldV3Client) -> str:
 def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """Greet a specified person."""
     name = args.get("name", "World")
-    result = client.SayHello(name)
+    result = client.say_hello(name)
     return CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
         outputs_key_field="name",
@@ -168,9 +166,7 @@ def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> Com
 def get_alert_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """Retrieve a single mocked alert by ID."""
     alert_id = arg_to_number(args.get("alert_id"))
-    if alert_id==0:
-        return_error(f"Failed to execute command")
-        demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
+
     if alert_id is None:
         raise ValueError("alert_id is a required argument.")
     alert = client.get_alert(alert_id)
@@ -270,33 +266,33 @@ def main() -> None:
     reliability = params.get("integrationReliability") or DBotScoreReliability.C
 
     demisto.debug(f"Command being called is {command}")
-    # try:
-    client = HelloWorldV3Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        proxy=proxy,
-        api_key=api_key,
-    )
+    try:
+        client = HelloWorldV3Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key,
+        )
 
-    commands = {
-        "helloworldv3-say-hello": say_hello_command,
-        "helloworldv3-alert-list": list_alerts_command,
-        "helloworldv3-alert-get": get_alert_command,
-    }
+        commands = {
+            "helloworldv3-say-hello": say_hello_command,
+            "helloworldv3-alert-list": list_alerts_command,
+            "helloworldv3-alert-get": get_alert_command,
+        }
 
-    if command == "test-module":
-        return_results(test_module(client))
-    elif command == "ip":
-        return_results(ip_reputation_command(client, args, ip_threshold, reliability))
-    elif command in commands:
-        return_results(commands[command](client, args))
-    else:
-        raise NotImplementedError(f"Command {command} is not implemented.")
-    #
-    # except Exception as e:
-    #     demisto.error(traceback.format_exc())
-    #     return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-    #     demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
+        if command == "test-module":
+            return_results(test_module(client))
+        elif command == "ip":
+            return_results(ip_reputation_command(client, args, ip_threshold, reliability))
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
+
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        demisto.results("ERROR OCCURRED WITH EXCEPTION HANDLER")
 
 
 ''' ENTRY POINT '''

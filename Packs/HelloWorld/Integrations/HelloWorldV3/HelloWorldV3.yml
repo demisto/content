@@ -21,7 +21,7 @@ configuration:
   display: Use system proxy settings
   type: 8
   required: false
-- name: ip
+- name: ip_threshold
   display: IP Threshold
   additionalinfo: The minimum score for an IP to be considered malicious (0-100).
   defaultvalue: "65"
