@@ -1,5 +1,5 @@
 [MODEL: dataset = menlo_security_ip_raw]
-| alter
+alter
     // `from`/`to` are reserved XQL tokens; alias before use.
     tmp_from = from,
     tmp_to = to,
