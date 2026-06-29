@@ -46,7 +46,7 @@ if demisto.command() == "yolo-coco-process-image":
 
     # load our input image and grab its spatial dimensions
     image = cv2.imread(args["image"])  # pylint: disable=E1101
-    (H, W) = image.shape[:2]
+    (H, W) = image.shape[:2]  # type: ignore[union-attr]
 
     # determine only the *output* layer names that we need from YOLO
     ln = net.getLayerNames()
@@ -56,7 +56,7 @@ if demisto.command() == "yolo-coco-process-image":
     # pass of the YOLO object detector, giving us our bounding boxes and
     # associated probabilities
     blob = cv2.dnn.blobFromImage(
-        image,
+        image,  # type: ignore[arg-type]
         1 / 255.0,
         (416, 416),  # pylint: disable=E1101
         swapRB=True,
@@ -127,7 +127,7 @@ if demisto.command() == "yolo-coco-process-image":
 
             # draw a bounding box rectangle and label on the image
             color = [int(c) for c in COLORS[classIDs[i]]]  # type: ignore
-            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # pylint: disable=E1101
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # pylint: disable=E1101  # type: ignore[arg-type]
             text = f"{LABELS[classIDs[i]]}: {confidences[i]:.4f}"  # type: ignore
             if LABELS[classIDs[i]] in output_keys:  # type: ignore
                 if isinstance(output_keys[LABELS[classIDs[i]]], float):  # type: ignore
@@ -139,7 +139,7 @@ if demisto.command() == "yolo-coco-process-image":
             else:
                 output_keys[LABELS[classIDs[i]]] = confidences[i]  # type: ignore
             cv2.putText(  # pylint: disable=E1101
-                image,
+                image,  # type: ignore[arg-type]
                 text,
                 (x, y - 5),
                 cv2.FONT_HERSHEY_SIMPLEX,  # pylint: disable=E1101
@@ -149,7 +149,7 @@ if demisto.command() == "yolo-coco-process-image":
             )
 
     # save the output image
-    cv2.imwrite("/tmp/snapshot.jpg", image)  # pylint: disable=E1101
+    cv2.imwrite("/tmp/snapshot.jpg", image)  # pylint: disable=E1101  # type: ignore[arg-type]
     # cv2.waitKey(0)
     f = open("/tmp/snapshot.jpg", "rb")
     output = f.read()
