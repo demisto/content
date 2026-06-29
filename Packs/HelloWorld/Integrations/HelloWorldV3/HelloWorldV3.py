@@ -17,6 +17,7 @@ from BaseContentApiModule import *  # noqa: F401
 ''' CONSTANTS '''
 
 DEFAULT_LIMIT = 10
+DEFAULT_PAGE_SIZE = 50
 DEFAULT_IP_THRESHOLD = 65
 
 
@@ -75,29 +76,68 @@ class HelloWorldV3Client(ContentClient):
         Implements a manual retry mechanism with exponential backoff when the
         server responds with HTTP 429 (Too Many Requests).
         """
-        return self._http_request(
+
+        res =  self._http_request(
             method="GET",
             url_suffix="/api/v1/hello",
-            params={"name": name},
+            params={"name": demisto.args().get("name")},
             resp_type="json",
             retries=3,
             backoff_factor=1,
             status_list=[429],
         )
 
+        return CommandResults(
+            outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
+            outputs_key_field="name",
+            outputs=res,
+            readable_output=res["message"],
+            raw_response=res,
+        )
 
-    def list_alerts(self, limit: int, severity: str | None) -> list[dict[str, Any]]:
-        """Return a mocked list of alerts, optionally filtered by severity."""
-        # In a real implementation:
-        # return self.get(url_suffix="/api/v1/alerts", params=assign_params(limit=limit, severity=severity),
-        #                 resp_type="json")
-        alerts = [
-            {"id": i, "name": f"Alert {i}", "severity": "high" if i % 2 == 0 else "low"}
-            for i in range(1, limit + 1)
-        ]
-        if severity:
-            alerts = [alert for alert in alerts if alert["severity"] == severity]
-        return alerts
+
+    def list_alerts(
+        self,
+        severity: str | None,
+        limit: int = DEFAULT_LIMIT,
+    ) -> list[dict[str, Any]]:
+        """Return a list of alerts, optionally filtered by severity.
+
+        Repeatedly requests pages from the server until ``limit`` alerts have
+        been collected or the server returns no more results. Each request
+        fetches at most ``page_size`` alerts (capped at the number still
+        needed to reach ``limit``).
+
+        Args:
+            severity (str | None): Optional severity to filter alerts by.
+            limit (int): Maximum total number of alerts to return.
+
+        Returns:
+            list[dict[str, Any]]: The collected alerts, at most ``limit`` items.
+        """
+        alerts: list[dict[str, Any]] = []
+        page = 1
+        while len(alerts) < limit:
+            current_page_size = min(DEFAULT_PAGE_SIZE, limit - len(alerts))
+            params = assign_params(
+                limit=current_page_size,
+                page=page,
+                severity=severity,
+                next_token=next_token
+            )
+            response = self.get(url_suffix="/api/v1/alerts", params=params, resp_type="json")
+            page_alerts = response.get("alerts", []) if isinstance(response, dict) else response
+            next_token = response.get("next_token")
+            if not page_alerts:
+                break
+            alerts.extend(page_alerts)
+            # A short page (fewer than requested) means there is no more data.
+            if len(page_alerts) < current_page_size:
+                break
+            page += 1
+        return alerts[:limit]
+
+
 
     def get_alert(self, alert_id: int) -> dict[str, Any]:
         """Return a single mocked alert by its ID."""
@@ -150,23 +190,14 @@ def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]):
     """Greet a specified person."""
 
     name = args.get("name", "World")
-    result = client.say_hello(name)
-
-
-    return CommandResults(
-        outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
-        outputs_key_field="name",
-        outputs=result,
-        readable_output=result["message"],
-        raw_response=result,
-    )
+    return client.say_hello(name)
 
 
 def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
     """List mocked alerts with optional severity filtering."""
-    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     severity = args.get("severity")
-    alerts = client.list_alerts(limit, severity)
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    alerts = client.list_alerts(severity, limit=limit)
     return CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Alert",
         outputs_key_field="id",
@@ -229,6 +260,8 @@ def ip_reputation_command(
             reputation = Common.DBotScore.BAD
         elif score >= threshold / 2:
             reputation = Common.DBotScore.SUSPICIOUS
+        else:
+            reputation = Common.DBotScore.UNKNOWN
 
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -271,8 +304,7 @@ def main() -> None:
     command = demisto.command()
 
     base_url = params.get("url", "https://api.dummy-example.com")
-    credentials = params.get("credentials") or {}
-    api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
+    api_key = params.get("credentials")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     ip_threshold = arg_to_number(params.get("ip_threshold")) or DEFAULT_IP_THRESHOLD

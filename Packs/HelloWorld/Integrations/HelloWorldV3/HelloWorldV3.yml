@@ -11,10 +11,8 @@ configuration:
   type: 0
   required: true
 - name: credentials
-  displaypassword: API Key
-  type: 9
+  type: 4
   required: true
-  hiddenusername: true
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
@@ -63,11 +61,6 @@ script:
   - name: helloworldv3-alert-list
     description: Lists mocked alerts, optionally filtered by severity.
     arguments:
-    - name: limit
-      description: The maximum number of alerts to return.
-      required: false
-      defaultvalue: "10"
-      type: number
     - name: severity
       description: The severity by which to filter the alerts.
       required: false
@@ -76,6 +69,11 @@ script:
       predefined:
       - low
       - high
+    - name: page_size
+      description: The maximum number of alerts to request per page when paginating.
+      required: false
+      defaultvalue: "50"
+      type: number
     outputs:
     - contextPath: HelloWorldV3.Alert.id
       description: The ID of the alert.
@@ -115,8 +113,6 @@ script:
     - name: ip
       description: A comma-separated list of IP addresses to check.
       required: true
-      isArray: true
-      default: true
       type: String
     - name: threshold
       description: The score threshold above which the IP is considered malicious. If not specified, the default integration threshold is used.
