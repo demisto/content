@@ -108,6 +108,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Retrieve detections belonging to a specified category.
   display: Detection Category
   hidden: false
