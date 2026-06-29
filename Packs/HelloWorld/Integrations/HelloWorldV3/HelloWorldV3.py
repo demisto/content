@@ -30,7 +30,6 @@ class HelloWorldV3AuthHandler(APIKeyAuthHandler):
     `APIKeyAuthHandler`, defined in `ContentClientApiModule`.
     """
 
-    @logger
     def __init__(self, api_key: str):
         """Initialize the authentication handler.
 
@@ -52,7 +51,6 @@ class HelloWorldV3Client(ContentClient):
     thread safety. The methods below return mocked data for demonstration.
     """
 
-    @logger
     def __init__(self, base_url: str, verify: bool, proxy: bool, api_key: str):
         """Initialize the HelloWorld v3 client.
 
@@ -105,18 +103,13 @@ class HelloWorldV3Client(ContentClient):
         """Return a single mocked alert by its ID."""
         # In a real implementation:
         # return self.get(url_suffix=f"/api/v1/alerts/{alert_id}", resp_type="json")
-        now = datetime.now(tz=timezone.utc)
-        epoch_float = now.timestamp()
-        epoch_int = int(epoch_float)
         return {
             "id": alert_id,
             "name": f"Alert {alert_id}",
             "severity": "high" if alert_id % 2 == 0 else "low",
             "status": "open",
-            "occurred": epoch_int,
         }
 
-    @logger
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Return a mocked reputation payload for the given IP address."""
         # In a real implementation:
@@ -159,18 +152,14 @@ def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]):
     name = args.get("name", "World")
     result = client.say_hello(name)
 
-    if not result:
-        return_error(str(result))
 
-    command_res =  CommandResults(
+    return CommandResults(
         outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
         outputs_key_field="name",
         outputs=result,
         readable_output=result["message"],
-        ignore_auto_extract=False,
         raw_response=result,
     )
-    return_results(command_res)
 
 
 def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
@@ -308,8 +297,6 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "ip":
             return_results(ip_reputation_command(client, args, ip_threshold, reliability))
-        elif command == "helloworldv3-say-hello":
-            say_hello_command(client,args)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
