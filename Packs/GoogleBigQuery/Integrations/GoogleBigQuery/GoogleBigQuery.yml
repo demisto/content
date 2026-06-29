@@ -1,8 +1,8 @@
+name: Google BigQuery
+display: Google BigQuery
 commonfields:
   id: Google BigQuery
   version: -1
-name: Google BigQuery
-display: Google BigQuery
 category: Database
 provider: Google
 sectionorder:
