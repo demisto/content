@@ -10,19 +10,7 @@ urllib3.disable_warnings()
 DEFAULT_RETRIES = 5
 
 
-def parse_tags(tags_str: str) -> dict:
-    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
-
-    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
-
-    Args:
-        tags_str (str): The keys and values string.
-
-    Returns:
-        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
-    """
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
-    return {key: value for key, value in regex.findall(tags_str)}
+""" HELPER FUNCTIONS """
 
 
 def build_client(params: dict) -> BotoClient:
@@ -80,77 +68,19 @@ def build_client(params: dict) -> BotoClient:
     )
 
 
-def test_module(client: BotoClient) -> str:
-    """Test connectivity and authentication against the AWS Security Hub V2 API.
-    Args:
-        client (BotoClient): An initialized boto3 ``securityhub`` client.
-    Returns:
-        str: ``"ok"`` if the call succeeds.
-    Raises:
-        DemistoException: With a user-friendly message when Security Hub V2 is not enabled
-            or the credentials/role do not have sufficient permissions.
-    """
-    demisto.debug("[AWS_Security_Hub_V2] Test Connectivity and Authentication")
-    try:
-        client.describe_security_hub_v2()
-    except client.exceptions.ResourceNotFoundException:
-        raise DemistoException(
-            "Security Hub V2 is not enabled in the configured account/region. "
-            "Enable Security Hub V2 or verify the configured region."
-        )
-    except client.exceptions.AccessDeniedException:
-        raise DemistoException(
-            "Access denied. Verify the configured role/credentials have the "
-            "'securityhub:DescribeSecurityHubV2' permission."
-        )
-    return "ok"
+def parse_tags(tags_str: str) -> dict:
+    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
 
-
-def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
-    """Enable AWS Security Hub V2 for the configured account and region.
+    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
 
     Args:
-        client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. Optional ``tags`` - a string of key/value pairs in the
-            format ``key=key1,value=value1;key=key2,value=value2`` to assign to the resource.
+        tags_str (str): The keys and values string.
 
     Returns:
-        CommandResults: The ARN of the enabled Security Hub V2 resource.
+        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
     """
-    tags = parse_tags(args.get("tags", ""))
-    kwargs = remove_empty_elements({"Tags": tags})
-
-    demisto.debug(f"[AWS_Security_Hub_V2] Enabling Security Hub V2 with tag keys: {list(tags.keys())}")
-    response = client.enable_security_hub_v2(**kwargs)
-
-    hub_arn = response.get("HubV2Arn")
-    outputs = {"HubV2Arn": hub_arn}
-    return CommandResults(
-        outputs_prefix="AWS.SecurityHub.Hub",
-        outputs_key_field="HubV2Arn",
-        outputs=outputs,
-        readable_output=tableToMarkdown("AWS Security Hub V2 Enabled", outputs, removeNull=True),
-        raw_response=response,
-    )
-
-
-def disable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
-    """Disable AWS Security Hub V2 for the configured account and region.
-
-    Args:
-        client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. No arguments are required.
-
-    Returns:
-        CommandResults: A confirmation message that Security Hub V2 was disabled.
-    """
-    demisto.debug("[AWS_Security_Hub_V2] Disabling Security Hub V2")
-    response = client.disable_security_hub_v2()
-
-    return CommandResults(
-        readable_output="AWS Security Hub V2 was successfully disabled.",
-        raw_response=response,
-    )
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    return {key: value for key, value in regex.findall(tags_str)}
 
 
 def parse_filter_entries(filters_str: str) -> list[dict]:
@@ -300,6 +230,79 @@ def generate_filters_for_get_findings(args: dict) -> dict | None:
     return {"CompositeFilters": [composite_filter], "CompositeOperator": args.get("composite_operator", "AND")}
 
 
+def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
+    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
+
+    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
+    Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
+
+    Args:
+        identifiers_str (str): The raw finding identifiers argument string.
+
+    Returns:
+        list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
+    """
+    return [
+        {
+            "CloudAccountUid": e["cloud_account_uid"],
+            "FindingInfoUid": e["finding_info_uid"],
+            "MetadataProductUid": e["metadata_product_uid"],
+        }
+        for e in parse_filter_entries(identifiers_str)
+        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
+    ]
+
+
+""" COMMAND FUNCTIONS """
+
+
+def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
+    """Enable AWS Security Hub V2 for the configured account and region.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. Optional ``tags`` - a string of key/value pairs in the
+            format ``key=key1,value=value1;key=key2,value=value2`` to assign to the resource.
+
+    Returns:
+        CommandResults: The ARN of the enabled Security Hub V2 resource.
+    """
+    tags = parse_tags(args.get("tags", ""))
+    kwargs = remove_empty_elements({"Tags": tags})
+
+    demisto.debug(f"[AWS_Security_Hub_V2] Enabling Security Hub V2 with tag keys: {list(tags.keys())}")
+    response = client.enable_security_hub_v2(**kwargs)
+
+    hub_arn = response.get("HubV2Arn")
+    outputs = {"HubV2Arn": hub_arn}
+    return CommandResults(
+        outputs_prefix="AWS.SecurityHub.Hub",
+        outputs_key_field="HubV2Arn",
+        outputs=outputs,
+        readable_output=tableToMarkdown("AWS Security Hub V2 Enabled", outputs, removeNull=True),
+        raw_response=response,
+    )
+
+
+def disable_security_hub_command(client: BotoClient, args: dict) -> CommandResults:
+    """Disable AWS Security Hub V2 for the configured account and region.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. No arguments are required.
+
+    Returns:
+        CommandResults: A confirmation message that Security Hub V2 was disabled.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Disabling Security Hub V2")
+    response = client.disable_security_hub_v2()
+
+    return CommandResults(
+        readable_output="AWS Security Hub V2 was successfully disabled.",
+        raw_response=response,
+    )
+
+
 def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
     """Retrieve a list of OCSF-formatted findings from AWS Security Hub V2.
 
@@ -347,29 +350,6 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
         ),
         raw_response=response,
     )
-
-
-def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
-    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
-
-    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
-    Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
-
-    Args:
-        identifiers_str (str): The raw finding identifiers argument string.
-
-    Returns:
-        list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
-    """
-    return [
-        {
-            "CloudAccountUid": e["cloud_account_uid"],
-            "FindingInfoUid": e["finding_info_uid"],
-            "MetadataProductUid": e["metadata_product_uid"],
-        }
-        for e in parse_filter_entries(identifiers_str)
-        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
-    ]
 
 
 def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResults:
@@ -426,6 +406,32 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
         readable_output=readable_output,
         raw_response=response,
     )
+
+
+def test_module(client: BotoClient) -> str:
+    """Test connectivity and authentication against the AWS Security Hub V2 API.
+    Args:
+        client (BotoClient): An initialized boto3 ``securityhub`` client.
+    Returns:
+        str: ``"ok"`` if the call succeeds.
+    Raises:
+        DemistoException: With a user-friendly message when Security Hub V2 is not enabled
+            or the credentials/role do not have sufficient permissions.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Test Connectivity and Authentication")
+    try:
+        client.describe_security_hub_v2()
+    except client.exceptions.ResourceNotFoundException:
+        raise DemistoException(
+            "Security Hub V2 is not enabled in the configured account/region. "
+            "Enable Security Hub V2 or verify the configured region."
+        )
+    except client.exceptions.AccessDeniedException:
+        raise DemistoException(
+            "Access denied. Verify the configured role/credentials have the "
+            "'securityhub:DescribeSecurityHubV2' permission."
+        )
+    return "ok"
 
 
 def main():  # pragma: no cover
