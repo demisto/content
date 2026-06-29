@@ -29,20 +29,53 @@ RESPONSE_ACTIONS_PARAMS: dict[str, list[str]] = {
     "FILE_ACQUIRE": ["host.id", "path.absolute"],
     "FILE_UNQUARANTINE": ["host.id", "path.absolute", "quarantined_file_path"],
     "DELETE_POD": ["kubernetes.cluster.name", "kubernetes.namespace.name", "kubernetes.pod.name"],
-    "ROLLOUT_RESTART": ["kubernetes.cluster.name", "kubernetes.namespace.name", "kubernetes.workload.type", "kubernetes.workload.name"],
-    "ISOLATE_NETWORK": ["kubernetes.cluster.name", "kubernetes.namespace.name", "kubernetes.workload.type", "kubernetes.workload.name"],
+    "ROLLOUT_RESTART": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.workload.type",
+        "kubernetes.workload.name",
+    ],
+    "ISOLATE_NETWORK": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.workload.type",
+        "kubernetes.workload.name",
+    ],
     "DELETE_NETWORK_POLICY": ["kubernetes.cluster.name", "kubernetes.namespace.name", "network_policy_name"],
     "GET_LOGS": ["kubernetes.cluster.name", "kubernetes.namespace.name"],
     "KUBERNETES_VOLUME_SNAPSHOT": ["kubernetes.cluster.name", "kubernetes.namespace.name"],
-    "KUBERNETES_DELETE_VOLUME_SNAPSHOT": ["kubernetes.cluster.name", "kubernetes.namespace.name", "kubernetes.persistentvolume.claim.name", "kubernetes.volume.snapshot.name"],
+    "KUBERNETES_DELETE_VOLUME_SNAPSHOT": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.persistentvolume.claim.name",
+        "kubernetes.volume.snapshot.name",
+    ],
     "CAPTURE": ["host.id", "capture.remote_storage_configuration_id", "capture.duration_ns", "capture.past_duration_ns"],
     "IAM_QUARANTINE": ["cloudProvider.name", "cloudProvider.account.id"],
     "IAM_UNQUARANTINE": ["cloudProvider.name", "cloudProvider.account.id", "iam_policy_name", "ct.user.identitytype", "ct.user"],
     "MAKE_PRIVATE_CLOUD_RESOURCE": ["cloudProvider.name", "cloudProvider.account.id", "cloudResourceType", "cloudResourceName"],
-    "UNDO_MAKE_PRIVATE_CLOUD_RESOURCE": ["cloudProvider.name", "cloudProvider.account.id", "cloudResourceType", "cloudResourceName", "previousPublicAccessSettings"],
+    "UNDO_MAKE_PRIVATE_CLOUD_RESOURCE": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudResourceType",
+        "cloudResourceName",
+        "previousPublicAccessSettings",
+    ],
     "CLOUD_VOLUME_SNAPSHOT": ["cloudProvider.name", "cloudProvider.account.id", "cloudProvider.region", "aws.instanceId"],
-    "UNDO_CLOUD_VOLUME_SNAPSHOT": ["cloudProvider.name", "cloudProvider.account.id", "cloudProvider.region", "snapshotIds", "aws.instanceId"],
-    "FETCH_CLOUD_LOGS": ["cloudProvider.name", "cloudProvider.account.id", "cloudProvider.region", "fromTimestamp", "toTimestamp"],
+    "UNDO_CLOUD_VOLUME_SNAPSHOT": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudProvider.region",
+        "snapshotIds",
+        "aws.instanceId",
+    ],
+    "FETCH_CLOUD_LOGS": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudProvider.region",
+        "fromTimestamp",
+        "toTimestamp",
+    ],
 }
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -177,7 +210,7 @@ def _build_data_payload(args: dict[str, Any]) -> dict[str, Any]:
         if val in (None, "", "null"):
             continue
         if api_key in INTEGER_PARAMS:
-            val = int(val)
+            val = int(val)  # type: ignore[arg-type]
         if api_key == "previous" or api_key == "allContainers":
             val = argToBoolean(val)
         parameters[api_key] = val
@@ -326,8 +359,7 @@ def create_system_capture_command(client: Client, args: dict[str, Any]) -> Comma
     Trigger a sysdig system capture
     """
     data = _build_capture_payload(args)
-    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures",
-                                          json_data=data)  # type: ignore[assignment]
+    result: dict = client.call_sysdig_api(method="POST", url_suffix="/api/v1/captures", json_data=data)  # type: ignore[assignment]
     readable_output = (
         f"## Capture: {result.get('capture', {}).get('name')}\n"
         f"- **Status:** {result.get('capture', {}).get('status')}\n"
@@ -388,7 +420,7 @@ def get_agent_by_mac_command(client: Client, args: dict[str, Any]) -> CommandRes
     if _cache_is_valid(cached) and not force:
         agent = cached["data"]
     else:
-        result: dict = client.call_sysdig_api("GET", url_suffix="/api/agents/connected")
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/agents/connected")  # type: ignore[assignment]
         agents = result.get("agents", result) if isinstance(result, dict) else result
         agent = None
         for a in agents:
@@ -431,7 +463,7 @@ def get_customer_info_command(client: Client, args: dict[str, Any]) -> CommandRe
         customer_id = cached["data"]["customer_id"]
         customer_name = cached["data"].get("customer_name", "")
     else:
-        result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")  # type: ignore[assignment]
         user: dict = result.get("user") or {}
         customer = user.get("customer") or {}
         customer_id = customer.get("id") or user.get("customerId")

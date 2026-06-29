@@ -20,7 +20,6 @@ This is the default integration for this content pack when configured by the Dat
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-
 ### execute-response-action
 
 ***
