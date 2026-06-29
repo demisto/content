@@ -87,14 +87,7 @@ class HelloWorldV3Client(ContentClient):
             status_list=[429],
         )
 
-        return CommandResults(
-            outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
-            outputs_key_field="name",
-            outputs=res,
-            readable_output=res["message"],
-            raw_response=res,
-        )
-
+        return res
 
     def list_alerts(
         self,
@@ -117,6 +110,7 @@ class HelloWorldV3Client(ContentClient):
         """
         alerts: list[dict[str, Any]] = []
         page = 1
+        next_token=None
         while len(alerts) < limit:
             current_page_size = min(DEFAULT_PAGE_SIZE, limit - len(alerts))
             params = assign_params(
@@ -125,7 +119,7 @@ class HelloWorldV3Client(ContentClient):
                 severity=severity,
                 next_token=next_token
             )
-            response = self.get(url_suffix="/api/v1/alerts", params=params, resp_type="json")
+            response = self._http_request(url_suffix="/api/v1/alerts", params=params, resp_type="json")
             page_alerts = response.get("alerts", []) if isinstance(response, dict) else response
             next_token = response.get("next_token")
             if not page_alerts:
@@ -170,10 +164,6 @@ class HelloWorldV3Client(ContentClient):
 
 OUTPUTS_PREFIX = "HelloWorldV3"
 
-MOCK_ALERT = {
-    "id": "{id}", "severity": "{severity}", "user": "{user}", "action": "{action}", "date": "{date}", "status": "{status}"
-}
-
 def test_module(client: HelloWorldV3Client) -> str:
     """Validate connectivity by performing a simple client call."""
     try:
@@ -190,7 +180,15 @@ def say_hello_command(client: HelloWorldV3Client, args: dict[str, Any]):
     """Greet a specified person."""
 
     name = args.get("name", "World")
-    return client.say_hello(name)
+    res =  client.say_hello(name)
+
+    return CommandResults(
+        outputs_prefix=f"{OUTPUTS_PREFIX}.Hello",
+        outputs_key_field="name",
+        outputs=res,
+        readable_output=res["message"],
+        raw_response=res,
+    )
 
 
 def list_alerts_command(client: HelloWorldV3Client, args: dict[str, Any]) -> CommandResults:
@@ -260,8 +258,6 @@ def ip_reputation_command(
             reputation = Common.DBotScore.BAD
         elif score >= threshold / 2:
             reputation = Common.DBotScore.SUSPICIOUS
-        else:
-            reputation = Common.DBotScore.UNKNOWN
 
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -304,7 +300,8 @@ def main() -> None:
     command = demisto.command()
 
     base_url = params.get("url", "https://api.dummy-example.com")
-    api_key = params.get("credentials")
+    credentials = params.get("credentials") or {}
+    api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     ip_threshold = arg_to_number(params.get("ip_threshold")) or DEFAULT_IP_THRESHOLD

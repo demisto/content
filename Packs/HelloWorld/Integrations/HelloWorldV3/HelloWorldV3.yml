@@ -11,8 +11,10 @@ configuration:
   type: 0
   required: true
 - name: credentials
-  type: 4
+  displaypassword: API Key
+  type: 9
   required: true
+  hiddenusername: true
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
@@ -104,9 +106,6 @@ script:
     - contextPath: HelloWorldV3.Alert.status
       description: The status of the alert.
       type: String
-    - contextPath: HelloWorldV3.Alert.occured
-      description: The date of the alert.
-      type: String
   - name: ip
     description: Returns IP reputation information for the given IP addresses.
     arguments:
@@ -114,6 +113,8 @@ script:
       description: A comma-separated list of IP addresses to check.
       required: true
       type: String
+      default: true
+      isArray: true
     - name: threshold
       description: The score threshold above which the IP is considered malicious. If not specified, the default integration threshold is used.
       required: false
