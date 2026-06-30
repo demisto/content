@@ -216,7 +216,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
         otherwise throws an Exception
     """
     if arg is None and required is True:
-        raise ValueError(f'Missing "{arg_name}"')
+        raise CortexMissingArgError(arg_name, override_message=f'Missing "{arg_name}"')
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp is a str containing digits - we just convert it to int
@@ -228,13 +228,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
         date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f"Invalid date: {arg_name}")
+            raise CortexInvalidArgError(arg_name, value=arg, override_message=f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
     if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
+    raise CortexInvalidArgError(arg_name, value=arg, override_message=f'Invalid date: "{arg_name}"')
 
 
 def get_server_url(server_url: str) -> str:
@@ -468,8 +468,15 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = "
 
         if arg in fields_to_clear:
             if input_arg:
-                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
-                You can either set or clear the field value.")
+                raise CortexConflictingArgsError(
+                    # Original message kept for backward compatibility (shown to non-Agentix callers).
+                    f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
+                You can either set or clear the field value.",
+                    # Structured metadata used to build the unified message and exposed in details.
+                    arguments=[arg, "clear_fields"],
+                    reason=f"Could not set a value for the argument '{arg}' and also add it to clear_fields.",
+                    resolution="You can either set the field value or clear it, but not both.",
+                )
             ticket_fields[arg] = ""
         elif input_arg:
             if arg in ["impact", "urgency", "severity"]:
@@ -533,7 +540,10 @@ def split_fields(fields: str = "", delimiter: str = ";") -> dict:
 
     if fields:
         if "=" not in fields:
-            raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
+            raise CortexInvalidArgError(
+                "fields", value=fields,
+                override_message=f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.",
+            )
         arr_fields = fields.split(delimiter)
         for f in arr_fields:
             field = f.split("=", 1)  # a field might include a '=' sign in the value. thus, splitting only once.
@@ -554,7 +564,9 @@ def split_notes(raw_notes, note_type, time_info):
         created_on, _, created_by = note_info.partition(" - ")
         created_by = created_by.split(" (")[0]
         if not created_on or not created_by:
-            raise Exception(f"Failed to extract the required information from the following note: {note_info} - {note_value}")
+            raise CortexParseError(
+                f"Failed to extract the required information from the following note: {note_info} - {note_value}"
+            )
 
         # convert note creation time to UTC
         try:
@@ -562,7 +574,7 @@ def split_notes(raw_notes, note_type, time_info):
             created_on = (created_on.replace("AM", "").replace("PM", "")).strip()
             created_on_UTC = datetime.strptime(created_on, display_date_format) + time_info.get("timezone_offset")
         except ValueError as e:
-            raise Exception(f"Failed to convert {created_on} to a datetime object. Error: {e}")
+            raise CortexParseError(f"Failed to convert {created_on} to a datetime object. Error: {e}")
 
         if time_info.get("filter") and created_on_UTC < time_info.get("filter"):
             # If a time_filter was passed and the note was created before this time, do not return it.
@@ -784,7 +796,7 @@ class Client(BaseClient):
                         proxies=self._proxies,
                     )
         except Exception as err:
-            raise Exception(f"Failed to upload file - {err!s}")
+            raise CortexExternalApiError(f"Failed to upload file - {err!s}")
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
@@ -864,9 +876,11 @@ class Client(BaseClient):
             demisto.debug(f"Response status code: {res.status_code}")
 
             if "Instance Hibernating page" in res.text:
-                raise DemistoException(
+                raise CortexExternalApiError(
                     "A connection was established but the instance is in hibernate mode.\n"
-                    "Please wake your instance and try again."
+                    "Please wake your instance and try again.",
+                    status_code=res.status_code,
+                    api_error_type=CortexErrorCode.SERVICE_ERROR,
                 )
             try:
                 json_res: dict = res.json()
@@ -876,7 +890,7 @@ class Client(BaseClient):
                     return "The ticket was successfully created."
                 if not res.content:
                     return ""
-                raise Exception(f"Error parsing reply - {res.content!s} - {err!s}")
+                raise CortexParseError(f"Error parsing reply - {res.content!s} - {err!s}")
 
             if error := json_res.get("error", {}):
                 if res.status_code == 401 and attempt < MAX_RETRY:
@@ -890,20 +904,24 @@ class Client(BaseClient):
                             demisto.debug("No record found, returning empty result")
                             return no_record_found_res
                         else:
-                            raise Exception(
+                            raise CortexExternalApiError(
                                 f"ServiceNow Error: {message}, details: {details}"
                                 f" Got status code {res.status_code} with url {url} with body {res.content!s}"
-                                f" with response headers {res.headers!s}"
+                                f" with response headers {res.headers!s}",
+                                status_code=res.status_code,
+                                response_body=res.content,
                             )
                     else:
-                        raise Exception(f"ServiceNow Error: {error}")
+                        raise CortexExternalApiError(f"ServiceNow Error: {error}", status_code=res.status_code)
 
             if 200 <= res.status_code < 300:
                 return json_res
             else:
-                raise Exception(
+                raise CortexExternalApiError(
                     f"Got status code {res.status_code} with url {url} with body {res.content!s}"
-                    f" with response headers {res.headers!s}"
+                    f" with response headers {res.headers!s}",
+                    status_code=res.status_code,
+                    response_body=res.content,
                 )
         return json_res
 
@@ -949,7 +967,7 @@ class Client(BaseClient):
         result = self.send_request("table/sys_template", "GET", params=query_params)
 
         if len(result["result"]) == 0:
-            raise ValueError("Incorrect template name.")
+            raise CortexResourceNotFoundError("template", identifier=template_name, override_message="Incorrect template name.")
 
         template = result["result"][0].get("template", "").split("^")
         dic_template = {}
@@ -1042,7 +1060,10 @@ class Client(BaseClient):
             query_params = custom_fields
         else:
             # Only in cases where the table is of type ticket
-            raise ValueError("servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.")
+            raise CortexMissingArgError(
+                ["id", "number"],
+                override_message="servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.",
+            )
 
         if use_display_value:
             query_params["sysparm_display_value"] = "all"
@@ -1764,7 +1785,10 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict[Any
     result = client.delete_attachment(attachment_file_id)
     if not result:  # successful response is 204 (empty response)
         return f"Attachment with Sys ID {attachment_file_id} was successfully deleted.", {}, result, True
-    raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
+    raise CortexResourceNotFoundError(
+        "attachment", identifier=attachment_file_id,
+        override_message="Error: No record found. Record doesn't exist or ACL restricts the record retrieval.",
+    )
 
 
 def get_attachment_command(client: Client, args: dict) -> list | CommandResults:
@@ -2889,12 +2913,12 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         local_time = (local_time.replace("AM", "").replace("PM", "")).strip()
         local_time_dt = datetime.strptime(local_time, display_date_format)
     except Exception as e:
-        raise Exception(f"Failed to get the display value offset time. ERROR: {e}")
+        raise CortexParseError(f"Failed to get the display value offset time. ERROR: {e}")
     try:
         utc_time = ticket.get("sys_created_on", {}).get("value", "")
         utc_time = datetime.strptime(utc_time, DATE_FORMAT)
     except ValueError as e:
-        raise Exception(f"Failed to convert {utc_time} to datetime object. ERROR: {e}")
+        raise CortexParseError(f"Failed to convert {utc_time} to datetime object. ERROR: {e}")
     offset = utc_time - local_time_dt
     return offset
 
@@ -2918,7 +2942,7 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
     """
     ticket_id = args.get("id")
     if not ticket_id:
-        raise ValueError("ServiceNow Ticket ID ('id') is required for preview.")
+        raise CortexMissingArgError("id", override_message="ServiceNow Ticket ID ('id') is required for preview.")
 
     demisto.debug(f"Getting preview for ServiceNow ticket {ticket_id=}")
 
@@ -2929,17 +2953,26 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
         raise DemistoException(f"Failed to fetch ticket {ticket_id} from ServiceNow. Error: {e}")
 
     if not result or "result" not in result:
-        raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).")
+        raise CortexResourceNotFoundError(
+            "ticket", identifier=ticket_id,
+            override_message=f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).",
+        )
 
     if isinstance(result["result"], list):
         if len(result["result"]) == 0:
-            raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).")
+            raise CortexResourceNotFoundError(
+                "ticket", identifier=ticket_id,
+                override_message=f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).",
+            )
         ticket_data = result["result"][0]
     else:
         ticket_data = result["result"]
 
     if not ticket_data:
-        raise DemistoException(f"Ticket data for {ticket_id=} is empty after fetch.")
+        raise CortexResourceNotFoundError(
+            "ticket", identifier=ticket_id,
+            override_message=f"Ticket data for {ticket_id=} is empty after fetch.",
+        )
 
     demisto.debug(f"Raw ticket data for preview: {ticket_data}")
 
@@ -3791,7 +3824,10 @@ def main():
     oauth_params = {}
     # use jwt only with OAuth
     if use_jwt and use_oauth:
-        raise ValueError("Please choose only one authentication method (OAuth or JWT)")
+        raise CortexConflictingArgsError(
+            "Please choose only one authentication method (OAuth or JWT)",
+            arguments=["use_oauth", "use_jwt"],
+        )
     elif use_jwt:
         use_oauth = True
     jwt_params: dict = {}
@@ -3815,7 +3851,11 @@ def main():
         }
         if use_jwt:
             if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
-                raise Exception("When using JWT, fill private key, kid and sub fields.")
+                raise CortexMissingArgError(
+                    ["private_key", "kid", "sub"],
+                    override_message="When using JWT, fill private key, kid and sub fields.",
+                    require_one=False,
+                )
             jwt_params = {
                 "private_key": params.get("private_key", {}).get("password"),
                 "kid": params.get("kid"),
@@ -3871,25 +3911,28 @@ def main():
     file_tag_from_service_now, file_tag_to_service_now = (params.get("file_tag_from_service_now"), params.get("file_tag"))
 
     if file_tag_from_service_now == file_tag_to_service_now:
-        raise Exception(
+        raise CortexConflictingArgsError(
             f"File Entry Tag To ServiceNow and File Entry Tag "
-            f"From ServiceNow cannot be the same name [{file_tag_from_service_now}]."
+            f"From ServiceNow cannot be the same name [{file_tag_from_service_now}].",
+            arguments=["file_tag_from_service_now", "file_tag"],
         )
 
     comment_tag_from_servicenow, comment_tag = (params.get("comment_tag_from_servicenow"), params.get("comment_tag"))
 
     if comment_tag_from_servicenow == comment_tag:
-        raise Exception(
+        raise CortexConflictingArgsError(
             f"Comment Entry Tag To ServiceNow and Comment Entry Tag "
-            f"From ServiceNow cannot be the same name [{comment_tag_from_servicenow}]."
+            f"From ServiceNow cannot be the same name [{comment_tag_from_servicenow}].",
+            arguments=["comment_tag_from_servicenow", "comment_tag"],
         )
 
     work_notes_tag_from_servicenow, work_notes_tag = (params.get("work_notes_tag_from_servicenow"), params.get("work_notes_tag"))
 
     if work_notes_tag_from_servicenow == work_notes_tag:
-        raise Exception(
+        raise CortexConflictingArgsError(
             f"Work note Entry Tag To ServiceNow and Work Note Entry Tag "
-            f"From ServiceNow cannot be the same name [{work_notes_tag_from_servicenow}]."
+            f"From ServiceNow cannot be the same name [{work_notes_tag_from_servicenow}].",
+            arguments=["work_notes_tag_from_servicenow", "work_notes_tag"],
         )
 
     raise_exception = False
@@ -3980,6 +4023,14 @@ def main():
             raise_exception = True
             raise NotImplementedError(f"{COMMAND_NOT_IMPLEMENTED_MSG}: {command}")
 
+    except CortexError as err:
+        # Standardized content errors carry an error_code and retry guidance.
+        # Passing the exception object lets return_error attach them to
+        # ExtendedPayload and surface the automatic message for Agentix callers,
+        # while non-Agentix callers still get the same human-readable message.
+        LOG(err)
+        LOG.print_log()
+        return_error(f"Unexpected error: {err!s}", error=err)
     except Exception as err:
         LOG(err)
         LOG.print_log()
