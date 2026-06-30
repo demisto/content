@@ -2353,6 +2353,692 @@ class TestCommands:
         with pytest.raises(ValueError, match="scan_id is required"):
             runtime_scan_content_get_command(mock_client, {})
 
+    # ----- DLP patterns: create/patch/replace (coverage) -----
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_create_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-create builds the request body (incl. optional fields) and writes DlpPatternCreate.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn", "type": "custom", "status": "active"}
+
+        result = runtime_dlp_patterns_create_command(
+            mock_client,
+            {
+                "name": "ssn",
+                "type": "custom",
+                "detection_technique": "regex",
+                "supported_confidence_levels": "low,medium",
+                "description": "SSN pattern",
+                "matching_rules": '{"regexes":[{"regex":"x","weight":1}]}',
+                "tags": '{"classification":["pii"]}',
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        body = kwargs["json_data"]
+        assert body["detection_config"]["technique"] == "regex"
+        assert body["detection_config"]["supported_confidence_levels"] == ["low", "medium"]
+        assert body["matching_rules"] == {"regexes": [{"regex": "x", "weight": 1}]}
+        assert body["tags"] == {"classification": ["pii"]}
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternCreate"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "p-1"
+
+    def test_runtime_dlp_patterns_create_requires_fields(self, mock_client: Client) -> None:
+        """dlp-patterns-create validates required name/type/detection_technique.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required"):
+            runtime_dlp_patterns_create_command(mock_client, {})
+        with pytest.raises(ValueError, match="type is required"):
+            runtime_dlp_patterns_create_command(mock_client, {"name": "x"})
+        with pytest.raises(ValueError, match="detection_technique is required"):
+            runtime_dlp_patterns_create_command(mock_client, {"name": "x", "type": "custom"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_patch_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-patch sends a merge-patch (incl. clear-to-null) and writes DlpPatternPatch.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn", "type": "custom", "status": "active"}
+
+        result = runtime_dlp_patterns_patch_command(
+            mock_client,
+            {
+                "pattern_id": "p-1",
+                "name": "ssn",
+                "type": "custom",
+                "detection_technique": "regex",
+                "description": "updated",
+                "matching_rules": "null",
+                "tags": "null",
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PATCH"
+        assert kwargs["url_suffix"].endswith("/p-1")
+        assert kwargs["headers"]["Content-Type"] == "application/merge-patch+json"
+        assert kwargs["json_data"]["matching_rules"] is None
+        assert kwargs["json_data"]["tags"] is None
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternPatch"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_patterns_replace_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-patterns-replace does a full PUT and writes DlpPatternReplace.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "p-1", "name": "ssn", "type": "custom", "status": "active"}
+
+        result = runtime_dlp_patterns_replace_command(
+            mock_client,
+            {
+                "pattern_id": "p-1",
+                "name": "ssn",
+                "type": "custom",
+                "detection_technique": "regex",
+                "supported_confidence_levels": '["high"]',
+                "description": "v2",
+                "matching_rules": '{"regexes":[{"regex":"y","weight":2}]}',
+                "tags": '{"compliance":["pci"]}',
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PUT"
+        assert kwargs["url_suffix"].endswith("/p-1")
+        assert kwargs["json_data"]["detection_config"]["supported_confidence_levels"] == ["high"]
+        assert result.outputs_prefix == "PrismaAIRs.DlpPatternReplace"
+
+    # ----- Red Team: scan-create + list commands (coverage) -----
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_create_static_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-scan-create (STATIC) builds the job body and writes RedTeamScanCreate.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "job-1", "name": "scan", "job_type": "STATIC", "status": "PENDING"}
+
+        result = redteam_scan_create_command(
+            mock_client, {"name": "scan", "target_uuid": "t-1", "job_type": "STATIC", "categories": '{"jailbreak":{}}'}
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        body = kwargs["json_data"]
+        assert body["target"] == {"uuid": "t-1"}
+        assert body["job_type"] == "STATIC"
+        assert body["job_metadata"]["categories"] == {"jailbreak": {}}
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanCreate"
+        assert result.outputs["uuid"] == "job-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_create_dynamic_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-scan-create (DYNAMIC) sets stream params + attack_goals.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "job-2", "job_type": "DYNAMIC", "status": "PENDING"}
+
+        result = redteam_scan_create_command(
+            mock_client,
+            {
+                "name": "dyn",
+                "target_uuid": "t-1",
+                "job_type": "DYNAMIC",
+                "stream_breadth": "3",
+                "stream_depth": "5",
+                "attack_goals": '["leak secrets"]',
+            },
+        )
+
+        body = mock_http.call_args.kwargs["json_data"]
+        assert body["job_metadata"]["stream_breadth"] == 3
+        assert body["job_metadata"]["stream_depth"] == 5
+        assert body["job_metadata"]["attack_goals"] == ["leak secrets"]
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanCreate"
+
+    def test_redteam_scan_create_validates(self, mock_client: Client) -> None:
+        """redteam-scan-create validates name/target and job_type.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required"):
+            redteam_scan_create_command(mock_client, {})
+        with pytest.raises(ValueError, match="target_uuid is required"):
+            redteam_scan_create_command(mock_client, {"name": "x"})
+        with pytest.raises(ValueError, match="job_type must be one of"):
+            redteam_scan_create_command(mock_client, {"name": "x", "target_uuid": "t", "job_type": "BOGUS"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_list_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-prompts-list parses data + writes RedTeamPrompts.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 1},
+            "data": [{"uuid": "pr-1", "prompt": "hi", "status": "active", "active": True, "goal": "g"}],
+        }
+
+        result = redteam_prompts_list_command(
+            mock_client,
+            {"prompt_set_uuid": "ps-1", "limit": "10", "skip": "0", "search": "hi", "status": "active", "active": "true"},
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert "ps-1/list-custom-prompts" in kwargs["url_suffix"]
+        assert kwargs["params"]["active"] == "true"
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPrompts"
+        assert result.outputs[0]["uuid"] == "pr-1"
+
+    def test_redteam_prompts_list_requires_set(self, mock_client: Client) -> None:
+        """redteam-prompts-list requires prompt_set_uuid.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="prompt_set_uuid is required"):
+            redteam_prompts_list_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompt_sets_list_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """redteam-prompt-sets-list parses data + writes RedTeamPromptSets.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 1},
+            "data": [{"uuid": "ps-1", "name": "set", "active": True, "archive": False, "status": "active", "description": "d"}],
+        }
+
+        result = redteam_prompt_sets_list_command(
+            mock_client, {"limit": "10", "skip": "0", "search": "set", "status": "active", "active": "true", "archive": "false"}
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert "list-custom-prompt-sets" in kwargs["url_suffix"]
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptSets"
+        assert result.outputs[0]["uuid"] == "ps-1"
+
+    # ----- Security profiles: get/create/update (coverage) -----
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_get_by_name_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """profiles-get filters by name (highest revision) and renders the policy summary.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "ai_profiles": [
+                {"profile_id": "pf-1", "profile_name": "p", "revision": 1, "active": True},
+                {
+                    "profile_id": "pf-2",
+                    "profile_name": "p",
+                    "revision": 2,
+                    "active": True,
+                    "policy": {"ai-security-profiles": [{}], "dlp-data-profiles": []},
+                },
+            ]
+        }
+
+        result = runtime_profiles_get_command(mock_client, {"profile_name": "p"})
+
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileGet"
+        assert result.outputs["id"] == "pf-2"  # highest revision selected
+
+    def test_runtime_profiles_get_requires_identifier(self, mock_client: Client) -> None:
+        """profiles-get needs profile_id or profile_name.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="Either profile_id or profile_name is required"):
+            runtime_profiles_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_create_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """profiles-create posts the policy and renders the policy summary.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "profile_id": "pf-1",
+            "profile_name": "p",
+            "revision": 1,
+            "active": True,
+            "policy": {"ai-security-profiles": [{}], "dlp-data-profiles": []},
+        }
+
+        result = runtime_profiles_create_command(
+            mock_client,
+            {"profile_name": "p", "active": "true", "policy": '{"ai-security-profiles":[{}],"dlp-data-profiles":[]}'},
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["json_data"]["policy"]["ai-security-profiles"] == [{}]
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileCreate"
+        assert result.outputs["id"] == "pf-1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_profiles_update_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """profiles-update PUTs by id and bumps revision.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "profile_id": "pf-1",
+            "profile_name": "p",
+            "revision": 2,
+            "active": True,
+            "policy": {"ai-security-profiles": [], "dlp-data-profiles": []},
+        }
+
+        result = runtime_profiles_update_command(
+            mock_client,
+            {
+                "profile_id": "pf-1",
+                "profile_name": "p",
+                "active": "true",
+                "policy": '{"ai-security-profiles":[],"dlp-data-profiles":[]}',
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PUT"
+        assert kwargs["url_suffix"].endswith("/profile/uuid/pf-1")
+        assert result.outputs_prefix == "PrismaAIRs.SecurityProfileUpdate"
+        assert result.outputs["revision"] == 2
+
+    @patch.object(Client, "http_request")
+    def test_model_security_rules_get_full_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-rules-get parses remediation + editable fields into RuleGet context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "r-1",
+            "name": "PII Rule",
+            "rule_type": "PII",
+            "compatible_sources": ["S3", "GCS"],
+            "default_state": "BLOCKING",
+            "remediation": {"description": "fix it", "steps": ["a", "b"], "url": "https://example.com"},
+            "editable_fields": ["state"],
+            "constant_values": {"x": 1},
+            "default_values": {"y": 2},
+        }
+
+        result = model_security_rules_get_command(mock_client, {"uuid": "r-1"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/security-rules/r-1"
+        assert kwargs["use_model_sec_mgmt"] is True
+        assert result.outputs["uuid"] == "r-1"
+        assert result.outputs["remediation_steps"] == ["a", "b"]
+        assert result.outputs["editable_fields"] == ["state"]
+
+    # ----- Custom topics: create/get/update (coverage) -----
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_create_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """topics-create posts the topic and renders the examples section.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"topic_id": "tp-1", "topic_name": "t", "revision": 1, "active": True, "examples": ["a", "b"]}
+
+        result = runtime_topics_create_command(
+            mock_client, {"topic_name": "t", "description": "d", "examples": "a,b", "active": "true"}
+        )
+
+        assert mock_http.call_args.kwargs["method"] == "POST"
+        assert result.outputs_prefix == "PrismaAIRs.TopicCreate"
+        assert result.outputs["topic_id"] == "tp-1"
+
+    def test_runtime_topics_create_validates(self, mock_client: Client) -> None:
+        """topics-create validates required fields.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="topic_name is required"):
+            runtime_topics_create_command(mock_client, {})
+        with pytest.raises(ValueError, match="description is required"):
+            runtime_topics_create_command(mock_client, {"topic_name": "t"})
+        with pytest.raises(ValueError, match="examples is required"):
+            runtime_topics_create_command(mock_client, {"topic_name": "t", "description": "d"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_get_by_name_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """topics-get filters the list by name and renders examples.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "custom_topics": [{"topic_id": "tp-1", "topic_name": "t", "revision": 1, "active": True, "examples": ["x"]}]
+        }
+
+        result = runtime_topics_get_command(mock_client, {"topic_name": "t"})
+
+        assert result.outputs_prefix == "PrismaAIRs.TopicGet"
+        assert result.outputs["topic_id"] == "tp-1"
+
+    def test_runtime_topics_get_requires_identifier(self, mock_client: Client) -> None:
+        """topics-get needs topic_id or topic_name.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="Either topic_id or topic_name is required"):
+            runtime_topics_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_update_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """topics-update PUTs by id with optional fields.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"topic_id": "tp-1", "topic_name": "t", "revision": 2, "active": True, "examples": ["a"]}
+
+        result = runtime_topics_update_command(
+            mock_client, {"topic_id": "tp-1", "topic_name": "t", "description": "d2", "examples": "a", "active": "false"}
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PUT"
+        assert kwargs["url_suffix"].endswith("/topic/uuid/tp-1")
+        assert result.outputs_prefix == "PrismaAIRs.TopicUpdate"
+        assert result.outputs["revision"] == 2
+
+    # ----- model-security scans-get + DLP patch + prompts-create (coverage) -----
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_get_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """scans-get parses eval_summary + error + model_formats branches.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "s-1",
+            "eval_outcome": "BLOCKED",
+            "eval_summary": {"rules_passed": 3, "rules_failed": 1, "total_rules": 4},
+            "error_code": "E1",
+            "error_message": "bad",
+            "model_formats": ["safetensors"],
+        }
+
+        result = model_security_scans_get_command(mock_client, {"uuid": "s-1"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/scans/s-1"
+        assert kwargs["use_model_sec_data"] is True
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScanGet"
+        assert result.outputs["rules_failed"] == 1
+        assert result.outputs["error_code"] == "E1"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_profiles_patch_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-profiles-patch sends a merge-patch and writes DlpProfilePatch.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dp-1", "name": "pii", "profile_type": "advanced"}
+
+        result = runtime_dlp_profiles_patch_command(
+            mock_client, {"profile_id": "dp-1", "name": "pii", "profile_type": "advanced", "description": "x"}
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PATCH"
+        assert kwargs["headers"]["Content-Type"] == "application/merge-patch+json"
+        assert result.outputs_prefix == "PrismaAIRs.DlpProfilePatch"
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_dictionaries_patch_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """dlp-dictionaries-patch sends a merge-patch and writes DlpDictionaryPatch.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "dd-1", "name": "terms", "category": "Confidential"}
+
+        result = runtime_dlp_dictionaries_patch_command(
+            mock_client,
+            {
+                "dictionary_id": "dd-1",
+                "name": "terms",
+                "category": "Confidential",
+                "original_file_name": "f.txt",
+                "description": "x",
+            },
+        )
+
+        assert mock_http.call_args.kwargs["method"] == "PATCH"
+        assert result.outputs_prefix == "PrismaAIRs.DlpDictionaryPatch"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_prompts_create_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """prompts-create posts a prompt and writes RedTeamPromptCreate.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "pr-1", "prompt": "hi", "status": "active"}
+
+        result = redteam_prompts_create_command(
+            mock_client, {"prompt_set_uuid": "ps-1", "prompt": "hi", "user_defined_goal": "g"}
+        )
+
+        assert mock_http.call_args.kwargs["method"] == "POST"
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPromptCreate"
+        assert result.outputs["uuid"] == "pr-1"
+
+    # ----- runtime-scan + probe + labels-delete + filtering-replace (coverage) -----
+    @patch.object(Client, "scanner_request")
+    def test_runtime_scan_full(self, mock_scan: Mock, mock_client: Client) -> None:
+        """runtime-scan builds the scanner request (with metadata) and parses detections.
+
+        Args:
+            mock_scan: Mocked scanner_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_scan.return_value = {
+            "scan_id": "sc-1",
+            "report_id": "r-1",
+            "action": "block",
+            "category": "malicious",
+            "prompt_detected": {"injection": True, "dlp": False},
+            "response_detected": {"dlp": False},
+            "tr_id": "tr-1",
+            "session_id": "se-1",
+            "profile_id": "pid",
+            "profile_name": "p",
+            "source": "src",
+        }
+
+        result = runtime_scan_command(
+            mock_client,
+            {
+                "profile_name": "p",
+                "prompt": "hi",
+                "response": "there",
+                "tr_id": "tr-1",
+                "session_id": "se-1",
+                "app_name": "app",
+                "app_user": "user",
+                "ai_model": "gpt",
+                "user_ip": "1.2.3.4",
+                "agent_id": "ag",
+                "agent_version": "1",
+                "agent_arn": "arn",
+            },
+        )
+
+        sent = mock_scan.call_args.args[0]
+        assert sent["ai_profile"]["profile_name"] == "p"
+        assert sent["contents"][0]["response"] == "there"
+        assert sent["metadata"]["app_name"] == "app"
+        assert result.outputs_prefix == "PrismaAIRs.RuntimeScan"
+        assert result.outputs_key_field == "scan_id"
+        assert result.outputs["category"] == "malicious"
+        assert result.outputs["detected"] is True
+
+    def test_runtime_scan_requires_args(self, mock_client: Client) -> None:
+        """runtime-scan requires profile_name and prompt.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="profile_name and prompt are required"):
+            runtime_scan_command(mock_client, {"profile_name": "p"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_probe_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """targets-probe builds the probe body (optional fields) and writes RedTeamTargetProbe.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "t-1", "name": "tgt", "status": "ok", "validated": True}
+
+        result = redteam_targets_probe_command(
+            mock_client,
+            {
+                "name": "tgt",
+                "uuid": "t-1",
+                "description": "d",
+                "target_type": "OPEN_AI",
+                "connection_type": "api",
+                "api_endpoint_type": "chat",
+                "response_mode": "sync",
+                "connection_params": '{"model":"gpt-4"}',
+                "probe_fields": "multi_turn,rate_limit",
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        body = kwargs["json_data"]
+        assert body["connection_params"] == {"model": "gpt-4"}
+        assert body["probe_fields"] == ["multi_turn", "rate_limit"]
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetProbe"
+
+    def test_redteam_targets_probe_requires_name(self, mock_client: Client) -> None:
+        """targets-probe requires name.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required for target probe"):
+            redteam_targets_probe_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_model_security_labels_delete_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """labels-delete sends a DELETE and writes ModelSecurityLabelsDelete.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {}
+
+        result = model_security_labels_delete_command(mock_client, {"scan_uuid": "s-1", "keys": "env,team"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "DELETE"
+        assert kwargs["params"]["keys"] == ["env", "team"]
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityLabelsDelete"
+        assert result.outputs["keys_deleted"] == ["env", "team"]
+
+    def test_model_security_labels_delete_validates(self, mock_client: Client) -> None:
+        """labels-delete requires scan_uuid and keys.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="scan_uuid is required"):
+            model_security_labels_delete_command(mock_client, {})
+        with pytest.raises(ValueError, match="keys is required"):
+            model_security_labels_delete_command(mock_client, {"scan_uuid": "s-1"})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_dlp_filtering_profiles_replace_full(self, mock_http: Mock, mock_client: Client) -> None:
+        """filtering-profiles-replace PUTs the full body (optional fields) and writes the replace context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"id": "fp-1", "name": "filter", "file_based": True, "non_file_based": True}
+
+        result = runtime_dlp_filtering_profiles_replace_command(
+            mock_client,
+            {
+                "profile_id": "fp-1",
+                "file_based": "true",
+                "non_file_based": "true",
+                "description": "d",
+                "direction": "BOTH",
+                "log_severity": "high",
+                "scan_type": "inline",
+                "data_profile_id": "5",
+                "euc_template_id": "euc-1",
+                "is_end_user_coaching_enabled": "true",
+                "is_granular_profile": "false",
+                "file_type": "pdf,docx",
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PUT"
+        body = kwargs["json_data"]
+        assert body["file_based"] is True
+        assert body["data_profile_id"] == 5
+        assert body["file_type"] == ["pdf", "docx"]
+        assert result.outputs_prefix == "PrismaAIRs.DlpFilteringProfileReplace"
+
     # ----- model-security: rules -----
     @patch.object(Client, "http_request")
     def test_model_security_rules_get_command(self, mock_http: Mock, mock_client: Client) -> None:
