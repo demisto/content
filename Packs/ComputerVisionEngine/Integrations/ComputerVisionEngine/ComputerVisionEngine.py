@@ -127,7 +127,7 @@ if demisto.command() == "yolo-coco-process-image":
 
             # draw a bounding box rectangle and label on the image
             color = [int(c) for c in COLORS[classIDs[i]]]  # type: ignore
-            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # pylint: disable=E1101  # type: ignore[arg-type]
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # type: ignore[arg-type]  # pylint: disable=E1101
             text = f"{LABELS[classIDs[i]]}: {confidences[i]:.4f}"  # type: ignore
             if LABELS[classIDs[i]] in output_keys:  # type: ignore
                 if isinstance(output_keys[LABELS[classIDs[i]]], float):  # type: ignore
@@ -149,7 +149,7 @@ if demisto.command() == "yolo-coco-process-image":
             )
 
     # save the output image
-    cv2.imwrite("/tmp/snapshot.jpg", image)  # pylint: disable=E1101  # type: ignore[arg-type]
+    cv2.imwrite("/tmp/snapshot.jpg", image)  # type: ignore[arg-type]  # pylint: disable=E1101
     # cv2.waitKey(0)
     f = open("/tmp/snapshot.jpg", "rb")
     output = f.read()
