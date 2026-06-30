@@ -231,7 +231,7 @@
               "key": "xql",
               "data": {
                 "type": "Custom XQL",
-                "title": "Executions by status per automated tasks",
+                "title": "Automated task errors over time",
                 "width": 33.333333333333336,
                 "height": 547,
                 "phrase": "dataset = playbook_tasks\n| filter automated = true\n| comp count() as exec_count by task_name, task_status\n| sort desc exec_count\n| view graph type = column subtype = grouped xaxis = task_name yaxis = exec_count series = task_status ",
