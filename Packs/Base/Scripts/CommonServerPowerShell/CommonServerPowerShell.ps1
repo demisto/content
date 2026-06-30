@@ -1057,21 +1057,6 @@ $plainMap['password'] = 'password'
 $script:UcpCanonicalFieldKeys['api_key'] = $apiKeyMap
 $script:UcpCanonicalFieldKeys['plain'] = $plainMap
 
-# --- UCP debug logging helper (never throws; safe in bare-mock contexts) ---
-# Emits through the standard demisto.debug channel so UCP diagnostics show up as
-# normal debug logging (no buffering, no War Room entry, no params.logs injection).
-function Write-UcpDebug([string]$Message) {
-    try {
-        if ($null -ne $demisto) { $demisto.debug($Message) | Out-Null }
-    } catch { }
-}
-
-function Write-UcpError([string]$Message) {
-    try {
-        if ($null -ne $demisto) { $demisto.error($Message) | Out-Null }
-    } catch { }
-}
-
 # --- C3: Set-UcpByPath (parity: _place_by_path, CommonServerPython.py:13719) ---
 function Set-UcpByPath {
     # Place $Value into $Target at the dotted $Path, creating intermediate ordered
@@ -1086,7 +1071,7 @@ function Set-UcpByPath {
     # match Python's `[seg for seg in path.split('.') if seg != '']`.
     $segments = @(($Path -split '\.') | Where-Object { $_ -ne '' })
     if ($segments.Count -eq 0) {
-        Write-UcpDebug("[UCP][Set-UcpByPath] path='$Path' produced no segments; nothing placed.")
+        $demisto.Debug("[UCP][Set-UcpByPath] path='$Path' produced no segments; nothing placed.")
         return
     }
     $cursor = $Target
@@ -1119,7 +1104,7 @@ function ConvertFrom-UcpParamMap {
         $entry = $entry.Trim()
         if ([string]::IsNullOrEmpty($entry)) { continue }
         if ($entry -notmatch ':') {
-            Write-UcpError("[UCP][CommonServerPowerShell.ps1] ConvertFrom-UcpParamMap: malformed entry '$entry' (no ':'); skipping.")
+            $demisto.Error("[UCP][CommonServerPowerShell.ps1] ConvertFrom-UcpParamMap: malformed entry '$entry' (no ':'); skipping.")
             continue
         }
         # `-split ':', 2` reproduces Python's `split(':', 1)` (first colon only).
@@ -1127,12 +1112,12 @@ function ConvertFrom-UcpParamMap {
         $fieldId = ($parts[0]).Trim()
         $destination = ($parts[1]).Trim()
         if ([string]::IsNullOrEmpty($fieldId) -or [string]::IsNullOrEmpty($destination)) {
-            Write-UcpDebug("[UCP][ConvertFrom-UcpParamMap] empty field id or destination ('$fieldId' -> '$destination'); skipping.")
+            $demisto.Debug("[UCP][ConvertFrom-UcpParamMap] empty field id or destination ('$fieldId' -> '$destination'); skipping.")
             continue
         }
         [void]$pairs.Add([pscustomobject]@{ FieldId = $fieldId; Destination = $destination })
     }
-    Write-UcpDebug("[UCP][ConvertFrom-UcpParamMap] parsed $($pairs.Count) pair(s).")
+    $demisto.Debug("[UCP][ConvertFrom-UcpParamMap] parsed $($pairs.Count) pair(s).")
     return @($pairs.ToArray())
 }
 
@@ -1194,7 +1179,7 @@ function Select-UcpProfiles {
     # pscustomobjects (host JSON).
     param([object]$Profiles, [string]$Capability)
     if (-not $Profiles) {
-        Write-UcpDebug('[UCP][Select-UcpProfiles] no connectionProfiles in metadata.')
+        $demisto.Debug('[UCP][Select-UcpProfiles] no connectionProfiles in metadata.')
         return @()
     }
     $matched = [System.Collections.ArrayList]::new()
@@ -1202,7 +1187,7 @@ function Select-UcpProfiles {
         $cap = [string](Get-UcpMember -Object $p -Key 'capability')
         if ($cap -ceq $Capability) { [void]$matched.Add($p) }
     }
-    Write-UcpDebug("[UCP][Select-UcpProfiles] found $($matched.Count) profile(s) with capability '$Capability'.")
+    $demisto.Debug("[UCP][Select-UcpProfiles] found $($matched.Count) profile(s) with capability '$Capability'.")
     if ($matched.Count -gt 0) {
         return @($matched.ToArray())
     }
@@ -1211,7 +1196,7 @@ function Select-UcpProfiles {
         $xsoarNode = Get-UcpMember -Object $metaNode -Key 'xsoar'
         $mapping = Get-UcpMember -Object $xsoarNode -Key 'interpolation_mapping'
         if ($mapping) {
-            Write-UcpDebug('[UCP][Select-UcpProfiles] no capability match; falling back to first profile with an interpolation_mapping.')
+            $demisto.Debug('[UCP][Select-UcpProfiles] no capability match; falling back to first profile with an interpolation_mapping.')
             return @($p)
         }
     }
@@ -1229,7 +1214,7 @@ function ConvertFrom-UcpCredentials {
     $credValues = [ordered]@{}
     $credsDict = ConvertTo-UcpDictionary $Credentials
     if ($credsDict -isnot [System.Collections.IDictionary]) {
-        Write-UcpDebug('[UCP][ConvertFrom-UcpCredentials] credentials did not normalize to a dict; returning empty.')
+        $demisto.Debug('[UCP][ConvertFrom-UcpCredentials] credentials did not normalize to a dict; returning empty.')
         return $credValues
     }
 
@@ -1252,7 +1237,7 @@ function ConvertFrom-UcpCredentials {
         $credValues = $innerDict
     }
     # Log field KEYS only (never values) to keep secrets out of logs.
-    Write-UcpDebug("[UCP][ConvertFrom-UcpCredentials] type='$credType', flattened field keys=[$(@($credValues.Keys) -join ', ')]")
+    $demisto.Debug("[UCP][ConvertFrom-UcpCredentials] type='$credType', flattened field keys=[$(@($credValues.Keys) -join ', ')]")
     return $credValues
 }
 
@@ -1288,12 +1273,12 @@ function Get-UcpProfiles {
     # Return connectionProfiles from UCP metadata or throw [UcpException].
     $connectorInfo = $demisto.UnifiedConnectorMetadata()
     if (-not $connectorInfo) {
-        Write-UcpError('[UCP][CommonServerPowerShell.ps1] Get-UcpProfiles: UnifiedConnectorMetadata() returned empty.')
+        $demisto.Error('[UCP][CommonServerPowerShell.ps1] Get-UcpProfiles: UnifiedConnectorMetadata() returned empty.')
         throw [UcpException]::new()
     }
     $profiles = Get-UcpMember -Object $connectorInfo -Key 'connectionProfiles'
     if (-not $profiles) {
-        Write-UcpError('[UCP][CommonServerPowerShell.ps1] Get-UcpProfiles: No connection profiles found in connector metadata.')
+        $demisto.Error('[UCP][CommonServerPowerShell.ps1] Get-UcpProfiles: No connection profiles found in connector metadata.')
         throw [UcpException]::new()
     }
     return $profiles
@@ -1314,7 +1299,7 @@ function Find-UcpProfileBySubCapability {
     }
     if ($matches.Count -eq 0) { return $null }
     if ($matches.Count -gt 1) {
-        Write-UcpDebug("[UCP][CommonServerPowerShell.ps1] Find-UcpProfileBySubCapability: Multiple profiles ($($matches.Count)) match sub_capability='$SubCapability'. Using first.")
+        $demisto.Debug("[UCP][CommonServerPowerShell.ps1] Find-UcpProfileBySubCapability: Multiple profiles ($($matches.Count)) match sub_capability='$SubCapability'. Using first.")
     }
     return [string](Get-UcpMember -Object $matches[0] -Key 'method_unique_id')
 }
@@ -1330,7 +1315,7 @@ function Find-UcpProfileByCapability {
     }
     if ($matches.Count -eq 0) { return $null }
     if ($matches.Count -gt 1) {
-        Write-UcpDebug("[UCP][CommonServerPowerShell.ps1] Find-UcpProfileByCapability: Multiple profiles ($($matches.Count)) match capability=`"$Capability`". Using first.")
+        $demisto.Debug("[UCP][CommonServerPowerShell.ps1] Find-UcpProfileByCapability: Multiple profiles ($($matches.Count)) match capability=`"$Capability`". Using first.")
     }
     return [string](Get-UcpMember -Object $matches[0] -Key 'method_unique_id')
 }
@@ -1343,7 +1328,7 @@ function Get-UcpMethodUniqueId {
     if ($SubCapability) {
         $methodId = Find-UcpProfileBySubCapability -Profiles $profiles -SubCapability ([string]$SubCapability)
         if ($methodId) {
-            Write-UcpDebug("[UCP][Get-UcpMethodUniqueId] resolved via sub_capability -> '$methodId'")
+            $demisto.Debug("[UCP][Get-UcpMethodUniqueId] resolved via sub_capability -> '$methodId'")
             return $methodId
         }
     }
@@ -1351,17 +1336,17 @@ function Get-UcpMethodUniqueId {
     if (-not $Capability) { $Capability = Resolve-UcpCapability }
     $methodId = Find-UcpProfileByCapability -Profiles $profiles -Capability ([string]$Capability)
     if ($methodId) {
-        Write-UcpDebug("[UCP][Get-UcpMethodUniqueId] resolved via capability='$Capability' -> '$methodId'")
+        $demisto.Debug("[UCP][Get-UcpMethodUniqueId] resolved via capability='$Capability' -> '$methodId'")
         return $methodId
     }
 
     $first = @($profiles)[0]
     $firstId = Get-UcpMember -Object $first -Key 'method_unique_id'
     if ($null -eq $firstId) {
-        Write-UcpDebug('[UCP][Get-UcpMethodUniqueId] no match and first profile has no method_unique_id; returning empty.')
+        $demisto.Debug('[UCP][Get-UcpMethodUniqueId] no match and first profile has no method_unique_id; returning empty.')
         return ''
     }
-    Write-UcpDebug("[UCP][Get-UcpMethodUniqueId] fell back to first profile -> '$firstId'")
+    $demisto.Debug("[UCP][Get-UcpMethodUniqueId] fell back to first profile -> '$firstId'")
     return [string]$firstId
 }
 
@@ -1390,7 +1375,7 @@ function Get-UcpExpiry {
         $dto = [System.DateTimeOffset]::Parse($normalized, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::AssumeUniversal)
         return [double]$dto.ToUnixTimeSeconds()
     } catch {
-        Write-UcpError('[UCP][CommonServerPowerShell.ps1] Get-UcpExpiry: Failed to parse UCP credentials expiry time. Defaulting to 5 minutes from now.')
+        $demisto.Error('[UCP][CommonServerPowerShell.ps1] Get-UcpExpiry: Failed to parse UCP credentials expiry time. Defaulting to 5 minutes from now.')
         return ([double][System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) + 300
     }
 }
@@ -1412,16 +1397,16 @@ function Get-UcpCredentials {
         $entry = $script:UcpCredsCache[$key]
         $expiry = $entry['expiry']
         if ($null -eq $expiry -or $now -lt ($expiry - $script:UcpRefreshThresholdSeconds)) {
-            Write-UcpDebug("[UCP][Get-UcpCredentials] cache HIT (fresh) for '$key'.")
+            $demisto.Debug("[UCP][Get-UcpCredentials] cache HIT (fresh) for '$key'.")
             return $entry['result']
         }
-        Write-UcpDebug("[UCP][Get-UcpCredentials] cache entry STALE for '$key'; re-fetching.")
+        $demisto.Debug("[UCP][Get-UcpCredentials] cache entry STALE for '$key'; re-fetching.")
         # Stale -- fall through to re-fetch.
     }
 
     $creds = $demisto.GetUCPCredentials($key, $false, $Body)
     $expiry = Get-UcpExpiry -Credentials $creds
-    Write-UcpDebug("[UCP][Get-UcpCredentials] fetched fresh credentials for '$key' (expiry=$expiry); caching.")
+    $demisto.Debug("[UCP][Get-UcpCredentials] fetched fresh credentials for '$key' (expiry=$expiry); caching.")
     $script:UcpCredsCache[$key] = @{ result = $creds; expiry = $expiry }
     return $creds
 }
@@ -1433,7 +1418,7 @@ function Clear-UcpCredentialEntry {
     if ($script:UcpCredsCache.ContainsKey($MethodUniqueId)) {
         $script:UcpCredsCache.Remove($MethodUniqueId) | Out-Null
     }
-    Write-UcpDebug("[UCP][CommonServerPowerShell.ps1] Invalidated cached credentials for method_unique_id=$MethodUniqueId")
+    $demisto.Debug("[UCP][CommonServerPowerShell.ps1] Invalidated cached credentials for method_unique_id=$MethodUniqueId")
 }
 
 
@@ -1447,7 +1432,7 @@ function Build-UcpParams {
     param([object]$ConnectorMetadata, [object]$Capability)
     $result = [ordered]@{}
     if (-not $ConnectorMetadata) {
-        Write-UcpDebug('[UCP][Build-UcpParams] ConnectorMetadata is empty; returning empty result.')
+        $demisto.Debug('[UCP][Build-UcpParams] ConnectorMetadata is empty; returning empty result.')
         return $result
     }
 
@@ -1457,7 +1442,7 @@ function Build-UcpParams {
     if (-not $profiles) { $profiles = @() }
 
     $selected = Select-UcpProfiles -Profiles $profiles -Capability ([string]$Capability)
-    Write-UcpDebug("[UCP][Build-UcpParams] capability='$Capability', selected $(@($selected).Count) of $(@($profiles).Count) profile(s).")
+    $demisto.Debug("[UCP][Build-UcpParams] capability='$Capability', selected $(@($selected).Count) of $(@($profiles).Count) profile(s).")
 
     foreach ($profile in $selected) {
         $methodUniqueId = Get-UcpMember -Object $profile -Key 'method_unique_id'
@@ -1465,10 +1450,11 @@ function Build-UcpParams {
         $metaNode = Get-UcpMember -Object $profile -Key 'metadata'
         $xsoarNode = Get-UcpMember -Object $metaNode -Key 'xsoar'
         $interpolationMapping = Get-UcpMember -Object $xsoarNode -Key 'interpolation_mapping'
+        $demisto.Debug("[UCP][Build-UcpParams] profile '$methodUniqueId' interpolation_mapping=$interpolationMapping")
 
         $pairs = ConvertFrom-UcpParamMap -ParamMap $interpolationMapping
         if (@($pairs).Count -eq 0) {
-            Write-UcpDebug("[UCP][Build-UcpParams] no interpolation pairs for profile '$methodUniqueId'; skipping.")
+            $demisto.Debug("[UCP][Build-UcpParams] no interpolation pairs for profile '$methodUniqueId'; skipping.")
             continue
         }
         $credentials = Get-UcpCredentials -MethodUniqueId $methodUniqueId
@@ -1495,14 +1481,14 @@ function Build-UcpParams {
             # Skip ONLY $null (parity: `if field_value is None`). '' / 0 / $false placed.
             # Log presence + type only -- NEVER the value (avoids leaking secrets).
             if ($null -eq $fieldValue) {
-                Write-UcpDebug("[UCP][Build-UcpParams] profile '$methodUniqueId': missing value for field '$fieldId' (lookupKey '$lookupKey').")
+                $demisto.Debug("[UCP][Build-UcpParams] profile '$methodUniqueId': missing value for field '$fieldId' (lookupKey '$lookupKey').")
                 continue
             }
             Set-UcpByPath -Target $result -Path $destination -Value $fieldValue
         }
     }
 
-    Write-UcpDebug("[UCP][Build-UcpParams] interpolated $(@($result.Keys).Count) top-level param(s) for capability='$Capability'.")
+    $demisto.Debug("[UCP][Build-UcpParams] interpolated $(@($result.Keys).Count) top-level param(s) for capability='$Capability'.")
     return $result
 }
 
@@ -1523,7 +1509,7 @@ function Test-UcpEnabled {
         }
         return $false
     } catch {
-        Write-UcpDebug('[UCP][CommonServerPowerShell.ps1] Test-UcpEnabled: UnifiedConnectorMetadata() unavailable or errored.')
+        $demisto.Debug('[UCP][CommonServerPowerShell.ps1] Test-UcpEnabled: UnifiedConnectorMetadata() unavailable or errored.')
         return $false
     }
 }
@@ -1547,16 +1533,16 @@ function Invoke-UcpParamInterpolation {
             try {
                 $ConnectorMetadata = $demisto.UnifiedConnectorMetadata()
             } catch {
-                Write-UcpDebug('[UCP][Invoke-UcpParamInterpolation] UnifiedConnectorMetadata() not available; skipping.')
+                $demisto.Debug('[UCP][Invoke-UcpParamInterpolation] UnifiedConnectorMetadata() not available; skipping.')
                 return $false
             }
             # Host returns @{} (not $null) when absent -> not in UCP-land.
             if ($null -eq $ConnectorMetadata) {
-                Write-UcpDebug('[UCP][Invoke-UcpParamInterpolation] ConnectorMetadata is $null; not in UCP-land.')
+                $demisto.Debug('[UCP][Invoke-UcpParamInterpolation] ConnectorMetadata is $null; not in UCP-land.')
                 return $false
             }
             if (($ConnectorMetadata -is [System.Collections.IDictionary]) -and $ConnectorMetadata.Count -eq 0) {
-                Write-UcpDebug('[UCP][Invoke-UcpParamInterpolation] ConnectorMetadata is empty; not in UCP-land.')
+                $demisto.Debug('[UCP][Invoke-UcpParamInterpolation] ConnectorMetadata is empty; not in UCP-land.')
                 return $false
             }
         }
@@ -1565,24 +1551,24 @@ function Invoke-UcpParamInterpolation {
         try {
             $capability = Resolve-UcpCapability
         } catch {
-            Write-UcpDebug('[UCP][Invoke-UcpParamInterpolation] could not resolve capability.')
+            $demisto.Debug('[UCP][Invoke-UcpParamInterpolation] could not resolve capability.')
         }
 
         $interpolated = Build-UcpParams -ConnectorMetadata $ConnectorMetadata -Capability $capability
         if (-not $interpolated -or @($interpolated.Keys).Count -eq 0) {
-            Write-UcpDebug('[UCP][Invoke-UcpParamInterpolation] no params produced; nothing to merge.')
+            $demisto.Debug('[UCP][Invoke-UcpParamInterpolation] no params produced; nothing to merge.')
             return $false
         }
 
         $params = $demisto._ucpParamsMergeTarget()
         Merge-UcpDeep -Target $params -Source $interpolated | Out-Null
         $script:UcpAuthParamsInjected = $true
-        Write-UcpDebug("[UCP][Invoke-UcpParamInterpolation] interpolated $(@($interpolated.Keys).Count) top-level param(s) for capability='$capability'.")
+        $demisto.Debug("[UCP][Invoke-UcpParamInterpolation] interpolated $(@($interpolated.Keys).Count) top-level param(s) for capability='$capability'.")
         return $true
     } catch {
         # Never let interpolation break the script lifecycle.
-        Write-UcpError("[UCP][CommonServerPowerShell.ps1] Invoke-UcpParamInterpolation: swallowed error: $_")
-        Write-UcpDebug("[UCP][Invoke-UcpParamInterpolation] exception detail: $($_ | Out-String)")
+        $demisto.Error("[UCP][CommonServerPowerShell.ps1] Invoke-UcpParamInterpolation: swallowed error: $_")
+        $demisto.Debug("[UCP][Invoke-UcpParamInterpolation] exception detail: $($_ | Out-String)")
         return $false
     }
 }
@@ -1596,9 +1582,9 @@ function Invoke-UcpParamInterpolation {
 try {
     if ($demisto.IsIntegration) {
         $bootstrapResult = Invoke-UcpParamInterpolation
-        Write-UcpDebug("[UCP][bootstrap] interpolation result=$bootstrapResult, injected=$($script:UcpAuthParamsInjected).")
+        $demisto.Debug("[UCP][bootstrap] interpolation result=$bootstrapResult, injected=$($script:UcpAuthParamsInjected).")
     }
 } catch {
     # Import-time safety net: never let interpolation break module load.
-    Write-UcpDebug("[UCP][bootstrap] swallowed error: $_")
+    $demisto.Error("[UCP][CommonServerPowerShell.ps1] import-time Invoke-UcpParamInterpolation swallowed error: $_")
 }

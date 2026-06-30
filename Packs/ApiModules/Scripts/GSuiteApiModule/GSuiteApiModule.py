@@ -64,8 +64,8 @@ class GSuiteClient:
         access_token = token_data.get("access_token") if isinstance(token_data, dict) else None
         if not access_token:
             demisto.error("[UCP][GSuiteApiModule.py] access token is empty.")
-            raise UcpException()
-        demisto.debug("Recieved access token from UCP Service")
+            raise UcpException
+        demisto.debug("Received access token from UCP Service")
         return method_id, access_token
 
     def __init__(
@@ -85,16 +85,17 @@ class GSuiteClient:
         self.user_id = user_id
 
         # The method id is kept so the cached credentials can be invalidated and refreshed
-        # after an auth error. TODO fix this later
+        # after an auth error.
         self._ucp_method_id: str | None = None
         # ``_ucp_token`` is set only in UCP mode; its presence flags that the
         # credentials are token-based (no scopes/subject impersonation needed).
         self._ucp_token: str | None = None
         if not service_account_dict and should_use_ucp_auth():
-            # The subject (user to impersonate) is resolved once by the caller
-            # (args override falling back to the instance param) and passed in as
-            # ``user_id``. It is forwarded to UCP so the issued token impersonates
-            # that user.
+            # In UCP (ConnectUs) mode the access token is provided by the
+            # connection profile via the platform; fetch it instead of building
+            # service-account credentials.
+            # The subject (user to impersonate) is the instance ``user_id``; it is
+            # forwarded to UCP so the issued token impersonates that user.
             self._ucp_method_id, self._ucp_token = self.get_ucp_access_token(subject=user_id or None)
             self.credentials = oauth2_credentials.Credentials(token=self._ucp_token)
             return
@@ -118,9 +119,9 @@ class GSuiteClient:
         # the configured subject, so scopes/subject must not be re-applied
         # (OAuth2 token credentials do not support ``with_subject``).
         if not self._ucp_token:
-            self.credentials = self.credentials.with_scopes(scopes)
+            self.credentials = self.credentials.with_scopes(scopes)  # type: ignore[attr-defined]
             if subject:
-                self.credentials = self.credentials.with_subject(subject)
+                self.credentials = self.credentials.with_subject(subject)  # type: ignore[attr-defined]
         authorized_http = AuthorizedHttp(
             credentials=self.credentials, http=GSuiteClient.get_http_client(self.proxy, self.verify, timeout=timeout)
         )
@@ -159,10 +160,10 @@ class GSuiteClient:
 
         with GSuiteClient.http_exception_handler():
             response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
-            self._maybe_invalidate_ucp_credentials(response)
+            self._invalidate_ucp_credentials_on_auth_error(response)
             return GSuiteClient.validate_and_extract_response(response)
 
-    def _maybe_invalidate_ucp_credentials(self, response: tuple) -> None:
+    def _invalidate_ucp_credentials_on_auth_error(self, response: tuple) -> None:
         """Invalidate cached UCP credentials when the response is an auth error.
 
         In UCP mode an expired/rotated credential is signalled by a 401/403.

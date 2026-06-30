@@ -519,7 +519,7 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(None, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=401), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=401), b"{}"))
 
         invalidate.assert_called_once_with("method-1")
 
@@ -531,7 +531,7 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(None, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=200), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=200), b"{}"))
 
         invalidate.assert_not_called()
 
@@ -543,6 +543,6 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(sa, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=401), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=401), b"{}"))
 
         invalidate.assert_not_called()

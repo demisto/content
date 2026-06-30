@@ -25,7 +25,7 @@ dependson:
   must:
   - core-api-post
   - core-api-get
-dockerimage: demisto/python3:3.12.13.8428455
+dockerimage: demisto/python3:3.12.13.10116658
 runas: DBotWeakRole
 tests:
 - No test - unit test
@@ -34,3 +34,10 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- cloud_posture
+- xsiam
+- edr

@@ -2211,6 +2211,7 @@ function isUcpEnabled() {
         var info = unifiedConnectorMetadata();
         return !!(info && info.connectionProfiles && info.connectionProfiles.length > 0);
     } catch (e) {
+        logError('[UCP][CommonServer.js] isUcpEnabled: unifiedConnectorMetadata() error: ' + e);
         return false;
     }
 }
@@ -2251,17 +2252,15 @@ function resolveUcpCapability(cmd) {
  */
 function _getUcpProfiles() {
     var info = unifiedConnectorMetadata();
-    // Metadata is available via logDebug if needed for troubleshooting
-    
-    logDebug('[UCP][CommonServer.js] UCP Metadata: ' + JSON.stringify(info));
     if (!info) {
+        logError('[UCP][CommonServer.js] _getUcpProfiles: unifiedConnectorMetadata() returned empty.');
         throw '[Unified Connector] Connector metadata is not available. '
             + 'Please verify that this integration instance is configured to use a Unified Connector.';
     }
-    
+
     var profiles = info.connectionProfiles || [];
     if (profiles.length === 0) {
-        logDebug('[UCP][CommonServer.js] No connection profiles found in connector metadata.');
+        logError('[UCP][CommonServer.js] _getUcpProfiles: No connection profiles found in connector metadata.');
         throw '[Unified Connector] No authentication profiles are configured for this connector. '
             + 'Please check the connector setup in your Cortex platform and ensure at least one authentication profile is defined.';
     }
@@ -2553,6 +2552,9 @@ function placeByPath(target, path, value) {
 function deepMergeObjects(target, source) {
     for (var key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+                continue;
+            }
             var sourceValue = source[key];
             var targetValue = target[key];
             var targetIsPlainObject = targetValue !== null
@@ -2743,21 +2745,9 @@ function buildUcpParams(connectorMetadata, capability) {
 
     var profiles = connectorMetadata.connectionProfiles || [];
 
-    function _ucpDump(obj) {
-        try {
-            return JSON.stringify(obj);
-        } catch (e) {
-            return String(obj);
-        }
-    }
-
-    logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: resolved capability=' + capability);
-    logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: connectionProfiles (' + profiles.length
-        + ' total) = ' + _ucpDump(profiles));
-
     var selected = selectUcpProfiles(profiles, capability);
-    logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: selected ' + selected.length
-        + ' profile(s) = ' + _ucpDump(selected));
+    logDebug('[UCP][CommonServer.js] buildUcpParams: capability=' + capability
+        + ', selected ' + selected.length + ' of ' + profiles.length + ' profile(s).');
 
     for (var i = 0; i < selected.length; i++) {
         var profile = selected[i];
@@ -2767,23 +2757,20 @@ function buildUcpParams(connectorMetadata, capability) {
         var meta = profile.metadata || {};
         var xsoar = meta.xsoar || {};
         var interpolationMapping = xsoar.interpolation_mapping;
-        logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: interpolation_mapping = ' + _ucpDump(interpolationMapping));
+        logDebug('[UCP][CommonServer.js] buildUcpParams: profile id ' + methodUniqueId
+            + ' interpolation_mapping=' + JSON.stringify(interpolationMapping));
 
         var pairs = parseParamMap(interpolationMapping);
         if (pairs.length === 0) {
-            logDebug('there are no pairs for profile id ' + methodUniqueId);
+            logDebug('[UCP][CommonServer.js] buildUcpParams: no interpolation pairs for profile id '
+                + methodUniqueId + '; skipping.');
             continue;
         }
-        // [UCP-CODE-VERSION] flatten-v3 — if this marker is ABSENT from the logs,
-        // the runtime is executing a STALE bundled CommonServer.js, not this file.
-        logDebug('[UCP-CODE-VERSION] buildUcpParams flatten-v3 active');
 
         // Fetch the RAW credentials envelope by method id (mirrors Python
         // get_ucp_credentials) and generically flatten — do NOT reuse the
         // hardcoded _flattenUcpCredentials, which drops mapped fields.
         var credentials = getUCPCredentials(methodUniqueId, false);
-        logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: getUCPCredentials(' + methodUniqueId
-            + ') envelope = ' + _ucpDump(credentials));
 
         var credValues = _flattenUcpCredentialsGeneric(credentials);
 
@@ -2793,6 +2780,9 @@ function buildUcpParams(connectorMetadata, capability) {
         // generic field_id lookup. Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
         var credType = (credentials && typeof credentials === 'object') ? credentials.type : null;
         var canonicalKeys = _UCP_CANONICAL_FIELD_KEYS[credType] || {};
+        // Log field KEYS only (never values) to keep credential material out of logs.
+        logDebug('[UCP][CommonServer.js] buildUcpParams: cred_type=' + credType
+            + ', flattened cred keys=[' + Object.keys(credValues || {}).join(', ') + '].');
 
         for (var p = 0; p < pairs.length; p++) {
             var fieldId = pairs[p][0];
@@ -2802,14 +2792,16 @@ function buildUcpParams(connectorMetadata, capability) {
             // Match Python's `if field_value is None`: only skip null/undefined.
             // Empty string, 0 and false ARE valid values and get placed.
             if (fieldValue === null || fieldValue === undefined) {
-                logDebug('missing field value for field ' + fieldId + ' for profile id ' + methodUniqueId);
+                logDebug('[UCP][CommonServer.js] buildUcpParams: missing value for field '
+                    + fieldId + ' for profile id ' + methodUniqueId + '.');
                 continue;
             }
             placeByPath(result, destination, fieldValue);
         }
     }
 
-    logDebug('[UCP-SCHEMA-DUMP] buildUcpParams: FINAL interpolated params = ' + _ucpDump(result));
+    logDebug('[UCP][CommonServer.js] buildUcpParams: interpolated '
+        + Object.keys(result).length + ' top-level param(s).');
     return result;
 }
 
@@ -2886,49 +2878,5 @@ try {
     interpolateUcpParams();
 } catch (e) {
     // Load-time safety net: never let interpolation break script load.
+    logError('[UCP][CommonServer.js] load-time interpolateUcpParams() swallowed error: ' + e);
 }
-
-///////////////////////////////////////////
-//     Params Parity Test Probe (BEGIN)  //
-///////////////////////////////////////////
-// Purpose:
-//   Support the connectus param-parity test (see connectus/runtime_demisto.params_parity/).
-//   When the framework invokes ``test-module``, this probe short-circuits the
-//   integration's own command dispatch and emits the full ``params`` object as an
-//   error payload. The parity-test orchestrator parses that payload to compare what
-//   the integration actually receives at runtime via the legacy XSOAR
-//   instance-creation path vs the new ConnectUs UCP-driven path.
-//
-// Safety:
-//   * Hard-wrapped in try/catch: any failure here MUST NOT break unrelated integrations.
-//     On any exception we silently fall through and let the integration's own code run.
-//   * Gated on ``command === 'test-module'``.
-//     Normal traffic pays only one string compare.
-//   * The probe runs at CommonServer.js load-time, which happens once per command
-//     dispatch BEFORE the integration's own code is reached. ``throw`` halts execution,
-//     so the integration's command dispatch never starts when the probe fires.
-try {
-    if (command === 'test-module') {
-        var _pp_payload = {
-            '__params_parity_dump__': true,
-            'params': params
-        };
-        // Sort keys to match Python's json.dumps(sort_keys=True)
-        var _pp_keys = Object.keys(_pp_payload.params || {}).sort();
-        var _pp_sorted = {};
-        for (var _pp_i = 0; _pp_i < _pp_keys.length; _pp_i++) {
-            _pp_sorted[_pp_keys[_pp_i]] = _pp_payload.params[_pp_keys[_pp_i]];
-        }
-        _pp_payload.params = _pp_sorted;
-        throw 'PARAMS_PARITY_DUMP::' + JSON.stringify(_pp_payload);
-    }
-} catch (_pp_ex) {
-    if (typeof _pp_ex === 'string' && _pp_ex.indexOf('PARAMS_PARITY_DUMP::') === 0) {
-        // Re-throw so the test-module call ends with the dump message.
-        throw _pp_ex;
-    }
-    // Probe must never break unrelated integrations. Swallow and continue.
-}
-///////////////////////////////////////////
-//     Params Parity Test Probe (END)    //
-///////////////////////////////////////////
