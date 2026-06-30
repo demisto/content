@@ -2,9 +2,7 @@ import json
 import time
 import base64
 from datetime import UTC, datetime
-from typing import Any
 
-import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -93,11 +91,11 @@ class Client(BaseClient):
             else:
                 raise error
 
-    def get_device(self, id):
+    def get_device(self, device_id):
         """
         Get a device from Device Security portal by device ID
         """
-        return self._http_request(method="GET", url_suffix="/device", params={"deviceid": id}, timeout=self.api_timeout)
+        return self._http_request(method="GET", url_suffix="/device", params={"deviceid": device_id}, timeout=self.api_timeout)
 
     def get_device_by_ip(self, ip):
         """
@@ -152,12 +150,9 @@ class Client(BaseClient):
             method="GET",
             full_url=f"{self._base_url.replace('/v1', '/v2')}/device/list",
             params={
-                "filter_monitored": "no",
                 "offset": offset,
                 "pagelength": pagelength,
                 "stime": f"{datetime.utcfromtimestamp(int(time.time()) - 2592000).isoformat()}Z",
-                "detail": "true",
-                "sortfield": "MAC",
                 "sortdirection": "asc",
             },
             timeout=self.api_timeout,
@@ -186,55 +181,6 @@ class Client(BaseClient):
             json_data={"action": "mitigate", "full_name": full_name, "reason": reason, "ticketIdList": [vuln_id]},
             timeout=self.api_timeout,
         )
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f"Invalid date: {arg}")
-
-        return int(date.replace(tzinfo=UTC).timestamp())
-    if isinstance(arg, int | float):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg}"')
 
 
 def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verify_certificate=True, proxy=False):
@@ -347,8 +293,17 @@ def device_security_get_device(client, args):
     device_id = args.get("id")
 
     result = client.get_device(device_id)
+    if not result:
+        return CommandResults(readable_output="### No device found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Device", outputs_key_field="deviceid", outputs=result)
+    readable_output = tableToMarkdown("Device Security Device", result, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.Device",
+        outputs_key_field="deviceid",
+        outputs=result,
+    )
 
 
 def device_security_get_device_by_ip(client, args):
@@ -367,9 +322,17 @@ def device_security_get_device_by_ip(client, args):
     device_ip = args.get("ip")
 
     result = client.get_device_by_ip(device_ip)
+    devices = result.get("devices", [])
+    if not devices:
+        return CommandResults(readable_output="### No devices found")
+
+    readable_output = tableToMarkdown("Device Security Devices", devices, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="PaloAltoNetworksDeviceSecurity.Device", outputs_key_field="devices", outputs=result["devices"]
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.Device",
+        outputs_key_field="devices",
+        outputs=devices,
     )
 
 
@@ -393,8 +356,13 @@ def device_security_list_devices(client, args):
     if not result:
         return CommandResults(readable_output="### No devices found")
 
+    readable_output = tableToMarkdown("Device Security Devices", result, removeNull=True)
+
     return CommandResults(
-        outputs_prefix="PaloAltoNetworksDeviceSecurity.DeviceList", outputs_key_field="deviceid", outputs=result
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.DeviceList",
+        outputs_key_field="deviceid",
+        outputs=result,
     )
 
 
@@ -419,19 +387,26 @@ def device_security_list_alerts(client, args):
     if not result:
         return CommandResults(readable_output="### No alerts found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Alerts", outputs_key_field="id", outputs=result)
+    readable_output = tableToMarkdown("Device Security Alerts", result, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.Alerts",
+        outputs_key_field="id",
+        outputs=result,
+    )
 
 
 def device_security_list_vulns(client, args):
     """
-    Returns a list of Device Security vulnerabilties (max: 1000)
+    Returns a list of Device Security vulnerabilities (max: 1000)
 
     Args:
         client (Client): Device Security client.
         args (dict): all command arguments.
 
     Returns:
-        List of vulnerabilties
+        List of vulnerabilities
 
         CommandResults
     """
@@ -443,7 +418,14 @@ def device_security_list_vulns(client, args):
     if not result:
         return CommandResults(readable_output="### No vulnerabilities found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Vulns", outputs_key_field="zb_ticketid", outputs=result)
+    readable_output = tableToMarkdown("Device Security Vulnerabilities", result, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.Vulns",
+        outputs_key_field="zb_ticketid",
+        outputs=result,
+    )
 
 
 def device_security_resolve_alert(client, args):
@@ -527,7 +509,7 @@ def fetch_alert_incidents(client, last_alerts_fetch, max_fetch):
 
         incident = {
             "name": alert["name"],
-            "type": "Device Security Alert",
+            "rawType": "Device Security Alert",
             "occurred": alert["date"],
             "rawJSON": json.dumps(alert),
             "details": alert.get("description", ""),
@@ -581,7 +563,7 @@ def fetch_vulnerability_incidents(client, last_vulns_fetch, max_fetch):
 
         incident = {
             "name": vuln["name"],
-            "type": "Device Security Vulnerability",
+            "rawType": "Device Security Vulnerability",
             "occurred": detected_date,
             "rawJSON": json.dumps(vuln),
             "details": f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
@@ -652,9 +634,14 @@ def main():
 
     first_fetch = "-1"
     try:
-        ff = arg_to_timestamp(arg=demisto.params().get("first_fetch"), arg_name="First fetch time", required=False)
-        if ff:
-            first_fetch = datetime.fromtimestamp(ff).astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+        first_fetch_dt = arg_to_datetime(
+            arg=demisto.params().get("first_fetch"),
+            arg_name="First fetch time",
+            is_utc=True,
+            required=False,
+        )
+        if first_fetch_dt:
+            first_fetch = first_fetch_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     except ValueError as e:
         return_error(f"First fetch time is in a wrong format. Error: {e!s}")
 

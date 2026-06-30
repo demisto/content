@@ -16,6 +16,7 @@
     "system": false,
     "readonly": false,
     "default": false,
+    "layout": "Device Security Alert Layout",
     "autorun": false,
     "closureScript": "device-security-alert-post-processing",
     "disabled": false,

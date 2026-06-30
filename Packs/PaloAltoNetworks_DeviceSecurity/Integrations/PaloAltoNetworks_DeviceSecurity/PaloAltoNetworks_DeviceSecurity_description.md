@@ -1,5 +1,4 @@
 ## Get your Palo Alto Networks Device Security Credentials
-This integration requires that API access be configured.
+This integration requires API access configuration.
 
-To obtain the **Client ID** and **Client Secret**, please refer to the official **API User Guide**:
-https://pan.dev/iot/api/iot-public-api-new
+To obtain the **Client ID** and **Client Secret**, see the [API User Guide](https://pan.dev/iot/api/iot-public-api-new).

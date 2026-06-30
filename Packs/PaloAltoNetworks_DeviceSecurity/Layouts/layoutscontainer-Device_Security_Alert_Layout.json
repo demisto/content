@@ -1,0 +1,82 @@
+{
+    "id": "Device Security Alert Layout",
+    "group": "incident",
+    "name": "Device Security Alert Layout",
+    "description": "Layout for Device Security Alert incidents.",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "occurred",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "severity",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "details",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "devicesecurityincidenturl",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "devicesecurityservicenowtablename",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "devicesecurityservicenowrecordid",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Device Security Alert",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "version": 0
+            }
+        ]
+    }
+}

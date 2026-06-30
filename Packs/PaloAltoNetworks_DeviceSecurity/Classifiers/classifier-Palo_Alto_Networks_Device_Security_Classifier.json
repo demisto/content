@@ -1,0 +1,21 @@
+{
+    "defaultIncidentType": "Device Security Alert",
+    "description": "Classifies Palo Alto Networks Device Security incidents.",
+    "feed": false,
+    "id": "Palo Alto Networks Device Security Classifier",
+    "keyTypeMap": {
+        "Device Security Alert": "Device Security Alert",
+        "Device Security Vulnerability": "Device Security Vulnerability"
+    },
+    "name": "Palo Alto Networks Device Security Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "rawType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

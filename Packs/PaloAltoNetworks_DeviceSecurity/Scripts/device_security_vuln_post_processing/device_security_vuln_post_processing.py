@@ -24,7 +24,7 @@ def device_security_resolve_vuln():
 
     demisto.executeCommand(
         "device-security-resolve-vuln",
-        {"id": zb_ticketid, "full_name": vulnerability_name, "reason": f'resolved by XSOAR incident {incident["id"]}'},
+        {"id": zb_ticketid, "full_name": vulnerability_name, "reason": f'Resolved by XSOAR incident {incident["id"]}'},
     )
 
 

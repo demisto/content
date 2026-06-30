@@ -19,7 +19,7 @@ def get_device_security_config(device_security_config_list_name="DEVICE_SECURITY
 
 
 def get_raci(args):
-    alert_name = args.get("alert_name", "")
+    incident_name = args.get("incident_name", "")
     alert_type = args.get("raw_type")
 
     category = args.get("category", "")
@@ -49,7 +49,7 @@ def get_raci(args):
             match_name = "name_regex" not in a
             if not match_name:
                 for n in a["name_regex"]:
-                    if re.match(n, alert_name):
+                    if re.match(n, incident_name):
                         match_name = True
                         break
             if match_name:

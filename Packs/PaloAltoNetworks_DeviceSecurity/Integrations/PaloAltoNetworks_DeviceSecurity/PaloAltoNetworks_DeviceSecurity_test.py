@@ -36,7 +36,7 @@ def test_device_security_get_device(requests_mock):
     assert outputs == mock_response
 
 
-def test_fetch_incidents(requests_mock, monkeypatch):
+def test_fetch_incidents(requests_mock):
     """
     Scenario: Fetch incidents normally
 
@@ -77,7 +77,7 @@ def test_fetch_incidents(requests_mock, monkeypatch):
         assert isinstance(incident.get("occurred"), str)
 
 
-def test_fetch_incidents_special(requests_mock, monkeypatch):
+def test_fetch_incidents_special(requests_mock):
     """
     Scenario: Fetch incidents corner cases due to the same timestamps
 

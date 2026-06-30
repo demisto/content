@@ -1,4 +1,4 @@
-comment: Device Security vulnerability post processing script to resolve the vulnerability incident in Device Security portal using API.
+comment: Resolves the vulnerability incident in the Device Security portal via the API. Designed to run as a post-processing script.
 commonfields:
   id: device-security-vuln-post-processing
   version: -1

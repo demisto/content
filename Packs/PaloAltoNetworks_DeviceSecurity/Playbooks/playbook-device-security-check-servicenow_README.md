@@ -1,4 +1,4 @@
-This playbook should be used in a recurring Job to check the ServiceNow ticket status for the Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilties.
+This playbook checks the ServiceNow ticket status for Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilities. Designed to run as a recurring job.
 
 ## Dependencies
 
@@ -23,7 +23,10 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook.
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| CloseReason | The close reason passed to closeInvestigation when incidents are closed by this playbook. | Other | Optional |
+| CloseNotes | The close notes passed to closeInvestigation when incidents are closed by this playbook. | Job finished | Optional |
 
 ## Playbook Outputs
 

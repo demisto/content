@@ -96,7 +96,7 @@ def test_device_security_get_raci_normal(monkeypatch):
 
     outputs = get_raci(
         {
-            "alert_name": "DOUBLEPULSAR Backdoor traffic",
+            "incident_name": "DOUBLEPULSAR Backdoor traffic",
             "raw_type": "Device Security Alert",
             "category": "Audio Streaming",
             "profile": "Profusion Media Player",
@@ -129,7 +129,7 @@ def test_device_security_get_raci_no_default_email(monkeypatch):
 
     outputs = get_raci(
         {
-            "alert_name": "",
+            "incident_name": "",
             "raw_type": "Device Security Vulnerability",
             "category": "Audio Streaming",
             "profile": "Profusion Media Player",
@@ -162,7 +162,7 @@ def test_device_security_get_raci_default_email(monkeypatch):
 
     outputs = get_raci(
         {
-            "alert_name": "",
+            "incident_name": "",
             "raw_type": "Device Security Vulnerability",
             "category": "Audio Streaming",
             "profile": "Profusion Media Player",
@@ -193,7 +193,7 @@ def test_device_security_get_raci_no_name_regex(monkeypatch):
     """
     monkeypatch.setattr(device_security_get_raci, "get_device_security_config", lambda x: _CONFIG)
 
-    outputs = get_raci({"alert_name": "FooBar", "raw_type": "Device Security Vulnerability", "category": "Foo"}).outputs
+    outputs = get_raci({"incident_name": "FooBar", "raw_type": "Device Security Vulnerability", "category": "Foo"}).outputs
     assert outputs == {
         "owner": None,
         "r": None,
@@ -204,7 +204,12 @@ def test_device_security_get_raci_no_name_regex(monkeypatch):
     }
 
     outputs = get_raci(
-        {"alert_name": "FooBar", "raw_type": "Device Security Vulnerability", "category": "Camera", "profile": "Avigilon Camera"}
+        {
+            "incident_name": "FooBar",
+            "raw_type": "Device Security Vulnerability",
+            "category": "Camera",
+            "profile": "Avigilon Camera",
+        }
     ).outputs
     assert outputs == {
         "owner": "WPR_SECURITY",
@@ -232,7 +237,7 @@ def test_device_security_snow(monkeypatch):
     monkeypatch.setattr(device_security_get_raci, "get_device_security_config", lambda x: _CONFIG)
     outputs = get_raci(
         {
-            "alert_name": "FooBar",
+            "incident_name": "FooBar",
             "raw_type": "Device Security Vulnerability",
             "category": "Audio Streaming",
             "profile": "Profusion Media Player",
@@ -267,6 +272,6 @@ def test_device_security_get_raci_no_raci(monkeypatch):
     """
     monkeypatch.setattr(device_security_get_raci, "get_device_security_config", lambda x: _CONFIG)
     outputs = get_raci(
-        {"alert_name": "FooBar", "raw_type": "Device Security Alert", "category": "Camera", "profile": "Avigilon Camera"}
+        {"incident_name": "FooBar", "raw_type": "Device Security Alert", "category": "Camera", "profile": "Avigilon Camera"}
     ).outputs
     assert outputs == {"owner": "WPR_SECURITY", "r": None, "r_email": None, "r_snow": None, "i": None, "i_email": None}

@@ -1,4 +1,4 @@
-comment: Close the XSOAR incident if the Device Security ServiceNow ticket was closed. This command should be run in a Job.
+comment: Closes the Cortex XSOAR incident if the Device Security ServiceNow ticket was closed. This command should be run in a Job.
 commonfields:
   id: device-security-check-servicenow
   version: -1

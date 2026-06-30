@@ -1,6 +1,6 @@
 args:
-- description: The name of the Device Security alert.
-  name: alert_name
+- description: The name of the Device Security incident.
+  name: incident_name
 - description: The raw type of the incident.
   name: raw_type
   required: true
@@ -22,9 +22,9 @@ args:
   defaultValue: DEVICE_SECURITY_CONFIG
 comment: Device Security RACI model script.
 commonfields:
-  id: device-security-security-get-raci
+  id: device-security-get-raci
   version: -1
-name: device-security-security-get-raci
+name: device-security-get-raci
 outputs:
 - contextPath: PaloAltoNetworksDeviceSecurity.RACI
   description: The RACI model of the Device Security incident.

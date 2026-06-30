@@ -1,4 +1,4 @@
-Device Security alert post processing script to resolve the alert in Device Security portal using API.
+Resolves the alert in the Device Security portal via the API. Designed to run as a post-processing script.
 
 ## Script Data
 

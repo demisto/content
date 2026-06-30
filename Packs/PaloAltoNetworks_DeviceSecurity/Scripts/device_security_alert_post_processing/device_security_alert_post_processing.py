@@ -25,7 +25,7 @@ def device_security_resolve_alert():
         "device-security-resolve-alert",
         {
             "id": _id,
-            "reason": f'resolved by XSOAR incident {incident["id"]}',
+            "reason": f'Resolved by XSOAR incident {incident["id"]}',
             "reason_type": "Issue Mitigated" if close_reason == "Resolved" else "No Action Needed",
         },
     )

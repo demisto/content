@@ -19,7 +19,7 @@ Based on a mapping defined in the Settings > Advanced > Lists, the device attrib
 
 ### ServiceNow ticket check
 
-The way this pack works with ServiceNow is persisting the new ticket ID in a custom field "ServiceNow Record ID". This automation script is to loop all the opened Device Security alerts and vulnerabilities in XSOAR, and query ServiceNow for the ticket status. If the status is "CLOSED", the corresponding XSOAR incident will be closed.
+The way this pack works with ServiceNow is persisting the new ticket ID in a custom field "Device Security ServiceNow Record ID". This automation script is to loop all the opened Device Security alerts and vulnerabilities in XSOAR, and query ServiceNow for the ticket status. If the status is "CLOSED", the corresponding XSOAR incident will be closed.
 
 ### Alert and Vulnerability resolution post-processing script
 

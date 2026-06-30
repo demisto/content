@@ -40,8 +40,8 @@ def check_servicenow_and_close():
     if incidents:
         closed_count = 0
         for incident in incidents:
-            servicenow_tablename = demisto.get(incident, "CustomFields.servicenowtablename")
-            servicenow_recordid = demisto.get(incident, "CustomFields.servicenowrecordid")
+            servicenow_tablename = demisto.get(incident, "CustomFields.devicesecurityservicenowtablename")
+            servicenow_recordid = demisto.get(incident, "CustomFields.devicesecurityservicenowrecordid")
             if servicenow_tablename:
                 # if servicenow_tablename is defined, there's a corresponding ticket created in ServiceNow
                 snow_record = get_servicenow_record(servicenow_tablename, servicenow_recordid)

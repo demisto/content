@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: Start of the playbook workflow.
     nexttasks:
       '#none#':
       - "1"
@@ -42,7 +42,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: Incident enrichment workflow.
     nexttasks:
       '#none#':
       - "11"
@@ -67,7 +67,7 @@ tasks:
       id: 201c5674-e376-41e7-8474-0a7b367c3e9a
       version: -1
       name: Get Device Details from Device Security Server
-      description: Device Security get device command - get a single device details.
+      description: Retrieves a single device's details using its MAC address.
       script: Palo Alto Networks Device Security|||device-security-get-device
       type: regular
       iscommand: true
@@ -102,7 +102,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: Apply the RACI model for this incident.
     nexttasks:
       '#none#':
       - "6"
@@ -128,7 +128,7 @@ tasks:
       version: -1
       name: Calculate RACI
       description: Device Security RACI model script
-      scriptName: device-security-security-get-raci
+      scriptName: device-security-get-raci
       type: regular
       iscommand: false
       brand: ""
@@ -136,7 +136,7 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      alert_name:
+      incident_name:
         simple: ${incident.name}
       category:
         simple: ${PaloAltoNetworksDeviceSecurity.Device.category}
@@ -172,7 +172,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: Playbook execution completed.
     separatecontext: false
     view: |-
       {
@@ -210,7 +210,14 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: lists.DEVICE_SECURITY_CONFIG
+              complex:
+                root: lists
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: ${inputs.DeviceSecurityConfigListName}
             iscontext: true
     view: |-
       {
@@ -293,10 +300,10 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: ServiceNow Table Name
+    - incidentfield: Device Security ServiceNow Table Name
       output:
         simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
-    - incidentfield: ServiceNow Record ID
+    - incidentfield: Device Security ServiceNow Record ID
       output:
         simple: ${ServiceNow.Record.ID}
     skipunavailable: false
@@ -337,7 +344,7 @@ tasks:
       id: 2fa4d52b-dc44-4dc3-b1e8-f226abe7752e
       version: -1
       name: Is ServiceNow v2 enabled and create ServiceNow ticket?
-      description: ''
+      description: Check whether ServiceNow v2 is enabled and ticket creation is requested.
       type: condition
       iscommand: false
       brand: ""
@@ -399,7 +406,7 @@ tasks:
       id: a00d7b3e-2a43-4a3f-b22d-868d2b9f7cb3
       version: -1
       name: Is Palo Alto Networks Device Security Enabled?
-      description: ''
+      description: Check whether Palo Alto Networks Device Security integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -461,21 +468,21 @@ view: |-
     }
   }
 inputs:
-- key: Device SecurityConfigListName
+- key: DeviceSecurityConfigListName
   value:
     simple: DEVICE_SECURITY_CONFIG
   required: false
-  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow calculation.
+  description: The list name defined in the Cortex XSOAR lists for the RACI and ServiceNow calculation.
   playbookInputQuery:
 - key: CreateServiceNowTicket
   value:
     simple: "false"
   required: false
-  description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
+  description: Whether a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
   playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksDeviceSecurity
-  description: This path will have field "device" for the device details and "raci" if the command "device-security-get-raci" has output.
+  description: Contains the device details and the RACI information if the device-security-get-raci command has output.
   type: string
 - contextPath: ServiceNow.Record
   description: The ServiceNow record after creating the ServiceNow ticket.

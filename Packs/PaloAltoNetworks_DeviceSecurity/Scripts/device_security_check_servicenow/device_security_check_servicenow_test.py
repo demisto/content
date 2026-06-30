@@ -8,7 +8,7 @@ _INCIDENTS = [
         "id": 2,
         "status": 1,
         "type": "Device Security Vulnerability",
-        "CustomFields": {"servicenowtablename": "incident", "servicenowrecordid": "snow_id"},
+        "CustomFields": {"devicesecurityservicenowtablename": "incident", "devicesecurityservicenowrecordid": "snow_id"},
     },
 ]
 
