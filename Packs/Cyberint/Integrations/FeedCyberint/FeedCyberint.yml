@@ -7,6 +7,7 @@ commonfields:
 fromversion: 6.9.0
 name: Cyberint Feed
 display: Check Point EM Feed
+provider: Check Point Software Technologies
 category: Data Enrichment & Threat Intelligence
 description: Use the Cyberint Feed integration to get indicators from the feed.
 configuration:

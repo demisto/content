@@ -1,5 +1,6 @@
 name: Cyberint Premium Feed
 display: Check Point EM IoC Intelligence Feed
+provider: Check Point Software Technologies
 sectionorder:
 - Connect
 - Collect
