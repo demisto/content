@@ -241,7 +241,7 @@ profiles:
               edit_modifiers: { required: true }
 ```
 
-Handlers reference it like any other profile: `auth_options: [{ id: "passthrough.acme_api", workloads: ["xsoar-pod"] }]`.
+Handlers reference it like any other profile: `auth_options: [{ id: "passthrough.acme_api", workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }]`.
 
 #### 2.6.2 Profile Metadata & the `interpolation_mapping`
 
@@ -1124,13 +1124,13 @@ Each integration gets one `handler.yaml` under `components/handlers/<handler-fol
 3. **Grouped connectors — handlers subscribe to SUB-capabilities ONLY, never bare capabilities.** A handler's `capabilities[].id` MUST be a sub-capability id (`<capability-id>/<sub-capability-id>`), never a bare `<capability-id>`. **Reason**: the FE renders **sub-capabilities** into `view_groups`; it does **not** know how to render a bare capability into a view_group. (Since every migrated connector has a sub-capability per integration — §3.1.9 — there is always a sub-capability to subscribe to.)
 4. **`auth_options[].id`** references a `connection.yaml` profile id only. The tile comes from the **profile's** `view_group` (§3.6) — do NOT put `view_group` on the handler.
 5. **`auth_options[]` are OR** (alternatives) — never AND. Multiple methods → separate entries referencing profiles that share a `view_group`. Several simultaneous inputs → one `passthrough` profile.
-6. **Workloads** always `["xsoar-pod"]`.
+6. **Workloads** always `["xsoar-pod", "xsoar-automationhub-runner"]`.
 
 ```yaml
 # Grouped connectors: ALWAYS subscribe to the SUB-capability (never a bare capability) — rule 3.
 capabilities:
   - id: "<parent-capability-id>/<sub-capability-id>"
-    workloads: ["xsoar-pod"]
+    workloads: ["xsoar-pod", "xsoar-automationhub-runner"]
 ```
 
 #### Actions per sub-capability
@@ -1152,14 +1152,14 @@ Emit `actions[]` on the relevant **sub-capability** entry, derived mechanically 
 capabilities:
   - id: "automation-and-remediation_my-integration"
     auth_options:
-      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
   - id: "fetch-issues_my-integration"
     auth_options:
-      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
     actions: [{ type: "reset_incidents_last_run" }]
   - id: "log-collection_my-integration"
     auth_options:
-      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.my_profile", workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
     actions: [{ type: "reset_events_last_run" }]
 ```
 
@@ -1564,8 +1564,8 @@ triggering:
 capabilities:
   - id: "automation-and-remediation_salesforce"
     auth_options:
-      - { id: "oauth2_client_credentials.salesforce",  workloads: ["xsoar-pod"] }
-      - { id: "oauth2_authorization_code.salesforce",  workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.salesforce",  workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
+      - { id: "oauth2_authorization_code.salesforce",  workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
 test_connection:
   type: "service"
   service: "xsoar"
@@ -1593,7 +1593,7 @@ triggering:
 capabilities:
   - id: "automation-and-remediation_salesforce-iam"
     auth_options:
-      - { id: "oauth2_client_credentials.salesforce-iam", scopes: ["api", "chatter_api", "refresh_token", "offline_access"], workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.salesforce-iam", scopes: ["api", "chatter_api", "refresh_token", "offline_access"], workloads: ["xsoar-pod", "xsoar-automationhub-runner"] }
 test_connection:
   type: "service"
   service: "xsoar"
@@ -1723,7 +1723,7 @@ The following integrations are excluded from the migration. If the LLM encounter
 | `WildFire-Reports` | `defaultEnabled: true` — default-instance integration; out of scope. |
 | Contributed integrations (partner + community) | Not maintained by the core content team; out of scope for the unified-connector migration. |
 | Deprecated integrations | Will not be migrated. Users will be pointed to the replacement connector (see §3.2.2 open item about deprecated-pack redirect text). |
-| `Cortex Core - IOC` (`CoreIOCs`), `Cortex Core - IR` (`CortexCoreIR`), `XQL Query Engine` (`CortexCoreXQLQueryEngine`), `Cortex Core - Platform` (`CortexPlatformCore`), `Core REST API` | Internal Cortex core integrations — always excluded.  |
+| `Cortex Core - IOC` (`CoreIOCs`), `Cortex Core - IR` (`CortexCoreIR`),  `CortexCoreXQLQueryEngine`, `Cortex Core - Platform` (`CortexPlatformCore`), `Core REST API` | Internal Cortex core integrations — always excluded.  |
 | `Salesforce` | Migrated manually in April — all Salesforce integrations excluded. |
 | `AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`, `GCP`, `Azure` | Already onboarded to the **cooc** experience — excluded from ConnectUs migration. |
 

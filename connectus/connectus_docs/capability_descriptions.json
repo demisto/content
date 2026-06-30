@@ -1,0 +1,9 @@
+{
+  "_comment": "Closed-list capability descriptions for capabilities.yaml (§8.2 / §11). Keyed by the top-level capability `id`. The documentation skill writes capabilities[].description verbatim from this table; any capability id NOT present here is raised as a __FLAG__ for a human. sub_capabilities[] are per-integration and need NO entry here. Wording below is the tech-writer-reviewed table from the design doc.",
+  "automation-and-remediation": "Run automated actions and remediation commands against the connected service.",
+  "fetch-issues": "Fetch issues from the connected service for investigation and response.",
+  "log-collection": "Collect and ingest logs and events from the connected service.",
+  "threat-intelligence-and-enrichment": "Ingest threat intelligence and enrich indicators using data from the connected service.",
+  "fetch-assets-and-vulnerabilities": "Fetch assets and vulnerabilities from the connected service into the Unified Asset Inventory.",
+  "fetch-secrets": "Retrieve secrets and credentials from the connected service."
+}
