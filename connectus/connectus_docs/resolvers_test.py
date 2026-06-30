@@ -168,6 +168,23 @@ class TestSlugify:
     def test_collapses_mixed_space_and_hyphen_runs(self):
         assert slugify("AWS - SNS") == "aws-sns"
 
+    def test_internal_dot_becomes_separator(self):
+        # An internal dot between word chars is a SEPARATOR, matching the
+        # migration (on-disk view_group ids are ``tenable-io`` / ``tenable-sc``
+        # / ``appsentinels-ai``, never ``tenableio`` / ``appsentinelsai``).
+        assert slugify("AppSentinels.ai") == "appsentinels-ai"
+        assert slugify("Tenable.io") == "tenable-io"
+        assert slugify("Tenable.sc") == "tenable-sc"
+        assert slugify("abuse.ch SSL Blacklist Feed") == "abuse-ch-ssl-blacklist-feed"
+
+    def test_internal_slash_becomes_separator(self):
+        assert slugify("foo/bar") == "foo-bar"
+
+    def test_trailing_dot_is_dropped_not_separator(self):
+        # A dot NOT between word chars (trailing) is still dropped, never a
+        # leading/trailing hyphen.
+        assert slugify("Acme.") == "acme"
+
 
 # --------------------------------------------------------------------------- #
 # Happy path
