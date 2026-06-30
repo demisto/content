@@ -191,6 +191,8 @@ MAX_FETCH_MIN = 1
 MAX_FETCH_CAP = 50
 DEFAULT_MAX_FETCH = 50
 MAX_FETCH_ERROR = "Incorrect value please enter between 1-50."
+DEFAULT_LOOKBACK_MINUTES = 5
+MAX_LOOKBACK_MINUTES = 60
 INCIDENTS_OFFSET_KEY = "incidents_offset"
 INCIDENTS_PAGINATION_FROM_KEY = "incidents_pagination_from"
 ALERTS_OFFSET_KEY = "alerts_offset"
@@ -399,6 +401,33 @@ def parse_backfill_days(backfill_days: str | int | float | None) -> str:
         days = DEFAULT_BACKFILL_DAYS
     start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
     return start.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def validate_lookback_minutes(lookback_minutes: int | str | None) -> None:
+    """Validate that lookback_minutes is an integer between 1 and MAX_LOOKBACK_MINUTES inclusive."""
+    parsed = arg_to_number(lookback_minutes, arg_name="lookback_minutes", required=False)
+    if parsed is None or parsed < 1 or parsed > MAX_LOOKBACK_MINUTES:
+        raise ValueError(f"Fetch Lookback (minutes) must be an integer between 1 and {MAX_LOOKBACK_MINUTES}.")
+
+
+def _parse_lookback_minutes(raw_value: str | int | None) -> int:
+    """Parse the lookback_minutes parameter, clamping to [1, MAX_LOOKBACK_MINUTES]."""
+    if raw_value is None or str(raw_value).strip() == "":
+        return DEFAULT_LOOKBACK_MINUTES
+    try:
+        minutes = int(str(raw_value).strip())
+    except (TypeError, ValueError):
+        return DEFAULT_LOOKBACK_MINUTES
+    return max(1, min(minutes, MAX_LOOKBACK_MINUTES))
+
+
+def _apply_lookback_to_from_time(from_time: str, lookback_minutes: int) -> str:
+    """Shift a fetch from_time backwards by lookback_minutes for late-indexed entity detection."""
+    parsed = _parse_entity_created_at(from_time)
+    if parsed is None:
+        return from_time
+    shifted = parsed - timedelta(minutes=lookback_minutes)
+    return _format_fetch_timestamp(shifted)
 
 
 def _mirror_bool(value: Any) -> bool:
@@ -1313,7 +1342,6 @@ def fetch_all_alert_events(
     while True:
         page_events, page_total = fetch_alert_events_page(client, alert_id, limit=page_limit, offset=offset)
         if page_events and _events_have_bad_alert_events_shape(page_events):
-            demisto.debug("getAlertsEvents returned rows with cid/eid fields; treating alert as having no alert events.")
             return [], 0
         if page_total > 0:
             total = page_total
@@ -4823,6 +4851,7 @@ def _ingest_fetched_incidents(
     incident_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     limit: int,
+    seen_ids: set[str] | None = None,
 ) -> int:
     """Fetch up to `limit` Vega incidents and return how many were created in XSOAR."""
     try:
@@ -4851,13 +4880,40 @@ def _ingest_fetched_incidents(
         resuming_offset = _is_resuming_fetch_pagination(
             last_run, INCIDENTS_OFFSET_KEY, "incidents_fetch_config", incidents_fetch_config
         )
+        all_returned_ids = [_normalize_entity_id(inc) for inc in incidents if _normalize_entity_id(inc)]
+        demisto.debug(
+            f"lookback-feature [incidents]: query from_time={incidents_from_time}, "
+            f"last_fetch={incidents_last_fetch}, "
+            f"already_existing_ids (from last_ids)={incidents_last_ids}, "
+            f"total_returned_from_api={len(incidents)}, "
+            f"returned_ids={all_returned_ids}"
+        )
+        skipped_cross_cycle = 0
+        skipped_cycle_local = 0
+        new_ids: list[str] = []
         for incident in incidents:
             if not resuming_offset and not _should_ingest_entity(incident, incidents_last_fetch, incidents_last_ids):
+                skipped_cross_cycle += 1
                 continue
             incident_id = _normalize_entity_id(incident)
+            # Cycle-local lookback dedup: skip if already created this cycle.
+            if seen_ids is not None and incident_id and incident_id in seen_ids:
+                skipped_cycle_local += 1
+                continue
             timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
             xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
             ingested.append(incident)
+            if incident_id:
+                new_ids.append(incident_id)
+            if seen_ids is not None and incident_id:
+                seen_ids.add(incident_id)
+        demisto.debug(
+            f"lookback-feature [incidents]: skipped_cross_cycle_duplicates={skipped_cross_cycle}, "
+            f"skipped_cycle_local_duplicates={skipped_cycle_local}, "
+            f"total_duplicates={skipped_cross_cycle + skipped_cycle_local}, "
+            f"new_ids_creating_incident={new_ids}, "
+            f"new_incident_count={len(new_ids)}"
+        )
 
         if ingested:
             new_last_fetch, new_last_ids = _resolve_next_fetch_state(
@@ -4895,6 +4951,7 @@ def _ingest_fetched_alerts(
     has_related_incidents: bool | None,
     integration_url: str | None,
     limit: int,
+    seen_ids: set[str] | None = None,
 ) -> int:
     """Fetch up to `limit` Vega alerts and return how many were created in XSOAR."""
     try:
@@ -4922,11 +4979,39 @@ def _ingest_fetched_alerts(
         )
         ingested: list[dict] = []
         resuming_offset = _is_resuming_fetch_pagination(last_run, ALERTS_OFFSET_KEY, "alerts_fetch_config", alerts_fetch_config)
+        all_returned_ids = [_normalize_entity_id(a) for a in alerts if _normalize_entity_id(a)]
+        demisto.debug(
+            f"lookback-feature [alerts]: query from_time={alerts_from_time}, "
+            f"last_fetch={alerts_last_fetch}, "
+            f"already_existing_ids (from last_ids)={alerts_last_ids}, "
+            f"total_returned_from_api={len(alerts)}, "
+            f"returned_ids={all_returned_ids}"
+        )
+        skipped_cross_cycle = 0
+        skipped_cycle_local = 0
+        new_ids: list[str] = []
         for alert in alerts:
             if not resuming_offset and not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
+                skipped_cross_cycle += 1
+                continue
+            alert_id = _normalize_entity_id(alert)
+            # Cycle-local lookback dedup: skip if already created this cycle.
+            if seen_ids is not None and alert_id and alert_id in seen_ids:
+                skipped_cycle_local += 1
                 continue
             xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
             ingested.append(alert)
+            if alert_id:
+                new_ids.append(alert_id)
+            if seen_ids is not None and alert_id:
+                seen_ids.add(alert_id)
+        demisto.debug(
+            f"lookback-feature [alerts]: skipped_cross_cycle_duplicates={skipped_cross_cycle}, "
+            f"skipped_cycle_local_duplicates={skipped_cycle_local}, "
+            f"total_duplicates={skipped_cross_cycle + skipped_cycle_local}, "
+            f"new_ids_creating_incident={new_ids}, "
+            f"new_incident_count={len(new_ids)}"
+        )
 
         if ingested:
             new_last_fetch, new_last_ids = _resolve_next_fetch_state(
@@ -4963,18 +5048,27 @@ def fetch_incidents_command(
     first_fetch_time: str,
     integration_url: str | None = None,
     max_fetch: int = DEFAULT_MAX_FETCH,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
 ) -> tuple[dict, list[dict]]:
     """Fetch Vega incidents and alerts as XSOAR incidents.
 
     Each cycle creates up to max_fetch XSOAR incidents total.
     Incidents are always fetched first; any remaining quota is used for alerts.
     Offset state is saved when a list is only partly read and resumes on the next cycle.
+
+    The query window is shifted backwards by lookback_minutes to catch
+    late-indexed entities.  A cycle-local ``seen_ids`` set collects the IDs of
+    all XSOAR incidents created during this cycle so that duplicates within the
+    lookback window are skipped.  The set is discarded at the end of the cycle.
     """
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
     next_run.pop("alerts_seen_ids", None)
     next_run.pop("incidents_seen_ids", None)
     next_run.pop("vega_backfill_days", None)
+
+    # Cycle-local dedup set – tracks IDs created this cycle then discarded.
+    seen_ids: set[str] = set()
 
     alerts_fetch_config = _build_fetch_filter_fingerprint(
         alert_severities,
@@ -4991,12 +5085,13 @@ def fetch_incidents_command(
 
     # Resume an in-progress incident page before anything else.
     if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
+        raw_from = _resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time)
         ingested_incidents = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time),
+            incidents_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
             incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
             incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
@@ -5004,6 +5099,7 @@ def fetch_incidents_command(
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
+            seen_ids=seen_ids,
         )
         remaining -= ingested_incidents
         working_run = next_run
@@ -5016,12 +5112,13 @@ def fetch_incidents_command(
         and working_run.get(INCIDENTS_OFFSET_KEY) is None
         and working_run.get(ALERTS_OFFSET_KEY) is not None
     ):
+        raw_from = _resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time)
         ingested_alerts = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time),
+            alerts_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
             alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
             alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
@@ -5031,6 +5128,7 @@ def fetch_incidents_command(
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
             limit=remaining,
+            seen_ids=seen_ids,
         )
         remaining -= ingested_alerts
         working_run = next_run
@@ -5038,12 +5136,13 @@ def fetch_incidents_command(
 
     # Start a new incident page when no list is mid-pagination.
     if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
+        raw_from = _resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time)
         ingested_incidents = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time),
+            incidents_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
             incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
             incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
@@ -5051,6 +5150,7 @@ def fetch_incidents_command(
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
+            seen_ids=seen_ids,
         )
         remaining -= ingested_incidents
         working_run = next_run
@@ -5063,12 +5163,13 @@ def fetch_incidents_command(
         and next_run.get(INCIDENTS_OFFSET_KEY) is None
         and next_run.get(ALERTS_OFFSET_KEY) is None
     ):
+        raw_from = _resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time)
         _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time),
+            alerts_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
             alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
             alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
@@ -5078,7 +5179,18 @@ def fetch_incidents_command(
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
             limit=remaining,
+            seen_ids=seen_ids,
         )
+
+    # Cycle-local seen_ids is discarded here – no persistence needed.
+    demisto.debug(
+        f"lookback-feature [summary]: cycle complete | "
+        f"lookback_minutes={lookback_minutes}, "
+        f"total_xsoar_incidents_created={len(xsoar_incidents)}, "
+        f"total_seen_ids_tracked={len(seen_ids)}, "
+        f"seen_ids_list={sorted(seen_ids)}, "
+        f"seen_ids now discarded (memory freed)"
+    )
 
     return next_run, xsoar_incidents
 
@@ -5087,9 +5199,11 @@ def test_module(
     client: Client,
     backfill_days: str | int | None = None,
     max_fetch: int | str | None = None,
+    lookback_minutes: int | str | None = None,
 ):
     try:
         validate_max_fetch(max_fetch)
+        validate_lookback_minutes(lookback_minutes)
         client.test_connection(backfill_days)
         return "ok"
     except Exception as e:
@@ -5102,8 +5216,8 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     backfill_days = params.get("backfill_days")
     return {
         "base_url": params.get("url"),
-        "access_key": params.get("access_key"),
-        "access_key_id": params.get("access_key_id"),
+        "access_key": params.get("access_key", {}).get("password"),
+        "access_key_id": params.get("access_key_id", {}).get("password"),
         "verify_certificate": not argToBoolean(params.get("insecure", False)),
         "proxy": argToBoolean(params.get("proxy", False)),
         "fetch_alerts": "Alerts" in vega_entities,
@@ -5118,6 +5232,7 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "backfill_days": backfill_days,
         "first_fetch_time": parse_backfill_days(backfill_days),
         "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
+        "lookback_minutes": _parse_lookback_minutes(params.get("lookback_minutes")),
     }
 
 
@@ -5135,7 +5250,11 @@ def _build_vega_client(config: dict[str, Any]) -> Client:
 def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any]) -> None:
     """Route a Vega integration command to its handler."""
     command_handlers: dict[str, Callable[..., None]] = {
-        "test-module": lambda: return_results(test_module(client, config["backfill_days"], demisto.params().get("max_fetch"))),
+        "test-module": lambda: return_results(
+            test_module(
+                client, config["backfill_days"], demisto.params().get("max_fetch"), demisto.params().get("lookback_minutes")
+            )
+        ),
         "vega-get-alert-events": lambda: return_results(fetch_alert_events_command(client, demisto.args())),
         "vega-set-detections-state": lambda: return_results(set_detections_state_command(client, demisto.args())),
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
@@ -5166,6 +5285,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             first_fetch_time=config["first_fetch_time"],
             integration_url=config["base_url"],
             max_fetch=config["max_fetch"],
+            lookback_minutes=config["lookback_minutes"],
         )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)

@@ -21,13 +21,17 @@ configuration:
     additionalinfo: The Access Key ID used to authenticate with the Vega API.
     name: access_key_id
     required: true
-    type: 4
+    hiddenusername: true
+    displaypassword: Access Key ID
+    type: 9
     section: Connect
   - display: Access Key
     additionalinfo: The Access Key used to authenticate with the Vega API.
     name: access_key
     required: true
-    type: 4
+    displaypassword: Access Key
+    type: 9
+    hiddenusername: true
     section: Connect
   - display: Fetch incidents
     name: isFetch
@@ -50,6 +54,16 @@ configuration:
     additionalinfo: >-
       Maximum number of Vega alerts and incidents to fetch per cycle, combined.
       Valid range is 1-50. Invalid values default to 50 during fetch.
+  - display: Fetch Lookback (minutes)
+    name: lookback_minutes
+    type: 0
+    section: Collect
+    required: true
+    defaultvalue: "5"
+    additionalinfo: >-
+      On each fetch cycle, the query window is shifted backwards by this many
+      minutes to catch alerts and incidents that were indexed late on the Vega
+      side. Deduplication prevents re-ingestion. Valid range is 1-60.
   - display: Vega Entities to fetch
     additionalinfo: Select the Vega entities to fetch as XSOAR incidents.
     name: vega_entities
