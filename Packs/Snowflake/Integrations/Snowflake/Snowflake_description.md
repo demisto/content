@@ -23,4 +23,4 @@ Configure: **Username**, **Password**. Optionally set **Authenticator** for Okta
 Configure: **Username**, **Certificate** (SSH Key). Optionally provide **Certificate Password** if the key is encrypted.
 
 ### External OAuth
-Configure: **Username**, **OAuth Client ID**, **OAuth Client Secret**, **OAuth Token URL**. Optionally provide **OAuth Scope**. Leave **Password** empty. See [Snowflake External OAuth Overview](https://docs.snowflake.com/en/user-guide/oauth-ext-overview).
+Configure: **Username**, **OAuth Client ID**, **OAuth Client Secret**, **OAuth Token URL**. Optionally provide **OAuth Scope**. Leave **Password** empty. To configure External OAuth authentication, please consult the following setup guidelines: [Snowflake External OAuth Overview](https://docs.snowflake.com/en/user-guide/oauth-ext-overview).

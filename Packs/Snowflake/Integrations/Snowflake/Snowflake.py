@@ -33,7 +33,25 @@ INSECURE = PARAMS.get("insecure", False)
 OAUTH_CLIENT_ID = PARAMS.get("oauth_client_id")
 OAUTH_CLIENT_SECRET = PARAMS.get("oauth_client_secret", {}).get("password")
 OAUTH_TOKEN_URL = PARAMS.get("oauth_token_url")
-OAUTH_SCOPE = PARAMS.get("oauth_scope")
+OAUTH_SCOPE_RAW = PARAMS.get("oauth_scope", "")
+
+
+def parse_oauth_scope(raw_scope: str) -> str | None:
+    """Convert a comma-separated scope string to space-separated as required by the Snowflake API.
+
+    Args:
+        raw_scope: Comma-separated scope string (e.g. "scope1,scope2,scope3").
+
+    Returns:
+        Space-separated scope string, or None if the input is empty.
+    """
+    if not raw_scope:
+        return None
+    result = " ".join(scope.strip() for scope in raw_scope.split(",") if scope.strip())
+    return result or None
+
+
+OAUTH_SCOPE = parse_oauth_scope(OAUTH_SCOPE_RAW)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get("isFetch")
 FETCH_TIME = PARAMS.get("fetch_time")

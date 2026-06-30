@@ -59,13 +59,13 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: OAuth Client ID
+- display: Client ID
   name: oauth_client_id
   type: 0
   required: false
   section: Connect
   additionalinfo: The OAuth client ID issued by the IdP (e.g., Okta, Entra ID). Required when using External OAuth authentication.
-- displaypassword: OAuth Client Secret
+- displaypassword: Client Secret
   name: oauth_client_secret
   hiddenusername: true
   type: 9
@@ -83,7 +83,7 @@ configuration:
   type: 0
   required: false
   section: Connect
-  additionalinfo: "The Snowflake OAuth scope. When multiple scopes are required, the value should be a space-separated list of multiple scopes. e.g., session:role:analyst. See https://docs.snowflake.com/en/user-guide/oauth-ext-overview#scopes for details."
+  additionalinfo: "The Snowflake OAuth scope. When multiple scopes are required, provide a comma-separated list. e.g., session:role:analyst,session:role:reader. See https://docs.snowflake.com/en/user-guide/oauth-ext-overview#scopes for details."
 - display: Fetch incidents
   name: isFetch
   type: 8

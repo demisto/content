@@ -24,8 +24,8 @@
 <li><strong>Default role to use</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust server certificate (insecure)</strong></li>
-<li><strong>OAuth Client ID</strong></li>
-<li><strong>OAuth Client Secret</strong></li>
+<li><strong>Client ID</strong></li>
+<li><strong>Client Secret</strong></li>
 <li><strong>OAuth Token URL</strong></li>
 <li><strong>OAuth Scope</strong></li>
 <li><strong>Fetch incidents</strong></li>
