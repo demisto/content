@@ -533,11 +533,17 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
 def fetch_incidents(client: BotoClient, params: dict) -> None:
     """Fetch AWS Security Hub V2 findings as XSOAR incidents.
 
-    Findings are queried via ``get_findings_v2`` filtered on ``finding_info.created_time_dt`` within
-    a moving time window, optionally narrowed by a minimum severity and additional string filters.
-    The last fetched creation time (advanced by 1ms to avoid duplicates) and any pagination token are
-    persisted via ``demisto.setLastRun``; the ``next_token`` is consumed first on the following run so
-    large backlogs drain over multiple cycles.
+    Findings are queried via ``get_findings_v2`` filtered on ``finding_info.created_time_dt`` from the
+    last fetched creation time (inclusive), optionally narrowed by a minimum severity and additional
+    string filters. State is persisted via ``demisto.setLastRun``:
+
+        * ``last_fetch``  - the latest finding creation time seen so far (used as an inclusive lower
+          bound; not bumped by 1ms).
+        * ``fetched_ids`` - the ``metadata.uid`` of every finding that shares that exact ``last_fetch``
+          timestamp. Because the lower bound is inclusive, these are the only findings that can be
+          returned again, so they are skipped to avoid duplicates.
+        * ``next_token``  - a pagination token. When present it is consumed first on the next run so
+          large backlogs drain over multiple cycles before a new window-bounded query starts.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
@@ -545,19 +551,20 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             ``fetch_filters``, ``mirror_direction``).
     """
     last_run = demisto.getLastRun()
-    start_time = last_run.get("last_fetch")
+    last_fetch = last_run.get("last_fetch")
     next_token = last_run.get("next_token")
+    fetched_ids = set(last_run.get("fetched_ids") or [])
 
-    if not start_time:
+    if not last_fetch:
         first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
-        start_time = arg_to_datetime(first_fetch, required=True).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        last_fetch = arg_to_datetime(first_fetch, required=True).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
     end_time = datetime.now(UTC).strftime(DATE_FORMAT)
     max_fetch = min(arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT)
     mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
 
     filters = build_fetch_filters(
-        start_time=start_time,
+        start_time=last_fetch,
         end_time=end_time,
         min_severity=params.get("min_severity"),
         additional_filters=params.get("fetch_filters"),
@@ -567,44 +574,62 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     # Filters, so it is sent on its own. Otherwise start a fresh window-bounded query.
     if next_token:
         demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
-        kwargs: dict = {"NextToken": next_token, "MaxResults": max_fetch}
+        try:
+            response = client.get_findings_v2(NextToken=next_token, MaxResults=max_fetch)
+        except client.exceptions.InvalidInputException as e:
+            # A stored token can expire or be revoked between cycles; fall back to a fresh query so
+            # fetching self-heals instead of getting stuck on a dead token.
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: next_token is no longer valid ({e}); restarting from the window.")
+            response = client.get_findings_v2(Filters=filters, MaxResults=max_fetch)
     else:
-        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: querying findings created in [{start_time}, {end_time}).")
-        kwargs = {"Filters": filters, "MaxResults": max_fetch}
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: querying findings created in [{last_fetch}, {end_time}].")
+        response = client.get_findings_v2(Filters=filters, MaxResults=max_fetch)
 
-    response = client.get_findings_v2(**kwargs)
     findings = response.get("Findings", [])
     new_next_token = response.get("NextToken")
     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: received {len(findings)} findings.")
 
     incidents = []
-    latest_created = start_time
+    latest_created = last_fetch
+    boundary_ids = set(fetched_ids)  # ids already recorded at the current boundary timestamp
     for finding in findings:
+        finding_info = finding.get("finding_info") or {}
+        uid = finding.get("metadata", {}).get("uid")
+        created_time = finding_info.get("created_time_dt")
+
+        # Skip findings already ingested in a previous cycle (only those at the inclusive boundary).
+        if uid and uid in fetched_ids:
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: skipping already-fetched finding {uid}.")
+            continue
+
         finding["mirror_direction"] = mirror_direction
         finding["mirror_instance"] = demisto.integrationInstance()
-
-        finding_info = finding.get("finding_info") or {}
-        created_time = finding_info.get("created_time_dt")
         incidents.append(
             {
-                "name": finding_info.get("title") or finding.get("metadata", {}).get("uid"),
+                "name": finding_info.get("title") or uid,
                 "occurred": created_time,
                 "severity": OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN),
                 "rawJSON": json.dumps(finding),
             }
         )
-        if created_time and created_time > latest_created:
+
+        if not created_time:
+            continue
+        # Track the latest creation time and the set of finding ids that share it. When the boundary
+        # advances, reset the id set; when it ties, accumulate so the next inclusive query skips them all.
+        if created_time > latest_created:
             latest_created = created_time
+            boundary_ids = {uid} if uid else set()
+        elif created_time == latest_created and uid:
+            boundary_ids.add(uid)
 
-    # Advance the window only when this was a fresh (non-token) page; a token page keeps the same
-    # window so its findings are not dropped from the next fresh query.
-    if not next_token and findings:
-        latest_dt = arg_to_datetime(latest_created, required=True) + timedelta(milliseconds=1)  # type: ignore[operator]
-        new_last_fetch = latest_dt.strftime(DATE_FORMAT)
-    else:
-        new_last_fetch = start_time
-
-    demisto.setLastRun({"last_fetch": new_last_fetch, "next_token": new_next_token})
+    demisto.setLastRun(
+        {
+            "last_fetch": latest_created,
+            "next_token": new_next_token,
+            "fetched_ids": list(boundary_ids),
+        }
+    )
     demisto.incidents(incidents)
 
 

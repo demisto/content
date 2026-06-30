@@ -471,14 +471,14 @@ def test_build_fetch_filters_with_severity_and_additional():
 
 def test_fetch_incidents_first_run(mocker):
     """
-    Given: No previous last run, and a client returning two OCSF findings.
+    Given: A previous last_fetch window and a client returning two OCSF findings newer than it.
     When: fetch_incidents is called.
-    Then: It builds incidents with mapped severity, advances last_fetch past the latest created time,
-          and stores the returned next_token.
+    Then: It builds incidents with mapped severity, sets last_fetch to the latest created time (no 1ms
+          bump), records the boundary finding id in fetched_ids, and stores the returned next_token.
     """
     import AWS_SecurityHub_V2
 
-    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     incidents_mock = mocker.patch.object(demisto, "incidents")
@@ -500,7 +500,7 @@ def test_fetch_incidents_first_run(mocker):
         "NextToken": "tok-next",
     }
 
-    fetch_incidents(mock_client, {"first_fetch": "1 day", "max_fetch": 50, "min_severity": "High"})
+    fetch_incidents(mock_client, {"max_fetch": 50, "min_severity": "High"})
 
     # Two incidents created with correct names and mapped severities.
     incidents = incidents_mock.call_args[0][0]
@@ -510,9 +510,10 @@ def test_fetch_incidents_first_run(mocker):
     assert incidents[1]["severity"] == AWS_SecurityHub_V2.IncidentSeverity.CRITICAL
     assert incidents[1]["occurred"] == "2024-01-01T12:00:00.000Z"
 
-    # last_fetch advanced 1ms past the latest created time; next_token persisted.
+    # last_fetch = latest created time (no bump); only the boundary id is stored; next_token persisted.
     last_run = set_last_run.call_args[0][0]
-    assert last_run["last_fetch"] == "2024-01-01T12:00:00.001000Z"
+    assert last_run["last_fetch"] == "2024-01-01T12:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-2"]
     assert last_run["next_token"] == "tok-next"
 
     # A fresh query uses Filters (not a NextToken).
@@ -525,7 +526,7 @@ def test_fetch_incidents_continues_with_next_token(mocker):
     """
     Given: A previous run that left a next_token.
     When: fetch_incidents is called.
-    Then: It sends the NextToken (not Filters) and preserves the original window in last_fetch.
+    Then: It sends the NextToken (not Filters) and advances last_fetch from the token page findings.
     """
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "tok-prev"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
@@ -550,19 +551,113 @@ def test_fetch_incidents_continues_with_next_token(mocker):
     assert call_kwargs["NextToken"] == "tok-prev"
     assert "Filters" not in call_kwargs
 
-    # Token page keeps the original window so its findings are not skipped by the next fresh query.
+    # The token page returns newer findings, so the boundary advances to that finding's created time.
     last_run = set_last_run.call_args[0][0]
-    assert last_run["last_fetch"] == "2024-01-01T00:00:00.000Z"
+    assert last_run["last_fetch"] == "2024-01-05T10:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-3"]
     assert last_run["next_token"] is None
+
+
+def test_fetch_incidents_skips_already_fetched_ids(mocker):
+    """
+    Given: A previous run whose fetched_ids contains a finding at the boundary timestamp, and the API
+           returns that same finding again (inclusive Start) plus a new one.
+    When: fetch_incidents is called.
+    Then: The already-fetched finding is skipped and only the new finding becomes an incident.
+    """
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"last_fetch": "2024-01-01T10:00:00.000Z", "fetched_ids": ["uid-1"]},
+    )
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},  # already fetched at the boundary - must be skipped
+                "severity_id": 4,
+                "finding_info": {"title": "Old Finding", "created_time_dt": "2024-01-01T10:00:00.000Z"},
+            },
+            {
+                "metadata": {"uid": "uid-2"},  # new finding
+                "severity_id": 3,
+                "finding_info": {"title": "New Finding", "created_time_dt": "2024-01-02T09:00:00.000Z"},
+            },
+        ],
+        "NextToken": None,
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 50})
+
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "New Finding"
+
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-02T09:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-2"]
+
+
+def test_fetch_incidents_invalid_next_token_falls_back(mocker):
+    """
+    Given: A stored next_token that the API rejects with InvalidInputException.
+    When: fetch_incidents is called.
+    Then: It falls back to a fresh filtered query and still produces incidents.
+    """
+
+    class InvalidInputException(Exception):
+        pass
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "stale"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.exceptions.InvalidInputException = InvalidInputException
+    fresh_response = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-9"},
+                "severity_id": 3,
+                "finding_info": {"title": "Recovered Finding", "created_time_dt": "2024-01-03T08:00:00.000Z"},
+            }
+        ],
+        "NextToken": None,
+    }
+    # First call (with the stale token) raises; the fallback fresh query (with Filters) succeeds.
+    mock_client.get_findings_v2.side_effect = [InvalidInputException("invalid token"), fresh_response]
+
+    fetch_incidents(mock_client, {"max_fetch": 50})
+
+    # Two calls: the failed token call, then the fresh filtered call.
+    assert mock_client.get_findings_v2.call_count == 2
+    assert "NextToken" in mock_client.get_findings_v2.call_args_list[0][1]
+    assert "Filters" in mock_client.get_findings_v2.call_args_list[1][1]
+
+    # The fresh query advances the boundary to the recovered finding's created time.
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 1
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-03T08:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-9"]
 
 
 def test_fetch_incidents_no_results(mocker):
     """
     Given: A client returning no findings.
     When: fetch_incidents is called.
-    Then: No incidents are created and last_fetch is preserved.
+    Then: No incidents are created and last_fetch and fetched_ids are preserved.
     """
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "fetched_ids": ["uid-x"]},
+    )
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     incidents_mock = mocker.patch.object(demisto, "incidents")
@@ -575,4 +670,5 @@ def test_fetch_incidents_no_results(mocker):
     assert incidents_mock.call_args[0][0] == []
     last_run = set_last_run.call_args[0][0]
     assert last_run["last_fetch"] == "2024-01-01T00:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-x"]
     assert last_run["next_token"] is None
