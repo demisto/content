@@ -431,8 +431,10 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
         uploadThroughput=0,
     )
 
-    # 1c. Belt-and-braces: enable the Fetch domain with a catch-all blocking pattern so
-    #     even requests that slip past the network-conditions layer are intercepted.
+    # 1c. Belt-and-braces: disable any existing Fetch interception first so that
+    #     pending requestIds are cleanly invalidated before we re-enable with a
+    #     catch-all pattern.
+    _safe_call_cdp_with_args(tab=tab, method_path="Fetch.disable", tab_id=tab_id, path=path)
     _safe_call_cdp_with_args(
         tab=tab,
         method_path="Fetch.enable",
@@ -827,12 +829,28 @@ class PychromeEventHandler:
 
         # abort the request if the url inside blocked_urls param and its redirect request
         if any(value in request_url for value in BLOCKED_URLS):
-            self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            try:
+                self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
+                demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            except Exception as ex:
+                # The interception ID may have been invalidated by a concurrent Fetch.disable/enable
+                # (e.g. from _freeze_tab_for_screenshot).  This is benign — the request is already gone.
+                demisto.debug(
+                    f"handle_request_paused: Fetch.failRequest failed (stale interception ID): "
+                    f"{ex}, {request_id=}, {request_url=}, {self.tab.id=}, {self.path=}"
+                )
         else:
             # Safety check in case the fetch enable patterns paused requests that shouldn't be blocked
-            demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
-            self.tab.Fetch.continueRequest(requestId=request_id)
+            try:
+                demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+                self.tab.Fetch.continueRequest(requestId=request_id)
+            except Exception as ex:
+                # The interception ID may have been invalidated by a concurrent Fetch.disable/enable
+                # (e.g. from _freeze_tab_for_screenshot).  This is benign — the request is already gone.
+                demisto.debug(
+                    f"handle_request_paused: Fetch.continueRequest failed (stale interception ID): "
+                    f"{ex}, {request_id=}, {request_url=}, {self.tab.id=}, {self.path=}"
+                )
 
 
 # endregion
