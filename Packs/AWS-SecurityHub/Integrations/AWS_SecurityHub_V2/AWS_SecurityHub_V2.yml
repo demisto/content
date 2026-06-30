@@ -98,6 +98,63 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  additionalinfo: 'The time range to consider for the initial data fetch, in the format <number> <unit> (for example, 3 days, 12 hours, 7 minutes).'
+  type: 0
+  section: Collect
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: 50
+  additionalinfo: The maximum number of findings to fetch per cycle. The maximum is 200.
+  type: 0
+  section: Collect
+  required: false
+- display: Minimum severity to fetch
+  name: min_severity
+  additionalinfo: Only fetch findings with this severity or higher (based on the OCSF severity_id). Leave empty to fetch all severities.
+  options:
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
+  - Fatal
+  type: 15
+  section: Collect
+  required: false
+- display: Additional fetch filters
+  name: fetch_filters
+  additionalinfo: 'Extra string filters to narrow the fetch, in the same format as the string_filters command argument: "fieldname=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  additionalinfo: Choose the direction to mirror the finding (Incoming - from AWS Security Hub to Cortex, Outgoing - from Cortex to AWS Security Hub, Incoming And Outgoing - both directions).
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  defaultvalue: None
+  type: 15
+  section: Collect
+  advanced: true
+  required: false
 script:
   commands:
   - name: aws-securityhub-security-hub-enable
@@ -201,6 +258,7 @@ script:
       description: The list of findings that could not be updated, including the error for each.
       type: Unknown
   dockerimage: demisto/boto3py3:1.0.0.7704170
+  isfetch: true
   runonce: false
   script: '-'
   subtype: python3

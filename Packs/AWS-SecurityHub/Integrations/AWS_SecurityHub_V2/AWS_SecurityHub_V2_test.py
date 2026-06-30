@@ -1,7 +1,10 @@
+import demistomock as demisto
 import pytest
 from AWS_SecurityHub_V2 import (
+    build_fetch_filters,
     disable_security_hub_command,
     enable_security_hub_command,
+    fetch_incidents,
     findings_batch_update_command,
     findings_get_command,
     generate_filters_for_get_findings,
@@ -427,3 +430,149 @@ def test_parse_date_filters_skips_entry_without_fieldname():
     Then: The entry is skipped and an empty list is returned (no exception raised).
     """
     assert parse_date_filters("days=7") == []
+
+
+def test_build_fetch_filters_time_only():
+    """
+    Given: A fetch window with no severity or additional filters.
+    When: build_fetch_filters is called.
+    Then: It builds a composite with only the created_time_dt DateFilter and AND operators.
+    """
+    result = build_fetch_filters("2024-01-01T00:00:00.000Z", "2024-01-02T00:00:00.000Z", None, None)
+    composite = result["CompositeFilters"][0]
+    assert result["CompositeOperator"] == "AND"
+    assert composite["Operator"] == "AND"
+    assert composite["DateFilters"] == [
+        {
+            "FieldName": "finding_info.created_time_dt",
+            "Filter": {"Start": "2024-01-01T00:00:00.000Z", "End": "2024-01-02T00:00:00.000Z"},
+        }
+    ]
+    assert "NumberFilters" not in composite
+    assert "StringFilters" not in composite
+
+
+def test_build_fetch_filters_with_severity_and_additional():
+    """
+    Given: A fetch window with a minimum severity and additional string filters.
+    When: build_fetch_filters is called.
+    Then: It adds a severity_id Gte NumberFilter and the parsed StringFilters.
+    """
+    result = build_fetch_filters(
+        "2024-01-01T00:00:00.000Z",
+        "2024-01-02T00:00:00.000Z",
+        "High",
+        "fieldname=cloud.region,value=us-east-1",
+    )
+    composite = result["CompositeFilters"][0]
+    assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
+    assert composite["StringFilters"] == [{"FieldName": "cloud.region", "Filter": {"Value": "us-east-1", "Comparison": "EQUALS"}}]
+
+
+def test_fetch_incidents_first_run(mocker):
+    """
+    Given: No previous last run, and a client returning two OCSF findings.
+    When: fetch_incidents is called.
+    Then: It builds incidents with mapped severity, advances last_fetch past the latest created time,
+          and stores the returned next_token.
+    """
+    import AWS_SecurityHub_V2
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 4,
+                "finding_info": {"title": "Finding One", "created_time_dt": "2024-01-01T10:00:00.000Z"},
+            },
+            {
+                "metadata": {"uid": "uid-2"},
+                "severity_id": 5,
+                "finding_info": {"title": "Finding Two", "created_time_dt": "2024-01-01T12:00:00.000Z"},
+            },
+        ],
+        "NextToken": "tok-next",
+    }
+
+    fetch_incidents(mock_client, {"first_fetch": "1 day", "max_fetch": 50, "min_severity": "High"})
+
+    # Two incidents created with correct names and mapped severities.
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "Finding One"
+    assert incidents[0]["severity"] == AWS_SecurityHub_V2.IncidentSeverity.HIGH
+    assert incidents[1]["severity"] == AWS_SecurityHub_V2.IncidentSeverity.CRITICAL
+    assert incidents[1]["occurred"] == "2024-01-01T12:00:00.000Z"
+
+    # last_fetch advanced 1ms past the latest created time; next_token persisted.
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-01T12:00:00.001000Z"
+    assert last_run["next_token"] == "tok-next"
+
+    # A fresh query uses Filters (not a NextToken).
+    call_kwargs = mock_client.get_findings_v2.call_args[1]
+    assert "Filters" in call_kwargs
+    assert call_kwargs["MaxResults"] == 50
+
+
+def test_fetch_incidents_continues_with_next_token(mocker):
+    """
+    Given: A previous run that left a next_token.
+    When: fetch_incidents is called.
+    Then: It sends the NextToken (not Filters) and preserves the original window in last_fetch.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "tok-prev"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-3"},
+                "severity_id": 2,
+                "finding_info": {"title": "Finding Three", "created_time_dt": "2024-01-05T10:00:00.000Z"},
+            }
+        ],
+        "NextToken": None,
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 10})
+
+    call_kwargs = mock_client.get_findings_v2.call_args[1]
+    assert call_kwargs["NextToken"] == "tok-prev"
+    assert "Filters" not in call_kwargs
+
+    # Token page keeps the original window so its findings are not skipped by the next fresh query.
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-01T00:00:00.000Z"
+    assert last_run["next_token"] is None
+
+
+def test_fetch_incidents_no_results(mocker):
+    """
+    Given: A client returning no findings.
+    When: fetch_incidents is called.
+    Then: No incidents are created and last_fetch is preserved.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {"Findings": []}
+
+    fetch_incidents(mock_client, {"max_fetch": 50})
+
+    assert incidents_mock.call_args[0][0] == []
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-01T00:00:00.000Z"
+    assert last_run["next_token"] is None

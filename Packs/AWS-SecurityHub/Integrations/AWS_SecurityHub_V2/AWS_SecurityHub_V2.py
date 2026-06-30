@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import urllib3.util
+from datetime import UTC
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 from botocore.client import BaseClient as BotoClient
@@ -8,6 +9,38 @@ from botocore.client import BaseClient as BotoClient
 urllib3.disable_warnings()
 
 DEFAULT_RETRIES = 5
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_MAX_FETCH = 50
+MAX_FETCH_LIMIT = 200
+
+# OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
+# OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
+# XSOAR: 0=Unknown, 0.5=Informational, 1=Low, 2=Medium, 3=High, 4=Critical.
+# XSOAR has no severity above Critical, so OCSF "Fatal" (6) collapses to XSOAR Critical.
+OCSF_SEVERITY_ID_TO_XSOAR = {
+    1: IncidentSeverity.INFO,
+    2: IncidentSeverity.LOW,
+    3: IncidentSeverity.MEDIUM,
+    4: IncidentSeverity.HIGH,
+    5: IncidentSeverity.CRITICAL,
+    6: IncidentSeverity.CRITICAL,  # Fatal -> Critical (XSOAR has no higher severity)
+}
+# Minimum severity label -> OCSF severity_id, used to build the fetch severity filter.
+SEVERITY_LABEL_TO_OCSF_ID = {
+    "Informational": 1,
+    "Low": 2,
+    "Medium": 3,
+    "High": 4,
+    "Critical": 5,
+    "Fatal": 6,
+}
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
 
 
 # Configuration driving the generic ``parse_filters`` helper. For each filter category, ``fields``
@@ -237,6 +270,41 @@ def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
     ]
 
 
+def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
+    """Build the Security Hub V2 composite ``Filters`` object used by the fetch loop.
+
+    The fetch always filters on the OCSF ``finding_info.created_time_dt`` field within the
+    ``[start_time, end_time)`` window. Optionally, a minimum severity (mapped to an OCSF
+    ``severity_id >=`` number filter) and any extra string filters are combined with ``AND``.
+
+    Args:
+        start_time (str): ISO8601 start of the fetch window (exclusive lower bound is handled by the caller).
+        end_time (str): ISO8601 end of the fetch window.
+        min_severity (str | None): Minimum severity label (e.g. ``High``) to include.
+        additional_filters (str | None): Extra ``string_filters``-formatted entries to AND into the query.
+
+    Returns:
+        dict: The composite ``Filters`` structure for ``get_findings_v2``.
+    """
+    composite_filter: dict = {
+        "DateFilters": [
+            {
+                "FieldName": "finding_info.created_time_dt",
+                "Filter": {"Start": start_time, "End": end_time},
+            }
+        ],
+    }
+
+    if min_severity and (severity_id := SEVERITY_LABEL_TO_OCSF_ID.get(min_severity)):
+        composite_filter["NumberFilters"] = [{"FieldName": "severity_id", "Filter": {"Gte": severity_id}}]
+
+    if additional_filters and (string_filters := parse_filters(additional_filters, "string")):
+        composite_filter["StringFilters"] = string_filters
+
+    composite_filter["Operator"] = "AND"
+    return {"CompositeFilters": [composite_filter], "CompositeOperator": "AND"}
+
+
 def parse_tags(tags_str: str) -> dict:
     """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
 
@@ -462,6 +530,84 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     )
 
 
+def fetch_incidents(client: BotoClient, params: dict) -> None:
+    """Fetch AWS Security Hub V2 findings as XSOAR incidents.
+
+    Findings are queried via ``get_findings_v2`` filtered on ``finding_info.created_time_dt`` within
+    a moving time window, optionally narrowed by a minimum severity and additional string filters.
+    The last fetched creation time (advanced by 1ms to avoid duplicates) and any pagination token are
+    persisted via ``demisto.setLastRun``; the ``next_token`` is consumed first on the following run so
+    large backlogs drain over multiple cycles.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        params (dict): Integration parameters (``first_fetch``, ``max_fetch``, ``min_severity``,
+            ``fetch_filters``, ``mirror_direction``).
+    """
+    last_run = demisto.getLastRun()
+    start_time = last_run.get("last_fetch")
+    next_token = last_run.get("next_token")
+
+    if not start_time:
+        first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
+        start_time = arg_to_datetime(first_fetch, required=True).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
+    end_time = datetime.now(UTC).strftime(DATE_FORMAT)
+    max_fetch = min(arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT)
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
+
+    filters = build_fetch_filters(
+        start_time=start_time,
+        end_time=end_time,
+        min_severity=params.get("min_severity"),
+        additional_filters=params.get("fetch_filters"),
+    )
+
+    # A NextToken from a previous run continues that exact query; the API rejects combining it with
+    # Filters, so it is sent on its own. Otherwise start a fresh window-bounded query.
+    if next_token:
+        demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
+        kwargs: dict = {"NextToken": next_token, "MaxResults": max_fetch}
+    else:
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: querying findings created in [{start_time}, {end_time}).")
+        kwargs = {"Filters": filters, "MaxResults": max_fetch}
+
+    response = client.get_findings_v2(**kwargs)
+    findings = response.get("Findings", [])
+    new_next_token = response.get("NextToken")
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: received {len(findings)} findings.")
+
+    incidents = []
+    latest_created = start_time
+    for finding in findings:
+        finding["mirror_direction"] = mirror_direction
+        finding["mirror_instance"] = demisto.integrationInstance()
+
+        finding_info = finding.get("finding_info") or {}
+        created_time = finding_info.get("created_time_dt")
+        incidents.append(
+            {
+                "name": finding_info.get("title") or finding.get("metadata", {}).get("uid"),
+                "occurred": created_time,
+                "severity": OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN),
+                "rawJSON": json.dumps(finding),
+            }
+        )
+        if created_time and created_time > latest_created:
+            latest_created = created_time
+
+    # Advance the window only when this was a fresh (non-token) page; a token page keeps the same
+    # window so its findings are not dropped from the next fresh query.
+    if not next_token and findings:
+        latest_dt = arg_to_datetime(latest_created, required=True) + timedelta(milliseconds=1)  # type: ignore[operator]
+        new_last_fetch = latest_dt.strftime(DATE_FORMAT)
+    else:
+        new_last_fetch = start_time
+
+    demisto.setLastRun({"last_fetch": new_last_fetch, "next_token": new_next_token})
+    demisto.incidents(incidents)
+
+
 def test_module(client: BotoClient) -> str:
     """Test connectivity and authentication against the AWS Security Hub V2 API.
     Args:
@@ -507,6 +653,8 @@ def main():  # pragma: no cover
             return_results(findings_get_command(client, args))
         elif command == "aws-securityhub-findings-batch-update":
             return_results(findings_batch_update_command(client, args))
+        elif command == "fetch-incidents":
+            fetch_incidents(client, params)
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
