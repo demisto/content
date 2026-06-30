@@ -4,6 +4,7 @@ import ipaddress
 import os
 import re
 import tempfile
+import uuid
 import zipfile
 from base64 import b64decode
 from collections.abc import Callable, Iterable
@@ -1183,24 +1184,42 @@ def prepare_response_data(data: str, prepend_str: str, append_str: str) -> str:
     return data
 
 
+def get_request_id() -> str:
+    """Return the per-request correlation id for log lines.
+
+    Reuses the ``X-Request-ID`` header that nginx forwards (the SAME id appears in
+    the nginx access log and the WSGI ``wsgi request:``/``wsgi access:`` lines), so
+    a single id can be grepped across NGINX -> WSGI -> EDL. Falls back to a fresh
+    short uuid if the header is missing (e.g. a direct hit that bypassed nginx).
+    """
+    try:
+        forwarded = request.headers.get("X-Request-ID")
+    except RuntimeError:
+        # No active Flask request context (e.g. called outside a route).
+        forwarded = None
+    return forwarded if forwarded else uuid.uuid4().hex[:12]
+
+
 @APP.route("/", methods=["GET"])
 def route_edl() -> Response:
     """
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+    rid = get_request_id()
     cache_refresh_rate: str = params.get("cache_refresh_rate")
-    if EXTENSIVE_LOGGING:
-        demisto.debug("edl: Starting EDL route handler")
+    start = datetime.now(timezone.utc)
+    demisto.info(f"edl: rid={rid} route=/ start handling request")
     auth_resp = authenticate_app(params, request.headers)
     if auth_resp:
+        demisto.info(f"edl: rid={rid} authentication failed; returning auth response")
         return auth_resp
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     request_args = get_request_args(request.args, params)
     on_demand = params.get("on_demand")
     if EXTENSIVE_LOGGING:
-        demisto.debug(f"{'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
+        demisto.debug(f"edl: rid={rid} {'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
 
     created = datetime.now(timezone.utc)
     if on_demand:
@@ -1225,7 +1244,7 @@ def route_edl() -> Response:
             data=edl_data, append_str=params.get("append_string"), prepend_str=params.get("prepend_string")
         )
     if EXTENSIVE_LOGGING:
-        demisto.debug(f"Final EDL size: {len(edl_data)} characters, {edl_size} lines")
+        demisto.debug(f"edl: rid={rid} Final EDL size: {len(edl_data)} characters, {edl_size} lines")
 
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
@@ -1236,14 +1255,26 @@ def route_edl() -> Response:
         ("X-EDL-Size", str(edl_size)),
         ("X-EDL-Origin-Size", original_indicators_count),
         ("ETag", etag),
+        # Echo the correlation id back so the client and nginx ($sent_http_x_request_id)
+        # observe the same id that EDL/WSGI logged.
+        ("X-Request-ID", rid),
     ]  # type: ignore[assignment]
 
-    demisto.debug(f'edl: Returning response with the following headers:\n{[f"{header[0]}: {header[1]}" for header in headers]}')
+    demisto.debug(
+        f'edl: rid={rid} Returning response with the following headers:\n'
+        f'{[f"{header[0]}: {header[1]}" for header in headers]}'
+    )
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age
     # number of seconds we are willing to serve stale content when there is an error
     resp.cache_control["stale-if-error"] = "600"
+
+    total_time = (datetime.now(timezone.utc) - start).total_seconds()
+    demisto.info(
+        f"edl: rid={rid} route=/ done status=200 edl_size={edl_size} "
+        f"chars={len(edl_data)} query_time_secs={query_time:.3f} total_secs={total_time:.3f}"
+    )
 
     return resp
 
@@ -1257,14 +1288,15 @@ def log_download() -> Response:
         Response: A Flask Response object that sends a ZIP file containing the full log.
     """
     params = demisto.params()
-    demisto.debug("edl: Starting EDL route/log_download handler")
+    rid = get_request_id()
+    demisto.debug(f"edl: rid={rid} Starting EDL route/log_download handler")
     auth_resp = authenticate_app(params, request.headers)
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     if auth_resp:
         return auth_resp
 
-    demisto.debug("edl: Getting log file to show")
+    demisto.debug(f"edl: rid={rid} Getting log file to show")
 
     created = datetime.now(timezone.utc)
 
@@ -1288,12 +1320,13 @@ def route_edl_log() -> Response:
             - A ZIP file download containing the log, if the log is too large to display.
     """
     params = demisto.params()
+    rid = get_request_id()
 
     cache_refresh_rate: str = params.get("cache_refresh_rate")
-    demisto.debug("edl: Starting EDL route/log handler")
+    demisto.debug(f"edl: rid={rid} Starting EDL route/log handler")
     auth_resp = authenticate_app(params, request.headers)
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     if auth_resp:
         return auth_resp
 
