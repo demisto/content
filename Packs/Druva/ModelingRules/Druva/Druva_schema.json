@@ -87,6 +87,10 @@
         "syslogSeverity": {
             "type": "int",
             "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

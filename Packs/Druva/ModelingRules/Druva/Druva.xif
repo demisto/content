@@ -14,7 +14,8 @@ alter
     xdm.source.ipv6 = if(is_ipv6(ip), ip),
     xdm.event.id  = rtrim(to_string(eventID), ".0"),
     xdm.target.host.os = if(clientOS = "", null, clientOS),
-    xdm.event.type = eventType,
+    xdm.event.type = source_log_type,
+    xdm.event.original_event_type = eventType,
     xdm.source.user.username = if(src_username != null, src_username ,initiator = "", null, initiator),
     xdm.source.user.first_name = if(src_first_name != null, src_first_name),
     xdm.source.user.last_name = if(src_last_name != null, src_last_name),
@@ -58,8 +59,8 @@ alter
     sec_outcome_raw= coalesce(sec_status, sec_login_res, sec_eventstate)
 | alter
     xdm.event.id                  = to_string(id),
-    xdm.event.type                = type,
-    xdm.event.original_event_type = feature,
+    xdm.event.type                = source_log_type,
+    xdm.event.original_event_type = type,
     xdm.event.description         = coalesce(sec_eventdet, sec_errmsg),
     xdm.source.ipv4               = if(is_ipv4(sec_actor_ip), sec_actor_ip),
     xdm.source.ipv6               = if(is_ipv6(sec_actor_ip), sec_actor_ip),
