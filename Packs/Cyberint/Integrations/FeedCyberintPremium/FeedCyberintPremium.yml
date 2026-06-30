@@ -1,5 +1,5 @@
 name: Cyberint Premium Feed
-display: Check Point EM IoC Intelligence Feed
+display: Check Point EM ThreatCloud Intelligence Feed
 provider: Check Point Software Technologies
 sectionorder:
 - Connect
@@ -9,7 +9,7 @@ commonfields:
   version: -1
 fromversion: 6.9.0
 category: Data Enrichment & Threat Intelligence
-description: Use the Check Point EM IoC Intelligence Feed integration to ingest high-fidelity IOC indicators from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs and to enrich a single indicator on demand.
+description: Use the Check Point EM ThreatCloud Intelligence Feed integration to ingest high-fidelity IOC indicators from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs and to enrich a single indicator on demand.
 configuration:
 - display: Cyberint API URL
   additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)

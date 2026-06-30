@@ -1,6 +1,6 @@
-## Check Point EM IoC Intelligence Feed
+## Check Point EM ThreatCloud Intelligence Feed
 
-Use the **Check Point EM IoC Intelligence Feed** integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs into your Cortex Threat Intelligence Module (Cortex XSOAR or Cortex XSIAM), and to enrich a single IOC on demand from the war room or a playbook task.
+Use the **Check Point EM ThreatCloud Intelligence Feed** integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs into your Cortex Threat Intelligence Module (Cortex XSOAR or Cortex XSIAM), and to enrich a single IOC on demand from the war room or a playbook task.
 
 ### Get your Cyberint API access token
 
@@ -10,7 +10,7 @@ Use the **Check Point EM IoC Intelligence Feed** integration to ingest high-fide
 
 ### Configure an integration instance
 
-1. In Cortex XSOAR or Cortex XSIAM, navigate to **Settings → Integrations → Servers & Services** (Cortex XSOAR) or **Settings → Configurations → Data Collection → Automation & Feed Integrations** (Cortex XSIAM), search for **Check Point EM IoC Intelligence Feed**, and click **Add instance**.
+1. In Cortex XSOAR or Cortex XSIAM, navigate to **Settings → Integrations → Servers & Services** (Cortex XSOAR) or **Settings → Configurations → Data Collection → Automation & Feed Integrations** (Cortex XSIAM), search for **Check Point EM ThreatCloud Intelligence Feed**, and click **Add instance**.
 2. Fill in the **Connect** section:
    - **Cyberint API URL** — your Argos base URL, e.g. `https://your-company.cyberint.io`.
    - **Company Name** — the customer/tenant name registered with Cyberint (sent as a telemetry header).
