@@ -39,7 +39,7 @@ To configure the Menlo Security integration in Cortex XSIAM:
 
 1. Navigate to **Settings** > **Data Sources & Integrations**.
 2. Click **New** and search for **Menlo Security**.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add ** to create and configure a new integration instance.
 
     | Parameter | Description | Required |
     | --- | --- | --- |
