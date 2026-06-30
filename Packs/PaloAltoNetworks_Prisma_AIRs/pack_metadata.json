@@ -19,7 +19,7 @@
         "Prisma",
         "AIRS",
         "AI",
-        "Security",
+        "API Security",
         "DLP",
         "Red Team",
         "Model Security"
@@ -32,7 +32,8 @@
     "supportedModules": [
         "cloud_runtime_security",
         "xsiam",
-        "cloud"
+        "cloud",
+        "agentix"
     ],
     "dependencies": {
         "CommonPlaybooks": {
