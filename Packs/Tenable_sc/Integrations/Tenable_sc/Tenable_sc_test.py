@@ -41,7 +41,9 @@ from Tenable_sc import (
     list_scans_command,
     list_users_command,
     list_zones_command,
+    generate_deterministic_uuid,
     parse_vulnerabilities,
+    populate_missing_uuids,
     skip_fetch_assets,
     update_asset_command,
     validate_create_scan_inputs,
@@ -1447,6 +1449,9 @@ def test_parse_vulnerabilities_normal():
 
     Then:
     - Should set isTruncated to False for normal-sized entries.
+    - Should set _time from lastSeen (the most recent observation) when both
+      lastSeen and firstSeen are present, so recently observed vulnerabilities
+      keep a recent _time and are not aged out by the findings retention window.
     """
     vulns = [
         {
@@ -1467,9 +1472,9 @@ def test_parse_vulnerabilities_normal():
     result = parse_vulnerabilities(vulns)
 
     assert len(result) == 2
-    assert result[0]["_time"] == "1709568000"
+    assert result[0]["_time"] == "1709654400"
     assert result[0]["isTruncated"] is False
-    assert result[1]["_time"] == "1709568000"
+    assert result[1]["_time"] == "1709654400"
     assert result[1]["isTruncated"] is False
 
 
@@ -1495,6 +1500,34 @@ def test_parse_vulnerabilities_uses_firstseen_fallback():
     result = parse_vulnerabilities(vulns)
 
     assert result[0]["_time"] == "1709568000"
+
+
+def test_parse_vulnerabilities_prefers_lastseen_over_firstseen():
+    """
+    Given:
+    - A vulnerability whose firstSeen is older than 30 days but whose lastSeen is recent.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - _time must be taken from lastSeen (the most recent observation) and not from
+      firstSeen, so the finding is not aged out by the 30-day retention window
+      (root cause of XSUP-70558).
+    """
+    old_first_seen = "1767805244"  # 2026-01-07 (more than 30 days ago)
+    recent_last_seen = "1775059249"  # 2026-04-01 (recent observation)
+    vulns = [
+        {
+            "pluginID": "19506",
+            "name": "Nessus Scan Information",
+            "firstSeen": old_first_seen,
+            "lastSeen": recent_last_seen,
+        },
+    ]
+    result = parse_vulnerabilities(vulns)
+
+    assert result[0]["_time"] == recent_last_seen
 
 
 def test_fetch_vulnerabilities_analysis_client_method(mocker):
@@ -1543,3 +1576,196 @@ def test_fetch_vulnerabilities_analysis_client_method(mocker):
         },
     )
     assert result == mock_response
+
+
+def test_generate_deterministic_uuid_is_stable_and_valid():
+    """
+    Given:
+    - The same ordered list of uniqueness fields.
+
+    When:
+    - Calling generate_deterministic_uuid multiple times.
+
+    Then:
+    - The same UUID is returned every time (deterministic) and it is a valid UUID string.
+    """
+    import uuid as uuid_module
+
+    fields = ["1", "10.233.4.186", "host.example.com"]
+
+    first = generate_deterministic_uuid(fields)
+    second = generate_deterministic_uuid(fields)
+
+    assert first == second
+    # Should be parseable as a real UUID.
+    assert str(uuid_module.UUID(first)) == first
+
+
+def test_generate_deterministic_uuid_differs_for_different_inputs():
+    """
+    Given:
+    - Two different lists of uniqueness fields.
+
+    When:
+    - Calling generate_deterministic_uuid on each.
+
+    Then:
+    - Different inputs produce different UUIDs.
+    """
+    uuid_a = generate_deterministic_uuid(["1", "10.0.0.1", "0", "TCP", "19506"])
+    uuid_b = generate_deterministic_uuid(["1", "10.0.0.2", "0", "TCP", "19506"])
+
+    assert uuid_a != uuid_b
+
+
+def test_generate_deterministic_uuid_handles_none_values():
+    """
+    Given:
+    - A list of fields containing None values.
+
+    When:
+    - Calling generate_deterministic_uuid.
+
+    Then:
+    - It does not raise and returns a valid, deterministic UUID treating None as empty.
+    """
+    import uuid as uuid_module
+
+    with_none = generate_deterministic_uuid(["1", None, None])
+    with_empty = generate_deterministic_uuid(["1", "", ""])
+
+    # None and "" are normalized the same way.
+    assert with_none == with_empty
+    assert str(uuid_module.UUID(with_none)) == with_none
+
+
+def test_populate_missing_uuids_generates_when_absent():
+    """
+    Given:
+    - A vulnerability record without hostUUID and vulnUUID (the XSUP-70558 scenario).
+
+    When:
+    - Calling populate_missing_uuids.
+
+    Then:
+    - Both hostUUID and vulnUUID are populated with deterministic UUIDs derived from
+      the documented uniqueness fields (repository.id, ip, dnsName for host;
+      repository.id, ip, port, protocol, pluginID for vuln).
+    """
+    vuln = {
+        "repository": {"id": "1", "name": "Repo"},
+        "ip": "10.233.4.186",
+        "dnsName": "host.example.com",
+        "port": "443",
+        "protocol": "TCP",
+        "pluginID": "19506",
+    }
+
+    populate_missing_uuids(vuln)
+
+    expected_host = generate_deterministic_uuid(["1", "10.233.4.186", "host.example.com"])
+    expected_vuln = generate_deterministic_uuid(["1", "10.233.4.186", "443", "TCP", "19506"])
+
+    assert vuln["hostUUID"] == expected_host
+    assert vuln["vulnUUID"] == expected_vuln
+
+
+def test_populate_missing_uuids_does_not_override_existing():
+    """
+    Given:
+    - A vulnerability record that already has hostUUID and vulnUUID (the common case).
+
+    When:
+    - Calling populate_missing_uuids.
+
+    Then:
+    - The existing native UUIDs are preserved and not overwritten.
+    """
+    vuln = {
+        "repository": {"id": "1"},
+        "ip": "10.233.4.186",
+        "dnsName": "",
+        "port": "0",
+        "protocol": "TCP",
+        "pluginID": "19506",
+        "hostUUID": "0005f124-280d-4095-9240-194ccec04ad6",
+        "vulnUUID": "3e4c4c34-af3f-45b7-b59f-9369f570d93f",
+    }
+
+    populate_missing_uuids(vuln)
+
+    assert vuln["hostUUID"] == "0005f124-280d-4095-9240-194ccec04ad6"
+    assert vuln["vulnUUID"] == "3e4c4c34-af3f-45b7-b59f-9369f570d93f"
+
+
+def test_populate_missing_uuids_with_empty_repository():
+    """
+    Given:
+    - A vulnerability record missing both UUIDs and without a repository object.
+
+    When:
+    - Calling populate_missing_uuids.
+
+    Then:
+    - UUIDs are still generated (repositoryID treated as empty) without raising.
+    """
+    vuln = {
+        "ip": "10.233.4.186",
+        "dnsName": "",
+        "port": "0",
+        "protocol": "TCP",
+        "pluginID": "19506",
+    }
+
+    populate_missing_uuids(vuln)
+
+    assert vuln["hostUUID"] == generate_deterministic_uuid([None, "10.233.4.186", ""])
+    assert vuln["vulnUUID"] == generate_deterministic_uuid([None, "10.233.4.186", "0", "TCP", "19506"])
+
+
+def test_parse_vulnerabilities_populates_missing_uuids():
+    """
+    Given:
+    - A list of vulnerability records, one missing hostUUID/vulnUUID and one with them.
+
+    When:
+    - Calling parse_vulnerabilities.
+
+    Then:
+    - The record missing UUIDs gets deterministic ones populated, while the record with
+      native UUIDs keeps them unchanged.
+    """
+    vulns = [
+        {
+            "pluginID": "19506",
+            "repository": {"id": "1"},
+            "ip": "10.233.4.186",
+            "dnsName": "",
+            "port": "0",
+            "protocol": "TCP",
+            "lastSeen": "1775059249",
+        },
+        {
+            "pluginID": "19507",
+            "repository": {"id": "1"},
+            "ip": "10.233.4.187",
+            "dnsName": "",
+            "port": "443",
+            "protocol": "TCP",
+            "lastSeen": "1775059249",
+            "hostUUID": "0005f124-280d-4095-9240-194ccec04ad6",
+            "vulnUUID": "3e4c4c34-af3f-45b7-b59f-9369f570d93f",
+        },
+    ]
+
+    result = parse_vulnerabilities(vulns)
+
+    # First record had no UUIDs - they must now be present and valid.
+    assert result[0]["hostUUID"]
+    assert result[0]["vulnUUID"]
+    assert result[0]["hostUUID"] == generate_deterministic_uuid(["1", "10.233.4.186", ""])
+    assert result[0]["vulnUUID"] == generate_deterministic_uuid(["1", "10.233.4.186", "0", "TCP", "19506"])
+
+    # Second record kept its native UUIDs.
+    assert result[1]["hostUUID"] == "0005f124-280d-4095-9240-194ccec04ad6"
+    assert result[1]["vulnUUID"] == "3e4c4c34-af3f-45b7-b59f-9369f570d93f"
