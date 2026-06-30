@@ -17,7 +17,7 @@ import json
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
-RETURN_ERROR_TARGET = "rasterize_8_15.return_error"
+RETURN_ERROR_TARGET = "rasterize.return_error"
 
 
 def util_read_tsv(file_path):
@@ -56,7 +56,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
 
 
 def test_rasterize_email_image_array(caplog, capfd, mocker):
-    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-email")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-email")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -70,7 +70,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
 
 
 def test_rasterize_email_pdf(caplog, capfd, mocker):
-    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-pdf")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-pdf")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -102,7 +102,7 @@ def test_get_chrome_options():
 
 
 def test_rasterize_large_html(capfd, mocker):
-    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-html")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/large.html")
         mocker.patch.object(rasterize, "support_multithreading")
@@ -111,14 +111,14 @@ def test_rasterize_large_html(capfd, mocker):
 
 
 def test_rasterize_html(mocker, capfd):
-    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-html")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/file.html")
         mocker.patch.object(demisto, "args", return_value={"EntryID": "test"})
         mocker.patch.object(demisto, "getFilePath", return_value={"path": path})
         mocker.patch.object(os, "rename")
         mocker.patch.object(os.path, "realpath", return_value=f"{os.getcwd()}/test_data/file.html")
-        mocker_output = mocker.patch("rasterize_8_15.return_results")
+        mocker_output = mocker.patch("rasterize.return_results")
         mocker.patch.object(rasterize, "support_multithreading")
         rasterize_html_command()
         assert mocker_output.call_args.args[0]["File"] == "email.png"
@@ -285,7 +285,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-        mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-image")
+        mocker.patch("rasterize.demisto.command", return_value="rasterize-image")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -617,7 +617,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
 
     mock_handler = MockPychromeEventHandler()
     mock_handler.is_mailto = True
-    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
     res = screenshot_image(None, MockTab(), "url", None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
@@ -651,7 +651,7 @@ def test_screenshot_image_local_file(mocker: MockerFixture):
     """The function returns an error when attempting to rasterize a local file"""
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
-    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-test")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-test")
 
     local_file_path = "file:///path/to/local/file.html"
 
@@ -680,7 +680,7 @@ def test_is_private_network_urls(mocker: MockerFixture):
 
     mock_handler = MockPychromeEventHandler()
     mock_handler.is_private_network_url = True
-    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
 
     res = screenshot_image(None, MockTab(), "url", None, None)
 
@@ -819,7 +819,7 @@ def test_rasterize_mailto(capfd, mocker):
     Then:
         - Verify that perform_rasterize exit with the expected error message.
     """
-    mocker_output = mocker.patch("rasterize_8_15.return_results")
+    mocker_output = mocker.patch("rasterize.return_results")
 
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="mailto:some.person@gmail.com", width=250, height=250, rasterize_type=RasterizeType.PNG)
@@ -840,7 +840,7 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
     Then:
         - Verify that perform_rasterize exit with the expected error message.
     """
-    mocker_output = mocker.patch("rasterize_8_15.return_results")
+    mocker_output = mocker.patch("rasterize.return_results")
 
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="0.0.0.8/test", width=250, height=250, rasterize_type=RasterizeType.PNG)
@@ -904,7 +904,7 @@ def test_handle_request_paused(mocker: MockerFixture):
         - Verify that tab.Fetch.failRequest executed with the correct requestId and errorReason Aborted
     """
 
-    mocker.patch("rasterize_8_15.BLOCKED_URLS", ["cloudflare.com"])
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
     kwargs = {"requestId": "1", "request": {"url": "cloudflare.com"}}
     mock_tab = MagicMock(spec=pychrome.Tab)
     mock_fetch = mocker.MagicMock()
@@ -918,6 +918,133 @@ def test_handle_request_paused(mocker: MockerFixture):
 
     assert mock_fail_request.call_args[1]["requestId"] == "1"
     assert mock_fail_request.call_args[1]["errorReason"] == "Aborted"
+
+
+def test_handle_request_paused_continues_non_blocked_url(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - A paused request for a URL that does NOT match any blocked pattern.
+    When:
+        - Running the 'handle_request_paused' function.
+    Then:
+        - Verify that tab.Fetch.continueRequest is called with the correct requestId,
+          and tab.Fetch.failRequest is NOT called.
+        This is the defensive `else` branch that prevents non-blocked paused requests
+        from hanging forever (the bug that caused the 180s page load deadlock).
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    kwargs = {"requestId": "2", "request": {"url": "https://example.com/main.css"}}
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_continue_request = mocker.patch.object(mock_fetch, "continueRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    tab_event_handler.handle_request_paused(**kwargs)
+
+    mock_fail_request.assert_not_called()
+    assert mock_continue_request.call_args[1]["requestId"] == "2"
+
+
+def test_handle_request_paused_blocks_multiple_matching_urls(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - Multiple sequential paused requests for different URLs that all match the blocked pattern.
+    When:
+        - Running 'handle_request_paused' for each of them.
+    Then:
+        - Verify that tab.Fetch.failRequest is called for EVERY matching URL (not just the first).
+        This proves the pre-fix bug where `Fetch.disable()` was called after the first abort,
+        which caused subsequent matching URLs to silently slip through, is closed.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    blocked_requests = [
+        {"requestId": "10", "request": {"url": "https://cdnjs.cloudflare.com/lib/a.css"}},
+        {"requestId": "11", "request": {"url": "https://cdnjs.cloudflare.com/lib/b.js"}},
+        {"requestId": "12", "request": {"url": "https://cdnjs.cloudflare.com/lib/c.js"}},
+    ]
+    for kwargs in blocked_requests:
+        tab_event_handler.handle_request_paused(**kwargs)
+
+    assert mock_fail_request.call_count == 3
+    aborted_request_ids = [call.kwargs["requestId"] for call in mock_fail_request.call_args_list]
+    assert aborted_request_ids == ["10", "11", "12"]
+
+
+def test_tab_lifecycle_manager_enables_fetch_with_scoped_patterns(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS contains two patterns: 'cloudflare.com' and 'tracker.io'.
+    When:
+        - TabLifecycleManager.__enter__ is invoked (the proactive Fetch.enable code path).
+    Then:
+        - Verify tab.Fetch.enable is called with a `patterns` argument containing exactly
+          one entry per blocked URL, each using glob-equivalent substring matching and
+          targeting the 'Request' stage.
+        This proves the proactive scoped-pattern fix is in place, preventing the race
+        condition where the first blocked URL slipped through unblocked and the
+        deadlock where bare Fetch.enable() intercepted (and hung) every request.
+    """
+    blocked_urls = ["cloudflare.com", "tracker.io"]
+    mocker.patch("rasterize.BLOCKED_URLS", blocked_urls)
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    returned_tab = manager.__enter__()
+
+    assert returned_tab is mock_tab
+    mock_tab.Fetch.enable.assert_called_once()
+    call_kwargs = mock_tab.Fetch.enable.call_args.kwargs
+    assert "patterns" in call_kwargs
+    patterns = call_kwargs["patterns"]
+    assert len(patterns) == len(blocked_urls)
+    for pat, blocked in zip(patterns, blocked_urls):
+        assert pat["urlPattern"] == f"*{blocked}*"
+        assert pat["requestStage"] == "Request"
+
+
+def test_tab_lifecycle_manager_skips_fetch_enable_when_no_blocked_urls(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS is empty (the common case for users not using URL blocking).
+    When:
+        - TabLifecycleManager.__enter__ is invoked.
+    Then:
+        - Verify tab.Fetch.enable is NOT called, so the integration doesn't pay any
+          interception cost when no URLs are configured to be blocked.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", [])
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    manager.__enter__()
+
+    mock_tab.Fetch.enable.assert_not_called()
 
 
 def test_retry_loading(mocker: MockerFixture):
@@ -1136,9 +1263,9 @@ def test_rasterize_email_command_default_arge(mocker):
         "height": "1500px",
     }
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
-    mock_uuid = mocker.patch("rasterize_8_15.uuid.uuid4", return_value="abcd-1234")
+    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
+    mock_uuid = mocker.patch("rasterize.uuid.uuid4", return_value="abcd-1234")
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1165,8 +1292,8 @@ def test_rasterize_email_command_png(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "width": "800", "height": "600", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
+    mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
     mock_results = mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1185,8 +1312,8 @@ def test_rasterize_email_command_pdf(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "width": "800", "height": "600", "type": "pdf", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("pdf_data", None)])
-    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "file"})
+    mocker.patch("rasterize.perform_rasterize", return_value=[("pdf_data", None)])
+    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "file"})
     mock_results = mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1205,8 +1332,8 @@ def test_rasterize_email_command_full_screen(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "full_screen": "true", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1233,8 +1360,8 @@ def test_rasterize_email_command_offline_mode(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "offline": "true", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
-    mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
+    mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1260,8 +1387,8 @@ def test_rasterize_email_command_custom_navigation_timeout(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "max_page_load_time": "30", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
-    mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
+    mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1287,7 +1414,7 @@ def test_rasterize_email_command_error_handling(mocker):
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", side_effect=Exception("Test error"))
+    mocker.patch("rasterize.perform_rasterize", side_effect=Exception("Test error"))
     mock_error = mocker.patch.object(demisto, "error")
 
     with pytest.raises(SystemExit):
@@ -1395,8 +1522,8 @@ def test_extract_text_content_success(mocker, capfd):
     mock_handler.is_mailto = False
     mock_handler.is_private_network_url = False
 
-    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
-    mocker.patch("rasterize_8_15.extract_content_from_tab", return_value=("# Test Content", "https://example.com"))
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize.extract_content_from_tab", return_value=("# Test Content", "https://example.com"))
 
     with capfd.disabled():
         content, url = extract_text_content(mock_browser, mock_tab, "https://example.com", 0, 30)
@@ -1422,7 +1549,7 @@ def test_extract_text_content_mailto_url(mocker, capfd):
     mock_handler.is_private_network_url = False
     mock_handler.document_url = "mailto:test@example.com"
 
-    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
 
     with capfd.disabled():
         content, error_msg = extract_text_content(mock_browser, mock_tab, "mailto:test@example.com", 0, 30)
@@ -1449,7 +1576,7 @@ def test_extract_text_content_private_network(mocker, capfd):
     mock_handler.is_private_network_url = True
     mock_handler.document_url = "http://192.168.1.1"
 
-    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
 
     with capfd.disabled():
         content, error_msg = extract_text_content(mock_browser, mock_tab, "http://192.168.1.1", 0, 30)
@@ -1469,8 +1596,8 @@ def test_rasterize_extract_command_success(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("# Test Content", "https://example.com")])
-    mock_return_results = mocker.patch("rasterize_8_15.return_results")
+    mocker.patch("rasterize.perform_rasterize", return_value=[("# Test Content", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize.return_results")
 
     rasterize_extract_command()
 
@@ -1493,10 +1620,10 @@ def test_rasterize_extract_command_multiple_urls(mocker):
     mock_args = {"url": urls, "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
     mocker.patch(
-        "rasterize_8_15.perform_rasterize",
+        "rasterize.perform_rasterize",
         return_value=[("# Content 1", "https://example1.com"), ("# Content 2", "https://example2.com")],
     )
-    mock_return_results = mocker.patch("rasterize_8_15.return_results")
+    mock_return_results = mocker.patch("rasterize.return_results")
 
     rasterize_extract_command()
 
@@ -1517,8 +1644,8 @@ def test_rasterize_extract_command_extraction_error(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("Extraction Error: Test error", "https://example.com")])
-    mock_return_results = mocker.patch("rasterize_8_15.return_results")
+    mocker.patch("rasterize.perform_rasterize", return_value=[("Extraction Error: Test error", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize.return_results")
 
     rasterize_extract_command()
 
@@ -1539,8 +1666,8 @@ def test_rasterize_extract_command_string_error(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize_8_15.perform_rasterize", return_value=["Error: Connection failed"])
-    mock_return_results = mocker.patch("rasterize_8_15.return_results")
+    mocker.patch("rasterize.perform_rasterize", return_value=["Error: Connection failed"])
+    mock_return_results = mocker.patch("rasterize.return_results")
 
     rasterize_extract_command()
 
@@ -1677,7 +1804,7 @@ def test_freeze_tab_for_screenshot_invokes_cdp_sequence(mocker):
 
     rasterize._freeze_tab_for_screenshot(tab, "tab_id", "path")
 
-    called_methods = [call.args[1] for call in safe_call.call_args_list]
+    called_methods = [call.kwargs["method_path"] for call in safe_call.call_args_list]
     for expected in [
         "Network.enable",
         "Network.emulateNetworkConditions",
@@ -1790,7 +1917,7 @@ def test_wait_for_page_load_timeout(mocker):
     )
 
     assert result is True
-    stopped = [call.args[1] for call in safe_call.call_args_list]
+    stopped = [call.kwargs["method_path"] for call in safe_call.call_args_list]
     assert "Page.stopLoading" in stopped
 
 
