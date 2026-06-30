@@ -769,6 +769,10 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
 | GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
 
+#### Usage
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
 ### gcp-storage-bucket-policy-set
 
 ***
