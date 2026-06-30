@@ -37,7 +37,7 @@ Data normalization capabilities:
 
 To configure the Menlo Security integration in Cortex XSIAM:
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+1. Navigate to **Settings** > **Data Sources & Integrations**.
 2. Search for **Menlo Security**.
 3. Click **Add instance** to create and configure a new integration instance.
 
