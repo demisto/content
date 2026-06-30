@@ -1329,6 +1329,8 @@ def cloudflare_waf_ruleset_get_command(client: Client, args: dict[str, Any]) -> 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
+    if not zone_id:
+        raise ValueError("zone_id is required.")
 
     response = client.cloudflare_waf_ruleset_get_request(ruleset_id, zone_id=zone_id)
 
@@ -1390,6 +1392,8 @@ def cloudflare_waf_ruleset_create_command(client: Client, args: dict[str, Any]) 
     if not phase:
         raise ValueError("phase is required.")
     zone_id = args.get("zone_id", client.zone_id)
+    if not zone_id:
+        raise ValueError("zone_id is required.")
     description = args.get("description")
     rules_json = args.get("rules")
 
@@ -1451,6 +1455,9 @@ def cloudflare_waf_ruleset_update_command(client: Client, args: dict[str, Any]) 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
+    if not zone_id:
+        raise ValueError("zone_id is required.")
+
     name = args.get("name")
     description = args.get("description")
     rules_json = args.get("rules")
@@ -1495,6 +1502,8 @@ def cloudflare_waf_ruleset_delete_command(client: Client, args: dict[str, Any]) 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
+    if not zone_id:
+        raise ValueError("zone_id is required.")
 
     client.cloudflare_waf_ruleset_delete_request(ruleset_id, zone_id=zone_id)
 
