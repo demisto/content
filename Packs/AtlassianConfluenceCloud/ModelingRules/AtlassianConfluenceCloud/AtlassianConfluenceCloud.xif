@@ -18,7 +18,9 @@ alter
     check_for_empty_string_resource_value = if(ext_changed_values_new_value ~= "^[\,\s]+$",null,ext_changed_values_new_value)
 | alter 
     xdm.source.user.username = author -> displayName,
+    xdm.source.identity.username = author -> displayName,
     xdm.source.user.identifier = author -> accountId,
+    xdm.source.identity.identifier = author -> accountId,
     xdm.event.operation = summary,
     xdm.event.type = category,
     xdm.event.description = to_xdm_event_description,
@@ -28,4 +30,6 @@ alter
     xdm.target.resource.name = coalesce(ext_associated_objects_name,ext_affected_object_name) ,
     xdm.target.resource.type = coalesce(ext_associated_objects_type,ext_affected_object_type),
     xdm.target.user.username = check_type_user_name,
-    xdm.target.user.groups = arraycreate(check_type_group);
+    xdm.target.identity.username = check_type_user_name,
+    xdm.target.user.groups = arraycreate(check_type_group),
+    xdm.target.identity.groups = arraycreate(check_type_group);

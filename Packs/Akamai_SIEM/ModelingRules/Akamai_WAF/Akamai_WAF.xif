@@ -58,7 +58,9 @@ alter // pre-modeling extractions
     xdm.source.location.region = geo -> regionCode, 
     xdm.source.user_agent = httpMessage -> requestHeaders.User_Agent,
     xdm.source.user.identifier = userRiskData -> uuid, // Unique identifier for the user whose user risk data is provided here. Available only to Identity Protector customers and only on endpoints configured for identity protection.
+    xdm.source.identity.identifier = userRiskData -> uuid, // Unique identifier for the user whose user risk data is provided here. Available only to Identity Protector customers and only on endpoints configured for identity protection.
     xdm.source.user.username = userRiskData -> username, // The unencrypted username, provided at login by the user. Available only to Identity Protector customers and only on endpoints configured for identity protection.
+    xdm.source.identity.username = userRiskData -> username, // The unencrypted username, provided at login by the user. Available only to Identity Protector customers and only on endpoints configured for identity protection.
     xdm.target.port = port,
     xdm.target.resource.id = attackData -> apiId, // For attacks on API services, this is a unique identifier under which the API is protected. It corresponds to the apiEndPointId value in the API Endpoint Definition API.
     xdm.target.sent_bytes = to_integer(httpMessage -> bytes), // The number of bytes served in the response.

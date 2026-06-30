@@ -120,8 +120,11 @@ filter _raw_log !~= ":\s+>#2,"
     xdm.source.process.pid = to_integer(coalesce(pid, process_id, session_id)),
     xdm.source.sent_packets = to_integer(attempt_num),
     xdm.source.user.groups = if(user_profile != null, arraycreate(user_profile)),
+    xdm.source.identity.groups = if(user_profile != null, arraycreate(user_profile)),
     xdm.source.user.identifier = user_uid,
+    xdm.source.identity.identifier = user_uid,
     xdm.source.user.username = user_uname,
+    xdm.source.identity.username = user_uname,
     xdm.target.host.device_id = target_net_reg,
     xdm.target.host.ipv4_addresses = target_ipv4_addresses,
     xdm.target.host.ipv6_addresses = target_ipv6_addresses,
@@ -132,4 +135,5 @@ filter _raw_log !~= ":\s+>#2,"
     xdm.target.resource.id = accessed_field_name,
     xdm.target.resource.name = accessed_web_page,
     xdm.target.resource.value = accessed_field_value,
-    xdm.target.user.username = target_username;
+    xdm.target.user.username = target_username,
+    xdm.target.identity.username = target_username;
