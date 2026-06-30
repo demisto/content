@@ -1,7 +1,7 @@
 {
     "druva_druva_raw": {
         "timeStamp": {
-            "type": "datetime",
+            "type": "string",
             "is_array": false
         },
         "clientOS": {
@@ -90,6 +90,30 @@
         },
         "source_log_type": {
             "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "string",
+            "is_array": false
+        },
+        "facility": {
+            "type": "int",
+            "is_array": false
+        },
+        "profileID": {
+            "type": "int",
+            "is_array": false
+        },
+        "globalID": {
+            "type": "string",
+            "is_array": false
+        },
+        "productID": {
+            "type": "int",
+            "is_array": false
+        },
+        "syslogFacility": {
+            "type": "int",
             "is_array": false
         }
     }
