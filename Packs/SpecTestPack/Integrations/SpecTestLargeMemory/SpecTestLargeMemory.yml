@@ -1,0 +1,69 @@
+category: Utilities
+spec: L
+commonfields:
+  id: SpecTestLargeMemory
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g., https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: >-
+  Test integration WITH the spec field set to L (large memory).
+  Used to validate the new SDK spec field for dedicated worker memory allocation.
+display: Spec Test Large Memory
+name: SpecTestLargeMemory
+script:
+  commands:
+  - arguments:
+    - description: The resource ID to process.
+      name: resource_id
+      required: true
+    description: Processes a resource that requires large memory allocation.
+    name: spec-test-large-process-resource
+    outputs:
+    - contextPath: SpecTestLargeMemory.Resource.ID
+      description: The ID of the processed resource.
+      type: String
+    - contextPath: SpecTestLargeMemory.Resource.Status
+      description: The processing status of the resource.
+      type: String
+    - contextPath: SpecTestLargeMemory.Resource.SizeBytes
+      description: The size of the processed resource in bytes.
+      type: Number
+  - arguments:
+    - description: Maximum number of items to return.
+      name: limit
+      defaultValue: '50'
+      required: false
+    description: Lists all available resources.
+    name: spec-test-large-list-resources
+    outputs:
+    - contextPath: SpecTestLargeMemory.Resource.ID
+      description: The ID of the resource.
+      type: String
+    - contextPath: SpecTestLargeMemory.Resource.Name
+      description: The name of the resource.
+      type: String
+  dockerimage: demisto/python3:3.11.11.1940875
+  isfetch: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
