@@ -16,15 +16,15 @@
       "type": "string",
       "is_array": false
     },
-    "x_client_country": {
-      "type": "string",
-      "is_array": false
-    },
     "egress_ip": {
       "type": "string",
       "is_array": false
     },
     "egress_country": {
+      "type": "string",
+      "is_array": false
+    },
+    "region": {
       "type": "string",
       "is_array": false
     },
