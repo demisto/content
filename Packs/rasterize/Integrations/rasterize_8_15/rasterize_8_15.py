@@ -127,15 +127,34 @@ except Exception as e:
     demisto.info(f"Exception trying to parse MAX_CHROME_TABS_COUNT, {e}")
     MAX_CHROME_TABS_COUNT = 10
 
-# Memory pressure tolerance (in bytes): if available memory drops below this value while a page
-# is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 650MB.
+# Memory pressure tolerance: if available memory drops below this value while a page is loading,
+# wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of whatever has
+# rendered so far, preventing an OOM kill.
+#
+# The tolerance is expressed as a *percentage* of the container's total memory limit so it scales
+# automatically when the memory limit changes (e.g. 65% of a 1 GiB limit is ~650 MiB; raising the
+# limit to 2 GiB automatically makes the tolerance ~1300 MiB with no code change).
+#
+# Full-screen captures use a larger viewport and therefore allocate more memory, so they use a
+# higher tolerance (default 70%) - the guard aborts earlier to leave more headroom for the bigger
+# screenshot.
 try:
-    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "650")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_PERCENT = float(os.getenv("MEMORY_PRESSURE_TOLERANCE_PERCENT", "65"))
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_PERCENT, {e}")
+    MEMORY_PRESSURE_TOLERANCE_PERCENT = 65.0
+
+try:
+    MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN = float(os.getenv("MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN", "70"))
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN, {e}")
+    MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN = 70.0
+
+try:
+    MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB = int(os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "650"))
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = 650 * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB = 650
 
 IS_LIGHTWEIGHT = argToBoolean(demisto.params().get("lightweight", False))
 if IS_LIGHTWEIGHT:  # In lightweight mode, we only allow one Chrome instance and one tab per instance
@@ -198,12 +217,12 @@ def get_container_working_set_bytes() -> int:
         return 0
 
 
-def get_container_available_memory_bytes() -> int:
+def get_container_total_memory_bytes() -> int:
     """
-    Returns the available memory in bytes (memory.max - working_set).
+    Returns the container's total (hard) memory limit in bytes, read from cgroup v2 memory.max.
 
     Returns:
-        int: Available memory in bytes.
+        int: Total memory limit in bytes.
              Returns -1 when no hard memory limit is set on the cgroup ("max").
              Returns 0 when the cgroup v2 files cannot be read.
     """
@@ -215,19 +234,107 @@ def get_container_available_memory_bytes() -> int:
             # No hard limit is set on this cgroup
             return -1
 
-        mem_max = int(max_val)
-        working_set = get_container_working_set_bytes()
-        available = max(0, mem_max - working_set)
-        demisto.debug(
-            f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
-            f"working_set={working_set / (1024 * 1024):.1f} MiB, "
-            f"available={available / (1024 * 1024):.1f} MiB",
-        )
-        return available
+        return int(max_val)
 
     except (FileNotFoundError, ValueError, PermissionError) as e:
-        demisto.debug(f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
+        demisto.debug(f"get_container_total_memory_bytes: Could not read cgroup v2 memory.max: {e}")
         return 0
+
+
+def get_container_available_memory_bytes() -> int:
+    """
+    Returns the available memory in bytes (memory.max - working_set).
+
+    Returns:
+        int: Available memory in bytes.
+             Returns -1 when no hard memory limit is set on the cgroup ("max").
+             Returns 0 when the cgroup v2 files cannot be read.
+    """
+    mem_max = get_container_total_memory_bytes()
+
+    # Propagate the special "no hard limit" (-1) and "unreadable" (0) signals unchanged.
+    if mem_max <= 0:
+        return mem_max
+
+    working_set = get_container_working_set_bytes()
+    available = max(0, mem_max - working_set)
+    demisto.debug(
+        f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
+        f"working_set={working_set / (1024 * 1024):.1f} MiB, "
+        f"available={available / (1024 * 1024):.1f} MiB",
+    )
+    return available
+
+
+def compute_memory_pressure_tolerance_bytes(percent: float, fallback_mb: int = 650) -> int:
+    """
+    Computes the memory-pressure tolerance (the available-memory floor) as a percentage of the
+    container's total memory limit, so it auto-scales when the memory limit changes.
+
+    For example, with percent=65 and a 1 GiB limit the tolerance is ~650 MiB; if the limit is
+    raised to 2 GiB the tolerance automatically becomes ~1300 MiB without any code change.
+
+    When the container has no hard memory limit, or the limit cannot be read, the function falls
+    back to a fixed value (fallback_mb).
+
+    Args:
+        percent: Percentage (0-100) of the total memory limit to use as the tolerance floor.
+        fallback_mb: Fixed tolerance in MiB to use when the total memory limit is unavailable.
+
+    Returns:
+        int: The tolerance in bytes.
+    """
+    total_memory = get_container_total_memory_bytes()
+    if total_memory > 0:
+        tolerance = int(total_memory * (percent / 100.0))
+        demisto.debug(
+            f"compute_memory_pressure_tolerance_bytes: total={total_memory / (1024 * 1024):.1f} MiB, "
+            f"percent={percent}%, tolerance={tolerance / (1024 * 1024):.1f} MiB",
+        )
+        return tolerance
+
+    # No hard limit set ("max") or the value could not be read - use the fixed fallback.
+    demisto.debug(
+        f"compute_memory_pressure_tolerance_bytes: no readable memory limit "
+        f"({total_memory=}), falling back to {fallback_mb} MiB",
+    )
+    return fallback_mb * 1024 * 1024
+
+
+# Available-memory floor in bytes, computed from the container's total memory limit so it scales
+# automatically with the configured memory size (see the comment near the constant definitions).
+MEMORY_PRESSURE_TOLERANCE_BYTES = compute_memory_pressure_tolerance_bytes(
+    percent=MEMORY_PRESSURE_TOLERANCE_PERCENT,
+    fallback_mb=MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB,
+)
+
+
+def set_memory_pressure_tolerance_for_capture(full_screen: bool) -> int:
+    """
+    Recomputes and stores the module-level MEMORY_PRESSURE_TOLERANCE_BYTES for the current command,
+    using a higher percentage for full-screen captures (which allocate more memory).
+
+    Each command handler calls this once after reading its full_screen argument, so the memory guard
+    (which reads the module-level MEMORY_PRESSURE_TOLERANCE_BYTES) uses the right floor without having
+    to drill the flag through navigate_to_path / wait_for_page_load_with_memory_guard.
+
+    Args:
+        full_screen: Whether the upcoming capture is full-screen.
+
+    Returns:
+        int: The newly computed tolerance in bytes.
+    """
+    global MEMORY_PRESSURE_TOLERANCE_BYTES
+    percent = MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN if full_screen else MEMORY_PRESSURE_TOLERANCE_PERCENT
+    MEMORY_PRESSURE_TOLERANCE_BYTES = compute_memory_pressure_tolerance_bytes(
+        percent=percent,
+        fallback_mb=MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB,
+    )
+    demisto.debug(
+        f"set_memory_pressure_tolerance_for_capture: {full_screen=}, using {percent}% -> "
+        f"{MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
+    )
+    return MEMORY_PRESSURE_TOLERANCE_BYTES
 
 
 ##### CDP management #####
@@ -310,14 +417,14 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
     demisto.debug(f"_freeze_tab_for_screenshot: starting freeze sequence, {tab_id=}, {path=}")
 
     # 1a. Make sure the Network domain is enabled before issuing emulateNetworkConditions.
-    _safe_call_cdp_with_args(tab, "Network.enable", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.enable", tab_id=tab_id, path=path)
 
     # 1b. Cut the network at the renderer: every new request fails immediately.
     _safe_call_cdp_with_args(
-        tab,
-        "Network.emulateNetworkConditions",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Network.emulateNetworkConditions",
+        tab_id=tab_id,
+        path=path,
         offline=True,
         latency=0,
         downloadThroughput=0,
@@ -327,42 +434,42 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
     # 1c. Belt-and-braces: enable the Fetch domain with a catch-all blocking pattern so
     #     even requests that slip past the network-conditions layer are intercepted.
     _safe_call_cdp_with_args(
-        tab,
-        "Fetch.enable",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Fetch.enable",
+        tab_id=tab_id,
+        path=path,
         patterns=[{"urlPattern": "*"}],
     )
 
     # 2. Cancel the current navigation's in-flight fetches.
-    _safe_call_cdp_with_args(tab, "Page.stopLoading", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
 
     # 3a. Halt the JS event loop so rAF / setInterval / observers stop allocating.
     _safe_call_cdp_with_args(
-        tab,
-        "Emulation.setScriptExecutionDisabled",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Emulation.setScriptExecutionDisabled",
+        tab_id=tab_id,
+        path=path,
         value=True,
     )
 
     # 3b. Signal the page-lifecycle layer that we are frozen (best-effort; not all
     #     Chrome builds support this CDP method).
     _safe_call_cdp_with_args(
-        tab,
-        "Page.setWebLifecycleState",
-        tab_id,
-        path,
+        tab=tab,
+        method_path="Page.setWebLifecycleState",
+        tab_id=tab_id,
+        path=path,
         state="frozen",
     )
 
     # 4. With nothing allocating on top of them, the GC hints can actually shrink
     #    the V8 heap and release renderer-side caches.
-    _safe_call_cdp_with_args(tab, "HeapProfiler.collectGarbage", tab_id, path)
-    _safe_call_cdp_with_args(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="HeapProfiler.collectGarbage", tab_id=tab_id, path=path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Memory.forciblyPurgeJavaScriptMemory", tab_id=tab_id, path=path)
 
     # 5. Drop the browser-level network cache populated by this tab.
-    _safe_call_cdp_with_args(tab, "Network.clearBrowserCache", tab_id, path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.clearBrowserCache", tab_id=tab_id, path=path)
 
     demisto.debug(
         f"_freeze_tab_for_screenshot: freeze sequence complete, "
@@ -394,7 +501,9 @@ def wait_for_page_load_with_memory_guard(
         tab_ready_event: The threading.Event that signals page load completion.
         navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
         tolerance_bytes: Available-memory floor in bytes. When None (the default), the
-            current module-level MEMORY_PRESSURE_TOLERANCE_BYTES is used.
+            current module-level MEMORY_PRESSURE_TOLERANCE_BYTES is used, which is recomputed per command via
+            set_memory_pressure_tolerance_for_capture (a higher percentage is used for
+            full-screen captures).
         poll_interval: How often (seconds) to sample memory while waiting. Default: 0.5 s.
         tab_id: Tab identifier for logging.
         path: URL/path being loaded, for logging.
@@ -433,7 +542,7 @@ def wait_for_page_load_with_memory_guard(
         # Check for timeout.
         if time.monotonic() >= deadline:  # pylint: disable=E9003
             # Stop the still-loading tab so it cannot keep consuming memory after we return.
-            _safe_call_cdp_with_args(tab, "Page.stopLoading", tab_id, path)
+            _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
             )
@@ -499,6 +608,17 @@ class TabLifecycleManager:
         except Exception as ex:
             demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable a new tab due to {ex}")
             raise ex
+
+        if BLOCKED_URLS:
+            try:
+                patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
+                self.tab.Fetch.enable(patterns=patterns)
+            except Exception as ex:
+                demisto.info(
+                    f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}"
+                )
+                raise ex
+
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: F841
@@ -700,19 +820,19 @@ class PychromeEventHandler:
             demisto.info(
                 f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
             )
-            self.tab.Fetch.enable()
-            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
-        request_url = kwargs.get("request", {}).get("url")
+        request_url = kwargs.get("request", {}).get("url") or ""
 
         # abort the request if the url inside blocked_urls param and its redirect request
-        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
+        if any(value in request_url for value in BLOCKED_URLS):
             self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
-            self.tab.Fetch.disable()
-            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
+            demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+        else:
+            # Safety check in case the fetch enable patterns paused requests that shouldn't be blocked
+            demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            self.tab.Fetch.continueRequest(requestId=request_id)
 
 
 # endregion
@@ -2062,6 +2182,7 @@ def rasterize_image_command():
     entry_id = args.get("EntryID")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     file_name = args.get("file_name", entry_id)
 
@@ -2086,6 +2207,7 @@ def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get("htmlBody")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     offline = demisto.args().get("offline", "false") == "true"
 
@@ -2187,6 +2309,7 @@ def rasterize_html_command():
     entry_id = args.get("EntryID")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     rasterize_type = args.get("type", "png").lower()
     file_name = args.get("file_name", "email")
@@ -2253,6 +2376,7 @@ def rasterize_command():  # pragma: no cover
     urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
     wait_time = int(demisto.args().get("wait_time", 0))
     navigation_timeout = int(demisto.args().get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))

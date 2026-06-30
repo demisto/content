@@ -1804,7 +1804,7 @@ def test_freeze_tab_for_screenshot_invokes_cdp_sequence(mocker):
 
     rasterize._freeze_tab_for_screenshot(tab, "tab_id", "path")
 
-    called_methods = [call.args[1] for call in safe_call.call_args_list]
+    called_methods = [call.kwargs["method_path"] for call in safe_call.call_args_list]
     for expected in [
         "Network.enable",
         "Network.emulateNetworkConditions",
@@ -1917,7 +1917,7 @@ def test_wait_for_page_load_timeout(mocker):
     )
 
     assert result is True
-    stopped = [call.args[1] for call in safe_call.call_args_list]
+    stopped = [call.kwargs["method_path"] for call in safe_call.call_args_list]
     assert "Page.stopLoading" in stopped
 
 
