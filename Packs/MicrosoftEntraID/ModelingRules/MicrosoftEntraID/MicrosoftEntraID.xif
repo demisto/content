@@ -255,7 +255,7 @@ alter
   check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
 | alter
   xdm.logon.type = if(
-    isInteractive = true or isInteractive ~= "(?i)true", XDM_CONST.LOGON_TYPE_INTERACTIVE,
+    to_string(isInteractive) ~= "(?i)^(true|1)$", XDM_CONST.LOGON_TYPE_INTERACTIVE,
     signInEventTypes ~= "nonInteractiveUser", XDM_CONST.LOGON_TYPE_NETWORK,
     signInEventTypes ~= "interactive", XDM_CONST.LOGON_TYPE_INTERACTIVE,
     signInEventTypes ~= "refreshToken", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS,
