@@ -203,11 +203,14 @@ def slugify(value: str) -> str:
     integration's ``commonfields.id`` / ``commonfields.name``. Runs of
     whitespace become a single ``-``; surrounding whitespace is trimmed.
 
-    Punctuation other than the hyphen (e.g. parentheses) is dropped; existing
-    hyphens are kept as separators; then any run of whitespace and/or hyphens is
-    collapsed to a single ``-`` (leading/trailing hyphens trimmed). This matches
-    the migration's clean-slug convention, where ``AWS-EKS`` stays ``aws-eks``
-    while ``... (O365 Azure Events)`` loses its parentheses.
+    Separating punctuation BETWEEN word characters (``.`` or ``/``, e.g. the dot
+    in ``Tenable.io`` / ``AppSentinels.ai``) acts as a SEPARATOR and becomes a
+    hyphen — matching the migration, which emits view_group ids ``tenable-io`` /
+    ``tenable-sc`` (NOT ``tenableio``). Other punctuation (e.g. parentheses) is
+    dropped; existing hyphens are kept as separators; then any run of whitespace
+    and/or hyphens is collapsed to a single ``-`` (leading/trailing hyphens
+    trimmed). This matches the migration's clean-slug convention, where ``AWS-EKS``
+    stays ``aws-eks`` while ``... (O365 Azure Events)`` loses its parentheses.
 
     >>> slugify("GuardiCore v2")
     'guardicore-v2'
@@ -219,10 +222,20 @@ def slugify(value: str) -> str:
     'aws-iam-user-lifecycle-management'
     >>> slugify("Microsoft Management Activity API (O365 Azure Events)")
     'microsoft-management-activity-api-o365-azure-events'
+    >>> slugify("AppSentinels.ai")
+    'appsentinels-ai'
+    >>> slugify("Tenable.io")
+    'tenable-io'
+    >>> slugify("abuse.ch SSL Blacklist Feed")
+    'abuse-ch-ssl-blacklist-feed'
     """
-    # Drop punctuation EXCEPT hyphens and whitespace, then collapse runs of
-    # whitespace/hyphens to a single hyphen.
-    cleaned = re.sub(r"[^0-9a-z\s-]", "", value.strip().lower())
+    lowered = value.strip().lower()
+    # Separating punctuation (``.`` / ``/``) BETWEEN word chars becomes a
+    # separator (``Tenable.io`` -> ``tenable-io``), matching the migration.
+    lowered = re.sub(r"(?<=[0-9a-z])[./](?=[0-9a-z])", "-", lowered)
+    # Drop remaining punctuation EXCEPT hyphens and whitespace, then collapse
+    # runs of whitespace/hyphens to a single hyphen.
+    cleaned = re.sub(r"[^0-9a-z\s-]", "", lowered)
     return re.sub(r"[\s-]+", "-", cleaned).strip("-")
 
 
