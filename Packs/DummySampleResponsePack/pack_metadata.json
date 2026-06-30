@@ -1,0 +1,37 @@
+{
+    "name": "Dummy Sample Response Pack",
+    "description": "This is a dummy sample pack used for demonstration purposes only. It contains a sample automated response playbook.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management",
+        "Endpoint",
+        "Cloud Security",
+        "Email"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "AggregatedScripts": {
+            "mandatory": true,
+            "display_name": "Aggregated Scripts"
+        }
+    },
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "cloud",
+        "cloud_runtime_security",
+        "agentix",
+        "xsiam",
+        "edr"
+    ]
+}
