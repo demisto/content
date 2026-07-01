@@ -339,6 +339,36 @@ def test_validate_params_for_fetch_incidents_error():
         validate_params_for_fetch_incidents(params)
 
 
+def test_validate_params_for_fetch_incidents_requires_user_id_in_legacy_mode(mocker):
+    """
+    Given: A legacy (non-UCP) configuration with no User ID.
+    When: validate_params_for_fetch_incidents is called.
+    Then: A ValueError about the required User ID is raised.
+    """
+    from GoogleDrive import validate_params_for_fetch_incidents
+
+    mocker.patch("GoogleDrive.should_use_ucp_auth", return_value=False)
+
+    with pytest.raises(ValueError, match=MESSAGES["USER_ID_REQUIRED"]):
+        validate_params_for_fetch_incidents({"isFetch": True})
+
+
+def test_validate_params_for_fetch_incidents_user_id_optional_in_ucp_mode(mocker):
+    """
+    Given: A UCP (ConnectUs) configuration with no User ID.
+    When: validate_params_for_fetch_incidents is called.
+    Then: No User ID error is raised (the subject comes from the connection profile).
+    """
+    from GoogleDrive import validate_params_for_fetch_incidents
+
+    mocker.patch("GoogleDrive.should_use_ucp_auth", return_value=True)
+
+    # Should not raise USER_ID_REQUIRED; max_fetch/first_fetch defaults are applied.
+    params: dict = {"isFetch": True}
+    validate_params_for_fetch_incidents(params)
+    assert params["max_fetch"] == 10
+
+
 def test_prepare_args_for_fetch_incidents():
     """
     Scenario: Prepare request body for fetch-incidents.
