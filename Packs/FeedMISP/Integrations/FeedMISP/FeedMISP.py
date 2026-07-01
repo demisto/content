@@ -583,10 +583,6 @@ def update_candidate(
     if not candidate_timestamp or (latest_indicator_timestamp and latest_indicator_timestamp > candidate_timestamp):
         last_run["candidate_timestamp"] = latest_indicator_timestamp
         last_run["candidate_value"] = latest_indicator_value
-    demisto.debug(
-        f"[FeedMISP update_candidate] latest_ts={latest_indicator_timestamp}, prior_candidate={candidate_timestamp}, "
-        f"new_candidate={last_run.get('candidate_timestamp')}"
-    )
 
 
 def fetch_attributes_command(client: Client, params: Dict[str, str]):
@@ -610,14 +606,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run_timestamp = arg_to_number(last_run.get("last_indicator_timestamp"))
     last_run_page = last_run.get("page") or 1
     last_run_value = last_run.get("last_indicator_value") or ""
-    # Seed the candidate from the previously stored watermark so that a run which fetches no new indicators
-    # (e.g. an empty incremental page) does not reset last_indicator_* to None on the final setLastRun.
-    last_run.setdefault("candidate_timestamp", last_run_timestamp)  # type: ignore[arg-type]
-    last_run.setdefault("candidate_value", last_run_value or None)  # type: ignore[arg-type]
-    demisto.debug(
-        f"[FeedMISP fetch] entry: getLastRun={last_run}, last_run_timestamp={last_run_timestamp}, "
-        f"last_run_value={last_run_value!r}, page={last_run_page}"
-    )
     params_dict = (
         parsing_user_query(query, fetch_limit, from_timestamp=last_run_timestamp, page=last_run_page)
         if query
@@ -630,12 +618,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     demisto.debug(f"params_dict: {params_dict}")
 
     attributes = get_attributes_from_response(search_query_per_page)
-    demisto.debug(f"[FeedMISP fetch] first page returned {len(attributes)} attributes (page={params_dict['page']})")
-    if not attributes:
-        demisto.debug(
-            "[FeedMISP fetch] first page empty -> loop skipped; candidate_* not populated this run, "
-            "final setLastRun may reset last_indicator_*"
-        )
     while attributes:
         demisto.debug(f"search_query_per_page number of attributes: {len(attributes)} page: {params_dict['page']}")
         attributes.sort(key=lambda x: x["timestamp"], reverse=False)
@@ -647,17 +629,10 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         latest_indicator = attributes
         latest_indicator_timestamp = arg_to_number(latest_indicator[-1]["timestamp"])
         latest_indicator_value = latest_indicator[-1]["value"]
-        demisto.debug(
-            f"[FeedMISP fetch] page={params_dict['page']} latest_indicator_timestamp={latest_indicator_timestamp}, "
-            f"latest_indicator_value={latest_indicator_value!r}"
-        )
 
         if last_run_timestamp == latest_indicator_timestamp and latest_indicator_value == last_run_value:
             # No new indicators since last run, no need to fetch again
-            demisto.debug(
-                f"[FeedMISP fetch] no new indicators since last run (last_run_timestamp={last_run_timestamp}, "
-                f"last_run_value={last_run_value!r}); returning without modifying lastRun"
-            )
+            demisto.debug("No new indicators found since last run")
             return
 
         for iter_ in batch(indicators, batch_size=2000):
@@ -667,12 +642,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit and fetch_limit <= total_fetched_indicators:
-            demisto.debug(
-                f"[FeedMISP fetch] fetch limit reached (total_fetched_indicators={total_fetched_indicators}); "
-                f"persisting lastRun={last_run | {'page': params_dict['page']}} "
-                f"candidate_timestamp={last_run.get('candidate_timestamp')} "
-                f"candidate_value={last_run.get('candidate_value')!r}"
-            )
             demisto.setLastRun(last_run | {"page": params_dict["page"]})
             demisto.debug(
                 f"Reached the limit of indicators to fetch. The number of indicators fetched is: {total_fetched_indicators}"
@@ -684,21 +653,9 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
 
     if error_message := search_query_per_page.get("Error"):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    candidate_timestamp = last_run.get("candidate_timestamp")
-    candidate_value = last_run.get("candidate_value")
-    if candidate_timestamp is None:
-        # No candidate was produced this run (e.g. an empty incremental page) and no prior watermark exists.
-        # Do not overwrite lastRun with nulls - leave the existing lastRun untouched to avoid resetting the cursor.
-        demisto.debug(
-            "[FeedMISP fetch] final: no candidate produced and no prior watermark; "
-            "leaving lastRun unchanged to avoid wiping last_indicator_*"
-        )
-        return
-    demisto.debug(
-        f"[FeedMISP fetch] final setLastRun: candidate_timestamp={candidate_timestamp}, "
-        f"candidate_value={candidate_value!r} -> writing last_indicator_timestamp/value"
+    demisto.setLastRun(
+        {"last_indicator_timestamp": last_run.get("candidate_timestamp"), "last_indicator_value": last_run.get("candidate_value")}
     )
-    demisto.setLastRun({"last_indicator_timestamp": candidate_timestamp, "last_indicator_value": candidate_value})
 
 
 def main():  # pragma: no cover
