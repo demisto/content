@@ -1,0 +1,4 @@
+!rasterize url=http://google.com
+!rasterize-email htmlBody="<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"></head><body><br>---------- TEST FILE ----------<br></body></html>"
+!rasterize-image EntryID=889@6e069bc4-2a1e-43ea-8ed3-ea558e377751
+!rasterize-pdf EntryID=897@6e069bc4-2a1e-43ea-8ed3-ea558e377751
