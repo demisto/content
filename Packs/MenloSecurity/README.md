@@ -2,7 +2,7 @@
 
 ## Overview
 
-The cloud-based Menlo Security Isolation Platform (MSIP) eliminates the possibility of malware reaching user devices via compromised or malicious web sites, email, or documents.
+The cloud-based Menlo Security Isolation Platform (MSIP) eliminates the possibility of malware reaching user devices via compromised or malicious websites, email, or documents.
 This pack enables the normalization of Menlo Security logs ingested into Cortex XSIAM via API-based collection.
 The normalized data can then be queried and used for investigation and analysis in Cortex XSIAM.
 
