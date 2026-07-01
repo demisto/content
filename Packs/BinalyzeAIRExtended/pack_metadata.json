@@ -1,0 +1,21 @@
+{
+    "name": "Binalyze AIR Extended",
+    "description": "**Binalyze AIR Extended** is a Cortex XSOAR integration designed to orchestrate Binalyze AIR incident response and forensic operations directly from XSOAR playbooks, automations, and the War Room.\n \nThe integration extends the baseline Binalyze AIR action set with operational commands for endpoint isolation, forensic acquisition, case management, triage rule lifecycle, task polling, asset lookup, acquisition profile discovery, repository visibility, and evidence artifact download.\n \nThis build is intended for SOC, DFIR, threat hunting, malware investigation, and detection engineering workflows where XSOAR acts as the orchestration layer and Binalyze AIR performs endpoint-level forensic and response actions.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ceyhun CAMLI",
+    "url": "",
+    "email": "",
+    "created": "2026-06-08T12:27:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "c3-h2"
+    ]
+}
