@@ -178,10 +178,17 @@ def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]
     Returns:
         list[dict[str, Any]]: The events with the _time key.
     """
+    events_missing_time = 0
     for event in events:
         if event_time := event.get("eventTime"):
             event["_time"] = event_time
+        else:
+            events_missing_time += 1
 
+    demisto.debug(
+        f"[add_time_key_to_events] Processed {len(events)} events. "
+        f"{len(events) - events_missing_time} had eventTime, {events_missing_time} were missing eventTime."
+    )
     return events
 
 
@@ -200,17 +207,23 @@ def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
         - If the events list is empty, return the current first fetch time.
     """
     if not events:
+        demisto.debug(
+            f"[get_last_event_time] No events provided, returning first_fetch_time: {first_fetch_time.strftime(DATE_FORMAT)}"
+        )
         return first_fetch_time.strftime(DATE_FORMAT)
 
     last_event_time = events[-1].get("eventTime")
+    demisto.debug(f"[get_last_event_time] Last event's raw eventTime: {last_event_time}")
     if not isinstance(last_event_time, datetime):
         last_event_time = arg_to_datetime(arg=last_event_time, settings={"RETURN_AS_TIMEZONE_AWARE": False})
 
-    return (
+    result = (
         (last_event_time + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
         if last_event_time
         else first_fetch_time.strftime(DATE_FORMAT)
     )
+    demisto.debug(f"[get_last_event_time] Computed next fetch start time: {result}")
+    return result
 
 
 def get_fetch_time(last_run: str | None, first_fetch_param: str) -> datetime | None:
@@ -223,18 +236,33 @@ def get_fetch_time(last_run: str | None, first_fetch_param: str) -> datetime | N
     Returns:
         Optional[datetime]: Maximum datetime value between last run from previous fetch and first fetch time parameter.
     """
+    demisto.debug(f"[get_fetch_time] Calculating fetch time with last_run={last_run}, first_fetch_param={first_fetch_param}")
     first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param)
+    demisto.debug(f"[get_fetch_time] first_fetch_param resolved to: {first_fetch_param_datetime}")
 
     # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
     if not last_run:
+        demisto.debug(f"[get_fetch_time] No last_run found (first fetch). Using first_fetch_param: {first_fetch_param_datetime}")
         return first_fetch_param_datetime
     else:
         last_run_datetime = arg_to_datetime(arg=last_run, settings={"RETURN_AS_TIMEZONE_AWARE": False})
+        demisto.debug(f"[get_fetch_time] last_run resolved to: {last_run_datetime}")
 
     if last_run_datetime and first_fetch_param_datetime:
-        return max(last_run_datetime, first_fetch_param_datetime)
+        result = max(last_run_datetime, first_fetch_param_datetime)
+        demisto.debug(
+            f"[get_fetch_time] Using max of last_run_datetime ({last_run_datetime}) "
+            f"and first_fetch_param_datetime ({first_fetch_param_datetime}): {result}"
+        )
+        return result
     else:
-        return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
+        fallback = arg_to_datetime(arg=FETCH_DEFAULT_TIME)
+        demisto.debug(
+            f"[get_fetch_time] Could not resolve both times "
+            f"(last_run_datetime={last_run_datetime}, first_fetch_param_datetime={first_fetch_param_datetime}). "
+            f"Falling back to default: {fallback}"
+        )
+        return fallback
 
 
 def events_to_command_results(events: list[dict[str, Any]], title: str) -> CommandResults:
@@ -263,10 +291,23 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
     Returns:
         requests.Response: raw response from the API.
     """
-    params = {"compartmentId": client.compartment_id, "startTime": start_time, "endTime": datetime.now().strftime(DATE_FORMAT)}
+    end_time = datetime.now().strftime(DATE_FORMAT)
+    params = {"compartmentId": client.compartment_id, "startTime": start_time, "endTime": end_time}
     if next_page:
         params["opc-next-page"] = next_page
-    return client._http_request(method="GET", params=params, resp_type="response")
+    demisto.debug(
+        f"[audit_log_api_request] Sending GET request to {client.base_url} with params: "
+        f"compartmentId={client.compartment_id}, startTime={start_time}, endTime={end_time}, "
+        f"next_page={next_page}"
+    )
+    response = client._http_request(method="GET", params=params, resp_type="response")
+    demisto.debug(
+        f"[audit_log_api_request] Response status: {response.status_code}, "
+        f"content length: {len(response.content)}, "
+        f"opc-next-page header: {response.headers.get('opc-next-page', 'N/A')}, "
+        f"opc-request-id: {response.headers.get('opc-request-id', 'N/A')}"
+    )
+    return response
 
 
 def searchlogs_api_request(
@@ -291,8 +332,18 @@ def searchlogs_api_request(
     if next_page:
         params["page"] = next_page
 
-    demisto.debug(f"Sending http request to get search log events with {body=} {params=}")
-    return client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
+    demisto.debug(
+        f"[searchlogs_api_request] Sending POST request to {url} with body={body}, params={params}, "
+        f"next_page={next_page}"
+    )
+    response = client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
+    demisto.debug(
+        f"[searchlogs_api_request] Response status: {response.status_code}, "
+        f"content length: {len(response.content)}, "
+        f"opc-next-page header: {response.headers.get('opc-next-page', 'N/A')}, "
+        f"opc-request-id: {response.headers.get('opc-request-id', 'N/A')}"
+    )
+    return response
 
 
 def add_millisecond_to_timestamp(timestamp: str) -> str:
@@ -361,24 +412,49 @@ def get_searchlogs_events(
             - list of search log events.
             - last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
     """
+    demisto.debug(
+        f"[get_searchlogs_events] Starting search logs fetch. query={search_log_query}, max_fetch={max_fetch}, "
+        f"first_fetch_time={first_fetch_time}, last_searchlogs_ids count={len(last_searchlogs_ids)}"
+    )
     searchlogs_events: list[dict[str, Any]] = []
     last_run = first_fetch_time
     try:
         searchlogs_time_end = (arg_to_datetime(first_fetch_time) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
+        demisto.debug(
+            f"[get_searchlogs_events] Search time window: start={first_fetch_time}, end={searchlogs_time_end}"
+        )
 
         searchlogs_res = searchlogs_api_request(
             client=client, time_start=first_fetch_time, time_end=searchlogs_time_end, search_query=search_log_query
         )
 
-        for result in json.loads(searchlogs_res.content).get("results", []):
+        response_body = json.loads(searchlogs_res.content)
+        initial_results = response_body.get("results", [])
+        demisto.debug(
+            f"[get_searchlogs_events] Initial API response: got {len(initial_results)} results. "
+            f"Response keys: {list(response_body.keys())}"
+        )
+
+        for result in initial_results:
             event_data = result.get("data", {}).get("logContent", {})
             searchlog_time = event_data.get("time")
             event_data["_time"] = searchlog_time
             if not searchlog_time:
-                demisto.debug(f"Search log event with Id {event_data.get('id')} has no time field.")
+                demisto.debug(f"[get_searchlogs_events] Search log event with Id {event_data.get('id')} has no time field.")
             searchlogs_events.append(event_data)
 
+        demisto.debug(
+            f"[get_searchlogs_events] After initial page: {len(searchlogs_events)} events collected. "
+            f"max_fetch={max_fetch}. Starting pagination check."
+        )
+
+        page_count = 1
         while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):  # type: ignore[attr-defined]
+            page_count += 1
+            demisto.debug(
+                f"[get_searchlogs_events] Fetching page {page_count}, "
+                f"current event count={len(searchlogs_events)}, next_page token={next_page[1]}"
+            )
             searchlogs_res = searchlogs_api_request(
                 client=client,
                 time_start=first_fetch_time,
@@ -388,7 +464,9 @@ def get_searchlogs_events(
             )
 
             results = json.loads(searchlogs_res.content).get("results", [])
+            demisto.debug(f"[get_searchlogs_events] Page {page_count} returned {len(results)} results.")
             if not results:
+                demisto.debug(f"[get_searchlogs_events] Page {page_count} returned empty results, stopping pagination.")
                 break
 
             for result in results:
@@ -396,21 +474,50 @@ def get_searchlogs_events(
                 event_data["_time"] = event_data.get("time")
                 searchlogs_events.append(event_data)
 
+        demisto.debug(
+            f"[get_searchlogs_events] Pagination complete. Total pages fetched: {page_count}. "
+            f"Total events before dedup: {len(searchlogs_events)}"
+        )
+
         if searchlogs_events:
             # Deduplicate
+            pre_dedup_count = len(searchlogs_events)
             searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
+            demisto.debug(
+                f"[get_searchlogs_events] After dedup: {len(searchlogs_events)} events "
+                f"(removed {pre_dedup_count - len(searchlogs_events)} duplicates). "
+                f"Truncating to max_fetch={max_fetch}."
+            )
             searchlogs_events = searchlogs_events[:max_fetch]
+        else:
+            demisto.debug("[get_searchlogs_events] No search log events found after all pages.")
 
         if searchlogs_events:
             last_run = searchlogs_events[-1]["_time"]
             last_searchlogs_ids = [
                 str(event.get("id")) for event in searchlogs_events if event.get("_time") == last_run and event.get("id")
             ]
+            demisto.debug(
+                f"[get_searchlogs_events] Updated last_run to {last_run}. "
+                f"Stored {len(last_searchlogs_ids)} IDs for dedup in next cycle."
+            )
+        else:
+            demisto.debug(
+                f"[get_searchlogs_events] No events after dedup/truncation. "
+                f"Keeping last_run={last_run}, last_searchlogs_ids count={len(last_searchlogs_ids)}"
+            )
 
     except Exception as e:
-        demisto.error(f"Error while fetching search log events: {e}")
+        demisto.error(
+            f"[get_searchlogs_events] Error while fetching search log events: {e}. "
+            f"Returning empty events list. last_run={last_run}, last_searchlogs_ids count={len(last_searchlogs_ids)}"
+        )
         return [], {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
+    demisto.debug(
+        f"[get_searchlogs_events] Completed. Returning {len(searchlogs_events)} events. "
+        f"last_run={last_run}"
+    )
     return searchlogs_events, {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
 
@@ -433,29 +540,71 @@ def get_events(
     Returns:
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
+    demisto.debug(
+        f"[get_events] Starting audit events fetch. first_fetch_time={first_fetch_time}, "
+        f"max_fetch={max_fetch}, push_events_on_error={push_events_on_error}"
+    )
     try:
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
         events = json.loads(response.content)
 
+        demisto.debug(
+            f"[get_events] Initial API response: type={type(events).__name__}, "
+            f"{'length=' + str(len(events)) if isinstance(events, list) else 'keys=' + str(list(events.keys())) if isinstance(events, dict) else 'value=empty/null'}"
+        )
+
         if not events:
+            demisto.debug(
+                f"[get_events] No events returned from API. Returning empty list with "
+                f"first_fetch_time={first_fetch_time.strftime(DATE_FORMAT)}"
+            )
             return [], first_fetch_time.strftime(DATE_FORMAT)
 
         if isinstance(events, dict):
+            demisto.debug("[get_events] Response was a single dict, wrapping in list.")
             events = [events]
 
         # pagination handling
+        page_count = 1
         while len(events) < max_fetch and (next_page := response.headers._store.get("opc-next-page")):  # type: ignore
+            page_count += 1
             current_start_time = add_millisecond_to_timestamp(events[-1].get("eventTime"))
+            demisto.debug(
+                f"[get_events] Fetching page {page_count}. Current event count={len(events)}, "
+                f"next_page token={next_page[1]}, current_start_time={current_start_time}"
+            )
             response = audit_log_api_request(client=client, start_time=current_start_time, next_page=next_page[1])
-            events.extend(json.loads(response.content))
+            new_events = json.loads(response.content)
+            demisto.debug(
+                f"[get_events] Page {page_count} returned {len(new_events) if isinstance(new_events, list) else 1} events."
+            )
+            events.extend(new_events)
+
+        demisto.debug(
+            f"[get_events] Pagination complete. Total pages: {page_count}, total events: {len(events)}"
+        )
 
         last_event_time = get_last_event_time(events, first_fetch_time)
         events = add_time_key_to_events(events)
 
+        if events:
+            demisto.debug(
+                f"[get_events] First event time: {events[0].get('eventTime')}, "
+                f"last event time: {events[-1].get('eventTime')}"
+            )
+
     # handle the case where an error occurred while fetching events,
     # and there are currently available events that can and need to be sent to XSIAM.
     except Exception as e:
+        demisto.error(
+            f"[get_events] Exception during fetch: {e}. "
+            f"Events collected so far: {len(events) if 'events' in dir() else 'N/A'}, "
+            f"push_events_on_error={push_events_on_error}"
+        )
         if events and push_events_on_error:
+            demisto.debug(
+                f"[get_events] Pushing {len(events)} partial events to XSIAM before raising error."
+            )
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
             handle_fetched_events(events, last_event_time)
@@ -474,10 +623,15 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
         events (list[dict[str, Any]]): Fetched events.
         last_event_time (str): Last event time.
     """
+    demisto.debug(
+        f"[handle_fetched_events] Called with {len(events)} events, last_event_time={last_event_time}"
+    )
     if events:
+        demisto.debug(f"[handle_fetched_events] Sending {len(events)} events to XSIAM (vendor={VENDOR}, product={PRODUCT}).")
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
         last_run = demisto.getLastRun()
+        demisto.debug(f"[handle_fetched_events] Current last_run before update: {last_run}")
         last_run["lastRun"] = last_event_time
         demisto.setLastRun(last_run)
         demisto.info(f"OCI: Set last run to {last_event_time}")
@@ -543,6 +697,7 @@ def main():
     last_run = demisto.getLastRun()
     last_run_time = last_run.get("lastRun")
     demisto.info(f"OCI: last_run_time value {last_run_time}")
+    demisto.debug(f"[main] Full last_run object: {last_run}")
     max_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get("first_fetch", FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
@@ -552,6 +707,14 @@ def main():
     searchlog_last_run = last_run.get("SearchLog", {})
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
 
+    demisto.debug(
+        f"[main] Resolved parameters: command={command}, max_fetch={max_fetch}, first_fetch={first_fetch}, "
+        f"first_fetch_time={first_fetch_time}, event_types_to_fetch={event_types_to_fetch}, "
+        f"should_push_events={should_push_events}, region={params.get('region')}, "
+        f"compartment_id={params.get('compartment_id')}, tenancy_ocid={params.get('tenancy_ocid')}, "
+        f"searchlogs_query={searchlogs_query}, searchlog_last_run={searchlog_last_run}"
+    )
+
     if "Search Logs" in event_types_to_fetch and not searchlogs_query:
         raise DemistoException("The parameter 'Search log query' is required in order to fetch search logs.")
 
@@ -559,6 +722,9 @@ def main():
 
     try:
         if not isinstance(first_fetch_time, datetime):
+            demisto.error(
+                f"[main] first_fetch_time is not a datetime object: type={type(first_fetch_time)}, value={first_fetch_time}"
+            )
             raise DemistoException("Could not resolve First fetch time parameter.")
 
         client = Client(
@@ -573,12 +739,17 @@ def main():
             private_key_type=private_key_type,
         )
         demisto.info("OCI: Client created successfully.")
+        demisto.debug(
+            f"[main] Client initialized with base_url={client.base_url}, "
+            f"searchlog_url={client.searchlog_url}, compartment_id={client.compartment_id}"
+        )
 
         if command == "test-module":
             return_results(test_module(client, searchlogs_query, event_types_to_fetch))
 
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
+            demisto.debug(f"[main] push_events={push_events} (command={command}, should_push_events={should_push_events})")
 
             searchlog_events: list[dict] = []
             audit_events: list[dict] = []
@@ -587,10 +758,17 @@ def main():
             if "Search Logs" in event_types_to_fetch:
                 if searchlog_last_run.get("lastRun"):
                     first_fetch_time_search_logs = searchlog_last_run["lastRun"]
+                    demisto.debug(
+                        f"[main] Using searchlog last_run for search logs start time: {first_fetch_time_search_logs}"
+                    )
                 else:
                     first_fetch_time_search_logs = (
                         datetime.now() - timedelta(minutes=SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES)
                     ).strftime(SEARCHLOG_DATE_FORMAT)
+                    demisto.debug(
+                        f"[main] No searchlog last_run found. Using default start time "
+                        f"(now - {SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES} minutes): {first_fetch_time_search_logs}"
+                    )
 
                 searchlog_events, searchlog_last_run = get_searchlogs_events(
                     client,
@@ -599,14 +777,32 @@ def main():
                     searchlog_last_run.get("LastFetchedIds", []),
                     first_fetch_time_search_logs,
                 )
+                demisto.debug(
+                    f"[main] Search logs fetch completed. Got {len(searchlog_events)} events. "
+                    f"searchlog_last_run={searchlog_last_run}"
+                )
+            else:
+                demisto.debug("[main] 'Search Logs' not in event_types_to_fetch, skipping search logs.")
 
             if "Audit" in event_types_to_fetch:
+                demisto.debug(f"[main] Starting audit events fetch with first_fetch_time={first_fetch_time}")
                 audit_events, last_audit_event_time = get_events(
                     client, first_fetch_time, max_fetch, push_events_on_error=push_events
                 )
+                demisto.debug(
+                    f"[main] Audit events fetch completed. Got {len(audit_events)} events. "
+                    f"last_audit_event_time={last_audit_event_time}"
+                )
+            else:
+                demisto.debug("[main] 'Audit' not in event_types_to_fetch, skipping audit events.")
 
             if push_events:
+                demisto.debug(
+                    f"[main] Pushing events to XSIAM. "
+                    f"searchlog_events={len(searchlog_events)}, audit_events={len(audit_events)}"
+                )
                 if searchlog_events:
+                    demisto.debug(f"[main] Sending {len(searchlog_events)} searchlog events to XSIAM.")
                     send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
                     demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
                     last_run["SearchLog"] = searchlog_last_run
@@ -614,6 +810,7 @@ def main():
                     demisto.info("OCI: No new searchlog events fetched, Last run was not updated.")
 
                 if audit_events:
+                    demisto.debug(f"[main] Sending {len(audit_events)} audit events to XSIAM.")
                     send_events_to_xsiam(audit_events, vendor=VENDOR, product=PRODUCT)
                     demisto.info(f"OCI: {len(audit_events)} events were sent to XSIAM at {datetime.now()}.")
                     last_run["lastRun"] = last_audit_event_time
@@ -622,8 +819,13 @@ def main():
 
                 demisto.setLastRun(last_run)
                 demisto.info(f"OCI: Set last run to {last_run}")
+                demisto.debug(f"[main] Final last_run object saved: {last_run}")
 
             elif command == "oracle-cloud-infrastructure-get-events":
+                demisto.debug(
+                    f"[main] Manual get-events command (no push). "
+                    f"Returning {len(audit_events)} audit events and {len(searchlog_events)} searchlog events."
+                )
                 if "Audit" in event_types_to_fetch:
                     return_results(events_to_command_results(audit_events, "Oracle Cloud Infrastructure Audit Events"))
                 if "Search Logs" in event_types_to_fetch:
@@ -631,6 +833,7 @@ def main():
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
+        demisto.error(f"[main] Exception caught in main: {e}")
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
