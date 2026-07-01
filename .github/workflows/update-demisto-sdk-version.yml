@@ -28,7 +28,7 @@ jobs:
       uses: Gr1N/setup-poetry@15821dc8a61bc630db542ae4baf6a7c19a994844 # v8
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
         token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
