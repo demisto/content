@@ -3,8 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
@@ -34,6 +33,12 @@ DOPPEL_INCIDENT = "Doppel Incident"
 DEFAULT_RETRY_TOTAL = 3
 DEFAULT_RETRY_BACKOFF_FACTOR = 2
 DEFAULT_RETRY_STATUS_LIST = [429, 500, 502, 503, 504]
+# Doppel's get-alerts API caps a page at 200 results; request the max to drain backlogs in fewer calls.
+DOPPEL_MAX_PAGE_SIZE = 200
+# Fallback when max_fetch is blank/invalid.
+DEFAULT_MAX_FETCH = 10
+# Hard ceiling on pages pulled in a single fetch run, so a misbehaving API can never spin forever.
+MAX_FETCH_PAGES_PER_RUN = 1000
 
 
 """ CLIENT CLASS """
@@ -288,6 +293,7 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
         "sort_type": "date_sourced",
         "sort_order": "asc",
         "page": page,
+        "page_size": DOPPEL_MAX_PAGE_SIZE,  # Pull large pages to drain backlogs in fewer requests (API max is 200)
     }
     get_alerts_response = client.get_alerts(params=query_params)
     alerts = get_alerts_response.get("alerts", None)
@@ -526,75 +532,161 @@ def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def _parse_fetch_timeout():
+    """Parse the fetch_timeout param. Blank or invalid means no timeout limit."""
+    raw = demisto.params().get("fetch_timeout")
+    if raw is None or str(raw).strip() == "":
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_max_fetch():
+    """Parse the max_fetch param, falling back to a safe default when blank/invalid."""
+    raw = demisto.params().get("max_fetch")
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return DEFAULT_MAX_FETCH
+    return value if value > 0 else DEFAULT_MAX_FETCH
+
+
+def _incident_alert_id(incident):
+    """Return the Doppel alert id for a queued/created incident (dbotMirrorId, else rawJSON id)."""
+    alert_id = str(incident.get("dbotMirrorId") or "")
+    if alert_id:
+        return alert_id
+    raw = incident.get("rawJSON")
+    if raw:
+        try:
+            return str(json.loads(raw).get("id") or "")
+        except Exception:
+            return ""
+    return ""
+
+
+def _seen_ids_from_queue(incidents_queue):
+    """Collect the Doppel alert ids already present in the persisted incidents queue."""
+    seen = set()
+    for queued in incidents_queue:
+        alert_id = _incident_alert_id(queued)
+        if alert_id:
+            seen.add(alert_id)
+    return seen
+
+
+def _alert_to_incident(alert, mirroring_object):
+    """Build an XSOAR incident dict from a single Doppel alert."""
+    alert_id = str(alert.get("id") or "")
+    created_at_str = alert.get("created_at")
+    created_at_datetime = None
+    if created_at_str:
+        for date_format in (DOPPEL_PAYLOAD_DATE_FORMAT, DOPPEL_API_DATE_FORMAT):
+            try:
+                created_at_datetime = datetime.strptime(created_at_str, date_format)
+                break
+            except (ValueError, TypeError):
+                continue
+    if created_at_datetime is None:
+        created_at_datetime = datetime.now()
+    alert.update(mirroring_object)
+    # Use the external Doppel alert id (e.g. TET-1953421) as the incident name so it
+    # is human-meaningful and duplicates are visually obvious.
+    incident_name = f"Doppel Alert {alert_id}" if alert_id else "Doppel Alert"
+    return {
+        "name": incident_name,
+        "type": DOPPEL_ALERT,
+        "occurred": created_at_datetime.strftime(XSOAR_DATE_FORMAT),
+        "dbotMirrorId": alert_id,
+        "rawJSON": json.dumps(alert),
+    }
+
+
 def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     """
-    Fetch incidents from Doppel alerts, map fields to custom XSOAR fields, and create incidents.
-    This function fetches alerts directly from Doppel
+    Fetch incidents from Doppel alerts and create XSOAR incidents.
+    Pagination is bounded per run and duplicates are removed by Doppel alert id
+    (both within a single run and across runs), so a large multi-page backlog is
+    drained safely over consecutive runs without ever creating the same alert twice.
     """
     demisto.debug("Fetching alerts from Doppel.")
     start_time = time.time()
-    timeout = float(demisto.params().get("fetch_timeout"))
-
-    # Fetch the last run (time of the last fetch)
-    last_run = demisto.getLastRun()
+    timeout = _parse_fetch_timeout()
+    fetch_limit = _parse_max_fetch()
+    last_run = demisto.getLastRun() or {}
     demisto.debug(f"Last run details:- {last_run}")
-
-    # creates incidents queue
     incidents_queue = last_run.get("incidents_queue", [])
-
-    last_run = last_run.get("last_run", None)
-    last_fetch_datetime = _get_last_fetch_datetime(last_run)
-
-    # Fetch alerts
-    fetch_limit = int(demisto.params().get("max_fetch"))
-
-    if len(incidents_queue) < fetch_limit:
-        page: int = 0
-        incidents = []
-        mirroring_object = _get_mirroring_fields()
+    recently_seen_ids = last_run.get("recently_seen_ids", [])
+    last_run_time = last_run.get("last_run", None)
+    last_fetch_datetime = _get_last_fetch_datetime(last_run_time)
+    # Seed the dedupe set with ids already in the queue plus the ids persisted from
+    # the previous run's high-water-mark second. This prevents re-creating alerts
+    # that share the cursor's boundary second when the next run re-pulls them.
+    seen_alert_ids = _seen_ids_from_queue(incidents_queue)
+    seen_alert_ids.update(str(i) for i in recently_seen_ids if i)
+    # Only pull more pages if the queue can't already cover this run plus a buffer.
+    target_queue_size = fetch_limit * 2
+    mirroring_object = _get_mirroring_fields()
+    if len(incidents_queue) < target_queue_size:
+        page = 0
         while True:
-            time_delta = time.time() - start_time
-
-            if timeout and time_delta > timeout:
-                raise DemistoException("Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
-
-            alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
-
-            if not alerts:
-                demisto.info("No new alerts fetched from Doppel. Exiting fetch_incidents.")
+            if timeout is not None and (time.time() - start_time) > timeout:
+                demisto.info("Fetch incidents reached its time budget. Progress saved; the next run continues.")
                 break
-
+            # Hard safeguard against an unbounded loop (e.g. a misbehaving API that
+            # never returns an empty page) when no fetch timeout is configured.
+            if page >= MAX_FETCH_PAGES_PER_RUN:
+                demisto.info(f"Reached the per-run page ceiling ({MAX_FETCH_PAGES_PER_RUN}). Continuing on the next run.")
+                break
+            alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
+            if not alerts:
+                demisto.info("No more alerts returned from Doppel. Exiting pagination loop.")
+                break
+            page_incidents = []
             for alert in alerts:
-                # Building the incident structure
-                created_at_str = alert.get("created_at")
-                created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-                alert.update(mirroring_object)
-
-                incident = {
-                    "name": f"Doppel Incident {uuid.uuid4()}",
-                    "type": DOPPEL_ALERT,
-                    "occurred": created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                    "rawJSON": json.dumps(alert),
-                }
-                incidents.append(incident)
-
-            demisto.info(f"Fetched Doppel alerts from page {page} Successfully.")
-            page = page + 1
-            incidents_queue += incidents
-
+                alert_id = str(alert.get("id") or "")
+                if not alert_id or alert_id in seen_alert_ids:
+                    continue
+                seen_alert_ids.add(alert_id)
+                page_incidents.append(_alert_to_incident(alert, mirroring_object))
+            incidents_queue += page_incidents
+            demisto.info(f"Fetched page {page} from Doppel ({len(page_incidents)} new alerts).")
+            page += 1
+            if len(incidents_queue) >= target_queue_size:
+                demisto.info("Reached per-run queue target; remaining pages will drain on the next run.")
+                break
     oldest_incidents = incidents_queue[:fetch_limit]
-
-    if oldest_incidents:
-        new_last_run = incidents_queue[-1]["occurred"]  # newest incident creation time
-        last_fetch_datetime = datetime.strptime(new_last_run, "%Y-%m-%dT%H:%M:%SZ")
-        # Increment by one second to make sure we don't pull same Doppel Alert twice
-        next_fetch_datetime = last_fetch_datetime + timedelta(seconds=1)
-        next_fetch = next_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    remaining_queue = incidents_queue[fetch_limit:]
+    # Advance the cursor to the newest alert time we currently know about. We do NOT
+    # skip the boundary second (which could drop same-second alerts split across a
+    # page); instead we persist the ids at that second so the inclusive re-pull on
+    # the next run is de-duplicated rather than lost.
+    all_occurred = [inc.get("occurred") for inc in incidents_queue if inc.get("occurred")]
+    if all_occurred:
+        newest_occurred = max(all_occurred)
+        next_fetch = newest_occurred
+        # Accumulate every alert id we have emitted/queued at this boundary second.
+        # incidents_queue here is the full pre-slice list (created + remaining), and
+        # while the cursor stays on the same second we also carry forward the ids
+        # already created on prior runs so the inclusive re-pull never re-creates them.
+        boundary = {_incident_alert_id(inc) for inc in incidents_queue if inc.get("occurred") == newest_occurred}
+        boundary.discard("")
+        if last_run_time == newest_occurred:
+            boundary.update(str(i) for i in recently_seen_ids if i)
+        boundary_ids = list(boundary)
     else:
-        next_fetch = last_run
-    demisto.setLastRun({"last_run": next_fetch, "incidents_queue": incidents_queue[fetch_limit:]})
-    demisto.debug({"last_run": next_fetch, "incidents_queue": incidents_queue[fetch_limit:]})
-
+        next_fetch = last_run_time
+        boundary_ids = [str(i) for i in recently_seen_ids if i]
+    demisto.setLastRun(
+        {
+            "last_run": next_fetch,
+            "incidents_queue": remaining_queue,
+            "recently_seen_ids": boundary_ids,
+        }
+    )
+    demisto.debug(f"Next cursor: {next_fetch}; queued for later: {len(remaining_queue)}; boundary ids: {len(boundary_ids)}.")
     # Create incidents in XSOAR
     if oldest_incidents and len(oldest_incidents) > 0:
         try:
