@@ -623,15 +623,15 @@ class CortexErrorCode(object):
     fix an argument, or escalate.
     """
 
-    # ── Argument Errors ──────────────────────────────────────────────
+    # -- Argument Errors ----------------------------------------------
     MISSING_ARGUMENT = "MISSING_ARGUMENT"
     INVALID_ARGUMENT = "INVALID_ARGUMENT"
     CONFLICTING_ARGUMENTS = "CONFLICTING_ARGUMENTS"
 
-    # ── Resource Errors ──────────────────────────────────────────────
+    # -- Resource Errors ----------------------------------------------
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
 
-    # ── API / Network Errors ─────────────────────────────────────────
+    # -- API / Network Errors -----------------------------------------
     API_ERROR = "API_ERROR"
     AUTH_ERROR = "AUTH_ERROR"
     QUOTA_ERROR = "QUOTA_ERROR"
@@ -641,13 +641,13 @@ class CortexErrorCode(object):
     SSL_ERROR = "SSL_ERROR"
     TIMEOUT_ERROR = "TIMEOUT_ERROR"
 
-    # ── Data Errors (failures parsing data returned by the API/service) ──
+    # -- Data Errors (failures parsing data returned by the API/service) --
     API_RESPONSE_PARSE_ERROR = "API_RESPONSE_PARSE_ERROR"
 
-    # ── Permission Errors ────────────────────────────────────────────
+    # -- Permission Errors --------------------------------------------
     PERMISSION_ERROR = "PERMISSION_ERROR"
 
-    # ── Execution Errors ─────────────────────────────────────────────
+    # -- Execution Errors ---------------------------------------------
     EXECUTION_ERROR = "EXECUTION_ERROR"
     UNSUPPORTED_COMMAND = "UNSUPPORTED_COMMAND"
     INTERNAL_ERROR = "INTERNAL_ERROR"
@@ -11231,7 +11231,7 @@ class UcpException(DemistoException):
         )
 
 
-# ── Agentix Standardized Error Hierarchy ─────────────────────────────
+# -- Agentix Standardized Error Hierarchy -----------------------------
 #
 # These exceptions provide structured error information (error_code,
 # details dict) that ``return_error`` serializes via ``ExtendedPayload``
@@ -11240,19 +11240,19 @@ class UcpException(DemistoException):
 #
 # Hierarchy:
 #   DemistoException
-#     └── CortexError  (base – carries error_code + details)
-#           ├── CortexMissingArgError
-#           ├── CortexInvalidArgError
-#           ├── CortexConflictingArgsError
-#           ├── CortexResourceNotFoundError
-#           ├── CortexExternalApiError
-#           │     ├── CortexAuthError
-#           │     ├── CortexRateLimitError
-#           │     ├── CortexTimeoutError
-#           │     └── CortexConnectionError
-#           ├── CortexParseError
-#           ├── CortexPermissionError
-#           └── CortexExecutionError
+#     └-- CortexError  (base – carries error_code + details)
+#           ├-- CortexMissingArgError
+#           ├-- CortexInvalidArgError
+#           ├-- CortexConflictingArgsError
+#           ├-- CortexResourceNotFoundError
+#           ├-- CortexExternalApiError
+#           │     ├-- CortexAuthError
+#           │     ├-- CortexRateLimitError
+#           │     ├-- CortexTimeoutError
+#           │     └-- CortexConnectionError
+#           ├-- CortexParseError
+#           ├-- CortexPermissionError
+#           └-- CortexExecutionError
 
 
 class RetryGuidance(object):
