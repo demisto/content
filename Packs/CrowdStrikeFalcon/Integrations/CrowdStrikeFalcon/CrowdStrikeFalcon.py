@@ -4003,14 +4003,37 @@ class AssetsDeviceHandler:
         log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
 
         try:
-            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            # 1. Enrich the AID batch via ContentClient.
+            # /devices/entities/devices/v2 returns HTTP 400 on partial success (valid devices in
+            # "resources", rejected IDs in "errors"). Accept 400 (ok_codes) to ingest the resolved
+            # devices instead of discarding the whole batch and raising on the full response body.
             response = await self.client._request(
-                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
+                method="POST",
+                url_suffix="/devices/entities/devices/v2",
+                json_data={"ids": aid_batch},
+                ok_codes=(200, 400),
+            )
+            log_falcon_assets(
+                f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike response status={response.status_code}"
             )
 
             # Parse response
             response_data = response.json()
             devices = response_data.get("resources", [])
+
+            # Log any invalid device IDs returned in the partial-success "errors" array.
+            errors = response_data.get("errors") or []
+            if errors:
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike returned "
+                    f"{len(errors)} invalid device ID(s); skipping them. First error: {errors[0].get('message')}",
+                    "warning",
+                )
+
+            # Mark the entire batch processed (including invalid IDs) regardless of whether any
+            # devices resolved, so permanently-invalid IDs are not retried indefinitely on every fetch.
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             if not devices:
                 log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
@@ -4020,11 +4043,7 @@ class AssetsDeviceHandler:
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Update state and send it to XSIAM after finish
-            self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
-
-            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            # 2. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
                 data=devices,
                 product=SPOTLIGHT_ASSETS_PRODUCT,
@@ -10115,7 +10134,6 @@ def main():  # pragma: no cover
             result = module_test()
             return_results(result)
         elif command == "fetch-incidents":
-            disable_for_xsiam()
             last_run, incidents = fetch_items(command=command)
             demisto.incidents(incidents)
         elif command == "fetch-events":
