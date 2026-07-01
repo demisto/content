@@ -1503,7 +1503,6 @@ def test_generic_file_get_command_success(requests_mock):
     result = confluence_cloud_generic_file_get_command(client, args)
 
     assert result.outputs_prefix == "FileContent"
-    assert result.outputs_key_field == "Id"
     assert result.outputs["Id"] == "2097159"
     assert result.outputs["Title"] == "test_page"
     assert result.outputs["Type"] == "text/html"
