@@ -316,15 +316,20 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
         new_iocs_file, new_log_stats = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
         iocs_set = set()
-        for count, line in enumerate(new_iocs_file):
-            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-            if count + 1 > limit:
-                break
-            if count < offset:
+        unique_count = 0
+        for line in new_iocs_file:
+            # Deduplicate first — wildcard Domain indicators write two lines each
+            # (bare domain + *.domain), so the temp file can exceed edl_size raw lines.
+            # Count only unique entries so that limit/offset reflect actual output size.
+            if line in iocs_set:
                 continue
-            elif line not in iocs_set:
-                iocs_set.add(line)
-                formatted_indicators += line
+            iocs_set.add(line)
+            unique_count += 1
+            if unique_count <= offset:
+                continue
+            if unique_count > limit:
+                break
+            formatted_indicators += line
 
         demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
 
