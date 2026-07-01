@@ -10152,7 +10152,7 @@ class TestAssetsDeviceHandler:
         handler = AssetsDeviceHandler(
             client=mock_client,
             context_store=mocker.Mock(),
-            spotlight_state=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
             snapshot_id="snap1",
             processed_aids=set(),
             batch_limit=10,
@@ -10165,6 +10165,97 @@ class TestAssetsDeviceHandler:
 
         # Verify
         mock_client._request.assert_awaited_once()
+        mock_create_task.assert_not_called()
+        # The batch is marked processed even when nothing resolves, so invalid IDs are not retried.
+        assert "d1" in handler.processed_aids
+
+    @pytest.mark.asyncio
+    async def test_handler_enrichment_partial_success(self, mocker):
+        """
+        Tests that a CrowdStrike partial-success response (HTTP 400 with valid resources and
+        invalid device IDs in 'errors') ingests the valid devices instead of failing the batch.
+
+        Given:
+            - The Device API returns valid resources AND an 'errors' array of invalid device IDs.
+        When:
+            - enrich_and_ingest_batch is called.
+        Then:
+            - The request is made with ok_codes=(200, 400) so the 400 is not raised.
+            - The valid devices are sent to XSIAM (a send task is created).
+            - The invalid device IDs are logged (warning) and skipped; no exception is raised.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # Setup: response with both resolved resources and an errors array (partial success).
+        mock_client = mocker.AsyncMock()
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": [{"device_id": "valid1"}],
+            "errors": [{"code": 400, "message": "invalid device id [bad_id_1]"}],
+        }
+        mock_client._request.return_value = mock_response
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda d: d)
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Execute
+        await handler.enrich_and_ingest_batch(["valid1", "bad_id_1"])
+
+        # Verify: 400 accepted, valid devices ingested, invalid IDs logged as a warning.
+        mock_client._request.assert_awaited_once()
+        _, request_kwargs = mock_client._request.call_args
+        assert request_kwargs.get("ok_codes") == (200, 400)
+        mock_create_task.assert_called_once()
+        assert any(
+            "invalid device id" in str(call.args[0]) and (len(call.args) > 1 and call.args[1] == "warning")
+            for call in mock_log.call_args_list
+        )
+
+    @pytest.mark.asyncio
+    async def test_handler_enrichment_real_failure_raises(self, mocker):
+        """
+        Tests that a genuine failure (no 'resources' in the response) still propagates.
+
+        Given:
+            - The Device enrichment call raises an exception (e.g. a real error, not partial success).
+        When:
+            - enrich_and_ingest_batch is called.
+        Then:
+            - The exception is re-raised and no XSIAM send task is created.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # The error path logs via demisto.error(), which writes to stdout under demistomock and
+        # would trip the conftest no-stdout/stderr guard at teardown. Patch the demisto reference
+        # used inside the integration module so the expected error log from this deliberate
+        # failure path is captured rather than leaked to stdout.
+        mocker.patch("CrowdStrikeFalcon.demisto.error")
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.side_effect = Exception("Request failed: real server error")
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+
+        # Execute / Verify
+        with pytest.raises(Exception, match="real server error"):
+            await handler.enrich_and_ingest_batch(["d1"])
         mock_create_task.assert_not_called()
 
     @pytest.mark.asyncio
