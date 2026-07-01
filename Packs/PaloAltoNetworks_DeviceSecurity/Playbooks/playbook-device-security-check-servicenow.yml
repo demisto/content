@@ -2,6 +2,7 @@ id: PANW Device Security ServiceNow Tickets Check
 version: -1
 name: PANW Device Security ServiceNow Tickets Check
 description: This playbook checks the ServiceNow ticket status for Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilities. Designed to run as a recurring job.
+starttaskid: "0"
 tasks:
   "0":
     id: "0"
@@ -79,7 +80,7 @@ tasks:
       assetid: {}
       closeNotes:
         simple: ${inputs.CloseNotes}
-      close_reason:
+      closeReason:
         simple: ${inputs.CloseReason}
       code42alerttype: {}
       emailclassification: {}

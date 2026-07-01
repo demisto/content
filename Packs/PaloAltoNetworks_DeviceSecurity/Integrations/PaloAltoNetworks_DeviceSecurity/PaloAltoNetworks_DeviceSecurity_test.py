@@ -192,8 +192,7 @@ def test_device_security_list_devices(requests_mock):
     """
     mock_response = json.loads("""{"devices":[{},{}],"total":2}""")
     requests_mock.get(
-        "https://test.api.strata.paloaltonetworks.com/iot/pub/v2/device/list?filter_monitored=no&offset=1"
-        "&pagelength=2&detail=true&sortfield=MAC&sortdirection=asc",
+        "https://test.api.strata.paloaltonetworks.com/iot/pub/v2/device/list?offset=1&pagelength=2&sortdirection=asc",
         json=mock_response,
     )
     client = Client(base_url="https://test.api.strata.paloaltonetworks.com/iot/pub/v2", verify=False)

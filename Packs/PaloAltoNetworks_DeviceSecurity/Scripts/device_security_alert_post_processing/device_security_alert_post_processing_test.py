@@ -23,7 +23,7 @@ def test_device_security_resolve_alert(monkeypatch, mocker):
     expected_command = "device-security-resolve-alert"
     expected_args = {
         "id": "5ed08587fe03d30d000016e8",
-        "reason": "resolved by XSOAR incident 28862",
+        "reason": "Resolved by XSOAR incident 28862",
         "reason_type": "No Action Needed",
     }
     device_security_resolve_alert()

@@ -12,64 +12,38 @@
                 "fields": [
                     {
                         "fieldId": "incident_name",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "incident_type",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "occurred",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "severity",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "details",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "devicesecurityincidenturl",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "devicesecurityservicenowtablename",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     },
                     {
                         "fieldId": "devicesecurityservicenowrecordid",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
+                        "isVisible": true
                     }
                 ],
-                "id": "",
                 "isVisible": true,
-                "modified": "0001-01-01T00:00:00Z",
                 "name": "Device Security Alert",
                 "query": null,
                 "queryType": "",

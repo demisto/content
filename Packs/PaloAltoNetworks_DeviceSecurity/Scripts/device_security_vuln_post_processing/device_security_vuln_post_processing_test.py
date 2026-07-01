@@ -24,6 +24,6 @@ def test_device_security_resolve_alert(monkeypatch, mocker):
     monkeypatch.setattr(device_security_vuln_post_processing, "_get_incident", lambda: _INCIDENT)
     execute_mocker = mocker.patch.object(demisto, "executeCommand")
     expected_command = "device-security-resolve-vuln"
-    expected_args = {"id": "vuln-99124066", "full_name": "SMB v1 Usage", "reason": "resolved by XSOAR incident 28862"}
+    expected_args = {"id": "vuln-99124066", "full_name": "SMB v1 Usage", "reason": "Resolved by XSOAR incident 28862"}
     device_security_resolve_vuln()
     execute_mocker.assert_called_with(expected_command, expected_args)
