@@ -1,11 +1,10 @@
 {
-    "id": "incident_sysdigcontainerid",
+    "id": "incident_sysdigruletype",
     "version": -1,
-    "modified": "2025-02-26T15:27:26.26216777Z",
-    "name": "Sysdig Container ID",
+    "name": "Sysdig Rule Type",
     "ownerOnly": false,
-    "description": "The Sysdig Container ID",
-    "cliName": "sysdigcontainerid",
+    "description": "The type of rule that triggered the event",
+    "cliName": "sysdigruletype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,6 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": false,
     "associatedTypes": [
         "Sysdig Runtime Event"
     ],
@@ -25,5 +25,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "fromVersion": "6.0.0"
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
 }
