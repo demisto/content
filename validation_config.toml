@@ -96,6 +96,19 @@ select = [
 warning = ["RM108", "PB130", "PB131", "GR107", "GR110", "GR101","PA133", "AS106", "MC101","GR113", "GR103", "GR109"]
 
 
+[connectors_path_based_validations]
+select = [
+  "CO100"
+]
+warning = []
+
+
+[connectors_use_git]
+select = [
+  "CO100"
+]
+
+
 [Custom_Categories]
 select = []
 warning = []
