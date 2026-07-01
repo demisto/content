@@ -8,7 +8,7 @@ commonfields:
   version: -1
 configuration:
 - name: with_error
-  display: Return Errors
+  display: Return Errors test
   required: false
   defaultvalue: "false"
   type: 8
