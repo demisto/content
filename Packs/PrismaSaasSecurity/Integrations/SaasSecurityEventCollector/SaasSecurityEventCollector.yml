@@ -38,6 +38,8 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
 - display: The maximum number of iterations to retrieve events
   additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts. Increasing this value may cause timeouts.
   defaultvalue: 50

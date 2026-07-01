@@ -56,6 +56,9 @@ configuration:
   additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc."
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '10'
@@ -63,6 +66,9 @@ configuration:
   additionalinfo: Maximal number of events is 100
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch IoT Alerts
   name: fetch_alerts
   defaultvalue: "true"

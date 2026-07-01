@@ -57,6 +57,8 @@ configuration:
   advanced: true
   defaultvalue: "10000"
   additionalinfo: Maximum number of alerts to fetch per cycle (default is 10000).
+  supportedModules:
+  - xsiam
 script:
   commands:
   - name: uptycs-get-events

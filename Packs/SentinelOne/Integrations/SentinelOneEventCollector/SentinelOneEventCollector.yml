@@ -47,6 +47,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - defaultvalue: 1000
   display: The maximum number of events per fetch should be between 1-1000
   additionalinfo: The limit is per event type. For example, if you choose 3 event types (ACTIVITIES, THREATS, ALERTS) with a limit of 100, the actually limit will be 300.
@@ -54,6 +56,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Activity and Alerts
 name: SentinelOneEventCollector

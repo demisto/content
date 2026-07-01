@@ -30,6 +30,8 @@ configuration:
   options:
   - Audit
   - Network Activities
+  supportedModules:
+  - xsiam
 - defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
   display: Network Activity Filters
   additionalinfo: "To create Network Activity Filters:\n 1. Sign in to the Zero Networks platform.\n 2. Go to Activities page.\n 3. Under Network tab, apply the required filters.\n 4. Copy the filters from the URL.\n Use filters to reduce amount of events."
@@ -55,10 +57,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Integrates with Zero Networks Segment API to fetch and process audit and network events.
 display: Zero Networks Segment
 name: ZeroNetworksSegmentEventCollector

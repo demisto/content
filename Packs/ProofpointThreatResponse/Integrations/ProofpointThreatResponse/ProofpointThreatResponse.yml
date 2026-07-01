@@ -54,12 +54,18 @@ configuration:
   additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   type: 0

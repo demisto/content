@@ -37,6 +37,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+    - agentix
+    - xsiam
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.
@@ -152,6 +155,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
 display: SpyCloud Enterprise Protection Feed
 name: SpyCloudEnterpriseProtectionFeed

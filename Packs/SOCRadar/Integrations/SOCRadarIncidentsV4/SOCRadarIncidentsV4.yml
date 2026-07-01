@@ -31,6 +31,9 @@ configuration:
   defaultvalue: 3 days
   section: Collect
   additionalinfo: 'Time range for FIRST fetch only. Examples: "3 days", "7 days", "30 days". After first fetch, integration will use Fetch Interval for subsequent fetches.'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Interval (Minutes)
   name: fetch_interval_minutes
   type: 0
@@ -43,6 +46,9 @@ configuration:
   defaultvalue: "200"
   section: Collect
   additionalinfo: "Maximum number of incidents to create per cycle. Recommended: 200 for stability. The actual number fetched depends on the time window and available alarms."
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Show Alarm Content
   name: show_content
   type: 8

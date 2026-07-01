@@ -58,6 +58,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'First fetch time'
   additionalinfo: 'How far back we should fetch alerts on the first incident fetch. This value is not used for subsequent fetches. Cannot be bigger than 90 days.'
   defaultvalue: '1440' # 1 day
@@ -65,6 +68,9 @@ configuration:
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Enable Classic Alerts'
   name: classic_alerts_enabled
   type: 8

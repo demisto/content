@@ -58,6 +58,7 @@ configuration:
   - xsoar
   - xpanse
   supportedModules:
+  - exposure_management
   - xsiam
 - defaultvalue: 10000
   section: Collect

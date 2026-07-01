@@ -44,6 +44,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n    \nFor example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z."
   defaultvalue: 1 hour
   display: First Fetch Time
@@ -52,6 +55,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions. Cortex XSOAR only parameter.
   display: Mirroring Direction
   hidden:

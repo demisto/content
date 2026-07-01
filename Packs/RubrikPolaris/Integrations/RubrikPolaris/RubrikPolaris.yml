@@ -57,6 +57,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: SEVERITY_CRITICAL
   display: Event severities to fetch as incidents
   additionalinfo: "Event severities to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for critical severity level. Applies only when RSC fetch type is set to \"Event\"."
@@ -99,6 +102,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations, IR Violations) are selected, the limit is distributed optimally among them to fetch all types."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
@@ -106,6 +112,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
   display: Event Critical Severity Level Mapping

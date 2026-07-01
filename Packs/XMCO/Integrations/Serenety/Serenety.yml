@@ -42,6 +42,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch.
@@ -49,10 +52,14 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   defaultvalue: 'XMCO Serenety Alert'
   type: 13
+  section: Connect
 description: 'Fetch Serenety alert from XMCO.'
 display: Serenety
 name: Serenety

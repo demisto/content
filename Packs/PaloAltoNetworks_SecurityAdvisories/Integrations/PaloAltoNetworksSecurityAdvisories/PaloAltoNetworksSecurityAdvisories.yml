@@ -93,6 +93,9 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Queries the public repository of PAN-OS CVEs.
 display: Palo Alto Networks Security Advisories (Beta)
 beta: true

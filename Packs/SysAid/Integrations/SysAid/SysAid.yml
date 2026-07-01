@@ -42,6 +42,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -53,6 +56,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Choose what service record type to fetch - incidents, requests, problems, changes, or all.
   defaultvalue: all
   display: Fetch types

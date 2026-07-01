@@ -62,12 +62,18 @@ configuration:
   defaultvalue: 60 minutes
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   display: Maximum number of incidents per fetch
   defaultvalue: '50'
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Lookback Window (minutes)
   name: look_back
   defaultvalue: '0'
@@ -76,6 +82,9 @@ configuration:
   additionalinfo: The number of minutes to look back during each fetch to capture late-indexed incidents.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: DLP Regions
   name: dlp_regions
   type: 16

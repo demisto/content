@@ -54,6 +54,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetches data from the Uptycs database.
 display: Uptycs
 name: Uptycs

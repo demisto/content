@@ -52,6 +52,9 @@ configuration:
   defaultvalue: 3 days
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -69,6 +72,9 @@ configuration:
   section: Collect
   additionalinfo: A maximum detections to fetch in each iteration.
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

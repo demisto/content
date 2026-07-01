@@ -55,34 +55,45 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
-- display: Incidents Fetch Interval
+  supportedModules:
+  - agentix
+  - xsiam
+- section: Collect
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
-- display: Default Mailbox
+- section: Collect
+  display: Default Mailbox
   name: fetch_from
   type: 0
   required: false
   additionalinfo: When provided, this mailbox is used for fetching as well as the default email for any command.
-- display: Fetch Query
+- section: Collect
+  display: Fetch Query
   name: fetch_query
   type: 0
   required: false
   additionalinfo: Elastic query to filter messages in the specified inbox.
-- display: Fetch Labels
+- section: Collect
+  display: Fetch Labels
   name: fetch_labels
   type: 0
   required: false
   defaultvalue: "INBOX"
   additionalinfo: Specify the folder that the messages will be fetched from.
-- display: Include Threads when Fetching
+- section: Collect
+  display: Include Threads when Fetching
   name: fetch_threads
   type: 8
   required: false

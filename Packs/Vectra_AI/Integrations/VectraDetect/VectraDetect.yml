@@ -75,6 +75,9 @@ configuration:
   defaultvalue: 7 days
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false
@@ -162,6 +165,9 @@ configuration:
   defaultvalue: 50
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 60
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: "Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created."
@@ -169,6 +175,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: 'Advanced: Fetch escalated Accounts and Hosts'
   additionalinfo: "Use this parameter to fetch escalated Accounts and Hosts.\n\nNote: If this parameter is set to True, it will fetch Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time."

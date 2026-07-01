@@ -62,11 +62,17 @@ configuration:
   type: 0
   section: Collect
   defaultvalue: 50
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First Fetch Time
   type: 0
   section: Collect
   defaultvalue: 3 days
+  supportedModules:
+  - agentix
+  - xsiam
 - name: fetch_type
   display: Fetch Type
   additionalinfo: 'The API to fetch incidents from: Data Feeds, Quarantine or both.'
@@ -77,6 +83,9 @@ configuration:
   - both
   - email_data_feed
   - email_quarantine
+  supportedModules:
+  - agentix
+  - xsiam
 - name: severity
   display: Severity - Email Data Feed
   additionalinfo: Filter the incidents by their severity. When left empty will fetch all.

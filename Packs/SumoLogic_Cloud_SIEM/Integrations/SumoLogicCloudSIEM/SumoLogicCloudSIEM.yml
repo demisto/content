@@ -55,18 +55,27 @@ configuration:
   additionalinfo: Fetch limit must not be greater than 200
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Override default fetch query
   name: fetch_query
   type: 0
   additionalinfo: Default fetch query is status:in("new", "inprogress")
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch time
   name: first_fetch
   defaultvalue: 1 day
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Pull associated Sumo Logic Signals as Incidents
   additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
   defaultvalue: "false"

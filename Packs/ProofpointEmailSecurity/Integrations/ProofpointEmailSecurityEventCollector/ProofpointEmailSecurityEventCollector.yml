@@ -34,6 +34,8 @@ configuration:
   defaultvalue: 60
   required: true
   section: Collect
+  supportedModules:
+  - xsiam
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
@@ -57,6 +59,8 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: message,maillog,audit
+  supportedModules:
+  - xsiam
 - display: Fetch events  # Checkbox should be visible on all supported products/modules to allow any user to disable event fetching before running the "!proofpoint-es-get-events" command
   name: isFetchEvents
   type: 8

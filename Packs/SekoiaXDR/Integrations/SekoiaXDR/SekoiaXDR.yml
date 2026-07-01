@@ -51,6 +51,9 @@ configuration:
   defaultvalue: -7d
   type: 0
   required: true
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: Maximum incidents to fetch per interval.
   name: max_fetch
@@ -58,6 +61,9 @@ configuration:
   type: 0
   required: true
   additionalinfo: By default the max_fetch is set to 10
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   advanced: true
   display: Incidents Fetch Interval

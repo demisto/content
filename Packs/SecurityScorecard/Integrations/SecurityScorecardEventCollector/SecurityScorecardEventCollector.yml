@@ -42,6 +42,8 @@ configuration:
   section: Collect
   defaultvalue: '1000'
   additionalinfo: The maximum number of events to fetch per cycle.
+  supportedModules:
+  - xsiam
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
