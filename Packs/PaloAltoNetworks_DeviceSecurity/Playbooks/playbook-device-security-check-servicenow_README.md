@@ -23,10 +23,7 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 
 ---
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| CloseReason | The close reason passed to closeInvestigation when incidents are closed by this playbook. | Other | Optional |
-| CloseNotes | The close notes passed to closeInvestigation when incidents are closed by this playbook. | Job finished | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
@@ -36,4 +33,5 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![Palo_Alto_Neworks_Device_Security_ServiceNow_Check](../doc_files/device-security-check-servicenow.png)
+
+![PANW Device Security ServiceNow Tickets Check](../doc_files/device-security-check-servicenow.png)

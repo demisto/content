@@ -8,9 +8,7 @@ Resolves the alert in the Device Security portal via the API. Designed to run as
 | --- | --- |
 | Script Type | python3 |
 | Tags | device security, post-processing |
-| Cortex XSOAR Version | 5.5.0 |
-
-This script executes the 'device-security-resolve-alert' command to resolve an alert in PANW Device Security portal during post-processing.
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
