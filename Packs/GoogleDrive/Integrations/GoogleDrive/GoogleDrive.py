@@ -3,7 +3,10 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
+import base64
 import io
+import os
+import re
 import uuid
 from collections.abc import Callable
 from typing import Any
@@ -13,6 +16,46 @@ import urllib3
 import yaml
 from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+
+APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx", ".yaml", ".yml"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+
+MIME_TO_EXTENSION = {
+    "text/markdown": ".md",
+    "text/x-markdown": ".md",
+    "application/json": ".json",
+    "application/jsonl": ".jsonl",
+    "application/x-jsonlines": ".jsonl",
+    "text/csv": ".csv",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+    "text/yaml": ".yaml",
+    "text/x-yaml": ".yaml",
+    "application/yaml": ".yaml",
+    "application/x-yaml": ".yaml",
+    "application/vnd.google-apps.document": ".md",
+    "application/vnd.google-apps.spreadsheet": ".csv",
+}
+
+
+def get_approved_extension(file_name: str, mime_type: str = None) -> Optional[str]:
+    """Return the approved file extension for the given file name or MIME type, or None if not approved."""
+    if file_name:
+        _, ext = os.path.splitext(file_name.lower())
+        if ext in APPROVED_EXTENSIONS:
+            return ext
+
+    if mime_type:
+        mime_ext = MIME_TO_EXTENSION.get(mime_type.lower())
+        if mime_ext in APPROVED_EXTENSIONS:
+            return mime_ext
+
+    return None
+
+
+def is_approved_file(file_name: str, mime_type: str = None) -> bool:
+    return get_approved_extension(file_name, mime_type) is not None
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -146,7 +189,42 @@ OUTPUT_PREFIX: dict[str, str] = {
     "FILE_PERMISSION": "FilePermission",
     "LABELS": "GoogleDrive.Labels",
     "PARENTS": "GoogleDrive.File.Parents",
+    "FILE_CONTENT": "FileContent",
 }
+
+GOOGLE_DRIVE_URL_PATTERNS = [
+    # Pattern: https://docs.google.com/document/d/<fileId>/edit
+    re.compile(r"docs\.google\.com/(?:document|spreadsheets|presentation|forms)/d/([a-zA-Z0-9_-]+)"),
+    # Pattern: https://drive.google.com/file/d/<fileId>/view
+    re.compile(r"drive\.google\.com/file/d/([a-zA-Z0-9_-]+)"),
+    # Pattern: https://drive.google.com/open?id=<fileId>
+    re.compile(r"drive\.google\.com/open\?id=([a-zA-Z0-9_-]+)"),
+    # Pattern: id=<fileId> in query string
+    re.compile(r"[?&]id=([a-zA-Z0-9_-]+)"),
+]
+
+# Mapping of Google Workspace MIME types to the MIME type they are exported as.
+# Docs are exported as Markdown so the platform's Markdown parser can ingest
+# them as structured text (headings, lists, tables) without base64 encoding.
+GOOGLE_WORKSPACE_EXPORT_MIME_TYPES: dict[str, str] = {
+    "application/vnd.google-apps.document": "text/markdown",
+    "application/vnd.google-apps.spreadsheet": "text/csv",
+    "application/vnd.google-apps.presentation": "text/plain",
+    "application/vnd.google-apps.drawing": "image/svg+xml",
+}
+
+# MIME types whose payload is plain text and safe to return inline as utf-8
+# (with errors="replace"). Anything not matching is treated as binary and
+# base64-encoded.
+_TEXT_MIME_EXACT: set[str] = {"application/json", "application/xml", "image/svg+xml"}
+
+
+def _is_text_mime(mime: str) -> bool:
+    """Return True when the given MIME type represents text-decodable content."""
+    if not mime:
+        return False
+    return mime.startswith("text/") or mime in _TEXT_MIME_EXACT
+
 
 DATE_FORMAT: str = "%Y-%m-%d"  # sample - 2020-08-23
 DATE_FORMAT_TIME_RANGE: str = "%Y-%m-%dT%H:%M:%SZ"
@@ -2083,6 +2161,175 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     )
 
 
+def _extract_file_id_from_url(url: str) -> str:
+    """
+    Extract the Google Drive file ID from a Google Drive or Google Docs URL.
+
+    Supports the following URL formats:
+    - https://docs.google.com/document/d/<fileId>/edit
+    - https://docs.google.com/spreadsheets/d/<fileId>/edit
+    - https://docs.google.com/presentation/d/<fileId>/edit
+    - https://drive.google.com/file/d/<fileId>/view
+    - https://drive.google.com/open?id=<fileId>
+
+    :type url: ``str``
+    :param url: The Google Drive file URL.
+
+    :return: The extracted file ID.
+    :rtype: ``str``
+
+    :raises ValueError: If the file ID cannot be extracted from the URL.
+    """
+    for pattern in GOOGLE_DRIVE_URL_PATTERNS:
+        match = pattern.search(url)
+        if match:
+            return match.group(1)
+
+    raise ValueError(
+        f"Could not extract file ID from URL: {url}. "
+        "Supported URL formats: "
+        "https://docs.google.com/document/d/<fileId>/edit, "
+        "https://drive.google.com/file/d/<fileId>/view, "
+        "https://drive.google.com/open?id=<fileId>"
+    )
+
+
+def _download_drive_file_content(client: "GSuiteClient", file_id: str, mime_type: str) -> tuple[str, str]:
+    """
+    Download a Drive file's bytes and return them in a string-safe form.
+
+    Google Workspace files (Docs / Sheets / Slides / Drawings) are exported via
+    ``files.export`` to a downloadable MIME type taken from
+    ``GOOGLE_WORKSPACE_EXPORT_MIME_TYPES``. Regular files are downloaded as-is
+    via ``files.get_media``.
+
+    Text payloads are decoded as utf-8 (with ``errors="replace"``) and returned
+    inline. Binary payloads are base64-encoded and the returned MIME type is
+    suffixed with ``;base64`` so callers can detect and decode it.
+
+    :param client: Authorised ``GSuiteClient`` (caller is responsible for
+        ``set_authorized_http`` with the correct ``user_id``).
+    :param file_id: Drive file ID.
+    :param mime_type: The file's MIME type as reported by Drive metadata.
+
+    :return: ``(content, output_mime_type)``.
+    """
+    export_mime = GOOGLE_WORKSPACE_EXPORT_MIME_TYPES.get(mime_type)
+    effective_mime = export_mime or mime_type
+
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+
+    # Workspace files need ``export`` (``get_media`` fails on them); regular
+    # files need ``get_media``. Both return the raw bytes via ``.execute()``.
+    if export_mime:
+        raw_bytes = drive_service.files().export(fileId=file_id, mimeType=export_mime).execute()
+    else:
+        raw_bytes = drive_service.files().get_media(fileId=file_id, supportsAllDrives=True).execute()
+
+    if _is_text_mime(effective_mime):
+        # Text payload — decode with replacement so a single bad byte cannot crash us.
+        return raw_bytes.decode("utf-8", errors="replace"), effective_mime
+
+    # Binary payload (PDF, image, etc.) — base64-encode and tag with ';base64'.
+    return base64.b64encode(raw_bytes).decode("ascii"), f"{effective_mime};base64"
+
+
+@logger
+def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
+    """
+    get-file-content
+    Retrieves a file from Google Drive by URL and returns it in a generic unified format.
+    For Google Workspace files (Docs, Sheets, Slides) the content is exported and
+    returned inline under ``Content``.
+
+    Text-based exports (csv / plain / svg / markdown) populate ``Content`` with the
+    decoded text and ``Type`` holds the export MIME type (e.g. ``text/csv``).
+    Binary exports (e.g. PDF) populate ``Content`` with the **base64-encoded**
+    payload and ``Type`` is suffixed with ``;base64`` (e.g. ``application/pdf;base64``)
+    so downstream consumers can detect and decode it.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    url = args.get("url", "")
+    if not url:
+        raise ValueError("The 'url' argument is required.")
+    file_id = _extract_file_id_from_url(url)
+
+    # Impersonate the user currently logged into the platform. The file must be
+    # shared with this user's email for the content to be accessible.
+    user_id = demisto.callingContext.get("context", {}).get("User", {}).get("email")
+    if not user_id:
+        raise ValueError("Could not determine the email of the logged-in user. Unable to access the file.")
+
+    client.set_authorized_http(scopes=COMMAND_SCOPES["FILES"], subject=user_id)
+
+    http_request_params: dict[str, str] = assign_params(
+        supportsAllDrives=True,
+        fields="id, name, mimeType, size, description, webViewLink",
+    )
+    url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(file_id)
+    try:
+        response = client.http_request(url_suffix=url_suffix, method="GET", params=http_request_params)
+    except DemistoException as error:
+        # A token refresh/authorization failure here usually means the file is not
+        # shared with the logged-in user's email, so impersonation could not be authorized.
+        if "access_denied" in str(error) or "invalid" in str(error).lower():
+            raise DemistoException(
+                f"Cannot access the file as '{user_id}'. Ensure the file is shared with '{user_id}' "
+                f"and that the integration is authorized to access this user's files."
+            )
+        raise
+
+    file_name = response.get("name", "")
+    mime_type = response.get("mimeType", "")
+    demisto.debug(f"get-file-content: file_id={file_id} mime_type={mime_type}")
+
+    # Check file format
+    if not is_approved_file(file_name, mime_type):
+        raise ValueError(f"File format not approved: {file_name} ({mime_type})")
+
+    # Check file size (limit to 5MB = 5 * 1024 * 1024 bytes)
+    size_str = response.get("size")
+    if size_str:
+        size_bytes = int(size_str)
+        if size_bytes > MAX_FILE_SIZE:
+            size_mb = size_bytes / (1024 * 1024)
+            limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+            raise ValueError(
+                f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+            )
+
+    content, output_type = _download_drive_file_content(client, file_id, mime_type)
+
+    generic_output = GSuiteClient.remove_empty_entities(
+        {
+            "Title": file_name,
+            "Type": output_type,
+            "Name": file_name,
+            "Content": content,
+            "Url": url,
+            "Id": file_id,
+        }
+    )
+
+    readable_hr = tableToMarkdown(
+        "Generic File Content",
+        generic_output,
+        headers=["Id", "Title", "Type", "Url"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["FILE_CONTENT"],
+        outputs=generic_output,
+        readable_output=readable_hr,
+        raw_response=response,
+    )
+
+
 def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2114,6 +2361,7 @@ def main() -> None:  # pragma: no cover
         "google-drive-file-get-parents": file_get_parents,
         "google-drive-file-move": file_move_command,
         "google-drive-file-create": file_create_command,
+        "get-file-content": get_file_content_command,
     }
     command = demisto.command()
 

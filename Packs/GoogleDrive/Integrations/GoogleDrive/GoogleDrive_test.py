@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from CommonServerPython import *
@@ -1567,3 +1567,220 @@ class TestFilePermissionMethods:
         assert perms[0].get("permissionDetails")[0].get("inherited") is True
         assert perms[0].get("permissionDetails")[0].get("inheritedFrom") == "parent_folder_id"
         assert perms[0].get("permissionDetails")[0].get("permissionType") == "file"
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://docs.google.com/document/d/test-file-id/edit", "test-file-id"),
+        ("https://docs.google.com/spreadsheets/d/test-file-id/edit#gid=0", "test-file-id"),
+        ("https://docs.google.com/presentation/d/test-file-id/edit", "test-file-id"),
+        ("https://drive.google.com/file/d/test-file-id/view", "test-file-id"),
+        ("https://drive.google.com/open?id=test-file-id", "test-file-id"),
+    ],
+)
+def test_extract_file_id_from_url(url: str, expected_id: str):
+    """
+    Given:
+        A Google Drive file URL in various supported formats.
+    When:
+        Calling _extract_file_id_from_url to parse the URL.
+    Then:
+        The correct file ID is extracted from the URL.
+    """
+    from GoogleDrive import _extract_file_id_from_url
+
+    assert _extract_file_id_from_url(url) == expected_id
+
+
+def test_extract_file_id_from_url_invalid():
+    """
+    Given:
+        An unsupported URL format that does not contain a Google Drive file ID.
+    When:
+        Calling _extract_file_id_from_url to parse the URL.
+    Then:
+        A ValueError is raised with a descriptive error message.
+    """
+    from GoogleDrive import _extract_file_id_from_url
+
+    with pytest.raises(ValueError, match="Could not extract file ID from URL"):
+        _extract_file_id_from_url("https://example.com/not-a-drive-url")
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_google_doc(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A Google Docs URL pointing to a Google Workspace document (exported as Markdown).
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        Content holds the decoded Markdown text and Type is 'text/markdown' (no ';base64').
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-file-id",
+        "name": "test_document",
+        "mimeType": "application/vnd.google-apps.document",
+        "description": "Document used by unit tests.",
+        "webViewLink": "https://docs.google.com/document/d/test-file-id/edit",
+    }
+    mocker_http_request.return_value = mock_metadata
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+
+    markdown_bytes = b"# Title\n\nSome **bold** text.\n"
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().export().execute.return_value = markdown_bytes
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://docs.google.com/document/d/test-file-id/edit"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs["Id"] == "test-file-id"
+    assert result.outputs["Title"] == "test_document"
+    assert result.outputs["Type"] == "text/markdown"
+    assert result.outputs["Content"] == "# Title\n\nSome **bold** text.\n"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_google_sheet_text_export(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A Google Sheets URL pointing to a Google Workspace spreadsheet (exported as CSV).
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        Content is the decoded CSV text and Type is 'text/csv' (no ';base64' suffix).
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-sheet-id",
+        "name": "test_sheet",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "webViewLink": "https://docs.google.com/spreadsheets/d/test-sheet-id/edit",
+    }
+    mocker_http_request.return_value = mock_metadata
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+
+    csv_bytes = b"a,b,c\n1,2,3\n"
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().export().execute.return_value = csv_bytes
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://docs.google.com/spreadsheets/d/test-sheet-id/edit"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs["Type"] == "text/csv"
+    assert result.outputs["Content"] == "a,b,c\n1,2,3\n"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_regular_text_file(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A Google Drive URL pointing to a regular CSV file uploaded directly to Drive.
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        The command downloads raw bytes via get_media and returns decoded text inline in Content.
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-csv-id",
+        "name": "test_notes.csv",
+        "mimeType": "text/csv",
+        "webViewLink": "https://drive.google.com/file/d/test-csv-id/view",
+    }
+    mocker_http_request.return_value = mock_metadata
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().get_media().execute.return_value = b"hello,world\n"
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://drive.google.com/file/d/test-csv-id/view"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs["Type"] == "text/csv"
+    assert result.outputs["Content"] == "hello,world\n"
+
+
+def test_get_file_content_command_missing_url(gsuite_client):
+    """
+    Given:
+        No URL argument provided to the get-file-content command.
+    When:
+        Calling the get-file-content command without a URL.
+    Then:
+        A ValueError is raised indicating the url argument is required.
+    """
+    from GoogleDrive import get_file_content_command
+
+    with pytest.raises(ValueError, match="'url' argument is required"):
+        get_file_content_command(gsuite_client, {})
+
+
+def test_get_file_content_command_missing_user_email(gsuite_client, mocker):
+    """
+    Given:
+        A valid URL but no logged-in user email available in the calling context.
+    When:
+        Calling the get-file-content command.
+    Then:
+        A ValueError is raised indicating the logged-in user's email could not be determined.
+    """
+    from GoogleDrive import get_file_content_command
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {}}})
+
+    with pytest.raises(ValueError, match="Could not determine the email of the logged-in user"):
+        get_file_content_command(gsuite_client, {"url": "https://drive.google.com/file/d/test-file-id/view"})
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_access_denied(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A valid URL and logged-in user email, but the API request fails with a
+        token refresh/access_denied error (file not shared with the user).
+    When:
+        Calling the get-file-content command.
+    Then:
+        A DemistoException is raised with an informative message asking the user to
+        verify the file is shared with their email.
+    """
+    from GoogleDrive import get_file_content_command
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+    mocker_http_request.side_effect = DemistoException(
+        "Failed to generate/refresh token. Subject email or service account credentials are invalid. "
+        "Reason: access_denied: Requested client not authorized."
+    )
+
+    with pytest.raises(DemistoException, match="Ensure the file is shared with"):
+        get_file_content_command(gsuite_client, {"url": "https://drive.google.com/file/d/test-file-id/view"})
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_other_demisto_exception_propagates(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A valid URL and logged-in user email, but the API request fails with an
+        unrelated error (not an auth/refresh issue).
+    When:
+        Calling the get-file-content command.
+    Then:
+        The original DemistoException is propagated unchanged.
+    """
+    from GoogleDrive import get_file_content_command
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+    mocker_http_request.side_effect = DemistoException("Some unrelated network failure.")
+
+    with pytest.raises(DemistoException, match="Some unrelated network failure"):
+        get_file_content_command(gsuite_client, {"url": "https://drive.google.com/file/d/test-file-id/view"})

@@ -2143,6 +2143,32 @@ script:
     - contextPath: ConfluenceCloud.Content._links.base
       description: Base URL of the Confluence site.
       type: String
+  - arguments:
+    - description: The URL of the Confluence page to retrieve content from. Supported formats include https://<site>.atlassian.net/wiki/spaces/<space>/pages/<pageId>/<title> and https://<site>.atlassian.net/wiki/pages/viewpage.action?pageId=<pageId>.
+      name: url
+      prettyname: Page URL
+      required: true
+    description: Retrieves content from a Confluence page by its URL and returns it in a generic unified format under the FileContent context key. The command automatically extracts the content ID from the URL.
+    name: get-file-content
+    outputs:
+    - contextPath: FileContent.Id
+      description: The unique identifier of the content.
+      type: String
+    - contextPath: FileContent.Title
+      description: The title of the content.
+      type: String
+    - contextPath: FileContent.Type
+      description: The type of the content (e.g., page, blogpost).
+      type: String
+    - contextPath: FileContent.Name
+      description: The name of the content (same as title for Confluence).
+      type: String
+    - contextPath: FileContent.Content
+      description: The body content in storage format (HTML).
+      type: String
+    - contextPath: FileContent.Url
+      description: The original URL used to retrieve the content.
+      type: String
   - arguments: []
     name: confluence-cloud-oauth-start
     description: Starts the OAuth 2.0 authentication flow. Returns an authorization URL that the user must visit to authorize the integration.
