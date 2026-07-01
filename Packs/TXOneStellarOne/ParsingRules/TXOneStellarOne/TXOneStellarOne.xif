@@ -1,0 +1,11 @@
+[INGEST:vendor="txone", product="stellarone", target_dataset="txone_stellarone_raw", no_hit=keep]
+filter to_string(start) ~= "\d{13}"
+| alter _time = to_timestamp(to_integer(start), "MILLIS");
+
+[INGEST:vendor="txone", product="stellarone", target_dataset="txone_stellarone_raw", no_hit=keep]
+filter start = null and to_string(rt) ~= "\d{13}"
+| alter _time = to_timestamp(to_integer(rt), "MILLIS");
+
+[INGEST:vendor="txone", product="stellarone", target_dataset="txone_stellarone_raw", no_hit=keep]
+filter start = null and rt = null and eventtime ~= "\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT"
+| alter _time = parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime);
