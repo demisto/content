@@ -8,7 +8,7 @@ commonfields:
   version: -1
 configuration:
 - name: with_error
-  display: Return Errors test
+  display: Return Errors
   required: false
   defaultvalue: "false"
   type: 8
@@ -74,6 +74,14 @@ configuration:
   type: 8
   additionalinfo:
   section: Connect
+- name: lightweight
+  display: Lightweight
+  required: false
+  defaultvalue: "false"
+  defaultvalue:platform: "true"
+  type: 8
+  hidden: true
+  section: Connect
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
@@ -89,6 +97,7 @@ script:
       name: url
       required: true
       isArray: true
+      isArray:platform: false
     - defaultValue: 1024px
       description: The page width, for example, 1024px. Specify with or without the px suffix.
       name: width
@@ -115,6 +124,7 @@ script:
       description: The name the file will be saved as.
       name: file_name
       isArray: true
+      isArray:platform: false
     - auto: PREDEFINED
       defaultValue: "False"
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
@@ -358,6 +368,7 @@ script:
       name: url
       required: true
       isArray: true
+      isArray:platform: false
     - description: Time in seconds to wait before extracting content.
       name: wait_time
     - description: Maximum time to wait for a page to load (in seconds).
@@ -380,5 +391,4 @@ script:
 defaultEnabled: true
 tests:
 - Rasterize Test
-fromversion: 5.0.0
-toversion: 8.14.0
+fromversion: 8.15.0
