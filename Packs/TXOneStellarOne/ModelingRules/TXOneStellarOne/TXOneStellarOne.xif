@@ -1,0 +1,51 @@
+[MODEL:dataset="txone_stellarone_raw"]
+alter
+    xdm.observer.vendor = cefdevicevendor,
+    xdm.observer.product = cefdeviceproduct,
+    xdm.observer.version = cefdeviceversion,
+    xdm.observer.name = serverip,
+    xdm.observer.unique_identifier = deviceexternalid,
+    xdm.observer.type = cefname,
+    xdm.event.type = cefname,
+    xdm.event.description = coalesce(msg, desc),
+    xdm.alert.severity = to_string(cefseverity),
+    xdm.alert.category = category,
+    xdm.alert.name = threatname,
+    xdm.event.operation_sub_type = act,
+    xdm.network.rule = policyversion,
+
+    get_event_id = coalesce(if(cefdeviceeventclassid != "0", cefdeviceeventclassid, null), eventid, to_string(vid)),
+    xdm.event.id = to_string(get_event_id),
+
+    get_user = coalesce(suser, username, accessuser, activeuser, threatuser),
+    xdm.source.user.username = get_user,
+
+    get_host = coalesce(agentendpoint, dvchost),
+    xdm.source.host.hostname = get_host,
+    xdm.source.host.os = agentos,
+    xdm.source.host.groups = arraycreate(agentgrpname),
+
+    get_src_ip = coalesce(cs1, clientip, agentip, src),
+    xdm.source.ipv4 = if(get_src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_src_ip, null),
+
+    get_dst_ip = dst,
+    xdm.target.ipv4 = if(get_dst_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", get_dst_ip, null),
+
+    xdm.source.user.groups = arraycreate(userrole),
+
+    xdm.alert.original_threat_name = threatname,
+    xdm.alert.original_threat_id = threatattackid,
+    get_file_name = coalesce(filename, targetfile),
+    xdm.target.file.filename = get_file_name,
+    get_file_path = coalesce(filepath, path, accessimagepath, threatimagepath),
+    xdm.target.file.path = get_file_path,
+    xdm.target.file.sha256 = filehash,
+    get_file_size = filesize,
+    xdm.target.file.size = to_integer(get_file_size),
+
+    get_proc_id = coalesce(to_string(pid), processid),
+    xdm.target.process.pid = to_integer(get_proc_id),
+    xdm.target.process.name = blockedprocess,
+
+    get_status = coalesce(to_string(status), actionresult, result),
+    xdm.event.outcome = if(get_status = null, null, get_status ~= "(?i)fail|block|denied|2", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS);

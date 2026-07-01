@@ -1,0 +1,25 @@
+{
+    "name": "TXOne StellarOne",
+    "description": "TXOne StellarOne is an OT (Operational Technology) endpoint security management console. This pack provides modeling and parsing rules for StellarOne CEF logs (audit, system, and console events).",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-07-01T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}
