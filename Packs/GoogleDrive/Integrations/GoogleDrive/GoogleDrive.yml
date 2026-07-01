@@ -3241,13 +3241,10 @@ script:
   - name: get-file-content
     description: Retrieves a file from Google Drive by its URL and returns it in a generic unified format under the FileContent context key. For Google Workspace files (Docs, Sheets, Slides) the content is exported and returned in 'Content' - text exports inline, binary exports (e.g. PDF) base64-encoded with 'Type' suffixed by ';base64'. The command automatically extracts the file ID from the URL.
     arguments:
-    - description: The URL of the Google Drive file to retrieve. Supported formats include https://docs.google.com/document/d/<fileId>/edit, https://drive.google.com/file/d/<fileId>/view, and https://drive.google.com/open?id=<fileId>.
+    - description: 'Max file size: 5 MB. The file must be shared with the logged-in user''s email.'
       name: url
-      prettyname: File URL
+      prettyname: The Google Drive file URL
       required: true
-    - name: user_email
-      prettyname: Owner Email
-      description: Owner's email. Required only for private (unshared) files.
     outputs:
     - contextPath: FileContent.Id
       description: The unique identifier of the file.

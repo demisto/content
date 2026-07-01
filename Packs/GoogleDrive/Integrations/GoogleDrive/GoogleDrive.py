@@ -2253,12 +2253,14 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
     url = args.get("url", "")
     if not url:
         raise ValueError("The 'url' argument is required.")
-
     file_id = _extract_file_id_from_url(url)
 
-    # Impersonate the file owner. UI passes `user_email` for private files;
-    # otherwise fall back to the instance-level User ID.
-    user_id = args.get("user_email") or client.user_id
+    # Impersonate the user currently logged into the platform. The file must be
+    # shared with this user's email for the content to be accessible.
+    user_id = demisto.callingContext.get("context", {}).get("User", {}).get("email")
+    if not user_id:
+        raise ValueError("Could not determine the email of the logged-in user. Unable to access the file.")
+
     client.set_authorized_http(scopes=COMMAND_SCOPES["FILES"], subject=user_id)
 
     http_request_params: dict[str, str] = assign_params(
@@ -2266,7 +2268,17 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
         fields="id, name, mimeType, size, description, webViewLink",
     )
     url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(file_id)
-    response = client.http_request(url_suffix=url_suffix, method="GET", params=http_request_params)
+    try:
+        response = client.http_request(url_suffix=url_suffix, method="GET", params=http_request_params)
+    except DemistoException as error:
+        # A token refresh/authorization failure here usually means the file is not
+        # shared with the logged-in user's email, so impersonation could not be authorized.
+        if "access_denied" in str(error) or "invalid" in str(error).lower():
+            raise DemistoException(
+                f"Cannot access the file as '{user_id}'. Ensure the file is shared with '{user_id}' "
+                f"and that the integration is authorized to access this user's files."
+            )
+        raise
 
     file_name = response.get("name", "")
     mime_type = response.get("mimeType", "")
