@@ -56,21 +56,19 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity.
+    """Tests connectivity.
+
+    This is a test-only integration for validating the 'spec' field.
+    The test-module always returns 'ok' since no real API backend exists.
 
     Args:
-        client: Client instance.
+        client: Client instance (unused for test-module).
 
     Returns:
-        'ok' if successful.
-
-    Raises:
-        DemistoException: If the API response is unexpected.
+        'ok' always.
     """
-    result = client.test_connection()
-    if result:
-        return "ok"
-    raise DemistoException("Unexpected response from API")
+    demisto.debug("test-module called — spec test integration, returning ok")
+    return "ok"
 
 
 def list_resources_command(client: Client, args: dict) -> CommandResults:

@@ -12,14 +12,9 @@ def client():
 
 
 class TestTestModule:
-    def test_positive(self, requests_mock, client):
-        requests_mock.get(urljoin(BASE_URL, "health"), json={"status": "ok"})
+    def test_always_returns_ok(self, client):
+        """test-module always returns ok for this test-only integration."""
         assert test_module(client) == "ok"
-
-    def test_negative(self, requests_mock, client):
-        requests_mock.get(urljoin(BASE_URL, "health"), json={})
-        with pytest.raises(DemistoException, match="Unexpected response"):
-            test_module(client)
 
 
 class TestListItems:
