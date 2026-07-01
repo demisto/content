@@ -3,6 +3,7 @@
     "version": -1,
     "name": "Vega New Comment",
     "ownerOnly": false,
+    "placeholder": "Comment to mirror to Vega",
     "description": "Comment to mirror from Cortex XSOAR to Vega.",
     "cliName": "veganewcomment",
     "type": "longText",
@@ -17,6 +18,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": true,
     "associatedTypes": [
         "Vega Alert",
         "Vega Incident"

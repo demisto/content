@@ -500,19 +500,19 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 5
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
-						"h": 7,
+						"h": 8,
 						"hideItemTitleOnlyOne": true,
 						"hideName": true,
 						"i": "js3vpk9qph-vega-timeline-events-section",
 						"items": [
 							{
-								"endCol": 6,
+								"endCol": 4,
 								"fieldId": "vegatimelineevents",
-								"height": 106,
+								"height": 52,
 								"id": "a8f3c2e1-4b5d-6e7f-8a9b-0c1d2e3f4a5b",
 								"index": 0,
 								"sectionItemType": "field",
@@ -571,11 +571,11 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 3
+						"y": 4
 					},
 					{
 						"displayType": "CARD",
-						"h": 7,
+						"h": 6,
 						"hideName": true,
 						"i": "js3vpk9qph-f9e9e215-7864-4007-a6e5-e88126b82ac9",
 						"items": [
@@ -587,15 +587,6 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "veganewcomment",
-								"height": 106,
-								"id": "vega-incident-new-comment-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -605,7 +596,36 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 8
+						"y": 9
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideItemTitleOnlyOne": false,
+						"hideName": true,
+						"i": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "veganewcomment",
+								"height": 53,
+								"id": "a951005e-765b-4ddb-93fc-76e87812451f",
+								"index": 0,
+								"listId": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega New Comment",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 15
 					}
 				],
 				"type": "custom"

@@ -64,6 +64,7 @@ VEGA_SEVERITY_FIELD = "vegaseverity"
 VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
 VEGA_NEW_COMMENT_FIELD = "veganewcomment"
+VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
@@ -97,6 +98,19 @@ VEGA_OUTGOING_MIRROR_FIELDS: dict[str, dict[str, tuple[str, ...]]] = {
         VEGA_NEW_COMMENT_FIELD: ("Comment to add on the Vega incident",),
     },
 }
+OUTGOING_MIRROR_FIELD_STATUS = "Status"
+OUTGOING_MIRROR_FIELD_SEVERITY = "Severity"
+OUTGOING_MIRROR_FIELD_VERDICT = "Verdict"
+OUTGOING_MIRROR_FIELD_VERDICT_REASONING = "Verdict Reasoning"
+OUTGOING_MIRROR_FIELD_COMMENTS = "Comments"
+OUTGOING_MIRROR_FIELD_LABELS: tuple[str, ...] = (
+    OUTGOING_MIRROR_FIELD_STATUS,
+    OUTGOING_MIRROR_FIELD_SEVERITY,
+    OUTGOING_MIRROR_FIELD_VERDICT,
+    OUTGOING_MIRROR_FIELD_VERDICT_REASONING,
+    OUTGOING_MIRROR_FIELD_COMMENTS,
+)
+VALID_OUTGOING_MIRROR_FIELD_LABELS = frozenset(OUTGOING_MIRROR_FIELD_LABELS)
 VEGA_CLOSE_STATUSES = frozenset({"RESOLVED"})
 VEGA_ALERT_OPEN_STATUSES = frozenset({"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "PEER_REVIEW"})
 VEGA_INCIDENT_OPEN_STATUSES = frozenset(
@@ -173,7 +187,16 @@ VEGA_TIMELINE_ALERT_SEVERITY_LABELS: dict[int, str] = {
 BACKFILL_DAYS_MIN = 0
 BACKFILL_DAYS_MAX = 365
 DEFAULT_BACKFILL_DAYS = 30
-GET_ALERTS_FETCH_LIMIT = None  # Set to None for production (unlimited alert fetch)
+MAX_FETCH_MIN = 1
+MAX_FETCH_CAP = 50
+DEFAULT_MAX_FETCH = 50
+MAX_FETCH_ERROR = "Incorrect value please enter between 1-50."
+DEFAULT_LOOKBACK_MINUTES = 5
+MAX_LOOKBACK_MINUTES = 60
+INCIDENTS_OFFSET_KEY = "incidents_offset"
+INCIDENTS_PAGINATION_FROM_KEY = "incidents_pagination_from"
+ALERTS_OFFSET_KEY = "alerts_offset"
+ALERTS_PAGINATION_FROM_KEY = "alerts_pagination_from"
 
 VALID_ALERT_STATUSES = frozenset({"OPEN", "IN_PROGRESS", "PEER_REVIEW", "RESOLVED"})
 ALERT_STATUS_DISPLAY_TO_API: dict[str, str] = {
@@ -248,11 +271,11 @@ TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check you
 GET_ALERTS_QUERY = (
     "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
     "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, "
     "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
     " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
     "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
+    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, "
     "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
@@ -287,9 +310,9 @@ GET_INCIDENT_MIRROR_QUERY = (
 GET_INCIDENTS_QUERY = (
     "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
     "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
-    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
+    "$from: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
     " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
-    "statuses: $statuses, verdicts: $verdicts, from: $from, to: $to, updatedFrom: $updatedFrom, "
+    "statuses: $statuses, verdicts: $verdicts, from: $from, updatedFrom: $updatedFrom, "
     "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
     "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
     "   assignee { userId displayName email } "
@@ -378,6 +401,33 @@ def parse_backfill_days(backfill_days: str | int | float | None) -> str:
         days = DEFAULT_BACKFILL_DAYS
     start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
     return start.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def validate_lookback_minutes(lookback_minutes: int | str | None) -> None:
+    """Validate that lookback_minutes is an integer between 1 and MAX_LOOKBACK_MINUTES inclusive."""
+    parsed = arg_to_number(lookback_minutes, arg_name="lookback_minutes", required=False)
+    if parsed is None or parsed < 1 or parsed > MAX_LOOKBACK_MINUTES:
+        raise ValueError(f"Fetch Lookback (minutes) must be an integer between 1 and {MAX_LOOKBACK_MINUTES}.")
+
+
+def _parse_lookback_minutes(raw_value: str | int | None) -> int:
+    """Parse the lookback_minutes parameter, clamping to [1, MAX_LOOKBACK_MINUTES]."""
+    if raw_value is None or str(raw_value).strip() == "":
+        return DEFAULT_LOOKBACK_MINUTES
+    try:
+        minutes = int(str(raw_value).strip())
+    except (TypeError, ValueError):
+        return DEFAULT_LOOKBACK_MINUTES
+    return max(1, min(minutes, MAX_LOOKBACK_MINUTES))
+
+
+def _apply_lookback_to_from_time(from_time: str, lookback_minutes: int) -> str:
+    """Shift a fetch from_time backwards by lookback_minutes for late-indexed entity detection."""
+    parsed = _parse_entity_created_at(from_time)
+    if parsed is None:
+        return from_time
+    shifted = parsed - timedelta(minutes=lookback_minutes)
+    return _format_fetch_timestamp(shifted)
 
 
 def _mirror_bool(value: Any) -> bool:
@@ -473,6 +523,19 @@ def filter_incident_verdicts(values: list[str] | None) -> list[str] | None:
     return _filter_fetch_values(values, VALID_VERDICTS, VERDICT_DISPLAY_TO_API)
 
 
+def _resolve_outgoing_mirror_fields(params: dict[str, Any] | None = None) -> set[str]:
+    """Return enabled outgoing mirror field labels. Empty selection mirrors all fields."""
+    params = params or demisto.params()
+    selected = argToList(params.get("outgoing_mirror_fields"))
+    if not selected:
+        return set(OUTGOING_MIRROR_FIELD_LABELS)
+
+    enabled = {
+        str(value).strip() for value in selected if value is not None and str(value).strip() in VALID_OUTGOING_MIRROR_FIELD_LABELS
+    }
+    return enabled if enabled else set(OUTGOING_MIRROR_FIELD_LABELS)
+
+
 def resolve_has_related_incidents(values: list[str] | None) -> bool | None:
     """Resolve the Vega hasRelatedIncidents filter from Yes/No multi-select values.
 
@@ -549,7 +612,6 @@ def _build_alerts_query_variables(
     verdicts: list[str] | None = None,
     has_related_incidents: bool | None = None,
     from_time: str | None = None,
-    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     alert_ids: list[str] | None = None,
@@ -570,8 +632,6 @@ def _build_alerts_query_variables(
         variables["hasRelatedIncidents"] = has_related_incidents
     if from_time:
         variables["from"] = from_time
-    if to_time:
-        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -587,7 +647,6 @@ def _build_incidents_query_variables(
     statuses: list[str] | None = None,
     verdicts: list[str] | None = None,
     from_time: str | None = None,
-    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     incident_ids: list[str] | None = None,
@@ -606,8 +665,6 @@ def _build_incidents_query_variables(
         variables["verdicts"] = verdicts
     if from_time:
         variables["from"] = from_time
-    if to_time:
-        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -792,14 +849,15 @@ class Client(BaseClient):
         }
 
         try:
-            query_res = self._http_request(
+            response = self._http_request(
                 method="POST",
                 url_suffix="query",
                 headers=self._auth_headers(session_jwt),
                 json_data=query_data,
-                resp_type="json",
+                resp_type="response",
                 ok_codes=(200,),
             )
+            query_res = response.json()
         except Exception as exc:
             raise ValueError(_test_connection_error_message(exc, TEST_CONNECTION_ACCESS_KEY_ID_ERROR)) from exc
 
@@ -823,7 +881,6 @@ class Client(BaseClient):
         verdicts: list[str] | None = None,
         has_related_incidents: bool | None = None,
         from_time: str | None = None,
-        to_time: str | None = None,
         updated_from: str | None = None,
         updated_to: str | None = None,
         alert_ids: list[str] | None = None,
@@ -837,7 +894,6 @@ class Client(BaseClient):
             verdicts=verdicts,
             has_related_incidents=has_related_incidents,
             from_time=from_time,
-            to_time=to_time,
             updated_from=updated_from,
             updated_to=updated_to,
             alert_ids=alert_ids,
@@ -873,7 +929,6 @@ class Client(BaseClient):
         statuses: list[str] | None = None,
         verdicts: list[str] | None = None,
         from_time: str | None = None,
-        to_time: str | None = None,
         updated_from: str | None = None,
         updated_to: str | None = None,
         incident_ids: list[str] | None = None,
@@ -886,7 +941,6 @@ class Client(BaseClient):
             statuses=statuses,
             verdicts=verdicts,
             from_time=from_time,
-            to_time=to_time,
             updated_from=updated_from,
             updated_to=updated_to,
             incident_ids=incident_ids,
@@ -1279,7 +1333,6 @@ def fetch_all_alert_events(
     while True:
         page_events, page_total = fetch_alert_events_page(client, alert_id, limit=page_limit, offset=offset)
         if page_events and _events_have_bad_alert_events_shape(page_events):
-            demisto.debug("getAlertsEvents returned rows with cid/eid fields; treating alert as having no alert events.")
             return [], 0
         if page_total > 0:
             total = page_total
@@ -1296,6 +1349,24 @@ def fetch_all_alert_events(
     if total == 0:
         total = len(events)
     return events, total
+
+
+def _fetch_alert_events_for_ingest(client: Client, alert_id: str) -> tuple[list[dict], dict[str, Any]]:
+    """Fetch alert events for a Vega alert during incident ingest."""
+    alert_id = str(alert_id).strip()
+    try:
+        all_events, total = fetch_all_alert_events(client, alert_id, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
+        events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
+            all_events,
+            total,
+            offset=0,
+            page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+        )
+        custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
+        return (all_events if has_alert_events else []), custom_fields
+    except Exception as exc:
+        demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+        return [], build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0)
 
 
 def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
@@ -1735,9 +1806,9 @@ def _apply_vega_mitre_attack_format(raw: dict) -> None:
         raw["vegaMitreAttack"] = mitre_attack
 
 
-def _build_vega_alert_custom_fields(raw: dict) -> dict[str, str]:
+def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
     """Build CustomFields for Vega alerts (set directly on ingest, not via mapper)."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     alert_uuid = raw.get("id")
     if alert_uuid is not None and str(alert_uuid).strip():
         custom_fields["alertid"] = str(alert_uuid).strip()
@@ -1747,6 +1818,10 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, str]:
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
+    alert_event_fields = raw.get("_alertEventsCustomFields")
+    if isinstance(alert_event_fields, dict):
+        custom_fields.update(alert_event_fields)
+    custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
 
@@ -2073,6 +2148,7 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
+    custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
 
@@ -2994,7 +3070,7 @@ def _build_xsoar_incident_dict(
         "occurred": raw.get("createdAt", ""),
         "severity": severity,
         "type": entity_type,
-        "rawJSON": json.dumps(raw),
+        "rawJSON": json.dumps({key: value for key, value in raw.items() if key != "_alertEventsCustomFields"}),
     }
     mirror_id = raw.get("mirror_id")
     if mirror_id:
@@ -3008,13 +3084,23 @@ def _build_xsoar_incident_dict(
     return xsoar_incident
 
 
-def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
+def alert_to_incident(
+    alert: dict,
+    integration_url: str | None = None,
+    client: Client | None = None,
+) -> dict:
     """Convert a Vega alert to an XSOAR incident."""
     raw = dict(alert)
     raw["vegaEntityType"] = "Vega Alert"
     raw.update(_get_mirroring_fields())
     _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_ALERT)
     _apply_vega_entity_link(raw, integration_url=integration_url)
+    if client is not None:
+        alert_id = _normalize_entity_id(raw)
+        if alert_id:
+            alert_events, event_custom_fields = _fetch_alert_events_for_ingest(client, alert_id)
+            raw["alertEvents"] = alert_events
+            raw["_alertEventsCustomFields"] = event_custom_fields
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Alert", MIRROR_ENTITY_SUFFIX_ALERT, _build_vega_alert_custom_fields)
 
@@ -3082,14 +3168,44 @@ def _apply_xsoar_mirror_metadata(
     mirror_context: dict[str, Any] | None = None,
 ) -> None:
     """Attach top-level mirror metadata required for XSOAR remote sync."""
-    if not xsoar_incident.get("dbotMirrorId"):
+    mirror_id = xsoar_incident.get("dbotMirrorId") or xsoar_incident.get("mirror_id")
+    if not mirror_id:
         return
-    mirror_fields = _get_mirroring_fields(mirror_context=xsoar_incident)
-    if mirror_fields.get("mirror_direction"):
-        xsoar_incident["dbotMirrorDirection"] = mirror_fields["mirror_direction"]
+    _apply_mirror_metadata_fields(xsoar_incident, mirror_context=mirror_context, mirror_id=str(mirror_id).strip())
 
+
+def _apply_mirror_metadata_fields(
+    payload: dict[str, Any],
+    mirror_context: dict[str, Any] | None = None,
+    *,
+    mirror_id: str | None = None,
+) -> None:
+    """Attach mirror direction and instance to an ingest or get-remote-data payload."""
+    effective_mirror_id = mirror_id or payload.get("dbotMirrorId") or payload.get("mirror_id")
+    if not effective_mirror_id:
+        return
+
+    mirror_id_text = str(effective_mirror_id).strip()
+    payload["dbotMirrorId"] = mirror_id_text
+    payload["mirror_id"] = mirror_id_text
+
+    mirror_fields = _get_mirroring_fields(mirror_context=mirror_context or payload)
+    if mirror_fields.get("mirror_direction"):
+        direction = mirror_fields["mirror_direction"]
+        payload["dbotMirrorDirection"] = direction
+        payload["mirror_direction"] = direction
     if mirror_fields.get("mirror_instance"):
-        xsoar_incident["dbotMirrorInstance"] = mirror_fields["mirror_instance"]
+        instance = mirror_fields["mirror_instance"]
+        payload["dbotMirrorInstance"] = instance
+        payload["mirror_instance"] = instance
+
+
+def _apply_mirror_sync_metadata(
+    sync_object: dict[str, Any],
+    mirror_context: dict[str, Any] | None = None,
+) -> None:
+    """Refresh top-level mirror metadata on every incoming mirror sync cycle."""
+    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context)
 
 
 def _normalize_entity_id(entity: dict, id_key: str = "id") -> str:
@@ -3154,98 +3270,20 @@ def _current_fetch_timestamp() -> str:
     return _format_fetch_timestamp(datetime.now(UTC))
 
 
-def _update_fetch_state(
-    fetched_entities: list[dict],
-    previous_last_fetch: str,
-    previous_last_ids: list[str],
-    id_key: str = "id",
-    time_key: str = "createdAt",
-) -> tuple[str, list[str]]:
-    """Calculate next-run last_fetch and last_ids from a paginated API response."""
-    if not fetched_entities:
-        return previous_last_fetch, previous_last_ids
-
-    parsed_entities: list[tuple[dict, datetime]] = []
-    for entity in fetched_entities:
-        parsed_time_raw = _parse_entity_created_at(entity.get(time_key))
-        if parsed_time_raw is not None:
-            parsed_entities.append((entity, _normalize_fetch_datetime(parsed_time_raw)))
-
-    if not parsed_entities:
-        return previous_last_fetch, previous_last_ids
-
-    max_dt = max(parsed_time for _, parsed_time in parsed_entities)
-    max_time = _format_fetch_timestamp(max_dt)
-    previous_dt_raw = _parse_entity_created_at(previous_last_fetch)
-    previous_dt = _normalize_fetch_datetime(previous_dt_raw) if previous_dt_raw is not None else None
-    previous_last_ids_normalized = [str(entity_id) for entity_id in previous_last_ids if entity_id]
-
-    ids_at_max: list[str] = []
-    for entity, parsed_time in parsed_entities:
-        if parsed_time == max_dt:
-            entity_id = _normalize_entity_id(entity, id_key)
-            if entity_id:
-                ids_at_max.append(entity_id)
-
-    if previous_dt is None or max_dt > previous_dt:
-        return max_time, ids_at_max
-    if max_dt == previous_dt:
-        return max_time, list(set(previous_last_ids_normalized + ids_at_max))
-
-    return previous_last_fetch, list(set(previous_last_ids_normalized + ids_at_max))
-
-
-def _resolve_next_fetch_state(
-    last_run: dict,
-    last_fetch_key: str,
-    fetched_entities: list[dict],
-    previous_last_fetch: str,
-    previous_last_ids: list[str],
-) -> tuple[str, list[str]]:
-    """Advance fetch cursor state, using current time when initial backfill returns nothing."""
-    new_last_fetch, new_last_ids = _update_fetch_state(fetched_entities, previous_last_fetch, previous_last_ids)
-    if last_run.get(last_fetch_key) in (None, "") and not fetched_entities:
-        return _current_fetch_timestamp(), []
-    return new_last_fetch, new_last_ids
-
-
-def _should_ingest_entity(
-    entity: dict,
-    last_fetch: str,
-    last_ids: list[str],
-    id_key: str = "id",
-    time_key: str = "createdAt",
-) -> bool:
-    """Return True when an entity should be ingested based on cursor timestamp and boundary IDs."""
-    entity_id = _normalize_entity_id(entity, id_key)
-    if not entity_id:
-        return False
-
-    parsed_time_raw = _parse_entity_created_at(entity.get(time_key))
-    last_dt_raw = _parse_entity_created_at(last_fetch)
-    if parsed_time_raw is None or last_dt_raw is None:
-        return True
-
-    parsed_time = _normalize_fetch_datetime(parsed_time_raw)
-    last_dt = _normalize_fetch_datetime(last_dt_raw)
-
-    if parsed_time > last_dt:
-        return True
-    if parsed_time == last_dt:
-        boundary_ids = {str(entity_id_value) for entity_id_value in last_ids if entity_id_value}
-        return entity_id not in boundary_ids
-    return False
-
-
 def _fetch_paginated_entities(
     fetch_func: Callable[..., dict],
     entities_key: str,
     max_entities: int | None = None,
+    start_offset: int = 0,
     **fetch_kwargs: Any,
-) -> list[dict]:
-    """Fetch entities from the Vega API with offset-based pagination."""
+) -> tuple[list[dict], int | None]:
+    """Fetch entities from the Vega API.
+
+    Returns the entity list and an optional next offset when max_entities stops
+    the fetch before all matching records are retrieved.
+    """
     entities: list[dict] = []
-    offset = 0
+    offset = start_offset
 
     while True:
         request_kwargs = dict(fetch_kwargs)
@@ -3266,6 +3304,11 @@ def _fetch_paginated_entities(
         entities.extend(page)
         if max_entities is not None and len(entities) >= max_entities:
             entities = entities[:max_entities]
+            total = response.get("total")
+            if total is not None:
+                next_offset = start_offset + len(entities)
+                if next_offset < total:
+                    return entities, next_offset
             break
 
         total = response.get("total")
@@ -3274,7 +3317,7 @@ def _fetch_paginated_entities(
 
         offset += len(page)
 
-    return entities
+    return entities, None
 
 
 def _build_fetch_filter_fingerprint(
@@ -3339,14 +3382,12 @@ def _resolve_mirror_updated_from(last_update: str | None) -> str:
     cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
     minimum_lookback = datetime.now(UTC) - MIRROR_POLL_LOOKBACK
     resolved = _format_mirror_timestamp(min(cursor_start, minimum_lookback))
-    demisto.info(f"Resolved incident poll updatedFrom: last_update={last_update}, updated_from={resolved}")
     return resolved
 
 
 def _resolve_mirror_updated_to() -> str:
     """Resolve updatedTo as current time plus a small buffer."""
     resolved = _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
-    demisto.info(f"Resolved poll updatedTo: updated_to={resolved}")
     return resolved
 
 
@@ -3410,6 +3451,72 @@ def _normalize_mirror_field_value(value: Any) -> Any:
         if "old" in value:
             return value.get("old")
     return value
+
+
+def _outgoing_mirror_comment_value(value: Any) -> str | None:
+    """Return a Vega comment to push, skipping empty values and the layout display default."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text or text.casefold() == VEGA_NEW_COMMENT_LAYOUT_DEFAULT.casefold():
+        return None
+    return text
+
+
+def _mirror_delta_raw_field_value(delta: dict[str, Any], field_name: str) -> Any:
+    """Return the raw delta value for a field without falling back to investigation data."""
+    if not delta:
+        return None
+    custom_fields = _mirror_custom_fields(delta)
+    if field_name in custom_fields:
+        return custom_fields[field_name]
+    if field_name in delta:
+        return delta[field_name]
+    return None
+
+
+def _normalize_outgoing_mirror_compare_value(field_name: str, value: Any, entity_type_suffix: str) -> str:
+    """Normalize a mirror field value for outgoing change comparison."""
+    if value is None:
+        return ""
+    if isinstance(value, dict):
+        value = value.get("value") or value.get("new") or value.get("old")
+    text = str(value or "").strip()
+    if not text or text in ("-", VEGA_EMPTY_FIELD_DISPLAY):
+        if field_name == VEGA_VERDICT_FIELD:
+            return "NA"
+        return ""
+    if field_name in (VEGA_ALERT_STATUS_FIELD, VEGA_INCIDENT_STATUS_FIELD):
+        return _normalize_vega_status_for_api(text, entity_type_suffix)
+    if field_name in (VEGA_ALERT_SEVERITY_FIELD, VEGA_SEVERITY_FIELD):
+        return _normalize_vega_severity_for_display(text)
+    if field_name == VEGA_VERDICT_FIELD:
+        normalized = text.upper()
+        return VERDICT_DISPLAY_TO_API.get(normalized, normalized)
+    return text
+
+
+def _mirror_field_changed_in_delta(field_name: str, delta: dict[str, Any], entity_type_suffix: str) -> bool:
+    """Return True when delta records a meaningful outgoing change for the field."""
+    raw = _mirror_delta_raw_field_value(delta, field_name)
+    if raw is None:
+        return False
+    if isinstance(raw, dict) and ("old" in raw or "new" in raw):
+        old_normalized = _normalize_outgoing_mirror_compare_value(field_name, raw.get("old"), entity_type_suffix)
+        new_normalized = _normalize_outgoing_mirror_compare_value(field_name, raw.get("new"), entity_type_suffix)
+        return old_normalized != new_normalized
+    normalized = _normalize_outgoing_mirror_compare_value(field_name, raw, entity_type_suffix)
+    return bool(normalized)
+
+
+def _mirror_delta_changed_value(field_name: str, delta: dict[str, Any], entity_type_suffix: str) -> Any:
+    """Return the new value for a field that changed in delta, or None when unchanged."""
+    if not _mirror_field_changed_in_delta(field_name, delta, entity_type_suffix):
+        return None
+    raw = _mirror_delta_raw_field_value(delta, field_name)
+    if raw is None:
+        return None
+    return _normalize_mirror_field_value(raw)
 
 
 def _mirror_field_value(field_name: str, delta: dict[str, Any], data: dict[str, Any] | None = None) -> Any:
@@ -3579,14 +3686,12 @@ def _mirror_entity_type_from_args(
     for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident"), args.get("delta")):
         entity_type = _entity_type_from_mirror_payload(_mirror_dict(raw_payload))
         if entity_type:
-            demisto.info(f"Resolved entity type from mirror args payload: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     if use_investigation_context:
         incident = load_current_incident()
         entity_type = _entity_type_from_mirror_payload(incident)
         if entity_type:
-            demisto.info(f"Resolved entity type from investigation context: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     entity_type = _entity_type_from_mirror_payload(
@@ -3610,13 +3715,11 @@ def _fetch_alert_for_mirror_lookup(
     """Fetch and normalize an alert for mirror resolution."""
     alert = client.get_alert_for_mirror(vega_id, **lookup_filters)
     if not alert:
-        demisto.info(f"Lightweight alert lookup empty; trying get_alert_by_id: vega_id={vega_id}")
         alert = client.get_alert_by_id(vega_id, **lookup_filters)
     normalized = _normalize_alert_api_entity(alert) if alert else {}
     if not normalized or not _entity_matches_remote_id(normalized, vega_id):
         return {}
     if require_vega_alert_id and not _poll_entity_is_alert(normalized):
-        demisto.info(f"Alert payload missing vegaAlertId; treating as non-alert: vega_id={vega_id}")
         return {}
     return normalized
 
@@ -3630,7 +3733,6 @@ def _fetch_incident_for_mirror_lookup(
     """Fetch and normalize an incident for mirror resolution."""
     incident = client.get_incident_for_mirror(vega_id, **lookup_filters)
     if not incident:
-        demisto.info(f"Lightweight incident lookup empty; trying get_incident_by_id: vega_id={vega_id}")
         incident = client.get_incident_by_id(vega_id, **lookup_filters)
     normalized = _normalize_incident_api_entity(incident) if incident else {}
     if normalized and _entity_matches_remote_id(normalized, vega_id):
@@ -3647,7 +3749,6 @@ def _resolve_preferred_alert_entity(
     """Resolve a remote ID when the preferred entity type is Vega Alert."""
     normalized = _fetch_alert_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        demisto.info(f"Resolved as alert: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_ALERT
     demisto.info(f"Alert not found: remote_id={remote_id}")
     return {}, ""
@@ -3662,7 +3763,6 @@ def _resolve_preferred_incident_entity(
     """Resolve a remote ID when the preferred entity type is Vega Incident."""
     normalized = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        demisto.info(f"Resolved as incident: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_INCIDENT
     demisto.info(f"Incident not found: remote_id={remote_id}")
     return {}, ""
@@ -3682,16 +3782,13 @@ def _resolve_ambiguous_remote_entity(
         require_vega_alert_id=True,
     )
     if normalized_alert:
-        demisto.info(f"Resolved as alert via vegaAlertId: remote_id={remote_id}")
         return normalized_alert, MIRROR_ENTITY_SUFFIX_ALERT
 
     demisto.info(f"Alert not found or missing vegaAlertId; trying incident lookup: remote_id={remote_id}, vega_id={vega_id}")
     normalized_incident = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized_incident:
-        demisto.info(f"Resolved as incident (fallback): remote_id={remote_id}")
         return normalized_incident, MIRROR_ENTITY_SUFFIX_INCIDENT
 
-    demisto.info(f"No matching Vega entity found: remote_id={remote_id}")
     return {}, ""
 
 
@@ -3710,10 +3807,6 @@ def _resolve_remote_entity(
         preferred_entity_type = "Vega Alert"
     elif hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
         preferred_entity_type = "Vega Incident"
-
-    demisto.info(
-        f"Resolving remote entity: preferred_entity_type={preferred_entity_type}, remote_id={remote_id}, vega_id={vega_id}"
-    )
 
     if preferred_entity_type == "Vega Alert":
         return _resolve_preferred_alert_entity(client, vega_id, remote_id, entity_lookup_filters)
@@ -3771,6 +3864,9 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
     reasoning = _normalize_verdict_reasoning_for_display(entity)
     if reasoning and reasoning != VEGA_EMPTY_FIELD_DISPLAY:
         custom_fields[VEGA_VERDICT_REASONING_FIELD] = reasoning
+
+    if "comments" in entity:
+        custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
     return custom_fields
 
 
@@ -3806,12 +3902,16 @@ def _build_mirror_sync_object(
         "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
-    for key in ("status", "severity", "verdict", "verdictReasoning", "mirror_direction", "mirror_instance"):
+    for key in ("status", "severity", "verdict", "verdictReasoning"):
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
 
-    demisto.info(f"Built mirrored sync object: entity_type={entity_type_suffix}, remote_id={effective_remote_id}")
+    if "vegaComments" in raw:
+        sync_object["vegaComments"] = raw["vegaComments"]
+
+    _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
+
     return sync_object
 
 
@@ -3826,7 +3926,6 @@ def _build_incoming_status_sync_entries(
 
     api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
     if api_status in VEGA_CLOSE_STATUSES:
-        demisto.info(f"Building close entry: api_status={api_status}, entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -3840,7 +3939,6 @@ def _build_incoming_status_sync_entries(
             }
         ]
     if api_status == "REOPENED":
-        demisto.info(f"Building reopen entry: entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -3956,7 +4054,6 @@ def _poll_modified_alerts_for_mirror(
                 break
             offset += page_count
 
-        demisto.info(f"Alert poll complete: alert_count={len(alert_bare_ids)}")
     except Exception as exc:
         demisto.info(f"Alert poll failed: error={str(exc)}")
 
@@ -3993,7 +4090,6 @@ def _poll_modified_incidents_for_mirror(
                 break
             offset += page_count
 
-        demisto.info(f"Incident poll complete: incident_count={len(incident_bare_ids)}")
     except Exception as exc:
         demisto.info(f"Incident poll failed: error={str(exc)}")
 
@@ -4049,10 +4145,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         )
 
     finalized_ids = _finalize_modified_mirror_ids(modified_ids, alert_bare_ids, incident_bare_ids)
-    demisto.info(
-        f"Command finished: total_ids={len(finalized_ids)}, "
-        f"sample_ids={','.join(finalized_ids[:5]) if finalized_ids else 'none'}"
-    )
+    demisto.info(f"Command finished: total_ids={len(finalized_ids)}, ")
     return GetModifiedRemoteDataResponse(finalized_ids)
 
 
@@ -4076,11 +4169,6 @@ def _resolve_remote_entity_for_mirror(
     if context_entity_type:
         context_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT if context_entity_type == "Vega Incident" else MIRROR_ENTITY_SUFFIX_ALERT
         if entity_type_suffix != context_suffix:
-            demisto.info(
-                f"Enforcing investigation entity type over mismatched remote resolution: "
-                f"remote_id={remote_id}, investigation_type={context_entity_type}, "
-                f"resolved_as={entity_type_suffix or 'none'}"
-            )
             preferred_entity_type = context_entity_type
             entity, entity_type_suffix = _resolve_remote_entity(
                 client,
@@ -4092,10 +4180,6 @@ def _resolve_remote_entity_for_mirror(
     if (preferred_entity_type == "Vega Incident" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT) or (
         preferred_entity_type == "Vega Alert" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
     ):
-        demisto.info(
-            f"Re-resolving entity with preferred type: remote_id={remote_id}, "
-            f"preferred_entity_type={preferred_entity_type}, resolved_as={entity_type_suffix}"
-        )
         entity, entity_type_suffix = _resolve_remote_entity(
             client,
             remote_id,
@@ -4124,12 +4208,11 @@ def _build_not_found_mirror_response(
 
     not_found: dict[str, Any] = {
         "id": mirror_key,
-        "dbotMirrorId": prefixed_mirror_id,
         "mirror_id": prefixed_mirror_id,
     }
     if effective_entity_type:
         not_found["vegaEntityType"] = effective_entity_type
-        not_found.update(_get_mirroring_fields())
+    _apply_mirror_sync_metadata(not_found)
     return GetRemoteDataResponse(mirrored_object=not_found, entries=[])
 
 
@@ -4182,13 +4265,12 @@ def _build_get_remote_data_error_response(remote_id: str, args: dict[str, Any], 
     preferred_entity_type = _mirror_entity_type_from_args(args, remote_id)
     error_object: dict[str, Any] = {
         "id": mirror_key,
-        "dbotMirrorId": mirror_key,
-        "mirror_id": mirror_key,
         "in_mirror_error": str(exc),
     }
     if preferred_entity_type:
         error_object["vegaEntityType"] = preferred_entity_type
-    error_object.update(_get_mirroring_fields())
+    error_object["mirror_id"] = mirror_key
+    _apply_mirror_sync_metadata(error_object)
     return GetRemoteDataResponse(mirrored_object=error_object, entries=[])
 
 
@@ -4233,9 +4315,6 @@ def get_remote_data_command(
         entries = _build_incoming_mirror_comment_entries(entity, last_update_dt)
         entries.extend(_build_incoming_status_sync_entries(entity, entity_type_suffix, last_update_dt))
 
-        demisto.info(
-            f"Command finished: remote_id={remote_id}, entity_type={entity_type_suffix}, " f"comment_entries={len(entries)}"
-        )
         return GetRemoteDataResponse(mirrored_object=mirrored_object, entries=entries)
     except Exception as exc:
         demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}")
@@ -4256,35 +4335,41 @@ def _build_outgoing_alert_mirror_update(
     delta: dict[str, Any],
     data: dict[str, Any],
     inc_status: int | None,
+    enabled_fields: set[str] | None = None,
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega alert."""
+    del data
     update_input: dict[str, Any] = {}
+    entity_type_suffix = MIRROR_ENTITY_SUFFIX_ALERT
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
 
-    def delta_value(field_name: str) -> Any:
-        return _mirror_field_value(field_name, delta, data)
+    if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
+        if inc_status == IncidentStatus.DONE:
+            update_input["status"] = "RESOLVED"
+        else:
+            status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is not None and str(status).strip():
+                update_input["status"] = _validate_alert_status_value(str(status))
 
-    if inc_status == IncidentStatus.DONE:
-        update_input["status"] = "RESOLVED"
-    else:
-        status = delta_value(VEGA_ALERT_STATUS_FIELD)
-        if status is not None and str(status).strip():
-            update_input["status"] = _validate_alert_status_value(str(status))
+    if OUTGOING_MIRROR_FIELD_VERDICT in active_fields:
+        verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
+        if verdict is not None and str(verdict).strip():
+            update_input["verdict"] = _validate_verdict_value(str(verdict))
 
-    verdict = delta_value(VEGA_VERDICT_FIELD)
-    if verdict is not None and str(verdict).strip():
-        update_input["verdict"] = _validate_verdict_value(str(verdict))
+    if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
+        severity = _mirror_delta_changed_value(VEGA_ALERT_SEVERITY_FIELD, delta, entity_type_suffix)
+        if severity is not None and str(severity).strip():
+            update_input["severity"] = _validate_severity_value(str(severity))
 
-    severity = delta_value(VEGA_ALERT_SEVERITY_FIELD)
-    if severity is not None and str(severity).strip():
-        update_input["severity"] = _validate_severity_value(str(severity))
+    if OUTGOING_MIRROR_FIELD_VERDICT_REASONING in active_fields:
+        verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
+        if verdict_reasoning is not None and str(verdict_reasoning).strip():
+            update_input["verdictReasoning"] = str(verdict_reasoning).strip()
 
-    verdict_reasoning = delta_value(VEGA_VERDICT_REASONING_FIELD)
-    if verdict_reasoning is not None and str(verdict_reasoning).strip():
-        update_input["verdictReasoning"] = str(verdict_reasoning).strip()
-
-    comment = delta_value(VEGA_NEW_COMMENT_FIELD)
-    if comment is not None and str(comment).strip():
-        update_input["comment"] = str(comment).strip()
+    if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
+        comment = _outgoing_mirror_comment_value(_mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix))
+        if comment is not None:
+            update_input["comment"] = comment
     return update_input
 
 
@@ -4292,43 +4377,49 @@ def _build_outgoing_incident_mirror_update(
     delta: dict[str, Any],
     data: dict[str, Any],
     inc_status: int | None,
+    enabled_fields: set[str] | None = None,
 ) -> dict[str, Any]:
     """Build the outgoing mirror update payload for a Vega incident."""
     update_input: dict[str, Any] = {}
+    entity_type_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
+    mirror_verdict = OUTGOING_MIRROR_FIELD_VERDICT in active_fields
+    mirror_verdict_reasoning = OUTGOING_MIRROR_FIELD_VERDICT_REASONING in active_fields
 
-    def delta_value(field_name: str) -> Any:
-        return _mirror_field_value(field_name, delta, data)
+    if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
+        if inc_status == IncidentStatus.DONE:
+            update_input["status"] = "RESOLVED"
+        else:
+            status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is None or not str(status).strip():
+                status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
+            if status is not None and str(status).strip():
+                update_input["status"] = _validate_incident_status_value(str(status))
 
-    if inc_status == IncidentStatus.DONE:
-        update_input["status"] = "RESOLVED"
-    else:
-        status = delta_value(VEGA_INCIDENT_STATUS_FIELD)
-        if status is None or not str(status).strip():
-            status = delta_value(VEGA_ALERT_STATUS_FIELD)
-        if status is not None and str(status).strip():
-            update_input["status"] = _validate_incident_status_value(str(status))
+    if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
+        severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
+        if severity is not None and str(severity).strip():
+            update_input["severity"] = _validate_severity_value(str(severity))
 
-    severity = delta_value(VEGA_SEVERITY_FIELD)
-    if severity is not None and str(severity).strip():
-        update_input["severity"] = _validate_severity_value(str(severity))
+    if mirror_verdict or mirror_verdict_reasoning:
+        verdict = _mirror_delta_changed_value(VEGA_VERDICT_FIELD, delta, entity_type_suffix)
+        verdict_reasoning = _mirror_delta_changed_value(VEGA_VERDICT_REASONING_FIELD, delta, entity_type_suffix)
+        if mirror_verdict and verdict is not None and str(verdict).strip():
+            update_input["verdict"] = {
+                "value": _validate_verdict_value(str(verdict)),
+                "reasoning": str(verdict_reasoning or "") if mirror_verdict_reasoning else "",
+            }
+        elif mirror_verdict_reasoning and verdict_reasoning is not None and str(verdict_reasoning).strip():
+            current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, {}, data)
+            update_input["verdict"] = {
+                "value": _validate_verdict_value(str(current_verdict or "NA")),
+                "reasoning": str(verdict_reasoning).strip(),
+            }
 
-    verdict = delta_value(VEGA_VERDICT_FIELD)
-    verdict_reasoning = delta_value(VEGA_VERDICT_REASONING_FIELD)
-    if verdict is not None and str(verdict).strip():
-        update_input["verdict"] = {
-            "value": _validate_verdict_value(str(verdict)),
-            "reasoning": str(verdict_reasoning or ""),
-        }
-    elif verdict_reasoning is not None and str(verdict_reasoning).strip():
-        current_verdict = _mirror_field_value(VEGA_VERDICT_FIELD, delta, data)
-        update_input["verdict"] = {
-            "value": _validate_verdict_value(str(current_verdict or "NA")),
-            "reasoning": str(verdict_reasoning).strip(),
-        }
-
-    comment = delta_value(VEGA_NEW_COMMENT_FIELD)
-    if comment is not None and str(comment).strip():
-        update_input["comment"] = str(comment).strip()
+    if OUTGOING_MIRROR_FIELD_COMMENTS in active_fields:
+        comment = _outgoing_mirror_comment_value(_mirror_delta_changed_value(VEGA_NEW_COMMENT_FIELD, delta, entity_type_suffix))
+        if comment is not None:
+            update_input["comment"] = comment
     return update_input
 
 
@@ -4345,10 +4436,6 @@ def _push_outgoing_mirror_entity_update(
         demisto.info(f"No {entity_label} fields to push: remote_id={remote_id}")
         return
 
-    demisto.info(
-        f"Updating {'alert' if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else 'incident'} in Vega: "
-        f"remote_id={remote_id}, payload={update_input}"
-    )
     if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
         client.update_alerts({**update_input, "alertIds": [vega_id]})
     else:
@@ -4361,8 +4448,14 @@ def _mirror_outgoing_war_room_comments(
     entity_type_suffix: str,
     vega_id: str,
     remote_id: str,
+    enabled_fields: set[str] | None = None,
 ) -> None:
     """Mirror eligible War Room comments to Vega."""
+    active_fields = enabled_fields if enabled_fields is not None else _resolve_outgoing_mirror_fields()
+    if OUTGOING_MIRROR_FIELD_COMMENTS not in active_fields:
+        demisto.info(f"War Room comments filtered by outgoing mirror field config: remote_id={remote_id}")
+        return
+
     for comment in _collect_outgoing_entry_comments(mirror_entries):
         demisto.info(f"Mirroring War Room comment to Vega: remote_id={remote_id}")
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
@@ -4439,6 +4532,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     mirror_entries = _normalize_mirror_entries(parsed_args.entries)
     vega_id, _ = _parse_mirror_id(remote_id)
     inc_status = _parse_outgoing_mirror_inc_status(parsed_args)
+    enabled_fields = _resolve_outgoing_mirror_fields()
 
     try:
         entity, entity_type_suffix, _ = _resolve_outgoing_mirror_entity(client, args, remote_id, delta, data)
@@ -4448,12 +4542,19 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
         if _mirror_bool(parsed_args.incident_changed):
             if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
-                update_input = _build_outgoing_alert_mirror_update(delta, data, inc_status)
+                update_input = _build_outgoing_alert_mirror_update(delta, data, inc_status, enabled_fields)
             else:
-                update_input = _build_outgoing_incident_mirror_update(delta, data, inc_status)
+                update_input = _build_outgoing_incident_mirror_update(delta, data, inc_status, enabled_fields)
             _push_outgoing_mirror_entity_update(client, entity_type_suffix, vega_id, remote_id, update_input)
 
-        _mirror_outgoing_war_room_comments(client, mirror_entries, entity_type_suffix, vega_id, remote_id)
+        _mirror_outgoing_war_room_comments(
+            client,
+            mirror_entries,
+            entity_type_suffix,
+            vega_id,
+            remote_id,
+            enabled_fields,
+        )
         demisto.info(f"Command finished: remote_id={remote_id}")
     except Exception as exc:
         demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}, error_type={type(exc).__name__}")
@@ -4489,9 +4590,102 @@ def _handle_fetch_entity_error(entity_label: str, exc: Exception) -> None:
     raise exc
 
 
-def _merge_fetch_boundary_ids(previous_ids: list[str], next_ids: list[str]) -> list[str]:
-    """Merge previous and next boundary IDs when fetch filters change."""
-    return list({str(entity_id) for entity_id in previous_ids if entity_id} | set(next_ids))
+def _fetch_filters_changed(last_run: dict, fetch_config_key: str, fetch_config: str) -> bool:
+    """Return True when fetch filters changed since the previous run."""
+    previous_config = last_run.get(fetch_config_key)
+    return previous_config is not None and previous_config != fetch_config
+
+
+def _clear_fetch_pagination_state(next_run: dict, offset_key: str, pagination_from_key: str) -> None:
+    """Drop saved offset pagination for an entity type."""
+    next_run.pop(offset_key, None)
+    next_run.pop(pagination_from_key, None)
+
+
+def _batch_fetch_last_run(
+    last_run: dict,
+    next_run: dict,
+    *,
+    offset_key: str,
+    pagination_from_key: str,
+    fetch_config_key: str,
+    fetch_config: str,
+) -> dict:
+    """Build the last_run view used for API pagination.
+
+    When fetch filters change, discard stale offset state so the next query uses the
+    stored cursor timestamp instead of an old backfill window.
+    """
+    if not _fetch_filters_changed(last_run, fetch_config_key, fetch_config):
+        return last_run
+
+    _clear_fetch_pagination_state(next_run, offset_key, pagination_from_key)
+    batch_run = dict(last_run)
+    batch_run.pop(offset_key, None)
+    batch_run.pop(pagination_from_key, None)
+    return batch_run
+
+
+def _is_resuming_fetch_pagination(
+    last_run: dict,
+    offset_key: str,
+    fetch_config_key: str,
+    fetch_config: str,
+) -> bool:
+    """Return True only when continuing offset pagination for the same filter set."""
+    return last_run.get(offset_key) is not None and not _fetch_filters_changed(last_run, fetch_config_key, fetch_config)
+
+
+def validate_max_fetch(max_fetch: int | str | None) -> None:
+    """Validate that max_fetch is an integer between 1 and 50 inclusive."""
+    parsed = arg_to_number(max_fetch, arg_name="max_fetch", required=False)
+    if parsed is None or parsed < MAX_FETCH_MIN or parsed > MAX_FETCH_CAP:
+        raise ValueError(MAX_FETCH_ERROR)
+
+
+def _resolve_max_fetch(max_fetch: int | str | None) -> int:
+    """Return the combined per-fetch limit, defaulting to 50 when the value is invalid."""
+    try:
+        validate_max_fetch(max_fetch)
+    except ValueError:
+        return DEFAULT_MAX_FETCH
+    return int(arg_to_number(max_fetch, arg_name="max_fetch", required=False))  # type: ignore[arg-type]
+
+
+def _fetch_vega_entity_batch(
+    last_run: dict,
+    next_run: dict,
+    *,
+    offset_key: str,
+    pagination_from_key: str,
+    default_from_time: str,
+    limit: int,
+    fetch_func: Callable[..., dict],
+    entities_key: str,
+    **fetch_kwargs: Any,
+) -> list[dict]:
+    """Fetch up to `limit` Vega entities and store offset state when more remain."""
+    saved_offset = last_run.get(offset_key)
+    offset = int(saved_offset) if saved_offset is not None else 0
+    from_time = str(last_run.get(pagination_from_key) or default_from_time) if offset > 0 else default_from_time
+
+    entities, next_offset = _fetch_paginated_entities(
+        fetch_func,
+        entities_key=entities_key,
+        max_entities=limit,
+        start_offset=offset,
+        from_time=from_time,
+        **fetch_kwargs,
+    )
+
+    if next_offset is not None:
+        next_run[offset_key] = next_offset
+        next_run[pagination_from_key] = from_time
+    else:
+        next_run.pop(offset_key, None)
+        next_run.pop(pagination_from_key, None)
+
+    return entities
 
 
 def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[dict]:
@@ -4504,6 +4698,90 @@ def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[di
     except Exception:
         return []
     return []
+
+
+def _ingest_fetched_incidents(
+    client: Client,
+    last_run: dict,
+    next_run: dict,
+    xsoar_incidents: list[dict],
+    *,
+    incidents_from_time: str,
+    incidents_last_fetch: str,
+    incidents_last_ids: list[str],
+    incidents_fetch_config: str,
+    incident_severities: list[str] | None,
+    incident_statuses: list[str] | None,
+    incident_verdicts: list[str] | None,
+    limit: int,
+    backfill_days: str | int | None = None,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
+) -> int:
+    try:
+        batch_last_run = _batch_fetch_last_run(
+            last_run,
+            next_run,
+            offset_key=INCIDENTS_OFFSET_KEY,
+            pagination_from_key=INCIDENTS_PAGINATION_FROM_KEY,
+            fetch_config_key="incidents_fetch_config",
+            fetch_config=incidents_fetch_config,
+        )
+        incidents = _fetch_vega_entity_batch(
+            batch_last_run,
+            next_run,
+            offset_key=INCIDENTS_OFFSET_KEY,
+            pagination_from_key=INCIDENTS_PAGINATION_FROM_KEY,
+            default_from_time=incidents_from_time,
+            limit=limit,
+            fetch_func=client.get_incidents,
+            entities_key="incidents",
+            severities=incident_severities,
+            statuses=incident_statuses,
+            verdicts=incident_verdicts,
+        )
+
+        previous_ids = set(incidents_last_ids)
+        new_ids: list[str] = []
+        duplicate_ids: list[str] = []
+        ingested: list[dict] = []
+        parsed_last_fetch = _parse_entity_created_at(incidents_last_fetch)
+        max_created_at_dt = _normalize_fetch_datetime(parsed_last_fetch) if parsed_last_fetch else None
+
+        current_cycle_ids = list(next_run.get("incidents_last_ids", []))
+
+        for incident in incidents:
+            incident_id = _normalize_entity_id(incident)
+            if not incident_id:
+                continue
+
+            current_cycle_ids.append(incident_id)
+
+            created_at_raw = _parse_entity_created_at(incident.get("createdAt"))
+            if created_at_raw:
+                dt = _normalize_fetch_datetime(created_at_raw)
+                if max_created_at_dt is None or dt > max_created_at_dt:
+                    max_created_at_dt = dt
+
+            if incident_id in previous_ids:
+                duplicate_ids.append(incident_id)
+                continue
+
+            new_ids.append(incident_id)
+            timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
+            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
+            ingested.append(incident)
+
+        next_run["incidents_last_ids"] = list(set(current_cycle_ids))
+        if new_ids and max_created_at_dt:
+            next_run["incidents_last_fetch"] = _format_fetch_timestamp(max_created_at_dt)
+        elif not new_ids:
+            next_run["incidents_last_fetch"] = _current_fetch_timestamp()
+
+        next_run["incidents_fetch_config"] = incidents_fetch_config
+        return len(ingested)
+    except Exception as exc:
+        _handle_fetch_entity_error("incidents", exc)
+        return 0
 
 
 def _ingest_fetched_alerts(
@@ -4521,75 +4799,75 @@ def _ingest_fetched_alerts(
     alert_verdicts: list[str] | None,
     has_related_incidents: bool | None,
     integration_url: str | None,
-) -> None:
-    """Fetch alerts from Vega and append new XSOAR incidents."""
+    limit: int,
+    backfill_days: str | int | None = None,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
+) -> int:
     try:
-        alerts = _fetch_paginated_entities(
-            client.get_alerts,
+        batch_last_run = _batch_fetch_last_run(
+            last_run,
+            next_run,
+            offset_key=ALERTS_OFFSET_KEY,
+            pagination_from_key=ALERTS_PAGINATION_FROM_KEY,
+            fetch_config_key="alerts_fetch_config",
+            fetch_config=alerts_fetch_config,
+        )
+        alerts = _fetch_vega_entity_batch(
+            batch_last_run,
+            next_run,
+            offset_key=ALERTS_OFFSET_KEY,
+            pagination_from_key=ALERTS_PAGINATION_FROM_KEY,
+            default_from_time=alerts_from_time,
+            limit=limit,
+            fetch_func=client.get_alerts,
             entities_key="alerts",
-            max_entities=GET_ALERTS_FETCH_LIMIT,
             severities=alert_severities,
             statuses=alert_statuses,
             verdicts=alert_verdicts,
             has_related_incidents=has_related_incidents,
-            from_time=alerts_from_time,
         )
-        for alert in alerts:
-            if not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
-                continue
-            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url))
 
-        next_run["alerts_last_fetch"], next_run["alerts_last_ids"] = _resolve_next_fetch_state(
-            last_run, "alerts_last_fetch", alerts, alerts_last_fetch, alerts_last_ids
-        )
-        previous_alerts_fetch_config = last_run.get("alerts_fetch_config")
-        if previous_alerts_fetch_config is not None and previous_alerts_fetch_config != alerts_fetch_config:
-            next_run["alerts_last_ids"] = _merge_fetch_boundary_ids(alerts_last_ids, next_run["alerts_last_ids"])
+        previous_ids = set(alerts_last_ids)
+        new_ids: list[str] = []
+        duplicate_ids: list[str] = []
+        ingested: list[dict] = []
+        parsed_last_fetch = _parse_entity_created_at(alerts_last_fetch)
+        max_created_at_dt = _normalize_fetch_datetime(parsed_last_fetch) if parsed_last_fetch else None
+
+        current_cycle_ids = list(next_run.get("alerts_last_ids", []))
+
+        for alert in alerts:
+            alert_id = _normalize_entity_id(alert)
+            if not alert_id:
+                continue
+
+            current_cycle_ids.append(alert_id)
+
+            created_at_raw = _parse_entity_created_at(alert.get("createdAt"))
+            if created_at_raw:
+                dt = _normalize_fetch_datetime(created_at_raw)
+                if max_created_at_dt is None or dt > max_created_at_dt:
+                    max_created_at_dt = dt
+
+            if alert_id in previous_ids:
+                duplicate_ids.append(alert_id)
+                continue
+
+            new_ids.append(alert_id)
+            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
+            ingested.append(alert)
+
+        next_run["alerts_last_ids"] = list(set(current_cycle_ids))
+        if new_ids and max_created_at_dt:
+            next_run["alerts_last_fetch"] = _format_fetch_timestamp(max_created_at_dt)
+        elif not new_ids:
+            next_run["alerts_last_fetch"] = _current_fetch_timestamp()
+
         next_run["alerts_fetch_config"] = alerts_fetch_config
+        return len(ingested)
     except Exception as exc:
         _handle_fetch_entity_error("alerts", exc)
-
-
-def _ingest_fetched_incidents(
-    client: Client,
-    last_run: dict,
-    next_run: dict,
-    xsoar_incidents: list[dict],
-    *,
-    incidents_from_time: str,
-    incidents_last_fetch: str,
-    incidents_last_ids: list[str],
-    incidents_fetch_config: str,
-    incident_severities: list[str] | None,
-    incident_statuses: list[str] | None,
-    incident_verdicts: list[str] | None,
-) -> None:
-    """Fetch incidents from Vega and append new XSOAR incidents."""
-    try:
-        incidents = _fetch_paginated_entities(
-            client.get_incidents,
-            entities_key="incidents",
-            severities=incident_severities,
-            statuses=incident_statuses,
-            verdicts=incident_verdicts,
-            from_time=incidents_from_time,
-        )
-        for incident in incidents:
-            if not _should_ingest_entity(incident, incidents_last_fetch, incidents_last_ids):
-                continue
-            incident_id = _normalize_entity_id(incident)
-            timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
-            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
-
-        next_run["incidents_last_fetch"], next_run["incidents_last_ids"] = _resolve_next_fetch_state(
-            last_run, "incidents_last_fetch", incidents, incidents_last_fetch, incidents_last_ids
-        )
-        previous_incidents_fetch_config = last_run.get("incidents_fetch_config")
-        if previous_incidents_fetch_config is not None and previous_incidents_fetch_config != incidents_fetch_config:
-            next_run["incidents_last_ids"] = _merge_fetch_boundary_ids(incidents_last_ids, next_run["incidents_last_ids"])
-        next_run["incidents_fetch_config"] = incidents_fetch_config
-    except Exception as exc:
-        _handle_fetch_entity_error("incidents", exc)
+        return 0
 
 
 def fetch_incidents_command(
@@ -4605,9 +4883,11 @@ def fetch_incidents_command(
     incident_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     first_fetch_time: str,
+    backfill_days: str | int | None = None,
     integration_url: str | None = None,
+    max_fetch: int = DEFAULT_MAX_FETCH,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
 ) -> tuple[dict, list[dict]]:
-    """Fetch alerts and/or incidents from Vega and return them as XSOAR incidents."""
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
     next_run.pop("alerts_seen_ids", None)
@@ -4622,43 +4902,131 @@ def fetch_incidents_command(
     )
     incidents_fetch_config = _build_fetch_filter_fingerprint(incident_severities, incident_statuses, incident_verdicts)
 
-    if fetch_alerts:
-        _ingest_fetched_alerts(
+    remaining = max_fetch
+    working_run = last_run
+    incidents_touched = False
+    alerts_touched = False
+
+    def _get_from_time(last_fetch_key: str) -> str:
+        last_fetch = working_run.get(last_fetch_key)
+        if last_fetch:
+            return _apply_lookback_to_from_time(last_fetch, lookback_minutes)
+        return first_fetch_time
+
+    incidents_last_fetch = working_run.get("incidents_last_fetch") or first_fetch_time
+    alerts_last_fetch = working_run.get("alerts_last_fetch") or first_fetch_time
+
+    if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
+        incidents_from_time = _get_from_time("incidents_last_fetch")
+        ingested_incidents = _ingest_fetched_incidents(
             client,
-            last_run,
+            working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_resolve_fetch_from_time(last_run, "alerts_last_fetch", first_fetch_time),
-            alerts_last_fetch=last_run.get("alerts_last_fetch") or first_fetch_time,
-            alerts_last_ids=last_run.get("alerts_last_ids", []),
+            incidents_from_time=incidents_from_time,
+            incidents_last_fetch=incidents_last_fetch,
+            incidents_last_ids=working_run.get("incidents_last_ids", []),
+            incidents_fetch_config=incidents_fetch_config,
+            incident_severities=incident_severities,
+            incident_statuses=incident_statuses,
+            incident_verdicts=incident_verdicts,
+            limit=remaining,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
+        )
+        remaining -= ingested_incidents
+        working_run = next_run
+        incidents_touched = True
+
+    if (
+        fetch_alerts
+        and remaining > 0
+        and working_run.get(INCIDENTS_OFFSET_KEY) is None
+        and working_run.get(ALERTS_OFFSET_KEY) is not None
+    ):
+        alerts_from_time = _get_from_time("alerts_last_fetch")
+        ingested_alerts = _ingest_fetched_alerts(
+            client,
+            working_run,
+            next_run,
+            xsoar_incidents,
+            alerts_from_time=alerts_from_time,
+            alerts_last_fetch=alerts_last_fetch,
+            alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
             alert_severities=alert_severities,
             alert_statuses=alert_statuses,
             alert_verdicts=alert_verdicts,
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
+            limit=remaining,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
+        remaining -= ingested_alerts
+        working_run = next_run
+        alerts_touched = True
 
-    if fetch_incidents:
-        _ingest_fetched_incidents(
+    if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
+        incidents_from_time = _get_from_time("incidents_last_fetch")
+        ingested_incidents = _ingest_fetched_incidents(
             client,
-            last_run,
+            working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_resolve_fetch_from_time(last_run, "incidents_last_fetch", first_fetch_time),
-            incidents_last_fetch=last_run.get("incidents_last_fetch") or first_fetch_time,
-            incidents_last_ids=last_run.get("incidents_last_ids", []),
+            incidents_from_time=incidents_from_time,
+            incidents_last_fetch=incidents_last_fetch,
+            incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
+            limit=remaining,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
+        )
+        remaining -= ingested_incidents
+        working_run = next_run
+
+    if (
+        fetch_alerts
+        and remaining > 0
+        and not alerts_touched
+        and next_run.get(INCIDENTS_OFFSET_KEY) is None
+        and next_run.get(ALERTS_OFFSET_KEY) is None
+    ):
+        alerts_from_time = _get_from_time("alerts_last_fetch")
+        _ingest_fetched_alerts(
+            client,
+            working_run,
+            next_run,
+            xsoar_incidents,
+            alerts_from_time=alerts_from_time,
+            alerts_last_fetch=alerts_last_fetch,
+            alerts_last_ids=working_run.get("alerts_last_ids", []),
+            alerts_fetch_config=alerts_fetch_config,
+            alert_severities=alert_severities,
+            alert_statuses=alert_statuses,
+            alert_verdicts=alert_verdicts,
+            has_related_incidents=has_related_incidents,
+            integration_url=integration_url,
+            limit=remaining,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
 
     return next_run, xsoar_incidents
 
 
-def test_module(client: Client, backfill_days: str | int | None = None):
+def test_module(
+    client: Client,
+    backfill_days: str | int | None = None,
+    max_fetch: int | str | None = None,
+    lookback_minutes: int | str | None = None,
+):
     try:
+        validate_max_fetch(max_fetch)
+        validate_lookback_minutes(lookback_minutes)
         client.test_connection(backfill_days)
         return "ok"
     except Exception as e:
@@ -4671,8 +5039,8 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     backfill_days = params.get("backfill_days")
     return {
         "base_url": params.get("url"),
-        "access_key": params.get("access_key"),
-        "access_key_id": params.get("access_key_id"),
+        "access_key": params.get("access_key", {}).get("password").strip(),
+        "access_key_id": params.get("access_key_id", {}).get("password").strip(),
         "verify_certificate": not argToBoolean(params.get("insecure", False)),
         "proxy": argToBoolean(params.get("proxy", False)),
         "fetch_alerts": "Alerts" in vega_entities,
@@ -4686,6 +5054,8 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "incident_verdicts": filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None),
         "backfill_days": backfill_days,
         "first_fetch_time": parse_backfill_days(backfill_days),
+        "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
+        "lookback_minutes": _parse_lookback_minutes(params.get("lookback_minutes")),
     }
 
 
@@ -4703,7 +5073,11 @@ def _build_vega_client(config: dict[str, Any]) -> Client:
 def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any]) -> None:
     """Route a Vega integration command to its handler."""
     command_handlers: dict[str, Callable[..., None]] = {
-        "test-module": lambda: return_results(test_module(client, config["backfill_days"])),
+        "test-module": lambda: return_results(
+            test_module(
+                client, config["backfill_days"], demisto.params().get("max_fetch"), demisto.params().get("lookback_minutes")
+            )
+        ),
         "vega-get-alert-events": lambda: return_results(fetch_alert_events_command(client, demisto.args())),
         "vega-set-detections-state": lambda: return_results(set_detections_state_command(client, demisto.args())),
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
@@ -4732,7 +5106,10 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             incident_statuses=config["incident_statuses"],
             incident_verdicts=config["incident_verdicts"],
             first_fetch_time=config["first_fetch_time"],
+            backfill_days=config["backfill_days"],
             integration_url=config["base_url"],
+            max_fetch=config["max_fetch"],
+            lookback_minutes=config["lookback_minutes"],
         )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)
