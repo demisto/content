@@ -27,6 +27,7 @@ from ServiceDeskPlus import (
 )
 from test_data.response_constants import (
     RESPONSE_CREATE_REQUEST,
+    RESPONSE_FAILURE_GENERIC,
     RESPONSE_FETCH_INCIDENTS,
     RESPONSE_GENERATE_REFRESH_TOKEN,
     RESPONSE_LINK_REQUEST,
@@ -37,6 +38,7 @@ from test_data.response_constants import (
     RESPONSE_RESOLUTION_LIST,
     RESPONSE_UNLINK_REQUEST,
     RESPONSE_UPDATE_REQUEST,
+    RESPONSE_WARNING_MISSING_FIELDS,
     RESPONSE_GET_NOTES_LIST,
     RESPONSE_GET_NOTE,
     RESPONSE_ADD_NOTE,
@@ -848,3 +850,135 @@ def test_update_request_note_command(mocker):
     }
     result = update_request_note_command(client, args)
     assert result.outputs == EXPECTED_UPDATE_NOTE
+
+
+# ---------------------------------------------------------------------------
+# Tests for API warning / failure response handling (XSUP-70513)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "command, args",
+    [
+        (update_request_command, {"request_id": "1234", "status": "Closed"}),
+        (close_request_command, {"request_id": "1234"}),
+    ],
+)
+def test_warning_response_raises_error_for_update_and_close(command, args, mocker):
+    """
+    Given:
+        - The ManageEngine API returns HTTP 200 but with a warning status in the
+          JSON body (e.g. mandatory fields 'technician' and 'resolution' are missing).
+
+    When:
+        - service-desk-plus-request-update or service-desk-plus-request-close is called.
+
+    Then:
+        - A DemistoException is raised containing the server's warning details so
+          the caller sees a meaningful error instead of a misleading success message.
+    """
+    from CommonServerPython import DemistoException
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_WARNING_MISSING_FIELDS)
+
+    with pytest.raises(DemistoException) as exc_info:
+        command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "warning" in error_message.lower()
+    assert "technician" in error_message or "resolution" in error_message
+
+
+@pytest.mark.parametrize(
+    "command, args",
+    [
+        (update_request_command, {"request_id": "1234", "status": "Closed"}),
+        (close_request_command, {"request_id": "1234"}),
+    ],
+)
+def test_failure_response_raises_error_for_update_and_close(command, args, mocker):
+    """
+    Given:
+        - The ManageEngine API returns HTTP 200 but with a 'failed' status in the
+          JSON body.
+
+    When:
+        - service-desk-plus-request-update or service-desk-plus-request-close is called.
+
+    Then:
+        - A DemistoException is raised containing the server's failure message.
+    """
+    from CommonServerPython import DemistoException
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_FAILURE_GENERIC)
+
+    with pytest.raises(DemistoException) as exc_info:
+        command(client, args)
+
+    error_message = str(exc_info.value)
+    assert "failed" in error_message.lower()
+
+
+def test_check_response_status_success_does_not_raise():
+    """
+    Given:
+        - A standard success response (status='success', status_code=2000).
+
+    When:
+        - check_response_status is called.
+
+    Then:
+        - No exception is raised.
+    """
+    from ServiceDeskPlus import check_response_status
+
+    success_response = {"response_status": {"status": "success", "status_code": 2000, "messages": []}}
+    # Should not raise
+    check_response_status(success_response)
+
+
+def test_check_response_status_warning_raises():
+    """
+    Given:
+        - A warning response with missing mandatory fields.
+
+    When:
+        - check_response_status is called.
+
+    Then:
+        - A DemistoException is raised with the field names in the message.
+    """
+    from CommonServerPython import DemistoException
+    from ServiceDeskPlus import check_response_status
+
+    with pytest.raises(DemistoException) as exc_info:
+        check_response_status(RESPONSE_WARNING_MISSING_FIELDS)
+
+    error_message = str(exc_info.value)
+    assert "warning" in error_message.lower()
+    assert "technician" in error_message
+    assert "resolution" in error_message
+
+
+def test_check_response_status_failure_raises():
+    """
+    Given:
+        - A generic failure response.
+
+    When:
+        - check_response_status is called.
+
+    Then:
+        - A DemistoException is raised with the failure message.
+    """
+    from CommonServerPython import DemistoException
+    from ServiceDeskPlus import check_response_status
+
+    with pytest.raises(DemistoException) as exc_info:
+        check_response_status(RESPONSE_FAILURE_GENERIC)
+
+    error_message = str(exc_info.value)
+    assert "failed" in error_message.lower()
+    assert "Operation failed" in error_message
