@@ -1,39 +1,20 @@
 {
-    "description": "Maps Palo Alto Networks Device Security incidents.",
+    "defaultIncidentType": "Device Security Alert",
+    "description": "Classifies Palo Alto Networks Device Security incidents.",
     "feed": false,
-    "id": "Palo Alto Networks Device Security Incoming Mapper",
-    "mapping": {
-        "Device Security Alert": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "details": {
-                    "simple": "description"
-                },
-                "name": {
-                    "simple": "name"
-                },
-                "occurred": {
-                    "simple": "date"
-                }
-            }
-        },
-        "Device Security Vulnerability": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "details": {
-                    "simple": "vulnerability_name"
-                },
-                "name": {
-                    "simple": "name"
-                },
-                "occurred": {
-                    "simple": "detected_date"
-                }
-            }
-        }
+    "id": "Palo Alto Networks Device Security Classifier",
+    "keyTypeMap": {
+        "Device Security Alert": "Device Security Alert",
+        "Device Security Vulnerability": "Device Security Vulnerability"
     },
-    "name": "Palo Alto Networks Device Security Incoming Mapper",
-    "type": "mapping-incoming",
+    "name": "Palo Alto Networks Device Security Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "rawType"
+    },
+    "type": "classification",
     "version": -1,
     "fromVersion": "6.10.0"
 }

@@ -79,9 +79,9 @@ tasks:
     scriptarguments:
       assetid: {}
       closeNotes:
-        simple: ${inputs.CloseNotes}
+        simple: Job finished
       closeReason:
-        simple: ${inputs.CloseReason}
+        simple: ""
       code42alerttype: {}
       emailclassification: {}
       id:
@@ -194,19 +194,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: CloseReason
-  value:
-    simple: Other
-  required: false
-  description: The close reason passed to closeInvestigation when incidents are closed by this playbook.
-  playbookInputQuery:
-- key: CloseNotes
-  value:
-    simple: Job finished
-  required: false
-  description: The close notes passed to closeInvestigation when incidents are closed by this playbook.
-  playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
 tests:

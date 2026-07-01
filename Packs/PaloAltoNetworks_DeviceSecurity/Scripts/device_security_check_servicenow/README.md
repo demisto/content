@@ -28,11 +28,6 @@ This script is used in the following playbooks and scripts.
 
 * PANW Device Security ServiceNow Tickets Check
 
-## Inputs
-
----
-There are no inputs for this script.
-
 ## Outputs
 
 ---

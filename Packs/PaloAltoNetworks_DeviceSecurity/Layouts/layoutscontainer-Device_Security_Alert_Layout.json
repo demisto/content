@@ -33,14 +33,6 @@
                     {
                         "fieldId": "devicesecurityincidenturl",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "devicesecurityservicenowtablename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "devicesecurityservicenowrecordid",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -48,8 +40,7 @@
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
-                "type": "",
-                "version": 0
+                "type": ""
             }
         ]
     }
