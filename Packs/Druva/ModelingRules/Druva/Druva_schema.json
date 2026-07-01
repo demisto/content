@@ -1,7 +1,7 @@
 {
     "druva_druva_raw": {
         "timeStamp": {
-            "type": "int",
+            "type": "datetime",
             "is_array": false
         },
         "clientOS": {
@@ -93,7 +93,7 @@
             "is_array": false
         },
         "timestamp": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "facility": {
