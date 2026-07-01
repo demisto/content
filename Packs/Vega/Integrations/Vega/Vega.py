@@ -271,11 +271,11 @@ TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check you
 GET_ALERTS_QUERY = (
     "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
     "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, "
     "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
     " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
     "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
+    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, "
     "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
@@ -310,9 +310,9 @@ GET_INCIDENT_MIRROR_QUERY = (
 GET_INCIDENTS_QUERY = (
     "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
     "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
-    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
+    "$from: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
     " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
-    "statuses: $statuses, verdicts: $verdicts, from: $from, to: $to, updatedFrom: $updatedFrom, "
+    "statuses: $statuses, verdicts: $verdicts, from: $from, updatedFrom: $updatedFrom, "
     "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
     "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
     "   assignee { userId displayName email } "
@@ -612,7 +612,6 @@ def _build_alerts_query_variables(
     verdicts: list[str] | None = None,
     has_related_incidents: bool | None = None,
     from_time: str | None = None,
-    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     alert_ids: list[str] | None = None,
@@ -633,8 +632,6 @@ def _build_alerts_query_variables(
         variables["hasRelatedIncidents"] = has_related_incidents
     if from_time:
         variables["from"] = from_time
-    if to_time:
-        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -650,7 +647,6 @@ def _build_incidents_query_variables(
     statuses: list[str] | None = None,
     verdicts: list[str] | None = None,
     from_time: str | None = None,
-    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     incident_ids: list[str] | None = None,
@@ -669,8 +665,6 @@ def _build_incidents_query_variables(
         variables["verdicts"] = verdicts
     if from_time:
         variables["from"] = from_time
-    if to_time:
-        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -855,14 +849,15 @@ class Client(BaseClient):
         }
 
         try:
-            query_res = self._http_request(
+            response = self._http_request(
                 method="POST",
                 url_suffix="query",
                 headers=self._auth_headers(session_jwt),
                 json_data=query_data,
-                resp_type="json",
+                resp_type="response",
                 ok_codes=(200,),
             )
+            query_res = response.json()
         except Exception as exc:
             raise ValueError(_test_connection_error_message(exc, TEST_CONNECTION_ACCESS_KEY_ID_ERROR)) from exc
 
@@ -886,7 +881,6 @@ class Client(BaseClient):
         verdicts: list[str] | None = None,
         has_related_incidents: bool | None = None,
         from_time: str | None = None,
-        to_time: str | None = None,
         updated_from: str | None = None,
         updated_to: str | None = None,
         alert_ids: list[str] | None = None,
@@ -900,7 +894,6 @@ class Client(BaseClient):
             verdicts=verdicts,
             has_related_incidents=has_related_incidents,
             from_time=from_time,
-            to_time=to_time,
             updated_from=updated_from,
             updated_to=updated_to,
             alert_ids=alert_ids,
@@ -936,7 +929,6 @@ class Client(BaseClient):
         statuses: list[str] | None = None,
         verdicts: list[str] | None = None,
         from_time: str | None = None,
-        to_time: str | None = None,
         updated_from: str | None = None,
         updated_to: str | None = None,
         incident_ids: list[str] | None = None,
@@ -949,7 +941,6 @@ class Client(BaseClient):
             statuses=statuses,
             verdicts=verdicts,
             from_time=from_time,
-            to_time=to_time,
             updated_from=updated_from,
             updated_to=updated_to,
             incident_ids=incident_ids,
@@ -3279,89 +3270,6 @@ def _current_fetch_timestamp() -> str:
     return _format_fetch_timestamp(datetime.now(UTC))
 
 
-def _update_fetch_state(
-    fetched_entities: list[dict],
-    previous_last_fetch: str,
-    previous_last_ids: list[str],
-    id_key: str = "id",
-    time_key: str = "createdAt",
-) -> tuple[str, list[str]]:
-    """Calculate next-run last_fetch and last_ids from a paginated API response."""
-    if not fetched_entities:
-        return previous_last_fetch, previous_last_ids
-
-    parsed_entities: list[tuple[dict, datetime]] = []
-    for entity in fetched_entities:
-        parsed_time_raw = _parse_entity_created_at(entity.get(time_key))
-        if parsed_time_raw is not None:
-            parsed_entities.append((entity, _normalize_fetch_datetime(parsed_time_raw)))
-
-    if not parsed_entities:
-        return previous_last_fetch, previous_last_ids
-
-    max_dt = max(parsed_time for _, parsed_time in parsed_entities)
-    max_time = _format_fetch_timestamp(max_dt)
-    previous_dt_raw = _parse_entity_created_at(previous_last_fetch)
-    previous_dt = _normalize_fetch_datetime(previous_dt_raw) if previous_dt_raw is not None else None
-    previous_last_ids_normalized = [str(entity_id) for entity_id in previous_last_ids if entity_id]
-
-    ids_at_max: list[str] = []
-    for entity, parsed_time in parsed_entities:
-        if parsed_time == max_dt:
-            entity_id = _normalize_entity_id(entity, id_key)
-            if entity_id:
-                ids_at_max.append(entity_id)
-
-    if previous_dt is None or max_dt > previous_dt:
-        return max_time, ids_at_max
-    if max_dt == previous_dt:
-        return max_time, list(set(previous_last_ids_normalized + ids_at_max))
-
-    return previous_last_fetch, list(set(previous_last_ids_normalized + ids_at_max))
-
-
-def _resolve_next_fetch_state(
-    last_run: dict,
-    last_fetch_key: str,
-    fetched_entities: list[dict],
-    previous_last_fetch: str,
-    previous_last_ids: list[str],
-) -> tuple[str, list[str]]:
-    """Advance fetch cursor state, using current time when initial backfill returns nothing."""
-    new_last_fetch, new_last_ids = _update_fetch_state(fetched_entities, previous_last_fetch, previous_last_ids)
-    if last_run.get(last_fetch_key) in (None, "") and not fetched_entities:
-        return _current_fetch_timestamp(), []
-    return new_last_fetch, new_last_ids
-
-
-def _should_ingest_entity(
-    entity: dict,
-    last_fetch: str,
-    last_ids: list[str],
-    id_key: str = "id",
-    time_key: str = "createdAt",
-) -> bool:
-    """Return True when an entity should be ingested based on cursor timestamp and boundary IDs."""
-    entity_id = _normalize_entity_id(entity, id_key)
-    if not entity_id:
-        return False
-
-    parsed_time_raw = _parse_entity_created_at(entity.get(time_key))
-    last_dt_raw = _parse_entity_created_at(last_fetch)
-    if parsed_time_raw is None or last_dt_raw is None:
-        return True
-
-    parsed_time = _normalize_fetch_datetime(parsed_time_raw)
-    last_dt = _normalize_fetch_datetime(last_dt_raw)
-
-    if parsed_time > last_dt:
-        return True
-    if parsed_time == last_dt:
-        boundary_ids = {str(entity_id_value) for entity_id_value in last_ids if entity_id_value}
-        return entity_id not in boundary_ids
-    return False
-
-
 def _fetch_paginated_entities(
     fetch_func: Callable[..., dict],
     entities_key: str,
@@ -3474,14 +3382,12 @@ def _resolve_mirror_updated_from(last_update: str | None) -> str:
     cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
     minimum_lookback = datetime.now(UTC) - MIRROR_POLL_LOOKBACK
     resolved = _format_mirror_timestamp(min(cursor_start, minimum_lookback))
-    demisto.info(f"Resolved incident poll updatedFrom: last_update={last_update}, updated_from={resolved}")
     return resolved
 
 
 def _resolve_mirror_updated_to() -> str:
     """Resolve updatedTo as current time plus a small buffer."""
     resolved = _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
-    demisto.info(f"Resolved poll updatedTo: updated_to={resolved}")
     return resolved
 
 
@@ -3780,14 +3686,12 @@ def _mirror_entity_type_from_args(
     for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident"), args.get("delta")):
         entity_type = _entity_type_from_mirror_payload(_mirror_dict(raw_payload))
         if entity_type:
-            demisto.info(f"Resolved entity type from mirror args payload: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     if use_investigation_context:
         incident = load_current_incident()
         entity_type = _entity_type_from_mirror_payload(incident)
         if entity_type:
-            demisto.info(f"Resolved entity type from investigation context: entity_type={entity_type}, remote_id={remote_id}")
             return entity_type
 
     entity_type = _entity_type_from_mirror_payload(
@@ -3811,13 +3715,11 @@ def _fetch_alert_for_mirror_lookup(
     """Fetch and normalize an alert for mirror resolution."""
     alert = client.get_alert_for_mirror(vega_id, **lookup_filters)
     if not alert:
-        demisto.info(f"Lightweight alert lookup empty; trying get_alert_by_id: vega_id={vega_id}")
         alert = client.get_alert_by_id(vega_id, **lookup_filters)
     normalized = _normalize_alert_api_entity(alert) if alert else {}
     if not normalized or not _entity_matches_remote_id(normalized, vega_id):
         return {}
     if require_vega_alert_id and not _poll_entity_is_alert(normalized):
-        demisto.info(f"Alert payload missing vegaAlertId; treating as non-alert: vega_id={vega_id}")
         return {}
     return normalized
 
@@ -3831,7 +3733,6 @@ def _fetch_incident_for_mirror_lookup(
     """Fetch and normalize an incident for mirror resolution."""
     incident = client.get_incident_for_mirror(vega_id, **lookup_filters)
     if not incident:
-        demisto.info(f"Lightweight incident lookup empty; trying get_incident_by_id: vega_id={vega_id}")
         incident = client.get_incident_by_id(vega_id, **lookup_filters)
     normalized = _normalize_incident_api_entity(incident) if incident else {}
     if normalized and _entity_matches_remote_id(normalized, vega_id):
@@ -3848,7 +3749,6 @@ def _resolve_preferred_alert_entity(
     """Resolve a remote ID when the preferred entity type is Vega Alert."""
     normalized = _fetch_alert_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        demisto.info(f"Resolved as alert: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_ALERT
     demisto.info(f"Alert not found: remote_id={remote_id}")
     return {}, ""
@@ -3863,7 +3763,6 @@ def _resolve_preferred_incident_entity(
     """Resolve a remote ID when the preferred entity type is Vega Incident."""
     normalized = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized:
-        demisto.info(f"Resolved as incident: remote_id={remote_id}")
         return normalized, MIRROR_ENTITY_SUFFIX_INCIDENT
     demisto.info(f"Incident not found: remote_id={remote_id}")
     return {}, ""
@@ -3883,16 +3782,13 @@ def _resolve_ambiguous_remote_entity(
         require_vega_alert_id=True,
     )
     if normalized_alert:
-        demisto.info(f"Resolved as alert via vegaAlertId: remote_id={remote_id}")
         return normalized_alert, MIRROR_ENTITY_SUFFIX_ALERT
 
     demisto.info(f"Alert not found or missing vegaAlertId; trying incident lookup: remote_id={remote_id}, vega_id={vega_id}")
     normalized_incident = _fetch_incident_for_mirror_lookup(client, vega_id, lookup_filters=lookup_filters)
     if normalized_incident:
-        demisto.info(f"Resolved as incident (fallback): remote_id={remote_id}")
         return normalized_incident, MIRROR_ENTITY_SUFFIX_INCIDENT
 
-    demisto.info(f"No matching Vega entity found: remote_id={remote_id}")
     return {}, ""
 
 
@@ -3911,10 +3807,6 @@ def _resolve_remote_entity(
         preferred_entity_type = "Vega Alert"
     elif hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
         preferred_entity_type = "Vega Incident"
-
-    demisto.info(
-        f"Resolving remote entity: preferred_entity_type={preferred_entity_type}, remote_id={remote_id}, vega_id={vega_id}"
-    )
 
     if preferred_entity_type == "Vega Alert":
         return _resolve_preferred_alert_entity(client, vega_id, remote_id, entity_lookup_filters)
@@ -4020,7 +3912,6 @@ def _build_mirror_sync_object(
 
     _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
 
-    demisto.info(f"Built mirrored sync object: entity_type={entity_type_suffix}, remote_id={effective_remote_id}")
     return sync_object
 
 
@@ -4035,7 +3926,6 @@ def _build_incoming_status_sync_entries(
 
     api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
     if api_status in VEGA_CLOSE_STATUSES:
-        demisto.info(f"Building close entry: api_status={api_status}, entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -4049,7 +3939,6 @@ def _build_incoming_status_sync_entries(
             }
         ]
     if api_status == "REOPENED":
-        demisto.info(f"Building reopen entry: entity_type={entity_type_suffix}")
         return [
             {
                 "Type": EntryType.NOTE,
@@ -4165,7 +4054,6 @@ def _poll_modified_alerts_for_mirror(
                 break
             offset += page_count
 
-        demisto.info(f"Alert poll complete: alert_count={len(alert_bare_ids)}")
     except Exception as exc:
         demisto.info(f"Alert poll failed: error={str(exc)}")
 
@@ -4202,7 +4090,6 @@ def _poll_modified_incidents_for_mirror(
                 break
             offset += page_count
 
-        demisto.info(f"Incident poll complete: incident_count={len(incident_bare_ids)}")
     except Exception as exc:
         demisto.info(f"Incident poll failed: error={str(exc)}")
 
@@ -4258,10 +4145,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         )
 
     finalized_ids = _finalize_modified_mirror_ids(modified_ids, alert_bare_ids, incident_bare_ids)
-    demisto.info(
-        f"Command finished: total_ids={len(finalized_ids)}, "
-        f"sample_ids={','.join(finalized_ids[:5]) if finalized_ids else 'none'}"
-    )
+    demisto.info(f"Command finished: total_ids={len(finalized_ids)}, ")
     return GetModifiedRemoteDataResponse(finalized_ids)
 
 
@@ -4285,11 +4169,6 @@ def _resolve_remote_entity_for_mirror(
     if context_entity_type:
         context_suffix = MIRROR_ENTITY_SUFFIX_INCIDENT if context_entity_type == "Vega Incident" else MIRROR_ENTITY_SUFFIX_ALERT
         if entity_type_suffix != context_suffix:
-            demisto.info(
-                f"Enforcing investigation entity type over mismatched remote resolution: "
-                f"remote_id={remote_id}, investigation_type={context_entity_type}, "
-                f"resolved_as={entity_type_suffix or 'none'}"
-            )
             preferred_entity_type = context_entity_type
             entity, entity_type_suffix = _resolve_remote_entity(
                 client,
@@ -4301,10 +4180,6 @@ def _resolve_remote_entity_for_mirror(
     if (preferred_entity_type == "Vega Incident" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT) or (
         preferred_entity_type == "Vega Alert" and entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
     ):
-        demisto.info(
-            f"Re-resolving entity with preferred type: remote_id={remote_id}, "
-            f"preferred_entity_type={preferred_entity_type}, resolved_as={entity_type_suffix}"
-        )
         entity, entity_type_suffix = _resolve_remote_entity(
             client,
             remote_id,
@@ -4440,9 +4315,6 @@ def get_remote_data_command(
         entries = _build_incoming_mirror_comment_entries(entity, last_update_dt)
         entries.extend(_build_incoming_status_sync_entries(entity, entity_type_suffix, last_update_dt))
 
-        demisto.info(
-            f"Command finished: remote_id={remote_id}, entity_type={entity_type_suffix}, " f"comment_entries={len(entries)}"
-        )
         return GetRemoteDataResponse(mirrored_object=mirrored_object, entries=entries)
     except Exception as exc:
         demisto.info(f"Command failed: remote_id={remote_id}, error={str(exc)}")
@@ -4564,10 +4436,6 @@ def _push_outgoing_mirror_entity_update(
         demisto.info(f"No {entity_label} fields to push: remote_id={remote_id}")
         return
 
-    demisto.info(
-        f"Updating {'alert' if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else 'incident'} in Vega: "
-        f"remote_id={remote_id}, payload={update_input}"
-    )
     if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
         client.update_alerts({**update_input, "alertIds": [vega_id]})
     else:
@@ -4722,11 +4590,6 @@ def _handle_fetch_entity_error(entity_label: str, exc: Exception) -> None:
     raise exc
 
 
-def _merge_fetch_boundary_ids(previous_ids: list[str], next_ids: list[str]) -> list[str]:
-    """Merge previous and next boundary IDs when fetch filters change."""
-    return list({str(entity_id) for entity_id in previous_ids if entity_id} | set(next_ids))
-
-
 def _fetch_filters_changed(last_run: dict, fetch_config_key: str, fetch_config: str) -> bool:
     """Return True when fetch filters changed since the previous run."""
     previous_config = last_run.get(fetch_config_key)
@@ -4851,9 +4714,9 @@ def _ingest_fetched_incidents(
     incident_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     limit: int,
-    seen_ids: set[str] | None = None,
+    backfill_days: str | int | None = None,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
 ) -> int:
-    """Fetch up to `limit` Vega incidents and return how many were created in XSOAR."""
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -4876,58 +4739,44 @@ def _ingest_fetched_incidents(
             statuses=incident_statuses,
             verdicts=incident_verdicts,
         )
-        ingested: list[dict] = []
-        resuming_offset = _is_resuming_fetch_pagination(
-            last_run, INCIDENTS_OFFSET_KEY, "incidents_fetch_config", incidents_fetch_config
-        )
-        all_returned_ids = [_normalize_entity_id(inc) for inc in incidents if _normalize_entity_id(inc)]
-        demisto.debug(
-            f"lookback-feature [incidents]: query from_time={incidents_from_time}, "
-            f"last_fetch={incidents_last_fetch}, "
-            f"already_existing_ids (from last_ids)={incidents_last_ids}, "
-            f"total_returned_from_api={len(incidents)}, "
-            f"returned_ids={all_returned_ids}"
-        )
-        skipped_cross_cycle = 0
-        skipped_cycle_local = 0
+
+        previous_ids = set(incidents_last_ids)
         new_ids: list[str] = []
+        duplicate_ids: list[str] = []
+        ingested: list[dict] = []
+        parsed_last_fetch = _parse_entity_created_at(incidents_last_fetch)
+        max_created_at_dt = _normalize_fetch_datetime(parsed_last_fetch) if parsed_last_fetch else None
+
+        current_cycle_ids = list(next_run.get("incidents_last_ids", []))
+
         for incident in incidents:
-            if not resuming_offset and not _should_ingest_entity(incident, incidents_last_fetch, incidents_last_ids):
-                skipped_cross_cycle += 1
-                continue
             incident_id = _normalize_entity_id(incident)
-            # Cycle-local lookback dedup: skip if already created this cycle.
-            if seen_ids is not None and incident_id and incident_id in seen_ids:
-                skipped_cycle_local += 1
+            if not incident_id:
                 continue
+
+            current_cycle_ids.append(incident_id)
+
+            created_at_raw = _parse_entity_created_at(incident.get("createdAt"))
+            if created_at_raw:
+                dt = _normalize_fetch_datetime(created_at_raw)
+                if max_created_at_dt is None or dt > max_created_at_dt:
+                    max_created_at_dt = dt
+
+            if incident_id in previous_ids:
+                duplicate_ids.append(incident_id)
+                continue
+
+            new_ids.append(incident_id)
             timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
             xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
             ingested.append(incident)
-            if incident_id:
-                new_ids.append(incident_id)
-            if seen_ids is not None and incident_id:
-                seen_ids.add(incident_id)
-        demisto.debug(
-            f"lookback-feature [incidents]: skipped_cross_cycle_duplicates={skipped_cross_cycle}, "
-            f"skipped_cycle_local_duplicates={skipped_cycle_local}, "
-            f"total_duplicates={skipped_cross_cycle + skipped_cycle_local}, "
-            f"new_ids_creating_incident={new_ids}, "
-            f"new_incident_count={len(new_ids)}"
-        )
 
-        if ingested:
-            new_last_fetch, new_last_ids = _resolve_next_fetch_state(
-                last_run, "incidents_last_fetch", ingested, incidents_last_fetch, incidents_last_ids
-            )
-            next_run["incidents_last_fetch"] = new_last_fetch
-            next_run["incidents_last_ids"] = new_last_ids
-            incidents_last_fetch = new_last_fetch
-            incidents_last_ids = new_last_ids
-        previous_incidents_fetch_config = last_run.get("incidents_fetch_config")
-        if previous_incidents_fetch_config is not None and previous_incidents_fetch_config != incidents_fetch_config:
-            next_run["incidents_last_ids"] = _merge_fetch_boundary_ids(
-                incidents_last_ids, next_run.get("incidents_last_ids", incidents_last_ids)
-            )
+        next_run["incidents_last_ids"] = list(set(current_cycle_ids))
+        if new_ids and max_created_at_dt:
+            next_run["incidents_last_fetch"] = _format_fetch_timestamp(max_created_at_dt)
+        elif not new_ids:
+            next_run["incidents_last_fetch"] = _current_fetch_timestamp()
+
         next_run["incidents_fetch_config"] = incidents_fetch_config
         return len(ingested)
     except Exception as exc:
@@ -4951,9 +4800,9 @@ def _ingest_fetched_alerts(
     has_related_incidents: bool | None,
     integration_url: str | None,
     limit: int,
-    seen_ids: set[str] | None = None,
+    backfill_days: str | int | None = None,
+    lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
 ) -> int:
-    """Fetch up to `limit` Vega alerts and return how many were created in XSOAR."""
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -4977,55 +4826,43 @@ def _ingest_fetched_alerts(
             verdicts=alert_verdicts,
             has_related_incidents=has_related_incidents,
         )
-        ingested: list[dict] = []
-        resuming_offset = _is_resuming_fetch_pagination(last_run, ALERTS_OFFSET_KEY, "alerts_fetch_config", alerts_fetch_config)
-        all_returned_ids = [_normalize_entity_id(a) for a in alerts if _normalize_entity_id(a)]
-        demisto.debug(
-            f"lookback-feature [alerts]: query from_time={alerts_from_time}, "
-            f"last_fetch={alerts_last_fetch}, "
-            f"already_existing_ids (from last_ids)={alerts_last_ids}, "
-            f"total_returned_from_api={len(alerts)}, "
-            f"returned_ids={all_returned_ids}"
-        )
-        skipped_cross_cycle = 0
-        skipped_cycle_local = 0
+
+        previous_ids = set(alerts_last_ids)
         new_ids: list[str] = []
+        duplicate_ids: list[str] = []
+        ingested: list[dict] = []
+        parsed_last_fetch = _parse_entity_created_at(alerts_last_fetch)
+        max_created_at_dt = _normalize_fetch_datetime(parsed_last_fetch) if parsed_last_fetch else None
+
+        current_cycle_ids = list(next_run.get("alerts_last_ids", []))
+
         for alert in alerts:
-            if not resuming_offset and not _should_ingest_entity(alert, alerts_last_fetch, alerts_last_ids):
-                skipped_cross_cycle += 1
-                continue
             alert_id = _normalize_entity_id(alert)
-            # Cycle-local lookback dedup: skip if already created this cycle.
-            if seen_ids is not None and alert_id and alert_id in seen_ids:
-                skipped_cycle_local += 1
+            if not alert_id:
                 continue
+
+            current_cycle_ids.append(alert_id)
+
+            created_at_raw = _parse_entity_created_at(alert.get("createdAt"))
+            if created_at_raw:
+                dt = _normalize_fetch_datetime(created_at_raw)
+                if max_created_at_dt is None or dt > max_created_at_dt:
+                    max_created_at_dt = dt
+
+            if alert_id in previous_ids:
+                duplicate_ids.append(alert_id)
+                continue
+
+            new_ids.append(alert_id)
             xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
             ingested.append(alert)
-            if alert_id:
-                new_ids.append(alert_id)
-            if seen_ids is not None and alert_id:
-                seen_ids.add(alert_id)
-        demisto.debug(
-            f"lookback-feature [alerts]: skipped_cross_cycle_duplicates={skipped_cross_cycle}, "
-            f"skipped_cycle_local_duplicates={skipped_cycle_local}, "
-            f"total_duplicates={skipped_cross_cycle + skipped_cycle_local}, "
-            f"new_ids_creating_incident={new_ids}, "
-            f"new_incident_count={len(new_ids)}"
-        )
 
-        if ingested:
-            new_last_fetch, new_last_ids = _resolve_next_fetch_state(
-                last_run, "alerts_last_fetch", ingested, alerts_last_fetch, alerts_last_ids
-            )
-            next_run["alerts_last_fetch"] = new_last_fetch
-            next_run["alerts_last_ids"] = new_last_ids
-            alerts_last_fetch = new_last_fetch
-            alerts_last_ids = new_last_ids
-        previous_alerts_fetch_config = last_run.get("alerts_fetch_config")
-        if previous_alerts_fetch_config is not None and previous_alerts_fetch_config != alerts_fetch_config:
-            next_run["alerts_last_ids"] = _merge_fetch_boundary_ids(
-                alerts_last_ids, next_run.get("alerts_last_ids", alerts_last_ids)
-            )
+        next_run["alerts_last_ids"] = list(set(current_cycle_ids))
+        if new_ids and max_created_at_dt:
+            next_run["alerts_last_fetch"] = _format_fetch_timestamp(max_created_at_dt)
+        elif not new_ids:
+            next_run["alerts_last_fetch"] = _current_fetch_timestamp()
+
         next_run["alerts_fetch_config"] = alerts_fetch_config
         return len(ingested)
     except Exception as exc:
@@ -5046,29 +4883,16 @@ def fetch_incidents_command(
     incident_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     first_fetch_time: str,
+    backfill_days: str | int | None = None,
     integration_url: str | None = None,
     max_fetch: int = DEFAULT_MAX_FETCH,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
 ) -> tuple[dict, list[dict]]:
-    """Fetch Vega incidents and alerts as XSOAR incidents.
-
-    Each cycle creates up to max_fetch XSOAR incidents total.
-    Incidents are always fetched first; any remaining quota is used for alerts.
-    Offset state is saved when a list is only partly read and resumes on the next cycle.
-
-    The query window is shifted backwards by lookback_minutes to catch
-    late-indexed entities.  A cycle-local ``seen_ids`` set collects the IDs of
-    all XSOAR incidents created during this cycle so that duplicates within the
-    lookback window are skipped.  The set is discarded at the end of the cycle.
-    """
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
     next_run.pop("alerts_seen_ids", None)
     next_run.pop("incidents_seen_ids", None)
     next_run.pop("vega_backfill_days", None)
-
-    # Cycle-local dedup set – tracks IDs created this cycle then discarded.
-    seen_ids: set[str] = set()
 
     alerts_fetch_config = _build_fetch_filter_fingerprint(
         alert_severities,
@@ -5083,43 +4907,51 @@ def fetch_incidents_command(
     incidents_touched = False
     alerts_touched = False
 
-    # Resume an in-progress incident page before anything else.
+    def _get_from_time(last_fetch_key: str) -> str:
+        last_fetch = working_run.get(last_fetch_key)
+        if last_fetch:
+            return _apply_lookback_to_from_time(last_fetch, lookback_minutes)
+        return first_fetch_time
+
+    incidents_last_fetch = working_run.get("incidents_last_fetch") or first_fetch_time
+    alerts_last_fetch = working_run.get("alerts_last_fetch") or first_fetch_time
+
     if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
-        raw_from = _resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time)
+        incidents_from_time = _get_from_time("incidents_last_fetch")
         ingested_incidents = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
-            incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
+            incidents_from_time=incidents_from_time,
+            incidents_last_fetch=incidents_last_fetch,
             incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
-            seen_ids=seen_ids,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
         remaining -= ingested_incidents
         working_run = next_run
         incidents_touched = True
 
-    # Resume an in-progress alert page before starting a new incident page.
     if (
         fetch_alerts
         and remaining > 0
         and working_run.get(INCIDENTS_OFFSET_KEY) is None
         and working_run.get(ALERTS_OFFSET_KEY) is not None
     ):
-        raw_from = _resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time)
+        alerts_from_time = _get_from_time("alerts_last_fetch")
         ingested_alerts = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
-            alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
+            alerts_from_time=alerts_from_time,
+            alerts_last_fetch=alerts_last_fetch,
             alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
             alert_severities=alert_severities,
@@ -5128,34 +4960,34 @@ def fetch_incidents_command(
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
             limit=remaining,
-            seen_ids=seen_ids,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
         remaining -= ingested_alerts
         working_run = next_run
         alerts_touched = True
 
-    # Start a new incident page when no list is mid-pagination.
     if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
-        raw_from = _resolve_fetch_from_time(working_run, "incidents_last_fetch", first_fetch_time)
+        incidents_from_time = _get_from_time("incidents_last_fetch")
         ingested_incidents = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            incidents_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
-            incidents_last_fetch=working_run.get("incidents_last_fetch") or first_fetch_time,
+            incidents_from_time=incidents_from_time,
+            incidents_last_fetch=incidents_last_fetch,
             incidents_last_ids=working_run.get("incidents_last_ids", []),
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
-            seen_ids=seen_ids,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
         remaining -= ingested_incidents
         working_run = next_run
 
-    # Fill any leftover quota with a new alert page once incidents are caught up.
     if (
         fetch_alerts
         and remaining > 0
@@ -5163,14 +4995,14 @@ def fetch_incidents_command(
         and next_run.get(INCIDENTS_OFFSET_KEY) is None
         and next_run.get(ALERTS_OFFSET_KEY) is None
     ):
-        raw_from = _resolve_fetch_from_time(working_run, "alerts_last_fetch", first_fetch_time)
+        alerts_from_time = _get_from_time("alerts_last_fetch")
         _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
             xsoar_incidents,
-            alerts_from_time=_apply_lookback_to_from_time(raw_from, lookback_minutes),
-            alerts_last_fetch=working_run.get("alerts_last_fetch") or first_fetch_time,
+            alerts_from_time=alerts_from_time,
+            alerts_last_fetch=alerts_last_fetch,
             alerts_last_ids=working_run.get("alerts_last_ids", []),
             alerts_fetch_config=alerts_fetch_config,
             alert_severities=alert_severities,
@@ -5179,18 +5011,9 @@ def fetch_incidents_command(
             has_related_incidents=has_related_incidents,
             integration_url=integration_url,
             limit=remaining,
-            seen_ids=seen_ids,
+            backfill_days=backfill_days,
+            lookback_minutes=lookback_minutes,
         )
-
-    # Cycle-local seen_ids is discarded here – no persistence needed.
-    demisto.debug(
-        f"lookback-feature [summary]: cycle complete | "
-        f"lookback_minutes={lookback_minutes}, "
-        f"total_xsoar_incidents_created={len(xsoar_incidents)}, "
-        f"total_seen_ids_tracked={len(seen_ids)}, "
-        f"seen_ids_list={sorted(seen_ids)}, "
-        f"seen_ids now discarded (memory freed)"
-    )
 
     return next_run, xsoar_incidents
 
@@ -5216,8 +5039,8 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     backfill_days = params.get("backfill_days")
     return {
         "base_url": params.get("url"),
-        "access_key": params.get("access_key", {}).get("password"),
-        "access_key_id": params.get("access_key_id", {}).get("password"),
+        "access_key": params.get("access_key", {}).get("password").strip(),
+        "access_key_id": params.get("access_key_id", {}).get("password").strip(),
         "verify_certificate": not argToBoolean(params.get("insecure", False)),
         "proxy": argToBoolean(params.get("proxy", False)),
         "fetch_alerts": "Alerts" in vega_entities,
@@ -5283,6 +5106,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             incident_statuses=config["incident_statuses"],
             incident_verdicts=config["incident_verdicts"],
             first_fetch_time=config["first_fetch_time"],
+            backfill_days=config["backfill_days"],
             integration_url=config["base_url"],
             max_fetch=config["max_fetch"],
             lookback_minutes=config["lookback_minutes"],
