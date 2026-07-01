@@ -1,5 +1,5 @@
 {
-    "id": "test-page-id",
+    "id": "2097159",
     "type": "page",
     "status": "current",
     "title": "test_page",
@@ -10,7 +10,7 @@
         }
     },
     "_links": {
-        "webui": "/spaces/TEST/pages/test-page-id/test_page",
-        "self": "https://test.atlassian.net/wiki/rest/api/content/test-page-id"
+        "webui": "/spaces/TEST/pages/2097159/test_page",
+        "self": "https://test.atlassian.net/wiki/rest/api/content/2097159"
     }
 }

@@ -787,7 +787,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "test-page-id", "title": "test_page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -1447,7 +1447,7 @@ class TestOAuthFunctions:
 @pytest.mark.parametrize(
     "url, expected_id",
     [
-        ("https://mysite.atlassian.net/wiki/spaces/TEST/pages/2097159/My+Page", "test-page-id"),
+        ("https://mysite.atlassian.net/wiki/spaces/TEST/pages/2097159/My+Page", "2097159"),
         ("https://mysite.atlassian.net/wiki/rest/api/content/12345", "12345"),
         ("https://mysite.atlassian.net/wiki/pages/viewpage.action?pageId=99999", "99999"),
         ("https://mysite.atlassian.net/wiki/spaces/DEV/pages/111222/Some+Title?extra=param", "111222"),
@@ -1495,16 +1495,16 @@ def test_generic_file_get_command_success(requests_mock):
 
     expected_response = util_load_json(os.path.join("test_data", "content_get/generic_file_get_response.json"))
     requests_mock.get(
-        "https://dummy.atlassian.com/wiki/rest/api/content/test-page-id?expand=body.storage",
+        "https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage",
         json=expected_response,
     )
 
-    args = {"url": "https://dummy.atlassian.net/wiki/spaces/TEST/pages/test-page-id/test_page"}
+    args = {"url": "https://dummy.atlassian.net/wiki/spaces/TEST/pages/2097159/test_page"}
     result = confluence_cloud_generic_file_get_command(client, args)
 
     assert result.outputs_prefix == "FileContent"
     assert result.outputs_key_field == "Id"
-    assert result.outputs["Id"] == "test-page-id"
+    assert result.outputs["Id"] == "2097159"
     assert result.outputs["Title"] == "test_page"
     assert result.outputs["Type"] == "text/html"
     assert result.outputs["Content"] == "<p>This is the page content</p>"
