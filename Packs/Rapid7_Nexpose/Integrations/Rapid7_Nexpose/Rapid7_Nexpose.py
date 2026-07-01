@@ -1280,9 +1280,14 @@ class Client(BaseClient):
         Returns:
             bytes: Report file in bytes.
         """
+
+        request_headers = self._headers.copy()
+        request_headers["Accept"] = "*/*"
+
         return self._http_request(
             url_suffix=f"/reports/{report_id}/history/{instance_id}/output",
             method="GET",
+            headers=request_headers,
             resp_type="content",
         )
 
