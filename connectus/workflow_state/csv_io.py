@@ -93,6 +93,22 @@ def _os() -> object:
     return _ws.os
 
 
+def _coerce_row_cells(rows: list[dict], expected: list[str]) -> list[dict[str, str]]:
+    """Normalize raw DictReader rows to a complete str-valued schema.
+
+    ``csv.DictReader`` produces ``None`` cell values for rows that are
+    shorter than the header (e.g. freshly-imported pipeline rows that
+    carry only the identity columns), and may also map overflow fields
+    under the ``None`` key. Coerce every expected column to a string,
+    treating an absent/``None`` cell as the empty string, so downstream
+    consumers never see a non-str cell value.
+    """
+    coerced: list[dict[str, str]] = []
+    for row in rows:
+        coerced.append({col: (row.get(col) or "") for col in expected})
+    return coerced
+
+
 def load_csv() -> list[dict[str, str]]:
     """Load the CSV and return list of row dicts. Normalizes on read."""
     cfg = get_config()
@@ -111,7 +127,7 @@ def load_csv() -> list[dict[str, str]]:
                 f"  Extra:   {extra}",
                 file=sys.stderr,
             )
-        rows = list(reader)
+        rows = _coerce_row_cells(list(reader), expected)
 
     _normalize_rows_with_warning(rows, context="loaded")
     return rows
@@ -132,7 +148,7 @@ def _read_rows_from_disk(csv_path: str) -> list[dict[str, str]]:
     if not _os().path.exists(csv_path):
         return []
     with open(csv_path, "r", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return _coerce_row_cells(list(csv.DictReader(f)), get_config().all_columns)
 
 
 def _write_rows_atomic(final_rows: list[dict[str, str]], fieldnames: list[str]) -> None:

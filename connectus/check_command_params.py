@@ -6368,8 +6368,16 @@ def resolve_integration_path(integration_id: str) -> Path:
             f"no resolvable YML path. Pass an explicit integration_path "
             f"instead."
         )
-    # ``yml`` is repo-relative; its parent directory is the integration dir.
-    return (Path(yml_rel).resolve()).parent
+    # ``yml`` is repo-relative (to the content-repo root). Resolve it
+    # against the repo root rather than the process cwd, because the idex
+    # shell cwd is the PARENT of the content repo (it contains ``content/``
+    # and ``unified-connectors-content/`` as siblings), so resolving a
+    # bare repo-relative path against the cwd would point one level too high
+    # (``<parent>/Packs/...`` instead of ``<parent>/content/Packs/...``).
+    yml_path = Path(yml_rel)
+    if not yml_path.is_absolute():
+        yml_path = _resolve_repo_root() / yml_path
+    return yml_path.resolve().parent
 
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:

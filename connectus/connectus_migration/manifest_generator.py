@@ -976,7 +976,7 @@ def slugify_capability_name(name: str) -> str:
 
 # Per guide §3.8 + §4.6 (Salesforce reference). The default backend
 # workload every XSOAR handler runs in.
-DEFAULT_HANDLER_WORKLOADS: list[str] = ["xsoar-pod"]
+DEFAULT_HANDLER_WORKLOADS: list[str] = ["xsoar-pod", "xsoar-automationhub-runner"]
 
 
 def handler_id_to_integration_slug(handler_id: str) -> str:
@@ -8931,7 +8931,20 @@ def generate_manifest(
         f"title={connector_title!r} slug={slug!r} target={connector_dir} "
         f"auth_methods_keys={list(auth_methods_dict.keys())}"
     )
-    author_image_path = Path(_load_connector_id_image()[connector_title])
+    _image_map = _load_connector_id_image()
+    _image_rel = _image_map.get(connector_title)
+    if _image_rel:
+        author_image_path = Path(_image_rel)
+    else:
+        # New connector with no entry in the author-image map: fall back to
+        # the integration's own ``<Name>_image.png`` sibling of its YML.
+        author_image_path = integration_path.parent / f"{integration_path.stem}_image.png"
+    # The author-image map stores content-repo-relative paths (e.g.
+    # ``Packs/Cribl/.../CriblSearch_image.png``). The idex shell cwd is the
+    # PARENT of the content repo, so resolve a relative path against the
+    # content-repo root rather than the process cwd.
+    if not author_image_path.is_absolute():
+        author_image_path = find_repo_root() / author_image_path
     if connector_exists_and_valid(connector_dir):
         add_handler_to_existing_connector(
             connector_dir=connector_dir,

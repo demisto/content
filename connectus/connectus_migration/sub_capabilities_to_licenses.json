@@ -3515,5 +3515,96 @@
   "fetch-issues_logrhythmrest": [
     "xsiam",
     "agentix"
+  ],
+  "automation-and-remediation_anthropic-claude": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cortex-attack-surface-management": [
+    "xsiam"
+  ],
+  "automation-and-remediation_cortex-data-lake": [
+    "agentix"
+  ],
+  "automation-and-remediation_criblsearch": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "automation-and-remediation_izoologic": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "automation-and-remediation_o365-message-trace": [
+    "xsiam"
+  ],
+  "automation-and-remediation_proofpoint-cloud-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicenow-mcp": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_splunkpyprerelease": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_cortex-data-lake": [
+    "agentix"
+  ],
+  "fetch-issues_proofpoint-cloud-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_splunkpyprerelease": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_anthropic-claude": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_izoologic": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "log-collection_menlo-security": [
+    "xsiam"
+  ],
+  "log-collection_o365-message-trace": [
+    "xsiam"
+  ],
+  "log-collection_securityscorecardeventcollector": [
+    "xsiam"
   ]
 }

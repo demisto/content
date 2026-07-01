@@ -66,6 +66,11 @@ def read_step_value(row: dict[str, str], step: Step) -> str:
     is NOT auto-written). For all other shapes, returns the raw value.
     """
     raw = row.get(step.name, "")
+    if raw is None:
+        # csv.DictReader fills missing keys with None for rows shorter than
+        # the header (e.g. freshly-imported rows carrying only the identity
+        # columns). Treat an absent cell as empty.
+        raw = ""
     if step.kind == "flag" and step.default is not None and raw.strip() == "":
         return step.default
     return raw
@@ -160,7 +165,7 @@ def reset_after(
     for s in cfg.steps:
         if s.index <= step.index:
             continue
-        had_value = row.get(s.name, "") != ""
+        had_value = (row.get(s.name, "") or "") != ""
         if respect_preserve and s.preserve_on_reset:
             if had_value:
                 preserved.append(s.name)
@@ -185,7 +190,7 @@ def normalize_row(row: dict[str, str]) -> list[str]:
             if not is_done(row, step):
                 found_incomplete = True
             continue
-        if row.get(step.name, "").strip() != "":
+        if (row.get(step.name, "") or "").strip() != "":
             cleared.append(step.name)
             row[step.name] = ""
     return cleared

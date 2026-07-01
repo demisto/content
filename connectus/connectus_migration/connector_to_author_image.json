@@ -290,5 +290,11 @@
   "dnstwist": "Packs/dnstwist/Integrations/dnstwist/dnstwist_image.png",
   "iManage": "Packs/iManageThreatManager/Integrations/iManageThreatManager/iManageThreatManager_image.png",
   "nmap": "Packs/Nmap/Integrations/Nmap/Nmap_image.png",
-  "runZero": "Packs/RunZero/Integrations/RunZero/RunZero_image.png"
+  "runZero": "Packs/RunZero/Integrations/RunZero/RunZero_image.png",
+  "Cribl": "Packs/Cribl/Integrations/CriblSearch/CriblSearch_image.png",
+  "Menlo Security": "Packs/MenloSecurity/Integrations/MenloSecurity/MenloSecurity_image.png",
+  "SecurityScorecard": "Packs/SecurityScorecard/Author_image.png",
+  "iZOOlogic": "Packs/iZOOlogic/Integrations/iZOOlogic/iZOOlogic_image.png",
+  "Cortex Attack Surface Management": "Packs/CortexAttackSurfaceManagement/Integrations/CortexAttackSurfaceManagement/CortexAttackSurfaceManagement_image.png",
+  "Cortex Data Lake": "Packs/CortexDataLake/Integrations/CortexDataLake/CortexDataLake_image.png"
 }
