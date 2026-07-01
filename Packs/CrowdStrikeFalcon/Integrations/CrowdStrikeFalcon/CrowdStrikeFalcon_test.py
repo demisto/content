@@ -9054,7 +9054,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks = await fetch_vulnerabilities_by_severity(
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="CRITICAL",
             context_store=mock_context_store,
@@ -9067,6 +9067,8 @@ class TestSpotlightSeverityBasedFetch:
         assert total == 2
         assert aids == {"aid1", "aid2"}
         assert len(tasks) == 1
+        # First record is withheld for the seal
+        assert withheld == [vulnerabilities[0]]
 
         # Verify API was called with correct filter
         mock_client._request.assert_awaited_once()
@@ -9085,7 +9087,8 @@ class TestSpotlightSeverityBasedFetch:
         mock_create_task.assert_called_once()
         task_kwargs = mock_create_task.call_args.kwargs
         assert task_kwargs["product"] == SPOTLIGHT_VULN_PRODUCT
-        assert task_kwargs["data"] == vulnerabilities
+        # The first record is withheld for the seal, so the data batch holds the remaining records
+        assert task_kwargs["data"] == vulnerabilities[1:]
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_multiple_pages(self, mocker):
@@ -9138,7 +9141,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks = await fetch_vulnerabilities_by_severity(
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="HIGH",
             context_store=mocker.Mock(),
@@ -9151,6 +9154,7 @@ class TestSpotlightSeverityBasedFetch:
         assert total == 3  # 2 from page1 + 1 from page2
         assert aids == {"aid1", "aid2", "aid3"}
         assert len(tasks) == 2  # One task per page
+        assert withheld == [page1_vulns[0]]
         assert mock_client._request.call_count == 2
 
     @pytest.mark.asyncio
@@ -9182,14 +9186,14 @@ class TestSpotlightSeverityBasedFetch:
         # Mock fetch_vulnerabilities_by_severity to return different results per severity
         async def mock_fetch_by_severity(client, severity, **kwargs):
             severity_data = {
-                "CRITICAL": (10, {"aid1", "aid2"}, set()),
-                "HIGH": (20, {"aid3", "aid4"}, set()),
-                "MEDIUM": (15, {"aid5"}, set()),
-                "LOW": (5, {"aid6"}, set()),
-                "NONE": (0, set(), set()),
-                "UNKNOWN": (0, set(), set()),
+                "CRITICAL": (10, {"aid1", "aid2"}, set(), [{"id": "c1", "aid": "aid1"}]),
+                "HIGH": (20, {"aid3", "aid4"}, set(), [{"id": "h1", "aid": "aid3"}]),
+                "MEDIUM": (15, {"aid5"}, set(), [{"id": "m1", "aid": "aid5"}]),
+                "LOW": (5, {"aid6"}, set(), [{"id": "l1", "aid": "aid6"}]),
+                "NONE": (0, set(), set(), []),
+                "UNKNOWN": (0, set(), set(), []),
             }
-            return severity_data.get(severity, (0, set(), set()))
+            return severity_data.get(severity, (0, set(), set(), []))
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
@@ -9269,13 +9273,13 @@ class TestSpotlightSeverityBasedFetch:
             if severity == "HIGH":
                 raise Exception("HIGH severity API error")
             severity_data = {
-                "CRITICAL": (10, {"aid1"}, set()),
-                "MEDIUM": (5, {"aid2"}, set()),
-                "LOW": (3, {"aid3"}, set()),
-                "NONE": (0, set(), set()),
-                "UNKNOWN": (0, set(), set()),
+                "CRITICAL": (10, {"aid1"}, set(), [{"id": "c1", "aid": "aid1"}]),
+                "MEDIUM": (5, {"aid2"}, set(), [{"id": "m1", "aid": "aid2"}]),
+                "LOW": (3, {"aid3"}, set(), [{"id": "l1", "aid": "aid3"}]),
+                "NONE": (0, set(), set(), []),
+                "UNKNOWN": (0, set(), set(), []),
             }
-            return severity_data.get(severity, (0, set(), set()))
+            return severity_data.get(severity, (0, set(), set(), []))
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
@@ -9378,7 +9382,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks = await fetch_vulnerabilities_by_severity(
+        total, aids, tasks, _withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="MEDIUM",
             context_store=mocker.Mock(),
@@ -9434,7 +9438,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks = await fetch_vulnerabilities_by_severity(
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="LOW",
             context_store=mocker.Mock(),
@@ -9446,7 +9450,8 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 0
         assert aids == set()
-        assert len(tasks) == 1  # Task still created
+        assert len(tasks) == 1  # Task still created (empty data batch)
+        assert withheld == []  # Nothing to withhold from an empty severity
 
         # Verify handler received empty set
         mock_handler.receive_new_aids.assert_awaited_once_with(set())
@@ -9562,6 +9567,456 @@ class TestSpotlightSeverityBasedFetch:
 
         # Verify error was logged
         assert any("Authentication failed" in str(call) and "error" in str(call) for call in mock_log.call_args_list)
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_withholds_first_record(self, mocker):
+        """
+        Tests that the first fetched record is withheld from the data batches (Option F seal fix).
+
+        Given:
+            - API returns 3 vulnerabilities for CRITICAL severity in a single page.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - The first record is withheld and returned as the 4th tuple element.
+            - The data batch sent to XSIAM contains only the remaining records (no duplicate of withheld).
+            - The withheld record is still counted in the total and its AID is still enriched.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [
+            {"id": "v1", "aid": "aid1"},
+            {"id": "v2", "aid": "aid2"},
+            {"id": "v3", "aid": "aid3"},
+        ]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+            client=mock_client,
+            severity="CRITICAL",
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            asset_handler=mock_handler,
+        )
+
+        # Total still counts every fetched record (withholding is at send-time, not count-time)
+        assert total == 3
+        # AID enrichment still covers the withheld record's host
+        assert aids == {"aid1", "aid2", "aid3"}
+        mock_handler.receive_new_aids.assert_awaited_once_with({"aid1", "aid2", "aid3"})
+
+        # Exactly one record withheld for the seal
+        assert withheld == [{"id": "v1", "aid": "aid1"}]
+
+        # The data batch sent during fetch must NOT include the withheld record
+        sent_data = mock_create_task.call_args.kwargs["data"]
+        assert sent_data == [{"id": "v2", "aid": "aid2"}, {"id": "v3", "aid": "aid3"}]
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_withholds_only_once_across_pages(self, mocker):
+        """
+        Tests that only the very first record (first page) is withheld, not one per page.
+
+        Given:
+            - API returns 2 pages of HIGH severity vulnerabilities.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - Only the first record of the first page is withheld.
+            - Page 2 is sent in full.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        page1_vulns = [{"id": "v1", "aid": "aid1"}, {"id": "v2", "aid": "aid2"}]
+        page2_vulns = [{"id": "v3", "aid": "aid3"}]
+
+        mock_response1 = mocker.Mock()
+        mock_response1.json.return_value = {
+            "resources": page1_vulns,
+            "meta": {"pagination": {"after": "token_page2"}},
+        }
+        mock_response2 = mocker.Mock()
+        mock_response2.json.return_value = {
+            "resources": page2_vulns,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.side_effect = [mock_response1, mock_response2]
+
+        sent_batches = []
+
+        def create_task_side_effect(*args, **kwargs):
+            sent_batches.append(kwargs["data"])
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+            client=mock_client,
+            severity="HIGH",
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            asset_handler=mock_handler,
+        )
+
+        assert total == 3
+        assert withheld == [{"id": "v1", "aid": "aid1"}]
+        # First page batch had its first record withheld; second page sent in full
+        assert sent_batches[0] == [{"id": "v2", "aid": "aid2"}]
+        assert sent_batches[1] == [{"id": "v3", "aid": "aid3"}]
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_empty_withholds_nothing(self, mocker):
+        """
+        Tests that a severity with no records withholds nothing.
+
+        Given:
+            - API returns no vulnerabilities for LOW severity.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - withheld_records is empty.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": [],
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+            client=mock_client,
+            severity="LOW",
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            asset_handler=mock_handler,
+        )
+
+        assert total == 0
+        assert withheld == []
+
+    @pytest.mark.asyncio
+    async def test_finalize_seals_with_real_withheld_records(self, mocker):
+        """
+        Tests that the final sealing batch carries real withheld records and the true total count.
+
+        Given:
+            - All severities completed.
+            - Withheld records collected from severities.
+        When:
+            - finalize_severity_fetch is called.
+        Then:
+            - The seal batch is sent with the withheld records as data (NOT empty).
+            - items_count equals the true total_vulnerabilities.
+            - batch_number is the high sealing number (999999).
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        seal_call = {}
+
+        def create_task_side_effect(*args, **kwargs):
+            seal_call.update(kwargs)
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        mock_handler = mocker.Mock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        withheld_records = [{"id": "v1", "aid": "aid1"}, {"id": "v2", "aid": "aid2"}]
+
+        await finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=1000,
+            all_unique_aids={"aid1", "aid2"},
+            asset_handler=mock_handler,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            withheld_records=withheld_records,
+        )
+
+        # The seal must carry real data, not an empty list
+        assert mock_create_task.called
+        assert seal_call["data"] == withheld_records
+        assert seal_call["data"] != []
+        assert seal_call["items_count"] == 1000
+        assert seal_call["batch_number"] == 999999
+
+    @pytest.mark.asyncio
+    async def test_finalize_skips_seal_when_no_withheld_records(self, mocker):
+        """
+        Tests that no seal request is emitted when the grand total is zero (no withheld records).
+
+        Given:
+            - All severities completed but there are zero records overall.
+        When:
+            - finalize_severity_fetch is called with empty withheld_records.
+        Then:
+            - No sealing batch is sent (legitimately empty snapshot, no empty request emitted).
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+        )
+
+        mock_handler = mocker.Mock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        await finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=0,
+            all_unique_aids=set(),
+            asset_handler=mock_handler,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            withheld_records=[],
+        )
+
+        # No empty seal request should be emitted
+        mock_create_task.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_finalize_does_not_seal_when_severities_incomplete(self, mocker, capfd):
+        """
+        Tests that the seal is not sent if not all severities completed (resume next cycle).
+
+        Given:
+            - Only some severities completed.
+            - Withheld records present.
+        When:
+            - finalize_severity_fetch is called.
+        Then:
+            - No seal is emitted; the snapshot is not finalized this cycle.
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+        )
+        mock_handler = mocker.Mock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        # This path intentionally logs a "NOT sealed" warning to stderr; disable capture.
+        with capfd.disabled():
+            await finalize_severity_fetch(
+                all_pending_tasks=set(),
+                current_completed_severities=["CRITICAL", "HIGH"],
+                total_vulnerabilities=30,
+                all_unique_aids={"aid1"},
+                asset_handler=mock_handler,
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                withheld_records=[{"id": "v1", "aid": "aid1"}],
+            )
+
+        mock_create_task.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_await_and_aggregate_collects_withheld_records(self, mocker):
+        """
+        Tests that withheld records are aggregated across severities.
+
+        Given:
+            - Several severity tasks each returning a withheld record.
+        When:
+            - await_and_aggregate_severity_results is called.
+        Then:
+            - All withheld records are aggregated and returned.
+        """
+        from CrowdStrikeFalcon import await_and_aggregate_severity_results
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        def make_task(result):
+            f = asyncio.Future()
+            f.set_result(result)
+            return f
+
+        severity_tasks = [
+            ("CRITICAL", make_task((10, {"aid1"}, set(), [{"id": "c1", "aid": "aid1"}]))),
+            ("HIGH", make_task((20, {"aid2"}, set(), [{"id": "h1", "aid": "aid2"}]))),
+            ("LOW", make_task((0, set(), set(), []))),
+        ]
+
+        (
+            total,
+            all_aids,
+            all_tasks,
+            completed,
+            withheld,
+        ) = await await_and_aggregate_severity_results(
+            severity_tasks=severity_tasks,
+            current_completed_severities=[],
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+        )
+
+        assert total == 30
+        assert all_aids == {"aid1", "aid2"}
+        assert {"id": "c1", "aid": "aid1"} in withheld
+        assert {"id": "h1", "aid": "aid2"} in withheld
+        assert len(withheld) == 2
+
+    @pytest.mark.asyncio
+    async def test_await_and_aggregate_merges_prior_withheld_records(self, mocker):
+        """
+        Tests that withheld records from previous cycles are merged and re-persisted (XSUP-70815).
+
+        Given:
+            - prior_withheld_records loaded from context (from severities completed earlier).
+            - A new severity completing this cycle with its own withheld record.
+        When:
+            - await_and_aggregate_severity_results is called.
+        Then:
+            - The returned withheld records include both the prior and the new records.
+            - The merged list is persisted to context via update_spotlight_state_and_metadata
+              so it survives a later resume / container restart.
+        """
+        from CrowdStrikeFalcon import await_and_aggregate_severity_results
+
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        def make_task(result):
+            f = asyncio.Future()
+            f.set_result(result)
+            return f
+
+        prior = [{"id": "c1", "aid": "aid1"}, {"id": "h1", "aid": "aid2"}]
+        severity_tasks = [
+            ("MEDIUM", make_task((15, {"aid3"}, set(), [{"id": "m1", "aid": "aid3"}]))),
+        ]
+
+        (
+            total,
+            all_aids,
+            all_tasks,
+            completed,
+            withheld,
+        ) = await await_and_aggregate_severity_results(
+            severity_tasks=severity_tasks,
+            current_completed_severities=["CRITICAL", "HIGH"],
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            prior_withheld_records=prior,
+        )
+
+        # Returned list carries prior + new
+        assert {"id": "c1", "aid": "aid1"} in withheld
+        assert {"id": "h1", "aid": "aid2"} in withheld
+        assert {"id": "m1", "aid": "aid3"} in withheld
+        assert len(withheld) == 3
+
+        # The merged withheld records were persisted to context
+        assert mock_update_state.called
+        saved_withheld = mock_update_state.call_args.kwargs["withheld_records"]
+        assert {"id": "c1", "aid": "aid1"} in saved_withheld
+        assert {"id": "m1", "aid": "aid3"} in saved_withheld
+        assert len(saved_withheld) == 3
+
+    def test_update_spotlight_state_persists_withheld_records(self, mocker):
+        """
+        Tests that withheld_records are written into the spotlight metadata.
+
+        Given:
+            - A spotlight state object and a list of withheld records.
+        When:
+            - update_spotlight_state_and_metadata is called with withheld_records.
+        Then:
+            - The metadata contains the withheld_records so they are persisted to context.
+        """
+        from CrowdStrikeFalcon import update_spotlight_state_and_metadata, ContentClientState
+
+        state = ContentClientState.from_dict({})
+        withheld = [{"id": "c1", "aid": "aid1"}]
+
+        update_spotlight_state_and_metadata(
+            spotlight_state=state,
+            cursor=None,
+            snapshot_id="snap123",
+            total_fetched=0,
+            unique_aids=set(),
+            processed_aids=set(),
+            completed_severities=["CRITICAL"],
+            withheld_records=withheld,
+        )
+
+        assert state.metadata["withheld_records"] == withheld
+        assert state.metadata["completed_severities"] == ["CRITICAL"]
 
 
 class TestAssetsDeviceHandler:
