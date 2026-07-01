@@ -1238,3 +1238,29 @@ def test_get_modified_remote_data_includes_cached(client, requests_mock, mocker)
     assert cached_alert_id in result.modified_incident_ids
     # Should also include the ones from API response
     assert len(result.modified_incident_ids) >= 3  # 1 cached + 2 from API
+
+
+def test_http_request_applies_retry_defaults(client, mocker):
+    """The Client should inject retry defaults into every _http_request call."""
+    super_request = mocker.patch.object(SekoiaXDR.BaseClient, "_http_request", return_value={})
+
+    client.get_alert(alert_uuid="ALERT-ID")
+
+    _, kwargs = super_request.call_args
+    assert kwargs["retries"] == SekoiaXDR.API_RETRIES
+    assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
+    assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
+
+
+def test_http_request_preserves_explicit_retry_args(client, mocker):
+    """Explicit retry arguments passed by a caller must take precedence over defaults."""
+    super_request = mocker.patch.object(SekoiaXDR.BaseClient, "_http_request", return_value="ok")
+
+    client._http_request(method="GET", url_suffix="/v1/auth/validate", retries=0)
+
+    _, kwargs = super_request.call_args
+    assert kwargs["retries"] == 0
+    assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
+    assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
+
+

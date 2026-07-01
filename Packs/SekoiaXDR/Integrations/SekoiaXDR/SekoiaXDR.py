@@ -20,6 +20,10 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTERVAL_SECONDS_EVENTS = 1
 TIMEOUT_EVENTS = 30
 INCIDENT_TYPE_NAME = "Sekoia XDR"
+# Retry configuration for transient Sekoia API errors (e.g. 502 Bad Gateway)
+API_RETRIES = 3
+API_BACKOFF_FACTOR = 1
+API_STATUS_LIST_TO_RETRY = [429, 500, 502, 503, 504]
 SEKOIA_INCIDENT_FIELDS = {
     "short_id": "The ID of the alert to edit",
     "status": "The name of the status.",
@@ -45,6 +49,17 @@ MIRROR_DIRECTION = {
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
+
+    def _http_request(self, *args, **kwargs) -> Any:  # type: ignore[override]
+        """
+        Wraps BaseClient._http_request to add default retry behavior on transient
+        errors (e.g. 502 Bad Gateway) returned by the Sekoia API. Explicit retry
+        arguments passed by a caller take precedence over these defaults.
+        """
+        kwargs.setdefault("retries", API_RETRIES)
+        kwargs.setdefault("status_list_to_retry", API_STATUS_LIST_TO_RETRY)
+        kwargs.setdefault("backoff_factor", API_BACKOFF_FACTOR)
+        return super()._http_request(*args, **kwargs)
 
     def get_validate_resource(self) -> str:
         """
