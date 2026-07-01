@@ -626,7 +626,7 @@ class CortexErrorCode(object):
     # ── Argument Errors ──────────────────────────────────────────────
     MISSING_ARGUMENT = "MISSING_ARGUMENT"
     INVALID_ARGUMENT = "INVALID_ARGUMENT"
-    CONFLICTING_ARGUMENTS = "CONFLICTING_ARGS"
+    CONFLICTING_ARGUMENTS = "CONFLICTING_ARGUMENTS"
 
     # ── Resource Errors ──────────────────────────────────────────────
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
@@ -1494,8 +1494,7 @@ def get_error_code(execute_command_result):
         ``None`` if no error code is present.
     """
     if isinstance(execute_command_result, dict):
-        extended = execute_command_result.get('ExtendedPayload') or {}
-        return extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
+        execute_command_result = [execute_command_result]
 
     if isinstance(execute_command_result, list):
         for entry in execute_command_result:
@@ -8862,7 +8861,10 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             if not error_code:
                 error_code = _classify_error_message(error_message)
             if error_code:
-                raise CortexExecutionError(
+                # Use the base CortexError so the standardized error_code taken
+                # from the failing sub-command (which may be any category, e.g.
+                # AUTH_ERROR/QUOTA_ERROR) is carried as-is.
+                raise CortexError(
                     # Original message kept for backward compatibility; the
                     # error_code carries the standardized classification.
                     override_message='Failed to execute {}. Error details:\n{}'.format(command, error_message),
