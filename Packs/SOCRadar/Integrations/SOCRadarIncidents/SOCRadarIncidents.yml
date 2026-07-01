@@ -53,6 +53,9 @@ configuration:
   type: 16
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of incidents to fetch in each integration execution interval.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch

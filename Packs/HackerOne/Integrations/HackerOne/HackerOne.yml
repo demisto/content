@@ -73,6 +73,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: |-
     By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.
 

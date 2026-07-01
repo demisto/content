@@ -63,6 +63,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Risk level of the incidents to fetch
   display: Risk level
   name: risk_level

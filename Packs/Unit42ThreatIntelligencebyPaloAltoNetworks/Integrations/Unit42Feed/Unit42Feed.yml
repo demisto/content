@@ -61,6 +61,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Feed Fetch Interval
   additionalinfo: Don't set the feed fetch interval to less than 12 hours.
   name: feedFetchInterval
@@ -135,6 +138,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incremental feed
   additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. If the indicator is new or modified on the 3rd-party vendor's side, only indicators that are new or modified are sent to Cortex. Therefore, all indicators coming from these feeds are labeled new or modified.
   name: feedIncremental

@@ -117,6 +117,9 @@ configuration:
   name: tags
   type: 16
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Filter the detections belonging to a specified category displayed as part of layout.\n\nNote: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type."
   display: Detection Category
   name: detection_category

@@ -189,6 +189,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information."
   display: Minimize Incident Information
   name: exclude_fields

@@ -101,6 +101,9 @@ configuration:
   additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Username
   name: credentials
   required: false

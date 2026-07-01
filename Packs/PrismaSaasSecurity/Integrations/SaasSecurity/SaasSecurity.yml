@@ -87,6 +87,9 @@ configuration:
   - '5.0'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Fetch only incidents with matching status'
   additionalinfo: If nothing is selected, **All** statuses will be used.
   name: status
@@ -103,6 +106,9 @@ configuration:
   - Dismiss
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch only incidents with matching Application IDs
   name: app_ids
   type: 0

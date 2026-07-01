@@ -47,6 +47,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Owners
   name: owners
   type: 0
@@ -124,6 +127,9 @@ configuration:
   defaultvalue: All
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Group types
   name: group_type
   type: 16

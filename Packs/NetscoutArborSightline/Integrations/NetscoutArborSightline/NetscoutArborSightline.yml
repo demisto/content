@@ -108,6 +108,9 @@ configuration:
   - traffic_auto_mitigation
   type: 16
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.
   display: Minimal importance to fetch
   name: importance

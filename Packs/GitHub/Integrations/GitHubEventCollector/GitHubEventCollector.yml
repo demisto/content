@@ -29,6 +29,8 @@ configuration:
   defaultvalue: 1000
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: First fetch timestamp
   name: after
   type: 0
@@ -36,6 +38,8 @@ configuration:
   section: Collect
   required: false
   hidden: true
+  supportedModules:
+  - xsiam
 - display: The event types to include
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include

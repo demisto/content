@@ -21,6 +21,9 @@ configuration:
   section: Collect
   defaultvalue: "label:Inbox"
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Events user key
   name: queryUserKey
   type: 0
@@ -76,6 +79,9 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+  supportedModules:
+  - agentix
+  - xsiam
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail

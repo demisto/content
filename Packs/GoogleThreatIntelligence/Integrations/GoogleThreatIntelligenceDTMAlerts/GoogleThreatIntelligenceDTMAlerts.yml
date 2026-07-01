@@ -63,6 +63,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Fetch Alerts by the specified alert types.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Alert Monitor ID
   name: alert_monitor_ids
   type: 16

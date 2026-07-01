@@ -71,6 +71,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: status
   display: Issue status to fetch
   additionalinfo: 'Select the status of issues to fetch from Wiz. Multiple selections are allowed.'
@@ -83,6 +86,9 @@ configuration:
   type: 16
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: issue_type
   display: Issue type to fetch
   additionalinfo: 'Select the type of issues to fetch from Wiz. Multiple selections are allowed.'

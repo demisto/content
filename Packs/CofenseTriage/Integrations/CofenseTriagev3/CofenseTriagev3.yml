@@ -71,6 +71,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: |-
     Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports.
     Supports comma separated values.

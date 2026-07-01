@@ -120,6 +120,9 @@ configuration:
   additionalinfo: Maximum number of indicators to fetch per API request (pagination). Default is 200, maximum is 1000. If you encounter timeout issues, consider reducing this limit.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8

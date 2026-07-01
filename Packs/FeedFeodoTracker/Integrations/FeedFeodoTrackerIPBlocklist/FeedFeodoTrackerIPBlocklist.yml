@@ -68,6 +68,9 @@ configuration:
   type: 8
   advanced: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
@@ -116,6 +119,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Gets a list of bad IPs from Feodo Tracker.
 display: Feodo Tracker IP Blocklist Feed
 name: Feodo Tracker IP Blocklist Feed

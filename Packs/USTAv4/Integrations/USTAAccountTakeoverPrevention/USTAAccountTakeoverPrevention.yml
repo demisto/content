@@ -35,6 +35,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '100'
   display: Maximum number of alerts per fetch
   name: max_fetch

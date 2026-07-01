@@ -89,6 +89,9 @@ configuration:
   - Activity Rule
   - Data Loss Prevention
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'An advanced filter to fetch the list of alerts.
 
     For example: source:"Google" AND type="Suspicious login".

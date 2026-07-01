@@ -69,6 +69,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Varonis threat model name
   additionalinfo: Pipe-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
   hidden: false
@@ -87,6 +90,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction

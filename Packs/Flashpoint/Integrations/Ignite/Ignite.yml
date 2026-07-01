@@ -73,6 +73,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Filters the incoming alerts with the provided alert status.
   display: Alert Status
   name: status
@@ -84,6 +87,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Filters the incoming alerts with the origin of the alert.
   display: Alert Origin
   name: origin

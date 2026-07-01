@@ -28,6 +28,8 @@ configuration:
   defaultvalue: 1000
   required: true
   section: Collect
+  supportedModules:
+  - xsiam
 - display: First fetch from API time
   name: after
   type: 15
@@ -43,6 +45,8 @@ configuration:
   - 1 month
   - 1 year
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Trust any certificate (not secure)
   name: verify
   type: 8

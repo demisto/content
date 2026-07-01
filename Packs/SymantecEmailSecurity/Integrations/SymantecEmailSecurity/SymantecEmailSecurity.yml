@@ -88,6 +88,9 @@ configuration:
   - medium
   - high
   - critical
+  supportedModules:
+  - agentix
+  - xsiam
 - name: type
   display: Type - Email Data Feed
   type: 15

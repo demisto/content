@@ -59,6 +59,9 @@ configuration:
   - CLOSED
   - ON_HOLD
   additionalinfo: Filter incidents by status (leave empty for all statuses)
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Severity Levels
   name: severities
   type: 16

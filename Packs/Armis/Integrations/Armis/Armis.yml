@@ -50,6 +50,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity

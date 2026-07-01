@@ -105,6 +105,9 @@ configuration:
   required: true
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: API token
   name: api_token
   type: 4

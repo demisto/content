@@ -25,6 +25,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Filters the incoming alerts with the provided alert type. Default All.
   defaultvalue: All
   display: Alert Type
@@ -37,6 +40,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of alerts to fetch each time. If the value is greater than 100, it will be considered as 100. The maximum is 100.
   defaultvalue: "40"
   display: Max Fetch

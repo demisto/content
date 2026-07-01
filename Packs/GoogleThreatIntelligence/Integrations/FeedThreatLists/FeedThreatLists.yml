@@ -47,6 +47,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"

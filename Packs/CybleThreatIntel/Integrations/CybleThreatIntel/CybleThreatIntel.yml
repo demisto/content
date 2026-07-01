@@ -137,6 +137,9 @@ configuration:
     section: Collect
     additionalinfo: Maximum number of indicators to fetch per execution.
     hidden: true
+    supportedModules:
+      - agentix
+      - xsiam
 script:
   type: python
   subtype: python3

@@ -88,6 +88,9 @@ configuration:
   - critical
   # Fetch incidents
   # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)
+  supportedModules:
+    - agentix
+    - xsiam
 - name: isFetch
   display: Fetch incidents
   additionalinfo: Fetch HelloWorld alerts as incidents in Cortex XSOAR.

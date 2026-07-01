@@ -27,6 +27,9 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Top
   name: top
   defaultvalue: 5000
