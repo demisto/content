@@ -1,3 +1,5 @@
+import hashlib
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -17,6 +19,7 @@ MAX_EVENTS_PER_REQUEST = 1000
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
 NEXT_TRIGGER_VALUE = "1"
+LAST_RUN_HASHES_KEY = "hashed_recent_events"
 
 """ CLIENT CLASS """
 
@@ -78,7 +81,7 @@ class Client(BaseClient):
             "token_expiration_seconds": token_expiration_seconds,
             "token_initiate_time": time.time(),
         }
-        demisto.debug(f"updating access token - {integration_context}")
+        demisto.debug(f"[Token] Updated access token; expires in {token_expiration_seconds}s.")
         set_integration_context(context=integration_context)
 
         return access_token
@@ -129,6 +132,43 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
         bool: True if token has expired, False if not.
     """
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
+
+
+def hash_event(event: dict) -> str:
+    """Compute a SHA-256 hash of an event using canonical (sorted-key) JSON for dedup."""
+    canonical = json.dumps(event, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def deduplicate_events(events: list[dict], previous_hashes: list[str]) -> tuple[list[dict], list[str]]:
+    """Remove events whose content-hash matches a previously-seen hash.
+
+    Filters out events that match either a hash from the previous run OR a hash
+    already seen earlier in the same batch (intra-batch dedup).
+
+    Returns:
+        (new_events, new_hashes) where both are bounded by len(events) and only
+        contain entries for unique events from THIS run. If `events` is empty,
+        `previous_hashes` is returned unchanged to preserve dedup state.
+    """
+    if not events:
+        demisto.debug("[Dedup] No events to process; returning previous hashes unchanged.")
+        return [], list(previous_hashes)
+
+    demisto.debug(f"[Dedup] Checking {len(events)} event(s) against {len(previous_hashes)} previous hash(es).")
+    previous_set = set(previous_hashes)  # O(1) lookup
+    new_events: list[dict] = []
+    new_hashes: list[str] = []
+    for event in events:
+        h = hash_event(event)
+        if h not in previous_set:
+            new_events.append(event)
+            new_hashes.append(h)
+            previous_set.add(h)  # intra-batch dedup: skip identical events later in this batch
+
+    skipped = len(events) - len(new_events)
+    demisto.debug(f"[Dedup] Skipped {skipped} duplicate(s); {len(new_events)} new event(s) remain.")
+    return new_events, new_hashes
 
 
 def get_max_fetch(limit: Optional[int]) -> int:
@@ -212,41 +252,46 @@ def get_events_command(
 def fetch_events_from_saas_security(
     client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
 ) -> tuple[list[dict], Exception | None, bool]:
-    """
-    Fetches events from the saas-security queue.
+    """Fetch events from the SaaS Security queue.
 
-    timeouts (204) docs:
-    https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
-    api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
-    4cce-93d2-e39446be650d
+    Iterates until max_fetch is reached, max_iterations is reached, or the queue
+    returns 204 (no more events). If max_fetch is None, fetches until the queue is drained.
+
+    SaaS Security 204 docs: https://docs.paloaltonetworks.com/saas-security/saas-security-admin/
+    saas-security-api/syslog-and-api-integration/api-client-integration/public-api-references/log-events-api
 
     Returns:
-        tuple: (events, exception, queue_drained) - queue_drained is True if got 204 (no more events in queue).
+        (events, exception, queue_drained) - queue_drained is True when 204 was received.
     """
     events: list[dict] = []
     under_max_fetch = True
     queue_drained = False
+    iteration_num = 1
 
-    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     try:
-        iteration_num = 1  # this is done in order to prevent timeouts
         while under_max_fetch and iteration_num < max_iterations + 1:
             response = client.get_events_request()
-            if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
+            if response.status_code == 204:
                 queue_drained = True
                 break
             fetched_events = response.json().get("events") or []
-            demisto.info(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
-            demisto.info(f"fetched the following events: {fetched_events} in iteration {iteration_num}")
+            demisto.info(f"[API Fetch] Iteration {iteration_num}: fetched {len(fetched_events)} event(s).")
             events.extend(fetched_events)
-            events_len = len(events)
             if max_fetch:
-                under_max_fetch = events_len < max_fetch
-            demisto.info(f"Collected already {events_len} events until iteration {iteration_num}")
+                under_max_fetch = len(events) < max_fetch
+            demisto.info(f"[API Fetch] Total accumulated after iteration {iteration_num}: {len(events)} event(s).")
             iteration_num += 1
     except Exception as exc:
-        demisto.info(f"Got error get_events: {exc}")
+        demisto.info(f"[API Fetch] Error on iteration {iteration_num}: {exc}")
         return events, exc, True
+
+    if queue_drained:
+        exit_reason = "204 queue_drained"
+    elif max_fetch and len(events) >= max_fetch:
+        exit_reason = f"max_fetch={max_fetch} reached"
+    else:
+        exit_reason = f"max_iterations={max_iterations} reached"
+    demisto.info(f"[API Fetch] Loop ended: {exit_reason} (iterations={iteration_num - 1}, total_events={len(events)}).")
 
     return events, None, queue_drained
 
@@ -264,7 +309,7 @@ def main() -> None:  # pragma: no cover
     max_iterations = arg_to_number(params.get("max_iterations")) or MAX_ITERATIONS
 
     command = demisto.command()
-    demisto.info(f"Command being called is {command}")
+    demisto.info(f"[Main] Command: {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -278,35 +323,48 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             integration_context = demisto.getIntegrationContext()
-            demisto.info(f"{integration_context=}")
+            cached_events_count = len(integration_context.get("events") or [])
+            previous_hashes_count = len(last_run.get(LAST_RUN_HASHES_KEY) or [])
+            demisto.info(
+                f"[Fetch] Starting: max_fetch={max_fetch}, max_iterations={max_iterations}, "
+                f"prev_hashes={previous_hashes_count}, cached_events={cached_events_count}, "
+                f"nextTrigger_set={'nextTrigger' in last_run}."
+            )
             queue_drained = True
             if not integration_context.get("events"):
                 events, exception, queue_drained = fetch_events_from_saas_security(
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
-                    demisto.info(f"got exception when trying to fetch events: [{exception}]")
+                    demisto.info(f"[Fetch] Got exception fetching events: [{exception}]")
             else:
-                events = integration_context.get("events")
-                demisto.info("Fetching events from integration context")
+                events = integration_context.get("events") or []
+                demisto.info(f"[Fetch] Resuming {len(events)} event(s) from integration context.")
                 queue_drained = False
+
+            # Dedup against hashes from last_run (no unique event ID is returned by the API).
+            previous_hashes = last_run.get(LAST_RUN_HASHES_KEY) or []
+            events, new_hashes = deduplicate_events(events, previous_hashes)
+
             try:
-                demisto.info(f"Sending the following amount of events into XSIAM: {len(events)}")
+                demisto.info(f"[Fetch] Sending {len(events)} event(s) to XSIAM.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setIntegrationContext({})
+                # Persist this run's hashes only (bounded by max_fetch) — replaces any prior hashes.
+                last_run[LAST_RUN_HASHES_KEY] = new_hashes
+                demisto.debug(f"[Fetch] Stored {len(last_run[LAST_RUN_HASHES_KEY])} hash(es) in last_run.")
             except Exception as e:
-                demisto.info(f"Received error when trying to send events to XSIAM: [{e}]")
+                demisto.info(f"[Fetch] Push to XSIAM failed: [{e}]")
                 demisto.setIntegrationContext({"events": events})
-                demisto.debug(f"Successfully set the following events into integration context: {events}")
+                demisto.debug(f"[Fetch] Saved {len(events)} event(s) to integration context for retry.")
                 queue_drained = True  # Prevent tight retry loops on push failure
 
-            # If the queue has not been fully drained, trigger next fetch in 1 second
             if not queue_drained:
                 last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
-                demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
+                demisto.debug("[Fetch] Batching in progress; nextTrigger=1s.")
             else:
                 last_run.pop("nextTrigger", None)
-                demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
+                demisto.debug("[Fetch] Queue drained; next run uses fetch interval.")
             demisto.setLastRun(last_run)
         elif command == "saas-security-get-events":
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
