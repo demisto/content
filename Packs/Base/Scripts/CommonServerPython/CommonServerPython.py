@@ -1536,12 +1536,18 @@ def _classify_error_message(message):
         return CortexErrorCode.CONNECTION_ERROR
     if any(kw in msg for kw in ('permission denied', 'forbidden', 'insufficient permissions')):
         return CortexErrorCode.PERMISSION_ERROR
+    if any(kw in msg for kw in ('invalid argument', 'invalid value', 'invalid parameter', 'is not a valid')):
+        return CortexErrorCode.INVALID_ARGUMENT
+    if any(kw in msg for kw in ('missing argument', 'missing required argument', 'required argument')):
+        return CortexErrorCode.MISSING_ARGUMENT
     if 'not found' in msg:
         return CortexErrorCode.RESOURCE_NOT_FOUND
     if any(kw in msg for kw in ('ssl', 'certificate verify')):
         return CortexErrorCode.SSL_ERROR
     if 'proxy' in msg:
         return CortexErrorCode.PROXY_ERROR
+    if any(kw in msg for kw in ('failed to parse', 'json decode', 'jsondecodeerror', 'invalid json', 'unable to parse')):
+        return CortexErrorCode.API_RESPONSE_PARSE_ERROR
     return None
 
 
