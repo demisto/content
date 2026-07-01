@@ -128,6 +128,91 @@ script:
     - contextPath: IBMStorageScale.Debug.error_details
       description: Error details if connection failed.
       type: String
+  - name: ibm-storage-scale-acl-list
+    description: Returns a list of all REST API access control lists (ACLs). If a user group is provided, returns only the ACLs defined for that user group.
+    arguments:
+    - name: user_group
+      description: The name of the user group by which to filter results. When provided, returns the ACLs for that user group. When omitted, lists all ACLs.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: IBMStorageScale.ACL.acls
+      description: The list of ACL objects returned by the API.
+      type: Unknown
+    - contextPath: IBMStorageScale.ACL.acls.userGroup
+      description: The user group for which the access control list is defined.
+      type: String
+    - contextPath: IBMStorageScale.ACL.acls.entries
+      description: The access control entries for the user group.
+      type: Unknown
+    - contextPath: IBMStorageScale.ACL.acls.entries.entryId
+      description: The ID of the REST API access control list entry.
+      type: Number
+    - contextPath: IBMStorageScale.ACL.acls.entries.type
+      description: The type of access provided (ALLOW or DENY).
+      type: String
+    - contextPath: IBMStorageScale.ACL.acls.entries.method
+      description: The REST API request method (GET, PUT, POST, or DELETE).
+      type: String
+    - contextPath: IBMStorageScale.ACL.acls.entries.uri
+      description: The resource URL the access control entry applies to.
+      type: String
+  - name: ibm-storage-scale-filesystem-acl-get
+    description: Returns information about the access control list (ACL) for a file or directory in a file system.
+    arguments:
+    - name: file_system_name
+      description: The name of the file system (for example, gpfs0).
+      required: true
+      isArray: false
+    - name: path
+      description: 'The file path relative to the file system mount point. Use forward slashes (for example, mnt/gpfs0/rest01).'
+      required: true
+      isArray: false
+    - name: fields
+      description: 'A comma-separated list of fields to include in the response. To include all available fields, use ":all:". When omitted, the API applies its own default behavior.'
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: IBMStorageScale.FileSystemACL.acl.type
+      description: The type of the ACL (for example, NFSv4).
+      type: String
+    - contextPath: IBMStorageScale.FileSystemACL.acl.entries
+      description: The access control entries for the file or directory.
+      type: Unknown
+    - contextPath: IBMStorageScale.FileSystemACL.acl.entries.type
+      description: The entry type. Can be 'allow', 'deny', 'alarm', or 'audit'.
+      type: String
+    - contextPath: IBMStorageScale.FileSystemACL.acl.entries.who
+      description: "The name of the user or group to which the ACL applies (for example, 'special:owner@', 'special:group@', 'special:everyone@', 'user:{name}', 'group:{name}')."
+      type: String
+    - contextPath: IBMStorageScale.FileSystemACL.acl.entries.permissions
+      description: The access permissions string (for example, 'rxancs').
+      type: String
+    - contextPath: IBMStorageScale.FileSystemACL.acl.entries.flags
+      description: The special flags and inheritance definition string (for example, 'fd').
+      type: String
+  - name: ibm-storage-scale-acl-delete
+    description: Deletes all REST API access control lists (ACL) defined for a user group. This is a potentially destructive operation.
+    execution: true
+    arguments:
+    - name: user_group
+      description: The name of the user group from which to delete the ACLs.
+      required: true
+      isArray: false
+    outputs: []
+  - name: ibm-storage-scale-acl-entry-delete
+    description: Deletes a specific REST API access control list (ACL) entry for a user group. This is a potentially destructive operation.
+    execution: true
+    arguments:
+    - name: user_group
+      description: The user group name the ACL entry belongs to.
+      required: true
+      isArray: false
+    - name: entry_id
+      description: The ID of the ACL entry to delete.
+      required: true
+      isArray: false
+    outputs: []
 beta: true
 tests:
 - No tests (auto formatted)

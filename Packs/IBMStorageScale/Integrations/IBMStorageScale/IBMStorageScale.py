@@ -1,9 +1,12 @@
 import asyncio
 import hashlib
+import traceback
 import httpx
 from datetime import UTC as _UTC  # type: ignore[attr-defined]
 from datetime import tzinfo
-from urllib.parse import urlparse, urlencode, quote_plus
+from urllib.parse import urlparse, urlencode, quote_plus, quote
+from typing import Never
+from collections.abc import Callable
 
 UTC = _UTC
 
@@ -14,6 +17,10 @@ from CommonServerPython import *  # noqa: F401
 API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
+
+# --- ACL ENDPOINTS ---
+ACCESS_ACLS_ENDPOINT = "/scalemgmt/v2/access/acls"
+FILESYSTEM_ACL_ENDPOINT_TEMPLATE = "/scalemgmt/v2/filesystems/{file_system_name}/acl/{path}"
 
 DEDUPLICATION_WINDOW_MINUTES = 2
 MAX_STORED_HASHES = 10000  # Cap dedup cache to 10k: handles short high-EPS bursts (1-min window) while bounding memory
@@ -31,6 +38,51 @@ MAX_SAMPLE_SIZE = 5
 ISO_MINUTE_FORMAT = "%Y-%m-%dT%H:%M"  # Minute bucket (chosen to keep filter length bounded)
 SECOND_WILDCARD_REGEX = "[0-5][0-9]"  # Seconds 00-59 as a compact class
 TIME_BUCKET_MINUTES = 1  # Step across minutes when constructing time-window regex
+
+
+# --- ACL HELPERS ---
+def _encode_path_segment(value: str) -> str:
+    """
+    URL-encode a single path segment using safe="" so '/' is encoded as %2F.
+
+    Used for every interpolated value in ACL endpoint paths (user_group, entry_id,
+    file_system_name, path). The IBM Storage Scale REST API expects the filesystem
+    'path' argument to carry its slashes as %2F (e.g. 'mnt/gpfs0/rest01' becomes
+    'mnt%2Fgpfs0%2Frest01').
+    """
+    return quote(value, safe="")
+
+
+def _raise_http_error(error: httpx.HTTPStatusError) -> Never:
+    """
+    Translate an httpx.HTTPStatusError into a DemistoException. Always raises.
+
+    Mapping:
+        - HTTP 401 / 403 -> "Authorization Error: Ensure the credentials are correct and
+          have the required permissions."
+        - HTTP 400 -> "Invalid Request (HTTP 400). <body>" message.
+        - Any other status (404, 500, ...) -> generic "HTTP Error. Status code: <status>.
+          <body>" message that includes the status code and the raw response body, so
+          operators see exactly what the server returned.
+
+    Args:
+        error: The exception raised by response.raise_for_status().
+
+    Raises:
+        DemistoException: Always.
+    """
+    status = error.response.status_code
+    body = ""
+    try:
+        body = error.response.text
+    except Exception:
+        demisto.debug(f"Failed to extract response body from error: {traceback.format_exc()}")
+
+    if status in (401, 403):
+        raise DemistoException("Authorization Error: Ensure the credentials are correct and have the required permissions.")
+    elif status == 400:
+        raise DemistoException(f"Invalid Request (HTTP 400). {body}".strip())
+    raise DemistoException(f"HTTP Error. Status code: {status}. {body}".strip())
 
 
 # --- TIMEZONE HELPERS ---
@@ -540,6 +592,110 @@ class Client:
 
         return debug_info
 
+    async def _request(
+        self,
+        method: str,
+        url_suffix: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json_body: Any | None = None,
+        error_handler: Callable[[httpx.HTTPStatusError], Never] = _raise_http_error,
+    ) -> dict[str, Any]:
+        """
+        Execute an HTTP request and return the parsed JSON response.
+
+        Owns the httpx.AsyncClient lifecycle (per-call, matching current behaviour) and
+        translates httpx errors into DemistoException via _raise_http_error and the
+        standard Connection Error message.
+
+        Args:
+            method: HTTP verb ("GET", "POST", "PUT", "DELETE", "PATCH", ...).
+            url_suffix: Path suffix appended to self.base_url. Caller is responsible for
+                        URL-encoding any interpolated path segments (use _encode_path_segment).
+            params: Optional query-string parameters, forwarded to httpx as `params=`.
+                    Pass None or omit to send no query string.
+            json_body: Optional JSON-serializable body, forwarded to httpx as `json=`.
+                       Pass None or omit to send no body.
+            error_handler: Callable invoked with the httpx.HTTPStatusError when the server
+                           returns a non-2xx response. Must always raise (typed as returning
+                           Never); defaults to _raise_http_error.
+
+        Returns:
+            Parsed JSON response body as a dict.
+
+        Raises:
+            DemistoException: On HTTP error (via error_handler (defaults to _raise_http_error)) or connection error.
+        """
+        async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
+            try:
+                response = await client.request(method, url_suffix, params=params, json=json_body)
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                error_handler(e)
+            except httpx.RequestError as e:
+                raise DemistoException(f"Connection Error: Could not connect to {self.base_url}. Reason: {e}")
+            return response.json()
+
+    async def list_acls(self, user_group: str | None = None) -> dict[str, Any]:
+        """
+        List access ACLs, optionally scoped to a single user/group.
+
+        Calls GET /scalemgmt/v2/access/acls when ``user_group`` is None, or
+        GET /scalemgmt/v2/access/acls/{user_group} when it is provided. Both endpoints
+        return the same envelope: ``{"acls": [...], "status": {...}}``; the per-user_group
+        endpoint returns the same ``acls`` array (typically with a single entry for that
+        group), NOT a bare object.
+        """
+        if user_group:
+            url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
+        else:
+            url_suffix = ACCESS_ACLS_ENDPOINT
+        return await self._request("GET", url_suffix)
+
+    async def get_filesystem_acl(
+        self,
+        file_system_name: str,
+        path: str,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve the ACL for a path inside a filesystem.
+
+        Calls GET /scalemgmt/v2/filesystems/{file_system_name}/acl/{path}, optionally with a
+        ``fields`` query parameter. ``fields`` is sent only when the caller explicitly provides
+        one; when ``fields is None`` the parameter is omitted (the API docs do not document a
+        default). The ``path`` argument uses forward slashes (e.g. 'mnt/gpfs0/rest01') and is
+        URL-encoded so '/' becomes '%2F'.
+        """
+        url_suffix = FILESYSTEM_ACL_ENDPOINT_TEMPLATE.format(
+            file_system_name=_encode_path_segment(file_system_name),
+            path=_encode_path_segment(path),
+        )
+        params = {"fields": fields} if fields else None
+        return await self._request("GET", url_suffix, params=params)
+
+    async def delete_acl(self, user_group: str) -> dict[str, Any]:
+        """
+        Delete all ACL entries for a user/group.
+
+        Calls DELETE /scalemgmt/v2/access/acls/{user_group}. Per the API docs this endpoint
+        always returns a JSON body shaped as ``{"jobs": [...], "status": {...}}``, so a plain
+        ``response.json()`` is safe (no defensive empty-body handling needed).
+        """
+        url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}"
+        return await self._request("DELETE", url_suffix)
+
+    async def delete_acl_entry(self, user_group: str, entry_id: str) -> dict[str, Any]:
+        """
+        Delete a single ACL entry (identified by ``entry_id``) from a user/group.
+
+        Calls DELETE /scalemgmt/v2/access/acls/{user_group}/entry/{entry_id}. The response
+        body is identical in shape to ``delete_acl`` (the ``{"jobs":[...], "status":{...}}``
+        envelope).
+        """
+        url_suffix = f"{ACCESS_ACLS_ENDPOINT}/{_encode_path_segment(user_group)}/entry/{_encode_path_segment(entry_id)}"
+        return await self._request("DELETE", url_suffix)
+
 
 class _ConcurrentEventFetcher:
     """
@@ -642,6 +798,100 @@ class _ConcurrentEventFetcher:
         return self.collected_events[: self.max_events], self.has_more_available
 
 
+# --- ACL COMMAND HANDLERS ---
+async def acl_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Handle the ``ibm-storage-scale-acl-list`` command.
+
+    Lists access ACLs (optionally scoped to ``user_group``) and returns a CommandResults with
+    the raw response under the ``IBMStorageScale.ACL`` context key (keyed on ``userGroup``).
+    """
+    user_group = args.get("user_group")
+    raw = await client.list_acls(user_group=user_group)
+
+    acls_for_table = raw.get("acls", []) if isinstance(raw, dict) else []
+
+    title = f"IBM Storage Scale ACLs for '{user_group}'" if user_group else "IBM Storage Scale ACLs"
+    return CommandResults(
+        outputs_prefix="IBMStorageScale.ACL",
+        outputs=raw,
+        raw_response=raw,
+        readable_output=tableToMarkdown(
+            title,
+            acls_for_table,
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        ),
+    )
+
+
+async def filesystem_acl_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Handle the ``ibm-storage-scale-filesystem-acl-get`` command.
+
+    Retrieves the ACL for a path inside a filesystem and returns a CommandResults with the raw
+    response under the ``IBMStorageScale.FileSystemACL`` context key. The ``fields`` argument
+    accepts either a CSV string or a list (the YAML declares ``isArray: true``); when omitted,
+    no ``fields`` query parameter is sent to the API.
+    """
+    file_system_name = args["file_system_name"]
+    path = args["path"]
+    fields_list = argToList(args.get("fields"))
+    fields = ",".join(fields_list) if fields_list else None
+
+    raw = await client.get_filesystem_acl(
+        file_system_name=file_system_name,
+        path=path,
+        fields=fields,
+    )
+
+    acl_obj = raw.get("acl") if isinstance(raw, dict) else None
+    entries = acl_obj.get("entries", []) if isinstance(acl_obj, dict) else []
+
+    return CommandResults(
+        outputs_prefix="IBMStorageScale.FileSystemACL",
+        outputs=raw,
+        raw_response=raw,
+        readable_output=tableToMarkdown(
+            f"ACL for {file_system_name}:{path}",
+            entries,
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        ),
+    )
+
+
+async def acl_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Handle the ``ibm-storage-scale-acl-delete`` command.
+
+    Deletes all ACL entries for ``user_group`` and returns a CommandResults whose
+    ``readable_output`` is a human-readable success message.
+    """
+    user_group = args["user_group"]
+    raw = await client.delete_acl(user_group=user_group)
+    return CommandResults(
+        readable_output=f"All ACL from {user_group} were deleted successfully",
+        raw_response=raw,
+    )
+
+
+async def acl_entry_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Handle the ``ibm-storage-scale-acl-entry-delete`` command.
+
+    Deletes a single ACL entry (identified by ``entry_id``) from ``user_group`` and returns a
+    CommandResults whose ``readable_output`` is a human-readable success message.
+    """
+    user_group = args["user_group"]
+    entry_id = args["entry_id"]
+    raw = await client.delete_acl_entry(user_group=user_group, entry_id=entry_id)
+    return CommandResults(
+        readable_output=f"ACL from {entry_id} were deleted successfully",
+        raw_response=raw,
+    )
+
+
 async def main() -> None:
     """Main function, serves as the orchestra for the integration."""
     params = demisto.params()
@@ -718,6 +968,14 @@ async def main() -> None:
                 ),
             )
             return_results(command_results)
+        elif command == "ibm-storage-scale-acl-list":
+            return_results(await acl_list_command(client, demisto.args()))
+        elif command == "ibm-storage-scale-filesystem-acl-get":
+            return_results(await filesystem_acl_get_command(client, demisto.args()))
+        elif command == "ibm-storage-scale-acl-delete":
+            return_results(await acl_delete_command(client, demisto.args()))
+        elif command == "ibm-storage-scale-acl-entry-delete":
+            return_results(await acl_entry_delete_command(client, demisto.args()))
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 
