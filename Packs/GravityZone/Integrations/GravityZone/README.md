@@ -1709,7 +1709,7 @@ Initiates the creation of a memory dump for the specified endpoint. Once the dum
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The target endpoint ID. The endpoint must be accessible and run a Windows operating system. | Required |
-| path | The path to the destination folder on the specified endpoint where the memory dump archive will be created. | Required |
+| path | The full path to the destination folder on the specified endpoint where the memory dump archive will be created. | Required |
 | password | The password used to secure the memory dump archive after it is created. It must contain at least 12 characters, including one uppercase letter, one lowercase letter, one digit, and one special character. | Required |
 | polling | Controls whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated. Default and recommended value: true. | Optional |
 
@@ -1724,8 +1724,8 @@ Initiates the creation of a memory dump for the specified endpoint. Once the dum
 | GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
 | GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump task started. |
 | GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump task ended, if available. |
-| GravityZone.MemoryDump.ErrorCode | String | An error code if the memory dump task fails, or Success if the task completes successfully. |
-| GravityZone.MemoryDump.Error | String | An error message if the memory dump task fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the memory dump task fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the memory dump task fails, or "Success" if the task completes successfully. |
 | GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the task completes successfully. |
 
 #### Command example
@@ -1755,7 +1755,7 @@ Initiates the creation of a memory dump for the specified endpoint. Once the dum
 
 #### Human Readable Output
 
-This example illustrates the human-readable output when *polling* is set to *true*. When *polling* is *false*, the table contains only the task ID and endpoint ID.
+This example illustrates the human-readable output when `polling` is set to `true`. When `polling` is `false`, the table contains only the task ID and endpoint ID.
 
 >### Memory dump for endpoint 6942a43afe8d4e463ca5c197
 >
@@ -1791,8 +1791,8 @@ Verifies the status of a task initiated via gz-endpoint-create-memory-dump.
 | GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
 | GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump creation task started. |
 | GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump creation task ended, if available. |
-| GravityZone.MemoryDump.ErrorCode | String | An error code if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully. |
-| GravityZone.MemoryDump.Error | String | An error message if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully. |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the task started through gz-endpoint-create-memory-dump fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the task started through gz-endpoint-create-memory-dump fails, or "Success" if the task completes successfully. |
 | GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the memory dump creation task completes successfully. |
 
 #### Command example
@@ -1822,7 +1822,7 @@ Verifies the status of a task initiated via gz-endpoint-create-memory-dump.
 
 #### Human Readable Output
 
-This example illustrates the human-readable output when *polling* is set to *true*. When *polling* is *false*, only the status of the memory dump creation task is displayed.
+This example illustrates the human-readable output when `polling` is set to `true`. When `polling` is `false`, only the status of the memory dump creation task is displayed.
 
 >### Memory dump for endpoint 6942a43afe8d4e463ca5c197
 >

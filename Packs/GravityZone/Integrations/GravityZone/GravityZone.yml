@@ -227,7 +227,7 @@ script:
       default: false
     - name: path
       isArray: false
-      description: The path to the destination folder on the specified endpoint where the memory dump archive will be created.
+      description: The full path to the destination folder on the specified endpoint where the memory dump archive will be created.
       required: true
       secret: false
       default: false
