@@ -33,6 +33,14 @@
                     {
                         "fieldId": "devicesecurityincidenturl",
                         "isVisible": true
+                    },
+                    {
+                        "fieldId": "devicesecurityservicenowtablename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "devicesecurityservicenowrecordid",
+                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
