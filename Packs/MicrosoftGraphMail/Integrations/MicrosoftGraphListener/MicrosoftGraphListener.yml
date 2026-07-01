@@ -131,12 +131,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
   section: Collect
   required: false
   defaultvalue: '50'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13

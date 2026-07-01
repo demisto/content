@@ -123,11 +123,17 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '100'
   display: How many incidents to fetch each time
   name: max_fetch
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Select Chronicle alert type to create an actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Curated Rule Detection alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).

@@ -50,6 +50,9 @@ configuration:
   required: false
   defaultvalue: WHITE
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy

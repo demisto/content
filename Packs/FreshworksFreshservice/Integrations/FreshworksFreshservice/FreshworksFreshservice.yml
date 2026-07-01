@@ -29,6 +29,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of incidents per fetch. Default is 100.
   defaultvalue: '100'
   display: Maximum incidents per fetch
@@ -36,6 +39,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: All
   display: Ticket type to fetch as incidents.
   name: ticket_type

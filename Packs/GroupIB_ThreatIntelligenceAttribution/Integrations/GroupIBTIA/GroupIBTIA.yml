@@ -107,6 +107,9 @@ configuration:
   required: false
   additionalinfo: Date to start fetching incidents from.
   hidden: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Exclude All with Combolist type
   name: exclude_combolist
   section: Collect
@@ -149,6 +152,9 @@ configuration:
   - '3'
   - '4'
   - '5'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Skip updated incidents (prevent duplicates)
   name: skip_updated_incidents
   section: Collect

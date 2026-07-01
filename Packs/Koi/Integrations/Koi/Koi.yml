@@ -53,6 +53,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - name: audit_types_filter
   display: Audit log type filter
   required: false
@@ -83,6 +85,8 @@ configuration:
   required: false
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - defaultvalue: 1
   display: Events Fetch Interval
   name: eventFetchInterval

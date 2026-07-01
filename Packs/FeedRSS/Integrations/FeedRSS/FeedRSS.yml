@@ -76,6 +76,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -138,6 +141,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: RSS Feed reader can ingest new items as report indicators.
 display: RSS Feed
 name: RSS Feed

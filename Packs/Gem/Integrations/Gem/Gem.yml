@@ -38,6 +38,9 @@ configuration:
     required: false
     type: 0
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - display: Use system proxy settings
     name: proxy
     type: 8
@@ -59,6 +62,9 @@ configuration:
     type: 0
     section: Collect
     required: false
+    supportedModules:
+      - agentix
+      - xsiam
 description: "Use Gem alerts as a trigger for Cortex XSOAR’s custom playbooks, to automate response to specific TTPs."
 display: Gem
 name: Gem

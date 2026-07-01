@@ -91,6 +91,9 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: suddenDeath
   display: ''
   name: feedExpirationPolicy
@@ -141,6 +144,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

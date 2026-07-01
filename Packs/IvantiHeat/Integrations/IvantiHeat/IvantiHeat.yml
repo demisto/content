@@ -40,6 +40,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The object field to use for incident name
   name: incident_name_field
   required: true

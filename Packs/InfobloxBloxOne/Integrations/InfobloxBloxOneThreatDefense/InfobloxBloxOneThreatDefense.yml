@@ -330,6 +330,9 @@ configuration:
   type: 0
   required: false
   additionalinfo: The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   additionalinfo: "The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
   defaultvalue: 24 hours
@@ -337,6 +340,9 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: Incidents Fetch Interval
   name: incidentFetchInterval

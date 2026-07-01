@@ -143,6 +143,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feedTags
   display: Tags
   type: 0

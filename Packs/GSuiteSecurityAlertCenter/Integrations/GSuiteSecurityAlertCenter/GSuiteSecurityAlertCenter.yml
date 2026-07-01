@@ -46,6 +46,9 @@ configuration:
   required: true
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'The time range to consider for the initial data fetch.
 
     Formats accepted: YYYY-MM-dd, YYYY-MM-ddTHH:mm:ss, 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years.
@@ -57,6 +60,9 @@ configuration:
   section: Collect
   defaultvalue: 3 days
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
 
     Note: If type is present in the Filter parameter this value will be overwritten.'

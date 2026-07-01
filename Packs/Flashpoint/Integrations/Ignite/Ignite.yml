@@ -42,6 +42,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time
@@ -49,6 +52,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected.
   defaultvalue: Compromised Credentials
   display: Fetch Type
@@ -59,6 +65,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Set the default severity for the incidents using this instance.
   defaultvalue: Unknown
   display: Severity for Incidents

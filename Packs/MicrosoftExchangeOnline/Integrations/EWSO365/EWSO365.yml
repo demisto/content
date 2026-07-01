@@ -95,12 +95,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch (up to 200). Performance might be affected by a value higher than 50.
   name: max_fetch
   type: 0
   defaultvalue: '50'
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Mark fetched emails as read
   name: mark_as_read
   type: 8

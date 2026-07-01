@@ -51,12 +51,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "25"
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python

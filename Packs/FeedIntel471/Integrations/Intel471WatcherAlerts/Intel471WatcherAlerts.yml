@@ -35,6 +35,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Username
   name: credentials
   type: 9
@@ -52,6 +55,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: How far back in time to go when performing the first fetch.
   defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -59,6 +65,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
   display: Watcher group UID(s)
   name: watcher_group_uids

@@ -37,12 +37,16 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch
   name: first_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Collect all events
   name: collect_all_events
   type: 8

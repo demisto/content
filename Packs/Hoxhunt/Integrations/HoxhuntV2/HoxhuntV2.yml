@@ -71,6 +71,9 @@ configuration:
   additionalinfo: (<number> <time unit>, e.g., 12 hours, 7 days). Defaults to 7 days.
   defaultvalue: "7 days"
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch limit
   defaultvalue: "50"
   name: max_fetch
@@ -78,6 +81,9 @@ configuration:
   required: false
   additionalinfo: Maxium number of incidents per fetch. Cap is 100.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Only fetch escalated incidents
   defaultvalue: "false"
   name: only_escalated_incidents

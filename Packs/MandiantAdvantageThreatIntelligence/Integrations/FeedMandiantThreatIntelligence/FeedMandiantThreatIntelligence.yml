@@ -84,6 +84,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feedExcludeOSIntel
   display: Feed Exclude Open Source Intelligence
   type: 8
@@ -103,6 +106,9 @@ configuration:
   defaultvalue: RED
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags

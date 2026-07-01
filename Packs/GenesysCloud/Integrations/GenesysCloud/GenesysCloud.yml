@@ -59,6 +59,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 description: Fetch audit events to see changes within a Genesys Cloud organization.
 display: Genesys Cloud
 name: GenesysCloud

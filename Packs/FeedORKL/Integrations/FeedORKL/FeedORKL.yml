@@ -50,6 +50,9 @@ configuration:
   required: false
   type: 15
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ''
   name: feedExpirationPolicy
   type: 17
