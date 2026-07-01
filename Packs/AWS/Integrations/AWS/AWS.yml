@@ -19431,7 +19431,7 @@ script:
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     - name: firewall_policy_arn
-      description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
+      description: The Amazon Resource Name (ARN) of the firewall policy.
       required: true
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
