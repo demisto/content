@@ -1,0 +1,167 @@
+# connectus/workflow_state_config.yml
+# Hardcoded declarative configuration for the connectus migration workflow
+# state machine. The runtime engine lives in connectus/workflow_state/.
+# Editing this file changes the workflow's shape; engine code does not need
+# to change for declarative edits (adding/removing/reordering steps,
+# changing descriptions, toggling optional, etc.).
+
+schema_version: 2
+
+# Identity / metadata columns — present in the CSV but NOT part of the
+# 15-step workflow. Never cleared by cascade reset. Order matters: this
+# is the leftmost prefix of the CSV header.
+identity_columns:
+  - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
+  - {"name": "Integration File Path", "description": "Repo-relative path to the integration's YML manifest."}
+  - {"name": "Connector ID", "description": "ConnectUs connector this integration belongs to."}
+  - {"name": "Connector Folder Path", "description": "Repo-relative path (in the unified-connectors-content repo) to the connector directory, e.g. connectors/salesforce. Populated by whoever creates the connector via set-connector-path; blank until then. Consumed by the param-parity resolver."}
+
+# Sentinels and marker strings. These are the literal values written into
+# CSV cells by the engine. Changing them is a data migration, not a code
+# change — bump schema_version when you do.
+#
+# Q2 BREAKING CHANGE (2026-05): historical aliases for "done"
+# ("YES", "true", "True", "done", "Done", "DONE") have been DROPPED.
+# Only the strict canonical values are accepted on read AND write.
+markers:
+  check: "✅"
+  fail: "❌"
+  na: "N/A"
+  # Values that count as "done" when seen in a checkpoint cell on read.
+  # Strict-only as of Q2 breaking change.
+  checkpoint_done_values:
+    - "✅"
+    - "N/A"
+  # Default valid values for any step whose kind is `flag` and which does
+  # NOT declare its own ``flag_values``. Per-step ``flag_values`` always
+  # win over this default when a step declares them.
+  flag_values:
+    - "YES"
+    - "NO"
+    - "N/A"
+
+# Cross-step interactions that don't fit the linear cascade model.
+# Currently empty:
+#  - The historical ``requires auth parity test`` flag and its
+#    ``flag_auto_na_target`` interaction were removed in 2026-05.
+#  - The standalone ``auth parity test passes`` checkpoint was removed
+#    in schema_version=2 (2026-05). Parity is now enforced *inside*
+#    ``set-auth`` (see ``connectus/check_auth_parity.py`` and the
+#    ``set_integration_auth`` API): the Auth Details cell cannot be
+#    committed unless the parity test passes or structurally short-
+#    circuits (NO_BASECLIENT / NON_PYTHON / ALL_INTERPOLATED / etc.).
+#  - The standalone ``wrote/checked code`` checkpoint was removed in
+#    schema_version=2 (2026-05) — code authorship was redundant with
+#    ``precommit/validate/unit tests passed`` and never carried its
+#    own gating logic.
+step_interactions: []
+
+# The unified ordered sequence. Order in this list IS the step index
+# (1-based). The engine asserts len(steps) >= 1 and unique names.
+steps:
+  - name: "assignee"
+    kind: data
+    optional: false
+    setter: set-assignee
+    cascade_on_set: false
+    description: "Assign an owner to drive this integration's migration."
+
+  - name: "Auth Details"
+    kind: data
+    optional: false
+    setter: set-auth
+    json_schema: {"validator": "auth_details"}
+    description: "Record the auth classification JSON (validated against the Auth Details schema). On commit, set-auth invokes connectus/check_auth_parity.py with this payload; the cell is rejected unless parity passes or structurally short-circuits (NO_BASECLIENT / NON_PYTHON / ALL_INTERPOLATED / CONNECTION_INTERPOLATED / INTEGRATION_REJECTS_HTTP)."
+
+  - name: "Collect Capabilities"
+    kind: data
+    optional: false
+    setter: set-capabilities
+    json_schema: {"validator": "capabilities"}
+    preserve_on_reset: true
+    description: "Flat, de-duplicated JSON list of the integration's expected capability names (closed enum, no 'general_configurations'), produced by connectus/connectus_migration/capabilities_collector.py:collect_capabilities. Drives the single-capability optimization in run_pre_manifest_steps.py: when exactly one capability is collected, Params to Commands is analyzed for test-module only. Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
+
+  - name: "Params to Commands"
+    kind: data
+    optional: false
+    setter: set-params-to-commands
+    json_schema: {"validator": "params_to_commands"}
+    cross_check: {"validator": "params_to_commands_no_auth_overlap"}
+    preserve_on_reset: true
+    description: "Map each integration command to the parameter IDs it consumes (JSON). Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
+
+  - name: "Params for test with default in code"
+    kind: data
+    optional: false
+    setter: set-param-defaults
+    json_schema: {"validator": "param_defaults"}
+    preserve_on_reset: false
+    description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument, and consumed by check_auth_parity.py as the first-precedence source of non-auth required param values."
+
+  - name: "UCP param-default review"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Audit the integration for ConnectUs param-default-removal breakage. Under ConnectUs, params no longer arrive with framework-injected type defaults (unchecked checkbox was False, empty numeric was 0; now absent/None). Run `python3 connectus/check_param_defaults.py --integration-id <id> --human`. It emits three buckets: UNSAFE (provable breaks — a strict converter like argToBoolean/arg_to_number/int/float on a defaultless param read), UNCERTAIN ('params still to be checked by AI' — cross-function flow, dynamic access, **params splats, custom wrappers, and checkbox reads that escape a pure-boolean context), and SAFE. Flow: the AI PRESENTS the UNSAFE + UNCERTAIN lists to the user, investigates each, FIXES the code (add a `.get(name, <default>)` / `... or <default>` fallback, or move the param to other_connection), UPDATES connectus-migration-SKILL.md when a new pattern is learned, then markpasses. Non-Python (JS/PS) integrations short-circuit as 'not analyzed: non-Python'. This is a present->fix->markpass checkpoint, NOT a self-executing gate."
+
+  - name: "Params to Capabilities"
+    kind: data
+    optional: false
+    setter: set-params-to-capabilities
+    json_schema: {"validator": "params_to_capabilities"}
+    preserve_on_reset: true
+    description: "Bare capability dict produced by connectus/connectus_migration/connector_param_mapper.py. Top-level keys are capability names (closed enum) plus 'general_configurations'; each value is a flat list of YML config param ids. See column-schemas.md for the schema. Preserved across reset-to/fail (still wiped by plain reset) so that re-applying Auth Details — which resets the workflow when a required test-module param is elevated into other_connection — does not discard the capability mapping. NOTE: set-auth's reset must therefore honor preserve_on_reset for this column (it is NOT included in set-auth's hard-wipe of the downstream Params* columns)."
+
+  - name: "generated manifest"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Generate the ConnectUs manifest YAML for the integration."
+
+  - name: "handler param coverage"
+    kind: checkpoint
+    optional: false
+    setter: null
+    gate: handler_param_coverage
+    description: "Verify the connector handler covers every non-hidden integration-YML param. Self-executing gate: `markpass` RUNS connectus/check_handler_param_coverage.py with the integration's --handler-path (resolved from the Connector Folder Path cell + derived handler id) and --integration-yml (from the Integration File Path cell) and only passes the checkpoint if it exits 0. Runs immediately before `run manifest make validate` so a missing param is caught before connector-level schema validation. No bypass."
+
+  - name: "run manifest make validate"
+    kind: checkpoint
+    optional: false
+    setter: null
+    gate: make_validate
+    description: "Run `make validate` on the generated manifest. Self-executing gate: `markpass` RUNS `make validate` in the ConnectUs repo (the shared-workspace sibling `unified-connectors-content`, overridable via $CONNECTUS_REPO_DIR) and only passes the checkpoint if it exits 0. Validates all connectors (JSON Schema + OPA). No bypass."
+
+  - name: "param parity test passes"
+    kind: checkpoint
+    optional: false
+    setter: null
+    gate: param_parity
+    description: "Run the parameter-parity test. Self-executing gate: `markpass` RUNS connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id <id> (acquire tenant lock -> deploy -> check_param_parity -> release) and only passes the checkpoint if it exits 0. Any non-zero exit (10 parity fail, 11 blocked, 20/21 deploy, 30 lock busy, 40 preflight) rejects the markpass and surfaces the output tail. No bypass."
+
+  - name: "code reviewed"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Complete code review."
+
+  - name: "code merged"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Merge the integration to the branch."
+
+  - name: "precommit/validate/unit tests passed"
+    kind: checkpoint
+    optional: false
+    setter: null
+    gate: precommit
+    description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit. Self-executing gate: `markpass` RUNS `demisto-sdk pre-commit -i <integration dir>` and only passes the checkpoint if it exits 0. No bypass."
+
+  - name: "Release Notes"
+    kind: data
+    optional: false
+    setter: set-release-notes
+    json_schema: {"validator": "release_notes"}
+    preserve_on_reset: false
+    description: "Verifies a release-notes file exists for the integration when its .py or .yml was modified during the migration. Cell shape: {\"required\": bool, \"path\": str|null, \"verified\": bool}. When `git diff HEAD` on the integration's .py/.yml is empty: {\"required\": false} auto-passes. When non-empty: requires a Packs/<PackName>/ReleaseNotes/<Version>.md containing the exact substring 'Enabled support for UCP' (case-sensitive). Generate with `demisto-sdk update-release-notes -i Packs/<PackName>` and edit the resulting RN file to include the required substring. If multiple RN files exist, the newest (largest version) is checked."

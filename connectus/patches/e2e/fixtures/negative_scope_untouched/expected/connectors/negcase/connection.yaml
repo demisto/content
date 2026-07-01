@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: negcase-plain
+  label: Basic Auth
+- id: negcase-token
+  label: API Token
+- id: negcase-vault
+  label: API Token (vault)
+profiles:
+- id: plain.negcase_basic
+  type: plain
+  view_group: negcase-plain
+  title: Basic (Username & Password)
+  description: A plain type-9 username/password profile — must NOT get vault_mappings.
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: username:credentials.identifier,password:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+- id: api_key.negcase_token
+  type: api_key
+  view_group: negcase-token
+  title: API Token
+  description: An api_key type-9 token profile — must NOT get vault_mappings.
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:credentials.password
+  configurations:
+  - fields:
+    - id: api_key
+      title: API Token
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+- id: api_key.negcase_vault
+  type: api_key
+  view_group: negcase-vault
+  title: API Token (vault enabled)
+  description: An api_key profile that opts into vault via the boolean — the patch
+    must leave vault_support untouched and add NO vault_mappings.
+  vault_support: true
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:credentials.password
+  configurations:
+  - fields:
+    - id: api_key
+      title: API Token
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false

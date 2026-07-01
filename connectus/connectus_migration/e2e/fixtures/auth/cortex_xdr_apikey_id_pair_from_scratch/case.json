@@ -1,0 +1,23 @@
+{
+  "description": "Cortex XDR (from scratch) — two hiddenusername type-9 creds forming one id+secret Passthrough profile (API Key ID + API Key). Input-only TDD red target.",
+  "connector_title": "Cortex XDR",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "API Key",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "apikey_id_creds.password": "apikey_id",
+          "apikey_creds.password": "apikey"
+        }
+      }
+    ],
+    "other_connection": [
+      "url",
+      "insecure",
+      "proxy"
+    ]
+  }
+}

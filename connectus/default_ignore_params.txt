@@ -1,0 +1,37 @@
+# XSOAR framework params (not part of any integration's auth or per-command logic).
+# Sourced separately from integration-specific Auth Details (--integration-id flag).
+# Do NOT add auth-related params here — those come from Auth Details automatically
+# (the analyzer pulls them via `workflow_state.py auth-params <id>` and unions
+# them into its effective ignore set).
+#
+# Also do NOT add connection-adjacent params here (url, server_url, host, port,
+# region, proxy, use_system_proxy, insecure, unsecure, trust_any_certificate,
+# credentials, apikey, api_key, client_id, client_secret, username, password,
+# token, etc.). Those belong in `Auth Details.other_connection` per integration.
+
+# Long-running / fetch-loop framework
+longRunning
+longRunningPort
+
+# Feed framework (TIM / indicator feeds)
+feedReputation
+feedExpirationInterval
+feedExpirationPolicy
+feedReliability
+feedTags
+feedFetchInterval
+feedBypassExclusionList
+feedIncremental
+tlp_color
+
+# Incident-mirroring / classifier framework
+mirror_options
+mirror_direction
+incidentType
+
+# Generic XSOAR fetch-loop toggles (flip switches XSOAR injects independently
+# of the integration's own command surface)
+isFetch
+isFetchEvents
+isFetchSamples
+isFetchAssets

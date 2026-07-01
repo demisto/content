@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: apiconn
+  label: ApiConn
+profiles:
+- id: api_key.apiconn
+  type: api_key
+  view_group: apiconn
+  title: API Key
+  description: API key authentication profile for ApiConn.
+  configurations:
+  - fields:
+    - id: api_key
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: apikey
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: server_url
+      title: Server URL
+      field_type: input
+      metadata:
+        auth:
+          parameter: server_url
+      options:
+        mask: false
+        placeholder: https://api.example.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - advanced: true
+    fields:
+    - id: timeout
+      title: Timeout (seconds)
+      field_type: input
+      metadata:
+        auth:
+          parameter: timeout
+      options:
+        mask: false
+        default_value: '30'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - advanced: true
+    fields:
+    - id: debug_mode
+      title: Debug Mode
+      field_type: checkbox
+      metadata:
+        auth:
+          parameter: debug_mode
+      options:
+        mask: false
+        default_value: 'false'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

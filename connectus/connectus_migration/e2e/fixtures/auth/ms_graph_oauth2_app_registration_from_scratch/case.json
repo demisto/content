@@ -1,0 +1,26 @@
+{
+  "description": "Microsoft Graph (from scratch) — multiple hiddenusername type-9 app-registration credentials (app id / tenant id / client secret) plus a certificate type-9, mapped into one app-registration Passthrough profile. Input-only TDD red target. Auth type is 'Passthrough' (the harness enum has no 'oauth2'; valid types are APIKey/Plain/Passthrough/NoneRequired).",
+  "connector_title": "Microsoft Graph",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "App Registration",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "creds_auth_id.password": "client_id",
+          "creds_tenant_id.password": "tenant_id",
+          "credentials.password": "client_secret",
+          "creds_certificate.password": "certificate"
+        }
+      }
+    ],
+    "other_connection": [
+      "url",
+      "self_deployed",
+      "insecure",
+      "proxy"
+    ]
+  }
+}

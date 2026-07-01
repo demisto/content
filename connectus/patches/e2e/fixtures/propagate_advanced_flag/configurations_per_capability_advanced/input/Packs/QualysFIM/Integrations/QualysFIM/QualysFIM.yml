@@ -1,0 +1,25 @@
+category: Vulnerability Management
+commonfields:
+  id: qualys_fim
+  version: -1
+configuration:
+- display: FIM Server
+  name: fimserver
+  type: 0
+  required: true
+- display: Fetch Filter
+  name: fetch_filter
+  type: 0
+  advanced: true
+  required: false
+description: Slimmed-down mocked QualysFIM XSOAR integration used only as a fixture source for the propagate_advanced_flag e2e suite.
+display: Qualys FIM
+name: qualys_fim
+script:
+  commands: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.0.0
+fromversion: 6.10.0

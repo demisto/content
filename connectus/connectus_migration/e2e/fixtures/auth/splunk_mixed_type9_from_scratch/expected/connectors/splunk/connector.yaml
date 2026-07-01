@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: splunk
+enabled: true
+metadata:
+  title: Splunk
+  description: integrate with Cisco Systems products.
+  version: 1.0.0
+  categories: []
+  tags: []
+  vendor: Cisco Systems
+  publisher: Palo Alto Networks
+  author_image: splunk.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true

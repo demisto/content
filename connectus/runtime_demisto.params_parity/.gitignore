@@ -1,0 +1,14 @@
+# Per-tenant filesystem locks (runtime-only; never committed). See tenant_lock.py.
+.locks/
+
+# Phase 7 results persistence: per-run envelope JSONs + ledger.csv (audit detail,
+# may contain captured params; never committed). See results_ledger.py.
+results/
+
+# Param-parity session state (runtime-only; never committed). The session
+# descriptor + port-forward PID written by session_setup.py. See session_env.py.
+.session/
+
+# Legacy writable-gcloud-config copy (no longer used — env is established by the
+# human-run session_setup.py in a writable terminal). Ignore any leftover dir.
+.gcloud_tmp/

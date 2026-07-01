@@ -1,0 +1,6 @@
+{
+  "description": "Connector whose source XSOAR YAML has zero `advanced: true` params — patch leaves the manifest tree byte-identical.",
+  "connector": "noopconn",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": false
+}

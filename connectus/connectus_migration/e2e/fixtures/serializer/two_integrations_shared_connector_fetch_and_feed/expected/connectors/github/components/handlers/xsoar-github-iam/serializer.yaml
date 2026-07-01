@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-github-iam_max_fetch
+  field_name: max_fetch
+- id: xsoar-github-iam_feedTags
+  field_name: feedTags
+- id: xsoar-github-iam_integrationLogLevel
+  field_name: integrationLogLevel
+- id: xsoar-github-iam_feedFetchInterval
+  field_name: feedFetchInterval
+- id: xsoar-github-iam_feedReliability
+  field_name: feedReliability
+- id: xsoar-github-iam_feedExpirationPolicy
+  field_name: feedExpirationPolicy
+- id: xsoar-github-iam_feedExpirationInterval
+  field_name: feedExpirationInterval
+- id: xsoar-github-iam_feedReputation
+  field_name: feedReputation
+- id: xsoar-github-iam_feedBypassExclusionList
+  field_name: feedBypassExclusionList
+- id: xsoar-github-iam_incidentType
+  field_name: incidentType
+- id: xsoar-github-iam_incomingMapperId
+  field_name: incomingMapperId
+- id: xsoar-github-iam_mappingId
+  field_name: mappingId
+- id: passthrough_github_iam_credentials_username
+  field_name: credentials_username
+- id: passthrough_github_iam_credentials_password
+  field_name: credentials_password
+- id: passthrough_github_iam_url
+  field_name: url
+- id: passthrough_github_iam_proxy
+  field_name: proxy
+- id: passthrough_github_iam_insecure
+  field_name: insecure
+- id: passthrough_github_iam_engine_mode
+  field_name: engine_mode
+- id: passthrough_github_iam_engine
+  field_name: engine
+- id: passthrough_github_iam_engine_group
+  field_name: engineGroup
+computed_fields:
+- output:
+  - id: feed
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: threat-intelligence-and-enrichment_github-iam
+        value: 'on'
+- output:
+  - id: isFetch
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_github-iam
+        value: 'on'
+- output:
+  - id: first_fetch
+    value: '10'
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_github-iam
+        value: 'on'
+    - type: capability
+      options:
+        capability_id: threat-intelligence-and-enrichment_github-iam
+        value: 'on'
+- output:
+  - id: incidentFetchInterval
+    value: '30'
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_github-iam
+        value: 'on'

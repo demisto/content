@@ -1,0 +1,29 @@
+category: Utilities
+commonfields:
+  id: SimpleConn
+  version: -1
+configuration:
+- display: API Endpoint
+  name: api_endpoint
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Scan Timeout (seconds)
+  name: scan_timeout
+  type: 0
+  advanced: true
+  required: false
+description: Minimal mocked XSOAR integration used only as a fixture source for the propagate_advanced_flag e2e suite.
+display: SimpleConn
+name: SimpleConn
+script:
+  commands: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.0.0
+fromversion: 6.10.0

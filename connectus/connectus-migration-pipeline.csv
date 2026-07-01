@@ -1,0 +1,194 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details,Collect Capabilities,Params to Commands,Params for test with default in code,UCP param-default review,Params to Capabilities,generated manifest,handler param coverage,run manifest make validate,param parity test passes,code reviewed,code merged,precommit/validate/unit tests passed,Release Notes
+CriblSearch,Packs/Cribl/Integrations/CriblSearch/CriblSearch.yml,Cribl,connectors/cribl,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth Client Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation""]","{
+  ""commands"": {
+    ""cribl-saved-search-list"": [],
+    ""cribl-search-dataset-list"": [],
+    ""cribl-search-job-create"": [],
+    ""cribl-search-job-delete"": [],
+    ""cribl-search-job-list"": [],
+    ""cribl-search-job-update"": [],
+    ""cribl-search-query"": [],
+    ""cribl-search-result"": [],
+    ""cribl-search-status"": [],
+    ""test-module"": []
+  },
+  ""integration"": ""Cribl Search""
+}",{},✅,"{
+  ""Automation"": [],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+Menlo Security,Packs/MenloSecurity/Integrations/MenloSecurity/MenloSecurity.yml,Menlo Security,connectors/menlo-security,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""token_type"",""url""]}","[
+  ""Log Collection""
+]","{""integration"":""Menlo Security"",""commands"":{""test-module"":[""log_types""],""fetch-events"":[""log_types"",""max_events_per_fetch_per_type""],""menlo-security-get-events"":[""log_types"",""max_events_per_fetch_per_type""]}}","{""log_types"":""web,safemail,audit,auth_flows,smtp,attachment,bandwidth,heat,firewall,dlp,ms_client_logs""}",✅,"{
+  ""Log Collection"": [
+    ""log_types"",
+    ""max_events_per_fetch_per_type""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+SecurityScorecardEventCollector,Packs/SecurityScorecard/Integrations/SecurityScorecardEventCollector/SecurityScorecardEventCollector.yml,SecurityScorecard,connectors/securityscorecard,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_token.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""scorecard_identifier"",""url""]}","[
+  ""Log Collection""
+]","{
+  ""commands"": {
+    ""fetch-events"": [
+      ""max_fetch""
+    ],
+    ""securityscorecard-get-events"": [],
+    ""test-module"": []
+  },
+  ""integration"": ""SecurityScorecard Event Collector""
+}",{},✅,"{
+  ""Log Collection"": [
+    ""max_fetch""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+Proofpoint Cloud Threat Response,Packs/ProofpointCloudThreatResponse/Integrations/ProofpointCloudThreatResponse/ProofpointCloudThreatResponse.yml,Proofpoint,connectors/proofpoint,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth Client Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[
+  ""Fetch Issues"",
+  ""Automation""
+]","{
+  ""commands"": {
+    ""fetch-incidents"": [
+      ""fetch_delta"",
+      ""fetch_enrich"",
+      ""fetch_states"",
+      ""first_fetch"",
+      ""max_fetch""
+    ],
+    ""proofpoint-ctr-incident-get"": [],
+    ""proofpoint-ctr-incidents-list"": [],
+    ""test-module"": [
+      ""fetch_states""
+    ]
+  },
+  ""integration"": ""Proofpoint Cloud Threat Response""
+}",{},✅,"{
+  ""Automation"": [],
+  ""Fetch Issues"": [
+    ""fetch_delta"",
+    ""fetch_enrich"",
+    ""fetch_states"",
+    ""first_fetch"",
+    ""max_fetch""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+ServiceNow MCP,Packs/ServiceNowMCP/Integrations/ServiceNowMCP/ServiceNowMCP.yml,ServiceNow Automation and Collection,connectors/servicenow-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth Authorization Code"",""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""oauth_credentials.identifier"":""client_id"",""oauth_credentials.password"":""client_secret"",""auth_code.password"":""auth_code"",""redirect_uri"":""redirect_uri""}}],""other_connection"":[""insecure"",""instance_url"",""server_name""]}","[
+  ""Automation""
+]","{
+  ""commands"": {
+    ""call-tool"": [],
+    ""list-tools"": [],
+    ""servicenow-mcp-auth-test"": [],
+    ""servicenow-mcp-generate-login-url"": [],
+    ""test-module"": []
+  },
+  ""integration"": ""ServiceNow MCP""
+}",{},✅,"{
+  ""Automation"": [],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+iZOOlogic,Packs/iZOOlogic/Integrations/iZOOlogic/iZOOlogic.yml,iZOOlogic,connectors/izoologic,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Key and Secret"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""api_key"",""secret_key.password"":""secret_key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[
+  ""Log Collection"",
+  ""Automation""
+]","{""integration"":""iZOOlogic"",""commands"":{""test-module"":[""events_types_filter""],""fetch-events"":[""events_types_filter"",""max_fetch""],""izoologic-get-events"":[""events_types_filter""],""izoologic-incident-create"":[],""izoologic-incident-fetch"":[]}}","{""events_types_filter"":""brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email,executive""}",✅,"{
+  ""Automation"": [],
+  ""Log Collection"": [
+    ""events_types_filter"",
+    ""max_fetch""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+O365 Message Trace,Packs/MicrosoftExchangeOnline/Integrations/O365MessageTrace/O365MessageTrace.yml,M365 Automation and Collection,connectors/m365-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Microsoft Graph authentication"",""interpolated"":true,""xsoar_param_map"":{""credentials_client_id.password"":""client_id"",""credentials.password"":""client_secret"",""creds_certificate.identifier"":""certificate_thumbprint"",""creds_certificate.password"":""private_key"",""auth_code.password"":""auth_code"",""managed_identities_client_id.password"":""managed_identities_client_id""}}],""other_connection"":[""insecure"",""proxy"",""redirect_uri"",""tenant_id"",""url"",""use_managed_identities""]}","[
+  ""Log Collection"",
+  ""Automation""
+]","{""integration"":""O365 Message Trace"",""commands"":{""test-module"":[],""fetch-events"":[""max_fetch""],""o365-message-trace-get-events"":[],""o365-message-trace-auth-test"":[],""o365-message-trace-auth-reset"":[],""o365-message-trace-generate-login-url"":[]}}",{},✅,"{
+  ""Automation"": [],
+  ""Log Collection"": [
+    ""max_fetch""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+Anthropic Claude,Packs/AnthropicClaude/Integrations/AnthropicClaude/AnthropicClaude.yml,Claude Automation and Collection,connectors/claude-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Anthropic Claude authentication"",""interpolated"":true,""xsoar_param_map"":{""apikey.password"":""api_key"",""compliance_apikey.password"":""compliance_api_key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[
+  ""Log Collection"",
+  ""Automation""
+]","{""integration"":""Anthropic Claude"",""commands"":{""test-module"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""claude-send-message"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""claude-check-email-header"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""claude-check-email-body"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""claude-create-soc-email-template"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""fetch-events"":[""max_events_per_fetch"",""activity_types""],""claude-get-events"":[],""claude-list-organizations"":[],""claude-list-organization-users"":[""organization_uuid""],""claude-list-roles"":[""organization_uuid""],""claude-list-role-permissions"":[""organization_uuid""],""claude-list-groups"":[],""claude-list-group-members"":[],""claude-list-chats"":[],""claude-list-chat-messages"":[],""claude-list-projects"":[],""claude-list-project-attachments"":[],""claude-get-project-document"":[]}}","{""max_tokens"":1024}",✅,"{
+  ""Automation"": [
+    ""model-select"",
+    ""model-freetext"",
+    ""max_tokens"",
+    ""temperature"",
+    ""top_p"",
+    ""organization_uuid""
+  ],
+  ""Log Collection"": [
+    ""max_events_per_fetch"",
+    ""activity_types""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+Cortex Attack Surface Management,Packs/CortexAttackSurfaceManagement/Integrations/CortexAttackSurfaceManagement/CortexAttackSurfaceManagement.yml,Cortex Attack Surface Management,connectors/cortex-attack-surface-management,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Cortex XDR API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""api_key_id"",""credentials.password"":""api_key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[
+  ""Automation""
+]","{
+  ""commands"": {
+    ""asm-get-asset-internet-exposure"": [],
+    ""asm-get-attack-surface-rule"": [],
+    ""asm-get-external-ip-address-range"": [],
+    ""asm-get-external-service"": [],
+    ""asm-get-remediation-confirmation-scan-status"": [],
+    ""asm-list-asset-internet-exposure"": [],
+    ""asm-list-external-ip-address-range"": [],
+    ""asm-list-external-service"": [],
+    ""asm-list-remediation-rule"": [],
+    ""asm-start-remediation-confirmation-scan"": [],
+    ""test-module"": []
+  },
+  ""integration"": ""Cortex Attack Surface Management""
+}",{},✅,"{
+  ""Automation"": [],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,
+SplunkPyPreRelease,Packs/SplunkPyPreRelease/Integrations/SplunkPyPreRelease/SplunkPyPreRelease.yml,Splunk Automation and Collection,connectors/splunk-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Splunk authentication"",""interpolated"":true,""xsoar_param_map"":{""authentication.identifier"":""username"",""authentication.password"":""password"",""hec_token"":""hec_token""}}],""other_connection"":[""app"",""hec_url"",""host"",""port"",""proxy"",""unsecure"",""use_requests_handler""]}","[
+  ""Fetch Issues"",
+  ""Automation""
+]","{""integration"":""SplunkPyPreRelease"",""commands"":{""test-module"":[""fetchQuery"",""timezone"",""enabled_enrichments""],""fetch-incidents"":[""fetchQuery"",""fetch_limit"",""fetch_time"",""replaceKeys"",""enabled_enrichments"",""extractFields"",""timezone"",""useSplunkTime"",""parseNotableEventsRaw"",""earliest_fetch_time_fieldname"",""latest_fetch_time_fieldname"",""occurrence_look_behind"",""unique_id_fields"",""extensive_logs"",""enrichment_timeout"",""num_enrichment_events""],""get-mapping-fields"":[""type_field"",""use_cim"",""useSplunkTime"",""extractFields"",""earliest_fetch_time_fieldname"",""latest_fetch_time_fieldname"",""fetchQuery"",""timezone""],""get-remote-data"":[""timezone""],""get-modified-remote-data"":[""timezone""],""splunk-search"":[],""splunk-job-create"":[],""splunk-results"":[],""splunk-get-indexes"":[],""splunk-submit-event"":[],""splunk-notable-event-edit"":[],""splunk-submit-event-hec"":[],""splunk-job-status"":[],""splunk-parse-raw"":[],""splunk-reset-enriching-fetch-mechanism"":[],""splunk-kv-store-collection-create"":[],""splunk-kv-store-collection-config"":[],""splunk-kv-store-collection-delete"":[],""splunk-kv-store-collections-list"":[],""splunk-kv-store-collection-add-entries"":[],""splunk-kv-store-collection-data-list"":[],""splunk-kv-store-collection-search-entry"":[],""splunk-kv-store-collection-data-delete"":[],""splunk-kv-store-collection-delete-entry"":[],""update-remote-system"":[]}}",{},✅,"{
+  ""Automation"": [],
+  ""Fetch Issues"": [
+    ""fetchQuery"",
+    ""fetch_limit"",
+    ""fetch_time"",
+    ""replaceKeys"",
+    ""enabled_enrichments"",
+    ""extractFields"",
+    ""timezone"",
+    ""useSplunkTime"",
+    ""parseNotableEventsRaw"",
+    ""earliest_fetch_time_fieldname"",
+    ""latest_fetch_time_fieldname"",
+    ""occurrence_look_behind"",
+    ""unique_id_fields"",
+    ""extensive_logs"",
+    ""enrichment_timeout"",
+    ""num_enrichment_events""
+  ],
+  ""general_configurations"": [
+    ""type_field"",
+    ""use_cim""
+  ]
+}",✅,✅,✅,,,,,
+Cortex Data Lake,Packs/CortexDataLake/Integrations/CortexDataLake/CortexDataLake.yml,Cortex Data Lake,connectors/cortex-data-lake,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Strata Logging Service authentication"",""interpolated"":true,""xsoar_param_map"":{""credentials_reg_id.password"":""registration_id"",""credentials_refresh_token.password"":""refresh_token"",""credentials_auth_key.password"":""encryption_key""}}],""other_connection"":[""insecure"",""proxy""]}","[
+  ""Fetch Issues"",
+  ""Automation""
+]","{""integration"":""Cortex Data Lake"",""commands"":{""test-module"":[""fetch_table"",""fetch_fields"",""filter_query"",""firewall_subtype"",""firewall_severity"",""first_fetch_timestamp""],""fetch-incidents"":[""first_fetch_timestamp"",""firewall_severity"",""fetch_table"",""firewall_subtype"",""fetch_fields"",""limit"",""filter_query""],""cdl-query-logs"":[],""sls-query-logs"":[],""cdl-get-critical-threat-logs"":[],""sls-get-critical-threat-logs"":[],""cdl-get-social-applications"":[],""sls-get-social-applications"":[],""cdl-search-by-file-hash"":[],""sls-search-by-file-hash"":[],""cdl-query-traffic-logs"":[],""sls-query-traffic-logs"":[],""cdl-query-threat-logs"":[],""sls-query-threat-logs"":[],""cdl-query-url-logs"":[],""sls-query-url-logs"":[],""cdl-query-file-data"":[],""sls-query-file-data"":[],""cdl-query-gp-logs"":[],""sls-query-gp-logs"":[],""cdl-reset-authentication-timeout"":[]}}",{},✅,"{
+  ""Automation"": [],
+  ""Fetch Issues"": [
+    ""first_fetch_timestamp"",
+    ""firewall_severity"",
+    ""fetch_table"",
+    ""firewall_subtype"",
+    ""fetch_fields"",
+    ""limit"",
+    ""filter_query""
+  ],
+  ""general_configurations"": []
+}",✅,✅,✅,,,,,

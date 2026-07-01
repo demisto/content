@@ -285,3 +285,5 @@ line-length = 130
 "**/TestData/*" = ["E501"] # line-too-long
 "**/TestInput/*" = ["E501"] # line-too-long
 "**/TestsInput/*" = ["E501"] # line-too-long
+# connectus_migration scripts are intentionally self-contained and use stdlib json/yaml/logging.
+"connectus/connectus_migration/*.py" = ["TID251"]

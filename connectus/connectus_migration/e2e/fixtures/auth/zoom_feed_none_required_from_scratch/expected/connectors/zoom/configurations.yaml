@@ -1,0 +1,159 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration
+view_groups:
+- id: zoom-feed
+  label: Zoom Feed
+  help_text: Configurations settings for Zoom Feed.
+general_configurations:
+  configurations:
+  - view_group: zoom-feed
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-zoom-feed.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: threat-intelligence-and-enrichment_zoom-feed
+  configurations:
+  - fields:
+    - id: feedFetchInterval
+      title: Feed Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          hours: 4
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  - fields:
+    - id: feedReliability
+      field_type: select
+      options:
+        values:
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
+        default_value: A - Completely reliable
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        description: Reliability of the source providing the intelligence data
+      title: Source Reliability
+  - fields:
+    - id: feedExpirationPolicy
+      field_type: select
+      options:
+        values:
+        - key: indicatorType
+          label: indicatorType
+        - key: Time Interval
+          label: Time Interval
+        - key: Never Expire
+          label: Never Expire
+        - key: When removed from the feed
+          label: When removed from the feed
+        default_value: indicatorType
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: feedExpirationInterval
+      title: Feed Expiration Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          days: 14
+        create_modifiers:
+          hidden: true
+        edit_modifiers:
+          hidden: true
+  - fields:
+    - id: feedReputation
+      field_type: select
+      options:
+        values:
+        - key: Unknown
+          label: Unknown
+        - key: Benign
+          label: Benign
+        - key: Suspicious
+          label: Suspicious
+        - key: Malicious
+          label: Malicious
+        searchable: true
+        clearable: true
+        default_value: Benign
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        description: Indicators from this integration instance will be marked with
+          this verdict
+      title: Indicator Reputation
+  - fields:
+    - id: feedBypassExclusionList
+      title: Bypass exclusion list
+      field_type: checkbox
+      options:
+        description: When selected, the exclusion list is ignored for indicators from
+          this feed. This means that if an indicator from this feed is on the exclusion
+          list, the indicator might still be added to the system.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: zoom-feed

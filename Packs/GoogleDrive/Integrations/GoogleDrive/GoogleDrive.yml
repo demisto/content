@@ -3238,6 +3238,22 @@ script:
     - contextPath: GoogleDrive.File.parents
       description: The list of parent folder IDs.
       type: Unknown
+  - name: google-drive-connectus-info
+    description: Prints the ConnectUs (UCP) connection information and integration parameters available in the demisto object. Sensitive values are masked.
+    arguments: []
+    outputs:
+    - contextPath: GoogleDrive.ConnectUsInfo.ConnectUs.ucp_enabled
+      description: Whether ConnectUs (UCP) authentication is enabled for this instance.
+      type: Boolean
+    - contextPath: GoogleDrive.ConnectUsInfo.ConnectUs.capability
+      description: The resolved ConnectUs (UCP) capability for the current command.
+      type: String
+    - contextPath: GoogleDrive.ConnectUsInfo.ConnectUs.method_unique_id
+      description: The ConnectUs (UCP) method unique ID for the resolved capability.
+      type: String
+    - contextPath: GoogleDrive.ConnectUsInfo.Params
+      description: The integration parameters from the demisto object, with sensitive values masked.
+      type: Unknown
   dockerimage: demisto/googleapi-python3:1.0.0.8516410
   isfetch: true
   runonce: false

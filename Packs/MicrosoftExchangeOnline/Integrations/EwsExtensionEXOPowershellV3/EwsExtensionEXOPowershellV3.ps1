@@ -2661,13 +2661,70 @@ function TestModuleCommand($client)
     {
         $client.DisconnectSession()
     }
-
+    return $null, $null, $null
 }
 function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     param()
+
     $command = $demisto.GetCommand()
+
+    # ----------------------------------------------------------------------
+    # ConnectUs params-parity probe (test-module only).
+    #
+    # When the param-parity harness arms the instance with the magic param
+    # ``__params_parity_dump__`` and invokes ``test-module``, emit the full
+    # ``demisto.Params()`` as the sentinel-prefixed test-module FAILURE message
+    # and HALT before any real setup runs (which would otherwise fail with the
+    # harness's dummy certificate/credentials and mask the dump).
+    #
+    # CRITICAL: the sentinel must be raised with ``throw`` (NOT ``ReturnError``).
+    # ``ReturnError`` only writes a result entry and RETURNS — it does NOT end
+    # the test-module call with our message, so the harness reads a later entry
+    # (a PowerShell hashtable rendered as ``@{...}``) and fails to find the
+    # sentinel. An uncaught ``throw`` surfaces as the test-module failure
+    # message, mirroring CommonServerPython's ``return_error`` (SystemExit) and
+    # CommonServer.js's ``throw`` probes. The probe sits BEFORE the main
+    # try/catch so the thrown sentinel escapes Main directly and is NOT
+    # re-wrapped by the catch's ``ReturnError $_.Exception.Message``.
+    # ----------------------------------------------------------------------
+    if ($command -eq "test-module") {
+        # Fire on EVERY test-module (matching the Python `return_error` probe at
+        # CommonServerPython.py:14384 and the JS `throw` probe at
+        # CommonServer.js:2911 — both gate ONLY on command == 'test-module', NOT
+        # on the magic param). The harness arms the instance with the magic param
+        # so it can create the instance, but the probe must NOT depend on reading
+        # it back: gating on ``ContainsKey('__params_parity_dump__')`` previously
+        # let execution fall through to the client constructor, which threw
+        # "Could not decode the certificate" on the harness's dummy cert.
+        $demisto.Debug("[params-parity] test-module probe reached; emitting sentinel via throw.")
+        try {
+            $pp_params = $demisto.Params()
+            try {
+                $demisto.Debug("[params-parity] param keys=$(@($pp_params.Keys) -join ',').")
+            } catch {
+                $demisto.Debug("[params-parity] could not enumerate param keys: $($_.Exception.Message)")
+            }
+            $pp_payload = @{
+                '__params_parity_dump__' = $true
+                'params'                 = $pp_params
+            }
+            $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+            $demisto.Debug("[params-parity] throwing sentinel; payload length=$($pp_json.Length).")
+            throw "PARAMS_PARITY_DUMP::$pp_json"
+        }
+        catch {
+            # If THIS is our sentinel, re-throw so the test-module call ends with
+            # the dump message. Any OTHER error here must NOT break test-module —
+            # log it and fall through to the normal flow.
+            if ($_.Exception.Message -like 'PARAMS_PARITY_DUMP::*') {
+                throw
+            }
+            $demisto.Debug("[params-parity] probe error (non-sentinel), continuing: $($_.Exception.Message)")
+        }
+    }
+
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
     if ($integration_params.password.password)

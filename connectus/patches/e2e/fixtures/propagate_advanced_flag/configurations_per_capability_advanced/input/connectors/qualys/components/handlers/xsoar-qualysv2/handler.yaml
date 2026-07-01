@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-qualysv2
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for QualysV2.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: QualysV2
+    xsoar-pack-id: qualys
+  args: {}
+capabilities:
+- id: fetch-events_qualysv2
+  auth_options:
+  - id: api_key.qualys
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

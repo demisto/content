@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: noopconn-basic
+  label: Basic Auth
+profiles:
+- id: plain.noopconn_basic
+  type: plain
+  view_group: noopconn-basic
+  title: Basic (Username & Password)
+  description: Plain auth profile — none of its source params are advanced.
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: username:credentials.identifier,password:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false

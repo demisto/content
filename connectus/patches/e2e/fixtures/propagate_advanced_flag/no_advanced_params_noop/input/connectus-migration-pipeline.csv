@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+NoOpConn,Packs/NoOpConn/Integrations/NoOpConn/NoOpConn.yml,NoOpConn,connectors/noopconn,xsoar,"{""auth_types"":[{""type"":""Plain""}]}"
