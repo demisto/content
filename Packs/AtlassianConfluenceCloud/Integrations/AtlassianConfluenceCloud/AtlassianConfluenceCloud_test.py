@@ -741,7 +741,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "test-page-id", "title": "test_page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
