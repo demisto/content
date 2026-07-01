@@ -99,6 +99,9 @@ configuration:
   defaultvalue: '10'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_time
   type: 0

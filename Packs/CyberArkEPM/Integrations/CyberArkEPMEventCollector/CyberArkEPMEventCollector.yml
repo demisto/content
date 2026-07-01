@@ -62,6 +62,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 - defaultvalue: 'false'
   display: Enable admin audits events
   name: enable_admin_audits

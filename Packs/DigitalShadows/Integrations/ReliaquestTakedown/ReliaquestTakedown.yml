@@ -56,6 +56,9 @@ configuration:
   required: true
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: This controls how often the integration will perform a fetch takwdown command.
   defaultvalue: "1"
   display: Takedown

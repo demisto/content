@@ -94,12 +94,18 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+    - agentix
+    - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Advanced: Minutes to look back when fetching'
   name: look_back
   type: 0
@@ -132,6 +138,9 @@ configuration:
   - Exabeam Incident
   - Exabeam Notable User
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max Users Per Fetch
   name: max_fetch_users
   additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.

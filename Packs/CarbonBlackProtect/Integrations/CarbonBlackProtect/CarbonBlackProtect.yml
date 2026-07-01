@@ -26,6 +26,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '15'
   display: Max incidents per fetch
   name: incidents_per_fetch
@@ -38,6 +41,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: API Token
   name: token
   type: 4

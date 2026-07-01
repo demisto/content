@@ -64,6 +64,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '10000'
   additionalinfo: The maximal number of indicators that could be fetched in a fetch cycle.
   display: Fetch Limit
@@ -71,6 +74,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -108,6 +114,9 @@ configuration:
   required: false
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy
@@ -219,6 +228,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Fetches indicators stored in an Elasticsearch database.
 display: Elasticsearch Feed
 name: ElasticsearchFeed

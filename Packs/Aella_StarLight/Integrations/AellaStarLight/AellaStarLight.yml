@@ -38,6 +38,9 @@ configuration:
   defaultvalue: '15'
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: The specific security event to look for. Default is all events
   name: event_name
   defaultvalue: ''

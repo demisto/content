@@ -45,6 +45,8 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - xsiam
 - display: Fetch events
   name: isFetchEvents
   required: false

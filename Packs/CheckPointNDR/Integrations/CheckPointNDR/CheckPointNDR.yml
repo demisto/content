@@ -43,6 +43,9 @@ configuration:
   defaultvalue: 7 days
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   advanced: true
   display: Fetch incidents
@@ -74,6 +77,9 @@ configuration:
   defaultvalue: "1000"
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: Collect network security events from Check Point Infinity NDR for your secured SaaS periodically.
 display: 'Check Point Network Detection and Response (Infinity NDR)'
 name: CheckPointNDR

@@ -65,6 +65,9 @@ configuration:
     defaultvalue: "3 days"
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - additionalinfo: Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100.
     display: Max fetch
     name: max_fetch
@@ -72,6 +75,9 @@ configuration:
     defaultvalue: "50"
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - additionalinfo: Fetch only security signals with these severity levels or higher.
     display: Fetch severity
     name: fetch_severity
@@ -102,6 +108,9 @@ configuration:
     type: 0
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - display: Incident Mirroring Direction
     name: mirror_direction
     type: 15

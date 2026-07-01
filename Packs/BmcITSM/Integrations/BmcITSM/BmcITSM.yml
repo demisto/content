@@ -32,6 +32,9 @@ configuration:
   additionalinfo: Default is 50. Maximum is 200.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
@@ -39,6 +42,9 @@ configuration:
   additionalinfo: ""
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: ticket_type
   display: Ticket Type
   defaultvalue: All

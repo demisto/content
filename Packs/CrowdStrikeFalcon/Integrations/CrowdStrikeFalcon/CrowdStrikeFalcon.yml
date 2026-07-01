@@ -114,8 +114,9 @@ configuration:
   hidden:
   - marketplacev2
   supportedModules:
-  - "xsiam"
-  - "agentix"
+  - agentix
+  - exposure_management
+  - xsiam
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -153,8 +154,9 @@ configuration:
   hidden:
   - marketplacev2
   supportedModules:
-  - "xsiam"
-  - "agentix"
+  - agentix
+  - exposure_management
+  - xsiam
 - display: Endpoint Detections filter query
   name: fetch_query
   type: 0
@@ -162,6 +164,10 @@ configuration:
   advanced: true
   required: false
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
+  - exposure_management
+  - xsiam
 - display: IDP Detections filter query
   name: idp_detections_fetch_query
   type: 0

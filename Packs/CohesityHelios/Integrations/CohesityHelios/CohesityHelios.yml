@@ -43,12 +43,18 @@ configuration:
   section: Collect
   required: true
   type: 0
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 7 days
   display: First fetch timestamp
   name: first_fetch
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   section: Collect

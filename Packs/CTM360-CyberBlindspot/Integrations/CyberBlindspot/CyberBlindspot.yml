@@ -54,6 +54,9 @@ configuration:
   defaultvalue: 7 days
   display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - name: api_key
   type: 9
   required: true
@@ -69,6 +72,9 @@ configuration:
   defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8

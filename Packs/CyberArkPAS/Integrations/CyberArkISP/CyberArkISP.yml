@@ -73,6 +73,8 @@ configuration:
   advanced: true
   defaultvalue: "10000"
   additionalinfo: Maximum number of events to fetch per cycle (default 10000, based on API paging definition).
+  supportedModules:
+  - xsiam
 - name: isFetchAssets
   display: Fetch Assets
   required: false

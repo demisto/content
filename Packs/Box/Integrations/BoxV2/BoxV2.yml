@@ -164,12 +164,18 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: The maximum amount of incidents to fetch at once
   name: max_fetch
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Manage Box users.
 display: Box v2
 name: Box v2

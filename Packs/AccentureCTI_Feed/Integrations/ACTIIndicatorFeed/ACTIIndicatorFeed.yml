@@ -53,6 +53,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -90,6 +93,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Which indicator types to fetch
   defaultvalue: IP,Domain,URL
   display: Indicator Type

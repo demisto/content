@@ -71,6 +71,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '200'
   display: How many incidents to fetch each time
   hidden: true
@@ -78,6 +81,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: |-
     Applies a filter to the list of detections based on a JSON-specific query.
 

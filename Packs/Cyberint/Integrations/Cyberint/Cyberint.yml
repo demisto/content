@@ -163,6 +163,9 @@ configuration:
   - ssl_tls
   - web_app_security
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Limit
   name: max_fetch
   type: 0
@@ -170,12 +173,18 @@ configuration:
   additionalinfo: Max number of alerts per fetch. Defaults to the minimum 10, max is 100.
   defaultvalue: '10'
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 7 days
   name: first_fetch
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

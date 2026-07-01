@@ -60,6 +60,8 @@ configuration:
   - Customer events
   - Audit Users
   section: Collect
+  supportedModules:
+  - xsiam
 - defaultvalue: '1250'
   section: Collect
   display: Maximum number of audit user events to fetch per request

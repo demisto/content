@@ -48,6 +48,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Maximum number of incidents per fetch. The default value is 200.
   defaultvalue: '200'
   display: Maximum incidents to fetch.
@@ -55,6 +58,9 @@ configuration:
   section: Collect
   type: 0
   required: false
+  supportedModules:
+    - agentix
+    - xsiam
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
@@ -62,6 +68,9 @@ configuration:
   name: first_fetch
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval

@@ -51,6 +51,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   additionalinfo: Maximum number of incidents to return per fetch run. Maximun 100. Default 25.
   defaultvalue: "25"
@@ -58,6 +61,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   defaultvalue: Cymulate Assessment Findings
   name: incidentType

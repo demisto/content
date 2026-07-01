@@ -74,6 +74,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.
   defaultvalue: "30"
   display: Fetch incidents timeout
@@ -88,6 +91,9 @@ configuration:
   section: Collect
   additionalinfo: Due to API limitations, the maximum is 100.
   defaultvalue: "10"
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

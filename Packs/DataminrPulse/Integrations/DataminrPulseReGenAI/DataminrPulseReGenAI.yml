@@ -44,6 +44,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -104,6 +107,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.
 display: Dataminr Pulse - ReGenAI
 name: Dataminr Pulse ReGenAI

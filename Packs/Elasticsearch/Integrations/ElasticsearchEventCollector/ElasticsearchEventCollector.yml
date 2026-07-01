@@ -81,6 +81,8 @@ configuration:
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - name: fetch_time_field
   display: Index time field
   type: 0

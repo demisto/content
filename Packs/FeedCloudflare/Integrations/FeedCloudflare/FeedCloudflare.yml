@@ -55,6 +55,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -105,6 +108,9 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Timeout of the polling request in seconds.
   display: Request Timeout
   name: polling_timeout

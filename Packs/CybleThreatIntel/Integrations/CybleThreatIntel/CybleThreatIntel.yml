@@ -18,6 +18,9 @@ configuration:
       - WHITE
     required: false
     section: Collect
+    supportedModules:
+      - agentix
+      - xsiam
   - display: Feed Fetch Interval
     name: feedFetchInterval
     type: 19

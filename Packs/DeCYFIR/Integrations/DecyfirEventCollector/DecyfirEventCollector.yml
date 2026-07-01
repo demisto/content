@@ -31,6 +31,8 @@ configuration:
   advanced: true
   type: 16
 
+  supportedModules:
+  - xsiam
 - defaultvalue: 3000
   section: Collect
   display: Maximum number of Access Logs events per fetch

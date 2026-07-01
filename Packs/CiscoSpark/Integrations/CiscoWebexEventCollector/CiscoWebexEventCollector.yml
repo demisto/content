@@ -67,6 +67,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
 description: Cisco Webex Event Collector fetches Events and Admin Audit Events and Security Audit Events.
 display: Cisco Webex Event Collector
 name: CiscoWebexEventCollector

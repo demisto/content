@@ -111,6 +111,9 @@ configuration:
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First Fetch Time Interval
   hidden: true
@@ -120,6 +123,9 @@ configuration:
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. Not used by Asimily Insight Integeration.
   defaultvalue: 10 minutes
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   section: Collect

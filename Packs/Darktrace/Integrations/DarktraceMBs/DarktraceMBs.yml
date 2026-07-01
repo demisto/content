@@ -61,6 +61,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
@@ -68,6 +71,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: Rapid detection of malicious behaviour can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate model breaches and all model breach related actions (such as commenting, acknowledging and model logic info).
 display: Darktrace Model Breaches
 name: DarktraceMBs

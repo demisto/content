@@ -140,6 +140,9 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 display: FeedDomainTools
 description: "Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time."
 name: FeedDomainTools

@@ -27,6 +27,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
   display: First fetch time interval
@@ -34,6 +37,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports.
   display: Report Location
   name: mailbox_location

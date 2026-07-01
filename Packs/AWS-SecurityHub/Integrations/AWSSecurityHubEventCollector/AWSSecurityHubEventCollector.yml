@@ -49,6 +49,8 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
 - display: Role Session Name
   name: role_session_name
   type: 0
@@ -69,6 +71,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - xsiam
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
