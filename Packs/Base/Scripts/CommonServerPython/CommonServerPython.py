@@ -1509,7 +1509,7 @@ def get_error_code(execute_command_result):
 def _classify_error_message(message):
     """Classify an error message into a :class:`CortexErrorCode` value.
 
-    Uses text heuristics to detect common error patterns — including
+    Uses text heuristics to detect common error patterns - including
     server-generated errors (e.g. ``"Unsupported Command"``) that have
     no ``ExtendedPayload``.
 
