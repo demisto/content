@@ -167,7 +167,25 @@ class Client:
             if skip:
                 params["$skip"] = skip
 
-        return self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+        # M365-DIAG: log the exact OData params sent so we can correlate raw page order with $skip/$filter (XSUP-71862)
+        demisto.debug(f"M365-DIAG incidents_list REQUEST params={json.dumps(params, default=str)}")
+        response = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+
+        # M365-DIAG: log the RAW response order exactly as the API returned it (before any sorting in fetch_incidents).
+        # This is the single most important signal to decide within-page vs between-page ordering instability.
+        try:
+            raw_value = response.get("value") or []
+            raw_pairs = [
+                {"id": inc.get("incidentId"), "createdTime": inc.get("createdTime")} for inc in raw_value
+            ]
+            demisto.debug(
+                f"M365-DIAG incidents_list RESPONSE skip={params.get('$skip', 0)} count={len(raw_pairs)} "
+                f"has_next_link={bool(response.get('@odata.nextLink'))} raw_order={json.dumps(raw_pairs, default=str)}"
+            )
+        except Exception as diag_err:  # never let diagnostics break the fetch
+            demisto.debug(f"M365-DIAG incidents_list RESPONSE logging failed: {diag_err}")
+
+        return response
 
     @logger
     def update_incident(
@@ -654,6 +672,77 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
     )
 
 
+# ============================================================================
+# M365-DIAG helpers (XSUP-71862) — TEMPORARY diagnostic instrumentation.
+# These are pure/read-only helpers used only to emit demisto.debug() lines so we
+# can pinpoint the missing/duplicate root cause from customer logs. Safe to remove
+# once the root cause is confirmed and the real fix is shipped.
+# ============================================================================
+def _diag_incident_id(item: dict):
+    """Return the M365 incidentId for either a raw API incident or a queue item ({'name','occurred','rawJSON'})."""
+    if not isinstance(item, dict):
+        return None
+    if "incidentId" in item:
+        return item.get("incidentId")
+    # queue items store the id inside the name: "Microsoft 365 Defender <id>"
+    name = item.get("name") or ""
+    match = re.search(r"(\d+)\s*$", str(name))
+    if match:
+        return int(match.group(1))
+    # fall back to parsing the embedded rawJSON if present
+    raw = item.get("rawJSON")
+    if raw:
+        try:
+            return json.loads(raw).get("incidentId")
+        except Exception:
+            return None
+    return None
+
+
+def _diag_extract_ids(items: list) -> list:
+    """Ordered list of incidentIds for a list of raw incidents or queue items."""
+    return [_diag_incident_id(i) for i in (items or [])]
+
+
+def _diag_find_duplicate_ids(ids: list) -> dict:
+    """Return {id: count} for ids that appear more than once (preserves duplicate evidence)."""
+    counts: dict = {}
+    for _id in ids:
+        counts[_id] = counts.get(_id, 0) + 1
+    return {str(_id): c for _id, c in counts.items() if c > 1}
+
+
+def _diag_created_time(item: dict):
+    """Return createdTime/occurred for a raw incident or queue item."""
+    if not isinstance(item, dict):
+        return None
+    return item.get("createdTime") or item.get("occurred")
+
+
+def _diag_ids_are_sorted_by_created(raw_incidents: list) -> bool:
+    """True if the raw page is already in ascending createdTime order (within-page ordering check)."""
+    times = []
+    for inc in raw_incidents or []:
+        parsed = dateparser.parse(str(_diag_created_time(inc)))
+        if parsed is None:
+            return False
+        times.append(parsed)
+    return all(times[i] <= times[i + 1] for i in range(len(times) - 1))
+
+
+def _diag_ids_at_or_before_cursor(items: list, cursor: str) -> list:
+    """Ids whose createdTime <= cursor. With the strict 'gt' filter these can never be re-fetched (permanent-miss risk)."""
+    cursor_dt = dateparser.parse(str(cursor)) if cursor else None
+    if cursor_dt is None:
+        return []
+    at_risk = []
+    for item in items or []:
+        item_dt = dateparser.parse(str(_diag_created_time(item)))
+        if item_dt is not None and item_dt <= cursor_dt:
+            at_risk.append(_diag_incident_id(item))
+    return at_risk
+
+
 @logger
 def fetch_incidents(
     client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None
@@ -686,6 +775,16 @@ def fetch_incidents(
 
     last_run_dict = demisto.getLastRun()
 
+    # M365-DIAG (XSUP-71862): log the FULL incoming state so carry-over queue + cursor are auditable each cycle.
+    _diag_incoming_queue = last_run_dict.get("incidents_queue", []) or []
+    _diag_incoming_queue_ids = _diag_extract_ids(_diag_incoming_queue)
+    demisto.debug(
+        f"M365-DIAG fetch START: incoming_last_run={last_run_dict.get('last_run')!r} "
+        f"incoming_queue_size={len(_diag_incoming_queue)} fetch_limit={fetch_limit} timeout={timeout} "
+        f"incoming_queue_ids={json.dumps(_diag_incoming_queue_ids, default=str)} "
+        f"incoming_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_incoming_queue_ids), default=str)}"
+    )
+
     last_run = last_run_dict.get("last_run")
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
@@ -694,9 +793,13 @@ def fetch_incidents(
                 f"Microsoft Defender 365 Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}"
             )
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
+        demisto.debug(f"M365-DIAG fetch: first run, using first_fetch cursor last_run={last_run!r}")
 
     # creates incidents queue
     incidents_queue = last_run_dict.get("incidents_queue", [])
+
+    # M365-DIAG: this cursor value is what the strict 'createdTime gt {last_run}' filter will use for every page below.
+    demisto.debug(f"M365-DIAG fetch: effective cursor last_run={last_run!r} (used in 'createdTime gt' filter)")
 
     if len(incidents_queue) < fetch_limit:
         incidents = []
@@ -704,6 +807,10 @@ def fetch_incidents(
         # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
         # incident we skip (offset) the number of incidents we already fetched.
         offset = 0
+
+        # M365-DIAG: track raw ids seen ACROSS pages to detect $skip-boundary overlaps (dupes) and per-page shifts.
+        _diag_seen_across_pages: dict = {}  # id -> list of skip offsets it appeared on
+        _diag_page_num = 0
 
         # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
         # occurs in batches. If timeout was given, exceeding the time will result an error.
@@ -718,6 +825,22 @@ def fetch_incidents(
             # HTTP request
             response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get("value")
+
+            # M365-DIAG: capture the RAW page order (ids in the exact sequence the API returned) BEFORE any processing.
+            # Comparing raw_page_ids to a sorted copy tells us if THIS page is internally unordered (within-page),
+            # and _diag_seen_across_pages tells us if ids repeat/shift across $skip boundaries (between-page).
+            _diag_page_num += 1
+            _diag_raw_page_ids = _diag_extract_ids(raw_incidents or [])
+            _diag_is_page_sorted = _diag_ids_are_sorted_by_created(raw_incidents or [])
+            for _pid in _diag_raw_page_ids:
+                _diag_seen_across_pages.setdefault(_pid, []).append(offset)
+            demisto.debug(
+                f"M365-DIAG RAW PAGE #{_diag_page_num} skip={offset} count={len(_diag_raw_page_ids)} "
+                f"within_page_sorted_by_createdTime={_diag_is_page_sorted} "
+                f"has_next_link={bool(response.get('@odata.nextLink'))} "
+                f"raw_page_ids={json.dumps(_diag_raw_page_ids, default=str)}"
+            )
+
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
                 incident.update(mirroring_fields)
@@ -736,12 +859,51 @@ def fetch_incidents(
                 break
             offset += int(MAX_ENTRIES)
 
+        # M365-DIAG: cross-page report — any id returned on more than one $skip page is a between-page DUPLICATE source.
+        _diag_cross_page_dups = {str(_id): offs for _id, offs in _diag_seen_across_pages.items() if len(offs) > 1}
+        _diag_pre_sort_ids = _diag_extract_ids(incidents)
+        demisto.debug(
+            f"M365-DIAG PAGING DONE: pages={_diag_page_num} total_raw_incidents={len(incidents)} "
+            f"distinct_raw_ids={len(set(_diag_pre_sort_ids))} "
+            f"cross_page_duplicate_ids={json.dumps(_diag_cross_page_dups, default=str)}"
+        )
+
         # sort the incidents by the creation time
         incidents.sort(key=lambda x: dateparser.parse(x["occurred"]))  # type: ignore
+
+        # M365-DIAG: post-sort duplicate check (dupes here survive into the queue and get emitted twice).
+        _diag_sorted_ids = _diag_extract_ids(incidents)
+        demisto.debug(
+            f"M365-DIAG POST-SORT: count={len(_diag_sorted_ids)} "
+            f"duplicate_ids_in_batch={json.dumps(_diag_find_duplicate_ids(_diag_sorted_ids), default=str)} "
+            f"batch_created_range=[{incidents[0]['occurred'] if incidents else None} .. "
+            f"{incidents[-1]['occurred'] if incidents else None}] "
+            f"sorted_ids={json.dumps(_diag_sorted_ids, default=str)}"
+        )
+
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
+
+    # M365-DIAG: cursor-advance audit. The strict 'gt' filter means anything with createdTime <= new_last_run that is
+    # NOT already captured can NEVER be fetched again -> permanent MISS detector.
+    _diag_out_ids = _diag_extract_ids(oldest_incidents)
+    _diag_retained = incidents_queue[fetch_limit:]
+    _diag_retained_ids = _diag_extract_ids(_diag_retained)
+    _diag_full_queue_ids = _diag_extract_ids(incidents_queue)
+    _diag_at_risk = _diag_ids_at_or_before_cursor(_diag_retained, new_last_run)
+    demisto.debug(
+        f"M365-DIAG fetch END: new_last_run={new_last_run!r} "
+        f"newest_from_id={incidents_queue[-1]['name'] if oldest_incidents else None} "
+        f"returning_count={len(_diag_out_ids)} retained_count={len(_diag_retained_ids)} "
+        f"full_queue_size={len(incidents_queue)} "
+        f"full_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_full_queue_ids), default=str)} "
+        f"returning_ids={json.dumps(_diag_out_ids, default=str)} "
+        f"retained_ids={json.dumps(_diag_retained_ids, default=str)} "
+        f"retained_at_or_before_cursor_AT_RISK={json.dumps(_diag_at_risk, default=str)}"
+    )
+
     demisto.setLastRun({"last_run": new_last_run, "incidents_queue": incidents_queue[fetch_limit:]})
     return oldest_incidents
 
