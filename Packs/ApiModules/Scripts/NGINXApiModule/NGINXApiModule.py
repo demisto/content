@@ -1,8 +1,9 @@
 import os
 import subprocess
 import traceback
+import uuid
+from itertools import count
 from math import ceil
-from multiprocessing import Process
 from pathlib import Path
 from signal import SIGUSR1
 from string import Template
@@ -13,7 +14,7 @@ import gevent
 import requests
 from CommonServerPython import *  # noqa: F401
 from flask.logging import default_handler
-from gevent.pywsgi import WSGIServer
+from gevent.pywsgi import WSGIHandler, WSGIServer
 
 from CommonServerUserPython import *
 
@@ -21,17 +22,370 @@ from CommonServerUserPython import *
 class Handler:
     @staticmethod
     def write(msg: str):
-        demisto.info(msg)
+        # gevent's pywsgi writes one Common-Log-Format access line per request here.
+        # Tag it so it is easy to grep for and correlate with the nginx access log.
+        demisto.info(f"wsgi access: {msg.rstrip()}")
 
 
 class ErrorHandler:
     @staticmethod
     def write(msg: str):
-        demisto.error(f"wsgi error: {msg}")
+        demisto.error(f"wsgi error: {msg.rstrip()}")
 
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+# --- Request lifecycle / concurrency instrumentation -------------------------
+# Monotonic sequence so every request can be correlated across the start line,
+# the end line and the gevent access line.
+_REQUEST_SEQ = count(1)
+# The environ key under which we stash the per-request id so DemistoWSGIHandler
+# can print the same id on the "wsgi access:" line.
+REQUEST_ID_ENVIRON_KEY = "nginxapimodule.request_id"
+# The environ key under which the middleware stashes the number of body bytes the
+# APP produced, so the gevent handler can compare it against the bytes actually
+# written to the socket and flag a discrepancy on the "wsgi access:" line.
+APP_BYTES_ENVIRON_KEY = "nginxapimodule.app_bytes"
+# When the app-produced bytes and the socket-sent bytes differ by MORE than this
+# many bytes, the access line includes a short body_diff note (a 1-byte trailing
+# newline difference is normal and must not be reported).
+BODY_DIFF_THRESHOLD_BYTES = 1000
+
+
+def _new_request_id(environ: dict) -> str:
+    """Return a correlation id for the request.
+
+    Prefers nginx's ``X-Request-ID`` (propagated via ``proxy_set_header``) so the
+    same id appears in the nginx access log, the ``wsgi request:`` line and the
+    ``wsgi access:`` line. Falls back to a fresh short uuid when nginx did not
+    forward one (e.g. direct upstream hit during tests).
+    """
+    forwarded = environ.get(_header_env_key("X-Request-ID"))
+    return forwarded if forwarded else uuid.uuid4().hex[:12]
+
+
+def _next_request_seq() -> int:
+    """Return the next monotonic per-request sequence number."""
+    return next(_REQUEST_SEQ)
+
+
+def _iso_now() -> str:
+    """Human-readable UTC timestamp for absolute received/responded times in logs."""
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+# Request headers worth capturing for client/cache/conditional diagnostics.
+# Shared by both the gevent access log (DemistoWSGIHandler) and the per-request
+# RequestLoggingMiddleware so the two log lines stay consistent.
+LOGGED_REQUEST_HEADERS = (
+    "X-Forwarded-For",
+    "X-Real-IP",
+    "X-Forwarded-Proto",
+    "X-Original-URI",
+    "Host",
+    "User-Agent",
+    "Range",
+    "If-None-Match",
+    "If-Modified-Since",
+    "Authorization",
+)
+
+
+def _header_env_key(header_name: str) -> str:
+    # WSGI exposes request headers as HTTP_<UPPER_SNAKE> in the environ.
+    return "HTTP_" + header_name.upper().replace("-", "_")
+
+
+def format_request_headers(environ: dict) -> str:
+    """Render the allow-listed request headers from a WSGI ``environ`` into a log string.
+
+    Produces a space-separated ``Name="value"`` sequence for every header in
+    ``LOGGED_REQUEST_HEADERS`` that is present. The ``Authorization`` header is
+    reduced to ``present`` so credentials are never written to the logs.
+
+    Args:
+        environ (dict): The WSGI request environment.
+
+    Returns:
+        str: e.g. ``X-Forwarded-For="1.2.3.4" Host="server" Authorization="present"``.
+    """
+    header_parts = []
+    for header_name in LOGGED_REQUEST_HEADERS:
+        value = environ.get(_header_env_key(header_name))
+        if value is None:
+            continue
+        if header_name == "Authorization":
+            value = "present"
+        header_parts.append(f'{header_name}="{value}"')
+    return " ".join(header_parts)
+
+
+class DemistoWSGIHandler(WSGIHandler):
+    """gevent WSGI handler that enriches the access line with transfer diagnostics + headers.
+
+    gevent's ``WSGIServer`` formats one Common-Log-Format access line per request
+    via ``WSGIHandler.format_request()`` and writes it to the configured ``log``
+    (our :class:`Handler`, which prefixes it with ``wsgi access:``). The default
+    line only reports the body bytes gevent sent, which - when compared with the
+    ``content_length`` the app declared in :class:`RequestLoggingMiddleware` - can
+    silently hide truncated/aborted transfers (client disconnects mid-stream).
+
+    To make that gap explicit on a single line, ``format_request`` appends data
+    that only gevent's handler knows:
+      * ``sent_bytes``      - bytes actually written to the socket (``self.response_length``).
+      * ``content_length``  - the ``Content-Length`` the app declared (``-`` if chunked/unset).
+      * ``truncated``       - ``true`` when a numeric ``Content-Length`` was declared but
+                              fewer bytes reached the socket (i.e. the transfer was cut short).
+      * ``connection``      - ``close`` or ``keep-alive``, derived from ``self.close_connection``.
+    It also appends the allow-listed request headers (via :func:`format_request_headers`)
+    so the real client/conditional headers are visible alongside the byte accounting.
+    """
+
+    @staticmethod
+    def _coerce_int(value: Any) -> int | None:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _transfer_diagnostics(self, environ: dict) -> str:
+        # Bytes gevent actually wrote to the socket for the response body.
+        sent_bytes = getattr(self, "response_length", None)
+        sent_bytes_str = str(sent_bytes) if sent_bytes is not None else "-"
+
+        # The Content-Length the app declared, if any (chunked responses won't have one).
+        declared_length: int | None = None
+        for header_key, header_value in getattr(self, "response_headers", None) or []:
+            if header_key.lower() == "content-length":
+                declared_length = self._coerce_int(header_value)
+                break
+        content_length_str = str(declared_length) if declared_length is not None else "-"
+
+        # The number of body bytes the APP produced (counted by RequestLoggingMiddleware
+        # and stashed in environ), so we can compare the two independent counts.
+        app_bytes = self._coerce_int(environ.get(APP_BYTES_ENVIRON_KEY))
+        app_bytes_str = str(app_bytes) if app_bytes is not None else "-"
+
+        # truncated=true only when we can prove fewer bytes reached the socket than promised.
+        if declared_length is not None and isinstance(sent_bytes, int):
+            truncated = "true" if sent_bytes < declared_length else "false"
+        else:
+            truncated = "unknown"
+
+        # Whether the connection is being closed (vs reused for keep-alive).
+        connection = "close" if getattr(self, "close_connection", True) else "keep-alive"
+
+        # client_disconnected mirrors the truncated detection but phrased from the
+        # connection's point of view: a proven short write means the peer went away
+        # (or nginx/the firewall dropped) before the full body was sent.
+        client_disconnected = "true" if truncated == "true" else "false"
+
+        # Number of requests served on this (keep-alive) connection, if gevent tracks it.
+        requests_on_conn = getattr(self, "_requests_on_connection", None)
+        requests_on_conn_str = str(requests_on_conn) if requests_on_conn is not None else "-"
+
+        diagnostics = (
+            f"sent_bytes={sent_bytes_str} app_bytes={app_bytes_str} content_length={content_length_str} "
+            f"truncated={truncated} client_disconnected={client_disconnected} "
+            f"connection={connection} requests_on_conn={requests_on_conn_str}"
+        )
+
+        # When the app produced N bytes but a meaningfully different number reached
+        # the socket, surface a short, human-readable explanation right on the line.
+        diff_note = self._body_diff_note(app_bytes, sent_bytes, declared_length)
+        if diff_note:
+            diagnostics = f"{diagnostics} {diff_note}"
+        return diagnostics
+
+    @staticmethod
+    def _body_diff_note(app_bytes: int | None, sent_bytes: Any, declared_length: int | None) -> str:
+        """Return a short 'body_diff=...' note when app vs socket bytes diverge.
+
+        Only emitted when both counts are known and differ by MORE than
+        ``BODY_DIFF_THRESHOLD_BYTES`` (a normal trailing-newline 1-byte delta is
+        ignored). The note names the likely cause so a reader instantly knows
+        whether the body was truncated on the wire or grew/shrank unexpectedly.
+        """
+        if app_bytes is None or not isinstance(sent_bytes, int):
+            return ""
+        delta = sent_bytes - app_bytes
+        if abs(delta) <= BODY_DIFF_THRESHOLD_BYTES:
+            return ""
+        if delta < 0:
+            # Fewer bytes on the wire than the app produced -> cut short.
+            missing = -delta
+            pct = (missing / app_bytes * 100) if app_bytes else 0.0
+            cause = (
+                "client/proxy closed the connection before the full body was sent"
+                if (declared_length is not None and sent_bytes < declared_length)
+                else "write stopped before the app finished streaming"
+            )
+            detail = (
+                f"body_diff=\"app produced {app_bytes} body bytes but only {sent_bytes} "
+                f"reached the socket; {missing} bytes ({pct:.1f}%) were not sent - "
+                f"likely {cause}\""
+            )
+        else:
+            extra = delta
+            detail = (
+                f"body_diff=\"socket sent {sent_bytes} bytes, {extra} MORE than the "
+                f"{app_bytes} body bytes the app counted - extra bytes are likely "
+                f"response framing/headers or a double-write\""
+            )
+        return detail
+
+    def format_request(self):
+        environ = self.environ or {}
+        base_line = super().format_request()
+        rid = environ.get(REQUEST_ID_ENVIRON_KEY, "-")
+        parts = [base_line, f"rid={rid}", self._transfer_diagnostics(environ)]
+        headers_str = format_request_headers(environ)
+        if headers_str:
+            parts.append(headers_str)
+        return " ".join(parts)
+
+
+class RequestLoggingMiddleware:
+    """WSGI middleware that emits a detailed, structured log line per request.
+
+    This is the Python-side counterpart to the nginx ``edl_detailed`` access log.
+    Because nginx serves cache HITs without ever reaching this upstream, a request
+    that appears in the nginx log with ``cache=HIT`` but is absent here was served
+    entirely from cache - making the cache-vs-upstream distinction explicit.
+
+    For every request it logs: the real client (X-Forwarded-For / X-Real-IP) as
+    forwarded by nginx, the original URI, conditional/range headers, user-agent,
+    the cache status nginx attached (X-Proxy-Cache), the response status, the
+    number of body bytes written, and the wall-clock time spent in the app.
+    """
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        # --- request received ------------------------------------------------
+        # Wall-clock for absolute timestamps; perf_counter for accurate durations.
+        t_received = time.time()
+        received_iso = _iso_now()
+        start_perf = time.perf_counter()
+
+        # Correlation id: reuse nginx's X-Request-ID when present, else generate.
+        # Stash it in environ so DemistoWSGIHandler prints the SAME id on the
+        # "wsgi access:" line, tying the two python log lines together.
+        rid = _new_request_id(environ)
+        environ[REQUEST_ID_ENVIRON_KEY] = rid
+
+        method = environ.get("REQUEST_METHOD", "-")
+        path = environ.get("PATH_INFO", "-")
+        query = environ.get("QUERY_STRING", "")
+        full_path = f"{path}?{query}" if query else path
+        remote_addr = environ.get("REMOTE_ADDR", "-")
+
+        # How long the request waited inside nginx (queueing / cache-lock / connect)
+        # BEFORE this app handler started. nginx forwards its forward-time as the
+        # X-Request-Start epoch header; the difference vs our receive time is the
+        # gap that explains why nginx's time_total_secs >> the app's elapsed time.
+        nginx_wait_str = "-"
+        request_start_header = environ.get(_header_env_key("X-Request-Start"))
+        if request_start_header:
+            try:
+                nginx_wait = t_received - float(request_start_header)
+                # Clamp tiny negative values from clock skew to 0.
+                nginx_wait_str = f"{max(0.0, nginx_wait):.3f}s"
+            except (TypeError, ValueError):
+                nginx_wait_str = "-"
+
+        # Collect the interesting request headers (auth is reduced to presence only).
+        headers_str = format_request_headers(environ)
+
+        # Monotonic sequence per request for correlation across log lines.
+        seq = _next_request_seq()
+
+        # Emit a START line immediately. A request that then hangs for 125s (or
+        # never finishes because the client vanished) is visible right away here,
+        # even though its END line would only appear much later (or not at all).
+        demisto.info(
+            f"wsgi request-start: rid={rid} seq={seq} received={received_iso} "
+            f"nginx_wait={nginx_wait_str} "
+            f"client={remote_addr} method={method} uri=\"{full_path}\" {headers_str}"
+        )
+
+        # Capture the response status/headers via a wrapped start_response.
+        response_info: dict = {"status": "-", "cache": "-", "edl_size": "-", "content_length": "-"}
+        # When start_response is invoked = app produced its response headers
+        # (time-to-headers). Captured via closure so we can log it below.
+        timings: dict = {"t_headers": None, "t_first_byte": None}
+
+        def logging_start_response(status, response_headers, exc_info=None):
+            if timings["t_headers"] is None:
+                timings["t_headers"] = time.perf_counter()
+            response_info["status"] = status.split(" ", 1)[0] if status else "-"
+            for header_key, header_value in response_headers:
+                lowered = header_key.lower()
+                if lowered == "x-proxy-cache":
+                    response_info["cache"] = header_value
+                elif lowered == "x-edl-size":
+                    response_info["edl_size"] = header_value
+                elif lowered == "content-length":
+                    response_info["content_length"] = header_value
+            return start_response(status, response_headers, exc_info)
+
+        bytes_sent = 0
+        error_str = "-"
+        t_app_start = time.perf_counter()
+        try:
+            result = self.app(environ, logging_start_response)
+            # Count the bytes actually produced by the app so we can detect
+            # size-vs-bytes mismatches / truncated bodies on the Python side.
+            for chunk in result:
+                if chunk:
+                    if timings["t_first_byte"] is None:
+                        timings["t_first_byte"] = time.perf_counter()
+                    bytes_sent += len(chunk)
+                    # Continuously expose the app-produced byte count so the gevent
+                    # handler (DemistoWSGIHandler) can compare it with the bytes that
+                    # actually reached the socket - even if we are cut off mid-stream.
+                    environ[APP_BYTES_ENVIRON_KEY] = bytes_sent
+                yield chunk
+            if hasattr(result, "close"):
+                result.close()
+        except Exception as exc:  # noqa: BLE001 - we re-raise after logging
+            # A client disconnect / write error surfaces here; record it so the
+            # END line explains why a transfer stopped short.
+            error_str = type(exc).__name__
+            raise
+        finally:
+            end_perf = time.perf_counter()
+            responded_iso = _iso_now()
+
+            # Phase breakdown so it's obvious WHERE the time went:
+            #   time_to_headers : app entry -> start_response (the "thinking" time).
+            #   ttfb            : request received -> first body byte.
+            #   stream_time     : first byte -> last byte (the streaming cost).
+            #   elapsed         : total time inside the app.
+            elapsed = end_perf - start_perf
+            time_to_headers = (timings["t_headers"] - t_app_start) if timings["t_headers"] else None
+            ttfb = (timings["t_first_byte"] - start_perf) if timings["t_first_byte"] else None
+            stream_time = (
+                end_perf - timings["t_first_byte"] if timings["t_first_byte"] else None
+            )
+
+            def _fmt(value):
+                return f"{value:.3f}s" if value is not None else "-"
+
+            demisto.info(
+                f"wsgi request: rid={rid} seq={seq} "
+                f"received={received_iso} responded={responded_iso} "
+                f"client={remote_addr} method={method} uri=\"{full_path}\" "
+                f"status={response_info['status']} "
+                f"app_bytes={bytes_sent} content_length={response_info['content_length']} "
+                f'cache="{response_info["cache"]}" edl_size={response_info["edl_size"]} '
+                f"nginx_wait={nginx_wait_str} time_to_headers={_fmt(time_to_headers)} ttfb={_fmt(ttfb)} "
+                f"stream_time={_fmt(stream_time)} elapsed={_fmt(elapsed)} "
+                f"error={error_str} {headers_str}"
+            )
 
 
 # nginx server params
@@ -44,12 +398,100 @@ NGINX_SSL_CERTS = f"""
     ssl_certificate {NGINX_SSL_CRT_FILE};
     ssl_certificate_key {NGINX_SSL_KEY_FILE};
 """
+# Detailed access log format with self-explanatory key names, grouped so the line
+# reads top-to-bottom like the life of one request. Fields are ordered:
+#
+#   1. IDENTITY (first, so every line starts with "who/when/which request"):
+#        when_finished         - ISO8601 timestamp of when nginx FINISHED the request
+#                                and wrote this log line (i.e. request end). NOTE: stock
+#                                nginx evaluates ALL log variables at write-time, so there
+#                                is no built-in variable for the absolute arrival time.
+#                                Derive it from the durations below:
+#                                  arrival       = when_finished - time_total_secs
+#                                  sent_upstream = arrival + time_to_upstream_connect_secs
+#        request_id            - unique id for THIS request; the SAME id is sent to
+#                                the Python upstream (X-Request-ID) and printed on the
+#                                "wsgi request:"/"wsgi access:" lines, so one request
+#                                can be followed across nginx and Python.
+#        connection_id         - id of the TCP connection (many requests can share one).
+#        requests_on_connection- how many requests have used this keep-alive connection
+#                                (rising numbers = reuse; helps spot CLOSE_WAIT buildup).
+#
+#   2. WHO CONNECTED (client identity through the proxy chain):
+#        client_real_ip        - the true client (the firewall), via X-Real-IP.
+#        client_forwarded_chain- full X-Forwarded-For chain of proxies in between.
+#        client_nearest_peer   - the immediate TCP peer nginx saw (usually localhost/edge).
+#        client_user_agent     - the client's User-Agent string.
+#
+#   3. WHAT WAS ASKED (the request itself):
+#        request_method        - GET/HEAD/...
+#        request_uri           - the full requested URI.
+#        request_host          - the Host header.
+#        request_scheme        - http or https.
+#        request_range         - Range header (partial-content requests).
+#        request_if_none_match - ETag the client already has (conditional GET).
+#        request_if_modified_since - date the client already has (conditional GET).
+#        request_bypass_cache  - value of the ?nocache= arg (cache bypass on/off).
+#
+#   4. WHAT HAPPENED (response outcome + cache decision):
+#        response_status       - HTTP status code returned.
+#        cache_status          - HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED.
+#        upstream_address      - which upstream served it (empty on a cache HIT).
+#        response_etag         - ETag we returned.
+#
+#   5. HOW BIG (payload accounting; mismatch = truncated/aborted transfer):
+#        response_body_bytes   - body bytes sent to the client.
+#        response_total_bytes  - total bytes sent (headers + body).
+#        edl_indicator_count   - number of indicators in the EDL response.
+#        edl_origin_count      - number of origin indicators before filtering.
+#
+#   6. HOW LONG (ALL timings grouped together at the end, in seconds). These are the
+#      source of truth for the timeline - use them to reconstruct WHEN nginx received
+#      the request from the client and WHEN it forwarded it to the upstream:
+#        time_total_secs            - total time to serve the request (from when nginx
+#                                     read the first client bytes until the last byte was
+#                                     sent to the client). The client request therefore
+#                                     ARRIVED at: when_finished - time_total_secs.
+#        time_to_upstream_connect_secs - seconds AFTER arrival that nginx established the
+#                                     upstream connection. This marks WHEN nginx forwarded
+#                                     the request to the upstream:
+#                                       sent_to_upstream = (when_finished - time_total_secs)
+#                                                          + time_to_upstream_connect_secs
+#                                     ("-" on a cache HIT, because no upstream request was made.)
+#        time_upstream_headers_secs - seconds after the upstream request until the upstream
+#                                     returned its response headers.
+#        time_upstream_response_secs- seconds after the upstream request until the upstream
+#                                     finished sending its response.
+#        time_edl_query_secs        - time the EDL spent building the list (app side).
+NGINX_LOG_FORMAT = """
+log_format edl_detailed
+    'when_finished=$time_iso8601 request_id=$request_id '
+    'connection_id=$connection requests_on_connection=$connection_requests '
+    'client_real_ip="$http_x_real_ip" client_forwarded_chain="$http_x_forwarded_for" '
+    'client_nearest_peer=$remote_addr client_user_agent="$http_user_agent" '
+    'request_method=$request_method request_uri="$request_uri" request_host="$host" request_scheme=$scheme '
+    'request_range="$http_range" request_if_none_match="$http_if_none_match" '
+    'request_if_modified_since="$http_if_modified_since" request_bypass_cache="$arg_nocache" '
+    'response_status=$status cache_status=$upstream_cache_status upstream_address="$upstream_addr" '
+    'response_etag="$sent_http_etag" '
+    'response_body_bytes=$body_bytes_sent response_total_bytes=$bytes_sent '
+    'edl_indicator_count="$sent_http_x_edl_size" edl_origin_count="$sent_http_x_edl_origin_size" '
+    'time_total_secs=$request_time time_to_upstream_connect_secs="$upstream_connect_time" '
+    'time_upstream_headers_secs="$upstream_header_time" time_upstream_response_secs="$upstream_response_time" '
+    'time_edl_query_secs="$sent_http_x_edl_query_time_secs"';
+"""
 NGINX_SERVER_CONF = """
+$log_format
 server {
 
     listen $port default_server $ssl;
 
     $sslcerts
+
+    # Per-request detailed access log + verbose error log so cache decisions,
+    # real client IPs, timings and upstream warnings are all captured.
+    access_log /var/log/nginx/access.log edl_detailed;
+    error_log /var/log/nginx/error.log info;
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
@@ -89,10 +531,32 @@ proxy_cache_background_update on;
         default_type text/html;
     }
 
-    # Proxy everything to python
+    # Proxy everything to the python (gevent) upstream on the single server port.
     location / {
         proxy_pass http://localhost:$serverport/;
-        add_header X-Proxy-Cache $upstream_cache_status;
+
+        # Forward the real client identity to the Python (gevent) upstream so the
+        # WSGI middleware can log the actual firewall/client instead of 127.0.0.1.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+        # Propagate nginx's per-request id to the Python upstream so the same
+        # request_id appears in the nginx access log AND the wsgi request/access
+        # lines, giving a single correlation id end-to-end.
+        proxy_set_header X-Request-ID $request_id;
+        # Forward, as an epoch (seconds.ms), the moment nginx is about to hand the
+        # request to the upstream. The WSGI middleware compares this with its own
+        # receive time and logs "nginx_wait" - the time the request spent inside
+        # nginx (queueing / cache-lock / connect) BEFORE the app started working.
+        # This is exactly the gap that makes nginx's time_total_secs much larger
+        # than the app's elapsed time.
+        proxy_set_header X-Request-Start $msec;
+
+        # Surface the cache decision both to the client and (via the access log
+        # variable) to our logging: HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED.
+        add_header X-Proxy-Cache $upstream_cache_status always;
         $extra_headers
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
@@ -101,12 +565,16 @@ proxy_cache_background_update on;
         proxy_send_timeout 3600;
         send_timeout 3600;
     }
+
+    # How long an idle keep-alive client connection stays open. Lowering this lets nginx
+    # reap connections from clients (e.g. firewalls) that polled and went away, instead of
+    # leaving them pinned in CLOSE_WAIT and consuming a worker_connections slot + an FD.
+    # Default "65" matches nginx's built-in default, so behavior is unchanged unless tuned.
+    keepalive_timeout $keepalive_timeout;
 }
 
 """
 NGINX_MAX_POLLING_TRIES = 5
-
-
 def create_nginx_server_conf(file_path: str, port: int, params: dict):
     """Create nginx conf file
 
@@ -135,6 +603,13 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     cache_lock_age = _normalize_nginx_time(params.get("cache_lock_age"), default=timeout, param_name="cache_lock_age")
     cache_404_ttl = _normalize_nginx_time(params.get("cache_404_ttl"), default="1m", param_name="cache_404_ttl")
     cache_default_ttl = _normalize_nginx_time(params.get("cache_default_ttl"), default="1m", param_name="cache_default_ttl")
+
+    # Idle keep-alive timeout for client connections. Normalized independently of `timeout` and
+    # deliberately NOT floored to it: a small value (default "65", nginx's own default) lets nginx
+    # promptly reap connections from clients that polled and disconnected, preventing the CLOSE_WAIT
+    # buildup that otherwise exhausts the worker's connection/FD budget. Behavior is unchanged unless
+    # the `keepalive_timeout` param is explicitly set.
+    keepalive_timeout = _normalize_nginx_time(params.get("keepalive_timeout"), default="65", param_name="keepalive_timeout")
 
     # Ensure cache_refresh_rate is at least as large as timeout, and apply the same anti-stampede
     # floor to the cache lock directives. All values are now guaranteed to end in "s" (the helper
@@ -173,6 +648,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
 
     extra_cache_keys_str = "".join(extra_cache_keys)
     server_conf = Template(template_str).safe_substitute(
+        log_format=NGINX_LOG_FORMAT,
         port=port,
         serverport=serverport,
         ssl=ssl,
@@ -185,7 +661,20 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_lock_age=cache_lock_age,
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
+        keepalive_timeout=keepalive_timeout,
         extra_headers=extra_headers,
+    )
+    # Log the effective cache / timeout settings so each (re)start records exactly
+    # which values are active - essential for interpreting cache=HIT/STALE/UPDATING
+    # decisions and the upstream timing fields in the access logs.
+    demisto.info(
+        "edl: nginx effective settings -> "
+        f"listen_port={port} upstream_port={serverport} ssl={'on' if ssl else 'off'} "
+        f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
+        f"cache_lock_timeout={cache_lock_timeout} cache_lock_age={cache_lock_age} "
+        f"cache_404_ttl={cache_404_ttl} cache_default_ttl={cache_default_ttl} "
+        f"keepalive_timeout={keepalive_timeout} "
+        f"extra_cache_keys=[{extra_cache_keys_str}]"
     )
     with open(file_path, mode="w+") as f:
         f.write(server_conf)
@@ -205,7 +694,9 @@ def start_nginx_server(port: int, params: dict = {}) -> subprocess.Popen:
         nginx_test_command.extend(directive_args)
         test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
         demisto.info(f"ngnix test passed. command: [{nginx_test_command}]")
-        demisto.debug(f"nginx test ouput:\n{test_output}")
+        # Promote the fully rendered config to info so the active log_format, cache,
+        # timeout and proxy_set_header directives are recorded on every (re)start.
+        demisto.info(f"nginx effective rendered config (nginx -T):\n{test_output}")
     except subprocess.CalledProcessError as err:
         raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
     nginx_command = ["nginx"]
@@ -274,6 +765,7 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
     while True:
         gevent.sleep(60)
         nginx_log_process(nginx_process)
+
 
 
 def test_nginx_web_server(port: int, params: dict):
@@ -500,6 +992,8 @@ def get_params_port(params: dict = None) -> int:
     return port
 
 
+
+
 def run_long_running(params: dict = None, is_test: bool = False):
     """
     Start the long running server
@@ -522,27 +1016,32 @@ def run_long_running(params: dict = None, is_test: bool = False):
         log_handler.setFormatter(logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
         APP.logger.addHandler(log_handler)  # type: ignore[name-defined] # pylint: disable=E0602
         demisto.debug("done setting demisto handler for logging")
-        server = WSGIServer(
-            ("0.0.0.0", server_port),
-            APP,  # type: ignore[name-defined]    # pylint: disable=E0602
-            log=DEMISTO_LOGGER,  # type: ignore[name-defined] # pylint: disable=E0602
-            error_log=ERROR_LOGGER,
-        )
+        demisto.info(f"edl: starting server on 0.0.0.0:{server_port}; nginx proxy on port {nginx_port}.")
+
         if is_test:
             test_nginx_server(nginx_port, params)
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
+            server = WSGIServer(
+                ("0.0.0.0", server_port),
+                APP,  # type: ignore[name-defined] # pylint: disable=E0602
+                log=DEMISTO_LOGGER,
+                error_log=ERROR_LOGGER,
+            )
+            server.start()
             time.sleep(5)
-            try:
-                server_process.terminate()
-                server_process.join(1.0)
-            except Exception as ex:
-                demisto.error(f"failed stopping test wsgi server process: {ex}")
+            server.stop()
 
         else:
             nginx_process = start_nginx_server(nginx_port, params)
             test_nginx_web_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
+            wsgi_app = RequestLoggingMiddleware(APP)  # type: ignore[name-defined] # pylint: disable=E0602
+            server = WSGIServer(
+                ("0.0.0.0", server_port),
+                wsgi_app,
+                log=DEMISTO_LOGGER,  # type: ignore[name-defined] # pylint: disable=E0602
+                error_log=ERROR_LOGGER,
+                handler_class=DemistoWSGIHandler,
+            )
             demisto.updateModuleHealth("")
             server.serve_forever()
     except Exception as e:
