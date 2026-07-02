@@ -14,6 +14,7 @@ alter
     xdm.event.original_event_type = coalesce(if(len(category) != 0, category, null),if(len(Category) != 0, Category, null), if(len(type) != 0, type, null)),
 	xdm.event.operation_sub_type = operationName,
     xdm.source.user.username = to_string(identity),
+    xdm.source.identity.username = to_string(identity),
     xdm.source.cloud.project_id = coalesce(SubscriptionId, arrayindex(regextract(resourceId, "/SUBSCRIPTIONS/([^\/]+)"), 0), tenantId),
     xdm.source.cloud.region = location,
 	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,

@@ -86,8 +86,11 @@ alter
     xdm.event.operation_sub_type = coalesce(check_properties_log_verb_notMethod, operationName),
     xdm.network.http.method = if(check_properties_log_verb_Method = "acl", XDM_CONST.HTTP_METHOD_ACL, check_properties_log_verb_Method = "baseline_control", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, check_properties_log_verb_Method = "bind", XDM_CONST.HTTP_METHOD_BIND, check_properties_log_verb_Method = "checkin", XDM_CONST.HTTP_METHOD_CHECKIN, check_properties_log_verb_Method = "checkout", XDM_CONST.HTTP_METHOD_CHECKOUT, check_properties_log_verb_Method = "connect", XDM_CONST.HTTP_METHOD_CONNECT, check_properties_log_verb_Method = "copy", XDM_CONST.HTTP_METHOD_COPY, check_properties_log_verb_Method = "delete", XDM_CONST.HTTP_METHOD_DELETE, check_properties_log_verb_Method = "get", XDM_CONST.HTTP_METHOD_GET, check_properties_log_verb_Method = "head", XDM_CONST.HTTP_METHOD_HEAD, check_properties_log_verb_Method = "label", XDM_CONST.HTTP_METHOD_LABEL, check_properties_log_verb_Method = "link", XDM_CONST.HTTP_METHOD_LINK, check_properties_log_verb_Method = "lock", XDM_CONST.HTTP_METHOD_LOCK, check_properties_log_verb_Method = "merge", XDM_CONST.HTTP_METHOD_MERGE, check_properties_log_verb_Method = "mkactivity", XDM_CONST.HTTP_METHOD_MKACTIVITY, check_properties_log_verb_Method = "mkcalendar", XDM_CONST.HTTP_METHOD_MKCALENDAR, check_properties_log_verb_Method = "mkcol", XDM_CONST.HTTP_METHOD_MKCOL, check_properties_log_verb_Method = "mkredirectref", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, check_properties_log_verb_Method = "mkworkspace", XDM_CONST.HTTP_METHOD_MKWORKSPACE, check_properties_log_verb_Method = "move", XDM_CONST.HTTP_METHOD_MOVE, check_properties_log_verb_Method = "options", XDM_CONST.HTTP_METHOD_OPTIONS, check_properties_log_verb_Method = "orderpatch", XDM_CONST.HTTP_METHOD_ORDERPATCH, check_properties_log_verb_Method = "patch", XDM_CONST.HTTP_METHOD_PATCH, check_properties_log_verb_Method = "post", XDM_CONST.HTTP_METHOD_POST, check_properties_log_verb_Method = "pri", XDM_CONST.HTTP_METHOD_PRI, check_properties_log_verb_Method = "propfind", XDM_CONST.HTTP_METHOD_PROPFIND, check_properties_log_verb_Method = "proppatch", XDM_CONST.HTTP_METHOD_PROPPATCH, check_properties_log_verb_Method = "put", XDM_CONST.HTTP_METHOD_PUT, check_properties_log_verb_Method = "rebind", XDM_CONST.HTTP_METHOD_REBIND, check_properties_log_verb_Method = "report", XDM_CONST.HTTP_METHOD_REPORT, check_properties_log_verb_Method = "search", XDM_CONST.HTTP_METHOD_SEARCH, check_properties_log_verb_Method = "trace", XDM_CONST.HTTP_METHOD_TRACE, check_properties_log_verb_Method = "unbind", XDM_CONST.HTTP_METHOD_UNBIND, check_properties_log_verb_Method = "uncheckout", XDM_CONST.HTTP_METHOD_UNCHECKOUT, check_properties_log_verb_Method = "unlink", XDM_CONST.HTTP_METHOD_UNLINK, check_properties_log_verb_Method = "unlock", XDM_CONST.HTTP_METHOD_UNLOCK, check_properties_log_verb_Method = "update", XDM_CONST.HTTP_METHOD_UPDATE, check_properties_log_verb_Method = "updateredirectref", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, check_properties_log_verb_Method = "version_control", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, check_properties_log_verb_Method = null, null, to_string(check_properties_log_verb_Method)),
     xdm.source.user.username = get_properties_log_user_username,
+    xdm.source.identity.username = get_properties_log_user_username,
     xdm.source.user.identifier = get_properties_log_user_uid,
+    xdm.source.identity.identifier = get_properties_log_user_uid,
     xdm.source.user.groups = get_properties_log_user_groups,
+    xdm.source.identity.groups = get_properties_log_user_groups,
     xdm.source.ipv4 = arrayindex(check_properties_log_sourceIPs_ipv4, 0),
     xdm.source.host.ipv4_addresses = arraymap(check_properties_log_sourceIPs_ipv4, if(
         incidr("@element", "10.0.0.0/8")
@@ -313,16 +316,27 @@ config case_sensitive = true
     xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
     xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations),
     xdm.target.user.username = get_properties_log_responseObject_subjects_name,
+    xdm.target.identity.username = get_properties_log_responseObject_subjects_name,
     xdm.source.user.user_type = if(
         get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
     ),
+    xdm.source.identity.user_type = if(
+        get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+    ),
     xdm.source.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
+    xdm.source.identity.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
     xdm.target.user.user_type = if(
         get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
-    ),      
-    xdm.target.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+    ),
+    xdm.target.identity.user_type = if(
+        get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+    ),
+    xdm.target.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
+    xdm.target.identity.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
 
 
 
@@ -368,7 +382,9 @@ config case_sensitive = true
     xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion),
     xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
     xdm.source.user.user_type = if(check_user_identity_type, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
-    xdm.source.user.identity_type = if(check_user_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+    xdm.source.identity.user_type = if(check_user_identity_type, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    xdm.source.user.identity_type = if(check_user_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
+    xdm.source.identity.identity_type = if(check_user_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
 
 
 

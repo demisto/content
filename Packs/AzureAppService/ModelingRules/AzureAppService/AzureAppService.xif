@@ -72,6 +72,7 @@ filter category = "AppServiceHTTPLogs"
         xdm.network.http.referrer = coalesce(properties -> Referer, Referer),
         xdm.source.user_agent = coalesce(properties -> UserAgent, userAgent),
         xdm.source.user.username = coalesce(properties -> CsUsername, CsUsername),
+        xdm.source.identity.username = coalesce(properties -> CsUsername, CsUsername),
         xdm.source.sent_bytes = to_number(coalesce(properties -> CsBytes, to_string(CsBytes))),
         xdm.target.sent_bytes = to_number(coalesce(properties -> ScBytes, to_string(ScBytes))),
         xdm.target.port = to_number(coalesce(properties -> SPort, SPort));
@@ -143,7 +144,9 @@ filter category = "AppServiceAuditLogs"
         xdm.auth.service = coalesce(properties -> Protocol, Protocol),
         xdm.network.application_protocol = coalesce(properties -> Protocol, Protocol),
         xdm.source.user.username = coalesce(properties -> User, User),
+        xdm.source.identity.username = coalesce(properties -> User, User),
         xdm.source.user.upn = if(tmp_UserDisplayName contains "@", tmp_UserDisplayName, null),
+        xdm.source.identity.upn = if(tmp_UserDisplayName contains "@", tmp_UserDisplayName, null),
         xdm.source.ipv4 = if(tmp_UserAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(tmp_UserAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), null),
 		xdm.source.ipv6 = if(tmp_UserAddress ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", arrayindex(regextract(tmp_UserAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), null);
 
