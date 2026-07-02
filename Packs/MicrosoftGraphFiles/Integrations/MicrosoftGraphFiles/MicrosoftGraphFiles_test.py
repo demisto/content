@@ -3,14 +3,16 @@
 Full behavioural coverage lives in the MicrosoftGraphFilesApiModule tests; this file
 exists only to confirm the shim wires through to the ApiModule correctly.
 """
+
 import pytest
 
 import MicrosoftGraphFiles
 
 
 def test_shim_imports_run_entry_point():
-    assert hasattr(MicrosoftGraphFiles, "run_microsoft_graph_files_integration"), \
-        "MicrosoftGraphFilesApiModule.run_microsoft_graph_files_integration must be importable via the shim"
+    assert hasattr(
+        MicrosoftGraphFiles, "run_microsoft_graph_files_integration"
+    ), "MicrosoftGraphFilesApiModule.run_microsoft_graph_files_integration must be importable via the shim"
 
 
 def test_shim_imports_client_class():

@@ -15,8 +15,6 @@
     "keywords": [],
     "githubUser": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
         "platform"
     ],
     "supportedModules": [

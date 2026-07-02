@@ -3,6 +3,7 @@
 Full behavioural coverage lives in the GoogleDriveApiModule tests; this file
 exists only to confirm the shim wires through to the ApiModule correctly.
 """
+
 from unittest.mock import patch  # noqa: F401
 
 import GoogleDrive
@@ -10,8 +11,9 @@ import GoogleDrive
 
 def test_shim_imports_run_entry_point():
     """The shim must re-export the ApiModule entry point under its expected name."""
-    assert hasattr(GoogleDrive, "run_google_drive_integration"), \
-        "GoogleDriveApiModule.run_google_drive_integration must be importable via the shim"
+    assert hasattr(
+        GoogleDrive, "run_google_drive_integration"
+    ), "GoogleDriveApiModule.run_google_drive_integration must be importable via the shim"
 
 
 def test_shim_imports_gsuite_client():
@@ -36,5 +38,6 @@ def test_main_propagates_exceptions(mocker):
     """`main()` is a thin shim and must not swallow exceptions from the ApiModule."""
     mocker.patch("GoogleDrive.run_google_drive_integration", side_effect=RuntimeError("boom"))
     import pytest
+
     with pytest.raises(RuntimeError, match="boom"):
         GoogleDrive.main()

@@ -696,7 +696,11 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
     """
     import re
 
-    from MicrosoftGraphFilesApiModule import MANAGED_IDENTITIES_TOKEN_URL, Resources, run_microsoft_graph_files_integration as main
+    from MicrosoftGraphFilesApiModule import (
+        MANAGED_IDENTITIES_TOKEN_URL,
+        Resources,
+        run_microsoft_graph_files_integration as main,
+    )
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
