@@ -1,6 +1,8 @@
 import base64
 import time
 import traceback
+from collections.abc import Iterator
+from concurrent.futures import Future, as_completed
 from datetime import datetime, timezone  # noqa: UP017
 from enum import Enum
 from typing import Any
@@ -388,6 +390,66 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_uuids: list[st
         demisto.debug("[Dedup] No duplicates found.")
 
     return new_events
+
+
+def stream_page_to_xsiam(events: list[dict[str, Any]]) -> list[Future]:
+    """Send a single page of events to XSIAM without blocking the fetch loop.
+
+    Performance optimisation (CIAC-16907): rather than accumulating every page
+    in memory and issuing one large blocking ``send_events_to_xsiam`` at the end
+    of the cycle, each page is dispatched as soon as it is fetched. We pass
+    ``multiple_threads=True`` so the send runs on a background thread pool and
+    returns ``Future`` objects immediately, letting the next page be fetched
+    from CyberArk while the current page is uploaded to XSIAM concurrently.
+
+    Because ``multiple_threads=True`` intentionally skips the module-health
+    update inside ``send_events_to_xsiam``, the caller is responsible for
+    awaiting the returned futures and calling ``demisto.updateModuleHealth``
+    exactly once at the end of the cycle (see ``finalize_event_stream``).
+
+    Args:
+        events: The events for this single page (already ``_time``-annotated).
+
+    Returns:
+        A list of ``Future`` objects representing the in-flight send(s). Empty
+        if ``events`` is empty.
+    """
+    if not events:
+        return []
+
+    add_time_to_events(events)
+    futures = send_events_to_xsiam(
+        events=events,
+        vendor=Config.VENDOR,
+        product=Config.PRODUCT,
+        multiple_threads=True,
+        should_update_health_module=False,
+    )
+    demisto.debug(f"[Async Send] Dispatched {len(events)} events to XSIAM on background thread(s).")
+    # send_events_to_xsiam returns a list of futures when multiple_threads=True.
+    return list(futures) if futures else []
+
+
+def finalize_event_stream(futures: list[Future], total_events_sent: int) -> None:
+    """Wait for all in-flight XSIAM sends to complete and update module health.
+
+    Mirrors the Code42EventCollector pattern: with ``multiple_threads=True`` the
+    health module is NOT updated by ``send_events_to_xsiam``, so we wait on every
+    future (surfacing any send failure) and then report the total once.
+
+    Args:
+        futures: All futures collected from ``stream_page_to_xsiam`` this cycle.
+        total_events_sent: Cumulative number of events handed off to XSIAM.
+    """
+    if futures:
+        # as_completed re-raises any exception that occurred inside a worker
+        # thread, so a failed send still surfaces to the platform.
+        for future in as_completed(futures):
+            future.result()
+        demisto.debug(f"[Async Send] All {len(futures)} send future(s) completed.")
+
+    demisto.updateModuleHealth({"eventsPulled": total_events_sent})
+    demisto.debug(f"[Async Send] Module health updated. Total events sent this cycle: {total_events_sent}")
 
 
 # endregion
@@ -923,8 +985,98 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
     )
 
 
+def iter_event_pages(client: Client, date_from: str, max_events: int) -> Iterator[list[dict[str, Any]]]:
+    """Yield pages of audit events one at a time (generator).
+
+    This is the streaming counterpart to ``fetch_events_with_pagination``: it
+    performs the same cursor-based pagination but ``yield``s each page as soon
+    as it is fetched instead of accumulating everything in memory. This lets
+    ``fetch_events_command`` overlap the network-bound XSIAM upload of page N
+    with the fetch of page N+1 (CIAC-16907).
+
+    The cursor pagination itself remains strictly sequential — each page
+    requires the cursor returned by the previous page — so the pages cannot be
+    fetched in parallel; only fetch-vs-send is overlapped.
+
+    Args:
+        client:      The CyberArk ISP client.
+        date_from:   Start time in CyberArk ISP format.
+        max_events:  Upper bound on the number of events to yield this cycle.
+
+    Yields:
+        Lists of event dicts, oldest-first (API sorts by timestamp asc). The
+        final page may be truncated so the cumulative total never exceeds
+        ``max_events``.
+    """
+    emitted = 0
+    page_count = 0
+    demisto.debug(f"[Stream] Start. Goal: {max_events}. From: {date_from}")
+
+    cursor_ref: str | None = client.create_stream_query(date_from=date_from, date_to=None)
+
+    while emitted < max_events and cursor_ref:
+        page_count += 1
+        page_events, next_cursor = client.get_stream_results(cursor_ref=cursor_ref)
+
+        if not page_events:
+            demisto.debug(f"[Stream] Page {page_count}: empty. Stopping.")
+            break
+
+        # Never emit more than max_events in total; truncate the final page.
+        remaining = max_events - emitted
+        if len(page_events) > remaining:
+            demisto.debug(f"[Stream] Page {page_count}: truncating {len(page_events)} -> {remaining} to honour max_events.")
+            page_events = page_events[:remaining]
+
+        emitted += len(page_events)
+        demisto.debug(f"[Stream] Page {page_count}: yielding {len(page_events)} events. Cumulative: {emitted}.")
+        yield page_events
+
+        cursor_ref = next_cursor
+        if not cursor_ref:
+            demisto.debug("[Stream] No next cursor. Stopping.")
+            break
+
+
+def compute_last_run(latest_timestamp: int | None, uuids_at_latest_timestamp: list[str]) -> dict[str, Any]:
+    """Build the next ``demisto.setLastRun`` payload from the high-water mark.
+
+    Args:
+        latest_timestamp:           The greatest event ``timestamp`` (ms) seen
+                                    this cycle, or ``None`` if no events.
+        uuids_at_latest_timestamp:  UUIDs of every event sharing
+                                    ``latest_timestamp`` (used for next-cycle
+                                    dedup of boundary events).
+
+    Returns:
+        The last-run dict, or an empty dict if there is no high-water mark to
+        advance to.
+    """
+    if not latest_timestamp:
+        demisto.debug("[Fetch] No high-water mark to persist; last-run unchanged.")
+        return {}
+
+    try:
+        last_event_dt = datetime.fromtimestamp(latest_timestamp / 1000, tz=timezone.utc)  # noqa: UP017
+        new_last_run_time = last_event_dt.strftime(Config.DATE_FORMAT)
+    except (ValueError, TypeError, OSError):
+        demisto.debug("[Fetch] Warning: Failed to convert last event timestamp. Using raw value.")
+        new_last_run_time = str(latest_timestamp)
+
+    demisto.debug(f"[Fetch] State computed. New HWM: {new_last_run_time}")
+    return {"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_latest_timestamp}
+
+
 def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events."""
+    """Scheduled command to fetch events.
+
+    Performance optimisation (CIAC-16907): events are streamed to XSIAM
+    page-by-page on a background thread pool (``send_events_to_xsiam(
+    multiple_threads=True)``) so the upload of page N overlaps the fetch of
+    page N+1. Dedup and high-water-mark tracking are done incrementally per
+    page so we never hold the entire result set in memory and the last-run
+    semantics match the previous (collect-then-send) behaviour.
+    """
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
 
@@ -944,46 +1096,47 @@ def fetch_events_command(client: Client) -> None:
 
     date_from = get_formatted_time(time_input)
 
-    # Fetch events
-    events = fetch_events_with_pagination(client, date_from, None, max_events_to_fetch)
+    send_futures: list[Future] = []
+    total_events_sent = 0
+    latest_timestamp: int | None = None
+    uuids_at_latest_timestamp: list[str] = []
 
-    if not events:
-        demisto.debug("[Fetch] No events found.")
+    for page in iter_event_pages(client, date_from, max_events_to_fetch):
+        # Per-page dedup against the boundary UUIDs persisted from the last cycle.
+        new_events = deduplicate_events(page, last_fetched_uuids)
+
+        # Advance the in-memory high-water mark using the FULL page (including
+        # duplicates) so the boundary is correct even when an entire page was a
+        # duplicate of the previous cycle's tail.
+        for event in page:
+            event_ts = event.get("timestamp")
+            event_uuid = event.get("uuid")
+            if not isinstance(event_ts, int):
+                continue
+            if latest_timestamp is None or event_ts > latest_timestamp:
+                latest_timestamp = event_ts
+                uuids_at_latest_timestamp = [event_uuid] if event_uuid else []
+            elif event_ts == latest_timestamp and event_uuid:
+                uuids_at_latest_timestamp.append(event_uuid)
+
+        if new_events:
+            send_futures.extend(stream_page_to_xsiam(new_events))
+            total_events_sent += len(new_events)
+        else:
+            demisto.debug("[Fetch] Page contained only duplicates; nothing dispatched.")
+
+    if total_events_sent == 0 and latest_timestamp is None:
+        demisto.debug("[Fetch] No events found this cycle.")
+        # Still report a zero-pull so the health module reflects the cycle ran.
+        demisto.updateModuleHealth({"eventsPulled": 0})
         return
 
-    # Deduplicate
-    new_events = deduplicate_events(events, last_fetched_uuids)
+    # Block until every in-flight send completes, then update module health once.
+    finalize_event_stream(send_futures, total_events_sent)
 
-    if not new_events:
-        demisto.debug("[Fetch] All events were duplicates.")
-    else:
-        add_time_to_events(new_events)
-        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
-
-    # Update Last Run - always update based on ALL fetched events (not just new_events)
-    # This ensures we advance the high-water mark even if some/all events were duplicates
-    last_event = events[-1]
-    new_last_run_timestamp = last_event.get("timestamp")
-
-    if new_last_run_timestamp:
-        # Convert timestamp to formatted string for next run
-        try:
-            last_event_dt = datetime.fromtimestamp(new_last_run_timestamp / 1000, tz=timezone.utc)  # noqa: UP017
-            new_last_run_time = last_event_dt.strftime(Config.DATE_FORMAT)
-        except (ValueError, TypeError, OSError):
-            demisto.debug("[Fetch] Warning: Failed to convert last event timestamp. Using raw value.")
-            new_last_run_time = str(new_last_run_timestamp)
-
-        # Collect UUIDs for the new high-water mark timestamp
-        uuids_at_last_timestamp = [
-            event.get("uuid") for event in events if event.get("timestamp") == new_last_run_timestamp and event.get("uuid")
-        ]
-
-        demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_uuids": uuids_at_last_timestamp})
-        demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
-    else:
-        demisto.debug("[Fetch] Warning: Last event missing timestamp. State not updated.")
+    new_last_run = compute_last_run(latest_timestamp, uuids_at_latest_timestamp)
+    if new_last_run:
+        demisto.setLastRun(new_last_run)
 
 
 # region Directory-data (fetch-assets) command implementations
