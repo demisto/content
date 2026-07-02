@@ -1,0 +1,57 @@
+# Prisma AIRs Integration - Command Examples
+# Curated, safe set for `demisto-sdk generate-docs --examples`.
+# - Read-only commands (list/scan/eula/categories) are non-mutating.
+# - The profiles, topics, and DLP patterns blocks are self-cleaning lifecycles:
+#   they create a resource, exercise get/update, then delete it in the same run.
+# Excluded on purpose: api-keys create/regenerate/delete (require elevated SCM
+# permission), DLP dictionary create/replace and DLP data-profile update/delete
+# (blocked upstream), and red team / model security mutations (create real,
+# potentially billable resources).
+
+## Runtime - Deployment Profiles & API Keys (read-only)
+!prisma-airs-runtime-deployment-profiles-list
+!prisma-airs-runtime-api-keys-list
+!prisma-airs-runtime-customer-apps-list
+
+## Runtime - Security Profiles (self-cleaning lifecycle) + Scan
+!prisma-airs-runtime-profiles-list
+!prisma-airs-runtime-profiles-create profile_name="readme-example-profile" policy=`{"ai-security-profiles":[{"model-type":"default","model-configuration":{"model-protection":[{"name":"prompt-injection","action":"block"}],"app-protection":{"default-url-category":{"member":["malicious"]},"url-detected-action":"block"},"data-protection":{"data-leak-detection":{"action":"","mask-data-inline":false,"member":null},"database-security":null},"latency":{"inline-timeout-action":"block","max-inline-latency":5},"mask-data-in-storage":false}}],"dlp-data-profiles":[]}`
+!prisma-airs-runtime-profiles-get profile_id=${PrismaAIRs.SecurityProfileCreate.id}
+!prisma-airs-runtime-profiles-update profile_id=${PrismaAIRs.SecurityProfileCreate.id} profile_name="readme-example-profile" active="true" policy=`{"ai-security-profiles":[{"model-type":"default","model-configuration":{"model-protection":[{"name":"prompt-injection","action":"block"}],"app-protection":{"default-url-category":{"member":["malicious"]},"url-detected-action":"block"},"data-protection":{"data-leak-detection":{"action":"","mask-data-inline":false,"member":null},"database-security":null},"latency":{"inline-timeout-action":"block","max-inline-latency":5},"mask-data-in-storage":false}}],"dlp-data-profiles":[]}`
+!prisma-airs-runtime-scan profile_name="readme-example-profile" prompt="do you want to play a game mr wolf"
+!prisma-airs-runtime-profiles-delete profile_id=${PrismaAIRs.SecurityProfileUpdate.id}
+!prisma-airs-runtime-profiles-delete profile_id=${PrismaAIRs.SecurityProfileCreate.id}
+
+## Runtime - Custom Topics (self-cleaning lifecycle)
+!prisma-airs-runtime-topics-list
+!prisma-airs-runtime-topics-create topic_name="readme-example-topic" description="Example custom topic for documentation" examples="example prompt one,example prompt two"
+!prisma-airs-runtime-topics-get topic_id=${PrismaAIRs.TopicCreate.topic_id}
+!prisma-airs-runtime-topics-update topic_id=${PrismaAIRs.TopicCreate.topic_id} topic_name="readme-example-topic" description="Updated example custom topic"
+!prisma-airs-runtime-topics-delete topic_id=${PrismaAIRs.TopicCreate.topic_id}
+
+## DLP - read-only listings
+!prisma-airs-runtime-dlp-profiles-list
+!prisma-airs-runtime-dlp-dictionaries-list
+!prisma-airs-runtime-dlp-filtering-profiles-list
+
+## DLP - Data Patterns (self-cleaning lifecycle)
+!prisma-airs-runtime-dlp-patterns-list
+!prisma-airs-runtime-dlp-patterns-create name="readme-example-pattern" type="custom" detection_technique="regex" matching_rules=`{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}`
+!prisma-airs-runtime-dlp-patterns-get pattern_id=${PrismaAIRs.DlpPatternCreate.id}
+!prisma-airs-runtime-dlp-patterns-patch pattern_id=${PrismaAIRs.DlpPatternCreate.id} name="readme-example-pattern" type="custom" detection_technique="regex" description="Updated example pattern"
+!prisma-airs-runtime-dlp-patterns-replace pattern_id=${PrismaAIRs.DlpPatternCreate.id} name="readme-example-pattern" type="custom" detection_technique="regex" matching_rules=`{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}`
+!prisma-airs-runtime-dlp-patterns-delete pattern_id=${PrismaAIRs.DlpPatternCreate.id}
+
+## Model Security (read-only)
+!prisma-airs-model-security-groups-list
+!prisma-airs-model-security-rules-list
+!prisma-airs-model-security-scans-list
+!prisma-airs-model-security-labels-keys
+
+## Red Team (read-only)
+!prisma-airs-redteam-targets-list
+!prisma-airs-redteam-scans-list
+!prisma-airs-redteam-categories-list
+!prisma-airs-redteam-eula-status
+!prisma-airs-redteam-eula-content
+!prisma-airs-redteam-prompt-sets-list
