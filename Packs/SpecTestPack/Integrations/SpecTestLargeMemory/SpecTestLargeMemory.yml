@@ -1,5 +1,4 @@
 category: Utilities
-spec: L
 commonfields:
   id: SpecTestLargeMemory
   version: -1
@@ -62,6 +61,7 @@ script:
   isfetch: false
   runonce: false
   script: '-'
+  spec: L
   subtype: python3
   type: python
 fromversion: 6.10.0
