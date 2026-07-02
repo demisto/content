@@ -1,0 +1,74 @@
+name: CiscoETDConnector
+display: CiscoETDConnector
+description: Ingests Cisco ETD logs to Cortex XSIAM.
+
+category: Analytics & SIEM
+commonfields:
+  id: CiscoETDConnector
+  version: -1
+provider: Cisco
+fromversion: 6.10.0
+
+configuration:
+- display: ETD API Base URL
+  name: etd_base_url
+  type: 0
+  required: true
+
+- displaypassword: ETD API Key
+  name: api_key
+  type: 9
+  required: true
+
+- display: Client ID
+  name: client_id
+  type: 0
+  required: true
+
+- displaypassword: Client Secret
+  name: client_secret
+  type: 9
+  required: true
+
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: 30 days
+  additionalinfo: Maximum supported value is 30 days
+
+- display: Max fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: '50'
+
+script:
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetch: true
+  isfetchevents: true
+  commands:
+  - name: test-module
+    description: Tests connectivity.
+    arguments: []
+    outputs: []
+
+  - name: cisco-etd-get-events
+    description: Fetch ETD logs and send to XSIAM.
+    arguments: []
+    outputs: []
+
+  - name: fetch-events
+    description: Fetch ETD logs and ingest events to XSIAM.
+    arguments: []
+    outputs: []
+
+marketplaces:
+- marketplacev2
+- platform
+
+tests:
+- No tests
