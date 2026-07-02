@@ -1,0 +1,136 @@
+display: Hello World v3
+name: HelloWorldV3
+category: Utilities
+commonfields:
+  id: HelloWorldV3
+  version: -1
+configuration:
+- name: url
+  display: Server URL (e.g., https://api.dummy-example.com)
+  defaultvalue: https://api.dummy-example.com
+  type: 0
+  required: true
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: true
+  hiddenusername: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+- name: feed
+  display: Fetch indicators
+  defaultvalue: "true"
+  type: 8
+  required: false
+- name: feedReliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+- name: max_indicator_fetch
+  display: Maximum number of indicators per fetch
+  additionalinfo: The maximum number of indicators to fetch in a single run.
+  defaultvalue: "100"
+  type: 0
+  required: false
+description: A dummy Hello World v3 integration used to demonstrate building Cortex integrations.
+script:
+  commands:
+  - name: helloworldv3-say-hello
+    description: Prints a greeting to the specified name.
+    arguments:
+    - name: name
+      description: The name of the person you want to say hello to.
+      required: false
+      defaultvalue: World
+    outputs:
+    - contextPath: HelloWorldV3.Hello.name
+      description: The name that was greeted.
+      type: String
+    - contextPath: HelloWorldV3.Hello.message
+      description: The greeting message returned by the command.
+      type: String
+  - name: helloworldv3-alert-list
+    description: Lists mocked alerts, optionally filtered by severity.
+    arguments:
+    - name: severity
+      description: The severity by which to filter the alerts.
+      required: false
+      type: String
+      auto: PREDEFINED
+      predefined:
+      - low
+      - high
+    - name: page_size
+      description: The maximum number of alerts to request per page when paginating.
+      required: false
+      defaultvalue: "50"
+      type: number
+    outputs:
+    - contextPath: HelloWorldV3.Alert.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: HelloWorldV3.Alert.name
+      description: The name of the alert.
+      type: String
+    - contextPath: HelloWorldV3.Alert.severity
+      description: The severity of the alert.
+      type: String
+  - name: helloworldv3-alert-get
+    description: Retrieves a single mocked alert by its ID.
+    arguments:
+    - name: alert_id
+      description: The ID of the alert to retrieve.
+      required: true
+      type: number
+    outputs:
+    - contextPath: HelloWorldV3.Alert.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: HelloWorldV3.Alert.name
+      description: The name of the alert.
+      type: String
+    - contextPath: HelloWorldV3.Alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: HelloWorldV3.Alert.status
+      description: The status of the alert.
+      type: String
+  - name: fetch-indicators
+    description: Fetches indicators from the feed and creates them in Cortex.
+    arguments: []
+    outputs: []
+  dockerimage: demisto/fastapi:0.125.0.9094740
+  feed: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
