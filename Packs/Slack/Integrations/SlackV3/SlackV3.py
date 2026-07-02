@@ -1284,6 +1284,18 @@ def mirror_investigation():
     else:
         mirror = mirrors.pop(mirrors.index(current_mirror[0]))
         conversation_id = mirror["channel_id"]
+        # Special case (XSUP-70395): `type` is the only provided argument, combined as
+        # "<mirror_type>:<mirror_direction>" (e.g. "all:ToDemisto"). Split it and keep the other values
+        # from the existing mirror context instead of overriding them with defaults.
+        if list(demisto.args()) == ["type"] and ":" in mirror_type:
+            mirror_type, mirror_direction = mirror_type.split(":", 1)
+            auto_close = mirror["auto_close"]
+            mirror_to = mirror["mirror_to"]
+            demisto.debug(
+                f"SlackV3 integration: 'type' was the only argument and contained a ':'. "
+                f"Split into mirror_type='{mirror_type}', mirror_direction='{mirror_direction}'. "
+                f"Kept auto_close={auto_close}, mirror_to={mirror_to} from the existing mirror context."
+            )
         if mirror_type:
             mirror["mirror_type"] = mirror_type
         if auto_close:
