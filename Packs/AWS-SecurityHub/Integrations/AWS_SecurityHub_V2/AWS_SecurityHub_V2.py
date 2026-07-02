@@ -4,6 +4,8 @@ from datetime import UTC
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 from botocore.client import BaseClient as BotoClient
+from dateparser import parse
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,7 +14,6 @@ DEFAULT_RETRIES = 5
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 50
-MAX_FETCH_LIMIT = 200
 
 # OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
 # OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
@@ -34,12 +35,6 @@ SEVERITY_LABEL_TO_OCSF_ID = {
     "High": 4,
     "Critical": 5,
     "Fatal": 6,
-}
-MIRROR_DIRECTION_MAPPING = {
-    "None": None,
-    "Incoming": "In",
-    "Outgoing": "Out",
-    "Incoming And Outgoing": "Both",
 }
 
 
@@ -270,16 +265,17 @@ def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
     ]
 
 
-def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
+def build_fetch_filters(start_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
     """Build the Security Hub V2 composite ``Filters`` object used by the fetch loop.
 
-    The fetch always filters on the OCSF ``finding_info.created_time_dt`` field within the
-    ``[start_time, end_time)`` window. Optionally, a minimum severity (mapped to an OCSF
-    ``severity_id >=`` number filter) and any extra string filters are combined with ``AND``.
+    The fetch filters on the OCSF ``finding_info.created_time_dt`` field within the
+    ``[start_time, end_time]`` window (the server requires a bounded ``{Start, End}`` date filter).
+    Optionally, a minimum severity (mapped to an OCSF ``severity_id >=`` number filter) and any extra
+    string filters are combined with ``AND``.
 
     Args:
-        start_time (str): ISO8601 start of the fetch window (exclusive lower bound is handled by the caller).
-        end_time (str): ISO8601 end of the fetch window.
+        start_time (str): ISO8601 inclusive lower bound of the fetch window.
+        end_time (str): ISO8601 upper bound of the fetch window.
         min_severity (str | None): Minimum severity label (e.g. ``High``) to include.
         additional_filters (str | None): Extra ``string_filters``-formatted entries to AND into the query.
 
@@ -290,7 +286,8 @@ def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None
         "DateFilters": [
             {
                 "FieldName": "finding_info.created_time_dt",
-                "Filter": {"Start": start_time, "End": end_time},
+                # "Filter": {"Start": start_time, "End": end_time},
+                "Filter": {"Start": start_time},
             }
         ],
     }
@@ -532,105 +529,116 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
 
 def fetch_incidents(client: BotoClient, params: dict) -> None:
     """Fetch AWS Security Hub V2 findings as XSOAR incidents.
-
-    Findings are queried via ``get_findings_v2`` filtered on ``finding_info.created_time_dt`` from the
-    last fetched creation time (inclusive), optionally narrowed by a minimum severity and additional
-    string filters. State is persisted via ``demisto.setLastRun``:
-
-        * ``last_fetch``  - the latest finding creation time seen so far (used as an inclusive lower
-          bound; not bumped by 1ms).
-        * ``fetched_ids`` - the ``metadata.uid`` of every finding that shares that exact ``last_fetch``
-          timestamp. Because the lower bound is inclusive, these are the only findings that can be
-          returned again, so they are skipped to avoid duplicates.
-        * ``next_token``  - a pagination token. When present it is consumed first on the next run so
-          large backlogs drain over multiple cycles before a new window-bounded query starts.
-
-    Args:
-        client (BotoClient): The boto3 ``securityhub`` client.
-        params (dict): Integration parameters (``first_fetch``, ``max_fetch``, ``min_severity``,
-            ``fetch_filters``, ``mirror_direction``).
     """
+    demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
     last_run = demisto.getLastRun()
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}")
     last_fetch = last_run.get("last_fetch")
     next_token = last_run.get("next_token")
-    fetched_ids = set(last_run.get("fetched_ids") or [])
+    fetched_ids = last_run.get("fetched_ids")
 
     if not last_fetch:
         first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
-        last_fetch = arg_to_datetime(first_fetch, required=True).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        lf = parse(f"{first_fetch} UTC")
+        last_fetch = lf.isoformat()  # type: ignore
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: no previous last_fetch; {first_fetch=} resolved to {last_fetch=}")
 
-    end_time = datetime.now(UTC).strftime(DATE_FORMAT)
-    max_fetch = min(arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT)
-    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
+    # end_time = datetime.now(UTC).isoformat()
+
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Fetch: parsed state -> {last_fetch=}, {next_token=}, {max_fetch=}"
+        f"min_severity={params.get('min_severity')}, fetch_filters={params.get('fetch_filters')}"
+    )
 
     filters = build_fetch_filters(
         start_time=last_fetch,
-        end_time=end_time,
+        # end_time=end_time,
         min_severity=params.get("min_severity"),
         additional_filters=params.get("fetch_filters"),
     )
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
 
-    # A NextToken from a previous run continues that exact query; the API rejects combining it with
-    # Filters, so it is sent on its own. Otherwise start a fresh window-bounded query.
     if next_token:
         demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
         try:
-            response = client.get_findings_v2(NextToken=next_token, MaxResults=max_fetch)
-        except client.exceptions.InvalidInputException as e:
-            # A stored token can expire or be revoked between cycles; fall back to a fresh query so
-            # fetching self-heals instead of getting stuck on a dead token.
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: next_token is no longer valid ({e}); restarting from the window.")
-            response = client.get_findings_v2(Filters=filters, MaxResults=max_fetch)
+            response = client.get_findings_v2(NextToken=next_token, MaxResults=max_fetch, Filters=filters)
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: token query succeeded.")
+        except client.exceptions.ClientError as e:
+            error = e.response.get("Error", {})
+            error_code = error.get("Code", "")
+            error_message = error.get("Message", "")
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Fetch: token query raised {type(e).__name__} "
+                f"(Code={error_code}, Message={error_message})."
+            )
+            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
     else:
-        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: querying findings created in [{last_fetch}, {end_time}].")
-        response = client.get_findings_v2(Filters=filters, MaxResults=max_fetch)
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings created in {last_fetch}.")
+        try:
+            response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters)
+        except client.exceptions.ClientError as e:
+            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
 
     findings = response.get("Findings", [])
     new_next_token = response.get("NextToken")
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: received {len(findings)} findings.")
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings.")
 
+    # dedup
     incidents = []
-    latest_created = last_fetch
-    boundary_ids = set(fetched_ids)  # ids already recorded at the current boundary timestamp
+    skipped_count = 0
     for finding in findings:
         finding_info = finding.get("finding_info") or {}
-        uid = finding.get("metadata", {}).get("uid")
         created_time = finding_info.get("created_time_dt")
+        uid = finding.get("metadata", {}).get("uid")
 
-        # Skip findings already ingested in a previous cycle (only those at the inclusive boundary).
-        if uid and uid in fetched_ids:
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: skipping already-fetched finding {uid}.")
+        if created_time and last_fetch and created_time < last_fetch:
+            skipped_count += 1
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Fetch: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
+            )
+            continue
+        if created_time and last_fetch and created_time == last_fetch and uid in fetched_ids:
+            skipped_count += 1
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Fetch: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
+            )
             continue
 
-        finding["mirror_direction"] = mirror_direction
-        finding["mirror_instance"] = demisto.integrationInstance()
+        xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN)
         incidents.append(
             {
                 "name": finding_info.get("title") or uid,
                 "occurred": created_time,
-                "severity": OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN),
+                "severity": xsoar_severity,
                 "rawJSON": json.dumps(finding),
             }
         )
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Fetch: created incident uid={uid}, created={created_time}, "
+            f"severity_id={finding.get('severity_id')} -> xsoar_severity={xsoar_severity}."
+        )
 
-        if not created_time:
-            continue
-        # Track the latest creation time and the set of finding ids that share it. When the boundary
-        # advances, reset the id set; when it ties, accumulate so the next inclusive query skips them all.
-        if created_time > latest_created:
-            latest_created = created_time
-            boundary_ids = {uid} if uid else set()
-        elif created_time == latest_created and uid:
-            boundary_ids.add(uid)
+    sorted_findings = sorted(findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
+    matching_uids = []
+    if sorted_findings:
+        first_finding_info = sorted_findings[0].get("finding_info") or {}
+        first_created_time = first_finding_info.get("created_time_dt")
+        matching_uids = [
+            finding.get("metadata", {}).get("uid")
+            for finding in sorted_findings
+            if (finding.get("finding_info") or {}).get("created_time_dt") == first_created_time
+        ]
 
-    demisto.setLastRun(
-        {
-            "last_fetch": latest_created,
-            "next_token": new_next_token,
-            "fetched_ids": list(boundary_ids),
-        }
+    new_last_run = {"last_fetch": last_fetch, "next_token": new_next_token, "fetched_ids": matching_uids}
+
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents, skipped {skipped_count}; "
+        f"new lastRun -> {new_last_run=}"
     )
+    demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
+    demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
 
 
 def test_module(client: BotoClient) -> str:

@@ -142,19 +142,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Incident Mirroring Direction
-  name: mirror_direction
-  additionalinfo: Choose the direction to mirror the finding (Incoming - from AWS Security Hub to Cortex, Outgoing - from Cortex to AWS Security Hub, Incoming And Outgoing - both directions).
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-  defaultvalue: None
-  type: 15
-  section: Collect
-  advanced: true
-  required: false
 script:
   commands:
   - name: aws-securityhub-security-hub-enable

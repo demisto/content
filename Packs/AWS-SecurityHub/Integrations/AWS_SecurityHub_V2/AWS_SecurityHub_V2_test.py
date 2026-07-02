@@ -434,33 +434,34 @@ def test_parse_date_filters_skips_entry_without_fieldname():
 
 def test_build_fetch_filters_time_only():
     """
-    Given: A fetch window with no severity or additional filters.
+    Given: A fetch start time with no severity or additional filters.
     When: build_fetch_filters is called.
-    Then: It builds a composite with only the created_time_dt DateFilter and AND operators.
+    Then: It builds a composite with only an open-ended created_time_dt DateFilter (Start, no End) and
+          AND operators.
     """
-    result = build_fetch_filters("2024-01-01T00:00:00.000Z", "2024-01-02T00:00:00.000Z", None, None)
+    result = build_fetch_filters("2024-01-01T00:00:00.000Z", None, None)
     composite = result["CompositeFilters"][0]
     assert result["CompositeOperator"] == "AND"
     assert composite["Operator"] == "AND"
     assert composite["DateFilters"] == [
         {
             "FieldName": "finding_info.created_time_dt",
-            "Filter": {"Start": "2024-01-01T00:00:00.000Z", "End": "2024-01-02T00:00:00.000Z"},
+            "Filter": {"Start": "2024-01-01T00:00:00.000Z"},
         }
     ]
+    assert "End" not in composite["DateFilters"][0]["Filter"]
     assert "NumberFilters" not in composite
     assert "StringFilters" not in composite
 
 
 def test_build_fetch_filters_with_severity_and_additional():
     """
-    Given: A fetch window with a minimum severity and additional string filters.
+    Given: A fetch start time with a minimum severity and additional string filters.
     When: build_fetch_filters is called.
     Then: It adds a severity_id Gte NumberFilter and the parsed StringFilters.
     """
     result = build_fetch_filters(
         "2024-01-01T00:00:00.000Z",
-        "2024-01-02T00:00:00.000Z",
         "High",
         "fieldname=cloud.region,value=us-east-1",
     )
@@ -522,13 +523,48 @@ def test_fetch_incidents_first_run(mocker):
     assert call_kwargs["MaxResults"] == 50
 
 
+def test_fetch_incidents_first_run_uses_open_ended_window(mocker):
+    """
+    Given: A previous last_fetch and a client returning a finding.
+    When: fetch_incidents builds the fresh query.
+    Then: The DateFilter has a Start (from last_fetch) and no End, so the query is stable across cycles.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 3,
+                "finding_info": {"title": "Finding One", "created_time_dt": "2024-01-01T10:00:00.000Z"},
+            }
+        ],
+        "NextToken": None,
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 50})
+
+    date_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["DateFilters"][0]["Filter"]
+    assert date_filter["Start"] == "2024-01-01T00:00:00.000Z"
+    assert "End" not in date_filter
+
+
 def test_fetch_incidents_continues_with_next_token(mocker):
     """
     Given: A previous run that left a next_token.
     When: fetch_incidents is called.
-    Then: It sends the NextToken (not Filters) and advances last_fetch from the token page findings.
+    Then: It sends the NextToken (not Filters) and advances last_fetch from the token page findings. The
+          window is open-ended, so no end_time state is needed to keep the token valid.
     """
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "tok-prev"})
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "tok-prev"},
+    )
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "incidents")
@@ -556,6 +592,8 @@ def test_fetch_incidents_continues_with_next_token(mocker):
     assert last_run["last_fetch"] == "2024-01-05T10:00:00.000Z"
     assert last_run["fetched_ids"] == ["uid-3"]
     assert last_run["next_token"] is None
+    # The open-ended design no longer stores an end_time.
+    assert "end_time" not in last_run
 
 
 def test_fetch_incidents_skips_already_fetched_ids(mocker):
@@ -604,13 +642,15 @@ def test_fetch_incidents_skips_already_fetched_ids(mocker):
 
 def test_fetch_incidents_invalid_next_token_falls_back(mocker):
     """
-    Given: A stored next_token that the API rejects with InvalidInputException.
+    Given: A stored next_token that the API rejects with a token-related ClientError.
     When: fetch_incidents is called.
     Then: It falls back to a fresh filtered query and still produces incidents.
     """
 
-    class InvalidInputException(Exception):
-        pass
+    class ClientError(Exception):
+        def __init__(self, response):
+            super().__init__(response.get("Error", {}).get("Message", ""))
+            self.response = response
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "stale"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
@@ -618,7 +658,8 @@ def test_fetch_incidents_invalid_next_token_falls_back(mocker):
     incidents_mock = mocker.patch.object(demisto, "incidents")
 
     mock_client = mocker.Mock()
-    mock_client.exceptions.InvalidInputException = InvalidInputException
+    mock_client.exceptions.ClientError = ClientError
+    token_error = ClientError({"Error": {"Code": "ValidationException", "Message": "The provided next token is invalid."}})
     fresh_response = {
         "Findings": [
             {
@@ -630,7 +671,7 @@ def test_fetch_incidents_invalid_next_token_falls_back(mocker):
         "NextToken": None,
     }
     # First call (with the stale token) raises; the fallback fresh query (with Filters) succeeds.
-    mock_client.get_findings_v2.side_effect = [InvalidInputException("invalid token"), fresh_response]
+    mock_client.get_findings_v2.side_effect = [token_error, fresh_response]
 
     fetch_incidents(mock_client, {"max_fetch": 50})
 
