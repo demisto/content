@@ -43,14 +43,19 @@ def test_fetch_incidents_passes_limit_key_to_snowflake_query(mocker):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "incidents")
 
-    from Packs.Snowflake.Integrations.Snowflake.Snowflake import fetch_incidents
+    import Packs.Snowflake.Integrations.Snowflake.Snowflake as snowflake_module
+
+    mocker.patch.object(snowflake_module, "FETCH_TIME", "3 days")
+    mocker.patch.object(snowflake_module, "FETCH_QUERY", "SELECT * FROM test")
+    mocker.patch.object(snowflake_module, "DATETIME_COLUMN", "TS")
+    mocker.patch.object(snowflake_module, "MAX_ROWS", 1000)
 
     mock_query = mocker.patch(
         "Packs.Snowflake.Integrations.Snowflake.Snowflake.snowflake_query",
         return_value=([], []),
     )
 
-    fetch_incidents()
+    snowflake_module.fetch_incidents()
 
     called_args = mock_query.call_args[0][0]
     assert "limit" in called_args, "fetch_incidents should pass 'limit' key, not 'rows'"
