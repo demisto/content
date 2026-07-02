@@ -1,0 +1,41 @@
+args:
+- description: The name of the Device Security alert.
+  name: alert_name
+- description: The raw type of the incident.
+  name: raw_type
+  required: true
+- default: true
+  description: The device category.
+  name: category
+- default: true
+  description: The device profile.
+  name: profile
+- default: true
+  description: The device vendor.
+  name: vendor
+- default: true
+  description: The device model.
+  name: model
+- default: true
+  description: The variable name for DEVICE_SECURITY_CONFIG.
+  name: device_security_config_list_name
+  defaultValue: DEVICE_SECURITY_CONFIG
+comment: Device Security RACI model script.
+commonfields:
+  id: device-security-security-get-raci
+  version: -1
+name: device-security-security-get-raci
+outputs:
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI
+  description: The RACI model of the Device Security incident.
+  type: unknown
+script: '-'
+tags:
+- device security
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,485 @@
+id: PANW Device Security Incident Handling with ServiceNow
+version: -1
+name: PANW Device Security Incident Handling with ServiceNow
+description: This playbook creates a ServiceNow ticket after the incident is enriched by Palo Alto Networks Device Security portal (previously Zingbox Cloud).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cb9fc6d7-c44d-4fb0-b2f3-78102b8bbfc0
+    type: start
+    task:
+      id: cb9fc6d7-c44d-4fb0-b2f3-78102b8bbfc0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 069c7fa6-6ead-4718-8a64-f3f71648a60d
+    type: title
+    task:
+      id: 069c7fa6-6ead-4718-8a64-f3f71648a60d
+      version: -1
+      name: Incident Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 201c5674-e376-41e7-8474-0a7b367c3e9a
+    type: regular
+    task:
+      id: 201c5674-e376-41e7-8474-0a7b367c3e9a
+      version: -1
+      name: Get Device Details from Device Security Server
+      description: Device Security get device command - get a single device details.
+      script: Palo Alto Networks Device Security|||device-security-get-device
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Device Security
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.deviceid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 04b501bb-e580-455d-838e-8a1e99b02946
+    type: title
+    task:
+      id: 04b501bb-e580-455d-838e-8a1e99b02946
+      version: -1
+      name: Applying RACI model
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 383b0063-1c7d-4e1e-94ea-a44213ed4a86
+    type: regular
+    task:
+      id: 383b0063-1c7d-4e1e-94ea-a44213ed4a86
+      version: -1
+      name: Calculate RACI
+      description: Device Security RACI model script
+      scriptName: device-security-security-get-raci
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_name:
+        simple: ${incident.name}
+      category:
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.category}
+      model:
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.model}
+      profile:
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.profile}
+      raw_type:
+        simple: ${incident.rawType}
+      vendor:
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c5e5fa99-3675-4b15-b4e8-5dd7903a90da
+    type: title
+    task:
+      id: c5e5fa99-3675-4b15-b4e8-5dd7903a90da
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2ee3db95-8051-41e3-8be6-091c0a157dd7
+    type: condition
+    task:
+      id: 2ee3db95-8051-41e3-8be6-091c0a157dd7
+      version: -1
+      name: DEVICE_SECURITY_CONFIG list configured?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: 'Check whether the DEVICE_SECURITY_CONFIG is defined.'
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: lists.DEVICE_SECURITY_CONFIG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 30e7fed6-6d69-494f-bde3-e5dd04a7a309
+    type: condition
+    task:
+      id: 30e7fed6-6d69-494f-bde3-e5dd04a7a309
+      version: -1
+      name: ServiceNow Table Exists?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: db7c893a-1807-483e-908a-a50def229dda
+    type: regular
+    task:
+      id: db7c893a-1807-483e-908a-a50def229dda
+      version: -1
+      name: servicenow-create-record
+      description: Creates a new record in the specified ServiceNow table.
+      script: ServiceNow v2|||servicenow-create-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      custom_fields:
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.custom_fields}
+      fields:
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.fields}
+      table_name:
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: ServiceNow Table Name
+      output:
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+    - incidentfield: ServiceNow Record ID
+      output:
+        simple: ${ServiceNow.Record.ID}
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 77e01ffd-5928-4e9f-a88a-248fe4be6493
+    type: regular
+    task:
+      id: 77e01ffd-5928-4e9f-a88a-248fe4be6493
+      version: -1
+      name: Manual investigation
+      description: Check the device and incident details.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2fa4d52b-dc44-4dc3-b1e8-f226abe7752e
+    type: condition
+    task:
+      id: 2fa4d52b-dc44-4dc3-b1e8-f226abe7752e
+      version: -1
+      name: Is ServiceNow v2 enabled and create ServiceNow ticket?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.CreateServiceNowTicket
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: a00d7b3e-2a43-4a3f-b22d-868d2b9f7cb3
+    type: condition
+    task:
+      id: a00d7b3e-2a43-4a3f-b22d-868d2b9f7cb3
+      version: -1
+      name: Is Palo Alto Networks Device Security Enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks Device Security
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1900,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Device SecurityConfigListName
+  value:
+    simple: DEVICE_SECURITY_CONFIG
+  required: false
+  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow calculation.
+  playbookInputQuery:
+- key: CreateServiceNowTicket
+  value:
+    simple: "false"
+  required: false
+  description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksDeviceSecurity
+  description: This path will have field "device" for the device details and "raci" if the command "device-security-get-raci" has output.
+  type: string
+- contextPath: ServiceNow.Record
+  description: The ServiceNow record after creating the ServiceNow ticket.
+  type: string
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
