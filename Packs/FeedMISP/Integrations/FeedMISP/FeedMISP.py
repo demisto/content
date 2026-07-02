@@ -653,9 +653,14 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
 
     if error_message := search_query_per_page.get("Error"):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun(
-        {"last_indicator_timestamp": last_run.get("candidate_timestamp"), "last_indicator_value": last_run.get("candidate_value")}
-    )
+
+    candidate_timestamp = last_run.get("candidate_timestamp")
+    candidate_value = last_run.get("candidate_value")
+    if candidate_timestamp is None:
+        # No candidate was produced this run.
+        demisto.debug("No candidate produced this run; leaving existing lastRun unchanged")
+        return
+    demisto.setLastRun({"last_indicator_timestamp": candidate_timestamp, "last_indicator_value": candidate_value})
 
 
 def main():  # pragma: no cover
