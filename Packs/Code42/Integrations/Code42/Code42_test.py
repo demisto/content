@@ -169,22 +169,11 @@ with open("test_data/alert_details_response.json") as f:
 MOCK_V2_FILE_EVENTS_RESPONSE = FileEventsPage.parse_file("test_data/v2_file_event_response.json")
 
 
-def _ensure_session_has_actor_and_rule_names(session: Session) -> Session:
-    """Backfill actor_name and rule_name when the installed SDK model omits these fields."""
-    session_dict = json.loads(session.json())
-    if not hasattr(session, "actor_name") and session_dict.get("actorName"):
-        session.actor_name = session_dict["actorName"]
-    for triggered_alert, rule_dict in zip(session.triggered_alerts, session_dict.get("triggeredAlerts", [])):
-        if not hasattr(triggered_alert, "rule_name") and rule_dict.get("ruleName"):
-            triggered_alert.rule_name = rule_dict["ruleName"]
-    return session
+MOCK_SESSION_RESPONSE = Session.parse_file("test_data/session_response.json")
 
+MOCK_SESSION_RESPONSE_2 = Session.parse_file("test_data/session_response_2.json")
 
-MOCK_SESSION_RESPONSE = _ensure_session_has_actor_and_rule_names(Session.parse_file("test_data/session_response.json"))
-
-MOCK_SESSION_RESPONSE_2 = _ensure_session_has_actor_and_rule_names(Session.parse_file("test_data/session_response_2.json"))
-
-MOCK_SESSION_RESPONSE_3 = _ensure_session_has_actor_and_rule_names(Session.parse_file("test_data/session_response_3.json"))
+MOCK_SESSION_RESPONSE_3 = Session.parse_file("test_data/session_response_3.json")
 
 MOCK_ACTOR_RESPONSE = Actor.parse_file("test_data/actor_response.json")
 
