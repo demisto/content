@@ -109,8 +109,9 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
-display: O365 File Management (Onedrive/Sharepoint/Teams) (Standard Connector)
+deprecated: true
+description: 'Deprecated. No available replacement. Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.'
+display: O365 File Management (Onedrive/Sharepoint/Teams) (Standard Connector) (Deprecated)
 name: MicrosoftGraphFilesStandardConnector
 script:
   commands:

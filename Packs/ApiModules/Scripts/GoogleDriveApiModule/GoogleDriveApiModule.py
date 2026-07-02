@@ -1260,7 +1260,7 @@ def file_upload_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     body = GSuiteClient.remove_empty_entities(body)
 
     media = MediaFileUpload(file_path["path"])
-    file = drive_service.files().create(body=body, media_body=media, supportsAllDrives=supports_all_drives, fields="*").execute()
+    file = drive_service.files().create(body=body, media_body=media, supportsAllDrives=supports_all_drives, fields="*").execute()  # pylint: disable=no-member
     return handle_response_file_single(file, args)
 
 
@@ -1278,7 +1278,7 @@ def file_download_command(client: "GSuiteClient", args: dict[str, str]) -> Comma
     prepare_file_command_request(client, args, scopes=COMMAND_SCOPES["FILES"])
 
     drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
-    request = drive_service.files().get_media(fileId=args.get("file_id"))
+    request = drive_service.files().get_media(fileId=args.get("file_id"))  # pylint: disable=no-member
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
     done = False
@@ -1304,7 +1304,7 @@ def file_replace_existing_command(client: "GSuiteClient", args: dict[str, str]) 
 
     drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     media = MediaFileUpload(file_path["path"])
-    file = drive_service.files().update(fileId=args.get("file_id", ""), body={}, media_body=media, fields="*").execute()
+    file = drive_service.files().update(fileId=args.get("file_id", ""), body={}, media_body=media, fields="*").execute()  # pylint: disable=no-member
     return handle_response_file_single(file, args)
 
 
@@ -1894,7 +1894,7 @@ def copy_file_http_request(
 
     try:
         return (
-            drive_service.files()
+            drive_service.files()  # pylint: disable=no-member
             .copy(
                 fileId=file_id,
                 supportsAllDrives=argToBoolean(supports_all_drives),
