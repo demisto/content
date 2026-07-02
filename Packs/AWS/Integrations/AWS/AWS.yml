@@ -18591,7 +18591,7 @@ script:
       description: The unique identifier for the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token used for optimistic locking to track the state of the firewall resource at the time of the request.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
@@ -19115,7 +19115,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
     - contextPath: AWS.NetworkFirewall.FirewallPoliciesNextToken
-      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      description: The token used to retrieve the next set of results from Network Firewall. Returns a NextToken value when the number of available objects exceeds the requested limit.
       type: String
 
   - name: aws-network-firewall-firewall-policy-describe
@@ -19325,7 +19325,7 @@ script:
     - name: tags
       description: The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2.
     - name: enable_tls_session_holding
-      description: Whether TCP and TLS packets are prevented from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
+      description: Whether to prevent TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules. Requires an associated TLS Inspection configuration.
       auto: PREDEFINED
       predefined:
         - "true"
@@ -19380,7 +19380,7 @@ script:
       type: String
 
   - name: aws-network-firewall-firewall-policy-associate
-    description: "Associates a FirewallPolicy to a Firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
+    description: "Associates a firewall policy to a firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
@@ -19444,7 +19444,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall policy that was associated with the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
       type: String
 
   - name: aws-network-firewall-firewall-policy-delete
@@ -19601,7 +19601,7 @@ script:
         - AWS_OWNED_KMS_KEY
 
   - name: aws-network-firewall-firewall-policy-change-protection-update
-    description: "Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
+    description: "Modifies the ChangeProtection flag, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
