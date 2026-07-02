@@ -1290,6 +1290,10 @@ def test_get_drilldown_timeframe(finding_data, raw, earliest, latest, mocker):
         ("field", {"field": "1"}, "field", "1"),
         ("field|s", {"_raw": "field=1, value=2"}, "field", "1"),
         ("x", {"y": "2"}, "", ""),
+        # A raw field that is a substring of another field must not collide
+        ("src_ip", {"src": "host1", "src_ip": "1.2.3.4"}, "src_ip", "1.2.3.4"),
+        ("src_ip|s", {"src": "host1", "src_ip": "1.2.3.4"}, "src_ip", "1.2.3.4"),
+        ("src_ip", {"_raw": "src=host1, src_ip=1.2.3.4"}, "src_ip", "1.2.3.4"),
     ],
 )
 def test_get_finding_field_and_value(raw_field, finding_data, expected_field, expected_value, mocker):
@@ -1359,6 +1363,14 @@ def test_get_finding_field_and_value(raw_field, finding_data, expected_field, ex
             'search countryA="test\\country" countryB=""',
         ),
         ({"test": "test_user"}, "search countryA=\\$this is a test\\$", {}, False, "search countryA=\\$this is a test\\$"),
+        # A field whose name is a substring of the queried field must resolve to the correct field
+        (
+            {"src": "host1", "src_ip": "1.2.3.4"},
+            "search src_ip=$src_ip$",
+            {},
+            False,
+            'search src_ip="1.2.3.4"',
+        ),
     ],
     ids=[
         "search query fields in findings data and raw data",
@@ -1371,6 +1383,7 @@ def test_get_finding_field_and_value(raw_field, finding_data, expected_field, ex
         "search query with a user field that is surrounded by quotation marks and contains a backslash",
         "search query fields in finding data more than one value, with one empty value",
         "search query with $ as part of the search - no need to replace",
+        "search query with a field name that is a substring of another field ",
     ],
 )
 def test_build_drilldown_search(finding_data, search, raw, is_query_name, expected_search, mocker):
@@ -1830,6 +1843,94 @@ def test_to_incident_finding_enrichments_status(enrichments, enrichment_type, ex
     finding.to_incident(mapper)
 
     assert finding.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
+
+
+@pytest.mark.parametrize(
+    "spl_search, expected",
+    [
+        # Single backslashes inside a field="value" filter must be doubled
+        (
+            'eventcode IN (1, 2) field_a="\\foo\\bar\\baz" | head 1',
+            'eventcode IN (1, 2) field_a="\\\\foo\\\\bar\\\\baz" | head 1',
+        ),
+        # Already-doubled values are left unchanged (idempotent)
+        ('field_a="\\\\foo\\\\bar"', 'field_a="\\\\foo\\\\bar"'),
+        # Values without backslashes are untouched
+        ('field_a="10.0.0.1" field_b="abc"', 'field_a="10.0.0.1" field_b="abc"'),
+        # rex / free-text quoted strings (not preceded by '=') must NOT be modified
+        (
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+        ),
+        # Regex literals inside SPL function calls (quote follows '(' or ',', NOT a field token)
+        # must NOT be re-escaped.
+        (
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+        ),
+        # Multiple genuine field="value" filters in one query are all doubled
+        (
+            'field_a="\\foo\\bar" field_b="\\\\baz\\\\qux"',
+            'field_a="\\\\foo\\\\bar" field_b="\\\\baz\\\\qux"',
+        ),
+        # A dotted field name is still treated as a field filter
+        (
+            'parent.child="\\foo\\bar"',
+            'parent.child="\\\\foo\\\\bar"',
+        ),
+    ],
+    ids=[
+        "single backslashes are doubled",
+        "already-doubled backslashes are unchanged",
+        "no backslashes are untouched",
+        "rex regex quoted string is not modified",
+        "eval/replace regex literal is not over-escaped",
+        "multiple field filters are all doubled",
+        "dotted field name is treated as a field filter",
+    ],
+)
+def test_escape_backslashes_in_field_filters(spl_search, expected):
+    """
+    Scenario: A drilldown search arrives as JSON; after json.loads, backslashes inside field filter
+    values are collapsed to single backslashes, which Splunk SPL cannot match. We re-escape them.
+
+    Given:
+    - An SPL search with a field="value" filter value containing single backslashes.
+    - An SPL search whose field filter values are already correctly escaped.
+    - An SPL search without backslashes.
+    - An SPL search with a rex/free-text quoted string containing a backslash.
+    - An SPL search with a regex literal inside a function call (eval/replace).
+    - An SPL search with multiple field filters.
+    - An SPL search with a dotted field name.
+
+    When:
+    - escape_backslashes_in_field_filters is called.
+
+    Then:
+    - Backslashes inside genuine field="value" filters are doubled, the operation is idempotent,
+      and rex/free-text quoted strings and regex literals inside function calls are left untouched.
+    """
+    assert splunk.escape_backslashes_in_field_filters(spl_search) == expected
+
+
+def test_parse_drilldown_searches_preserves_backslashes():
+    """
+    Given:
+    - A 'drilldown_searches' JSON payload where a field="value" filter value contains backslashes.
+
+    When:
+    - Running splunk.parse_drilldown_searches.
+
+    Then:
+    - The parsed 'search' keeps the backslashes escaped (doubled) for Splunk SPL.
+    """
+    searches = [
+        '[{"name":"Show events","search":"(index=idx_a OR index=idx_b) '
+        'eventcode IN (1, 2) field_a=\\"\\\\foo\\\\bar\\\\baz\\" '
+        '| head 1","earliest_offset":"1","latest_offset":"2","disabled":false}]'
+    ]
+    parsed = splunk.parse_drilldown_searches(searches)
+    assert parsed[0]["search"] == ("(index=idx_a OR index=idx_b) eventcode IN (1, 2) " 'field_a="\\\\foo\\\\bar\\\\baz" | head 1')
 
 
 def test_parse_drilldown_searches():
@@ -7807,3 +7908,310 @@ def test_splunk_update_investigation_command_multiple_event_ids_without_findings
     mock_add_findings.assert_not_called()
     assert "Successfully updated Splunk ES event ES-1" in result.readable_output
     assert "Successfully updated Splunk ES event ES-2" in result.readable_output
+
+
+# --------------------------------------------------------------------------- #
+# Tests for splunk-investigation-create                                       #
+# --------------------------------------------------------------------------- #
+
+
+def test_splunk_create_investigation_command_minimal_args(mocker):
+    """
+    Given:
+        - Args containing only the required `name` argument.
+    When:
+        - splunk_create_investigation_command is called.
+    Then:
+        - _es_rest_request is called once with POST and a payload containing only `name`.
+        - CommandResults outputs_prefix is `Splunk.CreateInvestigation` with the returned guid.
+        - The readable output mentions the investigation GUID.
+    """
+    expected_guid = "11111111-2222-3333-4444-555555555555"
+    mock_es_request = mocker.patch.object(
+        splunk,
+        "_es_rest_request",
+        return_value={"investigation_guid": expected_guid},
+    )
+
+    args = {"name": "My Investigation"}
+    result = splunk.splunk_create_investigation_command(service=MagicMock(), args=args)
+
+    mock_es_request.assert_called_once()
+    _, called_kwargs = mock_es_request.call_args
+    called_args_positional = mock_es_request.call_args.args
+    # signature: _es_rest_request(service, method, path, body=..., query=...)
+    assert called_args_positional[1] == "POST"
+    assert called_args_positional[2] == "public/v2/investigations"
+    assert called_kwargs["body"] == {"name": "My Investigation"}
+
+    assert result.outputs_prefix == "Splunk.Investigation"
+    assert result.outputs_key_field == "investigation_guid"
+    assert result.outputs == {"investigation_guid": expected_guid}
+    assert "Investigation created successfully" in result.readable_output
+    assert expected_guid in result.readable_output
+
+
+def test_splunk_create_investigation_command_all_fields_forwarded(mocker):
+    """
+    Given:
+        - Args containing all supported create fields and an extra unsupported field.
+    When:
+        - splunk_create_investigation_command is called.
+    Then:
+        - Only fields in INVESTIGATION_CREATE_FIELDS are forwarded in the payload.
+        - The unsupported `extra_field` argument is ignored.
+    """
+    mock_es_request = mocker.patch.object(
+        splunk,
+        "_es_rest_request",
+        return_value={"investigation_guid": "guid-1"},
+    )
+
+    args = {
+        "name": "Inv-Full",
+        "description": "desc",
+        "investigation_type": "default",
+        "status": "New",
+        "disposition": "Undetermined",
+        "owner": "admin",
+        "urgency": "high",
+        "sensitivity": "Amber",
+        "extra_field": "should-be-ignored",
+    }
+    splunk.splunk_create_investigation_command(service=MagicMock(), args=args)
+
+    body = mock_es_request.call_args.kwargs["body"]
+    assert body == {
+        "name": "Inv-Full",
+        "description": "desc",
+        "investigation_type": "default",
+        "status": "New",
+        "disposition": "Undetermined",
+        "owner": "admin",
+        "urgency": "high",
+        "sensitivity": "Amber",
+    }
+    assert "extra_field" not in body
+
+
+def test_splunk_create_investigation_command_missing_name_raises(mocker):
+    """
+    Given:
+        - Args missing the required `name` argument.
+    When:
+        - splunk_create_investigation_command is called.
+    Then:
+        - A DemistoException is raised stating that `name` is required.
+        - No HTTP request is performed.
+    """
+    mock_es_request = mocker.patch.object(splunk, "_es_rest_request")
+
+    with pytest.raises(DemistoException, match="`name` is a required argument"):
+        splunk.splunk_create_investigation_command(service=MagicMock(), args={"description": "no name"})
+
+    mock_es_request.assert_not_called()
+
+
+def test_splunk_create_investigation_command_non_dict_response(mocker):
+    """
+    Given:
+        - _es_rest_request returns a non-dict response (e.g., a list).
+    When:
+        - splunk_create_investigation_command is called.
+    Then:
+        - The command does not raise.
+        - outputs is None (no investigation_guid available).
+        - The raw_response still preserves the original response.
+    """
+    mocker.patch.object(splunk, "_es_rest_request", return_value=["unexpected"])
+
+    result = splunk.splunk_create_investigation_command(service=MagicMock(), args={"name": "X"})
+
+    assert result.outputs is None
+    assert result.raw_response == ["unexpected"]
+    assert "Investigation created successfully" in result.readable_output
+
+
+# --------------------------------------------------------------------------- #
+# Tests for splunk-investigation-list                                         #
+# --------------------------------------------------------------------------- #
+
+
+def test_splunk_list_investigations_command_no_args_returns_list(mocker):
+    """
+    Given:
+        - No filter args provided.
+        - _es_rest_request returns a list of two investigation dicts.
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - GET public/v2/investigations is called with an empty query.
+        - outputs is the full list (length 2).
+        - The HR title reflects the count.
+    """
+    investigations = [
+        {
+            "investigation_guid": "guid-1",
+            "investigation_id": "ES-00001",
+            "name": "Inv 1",
+            "status_name": "New",
+            "owner": "admin",
+        },
+        {
+            "investigation_guid": "guid-2",
+            "investigation_id": "ES-00002",
+            "name": "Inv 2",
+            "status_name": "In progress",
+            "owner": "analyst",
+        },
+    ]
+    mock_es_request = mocker.patch.object(
+        splunk,
+        "_es_rest_request",
+        return_value=investigations,
+    )
+
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args={})
+
+    called_args = mock_es_request.call_args.args
+    called_kwargs = mock_es_request.call_args.kwargs
+    assert called_args[1] == "GET"
+    assert called_args[2] == "public/v2/investigations"
+    assert called_kwargs["query"] == {}
+
+    assert result.outputs_prefix == "Splunk.Investigation"
+    assert result.outputs_key_field == "investigation_guid"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+    assert "2 Investigations Found" in result.readable_output
+
+
+def test_splunk_list_investigations_command_single_result_returns_dict(mocker):
+    """
+    Given:
+        - _es_rest_request returns a list with a single investigation dict.
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - outputs is the single investigation dict (not wrapped in a list).
+        - HR title uses the singular form "Investigation".
+    """
+    investigation = {
+        "investigation_guid": "guid-1",
+        "investigation_id": "ES-00001",
+        "name": "Solo",
+        "status_name": "New",
+    }
+    mocker.patch.object(splunk, "_es_rest_request", return_value=[investigation])
+
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args={})
+
+    assert isinstance(result.outputs, dict)
+    assert result.outputs == investigation
+    assert "1 Investigation Found" in result.readable_output
+
+
+def test_splunk_list_investigations_command_with_filters_forwarded_as_csv(mocker):
+    """
+    Given:
+        - Args with multi-value filters (`investigation_ids`, `status`, `urgency`) and
+          scalar filters (`limit`, `offset`, `sort`).
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - The XSOAR-facing `investigation_ids` arg is mapped to the Splunk API `ids`
+          query parameter and forwarded as a CSV string.
+        - Other multi-value args are forwarded as CSV strings.
+        - Scalar args are forwarded unchanged.
+        - The HR title includes the provided ids list.
+    """
+    mock_es_request = mocker.patch.object(
+        splunk,
+        "_es_rest_request",
+        return_value=[{"investigation_guid": "guid-1", "investigation_id": "ES-00001", "name": "n"}],
+    )
+
+    args = {
+        "investigation_ids": "ES-00001,ES-00002",
+        "status": "New,In progress",
+        "urgency": "high,critical",
+        "limit": "10",
+        "offset": "5",
+        "sort": "create_time:desc",
+    }
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args=args)
+
+    query = mock_es_request.call_args.kwargs["query"]
+    assert query["ids"] == "ES-00001,ES-00002"
+    assert query["status"] == "New,In progress"
+    assert query["urgency"] == "high,critical"
+    assert query["limit"] == "10"
+    assert query["offset"] == "5"
+    assert query["sort"] == "create_time:desc"
+
+    assert "ES-00001, ES-00002" in result.readable_output
+
+
+def test_splunk_list_investigations_command_empty_response(mocker):
+    """
+    Given:
+        - _es_rest_request returns an empty list.
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - CommandResults has a friendly "No investigations found" message.
+        - No outputs / outputs_prefix is set.
+    """
+    mocker.patch.object(splunk, "_es_rest_request", return_value=[])
+
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args={})
+
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert "No investigations found" in result.readable_output
+
+
+def test_splunk_list_investigations_command_dict_response_with_nested_list(mocker):
+    """
+    Given:
+        - _es_rest_request returns a dict whose value is the list of investigations
+          (e.g., {"results": [...]}).
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - The nested list is correctly unwrapped into outputs.
+    """
+    investigations = [
+        {"investigation_guid": "guid-1", "investigation_id": "ES-00001", "name": "A"},
+        {"investigation_guid": "guid-2", "investigation_id": "ES-00002", "name": "B"},
+    ]
+    mocker.patch.object(splunk, "_es_rest_request", return_value={"results": investigations})
+
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args={})
+
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["investigation_guid"] == "guid-1"
+
+
+def test_splunk_list_investigations_command_dict_response_single_investigation(mocker):
+    """
+    Given:
+        - _es_rest_request returns a single investigation dict (not wrapped in a list).
+    When:
+        - splunk_list_investigations_command is called.
+    Then:
+        - The single dict is treated as a list of one investigation.
+        - outputs is the investigation dict.
+    """
+    investigation = {
+        "investigation_guid": "guid-single",
+        "investigation_id": "ES-00009",
+        "name": "Single",
+    }
+    mocker.patch.object(splunk, "_es_rest_request", return_value=investigation)
+
+    result = splunk.splunk_list_investigations_command(service=MagicMock(), args={})
+
+    assert result.outputs == investigation
+    assert "1 Investigation Found" in result.readable_output
