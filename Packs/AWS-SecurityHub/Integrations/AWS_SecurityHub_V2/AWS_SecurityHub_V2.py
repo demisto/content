@@ -265,7 +265,7 @@ def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
     ]
 
 
-def build_fetch_filters(start_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
+def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
     """Build the Security Hub V2 composite ``Filters`` object used by the fetch loop.
 
     The fetch filters on the OCSF ``finding_info.created_time_dt`` field within the
@@ -286,8 +286,7 @@ def build_fetch_filters(start_time: str, min_severity: str | None, additional_fi
         "DateFilters": [
             {
                 "FieldName": "finding_info.created_time_dt",
-                # "Filter": {"Start": start_time, "End": end_time},
-                "Filter": {"Start": start_time},
+                "Filter": {"Start": start_time, "End": end_time},
             }
         ],
     }
@@ -536,6 +535,7 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     last_fetch = last_run.get("last_fetch")
     next_token = last_run.get("next_token")
     fetched_ids = last_run.get("fetched_ids")
+    filters = json.loads(last_run.get("filters"))
 
     if not last_fetch:
         first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
@@ -543,21 +543,11 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
         last_fetch = lf.isoformat()  # type: ignore
         demisto.debug(f"[AWS_Security_Hub_V2] Fetch: no previous last_fetch; {first_fetch=} resolved to {last_fetch=}")
 
-    # end_time = datetime.now(UTC).isoformat()
-
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     demisto.debug(
         f"[AWS_Security_Hub_V2] Fetch: parsed state -> {last_fetch=}, {next_token=}, {max_fetch=}"
         f"min_severity={params.get('min_severity')}, fetch_filters={params.get('fetch_filters')}"
     )
-
-    filters = build_fetch_filters(
-        start_time=last_fetch,
-        # end_time=end_time,
-        min_severity=params.get("min_severity"),
-        additional_filters=params.get("fetch_filters"),
-    )
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
 
     if next_token:
         demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
@@ -576,6 +566,15 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     else:
         demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings created in {last_fetch}.")
         try:
+            end_time = datetime.now(UTC).isoformat()
+            filters = build_fetch_filters(
+                start_time=last_fetch,
+                end_time=end_time,
+                min_severity=params.get("min_severity"),
+                additional_filters=params.get("fetch_filters"),
+            )
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
+
             response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters)
             demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
         except client.exceptions.ClientError as e:
@@ -634,7 +633,7 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             if (finding.get("finding_info") or {}).get("created_time_dt") == first_created_time
         ]
 
-    new_last_run = {"last_fetch": last_fetch, "next_token": new_next_token, "fetched_ids": matching_uids}
+    new_last_run = {"last_fetch": last_fetch, "next_token": new_next_token, "fetched_ids": matching_uids, "filters": filters}
 
     demisto.debug(
         f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents, skipped {skipped_count}; "
