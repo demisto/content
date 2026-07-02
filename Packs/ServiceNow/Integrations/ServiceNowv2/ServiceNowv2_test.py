@@ -701,6 +701,132 @@ def test_get_entries_for_notes_with_comment(notes, params, expected):
 
 
 @pytest.mark.parametrize(
+    "notes, params, expected",
+    [
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {
+                "comment_tag_from_servicenow": "CommentFromServiceNow",
+                "comment_format": "html"
+            },
+            [
+                {
+                    "Type": 1,
+                    "Category": None,
+                    "Contents": "Type: comments<br>Created By: Test User<br>Created On: 2022-11-21 20:45:37<br><p>test</p>",
+                    "created": "2022-11-21 20:45:37",
+                    "ContentsFormat": "html",
+                    "Tags": ["CommentFromServiceNow"],
+                    "Note": True,
+                    "EntryContext": {"comments_and_work_notes": "[code]<p>test</p>[/code]"},
+                }
+            ],
+        )
+    ],
+)
+def test_get_entries_for_notes_with_comment_and_format(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
+
+
+@pytest.mark.parametrize(
+    "notes, params, expected_format, expected_value",
+    [
+        # comment_format="source" (explicit) -> use the note's own format, value unchanged.
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                    "format": "html",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "source"},
+            "html",
+            "[code]<p>test</p>[/code]",
+        ),
+        # comment_format="text" -> force the format, no [code] stripping.
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "text"},
+            "text",
+            "[code]<p>test</p>[/code]",
+        ),
+        # comment_format="html" but no [code] wrapper -> value left intact.
+        (
+            [
+                {
+                    "value": "<p>plain</p>",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "html"},
+            "html",
+            "<p>plain</p>",
+        ),
+        # No comment_format -> defaults to "source", uses the note's own format.
+        (
+            [
+                {
+                    "value": "Plain comment",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                    "format": "text",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow"},
+            "text",
+            "Plain comment",
+        ),
+    ],
+)
+def test_get_entries_for_notes_comment_format_variations(notes, params, expected_format, expected_value):
+    """
+    Given
+        - A list of notes and a comment_format param (source / text / html-without-code / absent)
+    When
+        - Calling get_entries_for_notes
+    Then
+        - The entry ContentsFormat and value reflect the comment_format handling:
+          'source' (or absent) uses the note's own format, non-html formats are passed through without
+          stripping, and 'html' only strips a [code]...[/code] wrapper when present.
+    """
+    result = get_entries_for_notes(notes, params)
+    assert len(result) == 1
+    assert result[0]["ContentsFormat"] == expected_format
+    assert result[0]["EntryContext"]["comments_and_work_notes"] == notes[0]["value"]
+    # "html" entries only carry "Contents" (no "HumanReadable"); other formats carry both.
+    assert result[0]["Contents"].endswith(expected_value)
+
+
+@pytest.mark.parametrize(
     "command, args, response, expected_result, expected_auto_extract",
     [
         (update_ticket_command, {"id": "1234", "impact": "2"}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
@@ -3775,6 +3901,56 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
+        # mark_attachments_as_note is not set -> the attachment entry must not be marked as a note.
+        assert "Note" not in result[1]
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_attachment_attachment_is_note(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+    """
+    Tests that new file attachments are fetched and formatted correctly.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+
+    new_mock_params = mock_params | {"mark_attachments_as_note": True}
+
+    attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = [attachment_entry]
+    mock_client.query.return_value = {"result": []}  # No new comments
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, new_mock_params)
+
+        # Assert
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Note"] == True
         assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
 
 
