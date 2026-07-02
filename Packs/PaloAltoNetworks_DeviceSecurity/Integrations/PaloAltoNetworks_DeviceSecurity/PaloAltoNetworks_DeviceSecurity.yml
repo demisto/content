@@ -9,15 +9,15 @@ configuration:
 - display: TSG ID
   name: tsg_id
   type: 0
-  required: false
+  required: true
 - display: Client ID
   name: client_id
   type: 4
-  required: false
+  required: true
 - display: Client Secret
   name: client_secret
   type: 4
-  required: false
+  required: true
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -60,6 +60,16 @@ configuration:
   type: 8
   required: false
   additionalinfo: When selected, the integration fetches Device Security vulnerabilities from the Device Security Security Portal.
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
 - section: Connect
   advanced: true
   display: The timeout for querying APIs
@@ -71,16 +81,6 @@ configuration:
   display: Incident type
   name: incidentType
   type: 13
-  required: false
-- section: Collect
-  display: Fetch incidents
-  name: isFetch
-  type: 8
-  required: false
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: '1'
-  type: 19
   required: false
 script:
   script: ''
