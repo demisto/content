@@ -58,6 +58,9 @@ configuration:
   defaultvalue: "100"
   type: 0
   required: false
+- name: isFetchEvents
+  required: false
+  type: 8
 description: A dummy Hello World v3 integration used to demonstrate building Cortex integrations.
 script:
   commands:
