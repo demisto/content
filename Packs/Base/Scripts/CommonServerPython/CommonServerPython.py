@@ -621,6 +621,9 @@ class CortexErrorCode(object):
     Used by :class:`CortexError` and its subclasses so that LLM agents can
     programmatically distinguish error categories and decide whether to retry,
     fix an argument, or escalate.
+
+    :return: None
+    :rtype: ``None``
     """
 
     # -- Argument Errors ----------------------------------------------
@@ -11835,6 +11838,9 @@ class CortexAuthError(CortexExternalApiError):
     ║ problems - invalid/expired credentials, API key, or token.           ║
     ║ Marked not-retryable (retrying as-is won't help).                    ║
     ╚══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.AUTH_ERROR
@@ -11886,6 +11892,9 @@ class CortexTimeoutError(CortexExternalApiError):
     ║ The request was sent but the external service did not respond within ║
     ║ the allotted time (read/connect timeout). Marked retryable-later.    ║
     ╚══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.TIMEOUT_ERROR
@@ -11907,6 +11916,9 @@ class CortexConnectionError(CortexExternalApiError):
     ║ DO NOT use for: a connection that succeeded but returned an error    ║
     ║ status - use CortexExternalApiError (or a more specific subclass).   ║
     ╚══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.CONNECTION_ERROR
@@ -11929,6 +11941,9 @@ class CortexParseError(CortexError):
     ║ DO NOT use for: invalid user input (CortexInvalidArgError) or a       ║
     ║ non-2xx API status (CortexExternalApiError).                          ║
     ╚═══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.API_RESPONSE_PARSE_ERROR
@@ -11946,6 +11961,9 @@ class CortexPermissionError(CortexError):
     ║ Marked not-retryable.                                                ║
     ║ DO NOT use for: failed authentication/credentials (CortexAuthError). ║
     ╚══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.PERMISSION_ERROR
@@ -11965,6 +11983,9 @@ class CortexExecutionError(CortexError):
     ║ DO NOT use for: input validation, external API failures, or parsing   ║
     ║ problems - prefer the dedicated subclasses for those.                 ║
     ╚═══════════════════════════════════════════════════════════════════════╝
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.EXECUTION_ERROR
