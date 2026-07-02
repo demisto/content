@@ -1,20 +1,30 @@
-import pytest
 import logging
 from datetime import datetime
-from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus, EntryType, CommandResults
+
+import pytest
+from CommonServerPython import (
+    CommandResults,
+    DemistoException,
+    EntryType,
+    IncidentSeverity,
+    IncidentStatus,
+)
 from CyberBlindspot import (
-    LOGGING_PREFIX,
-    CBS_INCOMING_DATE_FORMAT,
-    CBS_OUTGOING_DATE_FORMAT,
     ABSOLUTE_MAX_FETCH,
-    CBS_INCIDENT_FIELDS,
     CBS_CARD_FIELDS,
     CBS_CRED_FIELDS,
     CBS_DOMAIN_INFRINGE_FIELDS,
+    CBS_GS_FIELDS,
+    CBS_INCIDENT_FIELDS,
+    CBS_INCOMING_DATE_FORMAT,
     CBS_MALWARE_LOG_FIELDS,
+    CBS_MM_FIELDS,
+    CBS_OUTGOING_DATE_FORMAT,
+    CBS_SMF_FIELDS,
+    LOGGING_PREFIX,
 )
+from dateparser import parse
 
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
@@ -66,6 +76,24 @@ MODULES = [
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_MALWARE_LOG_FIELDS,
+    ),
+    (
+        "social_media_fraud",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_SMF_FIELDS,
+    ),
+    (
+        "money_mules",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_MM_FIELDS,
+    ),
+    (
+        "gambling_sites",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_GS_FIELDS,
     ),
 ]
 
@@ -315,6 +343,23 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
 
 
 @pytest.mark.parametrize(
+    "value,expected",
+    [
+        (1642607418000, 1642607418000),
+        ("1642607418000", 1642607418000),
+        ("2022-03-01T13:02:00", 1646139720000),
+        ("", ""),
+        (None, None),
+    ],
+)
+def test_normalize_timestamp(value, expected):
+    """ISO and numeric-string CBS timestamps must normalize to epoch milliseconds."""
+    from CyberBlindspot import normalize_timestamp
+
+    assert normalize_timestamp(value) == expected
+
+
+@pytest.mark.parametrize(
     "mock_input_file,mock_assert_file,mock_module",
     [
         ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json", MODULES[0][0]),
@@ -323,6 +368,9 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
         ("fetch_domains_response_valid.json", "domain_list_cmd_result_valid.json", MODULES[3][0]),
         ("fetch_subdomains_response_valid.json", "subdomain_list_cmd_result_valid.json", MODULES[4][0]),
         ("fetch_malware_logs_response_valid.json", "malware_logs_list_cmd_result_valid.json", MODULES[5][0]),
+        ("fetch_social_media_fraud_response_valid.json", "social_media_fraud_list_cmd_result_valid.json", MODULES[6][0]),
+        ("fetch_money_mules_response_valid.json", "money_mules_list_cmd_result_valid.json", MODULES[7][0]),
+        ("fetch_gambling_sites_response_valid.json", "gambling_sites_list_cmd_result_valid.json", MODULES[8][0]),
     ],
 )
 def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module):
@@ -338,11 +386,11 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
 
     mock_fetched_incident = load_mock_response(mock_input_file)[0]
     mock_assert = load_mock_response(mock_assert_file)[0]
-    del mock_assert["rawJson"]
+    mock_assert.pop("rawJson", None)
 
     with patch("CyberBlindspot.INSTANCE.module", new=mock_module):
         result = map_and_create_incident(mock_fetched_incident)
-        del result["rawJson"]
+        result.pop("rawJson", None)
         logging.debug(result)
         logging.debug(mock_assert)
         assert result == mock_assert
@@ -369,6 +417,15 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
         ("", ([], []), ([], []), MODULES[5][0]),
         ("fetch_malware_logs_response_valid.json", 2, ([], []), MODULES[5][0]),
         ("fetch_malware_logs_response_valid.json", -2, ([], []), MODULES[5][0]),
+        ("", ([], []), ([], []), MODULES[6][0]),
+        ("fetch_social_media_fraud_response_valid.json", 2, ([], []), MODULES[6][0]),
+        ("fetch_social_media_fraud_response_valid.json", -2, ([], []), MODULES[6][0]),
+        ("", ([], []), ([], []), MODULES[7][0]),
+        ("fetch_money_mules_response_valid.json", 2, ([], []), MODULES[7][0]),
+        ("fetch_money_mules_response_valid.json", -2, ([], []), MODULES[7][0]),
+        ("", ([], []), ([], []), MODULES[8][0]),
+        ("fetch_gambling_sites_response_valid.json", 2, ([], []), MODULES[8][0]),
+        ("fetch_gambling_sites_response_valid.json", -2, ([], []), MODULES[8][0]),
     ],
 )
 def test_deduplicate_and_create_incidents(
@@ -492,10 +549,6 @@ def test_test_configuration(mock_response, mock_client, mocker):
             DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
         ({"mirror_direction": "None", "api_key": {"password": ""}}, DemistoException('Invalid "API Key" Value')),
-        (
-            {"mirror_direction": "None", "api_key": {"password": "test"}, "module_to_use": ""},
-            DemistoException('Invalid "Module" Value'),
-        ),
     ],
 )
 def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
@@ -519,6 +572,66 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
     with pytest.raises(DemistoException) as e:
         test_module(mock_client, mock_params)
     assert str(e.value) == mock_side_effect.message
+
+
+def test_test_module_ok_when_module_to_use_missing(mock_client, mocker):
+    """Upgraded instances without module_to_use should still test and fetch as Incidents."""
+    from CyberBlindspot import test_module
+
+    mock_test = mocker.patch.object(mock_client, "test_configuration", return_value=[])
+    result = test_module(
+        mock_client,
+        {"mirror_direction": "None", "api_key": {"password": "test"}},
+    )
+    assert result == "ok"
+    assert mock_test.call_args[0][0]["module_type"] == "incidents"
+
+
+@pytest.mark.parametrize(
+    "module_to_use,expected",
+    [
+        (None, "incidents"),
+        ("", "incidents"),
+        ("Incidents", "incidents"),
+        ("Malware Logs", "malware_logs"),
+        ("Social Media Fraud", "social_media_fraud"),
+        ("Gambling Sites", "gambling_sites"),
+        ("Money Mules", "money_mules"),
+        ("legacy-unknown", "incidents"),
+    ],
+)
+def test_resolve_cbs_module_defaults_to_incidents(module_to_use, expected):
+    """Missing or blank module_to_use must keep pre-module-selector behavior (Incidents)."""
+    from CyberBlindspot import resolve_cbs_module
+
+    assert resolve_cbs_module(module_to_use) == expected
+
+
+@pytest.mark.parametrize(
+    "is_xsiam_platform, expected_severity",
+    [
+        (True, IncidentSeverity.MEDIUM),
+        (False, IncidentSeverity.MEDIUM),
+    ],
+)
+def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expected_severity, mocker):
+    """Incident fetch maps API severity to numeric Demisto severity on all platforms."""
+    from CyberBlindspot import map_and_create_incident
+
+    mocker.patch("CyberBlindspot.is_xsiam", return_value=is_xsiam_platform)
+    record = {
+        "remarks": "Test incident",
+        "first_seen": "05-07-2024 06:28:28",
+        "last_seen": "26-10-2024 12:15:24",
+        "status": "monitoring",
+        "severity": "medium",
+        "id": "CBS-1",
+        "timestamp": 1720161042000,
+        "external_link": "https://example.com",
+    }
+    result = map_and_create_incident(record)
+
+    assert result["severity"] == expected_severity
 
 
 @pytest.mark.parametrize(
@@ -663,6 +776,86 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                 }
             },
         ),
+        (
+            MODULES[6][0],
+            {
+                "CyberBlindspot Incident": {
+                    "platform": "Social network platform (e.g. Twitter).",
+                    "subject": "Subject URL or profile link.",
+                    "risk_score": "Numeric risk score from CBS.",
+                    "risks": "Risk indicators associated with the finding.",
+                    "incident_status": "Platform-specific incident status.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                }
+            },
+        ),
+        (
+            MODULES[7][0],
+            {
+                "CyberBlindspot Incident": {
+                    "money_mule_id": "CBS money mule finding ID.",
+                    "account_identifier": "Account identifier tied to the mule.",
+                    "suspect_names": "Names associated with the money mule.",
+                    "suspect_emails": "Email addresses associated with the money mule.",
+                    "suspect_phones": "Phone numbers associated with the money mule.",
+                    "transfer_amount": "Transfer amount when present.",
+                    "transfer_currency": "Currency code for the transfer.",
+                    "bank_account_holder_name": "Name on the bank account.",
+                    "bank_name": "Bank name tied to the mule.",
+                    "bank_account_country": "Country of the bank account.",
+                    "bic": "Bank Identifier Code.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                }
+            },
+        ),
+        (
+            MODULES[8][0],
+            {
+                "CyberBlindspot Incident": {
+                    "finding_id": "CBS gambling-site finding ID.",
+                    "url": "Primary gambling site URL.",
+                    "submitted_url": "URL submitted to CBS for scanning.",
+                    "landing_url": "Landing page URL observed for the site.",
+                    "title": "Page title observed during scan.",
+                    "resolving_ip": "Resolved IP for the site.",
+                    "tags": "Tags applied to the finding.",
+                    "status_code": "HTTP status code from scan.",
+                    "url_status": "URL reachability status.",
+                    "scan_status": "Scan completion status.",
+                    "enrichment": "DNS enrichment payload.",
+                    "external_links": "External links discovered.",
+                    "internal_links": "Internal links discovered.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                }
+            },
+        ),
     ],
 )
 def test_get_mapping_fields_command(mock_module, expected_mappings):
@@ -674,7 +867,7 @@ def test_get_mapping_fields_command(mock_module, expected_mappings):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned.
     """
-    from CyberBlindspot import get_mapping_fields_command, Instance
+    from CyberBlindspot import Instance, get_mapping_fields_command
 
     mock_instance = Instance(module=mock_module)
 
@@ -850,6 +1043,48 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
             MODULES[5][0],
             MODULES[5][1],
         ),
+        (
+            "fetch_social_media_fraud_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "social_media_fraud_list_cmd_result_valid.json",
+            MODULES[6][0],
+            MODULES[6][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[6][0],
+            MODULES[6][1],
+        ),
+        (
+            "fetch_money_mules_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "money_mules_list_cmd_result_valid.json",
+            MODULES[7][0],
+            MODULES[7][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[7][0],
+            MODULES[7][1],
+        ),
+        (
+            "fetch_gambling_sites_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "gambling_sites_list_cmd_result_valid.json",
+            MODULES[8][0],
+            MODULES[8][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[8][0],
+            MODULES[8][1],
+        ),
     ],
 )
 def test_ctm360_cbs_incident_list_command(
@@ -864,7 +1099,7 @@ def test_ctm360_cbs_incident_list_command(
     Then:
         - Fetch the list of incidents from the remote server.
     """
-    from CyberBlindspot import ctm360_cbs_list_command, Instance
+    from CyberBlindspot import Instance, ctm360_cbs_list_command
 
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
@@ -1078,6 +1313,42 @@ def test_ctm360_cbs_incident_list_command(
             {},
             MODULES[5],
         ),
+        (
+            "social_media_fraud_details_response_valid.json",
+            {"ticketId": "BI-A81ET1215"},
+            "social_media_fraud_details_response_valid.json",
+            MODULES[6],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[6],
+        ),
+        (
+            "money_mules_details_response_valid.json",
+            {"ticketId": "MM-C7FDB1092"},
+            "money_mules_details_response_valid.json",
+            MODULES[7],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[7],
+        ),
+        (
+            "gambling_sites_details_response_valid.json",
+            {"ticketId": "GS-162RTEE07"},
+            "gambling_sites_details_response_valid.json",
+            MODULES[8],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[8],
+        ),
     ],
 )
 def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock_asserts, mock_module, mock_client, mocker):
@@ -1089,13 +1360,17 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
     Then:
         - Ensure result is as expected.
     """
-    from CyberBlindspot import ctm360_cbs_details_command, Instance
+    from CyberBlindspot import Instance, ctm360_cbs_details_command, normalize_timestamp
 
     mock_instance = Instance(module=mock_module)
 
     with patch("CyberBlindspot.INSTANCE", new=mock_instance):
         patched_response = load_mock_response(response_file_name) if response_file_name else {}
         mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
+        if isinstance(mock_asserts, str):
+            mock_asserts = load_mock_response(mock_asserts)
+            if mock_asserts.get("timestamp", ""):
+                mock_asserts = {**mock_asserts, "timestamp": str(normalize_timestamp(mock_asserts["timestamp"]))}
         cmd_results = ctm360_cbs_details_command(mock_client, mock_args)
         assert cmd_results.to_context().get("Contents") == mock_asserts
 
@@ -1226,7 +1501,12 @@ def test_get_remote_data(mock_module, mock_response, mock_entry, mock_status, mo
         - Ensure result is as expected.
     """
     from copy import deepcopy
-    from CyberBlindspot import get_remote_data_command, map_and_create_incident, Instance
+
+    from CyberBlindspot import (
+        Instance,
+        get_remote_data_command,
+        map_and_create_incident,
+    )
 
     mock_args = {"id": "COMX165756654321", "lastUpdate": "2024-01-02T13:30:21.172707565Z"}
     mock_result = load_mock_response(mock_response)
