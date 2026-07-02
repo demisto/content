@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaistestmode",
+    "version": -1,
+    "name": "Vega Is Test Mode",
+    "ownerOnly": false,
+    "description": "Indicates whether this alert was generated in test/simulation mode.",
+    "cliName": "vegaistestmode",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
