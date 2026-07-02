@@ -4,7 +4,7 @@ commonfields:
 name: Palo Alto Networks Device Security
 display: Palo Alto Networks Device Security
 category: Network Security
-description: This is the Palo Alto Networks Device Security integration (previously Zingbox).
+description: Use the Palo Alto Networks Device Security integration to fetch alerts and vulnerabilities, retrieve device details, and resolve security incidents (previously Zingbox).
 configuration:
 - display: TSG ID
   name: tsg_id
@@ -12,7 +12,7 @@ configuration:
   required: true
 - display: Client ID
   name: client_id
-  type: 4
+  type: 0
   required: true
 - display: Client Secret
   name: client_secret
@@ -36,14 +36,14 @@ configuration:
   defaultvalue: 7 days
   type: 0
   required: false
-  additionalinfo: 'The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc.'
+  additionalinfo: 'The format must be <number> <time unit>, for example, 12 hours, 7 days, or 2 seconds.'
 - section: Collect
   display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '10'
   type: 0
   required: false
-  additionalinfo: Maximal number of events is 100
+  additionalinfo: The maximum number of events is 100.
 - section: Collect
   advanced: true
   display: Fetch Device Security Alerts
@@ -65,7 +65,8 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Incidents Fetch Interval
+- section: Collect
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
@@ -90,11 +91,11 @@ script:
     arguments:
     - name: id
       required: true
-      description: The device uid (mac address).
+      description: Retrieves the device UID (mac address).
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Device
-      description: Device details.
-      type: unknown
+      description: The device details.
+      type: Object
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.hostname
       description: The hostname of the device.
       type: String
@@ -123,7 +124,7 @@ script:
       description: The device VLAN ID.
       type: Number
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.site_name
-      description: The site which the device is in.
+      description: The name of the site where the device is located.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.risk_score
       description: The device risk score.
@@ -142,7 +143,7 @@ script:
       type: Number
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.deviceid
       description: The device ID.
-      type: Date
+      type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.location
       description: The device location.
       type: String
@@ -165,10 +166,10 @@ script:
       description: The device serial number.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.DHCP
-      description: 'Whether the device is in DHCP model: Valid values are Yes or No.'
+      description: Whether the device uses DHCP configuration. Can be "Yes" or "No".
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.wire_or_wireless
-      description: Is the device wired or wireless.
+      description: Whether the device is wired or wireless.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.department
       description: The device department.
@@ -193,23 +194,23 @@ script:
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.MAC
       description: The device MAC address.
-      type: Date
+      type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.display_tags
       description: The user tags of the device.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.mac_address
       description: The device MAC address.
       type: String
-    description: Device security get device command - get a single device's details.
+    description: Retrieves a single device's details using its MAC address.
   - name: device-security-get-device-by-ip
     arguments:
     - name: ip
       required: true
-      description: The device ip (ip address).
+      description: The device IP address.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Device
-      description: Device details.
-      type: unknown
+      description: The device details.
+      type: Object
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.hostname
       description: The hostname of the device.
       type: String
@@ -238,7 +239,7 @@ script:
       description: The device VLAN ID.
       type: Number
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.site_name
-      description: The site which the device is in.
+      description: The name of the site where the device is located.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.risk_score
       description: The device risk score.
@@ -257,7 +258,7 @@ script:
       type: Number
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.deviceid
       description: The device ID.
-      type: Date
+      type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.location
       description: The device location.
       type: String
@@ -280,10 +281,10 @@ script:
       description: The device serial number.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.DHCP
-      description: 'Whether the device is in DHCP model: Valid values are Yes or No.'
+      description: Whether the device uses DHCP configuration. Can be "Yes" or "No".
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.wire_or_wireless
-      description: Is the device wired or wireless.
+      description: Whether the device is wired or wireless.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.department
       description: The device department.
@@ -308,14 +309,14 @@ script:
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.MAC
       description: The device MAC address.
-      type: Date
+      type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.display_tags
       description: The user tags of the device.
       type: String
     - contextPath: PaloAltoNetworksDeviceSecurity.Device.mac_address
       description: The device MAC address.
       type: String
-    description: Device security get device command - get a single device's details.
+    description: Returns a single device's details using its IP address.
   - name: device-security-list-devices
     arguments:
     - name: offset
@@ -324,9 +325,9 @@ script:
       description: The maximum size of the list of the devices.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.DeviceList
-      description: List of devices.
-      type: unknown
-    description: Device security list devices command.
+      description: The list of devices.
+      type: List
+    description: Retrieves a list of devices.
   - name: device-security-list-alerts
     arguments:
     - name: start_time
@@ -337,22 +338,22 @@ script:
       description: The maximum size of the list of the alerts.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Alerts
-      description: List of alerts.
-      type: unknown
+      description: The list of alerts.
+      type: List
     description: Device security list alerts command.
   - name: device-security-list-vulns
     arguments:
     - name: start_time
-      description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
+      description: The start time in ISO 8601 UTC format, for example 2018-11-06T08:56:41Z.
     - name: offset
       description: The offset in the pagination.
     - name: limit
       description: The maximum size of the list of the vulnerabilities.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Vulns
-      description: List of vulnerabilities.
-      type: unknown
-    description: Device security list vulnerabilities command.
+      description: The list of vulnerabilities.
+      type: List
+    description: Retrieves a list of device security vulnerabilities.
   - name: device-security-resolve-alert
     arguments:
     - name: id
@@ -366,7 +367,7 @@ script:
       - No Action Needed
       - Issue Mitigated
       description: The alert resolution reason type (No Action Needed, Issue Mitigated).
-    description: Resolving a device security alert.
+    description: Resolves a device security alert.
   - name: device-security-resolve-vuln
     arguments:
     - name: id
@@ -377,7 +378,7 @@ script:
       description: The vulnerability full name.
     - name: reason
       description: The vulnerability resolution reason.
-    description: Resolving a device security vulnerability.
+    description: Resolves a device security vulnerability.
   isfetch: true
   runonce: false
   subtype: python3
