@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The timestamp of the last update to this incident in Vega.",
     "cliName": "vegalastupdated",
-    "type": "shortText",
+    "type": "date",
     "closeForm": false,
     "editForm": false,
     "required": false,

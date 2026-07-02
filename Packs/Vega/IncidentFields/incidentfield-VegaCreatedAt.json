@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The timestamp when this Vega alert or incident was created.",
     "cliName": "vegacreatedat",
-    "type": "shortText",
+    "type": "date",
     "closeForm": false,
     "editForm": false,
     "required": false,

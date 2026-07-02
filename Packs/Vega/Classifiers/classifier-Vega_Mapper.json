@@ -36,6 +36,9 @@
                 "Vega Created At": {
                     "simple": "createdAt"
                 },
+                "occurred": {
+                    "simple": "createdAt"
+                },
                 "Vega Detection Source": {
                     "simple": "detectionSource"
                 },
@@ -105,6 +108,9 @@
                     "simple": "createdBy"
                 },
                 "Vega Created At": {
+                    "simple": "createdAt"
+                },
+                "occurred": {
                     "simple": "createdAt"
                 },
                 "Vega Last Updated": {
