@@ -8258,10 +8258,10 @@ def _select_error_message(message, error):
     """Choose which message ``return_error`` should surface.
 
     Selection rules:
-      * **Agentix caller** → always use the automatic, unified message built
+      * **Agentix caller** -> always use the automatic, unified message built
         from the :class:`CortexError` (when one is available); otherwise fall
         back to the explicitly-passed ``message``.
-      * **Non-Agentix caller** → prefer the explicitly-passed ``message``; if
+      * **Non-Agentix caller** -> prefer the explicitly-passed ``message``; if
         none was provided, fall back to the automatic message.
 
     :type message: ``str``
@@ -8352,7 +8352,7 @@ def return_error(message, error='', outputs=None):
         # flag) inside ExtendedPayload so LLM agents can classify the failure
         # and decide whether to retry, without parsing the human-readable
         # Contents string.
-        # Priority for the CortexError source: error param → current exception.
+        # Priority for the CortexError source: error param -> current exception.
         _cortex_error = error if isinstance(error, CortexError) else None
         if _cortex_error is None:
             exc = sys.exc_info()[1]
@@ -11249,19 +11249,19 @@ class UcpException(DemistoException):
 #
 # Hierarchy:
 #   DemistoException
-#     └-- CortexError  (base – carries error_code + details)
-#           ├-- CortexMissingArgError
-#           ├-- CortexInvalidArgError
-#           ├-- CortexConflictingArgsError
-#           ├-- CortexResourceNotFoundError
-#           ├-- CortexExternalApiError
-#           │     ├-- CortexAuthError
-#           │     ├-- CortexRateLimitError
-#           │     ├-- CortexTimeoutError
-#           │     └-- CortexConnectionError
-#           ├-- CortexParseError
-#           ├-- CortexPermissionError
-#           └-- CortexExecutionError
+#     +-- CortexError  (base - carries error_code + details)
+#           +-- CortexMissingArgError
+#           +-- CortexInvalidArgError
+#           +-- CortexConflictingArgsError
+#           +-- CortexResourceNotFoundError
+#           +-- CortexExternalApiError
+#           |     +-- CortexAuthError
+#           |     +-- CortexRateLimitError
+#           |     +-- CortexTimeoutError
+#           |     +-- CortexConnectionError
+#           +-- CortexParseError
+#           +-- CortexPermissionError
+#           +-- CortexExecutionError
 
 
 class RetryGuidance(object):
@@ -11335,14 +11335,14 @@ class CortexError(DemistoException):
     ``retry_guidance`` and ``details`` that are attached to the error entry via
     ``ExtendedPayload`` for LLM agent consumption.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ Generic fallback for an error that fits none of the specific         ║
-    ║ subclasses below. PREFER a specific subclass whenever one applies -  ║
-    ║ it sets the correct error_code and retry_guidance automatically,     ║
-    ║ letting LLM agents (Agentix) classify the failure and decide whether ║
-    ║ to retry. Use the base class directly only as a last resort.         ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | Generic fallback for an error that fits none of the specific         |
+    | subclasses below. PREFER a specific subclass whenever one applies -  |
+    | it sets the correct error_code and retry_guidance automatically,     |
+    | letting LLM agents (Agentix) classify the failure and decide whether |
+    | to retry. Use the base class directly only as a last resort.         |
+    +======================================================================+
 
     :type override_message: ``str``
     :param override_message: An OPTIONAL, fully-custom message that REPLACES the
@@ -11451,13 +11451,13 @@ class CortexError(DemistoException):
 class CortexMissingArgError(CortexError):
     """Raised when a required argument (or one of several) is not provided.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ A mandatory command/script argument was not supplied at all (missing ║
-    ║ or empty). Also for "at least one of these arguments is required".   ║
-    ║ DO NOT use for an argument that WAS provided but holds a bad value - ║
-    ║ use CortexInvalidArgError instead.                                   ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | A mandatory command/script argument was not supplied at all (missing |
+    | or empty). Also for "at least one of these arguments is required".   |
+    | DO NOT use for an argument that WAS provided but holds a bad value - |
+    | use CortexInvalidArgError instead.                                   |
+    +======================================================================+
 
     Supports three shapes, selected automatically:
 
@@ -11533,15 +11533,15 @@ class CortexMissingArgError(CortexError):
 class CortexInvalidArgError(CortexError):
     """Raised when an argument has an invalid value.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ An argument WAS provided but its value is unacceptable - wrong       ║
-    ║ format, out of range, or not an allowed value (e.g. a non-numeric    ║
-    ║ "limit", an unknown enum option, a malformed date).                  ║
-    ║ DO NOT use for: a missing argument (CortexMissingArgError),          ║
-    ║ contradicting arguments (CortexConflictingArgsError), or a parsing   ║
-    ║ failure of API response data (CortexParseError).                     ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | An argument WAS provided but its value is unacceptable - wrong       |
+    | format, out of range, or not an allowed value (e.g. a non-numeric    |
+    | "limit", an unknown enum option, a malformed date).                  |
+    | DO NOT use for: a missing argument (CortexMissingArgError),          |
+    | contradicting arguments (CortexConflictingArgsError), or a parsing   |
+    | failure of API response data (CortexParseError).                     |
+    +======================================================================+
 
     :type arg_name: ``str``
     :param arg_name: Name of the invalid argument.
@@ -11594,22 +11594,22 @@ class CortexInvalidArgError(CortexError):
 class CortexConflictingArgsError(CortexError):
     """Raised when arguments contradict each other.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ Two or more individually-valid arguments cannot be used together     ║
-    ║ (mutually exclusive), or the combination is contradictory (e.g. both ║
-    ║ ip and hostname given when only one is allowed, or start_time later  ║
-    ║ than end_time).                                                      ║
-    ║ DO NOT use for: a single bad value (CortexInvalidArgError) or a      ║
-    ║ missing argument (CortexMissingArgError).                            ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | Two or more individually-valid arguments cannot be used together     |
+    | (mutually exclusive), or the combination is contradictory (e.g. both |
+    | ip and hostname given when only one is allowed, or start_time later  |
+    | than end_time).                                                      |
+    | DO NOT use for: a single bad value (CortexInvalidArgError) or a      |
+    | missing argument (CortexMissingArgError).                            |
+    +======================================================================+
 
     Builds a smart, actionable message that explains *which* arguments
     conflict, *why* they conflict, and *what* a valid combination looks like.
 
     There are two common conflict shapes, selected automatically:
 
-    * **Mutually exclusive** (``mutually_exclusive=True`` – the default when
+    * **Mutually exclusive** (``mutually_exclusive=True`` - the default when
       ``arguments`` are given): only one of the listed arguments may be
       provided at a time.  The message tells the user to pick exactly one.
     * **Free-form**: when ``reason`` / ``resolution`` are supplied (or a custom
@@ -11687,15 +11687,15 @@ class CortexConflictingArgsError(CortexError):
 class CortexResourceNotFoundError(CortexError):
     """Raised when a requested resource is not found.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ A specific entity the user asked for does not exist on the remote    ║
-    ║ system (e.g. an incident/ticket/endpoint/user ID returns 404 or an   ║
-    ║ empty result). The identifier was syntactically valid - it just has  ║
-    ║ no match.                                                            ║
-    ║ DO NOT use for: a malformed identifier value (CortexInvalidArgError) ║
-    ║ or a generic non-2xx API failure (CortexExternalApiError).           ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | A specific entity the user asked for does not exist on the remote    |
+    | system (e.g. an incident/ticket/endpoint/user ID returns 404 or an   |
+    | empty result). The identifier was syntactically valid - it just has  |
+    | no match.                                                            |
+    | DO NOT use for: a malformed identifier value (CortexInvalidArgError) |
+    | or a generic non-2xx API failure (CortexExternalApiError).           |
+    +======================================================================+
 
     :type resource_type: ``str``
     :param resource_type: Type of resource (e.g. "endpoint", "incident").
@@ -11731,25 +11731,25 @@ class CortexResourceNotFoundError(CortexError):
 class CortexExternalApiError(CortexError):
     """Raised when an external API returns an error.
 
-    ╔════════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                            ║
-    ║ A request to the third-party/external service failed with a non-2xx    ║
-    ║ HTTP status (or an equivalent transport error) and no more specific    ║
-    ║ subclass applies. Pass status_code so the error is auto-classified     ║
-    ║ (auth / quota / service) and retry guidance is set correctly.          ║
-    ║ PREFER a specific subclass when it fits: CortexAuthError (401/403),    ║
-    ║ CortexRateLimitError (429), CortexTimeoutError, CortexConnectionError. ║
-    ║ DO NOT use for: a valid response whose BODY cannot be parsed           ║
-    ║ (CortexParseError) or a 404 for a specific entity                      ║
-    ║ (CortexResourceNotFoundError).                                         ║
-    ╚════════════════════════════════════════════════════════════════════════╝
+    +========================================================================+
+    | WHEN TO USE                                                            |
+    | A request to the third-party/external service failed with a non-2xx    |
+    | HTTP status (or an equivalent transport error) and no more specific    |
+    | subclass applies. Pass status_code so the error is auto-classified     |
+    | (auth / quota / service) and retry guidance is set correctly.          |
+    | PREFER a specific subclass when it fits: CortexAuthError (401/403),    |
+    | CortexRateLimitError (429), CortexTimeoutError, CortexConnectionError. |
+    | DO NOT use for: a valid response whose BODY cannot be parsed           |
+    | (CortexParseError) or a 404 for a specific entity                      |
+    | (CortexResourceNotFoundError).                                         |
+    +========================================================================+
 
     Automatically classifies by HTTP status code when ``api_error_type``
     is not provided:
 
-    - 401/403 → ``AUTH_ERROR``
-    - 429 → ``QUOTA_ERROR``
-    - 5xx → ``SERVICE_ERROR``
+    - 401/403 -> ``AUTH_ERROR``
+    - 429 -> ``QUOTA_ERROR``
+    - 5xx -> ``SERVICE_ERROR``
 
     :type override_message: ``str``
     :param override_message: Optional custom message that overrides the
@@ -11832,12 +11832,12 @@ class CortexExternalApiError(CortexError):
 class CortexAuthError(CortexExternalApiError):
     """Raised when authentication fails (401/403).
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ The external service rejected the request due to authentication      ║
-    ║ problems - invalid/expired credentials, API key, or token.           ║
-    ║ Marked not-retryable (retrying as-is won't help).                    ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The external service rejected the request due to authentication      |
+    | problems - invalid/expired credentials, API key, or token.           |
+    | Marked not-retryable (retrying as-is won't help).                    |
+    +======================================================================+
 
     :return: None
     :rtype: ``None``
@@ -11854,12 +11854,12 @@ class CortexAuthError(CortexExternalApiError):
 class CortexRateLimitError(CortexExternalApiError):
     """Raised when API rate limit is exceeded (429).
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ The external service throttled the request (rate/quota limit).       ║
-    ║ Marked retryable-later; pass retry_after when the service indicates  ║
-    ║ how long to wait.                                                    ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The external service throttled the request (rate/quota limit).       |
+    | Marked retryable-later; pass retry_after when the service indicates  |
+    | how long to wait.                                                    |
+    +======================================================================+
 
     :type retry_after: ``int``
     :param retry_after: Seconds to wait before retrying, if known.
@@ -11887,11 +11887,11 @@ class CortexRateLimitError(CortexExternalApiError):
 class CortexTimeoutError(CortexExternalApiError):
     """Raised when an API request times out.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ The request was sent but the external service did not respond within ║
-    ║ the allotted time (read/connect timeout). Marked retryable-later.    ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The request was sent but the external service did not respond within |
+    | the allotted time (read/connect timeout). Marked retryable-later.    |
+    +======================================================================+
 
     :return: None
     :rtype: ``None``
@@ -11908,14 +11908,14 @@ class CortexTimeoutError(CortexExternalApiError):
 class CortexConnectionError(CortexExternalApiError):
     """Raised when unable to connect to the service.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ The connection to the external service could not be established at   ║
-    ║ all (DNS failure, connection refused/reset, network unreachable) -   ║
-    ║ i.e. there was no HTTP response. Marked retryable-later.             ║
-    ║ DO NOT use for: a connection that succeeded but returned an error    ║
-    ║ status - use CortexExternalApiError (or a more specific subclass).   ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The connection to the external service could not be established at   |
+    | all (DNS failure, connection refused/reset, network unreachable) -   |
+    | i.e. there was no HTTP response. Marked retryable-later.             |
+    | DO NOT use for: a connection that succeeded but returned an error    |
+    | status - use CortexExternalApiError (or a more specific subclass).   |
+    +======================================================================+
 
     :return: None
     :rtype: ``None``
@@ -11932,15 +11932,15 @@ class CortexConnectionError(CortexExternalApiError):
 class CortexParseError(CortexError):
     """Raised when data returned by the external API/service cannot be parsed.
 
-    ╔═══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                           ║
-    ║ A RESPONSE received from the external service could not be decoded or ║
-    ║ interpreted (invalid JSON/XML, unexpected schema, missing fields).    ║
-    ║ The call itself succeeded - the problem is the payload.               ║
-    ║ Marked not-retryable.                                                 ║
-    ║ DO NOT use for: invalid user input (CortexInvalidArgError) or a       ║
-    ║ non-2xx API status (CortexExternalApiError).                          ║
-    ╚═══════════════════════════════════════════════════════════════════════╝
+    +=======================================================================+
+    | WHEN TO USE                                                           |
+    | A RESPONSE received from the external service could not be decoded or |
+    | interpreted (invalid JSON/XML, unexpected schema, missing fields).    |
+    | The call itself succeeded - the problem is the payload.               |
+    | Marked not-retryable.                                                 |
+    | DO NOT use for: invalid user input (CortexInvalidArgError) or a       |
+    | non-2xx API status (CortexExternalApiError).                          |
+    +=======================================================================+
 
     :return: None
     :rtype: ``None``
@@ -11954,13 +11954,13 @@ class CortexParseError(CortexError):
 class CortexPermissionError(CortexError):
     """Raised when the user lacks required permissions.
 
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                          ║
-    ║ The action is understood and authenticated, but the user/account is  ║
-    ║ not authorized to perform it (authorization, not authentication).    ║
-    ║ Marked not-retryable.                                                ║
-    ║ DO NOT use for: failed authentication/credentials (CortexAuthError). ║
-    ╚══════════════════════════════════════════════════════════════════════╝
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The action is understood and authenticated, but the user/account is  |
+    | not authorized to perform it (authorization, not authentication).    |
+    | Marked not-retryable.                                                |
+    | DO NOT use for: failed authentication/credentials (CortexAuthError). |
+    +======================================================================+
 
     :return: None
     :rtype: ``None``
@@ -11974,15 +11974,15 @@ class CortexPermissionError(CortexError):
 class CortexExecutionError(CortexError):
     """Raised when a command or script execution fails.
 
-    ╔═══════════════════════════════════════════════════════════════════════╗
-    ║ WHEN TO USE                                                           ║
-    ║ A command/script failed during its own logic for a reason not covered ║
-    ║ by the other categories (e.g. a sub-command returned an error, a      ║
-    ║ business rule could not be satisfied, an internal step failed).       ║
-    ║ Retry guidance is left unset (retryability depends on the case).      ║
-    ║ DO NOT use for: input validation, external API failures, or parsing   ║
-    ║ problems - prefer the dedicated subclasses for those.                 ║
-    ╚═══════════════════════════════════════════════════════════════════════╝
+    +=======================================================================+
+    | WHEN TO USE                                                           |
+    | A command/script failed during its own logic for a reason not covered |
+    | by the other categories (e.g. a sub-command returned an error, a      |
+    | business rule could not be satisfied, an internal step failed).       |
+    | Retry guidance is left unset (retryability depends on the case).      |
+    | DO NOT use for: input validation, external API failures, or parsing   |
+    | problems - prefer the dedicated subclasses for those.                 |
+    +=======================================================================+
 
     :return: None
     :rtype: ``None``
