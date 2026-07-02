@@ -1,0 +1,57 @@
+{
+    "cve_id": "CVE-2024-1234",
+    "cyberint_score": 8.7,
+    "cvss": {
+        "cvss_v2": null,
+        "cvss_v3": {
+            "version": "3.1",
+            "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "base_score": 9.8,
+            "base_severity": "CRITICAL",
+            "impact_score": 5.9,
+            "exploitability_score": 3.9
+        },
+        "cvss_v4": {
+            "version": "4.0",
+            "breakdown": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N",
+            "base_score": 9.3
+        }
+    },
+    "epss": 0.974,
+    "description": "A remote code execution vulnerability in Example Server allows unauthenticated attackers to execute arbitrary commands.",
+    "last_updated": "2024-02-01T00:00:00Z",
+    "published": "2024-01-15T00:00:00Z",
+    "exploited_by": [
+        {
+            "name": "APT-Example",
+            "category": "nation-state",
+            "type": "threat_actor"
+        }
+    ],
+    "products": [
+        "Example Server 1.0"
+    ],
+    "impact": "Remote code execution",
+    "recommendation": "Apply the vendor security patch immediately.",
+    "risk_factors": [
+        "Active exploitation",
+        "Public PoC available"
+    ],
+    "cpes": [
+        {
+            "cpe": "cpe:2.3:a:example:server:1.0:*:*:*:*:*:*:*"
+        }
+    ],
+    "cwes": [
+        {
+            "cwe_id": "CWE-78",
+            "name": "Improper Neutralization of Special Elements used in an OS Command"
+        }
+    ],
+    "references": [
+        {
+            "hyperlink": "https://example.com/advisory",
+            "resource": "Vendor Advisory"
+        }
+    ]
+}

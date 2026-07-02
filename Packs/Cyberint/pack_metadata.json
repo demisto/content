@@ -2,7 +2,7 @@
     "name": "Cyberint",
     "description": "Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.",
     "support": "partner",
-    "currentVersion": "1.4.1",
+    "currentVersion": "1.5.0",
     "author": "Cyberint",
     "url": "https://cyberint.com",
     "email": "support@cyberint.com",
@@ -12,7 +12,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cyberint",
+        "Check Point"
+    ],
+    "githubUser": [
+        "klevitskiy"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
@@ -20,7 +26,8 @@
     ],
     "itemPrefix": [
         "Cyberint",
-        "CyberInt"
+        "CyberInt",
+        "Check Point"
     ],
     "supportedModules": [
         "agentix",
