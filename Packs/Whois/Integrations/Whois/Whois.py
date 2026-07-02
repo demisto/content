@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import re
 import socket
 import sys
+import time
 import socks
 import ipwhois
 from typing import Dict, List, Optional, Type
@@ -1879,6 +1880,7 @@ whois_exception_mapping: Dict[Type, str] = {
     socket.gaierror: "connection_error",
     WhoisInvalidDomain: "general_error",
     WhoisEmptyResponse: "service_error",
+    WhoisRateLimit: "quota_error",
     TypeError: "general_error",
     PywhoisError: "service_error",
 }
@@ -3437,8 +3439,19 @@ def domain_command(reliability: str) -> List[CommandResults]:
     domains = args.get("domain", [])
     is_recursive = argToBoolean(args.get("recursive", "false"))
     should_error = argToBoolean(demisto.params().get("with_error", False))
+    rate_limit_retry_count: int = (
+        RATE_LIMIT_RETRY_COUNT_DEFAULT
+        if is_time_sensitive()
+        else int(get_param_or_arg("rate_limit_retry_count", "rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    )
+    rate_limit_wait_seconds: int = int(
+        get_param_or_arg("rate_limit_wait_seconds", "rate_limit_wait_seconds") or RATE_LIMIT_WAIT_SECONDS_DEFAULT
+    )
+    rate_limit_errors_suppressed: bool = argToBoolean(
+        get_param_or_arg("rate_limit_errors_suppressed", "rate_limit_errors_suppressed") or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
+    )
 
-    demisto.info(f"whois command is called with the query '{domains}'")
+    demisto.info(f"domain command is called with the query '{domains}'")
 
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
@@ -3446,7 +3459,34 @@ def domain_command(reliability: str) -> List[CommandResults]:
         demisto.debug(f"Getting domain for a single {domain=}")
 
         try:
-            whois_result = get_whois(domain, is_recursive=is_recursive)
+            whois_result = None
+            for attempt in range(rate_limit_retry_count + 1):
+                try:
+                    whois_result = get_whois(domain, is_recursive=is_recursive)
+                    break
+                except WhoisRateLimit as e:
+                    if attempt < rate_limit_retry_count:
+                        demisto.debug(
+                            f"Rate limit hit for domain '{domain}' on attempt {attempt + 1}/{rate_limit_retry_count + 1}. "
+                            f"Waiting {rate_limit_wait_seconds}s before retrying..."
+                        )
+                        time.sleep(rate_limit_wait_seconds)
+                    else:
+                        if rate_limit_errors_suppressed:
+                            demisto.debug(f"Suppressed WhoisRateLimit error for domain '{domain}': {e}")
+                        else:
+                            raise
+
+            if whois_result is None:
+                demisto.debug(f"No result returned for domain '{domain}' after rate limit retries — skipping.")
+                results.append(
+                    CommandResults(
+                        readable_output=f"No results returned for domain {domain} (rate limit suppressed).",
+                        entry_type=EntryType.WARNING,
+                    )
+                )
+                continue
+
             demisto.debug(f"Got domain for a single {domain=}")
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
@@ -3467,7 +3507,8 @@ def domain_command(reliability: str) -> List[CommandResults]:
         except (
             PywhoisError,
             WhoisEmptyResponse,
-        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes"
+            WhoisRateLimit,
+        ) as e:  # "DOMAIN NOT FOUND", "Invalid Domain Format", "Network Issues", "WHOIS Server Changes", "Rate Limit"
             demisto.debug(f"WHOIS lookup failed for {domain}: {e}")
 
             execution_metrics = increment_metric(

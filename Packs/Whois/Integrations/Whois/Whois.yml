@@ -701,6 +701,15 @@ script:
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
+    - description: 'The number of times to try when getting a Rate Limit response.'
+      defaultValue: 0
+      name: rate_limit_retry_count
+    - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
+      defaultValue: 120
+      name: rate_limit_wait_seconds
+    - description: 'Whether Rate Limit errors should be suppressed or not.'
+      defaultValue: 'false'
+      name: rate_limit_errors_suppressed
     description: Provides data enrichment for domains.
     name: domain
     outputs:

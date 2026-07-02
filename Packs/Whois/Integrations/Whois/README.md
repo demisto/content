@@ -368,6 +368,9 @@ Provides data enrichment for domains.
 | --- | --- | --- |
 | domain | The domain to enrich. | Required |
 | recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional |
+| rate_limit_retry_count | The number of times to try when getting a Rate Limit response. Default is 0 (no retries). | Optional |
+| rate_limit_wait_seconds | The number of seconds to wait each iteration when getting a Rate Limit response. Default is 120. | Optional |
+| rate_limit_errors_suppressed | Whether Rate Limit errors should be suppressed or not. Default is false. | Optional |
 
 #### Context Output
 
