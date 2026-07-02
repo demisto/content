@@ -59,6 +59,7 @@ The integration supports automatic incident fetching with **no-duplicate guarant
 - Auto-maps to custom incident types: `Brandefense Incident` and `Brandefense Intelligence`
 
 ### Configuration
+
 1. Enable **Fetch incidents** in the integration settings
 2. Set the **Fetch Interval** (default: 30 minutes)
 3. Configure **First time fetching** for initial backfill (default: 3 days)

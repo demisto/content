@@ -4,8 +4,7 @@ commonfields:
 name: BrandefenseDRPS
 display: Brandefense Digital Risk Protection Services
 category: Data Enrichment & Threat Intelligence
-description: 'Brandefense is a Cyber Intelligence Platform that responds directly
-  and effectively to today''s complex cyber threats.'
+description: 'Brandefense is a Cyber Intelligence Platform that responds directly and effectively to today''s complex cyber threats.'
 detaileddescription: |-
   Brandefense is a leading SaaS platform that offers innovative Digital Risk Protection Services (DRPS), External Attack Surface Management (EASM), and Actionable Threat Intelligence solutions. Our AI-driven technology helps organizations to significantly enhance their security posture and decrease response time to breaches.
 
@@ -72,8 +71,7 @@ configuration:
   - INTELLIGENCE_SUPPORT
   - INVESTIGATION
   - THIRD_PARTY_RISK_MANAGEMENT
-  additionalinfo: This parameter will request and show the incident's related module
-    category.
+  additionalinfo: This parameter will request and show the incident's related module category.
 - display: Incident Module
   name: IncidentModule
   type: 16
@@ -127,8 +125,7 @@ configuration:
   defaultvalue: CVE
   type: 0
   required: false
-  additionalinfo: This parameter allows you to filter intelligence values with keyword
-    search.
+  additionalinfo: This parameter allows you to filter intelligence values with keyword search.
 - display: Fetching Issue Types
   name: FetchingIssueTypes
   defaultvalue: Incident,Intelligence
@@ -227,8 +224,7 @@ configuration:
   - Private IP Address Exposure
   - Management Port Detection
   - Hacker Search Engine Monitoring Detection
-  additionalinfo: This parameter will request and show the incident's related template.
-    Don't select any to get all alerts.
+  additionalinfo: This parameter will request and show the incident's related template. Don't select any to get all alerts.
 script:
   script: '-'
   type: python
@@ -236,8 +232,8 @@ script:
   dockerimage: demisto/python3:3.11.10.111039
   isfetch: true
   runonce: false
-  isremotesyncin: true
-  isremotesyncout: true
+  isremotesyncin: false
+  isremotesyncout: false
   commands:
   - name: ip
     arguments:
@@ -1165,6 +1161,6 @@ script:
       description: Organization name associated with the incident.
       type: String
     description: "Get indicators from Brandefense. Retrieves Consolidated Data and Incident indicators by type and organization with optional date range and status filters."
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests

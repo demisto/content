@@ -5,9 +5,6 @@
     "name": "Brandefense Incident",
     "prevName": "Brandefense Incident",
     "color": "#6E3F9E",
-    "spiMetaData": null,
-    "preProcessing": [],
-    "closureScript": "",
     "default": false,
     "autorun": true,
     "disabled": false,
@@ -19,7 +16,6 @@
     "daysR": 0,
     "weeksR": 0,
     "hours": 0,
-    "playbookId": "",
-    "fromVersion": "6.5.0",
+    "fromVersion": "6.10.0",
     "layout": "Brandefense Incident Layout"
 }

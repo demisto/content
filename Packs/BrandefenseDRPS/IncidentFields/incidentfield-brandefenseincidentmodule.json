@@ -12,5 +12,7 @@
     "associatedTypes": [
         "Brandefense Incident"
     ],
-    "fromVersion": "6.5.0"
+    "unsearchable": true,
+    "fromVersion": "6.10.0",
+    "required": false
 }

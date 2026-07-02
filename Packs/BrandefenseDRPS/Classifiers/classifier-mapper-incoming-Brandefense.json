@@ -1,13 +1,11 @@
 {
     "id": "Brandefense - Incoming Mapper",
     "version": -1,
-    "modified": "2026-02-21T00:00:00Z",
     "name": "Brandefense - Incoming Mapper",
     "description": "Maps Brandefense API fields to Cortex XSOAR incident fields for both Incidents and Intelligence reports.",
-    "brandName": "BrandefenseDRPS",
     "type": "mapping-incoming",
     "feed": false,
-    "fromVersion": "6.5.0",
+    "fromVersion": "6.10.0",
     "defaultIncidentType": "Brandefense Incident",
     "mapping": {
         "Brandefense Incident": {
@@ -24,50 +22,6 @@
                 "Details": {
                     "simple": "description",
                     "complex": null
-                },
-                "Source Brand": {
-                    "simple": "",
-                    "complex": {
-                        "root": "",
-                        "filters": [],
-                        "accessor": "",
-                        "transformers": [
-                            {
-                                "operator": "SetIfEmpty",
-                                "args": {
-                                    "applyIfEmpty": {},
-                                    "defaultValue": {
-                                        "value": {
-                                            "simple": "Brandefense"
-                                        },
-                                        "isContext": false
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                "Source Instance": {
-                    "simple": "",
-                    "complex": {
-                        "root": "",
-                        "filters": [],
-                        "accessor": "",
-                        "transformers": [
-                            {
-                                "operator": "SetIfEmpty",
-                                "args": {
-                                    "applyIfEmpty": {},
-                                    "defaultValue": {
-                                        "value": {
-                                            "simple": "Brandefense"
-                                        },
-                                        "isContext": false
-                                    }
-                                }
-                            }
-                        ]
-                    }
                 },
                 "Brandefense Incident Code": {
                     "simple": "code",
@@ -101,11 +55,11 @@
                     "simple": "network_type",
                     "complex": null
                 },
-                "Brandefense Incident Created At": {
+                "occurred": {
                     "simple": "created_at",
                     "complex": null
                 },
-                "Brandefense Reference URL": {
+                "Alert URL": {
                     "simple": "reference_url",
                     "complex": null
                 },
@@ -113,12 +67,8 @@
                     "simple": "indicators",
                     "complex": null
                 },
-                "MITRE Tactics": {
+                "MITRE Tactic ID": {
                     "simple": "mitre_tactics",
-                    "complex": null
-                },
-                "dbotMirrorId": {
-                    "simple": "code",
                     "complex": null
                 }
             }
@@ -138,50 +88,6 @@
                     "simple": "description",
                     "complex": null
                 },
-                "Source Brand": {
-                    "simple": "",
-                    "complex": {
-                        "root": "",
-                        "filters": [],
-                        "accessor": "",
-                        "transformers": [
-                            {
-                                "operator": "SetIfEmpty",
-                                "args": {
-                                    "applyIfEmpty": {},
-                                    "defaultValue": {
-                                        "value": {
-                                            "simple": "Brandefense"
-                                        },
-                                        "isContext": false
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                "Source Instance": {
-                    "simple": "",
-                    "complex": {
-                        "root": "",
-                        "filters": [],
-                        "accessor": "",
-                        "transformers": [
-                            {
-                                "operator": "SetIfEmpty",
-                                "args": {
-                                    "applyIfEmpty": {},
-                                    "defaultValue": {
-                                        "value": {
-                                            "simple": "Brandefense"
-                                        },
-                                        "isContext": false
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
                 "Brandefense Intelligence Code": {
                     "simple": "code",
                     "complex": null
@@ -194,20 +100,16 @@
                     "simple": "tags",
                     "complex": null
                 },
-                "Brandefense Intelligence Created At": {
+                "occurred": {
                     "simple": "created_at",
                     "complex": null
                 },
-                "Brandefense Reference URL": {
+                "Alert URL": {
                     "simple": "reference_url",
                     "complex": null
                 },
                 "Brandefense Indicators": {
                     "simple": "indicators",
-                    "complex": null
-                },
-                "dbotMirrorId": {
-                    "simple": "code",
                     "complex": null
                 }
             }

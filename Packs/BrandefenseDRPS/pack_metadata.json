@@ -8,7 +8,7 @@
     "url": "https://www.brandefense.io",
     "email": "support@brandefense.io",
     "created": "2026-02-21T00:00:00Z",
-    "serverMinVersion": "6.5.0",
+    "serverMinVersion": "6.10.0",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
