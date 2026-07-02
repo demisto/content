@@ -3950,7 +3950,7 @@ def test_get_remote_data_with_new_attachment_attachment_is_note(mock_is_new_inci
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[1]["File"] == "evidence.txt"
-        assert result[1]["Note"] == True
+        assert result[1]["Note"] is True
         assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
 
 
