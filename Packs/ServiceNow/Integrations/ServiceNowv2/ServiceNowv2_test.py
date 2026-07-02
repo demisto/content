@@ -712,10 +712,7 @@ def test_get_entries_for_notes_with_comment(notes, params, expected):
                     "element": "comments",
                 }
             ],
-            {
-                "comment_tag_from_servicenow": "CommentFromServiceNow",
-                "comment_format": "html"
-            },
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "html"},
             [
                 {
                     "Type": 1,
@@ -3907,7 +3904,9 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
 
 
 @patch("ServiceNowv2.is_new_incident", return_value=False)
-def test_get_remote_data_with_new_attachment_attachment_is_note(mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params) -> None:
+def test_get_remote_data_with_new_attachment_attachment_is_note(
+    mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params
+) -> None:
     """
     Tests that new file attachments are fetched and formatted correctly.
 

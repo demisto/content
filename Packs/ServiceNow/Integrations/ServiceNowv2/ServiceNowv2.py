@@ -1930,7 +1930,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                 if comment_format == "html" and isinstance(rendered_value, str):
                     stripped = rendered_value.strip()
                     if stripped.startswith("[code]") and stripped.endswith("[/code]"):
-                        rendered_value = stripped[len("[code]"):-len("[/code]")]
+                        rendered_value = stripped[len("[code]") : -len("[/code]")]
                 entry_format = comment_format
             else:
                 entry_format = note.get("format")
