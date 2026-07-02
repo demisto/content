@@ -1,8 +1,7 @@
 name: GoogleDriveStandardConnector
 category: IT Services
 provider: Google
-deprecated: true
-display: Google Drive (Standard Connector) (Deprecated)
+display: Google Drive (Standard Connector)
 sectionorder:
 - Connect
 - Collect
@@ -105,7 +104,7 @@ configuration:
   advanced: true
   additionalinfo:
   required: false
-description: Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
+description: 'This integration is configured automatically as part of the Google Drive Standard Connector. Do not configure this integration directly — set it up from the connector page instead.'
 script:
   commands:
   - arguments:

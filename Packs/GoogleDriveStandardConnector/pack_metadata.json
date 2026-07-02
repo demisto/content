@@ -1,6 +1,6 @@
 {
     "name": "Google Drive (Standard Connector)",
-    "description": "Hidden satellite pack of Google Drive used for the Standard Connector deployment. Shares core logic with the Google Drive pack via the GoogleDriveApiModule.",
+    "description": "Satellite pack of Google Drive used for the Standard Connector deployment. Shares core logic with the Google Drive pack via the GoogleDriveApiModule.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -21,5 +21,5 @@
         "agentix",
         "xsiam"
     ],
-    "hidden": true
+    "hidden": false
 }

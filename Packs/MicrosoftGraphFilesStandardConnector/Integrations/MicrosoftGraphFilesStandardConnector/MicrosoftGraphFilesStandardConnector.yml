@@ -109,9 +109,8 @@ configuration:
   type: 8
   required: false
   section: Connect
-deprecated: true
-description: 'Deprecated.'
-display: O365 File Management (Onedrive/Sharepoint/Teams) (Standard Connector) (Deprecated)
+description: 'This integration is configured automatically as part of the O365 File Management (Onedrive/Sharepoint/Teams) Standard Connector. Do not configure this integration directly — set it up from the connector page instead.'
+display: O365 File Management (Onedrive/Sharepoint/Teams) (Standard Connector)
 name: MicrosoftGraphFilesStandardConnector
 script:
   commands:
