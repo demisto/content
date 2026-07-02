@@ -38,7 +38,7 @@ def test_fetch_incidents_passes_limit_key_to_snowflake_query(mocker):
     - Ensure the args dict passed to snowflake_query contains the key "limit" (not "rows")
       with the configured MAX_ROWS value
     """
-    mocker.patch.object(demisto, "params", return_value={"limit": "1000"})
+    mocker.patch.object(demisto, "params", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "incidents")
@@ -74,6 +74,9 @@ def test_snowflake_query_uses_provided_limit(mocker):
     """
     mocker.patch.object(demisto, "params", return_value={})
 
+    import Packs.Snowflake.Integrations.Snowflake.Snowflake as snowflake_module
+
+    mocker.patch.object(snowflake_module, "MAX_ROWS", 10000)
     from Packs.Snowflake.Integrations.Snowflake.Snowflake import snowflake_query
 
     mock_cursor = mocker.MagicMock()
@@ -106,6 +109,9 @@ def test_snowflake_query_defaults_to_100_when_no_limit(mocker):
     """
     mocker.patch.object(demisto, "params", return_value={})
 
+    import Packs.Snowflake.Integrations.Snowflake.Snowflake as snowflake_module
+
+    mocker.patch.object(snowflake_module, "MAX_ROWS", 10000)
     from Packs.Snowflake.Integrations.Snowflake.Snowflake import snowflake_query
 
     mock_cursor = mocker.MagicMock()
