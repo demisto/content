@@ -5920,6 +5920,11 @@
         {
             "playbookID": "CVEEnrichment-Test",
             "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
+        },
+        {
+            "integrations": "Palo Alto Networks Device Security",
+            "playbookID": "PaloAltoNetworks_DeviceSecurity-Test",
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
