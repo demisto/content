@@ -860,7 +860,7 @@ script:
     description: The command deletes a ruleset by ID.
     name: cloudflare-waf-ruleset-delete
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10404775
   runonce: false
   script: '-'
   subtype: python3
