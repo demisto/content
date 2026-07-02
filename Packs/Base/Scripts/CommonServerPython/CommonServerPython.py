@@ -11276,6 +11276,9 @@ class RetryGuidance(object):
     * :data:`RETRY_LATER` - the same request may succeed if retried later,
       typically after a short wait (e.g. rate limiting, timeouts, transient
       connection issues).
+
+    :return: None
+    :rtype: ``None``
     """
 
     NOT_RETRYABLE = "not_retryable"
@@ -11292,13 +11295,27 @@ class RetryGuidance(object):
     @classmethod
     def hint(cls, guidance):
         # type: (str) -> str
-        """Return the human-readable retry hint for a guidance value."""
+        """Return the human-readable retry hint for a guidance value.
+
+        :type guidance: ``str``
+        :param guidance: A :class:`RetryGuidance` value.
+
+        :return: The human-readable retry hint, or an empty string if unknown.
+        :rtype: ``str``
+        """
         return cls._HINTS.get(guidance, "")
 
     @classmethod
     def is_retryable(cls, guidance):
         # type: (str) -> bool
-        """Return whether the given guidance value indicates a retry may help."""
+        """Return whether the given guidance value indicates a retry may help.
+
+        :type guidance: ``str``
+        :param guidance: A :class:`RetryGuidance` value.
+
+        :return: ``True`` if a retry may help, ``False`` otherwise.
+        :rtype: ``bool``
+        """
         return guidance in (cls.RETRY_AFTER_FIX, cls.RETRY_LATER)
 
 
