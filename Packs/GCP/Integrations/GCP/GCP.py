@@ -2962,6 +2962,9 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
+    test_arg = args.get("test_arg")
+    if test_arg:
+        demisto.info(f"In a test {test_arg=}")
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {

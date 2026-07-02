@@ -8923,6 +8923,9 @@ def main():  # pragma: no cover
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
     handle_proxy()
+    test_arg = args.get("test_arg")
+    if test_arg:
+        demisto.info(f"In a test {test_arg=}")
 
     try:
         if command == "test-module":

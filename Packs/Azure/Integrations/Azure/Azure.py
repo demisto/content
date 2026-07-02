@@ -5495,6 +5495,9 @@ def main():  # pragma: no cover
     connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
     handle_proxy()
+    test_arg = args.get("test_arg")
+    if test_arg:
+        demisto.info(f"In a test {test_arg=}")
     try:
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,

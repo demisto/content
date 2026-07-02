@@ -254,6 +254,9 @@ script:
       required: false
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string."
+    - name: test_arg
+      description: a test arg
+      required: true
     outputs:
     - contextPath: GCP.Compute.Firewall.id
       description: Unique identifier for the firewall rule.

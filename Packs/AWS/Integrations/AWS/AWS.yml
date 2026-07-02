@@ -5580,6 +5580,9 @@ script:
       description: "Maximum number of instances to return in a single request. You cannot specify this parameter and the instance IDs parameter in the same request."
       required: false
       defaultValue: 50
+    - name: test_arg
+      description: a test arg
+      required: true
     outputs:
     - contextPath: AWS.EC2.InstancesNextToken
       description: Token to use for pagination in subsequent requests.
