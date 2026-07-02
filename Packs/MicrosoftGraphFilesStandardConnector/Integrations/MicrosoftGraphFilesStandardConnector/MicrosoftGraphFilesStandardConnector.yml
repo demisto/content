@@ -5,6 +5,7 @@ sectionorder:
 commonfields:
   id: MicrosoftGraphFilesStandardConnector
   version: -1
+deprecated: true
 configuration:
 - defaultvalue: https://graph.microsoft.com
   display: Server URL
