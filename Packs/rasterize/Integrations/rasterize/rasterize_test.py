@@ -1676,3 +1676,63 @@ def test_rasterize_extract_command_string_error(mocker):
     assert len(results) == 1
     assert results[0].entry_type == EntryType.ERROR
     assert "Error rasterizing" in results[0].readable_output
+
+
+def test_rasterize_extract_command_extraction_error_includes_guidance(mocker):
+    """
+    Given: A URL that fails extraction with an "Extraction Error:" result
+    When: Calling rasterize_extract_command
+    Then: The error output includes actionable guidance (slow/anti-bot, retry with higher
+          max_page_load_time) so the caller/agent can act instead of retrying blindly
+    """
+    from rasterize import rasterize_extract_command
+
+    mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker.patch("rasterize.perform_rasterize", return_value=[("Extraction Error: timeout", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize.return_results")
+
+    rasterize_extract_command()
+
+    output = mock_return_results.call_args[0][0][0].readable_output
+    assert "page-load timeout" in output
+    assert "anti-bot" in output
+    assert "max_page_load_time" in output
+
+
+def test_rasterize_extract_command_passes_navigation_timeout_unchanged(mocker):
+    """
+    Given: An explicit max_page_load_time
+    When: Calling rasterize_extract_command
+    Then: The navigation_timeout passed to perform_rasterize is the caller's value, unchanged
+          (the navigation budget is never shortened - slow pages still get their full time)
+    """
+    from rasterize import rasterize_extract_command
+
+    mock_args = {"url": "https://example.com", "max_page_load_time": "250"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mock_perform = mocker.patch("rasterize.perform_rasterize", return_value=[("# Content", "https://example.com")])
+    mocker.patch("rasterize.return_results")
+
+    rasterize_extract_command()
+
+    assert mock_perform.call_args.kwargs["navigation_timeout"] == 250
+
+
+def test_extract_content_from_tab_uses_navigation_timeout(mocker):
+    """
+    Given: A navigation_timeout value
+    When: Calling extract_content_from_tab
+    Then: The extraction JS timeout is the same navigation_timeout (original behavior - the total
+          per-URL budget is controlled via the action's max_page_load_time, not hardcoded here)
+    """
+    from rasterize import extract_content_from_tab
+
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "https://example.com"}}}
+    mock_tab.Runtime.evaluate.return_value = {"result": {"value": {"type": "html", "content": "# ok"}}}
+
+    extract_content_from_tab(mock_tab, 145)
+
+    assert mock_tab.Runtime.evaluate.call_args.kwargs["_timeout"] == 145

@@ -4997,7 +4997,7 @@ def postprocess_case_resolution_statuses(client, response: dict):
     categories = ["done", "inProgress", "pending", "recommended"]
 
     for category in categories:
-        tasks = response.get(category, {}).get("caseTasks", [])
+        tasks = (response.get(category) or {}).get("caseTasks", [])
         for task in tasks:
             # Add category field to identify which list this came from
             task["category"] = category
@@ -5009,8 +5009,11 @@ def postprocess_case_resolution_statuses(client, response: dict):
             if category in ["done", "inProgress"]:
                 enhance_with_pb_details(pb_id_to_data, task)
             elif category == "pending":
-                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
-                task["parentPlaybook"] = task.pop("parentdetails")
+                # A pending task's parent playbook may not be resolved yet, so parentdetails
+                # can be null (seen in prod). Only enhance when it's an actual dict.
+                if parent_details := task.get("parentdetails"):
+                    enhance_with_pb_details(pb_id_to_data, parent_details)
+                task["parentPlaybook"] = task.pop("parentdetails", None)
 
             all_items.append(task)
 

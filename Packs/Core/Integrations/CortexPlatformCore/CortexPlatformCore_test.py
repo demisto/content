@@ -10428,6 +10428,42 @@ def test_postprocess_case_resolution_statuses(mocker):
     assert "name" not in recommended_task  # pb4 not in metadata
 
 
+def test_postprocess_case_resolution_statuses_null_values(mocker):
+    """
+    GIVEN:
+        - A response where a category key is present but null (case has no resolution plan yet),
+          and a pending task whose 'parentdetails' is null.
+    WHEN:
+        - postprocess_case_resolution_statuses is called.
+    THEN:
+        - It does not raise "'NoneType' object has no attribute 'get'" (CRTX-255388) and
+          gracefully skips/handles the null values.
+    """
+    from CortexPlatformCore import postprocess_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Enhanced PB 1", "comment": "Enhanced Comment 1"},
+    ]
+
+    response = {
+        "done": None,  # key present but null - previously crashed on None.get("caseTasks")
+        "inProgress": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "pending": {"caseTasks": [{"id": "task2", "parentdetails": None}]},  # null parentdetails
+        "recommended": None,
+    }
+
+    result = postprocess_case_resolution_statuses(mock_client, response)
+
+    # Only the inProgress and pending tasks survive; no exception raised.
+    assert len(result) == 2
+    in_progress_task = next(item for item in result if item["category"] == "inProgress")
+    assert in_progress_task["name"] == "Enhanced PB 1"
+    pending_task = next(item for item in result if item["category"] == "pending")
+    assert pending_task["itemType"] == "playbookTask"
+    assert pending_task["parentPlaybook"] is None
+
+
 def test_get_case_resolution_statuses_command(mocker):
     """
     GIVEN:
