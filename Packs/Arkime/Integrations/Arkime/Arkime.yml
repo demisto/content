@@ -6,6 +6,7 @@ display: Arkime
 category: Utilities
 provider: Open Source
 fromversion: 6.2.0
+
 description: Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
 configuration:
 - name: url
