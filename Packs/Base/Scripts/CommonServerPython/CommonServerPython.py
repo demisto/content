@@ -11358,6 +11358,9 @@ class CortexError(DemistoException):
 
     :type details: ``dict``
     :param details: Arbitrary key/value pairs providing context about the error.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.INTERNAL_ERROR  # type: str
@@ -11485,6 +11488,9 @@ class CortexMissingArgError(CortexError):
     :param require_one: When a list of names is provided, whether only *one* of
         them is required (``True``, default) or *all* of them (``False``).
         Ignored when a single argument name is provided.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.MISSING_ARGUMENT
@@ -11549,6 +11555,9 @@ class CortexInvalidArgError(CortexError):
     :type override_message: ``str``
     :param override_message: Optional custom message that overrides the
         auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.INVALID_ARGUMENT
@@ -11622,6 +11631,9 @@ class CortexConflictingArgsError(CortexError):
     :type mutually_exclusive: ``bool``
     :param mutually_exclusive: Whether the listed arguments are mutually
         exclusive. Defaults to ``True`` when ``arguments`` are provided.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.CONFLICTING_ARGUMENTS
@@ -11691,6 +11703,9 @@ class CortexResourceNotFoundError(CortexError):
     :type override_message: ``str``
     :param override_message: Optional custom message that overrides the
         auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.RESOURCE_NOT_FOUND
@@ -11750,6 +11765,9 @@ class CortexExternalApiError(CortexError):
         bytes are decoded). It is appended to the built/auto message
         (``... Original API error: <body>``) so the raw API error travels
         together with the unified, human-readable message.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.API_ERROR
@@ -11839,6 +11857,9 @@ class CortexRateLimitError(CortexExternalApiError):
 
     :type retry_after: ``int``
     :param retry_after: Seconds to wait before retrying, if known.
+
+    :return: None
+    :rtype: ``None``
     """
 
     error_code = CortexErrorCode.QUOTA_ERROR
