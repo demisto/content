@@ -5,6 +5,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 ## Configure AWS - System Manager in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | AWS Default Region |  | True |
@@ -15,8 +16,10 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 | Secret Key |  | False |
 | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+
 
 ## Commands
 
@@ -1072,64 +1075,30 @@ Initiates execution of an Automation runbook.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | An identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
-| document_name | The name of the SSM document to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document ARN. Note: To get the document name, use the aws-ssm-document-list command. | Required |
-| client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional |
-| document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional |
-| max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional |
-| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. | Optional |
-| mode | The execution mode of the automation. The default mode is Auto. Possible values are: Auto, Interactive. | Optional |
-| tag_key | The name of the tag. | Optional |
-| tag_value | The value of the tag. | Optional |
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
-| parameters | 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'<br/>Example for execute the command in the war-room:<br/>- `"Role":["Admin", "User"]"`.<br/>Example for execute the command in the playbook (see screenshot below):<br/>in the first input box:<br/>Role (without a  quote)<br/>in the second input box:<br/>Admin, User (without a quote, and with a comma between values). | Optional |
-| execution_id | The ID of the execution. This is for the polling to work, not for the user. | Optional |
-| timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
-| target_parameter_name | The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn. | Optional |
-| target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument. Possible values are: Parameter Values, Tag Key, Resource Group. | Optional |
-| target_values | User-defined criteria that maps to target_key.<br/>For example:<br/> - target_key=ResourceGroup target_values=MyResourceGroup.<br/> - target_key=TagKey target_values=&lt;my-tag-key-1&gt;,&lt;my-tag-key-2&gt;<br/> Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | Optional |
-
-##### How to use parameters argument
-
-###### in playbook
-
-![parameters argument](../../doc_files/parameters_playbook.png)
-
-###### in the war room
-
-![Alt text](../../doc_files/parameters_war_room_1.png)
-![Alt text](../../doc_files/parameters_war_room_2.png)
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| document_name | The name of the SSM document to run. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document ARN. Note: To get the document name, use the aws-ssm-document-list command. | Required | 
+| client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional | 
+| document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
+| max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional | 
+| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. | Optional | 
+| mode | The execution mode of the automation. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
+| tag_key | The name of the tag. | Optional | 
+| tag_value | The value of the tag. | Optional | 
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
+| parameters | 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'<br/>Example for execute the command in the war-room:<br/>- `"Role":["Admin", "User"]"`.<br/>Example for execute the command in the playbook (see screenshot in the README.md file):<br/>in the first input box:<br/>Role (without a  quote)<br/>in the second input box:<br/>Admin, User (without a quote, and with a comma between values). | Optional | 
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| target_parameter_name | The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn. | Optional | 
+| target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument. Possible values are: Parameter Values, Tag Key, Resource Group. | Optional | 
+| target_values | User-defined criteria that maps to target_key.<br/>For example:<br/> - target_key=ResourceGroup target_values=MyResourceGroup.<br/> - target_key=TagKey target_values=&lt;my-tag-key-1&gt;,&lt;my-tag-key-2&gt;<br/> Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.AutomationExecution.AutomationExecutionId | String | The unique ID of a newly scheduled automation execution. |
-
-#### Command example
-
-```!aws-ssm-automation-execution-run document_name=AWS target_parameter_name=InstanceId target_key="Parameter Values" target_values=instance id   parameters=`{"RoleName":"role_name"}````
-
-#### Context Example
-
-```json
-{
-    "AWS": {
-        "SSM": {
-            "AutomationExecution": {
-                "AutomationExecutionId": "bbbbbb"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Execution bbbbbb is in progress
+| AWS.SSM.AutomationExecution.AutomationExecutionId | String | The unique ID of a newly scheduled automation execution. | 
 
 ### aws-ssm-automation-execution-cancel
 
@@ -1165,8 +1134,42 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Cancellation command was sent successfully.
+### aws-ssm-automation-execution-cancel
 
+***
+Stop an Automation execution.
+
+#### Base Command
+
+`aws-ssm-automation-execution-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
+| automation_execution_id | The execution ID of the Automation to stop. | Required | 
+| type | The stop request type. The default type is Cancel. Can get the value by running the aws-ssm-automation-list command. Possible values are: Cancel, Complete. | Optional | 
+| include_polling | When set to true, will keep polling results until the command returns that the status of the automation execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+| AWS.SSM.AutomationExecution.StepExecutions.TimeoutSeconds | Number | The timeout seconds of the step. |
+| AWS.SSM.AutomationExecution.StepExecutions.OnFailure | String | The action to take if the step fails. The default value is Abort. |
+| AWS.SSM.AutomationExecution.StepExecutions.MaxAttempts | Number | The maximum number of tries to run the action of the step. The default value is 1. |
+| AWS.SSM.AutomationExecution.StepExecutions.ExecutionStartTime | String | If a step has begun execution, this contains the time the step started. If the step is in Pending status, this field isn’t populated. |
+| AWS.SSM.AutomationExecution.StepExecutions.ExecutionEndTime | String | If a step has finished execution, this contains the time the execution ended. If the step hasn’t yet concluded, this field isn’t populated. |
+| AWS.SSM.AutomationExecution.StepExecutions.StepStatus | String | The execution status for this step. |
+| AWS.SSM.AutomationExecution.StepExecutions.ResponseCode | String | The response code returned by the execution of the step. |
+| AWS.SSM.AutomationExecution.StepExecutions.Inputs | Dictionary | Fully-resolved values passed into the step before execution. |
+| AWS.SSM.AutomationExecution.StepExecutions.Outputs | Dictionary | Returned values from the execution of the step. |
+| AWS.SSM.AutomationExecution.StepExecutions.Response | String | A message associated with the response code for an execution. |
 ### aws-ssm-automation-execution-list
 
 ***
@@ -1180,274 +1183,114 @@ If the argument execution_id is provided, the command returns detailed informati
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | An identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
-| execution_id | The unique identifier for an existing automation execution to examine. The execution ID is returned by aws-ssm-automation-execution-run command when the execution of an Automation runbook is initiated. Note: if execution_id not provide the command return a list of executions. | Optional |
-| limit | The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. Default is 50. | Optional |
-| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| execution_id | The unique identifier for an existing automation execution to examine. The execution ID is returned by aws-ssm-automation-execution-run command when the execution of an Automation runbook is initiated. Note: if execution_id not provide the command return a list of executions. | Optional | 
+| limit | The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. Default is 50. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.AutomationExecutionNextToken.NextToken | String | The token for the next set of items to return. |
-| AWS.SSM.AutomationExecution.AutomationExecutionId | String | The execution ID. |
-| AWS.SSM.AutomationExecution.DocumentName | String | The name of the Automation runbook used during the execution. |
-| AWS.SSM.AutomationExecution.DocumentVersion | String | The version of the document to use during execution. |
-| AWS.SSM.AutomationExecution.ExecutionStartTime | String | The time the execution started. |
-| AWS.SSM.AutomationExecution.ExecutionEndTime | String | The time the execution finished. |
-| AWS.SSM.AutomationExecution.AutomationExecutionStatus | String | The execution status of the Automation. |
-| AWS.SSM.AutomationExecution.StepExecutions.StepName | String | The name of this execution step. |
-| AWS.SSM.AutomationExecution.StepExecutions.Action | String | The action this step performs. The action determines the behavior of the step. |
-| AWS.SSM.AutomationExecution.StepExecutions.TimeoutSeconds | Number | The timeout seconds of the step. |
-| AWS.SSM.AutomationExecution.StepExecutions.OnFailure | String | The action to take if the step fails. The default value is Abort. |
-| AWS.SSM.AutomationExecution.StepExecutions.MaxAttempts | Number | The maximum number of tries to run the action of the step. The default value is 1. |
-| AWS.SSM.AutomationExecution.StepExecutions.ExecutionStartTime | String | If a step has begun execution, this contains the time the step started. If the step is in Pending status, this field isn’t populated. |
-| AWS.SSM.AutomationExecution.StepExecutions.ExecutionEndTime | String | If a step has finished execution, this contains the time the execution ended. If the step hasn’t yet concluded, this field isn’t populated. |
-| AWS.SSM.AutomationExecution.StepExecutions.StepStatus | String | The execution status for this step. |
-| AWS.SSM.AutomationExecution.StepExecutions.ResponseCode | String | The response code returned by the execution of the step. |
-| AWS.SSM.AutomationExecution.StepExecutions.Inputs | Dictionary | Fully-resolved values passed into the step before execution. |
-| AWS.SSM.AutomationExecution.StepExecutions.Outputs | Dictionary | Returned values from the execution of the step. |
-| AWS.SSM.AutomationExecution.StepExecutions.Response | String | A message associated with the response code for an execution. |
-| AWS.SSM.AutomationExecution.StepExecutions.FailureMessage | String | If a step failed, this message explains why the execution failed. |
-| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureStage | String | The stage of the Automation execution when the failure occurred. The stages include the following: InputValidation, PreVerification, Invocation, PostVerification. |
-| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureType | String | The type of Automation failure. Failure types include the following: Action, Permission, Throttling, Verification, Internal. |
-| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.Details | Dictionary | Detailed information about the Automation step failure. |
-| AWS.SSM.AutomationExecution.StepExecutions.StepExecutionId | String | The unique ID of a step execution. |
-| AWS.SSM.AutomationExecution.StepExecutions.OverriddenParameters | Dictionary | A user-specified list of parameters to override when running a step. |
-| AWS.SSM.AutomationExecution.StepExecutions.IsEnd | Boolean | The flag which can be used to end automation no matter whether the step succeeds or fails. |
-| AWS.SSM.AutomationExecution.StepExecutions.NextStep | String | The next step after the step succeeds. |
-| AWS.SSM.AutomationExecution.StepExecutions.IsCritical | Boolean | The flag which can be used to help decide whether the failure of the current step leads to the Automation failure. |
-| AWS.SSM.AutomationExecution.StepExecutions.ValidNextSteps | String | Strategies used when a step fails. Supports Continue and Abort. Abort will fail the automation when the step fails. Continue will ignore the failure of the current step and allow automation to run the next step. With conditional branching, AWS added step:stepName to support the automation to go to another specific step. |
-| AWS.SSM.AutomationExecution.StepExecutions.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. |
-| AWS.SSM.AutomationExecution.StepExecutions.Targets.Values | String | User-defined criteria that maps to Key. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. |
-| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.StepExecutionsTruncated | Boolean | A boolean value that indicates if the response contains the full list of the Automation step executions. If true, use the DescribeAutomationStepExecutions API operation to get the full list of step executions. |
-| AWS.SSM.AutomationExecution.Parameters. | Dictionary | The key-value map of execution parameters, which were supplied when calling StartAutomationExecution. |
-| AWS.SSM.AutomationExecution.Outputs | Dictionary | The list of execution outputs as defined in the Automation runbook. |
-| AWS.SSM.AutomationExecution.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. |
-| AWS.SSM.AutomationExecution.Mode | String | The automation execution mode. |
-| AWS.SSM.AutomationExecution.ParentAutomationExecutionId | String | The AutomationExecutionId of the parent automation. |
-| AWS.SSM.AutomationExecution.ExecutedBy | String | The Amazon Resource Name \(ARN\) of the user who ran the automation. |
-| AWS.SSM.AutomationExecution.CurrentStepName | String | The name of the step that is currently running. |
-| AWS.SSM.AutomationExecution.CurrentAction | String | The action of the step that is currently running. |
-| AWS.SSM.AutomationExecution.TargetParameterName | String | The parameter name. |
-| AWS.SSM.AutomationExecution.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. |
-| AWS.SSM.AutomationExecution.Targets.Values | String | User-defined criteria that maps to Key. |
-| AWS.SSM.AutomationExecution.TargetMaps | List Of Dictionaries | The specified key-value mapping of document parameters to target resources. |
-| AWS.SSM.AutomationExecution.ResolvedTargets.ParameterValues | String | A list of parameter values sent to targets that resolved during the Automation execution. |
-| AWS.SSM.AutomationExecution.ResolvedTargets.Truncated | Boolean | A boolean value indicating whether the resolved target list is truncated. |
-| AWS.SSM.AutomationExecution.MaxConcurrency | String | The MaxConcurrency value specified by the user when the execution started. |
-| AWS.SSM.AutomationExecution.MaxErrors | String | The MaxErrors value specified by the user when the execution started. |
-| AWS.SSM.AutomationExecution.Target | String | The target of the execution. |
-| AWS.SSM.AutomationExecution.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. |
-| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. |
-| AWS.SSM.AutomationExecution.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. |
-| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. |
-| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.ProgressCounters.TotalSteps | Number | The total number of steps run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. |
-| AWS.SSM.AutomationExecution.ProgressCounters.SuccessSteps | Number | The total number of steps that successfully completed in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. |
-| AWS.SSM.AutomationExecution.ProgressCounters.FailedSteps | Number | The total number of steps that failed to run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. |
-| AWS.SSM.AutomationExecution.ProgressCounters.CancelledSteps | Number | The total number of steps that the system cancelled in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. |
-| AWS.SSM.AutomationExecution.ProgressCounters.TimedOutSteps | Number | The total number of steps that timed out in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. |
-| AWS.SSM.AutomationExecution.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. |
-| AWS.SSM.AutomationExecution.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.AutomationSubtype | String | The subtype of the Automation operation. Currently, the only supported value is ChangeRequest. |
-| AWS.SSM.AutomationExecution.ScheduledTime | String | The date and time the Automation operation is scheduled to start. |
-| AWS.SSM.AutomationExecution.Runbooks.DocumentName | String | The name of the Automation runbook used in a runbook workflow. |
-| AWS.SSM.AutomationExecution.Runbooks.DocumentVersion | String | The version of the Automation runbook used in a runbook workflow. |
-| AWS.SSM.AutomationExecution.Runbooks.Parameters | Dictionary | The key-value map of execution parameters, which were supplied when calling StartChangeRequestExecution. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetParameterName | String | The name of the parameter used as the target resource for the rate-controlled runbook workflow. Required if you specify Targets. |
-| AWS.SSM.AutomationExecution.Runbooks.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. |
-| AWS.SSM.AutomationExecution.Runbooks.Targets.Values | String | User-defined criteria that maps to Key. For example, if you specified tag:ServerRole, you could specify value:WebServer to run a command on instances that include EC2 tags of ServerRole,WebServer. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetMaps | List Of Dictionaries | A key-value mapping of runbook parameters to target resources. Both Targets and TargetMaps can’t be specified together. |
-| AWS.SSM.AutomationExecution.Runbooks.MaxConcurrency | String | The MaxConcurrency value specified by the user when the operation started, indicating the maximum number of resources that the runbook operation can run on at the same time. |
-| AWS.SSM.AutomationExecution.Runbooks.MaxErrors | String | The MaxErrors value specified by the user when the execution started, indicating the maximum number of errors that can occur during the operation before the updates are stopped or rolled back. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. |
-| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.AutomationExecution.OpsItemId | String | The ID of an OpsItem that is created to represent a Change Manager change request. |
-| AWS.SSM.AutomationExecution.AssociationId | String | The ID of a State Manager association used in the Automation operation. |
-| AWS.SSM.AutomationExecution.ChangeRequestName | String | The name of the Change Manager change request. |
+| AWS.SSM.AutomationExecutionNextToken.NextToken | String | The token for the next set of items to return. | 
+| AWS.SSM.AutomationExecution.AutomationExecutionId | String | The execution ID. | 
+| AWS.SSM.AutomationExecution.DocumentName | String | The name of the Automation runbook used during the execution. | 
+| AWS.SSM.AutomationExecution.DocumentVersion | String | The version of the document to use during execution. | 
+| AWS.SSM.AutomationExecution.ExecutionStartTime | String | The time the execution started. | 
+| AWS.SSM.AutomationExecution.ExecutionEndTime | String | The time the execution finished. | 
+| AWS.SSM.AutomationExecution.AutomationExecutionStatus | String | The execution status of the Automation. | 
+| AWS.SSM.AutomationExecution.StepExecutions.StepName | String | The name of this execution step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Action | String | The action this step performs. The action determines the behavior of the step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TimeoutSeconds | Number | The timeout seconds of the step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.OnFailure | String | The action to take if the step fails. The default value is Abort. | 
+| AWS.SSM.AutomationExecution.StepExecutions.MaxAttempts | Number | The maximum number of tries to run the action of the step. The default value is 1. | 
+| AWS.SSM.AutomationExecution.StepExecutions.ExecutionStartTime | String | If a step has begun execution, this contains the time the step started. If the step is in Pending status, this field isn’t populated. | 
+| AWS.SSM.AutomationExecution.StepExecutions.ExecutionEndTime | String | If a step has finished execution, this contains the time the execution ended. If the step hasn’t yet concluded, this field isn’t populated. | 
+| AWS.SSM.AutomationExecution.StepExecutions.StepStatus | String | The execution status for this step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.ResponseCode | String | The response code returned by the execution of the step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Inputs | Dictionary | Fully-resolved values passed into the step before execution. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Outputs | Dictionary | Returned values from the execution of the step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Response | String | A message associated with the response code for an execution. | 
+| AWS.SSM.AutomationExecution.StepExecutions.FailureMessage | String | If a step failed, this message explains why the execution failed. | 
+| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureStage | String | The stage of the Automation execution when the failure occurred. The stages include the following: InputValidation, PreVerification, Invocation, PostVerification. | 
+| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.FailureType | String | The type of Automation failure. Failure types include the following: Action, Permission, Throttling, Verification, Internal. | 
+| AWS.SSM.AutomationExecution.StepExecutions.FailureDetails.Details | Dictionary | Detailed information about the Automation step failure. | 
+| AWS.SSM.AutomationExecution.StepExecutions.StepExecutionId | String | The unique ID of a step execution. | 
+| AWS.SSM.AutomationExecution.StepExecutions.OverriddenParameters | Dictionary | A user-specified list of parameters to override when running a step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.IsEnd | Boolean | The flag which can be used to end automation no matter whether the step succeeds or fails. | 
+| AWS.SSM.AutomationExecution.StepExecutions.NextStep | String | The next step after the step succeeds. | 
+| AWS.SSM.AutomationExecution.StepExecutions.IsCritical | Boolean | The flag which can be used to help decide whether the failure of the current step leads to the Automation failure. | 
+| AWS.SSM.AutomationExecution.StepExecutions.ValidNextSteps | String | Strategies used when a step fails. Supports Continue and Abort. Abort will fail the automation when the step fails. Continue will ignore the failure of the current step and allow automation to run the next step. With conditional branching, AWS added step:stepName to support the automation to go to another specific step. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.AutomationExecution.StepExecutions.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TargetLocation.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.StepExecutions.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.StepExecutionsTruncated | Boolean | A boolean value that indicates if the response contains the full list of the Automation step executions. If true, use the DescribeAutomationStepExecutions API operation to get the full list of step executions. | 
+| AWS.SSM.AutomationExecution.Parameters. | Dictionary | The key-value map of execution parameters, which were supplied when calling StartAutomationExecution. | 
+| AWS.SSM.AutomationExecution.Outputs | Dictionary | The list of execution outputs as defined in the Automation runbook. | 
+| AWS.SSM.AutomationExecution.FailureMessage | String | A message describing why an execution has failed, if the status is set to Failed. | 
+| AWS.SSM.AutomationExecution.Mode | String | The automation execution mode. | 
+| AWS.SSM.AutomationExecution.ParentAutomationExecutionId | String | The AutomationExecutionId of the parent automation. | 
+| AWS.SSM.AutomationExecution.ExecutedBy | String | The Amazon Resource Name \(ARN\) of the user who ran the automation. | 
+| AWS.SSM.AutomationExecution.CurrentStepName | String | The name of the step that is currently running. | 
+| AWS.SSM.AutomationExecution.CurrentAction | String | The action of the step that is currently running. | 
+| AWS.SSM.AutomationExecution.TargetParameterName | String | The parameter name. | 
+| AWS.SSM.AutomationExecution.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.AutomationExecution.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.AutomationExecution.TargetMaps | List Of Dictionaries | The specified key-value mapping of document parameters to target resources. | 
+| AWS.SSM.AutomationExecution.ResolvedTargets.ParameterValues | String | A list of parameter values sent to targets that resolved during the Automation execution. | 
+| AWS.SSM.AutomationExecution.ResolvedTargets.Truncated | Boolean | A boolean value indicating whether the resolved target list is truncated. | 
+| AWS.SSM.AutomationExecution.MaxConcurrency | String | The MaxConcurrency value specified by the user when the execution started. | 
+| AWS.SSM.AutomationExecution.MaxErrors | String | The MaxErrors value specified by the user when the execution started. | 
+| AWS.SSM.AutomationExecution.Target | String | The target of the execution. | 
+| AWS.SSM.AutomationExecution.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.AutomationExecution.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AutomationExecution.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.ProgressCounters.TotalSteps | Number | The total number of steps run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. | 
+| AWS.SSM.AutomationExecution.ProgressCounters.SuccessSteps | Number | The total number of steps that successfully completed in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. | 
+| AWS.SSM.AutomationExecution.ProgressCounters.FailedSteps | Number | The total number of steps that failed to run in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. | 
+| AWS.SSM.AutomationExecution.ProgressCounters.CancelledSteps | Number | The total number of steps that the system cancelled in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. | 
+| AWS.SSM.AutomationExecution.ProgressCounters.TimedOutSteps | Number | The total number of steps that timed out in all specified Amazon Web Services Regions and Amazon Web Services accounts for the current Automation execution. | 
+| AWS.SSM.AutomationExecution.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AutomationExecution.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.AutomationSubtype | String | The subtype of the Automation operation. Currently, the only supported value is ChangeRequest. | 
+| AWS.SSM.AutomationExecution.ScheduledTime | String | The date and time the Automation operation is scheduled to start. | 
+| AWS.SSM.AutomationExecution.Runbooks.DocumentName | String | The name of the Automation runbook used in a runbook workflow. | 
+| AWS.SSM.AutomationExecution.Runbooks.DocumentVersion | String | The version of the Automation runbook used in a runbook workflow. | 
+| AWS.SSM.AutomationExecution.Runbooks.Parameters | Dictionary | The key-value map of execution parameters, which were supplied when calling StartChangeRequestExecution. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetParameterName | String | The name of the parameter used as the target resource for the rate-controlled runbook workflow. Required if you specify Targets. | 
+| AWS.SSM.AutomationExecution.Runbooks.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.AutomationExecution.Runbooks.Targets.Values | String | User-defined criteria that maps to Key. For example, if you specified tag:ServerRole, you could specify value:WebServer to run a command on instances that include EC2 tags of ServerRole,WebServer. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetMaps | List Of Dictionaries | A key-value mapping of runbook parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
+| AWS.SSM.AutomationExecution.Runbooks.MaxConcurrency | String | The MaxConcurrency value specified by the user when the operation started, indicating the maximum number of resources that the runbook operation can run on at the same time. | 
+| AWS.SSM.AutomationExecution.Runbooks.MaxErrors | String | The MaxErrors value specified by the user when the execution started, indicating the maximum number of errors that can occur during the operation before the updates are stopped or rolled back. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Accounts | String | The Amazon Web Services accounts targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.Regions | String | The Amazon Web Services Regions targeted by the current Automation execution. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxConcurrency | String | The maximum number of Amazon Web Services Regions and Amazon Web Services accounts allowed to run the Automation concurrently. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationMaxErrors | String | The maximum number of errors allowed before the system stops queueing additional Automation executions for the currently running Automation. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.ExecutionRoleName | String | The Automation execution role used by the currently running Automation. If not specified, the default value is AWS-SystemsManager-AutomationExecutionRole. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.AutomationExecution.Runbooks.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.AutomationExecution.OpsItemId | String | The ID of an OpsItem that is created to represent a Change Manager change request. | 
+| AWS.SSM.AutomationExecution.AssociationId | String | The ID of a State Manager association used in the Automation operation. | 
+| AWS.SSM.AutomationExecution.ChangeRequestName | String | The name of the Change Manager change request. | 
 
-#### Command example
-
-```!aws-ssm-automation-execution-list limit=2```
-
-#### Context Example
-
-```json
-{
-    "AWS": {
-        "SSM": {
-            "AutomationExecution": [
-                {
-                    "AutomationExecutionId": "aaaaaa",
-                    "AutomationExecutionStatus": "Failed",
-                    "AutomationType": "Local",
-                    "DocumentName": "AWS",
-                    "DocumentVersion": "1",
-                    "ExecutedBy": "arn",
-                    "ExecutionEndTime": "2023-09-17T21:41:10.509000+00:00",
-                    "ExecutionStartTime": "2023-09-17T21:41:08.659000+00:00",
-                    "FailureMessage": "Step fails when it ...",
-                    "LogFile": "",
-                    "Mode": "Auto",
-                    "Outputs": {
-                        "AttachIAMProfileToInstance.AssociationId": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "AttachIAMProfileToInstanceWithRetry.AssociationId": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "GetInstanceProfile.InstanceProfileArn": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "GetInstanceProfile.InstanceProfileName": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "ListInstanceProfilesForRole.InstanceProfileArn": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "ListInstanceProfilesForRole.InstanceProfileName": [
-                            "No output available yet because the step is not successfully executed"
-                        ]
-                    },
-                    "ParentAutomationExecutionId": "bbbbbb",
-                    "ResolvedTargets": {
-                        "ParameterValues": [],
-                        "Truncated": false
-                    },
-                    "Target": "instance id",
-                    "Targets": []
-                },
-                {
-                    "AutomationExecutionId": "bbbbbb",
-                    "AutomationExecutionStatus": "Failed",
-                    "AutomationType": "Local",
-                    "DocumentName": "AWS",
-                    "DocumentVersion": "1",
-                    "ExecutedBy": "arn",
-                    "ExecutionEndTime": "2023-09-17T21:41:10.985000+00:00",
-                    "ExecutionStartTime": "2023-09-17T21:41:08.340000+00:00",
-                    "LogFile": "",
-                    "MaxConcurrency": "10",
-                    "MaxErrors": "100%",
-                    "Mode": "Auto",
-                    "Outputs": {
-                        "AttachIAMProfileToInstance.AssociationId": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "AttachIAMProfileToInstanceWithRetry.AssociationId": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "GetInstanceProfile.InstanceProfileArn": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "GetInstanceProfile.InstanceProfileName": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "ListInstanceProfilesForRole.InstanceProfileArn": [
-                            "No output available yet because the step is not successfully executed"
-                        ],
-                        "ListInstanceProfilesForRole.InstanceProfileName": [
-                            "No output available yet because the step is not successfully executed"
-                        ]
-                    },
-                    "ResolvedTargets": {
-                        "ParameterValues": [],
-                        "Truncated": false
-                    },
-                    "TargetParameterName": "InstanceId",
-                    "Targets": [
-                        {
-                            "Key": "ParameterValues",
-                            "Values": [
-                                "instance id"
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "AutomationExecutionNextToken": {
-                "NextToken": "AA"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### AWS SSM Automation Executions
-
->|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|Executed By|
->|---|---|---|---|---|---|---|---|
->| aaaaaa | AWS | 1 | 2023-09-17T21:41:08.659000+00:00 | 2023-09-17T21:41:10.509000+00:00 | Failed | Auto | arn |
->| bbbbbb | AWS | 1 | 2023-09-17T21:41:08.340000+00:00 | 2023-09-17T21:41:10.985000+00:00 | Failed | Auto | arn |
-
-### aws-ssm-command-list
-
-***
-Lists the commands requested by users of the Amazon Web Services account.
-
-#### Base Command
-
-`aws-ssm-command-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | An identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
-| command_id | A unique identifier for this command. If provided, lists only the specified command. | Optional |
-| limit | The maximum number of items to return for this call. Default is 50. | Optional |
-| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.SSM.CommandNextToken.NextToken | String | The token for the next set of items to return. \(Received this token from a previous call\). |
-| AWS.SSM.Command.CommandId | String | A unique identifier for this command. |
-| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. |
-| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. |
-| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. |
-| AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. |
-| AWS.SSM.Command.Parameters | String | The parameter values to be inserted in the document when running the command. |
-| AWS.SSM.Command.InstanceIds | String | The managed node IDs against which this command was requested. |
-| AWS.SSM.Command.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. |
-| AWS.SSM.Command.Targets.Values | String | User-defined criteria that maps to Key. |
-| AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. |
-| AWS.SSM.Command.Status | String | The status of the command. |
-| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. |
-| AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. |
-| AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. |
-| AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. |
-| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. |
-| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. |
-| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. |
 | AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. |
 | AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. |
 | AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. |
@@ -1564,136 +1407,65 @@ Runs commands on one or more managed nodes.
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | command_id | A unique identifier for this command. This is for the polling to work, not for the user. | Optional |
 | polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
-| command_timeout | If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days). | Optional |
-
-##### How to use parameters argument
-
-###### in playbook
-
-![parameters argument](../../doc_files/parameters_playbook.png)
-
-###### in the war room
-
-![Alt text](../../doc_files/parameters_war_room_1.png)
-![Alt text](../../doc_files/parameters_war_room_2.png)
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.SSM.Command.CommandId | String | A unique identifier for this command. |
-| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. |
-| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. |
-| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. |
-| AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. |
-| AWS.SSM.Command.Parameters.string | String | The parameter values to be inserted in the document when running the command. |
-| AWS.SSM.Command.InstanceIds | String | The managed node IDs against which this command was requested. |
-| AWS.SSM.Command.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. |
-| AWS.SSM.Command.Targets.Values | String | User-defined criteria that maps to Key. |
-| AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. |
-| AWS.SSM.Command.Status | String | The status of the command. |
-| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. |
-| AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) You can no longer specify this parameter. The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. |
-| AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. |
-| AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. |
-| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. |
-| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. |
-| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. |
-| AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. |
-| AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. |
-| AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. |
-| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. |
-| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. |
-| AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for which you can receive notifications. |
-| AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. |
-| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName. |
-| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. |
-| AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. |
-| AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. |
-| AWS.SSM.Command.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.Command.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. |
-| AWS.SSM.Command.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
-
-#### Command example
-
-```!aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=instance id```
-
-#### Context Example
-
-```json
-{
-    "AWS": {
-        "SSM": {
-            "Command": {
-                "AlarmConfiguration": {
-                    "Alarms": [],
-                    "IgnorePollAlarmFailure": false
-                },
-                "CloudWatchOutputConfig": {
-                    "CloudWatchLogGroupName": "",
-                    "CloudWatchOutputEnabled": false
-                },
-                "CommandId": "bbbbbb",
-                "Comment": "",
-                "CompletedCount": 0,
-                "DeliveryTimedOutCount": 0,
-                "DocumentName": "AWS",
-                "DocumentVersion": "$DEFAULT",
-                "ErrorCount": 0,
-                "ExpiresAfter": "2023-09-17T23:41:31.607000+00:00",
-                "InstanceIds": [],
-                "MaxConcurrency": "50",
-                "MaxErrors": "0",
-                "NotificationConfig": {
-                    "NotificationArn": "",
-                    "NotificationEvents": [],
-                    "NotificationType": ""
-                },
-                "OutputS3BucketName": "",
-                "OutputS3KeyPrefix": "",
-                "OutputS3Region": "eu",
-                "Parameters": {},
-                "RequestedDateTime": "2023-09-17T21:41:31.607000+00:00",
-                "ServiceRole": "",
-                "Status": "Pending",
-                "StatusDetails": "Pending",
-                "TargetCount": 0,
-                "Targets": [
-                    {
-                        "Key": "InstanceIds",
-                        "Values": [
-                            "instance id"
-                        ]
-                    }
-                ],
-                "TimeoutSeconds": 3600,
-                "TriggeredAlarms": []
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Command bbbbbb was sent successful.
-
-### aws-ssm-command-cancel
+### aws-ssm-command-list
 
 ***
-Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
+Lists the commands requested by users of the Amazon Web Services account.
 
 #### Base Command
 
-`aws-ssm-command-cancel`
+`aws-ssm-command-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | An identifier for the assumed role session. | Optional |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| command_id | A unique identifier for this command. If provided, lists only the specified command. | Optional | 
+| limit | The maximum number of items to return for this call. Default is 50. | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.CommandNextToken.NextToken | String | The token for the next set of items to return. \(Received this token from a previous call\). | 
+| AWS.SSM.Command.CommandId | String | A unique identifier for this command. | 
+| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. | 
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
+| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. | 
+| AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. | 
+| AWS.SSM.Command.Parameters | String | The parameter values to be inserted in the document when running the command. | 
+| AWS.SSM.Command.InstanceIds | String | The managed node IDs against which this command was requested. | 
+| AWS.SSM.Command.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Command.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. | 
+| AWS.SSM.Command.Status | String | The status of the command. | 
+| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. | 
+| AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
+| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
+| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. | 
+| AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
+| AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. | 
+| AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. | 
+| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. | 
+| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. | 
+| AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for receive notifications. | 
+| AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where to send command output. If a group name is not specified, Amazon Web Services Systems Manager automatically creates a log group. The log group uses the following naming format: \`aws/ssm/SystemsManagerDocumentName\`. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
+| AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
+| AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
+| AWS.SSM.Command.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm specified in the configuration. | 
+| AWS.SSM.Command.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Command.TriggeredAlarms.State | String | The name of the CloudWatch alarm. | 
+
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
 | command_id | The ID of the command to cancel. Can get from the aws-ssm-command-list command. | Required |
 | instance_ids | A list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested. | Optional |
@@ -1713,3 +1485,119 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Cancellation command was sent successful.
+### aws-ssm-command-run
+
+***
+Runs commands on one or more managed nodes.
+
+#### Base Command
+
+`aws-ssm-command-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required | 
+| target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria.<br/>For example:<br/> - target_key=InstanceIds target_values=&lt;instance-id-1&gt;,&lt;instance-id-2&gt;.<br/> - target_key=tag:&lt;my-tag-key&gt; target_values=&lt;my-tag-value-1&gt;,&lt;my-tag-value-2&gt;.<br/> - target_key=resource-groups:Name target_values=&lt;resource-group-name&gt;. Possible values are: Instance Ids, Tag Key, Resource Group. | Required | 
+| target_values | The value of target_values is determined by what is provided in the "target_key" argument.<br/>Note: the maximum number of values for a key might be lower than the global maximum of 50.           . | Required | 
+| document_version | The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number. | Optional | 
+| max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. Default is 50. | Optional | 
+| max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. Default is 0. | Optional | 
+| parameters | The required and optional parameters specified in the document being run. | Optional | 
+| comment | User-specified information about the command, such as a brief description of what the command should do. | Optional | 
+| output_s3_bucket_name | The name of the S3 bucket where command execution responses should be stored. | Optional | 
+| output_s3_key_prefix | The directory structure within the S3 bucket where the responses should be stored. | Optional | 
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| command_timeout | If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Command.CommandId | String | A unique identifier for this command. | 
+| AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. | 
+| AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
+| AWS.SSM.Command.Comment | String | User-specified information about the command, such as a brief description of what the command should do. | 
+| AWS.SSM.Command.ExpiresAfter | String | If a command expires, it changes status to DeliveryTimedOut for all invocations that have the status InProgress, Pending, or Delayed. ExpiresAfter is calculated based on the total timeout for the overall command. | 
+| AWS.SSM.Command.Parameters.string | String | The parameter values to be inserted in the document when running the command. | 
+| AWS.SSM.Command.InstanceIds | String | The managed node IDs against which this command was requested. | 
+| AWS.SSM.Command.Targets.Key | String | User-defined criteria for sending commands that target managed nodes that meet the criteria. | 
+| AWS.SSM.Command.Targets.Values | String | User-defined criteria that maps to Key. | 
+| AWS.SSM.Command.RequestedDateTime | String | The date and time the command was requested. | 
+| AWS.SSM.Command.Status | String | The status of the command. | 
+| AWS.SSM.Command.StatusDetails | String | A detailed status of the command execution. StatusDetails includes more information than Status because it includes states resulting from error and concurrency control parameters. StatusDetails can show different results than Status. | 
+| AWS.SSM.Command.OutputS3Region | String | \(Deprecated\) You can no longer specify this parameter. The system ignores it. Instead, Systems Manager automatically determines the Amazon Web Services Region of the S3 bucket. | 
+| AWS.SSM.Command.OutputS3BucketName | String | The S3 bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.OutputS3KeyPrefix | String | The S3 directory path inside the bucket where the responses to the command executions should be stored. This was requested when issuing the command. | 
+| AWS.SSM.Command.MaxConcurrency | String | The maximum number of managed nodes that are allowed to run the command at the same time. | 
+| AWS.SSM.Command.MaxErrors | String | The maximum number of errors allowed before the system stops sending the command to additional targets. | 
+| AWS.SSM.Command.TargetCount | Number | The number of targets for the command. | 
+| AWS.SSM.Command.CompletedCount | Number | The number of targets for which the command invocation reached a terminal state. Terminal states include the following: Success, Failed, Execution Timed Out, Delivery Timed Out, Cancelled, Terminated, or Undeliverable. | 
+| AWS.SSM.Command.ErrorCount | Number | The number of targets for which the status is Failed or Execution Timed Out. | 
+| AWS.SSM.Command.DeliveryTimedOutCount | Number | The number of targets for which the status is Delivery Timed Out. | 
+| AWS.SSM.Command.ServiceRole | String | The Identity and Access Management \(IAM\) service role that Run Command, a capability of Amazon Web Services Systems Manager, uses to act on your behalf when sending notifications about command status changes. | 
+| AWS.SSM.Command.NotificationConfig.NotificationArn | String | An Amazon Resource Name \(ARN\) for an Amazon Simple Notification Service \(Amazon SNS\) topic. Run Command pushes notifications about command status changes to this topic. | 
+| AWS.SSM.Command.NotificationConfig.NotificationEvents | String | The different events for which you can receive notifications. | 
+| AWS.SSM.Command.NotificationConfig.NotificationType | String | The type of notification. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchLogGroupName | String | The name of the CloudWatch Logs log group where you want to send command output. If you don’t specify a group name, Amazon Web Services Systems Manager automatically creates a log group for you. The log group uses the following naming format: aws/ssm/SystemsManagerDocumentName. | 
+| AWS.SSM.Command.CloudWatchOutputConfig.CloudWatchOutputEnabled | Boolean | Enables Systems Manager to send command output to CloudWatch Logs. | 
+| AWS.SSM.Command.TimeoutSeconds | Number | The TimeoutSeconds value specified for a command. | 
+| AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, your automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. | 
+| AWS.SSM.Command.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Command.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
+| AWS.SSM.Command.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
+### aws-ssm-command-cancel
+
+***
+Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
+
+#### Base Command
+
+`aws-ssm-command-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| command_id | The ID of the command to cancel. Can get from the aws-ssm-command-list command. | Required | 
+| instance_ids | A list of managed node IDs on which you want to cancel the command. If not provided, the command is canceled on every node on which it was requested. | Optional | 
+| include_polling | When set to true, will keep polling results until the command return that the  status of the command execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ssm-parameter-list
+
+***
+Returns a list of AWS Parameter with tags.
+
+#### Base Command
+
+`aws-ssm-parameter-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Enter the Filter or Tag for aws ssm parameters. | Optional | 
+| tags | Enter the Tag for aws ssm parameters. | Optional | 
+| max_results | Maximum number of parameters to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Parameter.Name | unknown | Name of the AWS SSM parameter | 
+
