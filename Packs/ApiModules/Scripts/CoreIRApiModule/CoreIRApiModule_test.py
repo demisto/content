@@ -694,6 +694,97 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     assert expected_command_result == res.outputs
 
 
+def test_blocklist_files_command_when_all_hashes_already_added(requests_mock):
+    """
+    Given:
+        - A list of file hashes that have already been added to the allow or block list.
+    When:
+        - Running blocklist_files_command and the API raises the
+          "All hashes have already been added to the allow or block list" error.
+    Then:
+        - The command returns a CommandResults with the proper readable_output AND populated outputs
+          (the outputs should contain the hashes even though nothing new was added).
+    """
+    from CoreIRApiModule import CoreClient, blocklist_files_command
+
+    test_data = load_test_data("test_data/blocklist_allowlist_files_success.json")
+    hash_list = test_data["multi_command_args"]["hash_list"]
+    expected_outputs = {"CoreApiModule.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)": hash_list}
+
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        status_code=500,
+        json={"reply": {"err_msg": "All hashes have already been added to the allow or block list"}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    res = blocklist_files_command(client, test_data["multi_command_args"])
+
+    assert res.readable_output == "All hashes have already been added to the block list."
+    assert res.outputs == expected_outputs
+
+
+def test_blocklist_files_command_unexpected_error_is_raised(requests_mock):
+    """
+    Given:
+        - A list of file hashes and an API that fails with an unexpected error.
+    When:
+        - Running blocklist_files_command and the API raises an error that is not the
+          "already added" message.
+    Then:
+        - The exception is propagated to the caller (not swallowed).
+    """
+    from CoreIRApiModule import CoreClient, blocklist_files_command
+
+    test_data = load_test_data("test_data/blocklist_allowlist_files_success.json")
+
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        status_code=500,
+        json={"reply": {"err_msg": "Some unexpected server error"}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+
+    with pytest.raises(Exception):
+        blocklist_files_command(client, test_data["multi_command_args"])
+
+
+def test_blocklist_files_command_with_custom_brand_and_prefix(requests_mock):
+    """
+    Given:
+        - A list of file hashes together with custom integration_context_brand and prefix arguments.
+    When:
+        - Running blocklist_files_command successfully (non-detailed response).
+    Then:
+        - The outputs key is built using the provided brand and prefix.
+    """
+    from CoreIRApiModule import CoreClient, blocklist_files_command
+
+    test_data = load_test_data("test_data/blocklist_allowlist_files_success.json")
+    hash_list = test_data["single_command_args"]["hash_list"]
+    args = {
+        "hash_list": hash_list,
+        "comment": "test",
+        "integration_context_brand": "CustomBrand",
+        "prefix": "customprefix",
+    }
+    expected_outputs = {"CustomBrand.customprefix.added_hashes.fileHash(val.fileHash == obj.fileHash)": hash_list}
+
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/hash_exceptions/blocklist/",
+        json=test_data["api_response"],
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    res = blocklist_files_command(client, args)
+
+    assert res.outputs == expected_outputs
+
+
 def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     """
     Given:
