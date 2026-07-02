@@ -12,11 +12,23 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 VENDOR = "paloaltonetworks"
 PRODUCT = "saassecurity"
 
-MAX_ITERATIONS = 50
-MAX_EVENTS_PER_REQUEST = 1000
+# The SaaS Security /log_events_bulk endpoint returns at most 100 events per call,
+# regardless of the requested 'size'. This is a hard server-side cap (verified against the API).
+MAX_EVENTS_PER_REQUEST = 100
+# Per-execution iteration cap (timeout protection). Each iteration pulls up to MAX_EVENTS_PER_REQUEST (100) events,
+# so a single execution can drain up to MAX_ITERATIONS * 100 events before handing off to the push step.
+# Combined with the nextTrigger mechanism (re-fires in 1 second while the queue is not drained), this lets the
+# collector sustain a drain rate well above the upstream production rate and keep ingestion lag near zero.
+MAX_ITERATIONS = 150
+# Upper bound for the 'max_fetch' value, which applies only to the manual 'saas-security-get-events' command
+# (to avoid fetch timeouts on a single manual run). It does not affect the scheduled fetch, which drains the
+# queue continuously and is bounded by MAX_ITERATIONS.
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
 NEXT_TRIGGER_VALUE = "1"
+# After this many consecutive fetch cycles where the queue is still not drained, emit a high-visibility
+# warning so sustained backlog/lag is observable instead of silent.
+BACKLOG_WARNING_THRESHOLD = 10
 
 """ CLIENT CLASS """
 
@@ -105,7 +117,10 @@ class Client(BaseClient):
 
     def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
         """
-        Get up to 100 event logs.
+        Get a single batch of event logs from the SaaS Security queue.
+
+        Note: the endpoint returns at most ``MAX_EVENTS_PER_REQUEST`` (100) events per call,
+        regardless of the requested ``size``. A 204 status code means the queue is currently empty.
         """
         return self.http_request(
             "GET", url_suffix="/api/v1/log_events_bulk", resp_type="response", ok_codes=[200, 204], params={"size": size}
@@ -213,7 +228,19 @@ def fetch_events_from_saas_security(
     client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
 ) -> tuple[list[dict], Exception | None, bool]:
     """
-    Fetches events from the saas-security queue.
+    Fetches a single execution's worth of events from the SaaS Security queue.
+
+    The loop keeps pulling batches (up to ``MAX_EVENTS_PER_REQUEST`` = 100 events each) until one of:
+      * a 204 status code is received (the queue is drained - no more events available right now), or
+      * ``max_iterations`` is reached (timeout protection for a single execution), or
+      * ``max_fetch`` events have been collected (only when ``max_fetch`` is provided - used by the
+        manual ``saas-security-get-events`` command; live fetch passes ``max_fetch=None`` so it is
+        bounded only by ``max_iterations`` and drains as much of the queue as possible per execution).
+
+    When the queue is not drained (``queue_drained`` is False), the caller schedules an immediate
+    follow-up run via ``nextTrigger`` so the collector keeps draining back-to-back instead of waiting
+    the full fetch interval. This is what lets the collector keep pace with high upstream event rates
+    and prevents ingestion lag from accumulating.
 
     timeouts (204) docs:
     https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
@@ -236,14 +263,16 @@ def fetch_events_from_saas_security(
                 queue_drained = True
                 break
             fetched_events = response.json().get("events") or []
-            demisto.info(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
-            demisto.info(f"fetched the following events: {fetched_events} in iteration {iteration_num}")
+            demisto.debug(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
             events.extend(fetched_events)
             events_len = len(events)
             if max_fetch:
                 under_max_fetch = events_len < max_fetch
-            demisto.info(f"Collected already {events_len} events until iteration {iteration_num}")
             iteration_num += 1
+        demisto.info(
+            f"Finished fetch iteration loop: collected {len(events)} events over {iteration_num - 1} iteration(s), "
+            f"queue_drained={queue_drained} (max_iterations={max_iterations}, max_fetch={max_fetch})."
+        )
     except Exception as exc:
         demisto.info(f"Got error get_events: {exc}")
         return events, exc, True
@@ -281,8 +310,12 @@ def main() -> None:  # pragma: no cover
             demisto.info(f"{integration_context=}")
             queue_drained = True
             if not integration_context.get("events"):
+                # For live fetch we pass max_fetch=None so a single execution drains as much of the queue
+                # as possible (bounded only by max_iterations), instead of stopping early at the max_fetch
+                # limit. Combined with nextTrigger, this keeps the collector ahead of high upstream rates
+                # and prevents ingestion lag from accumulating.
                 events, exception, queue_drained = fetch_events_from_saas_security(
-                    client=client, max_fetch=max_fetch, max_iterations=max_iterations
+                    client=client, max_fetch=None, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
                     demisto.info(f"got exception when trying to fetch events: [{exception}]")
@@ -300,12 +333,27 @@ def main() -> None:  # pragma: no cover
                 demisto.debug(f"Successfully set the following events into integration context: {events}")
                 queue_drained = True  # Prevent tight retry loops on push failure
 
-            # If the queue has not been fully drained, trigger next fetch in 1 second
+            # If the queue has not been fully drained, trigger next fetch in 1 second so the collector
+            # keeps draining back-to-back instead of waiting the full fetch interval.
             if not queue_drained:
                 last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
-                demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
+                # Track how many consecutive cycles the queue has not drained, so sustained backlog
+                # (= growing ingestion lag) is observable instead of failing silently.
+                consecutive_backlog_cycles = int(last_run.get("consecutive_backlog_cycles", 0)) + 1
+                last_run["consecutive_backlog_cycles"] = consecutive_backlog_cycles
+                if consecutive_backlog_cycles >= BACKLOG_WARNING_THRESHOLD:
+                    demisto.error(
+                        f"SaaS Security ingestion backlog: the event queue has not fully drained for "
+                        f"{consecutive_backlog_cycles} consecutive fetch cycles. The upstream event rate may "
+                        f"exceed the collector throughput, which can cause ingestion lag. Consider increasing "
+                        f"'The maximum number of iterations to retrieve events' or distributing the load across "
+                        f"multiple instances."
+                    )
+                else:
+                    demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
             else:
                 last_run.pop("nextTrigger", None)
+                last_run.pop("consecutive_backlog_cycles", None)
                 demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
             demisto.setLastRun(last_run)
         elif command == "saas-security-get-events":
