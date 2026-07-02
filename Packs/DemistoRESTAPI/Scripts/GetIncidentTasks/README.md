@@ -10,6 +10,14 @@ Get all tasks for a specific incident by the given state, name and/or tag.
 | Tags | Utility |
 | Cortex XSOAR Version | 6.10.0 |
 
+## Dependencies
+
+---
+This script uses the following commands and scripts.
+
+* Core REST API
+* core-api-get
+
 ## Inputs
 
 ---
