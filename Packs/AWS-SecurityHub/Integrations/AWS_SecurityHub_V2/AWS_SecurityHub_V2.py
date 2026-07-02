@@ -577,15 +577,17 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
         demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings created in {last_fetch}.")
         try:
             response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters)
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
         except client.exceptions.ClientError as e:
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
 
     findings = response.get("Findings", [])
     new_next_token = response.get("NextToken")
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings.")
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
 
     # dedup
     incidents = []
+    new_findings = []
     skipped_count = 0
     for finding in findings:
         finding_info = finding.get("finding_info") or {}
@@ -619,7 +621,9 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             f"severity_id={finding.get('severity_id')} -> xsoar_severity={xsoar_severity}."
         )
 
-    sorted_findings = sorted(findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
+        new_findings.append(finding)
+
+    sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
     matching_uids = []
     if sorted_findings:
         first_finding_info = sorted_findings[0].get("finding_info") or {}
