@@ -42,7 +42,11 @@ ANALYST_VERDICT = {
     "False positive": "false_positive",
     "Undefined": "undefined",
 }
-THREAT_STATUS = {"Unresolved": "unresolved", "Resolved": "resolved", "In progress": "in_progress"}
+THREAT_STATUS = {
+    "Unresolved": "unresolved",
+    "Resolved": "resolved",
+    "In progress": "in_progress",
+}
 UAM_ALERT_STATUS = {
     "New": "NEW",
     "In progress": "IN_PROGRESS",
@@ -260,11 +264,19 @@ class Client(BaseClient):
     def fetch_file_request(self, agent_id, file_path, password) -> dict:
         body = {"data": {"password": password, "files": [file_path]}}
 
-        response = self._http_request(method="POST", url_suffix=f"agents/{agent_id}/actions/fetch-files", json_data=body)
+        response = self._http_request(
+            method="POST",
+            url_suffix=f"agents/{agent_id}/actions/fetch-files",
+            json_data=body,
+        )
         return response.get("data", {})
 
     def download_fetched_file_request(self, agent_id, activity_id) -> bytes:
-        return self._http_request(method="GET", url_suffix=f"agents/{agent_id}/uploads/{activity_id}", resp_type="content")
+        return self._http_request(
+            method="GET",
+            url_suffix=f"agents/{agent_id}/uploads/{activity_id}",
+            resp_type="content",
+        )
 
     def get_activities_request(
         self,
@@ -636,14 +648,20 @@ class Client(BaseClient):
     def update_threat_analyst_verdict_request(self, threat_ids, action):
         endpoint_url = "threats/analyst-verdict"
 
-        payload = {"data": {"analystVerdict": action}, "filter": {"ids": threat_ids, "tenant": "true"}}
+        payload = {
+            "data": {"analystVerdict": action},
+            "filter": {"ids": threat_ids, "tenant": "true"},
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
     def update_alert_analyst_verdict_request(self, alert_ids, action):
         endpoint_url = "cloud-detection/alerts/analyst-verdict"
 
-        payload = {"data": {"analystVerdict": action}, "filter": {"ids": alert_ids, "tenant": "true"}}
+        payload = {
+            "data": {"analystVerdict": action},
+            "filter": {"ids": alert_ids, "tenant": "true"},
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -667,7 +685,11 @@ class Client(BaseClient):
         query_lang,
     ):
         endpoint_url = "cloud-detection/rules"
-        filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids,
+        }
         filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
@@ -712,7 +734,11 @@ class Client(BaseClient):
         query_lang,
     ):
         endpoint_url = f"cloud-detection/rules/{rule_id}"
-        filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids,
+        }
         filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
@@ -763,7 +789,18 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=endpoint_url)
         return response.get("data", {})
 
-    def create_ioc_request(self, name, source, ioc_type, method, validUntil, value, account_ids, externalId, description):
+    def create_ioc_request(
+        self,
+        name,
+        source,
+        ioc_type,
+        method,
+        validUntil,
+        value,
+        account_ids,
+        externalId,
+        description,
+    ):
         endpoint_url = "threat-intelligence/iocs"
         payload = {
             "filter": {"accountIds": account_ids},
@@ -818,7 +855,17 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
-    def run_powerquery_request(self, sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails):
+    def run_powerquery_request(
+        self,
+        sdl_url,
+        sdl_api_key,
+        query,
+        start_time,
+        end_time,
+        priority,
+        recurring,
+        team_emails,
+    ):
         if not sdl_url.startswith("https://"):
             raise DemistoException("Invalid URL: must start with https://")
 
@@ -840,7 +887,10 @@ class Client(BaseClient):
             {param_name: param_value for param_name, param_value in optional_params.items() if param_value not in [None, ""]}
         )
         return self._http_request(
-            method="POST", full_url=f"{sdl_url.rstrip('/')}/api/powerQuery", headers=headers, json_data=payload
+            method="POST",
+            full_url=f"{sdl_url.rstrip('/')}/api/powerQuery",
+            headers=headers,
+            json_data=payload,
         )
 
     def delete_ioc_request(self, account_ids, uuids):
@@ -857,12 +907,20 @@ class Client(BaseClient):
         return data, pagination
 
     def get_accounts_request(self, account_id: str = None):
-        response = self._http_request(method="GET", url_suffix=f"accounts/{account_id}" if account_id else "accounts")
+        response = self._http_request(
+            method="GET",
+            url_suffix=f"accounts/{account_id}" if account_id else "accounts",
+        )
         return response.get("data", {})
 
     def create_power_query_request(self, limit, query, from_date, to_date):
         endpoint_url = "dv/events/pq"
-        payload = {"limit": limit, "query": query, "toDate": to_date, "fromDate": from_date}
+        payload = {
+            "limit": limit,
+            "query": query,
+            "toDate": to_date,
+            "fromDate": from_date,
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -1202,7 +1260,9 @@ class Client(BaseClient):
         variables = {"id": alert_id, "status": status}
 
         response = self._http_request(
-            method="POST", url_suffix=graphql_endpoint, json_data={"query": query, "variables": variables}
+            method="POST",
+            url_suffix=graphql_endpoint,
+            json_data={"query": query, "variables": variables},
         )
         demisto.debug(f"UAM GraphQL Mutation - Update status response: {response}")
         return (response or {}).get("data", {})
@@ -1254,7 +1314,9 @@ class Client(BaseClient):
         # 3. Send the request with query and variables separated
         demisto.debug(f"S1 UAM GraphQL Mutation - Update Analyst Verdict for ID: {alert_id}")
         response = self._http_request(
-            method="POST", url_suffix=graphql_endpoint, json_data={"query": query, "variables": variables}
+            method="POST",
+            url_suffix=graphql_endpoint,
+            json_data={"query": query, "variables": variables},
         )
         return (response or {}).get("data", {})
 
@@ -1385,7 +1447,12 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=endpoint_url, resp_type="content")
 
     def download_threat_cloud_file(self, url):
-        return self._http_request(method="GET", full_url=url, resp_type="content", headers={"Accept": "application/json"})
+        return self._http_request(
+            method="GET",
+            full_url=url,
+            resp_type="content",
+            headers={"Accept": "application/json"},
+        )
 
     def get_installed_applications_request(self, query_params):
         endpoint_url = "agents/applications"
@@ -1408,7 +1475,11 @@ class Client(BaseClient):
         endpoint_url = "agents/actions/fetch-logs"
         payload = {
             "filter": {"ids": agent_ids},
-            "data": {"agentLogs": agent_logs, "customerFacingLogs": customer_facing_logs, "platformLogs": platform_logs},
+            "data": {
+                "agentLogs": agent_logs,
+                "customerFacingLogs": customer_facing_logs,
+                "platformLogs": platform_logs,
+            },
         }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
@@ -1417,10 +1488,23 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=f"threats?ids={threat_ids}")
         return response.get("data", [])
 
-    def get_power_query_request(self, account_ids: list, site_ids: list, query: str, from_date: str, to_date: str, limit: Any):
+    def get_power_query_request(
+        self,
+        account_ids: list,
+        site_ids: list,
+        query: str,
+        from_date: str,
+        to_date: str,
+        limit: Any,
+    ):
         endpoint_url = "dv/events/pq"
         payload = assign_params(
-            accountIds=account_ids, siteIds=site_ids, limit=limit, query=query, toDate=to_date, fromDate=from_date
+            accountIds=account_ids,
+            siteIds=site_ids,
+            limit=limit,
+            query=query,
+            toDate=to_date,
+            fromDate=from_date,
         )
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
@@ -1539,7 +1623,11 @@ class Client(BaseClient):
         return response.get("data", {}).get("download_links", [])
 
     def list_installed_applications_request(self, params: dict):
-        response = self._http_request(method="GET", url_suffix="singularity-marketplace/applications", params=params)
+        response = self._http_request(
+            method="GET",
+            url_suffix="singularity-marketplace/applications",
+            params=params,
+        )
         return response.get("data", []), response.get("pagination", {})
 
     def get_service_users_request(self, params: dict):
@@ -1576,6 +1664,49 @@ class Client(BaseClient):
             data["message"] = response.get("errors", [{}])[0].get("detail", "An Unknown Error occurred")
         return data
 
+    def threat_export_raw_threat_timeline(self, threat_id: str) -> list[dict[str, str]]:
+        endpoint_url = f"threats/{threat_id}/timeline"
+        query_params = assign_params(
+            skip=0,
+            limit=1000,
+            sortOrder="desc",
+        )
+        response = self._http_request(
+            method="GET",
+            url_suffix=endpoint_url,
+            params=query_params,
+            retries=3,
+            backoff_factor=5,
+            status_list_to_retry=[200, 202],
+        )
+        timeline: list = response.get("data", [])
+        cursor = dict_safe_get(response, ["pagination", "nextCursor"])
+        while cursor:
+            query_params["cursor"] = cursor
+            response = self._http_request(
+                method="GET",
+                url_suffix=endpoint_url,
+                params=query_params,
+                retries=3,
+                backoff_factor=5,
+                status_list_to_retry=[200, 202],
+            )
+            timeline.extend(response.get("data", []))
+            cursor = dict_safe_get(response, ["pagination", "nextCursor"])
+        return timeline
+
+    def threat_export_events(self, threat_id: str) -> list[dict[str, str]]:
+        endpoint_url = f"export/threats/{threat_id}/explore/events"
+        query_params = assign_params(format="json", eventTypes="events")
+        return self._http_request(
+            method="GET",
+            url_suffix=endpoint_url,
+            params=query_params,
+            retries=3,
+            backoff_factor=5,
+            status_list_to_retry=[200, 202],
+        )
+
 
 """ COMMANDS + REQUESTS FUNCTIONS """
 
@@ -1600,7 +1731,15 @@ def get_activities_command(client: Client, args: dict) -> CommandResults:
     Get a list of activities.
     """
     context_entries = []
-    headers = ["ID", "PrimaryDescription", "Data", "UserID", "CreatedAt", "ThreatID", "UpdatedAt"]
+    headers = [
+        "ID",
+        "PrimaryDescription",
+        "Data",
+        "UserID",
+        "CreatedAt",
+        "ThreatID",
+        "UpdatedAt",
+    ]
     activities = client.get_activities_request(**args)
 
     for activity in activities:
@@ -1628,7 +1767,11 @@ def get_activities_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One Activities", context_entries, headers=headers, removeNull=True, headerTransform=pascalToSpace
+            "Sentinel One Activities",
+            context_entries,
+            headers=headers,
+            removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.Activity",
         outputs_key_field="ID",
@@ -1657,7 +1800,13 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
     groups = client.get_groups_request(query_params)
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One Groups", groups, headers, headerTransform=pascalToSpace, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One Groups",
+            groups,
+            headers,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Group",
         outputs_key_field="ID",
         outputs=groups,
@@ -1676,7 +1825,12 @@ def delete_group(client: Client, args: dict) -> CommandResults:
     success = f"The deletion of group: {group_id} has failed"
     context = {"Success": success}
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Delete Group", context, removeNull=True, headerTransform=pascalToSpace),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Delete Group",
+            context,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         outputs_prefix="SentinelOne.DeleteGroup",
         outputs_key_field="Success",
         outputs=context,
@@ -1704,7 +1858,7 @@ def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            f'Sentinel One - Moved Agents\nTotal of: {agents_groups.get("AgentsMoved", 0)}agents were Moved successfully',
+            f"Sentinel One - Moved Agents\nTotal of: {agents_groups.get('AgentsMoved', 0)}agents were Moved successfully",
             context_entries,
             removeNull=True,
         ),
@@ -1720,7 +1874,14 @@ def get_agent_processes(client: Client, args: dict):
     Retrieve running processes for a specific agent.
     Note: This feature is obsolete and an empty array will always be returned
     """
-    headers = ["ProcessName", "StartTime", "Pid", "MemoryUsage", "CpuUsage", "ExecutablePath"]
+    headers = [
+        "ProcessName",
+        "StartTime",
+        "Pid",
+        "MemoryUsage",
+        "CpuUsage",
+        "ExecutablePath",
+    ]
     contents = []
     context = {}
     agents_ids = args.get("agents_ids")
@@ -1811,7 +1972,9 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "SentinelOne - Hash Reputation Verdict\nProvides hash reputation verdict:", contents, removeNull=True
+            "SentinelOne - Hash Reputation Verdict\nProvides hash reputation verdict:",
+            contents,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Hash",
         outputs_key_field="Hash",
@@ -1834,7 +1997,7 @@ def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
 
     # Parse response into context & content entries
     if affected_threats.get("affected") and int(affected_threats.get("affected")) > 0:
-        title = f'Total of {affected_threats.get("affected")} provided threats were marked successfully'
+        title = f"Total of {affected_threats.get('affected')} provided threats were marked successfully"
         affected = True
     else:
         affected = False
@@ -1878,7 +2041,7 @@ def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if mitigated_threats.get("affected") and int(mitigated_threats.get("affected")) > 0:
         mitigated = True
-        meta = f'Total of {mitigated_threats.get("affected")} provided threats were mitigated successfully'
+        meta = f"Total of {mitigated_threats.get('affected')} provided threats were mitigated successfully"
     else:
         mitigated = False
         meta = "No threats were mitigated"
@@ -1899,7 +2062,12 @@ def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
         )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Mitigating threats", contents, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Mitigating threats",
+            contents,
+            metadata=meta,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
         outputs=context_entries,
@@ -1924,7 +2092,7 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if updated_threats.get("affected") and int(updated_threats.get("affected")) > 0:
         updated = True
-        meta = f'Total of {updated_threats.get("affected")} provided threats analyst verdict were updated successfully'
+        meta = f"Total of {updated_threats.get('affected')} provided threats analyst verdict were updated successfully"
     else:
         updated = False
         meta = "No threats were updated"
@@ -1946,7 +2114,10 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Update threats analyst verdict", contents, metadata=meta, removeNull=True
+            "Sentinel One - Update threats analyst verdict",
+            contents,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
@@ -1972,7 +2143,7 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if updated_alerts.get("affected") and int(updated_alerts.get("affected")) > 0:
         updated = True
-        meta = f'Total of {updated_alerts.get("affected")} provided alerts analyst verdict were updated successfully'
+        meta = f"Total of {updated_alerts.get('affected')} provided alerts analyst verdict were updated successfully"
     else:
         updated = False
         meta = "No alerts were updated"
@@ -1993,7 +2164,12 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
         )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Update alerts analyst verdict", contents, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Update alerts analyst verdict",
+            contents,
+            metadata=meta,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Alert",
         outputs_key_field="ID",
         outputs=context_entries,
@@ -2036,7 +2212,10 @@ def update_uam_alert_status(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Update UAM Alerts Status", context_entries, metadata=meta, removeNull=True
+            "Sentinel One - Update UAM Alerts Status",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.UAMAlert",
         outputs_key_field="ID",
@@ -2077,7 +2256,10 @@ def update_uam_alert_analyst_verdict(client: Client, args: dict) -> CommandResul
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Update UAM Alerts Analyst Verdict", context_entries, metadata=meta, removeNull=True
+            "Sentinel One - Update UAM Alerts Analyst Verdict",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.UAMAlert",
         outputs_key_field="ID",
@@ -2288,7 +2470,7 @@ def enable_star_rules(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if enabled_rules.get("affected") and int(enabled_rules.get("affected")) > 0:
         enabled = True
-        meta = f'Total of {enabled_rules.get("affected")} provided star rules were enabled successfully'
+        meta = f"Total of {enabled_rules.get('affected')} provided star rules were enabled successfully"
     else:
         enabled = False
         meta = "No star rules were enabled"
@@ -2324,7 +2506,7 @@ def disable_star_rules(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if disabled_rules.get("affected") and int(disabled_rules.get("affected")) > 0:
         disabled = True
-        meta = f'Total of {disabled_rules.get("affected")} provided star rules were disabled successfully'
+        meta = f"Total of {disabled_rules.get('affected')} provided star rules were disabled successfully"
     else:
         disabled = False
         meta = "No star rules were disabled"
@@ -2360,7 +2542,7 @@ def delete_star_rule(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if deleted_rules.get("affected") and int(deleted_rules.get("affected")) > 0:
         deleted = True
-        meta = f'Total of {deleted_rules.get("affected")} provided star rules were deleted successfully'
+        meta = f"Total of {deleted_rules.get('affected')} provided star rules were deleted successfully"
     else:
         deleted = False
         meta = "No star rules were deleted"
@@ -2397,7 +2579,7 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if threat_notes.get("affected") and int(threat_notes.get("affected")) > 0:
         status = "Success"
-        meta = f'Total of {threat_notes.get("affected")} provided threats. THreat notes were successfully Added for them'
+        meta = f"Total of {threat_notes.get('affected')} provided threats. THreat notes were successfully Added for them"
     else:
         status = "Failed"
         meta = "No threat notes were Added"
@@ -2405,7 +2587,11 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
         context_entries.append({"ID": threat_id, "Note": note, "Status": status})
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Write threat note", context_entries, removeNull=True, metadata=meta, headerTransform=pascalToSpace
+            "Sentinel One - Write threat note",
+            context_entries,
+            removeNull=True,
+            metadata=meta,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
@@ -2438,7 +2624,10 @@ def get_threat_notes(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Get Threat Notes", context_entries, headerTransform=pascalToSpace, removeNull=True
+            "Sentinel One - Get Threat Notes",
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Notes",
         outputs_key_field="ID",
@@ -2466,7 +2655,17 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
     description = args.get("description")
 
     # Make request and get raw response
-    ioc = client.create_ioc_request(name, source, ioc_type, method, validUntil, value, account_ids, externalId, description)[0]
+    ioc = client.create_ioc_request(
+        name,
+        source,
+        ioc_type,
+        method,
+        validUntil,
+        value,
+        account_ids,
+        externalId,
+        description,
+    )[0]
 
     if ioc:
         context = {
@@ -2566,7 +2765,14 @@ def run_powerquery(client: Client, args: dict) -> CommandResults:
     team_emails = argToList(args.get("team_emails")) or None
 
     pq_response = client.run_powerquery_request(
-        sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails
+        sdl_url,
+        sdl_api_key,
+        query,
+        start_time,
+        end_time,
+        priority,
+        recurring,
+        team_emails,
     )
 
     # Extract columns and rows
@@ -2575,7 +2781,7 @@ def run_powerquery(client: Client, args: dict) -> CommandResults:
 
     table_data = [dict(zip(columns, row)) for row in rows]
 
-    summary = f"### SentinelOne PowerQuery Results\n" f"**Query:** `{args.get('query')}`  \n\n"
+    summary = f"### SentinelOne PowerQuery Results\n**Query:** `{args.get('query')}`  \n\n"
 
     md = summary + tableToMarkdown("Query Output", table_data)
 
@@ -2587,7 +2793,10 @@ def run_powerquery(client: Client, args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        readable_output=md, outputs_prefix="SentinelOne.PowerQuery.Results", outputs=outputs, raw_response=pq_response
+        readable_output=md,
+        outputs_prefix="SentinelOne.PowerQuery.Results",
+        outputs=outputs,
+        raw_response=pq_response,
     )
 
 
@@ -2607,7 +2816,7 @@ def delete_ioc(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if deleted_iocs.get("affected") and int(deleted_iocs.get("affected")) > 0:
         deleted = True
-        meta = f'Total of {deleted_iocs.get("affected")} provided IOCs were deleted successfully'
+        meta = f"Total of {deleted_iocs.get('affected')} provided IOCs were deleted successfully"
     else:
         deleted = False
         meta = "No IOC were deleted"
@@ -2616,7 +2825,11 @@ def delete_ioc(client: Client, args: dict) -> CommandResults:
         context_entries.append({"UUID": uuid, "Deleted": deleted})
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Delete List of IOCs", context_entries, removeNull=True, metadata=meta, headerTransform=pascalToSpace
+            "Sentinel One - Delete List of IOCs",
+            context_entries,
+            removeNull=True,
+            metadata=meta,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.IOC",
         outputs_key_field="UUID",
@@ -2801,7 +3014,12 @@ def update_threat_status(client: Client, args: dict) -> CommandResults:
         meta = f"Total of {affected} provided threats status were updated successfully"
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Update threats status", context_entries, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Update threats status",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
         outputs=context_entries,
@@ -2842,7 +3060,12 @@ def update_alert_status(client: Client, args: dict) -> CommandResults:
         meta = f"Total of {affected} provided alerts status were updated successfully"
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Update alerts status", context_entries, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Update alerts status",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Alert",
         outputs_key_field="ID",
         outputs=context_entries,
@@ -2900,7 +3123,7 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
 
     if downloaded_files.get("affected") and int(downloaded_files.get("affected")) > 0:
         downloadable = True
-        meta = f'Total of {downloaded_files.get("affected")} provided threats were downloaded successfully'
+        meta = f"Total of {downloaded_files.get('affected')} provided threats were downloaded successfully"
     else:
         downloadable = False
         meta = "No threats were downloaded"
@@ -2910,12 +3133,27 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
         threat_file_download_endpoint = client.download_url_request(threat_id)
         if threat_file_download_endpoint != "-1":
             zip_file_data = client.download_threat_file_request(threat_file_download_endpoint)
-            files.append(fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
-            zipped_file = fileResult(filename=f"{threat_id}.zip", data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            files.append(
+                fileResult(
+                    filename=f"{threat_id}.zip",
+                    data=zip_file_data,
+                    file_type=EntryType.ENTRY_INFO_FILE,
+                )
+            )
+            zipped_file = fileResult(
+                filename=f"{threat_id}.zip",
+                data=zip_file_data,
+                file_type=EntryType.ENTRY_INFO_FILE,
+            )
         context_entries.append({"Downloadable": downloadable, "ID": threat_id, "ZippedFile": zipped_file})
     return [
         CommandResults(
-            readable_output=tableToMarkdown("Sentinel One - Fetch threat file", context_entries, metadata=meta, removeNull=False),
+            readable_output=tableToMarkdown(
+                "Sentinel One - Fetch threat file",
+                context_entries,
+                metadata=meta,
+                removeNull=False,
+            ),
             outputs_prefix="SentinelOne.Threat",
             outputs_key_field="ID",
             outputs=context_entries,
@@ -2937,12 +3175,20 @@ def threat_download_from_cloud(client: Client, args: dict) -> list[CommandResult
         file_download_url = response["downloadUrl"]
         try:
             zip_file_data = client.download_threat_cloud_file(file_download_url)
-            zipped_file = fileResult(filename=response["fileName"], data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            zipped_file = fileResult(
+                filename=response["fileName"],
+                data=zip_file_data,
+                file_type=EntryType.ENTRY_INFO_FILE,
+            )
             files.append(zipped_file)
             downloadable = True
         except Exception:
             zipped_file = "File not available for Download from BinaryVault"
-    context_entry = {"Downloadable": downloadable, "ID": threat_id, "ZippedFile": zipped_file}
+    context_entry = {
+        "Downloadable": downloadable,
+        "ID": threat_id,
+        "ZippedFile": zipped_file,
+    }
     return [
         CommandResults(
             readable_output=tableToMarkdown("Sentinel One - Download From Cloud", context_entry, removeNull=False),
@@ -3076,7 +3322,7 @@ def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     # Parse response into context & content entries
     if resolved_threats.get("affected") and int(resolved_threats.get("affected")) > 0:
         resolved = True
-        title = f'Total of {resolved_threats.get("affected")} provided threats were resolved successfully'
+        title = f"Total of {resolved_threats.get('affected')} provided threats were resolved successfully"
     else:
         resolved = False
         title = "No threats were resolved"
@@ -3090,7 +3336,11 @@ def resolve_threat_command(client: Client, args: dict) -> CommandResults:
         )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Resolving threats\n" + title, context_entries, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Resolving threats\n" + title,
+            context_entries,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
         outputs=context_entries,
@@ -3145,7 +3395,7 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
     initiated = client.initiate_endpoint_scan_request(agent_ids)
     if initiated.get("affected") and int(initiated.get("affected")) > 0:
         updated = True
-        meta = f'Total of {initiated.get("affected")} provided agents were successfully initiated the scan'
+        meta = f"Total of {initiated.get('affected')} provided agents were successfully initiated the scan"
     else:
         updated = False
         meta = "No agents scan was initiated"
@@ -3153,7 +3403,10 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         context_entries.append({"Agent ID": agent_id, "Initiated": updated})
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Initiate endpoint scan on provided Agent ID", context_entries, metadata=meta, removeNull=True
+            "Sentinel One - Initiate endpoint scan on provided Agent ID",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Agent",
         outputs_key_field="Agent ID",
@@ -3172,7 +3425,7 @@ def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
     aborted = client.abort_endpoint_scan_request(agent_ids)
     if aborted.get("affected") and int(aborted.get("affected")) > 0:
         updated = True
-        meta = f'Total of {aborted.get("affected")} provided agents were successfully aborted the scan'
+        meta = f"Total of {aborted.get('affected')} provided agents were successfully aborted the scan"
     else:
         updated = False
         meta = "No agents scan was aborted"
@@ -3180,7 +3433,10 @@ def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
         context_entries.append({"Agent ID": agent_id, "Aborted": updated})
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Abort endpoint scan on provided Agent ID", context_entries, metadata=meta, removeNull=True
+            "Sentinel One - Abort endpoint scan on provided Agent ID",
+            context_entries,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Agent",
         outputs_key_field="Agent ID",
@@ -3209,7 +3465,10 @@ def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
         meta = "No entity was affected."
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True
+            "Sentinel One - Get the Agent and Endpoint logs",
+            context,
+            metadata=meta,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Agent",
         outputs_key_field="Affected",
@@ -3234,7 +3493,12 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
 
     # Make request and get raw response
     exclusion_items = client.get_exclusions_request(
-        item_ids, os_types, exclusion_type, limit, include_parents=should_include_parent, include_children=should_include_children
+        item_ids,
+        os_types,
+        exclusion_type,
+        limit,
+        include_parents=should_include_parent,
+        include_children=should_include_children,
     )
 
     # Parse response into context & content entries
@@ -3279,7 +3543,13 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
     item_ids: list = []
     limit = OS_COUNT + 1
     white_list = client.get_exclusions_request(
-        item_ids, os_type, exclusion_type, limit, item, include_children=True, include_parents=True
+        item_ids,
+        os_type,
+        exclusion_type,
+        limit,
+        item,
+        include_children=True,
+        include_parents=True,
     )
     demisto.debug(f"white_list: {white_list}")
 
@@ -3319,7 +3589,10 @@ def remove_item_from_whitelist(client: Client, args: dict) -> CommandResults:
             numRemoved += 1
             result.append(client.remove_exclusion_item_request(item_id=item_id))
 
-        status = {"item": item, "status": f"Removed {numRemoved} entries from whitelist"}
+        status = {
+            "item": item,
+            "status": f"Removed {numRemoved} entries from whitelist",
+        }
 
     return CommandResults(
         readable_output=f"{item}: {status['status']}.",
@@ -3351,7 +3624,14 @@ def create_white_item_command(client: Client, args: dict):
 
     # Make request and get raw response
     new_item = client.create_exclusion_item_request(
-        exclusion_type, exclusion_value, os_type, description, exclusion_mode, path_exclusion_type, group_ids, site_ids
+        exclusion_type,
+        exclusion_value,
+        os_type,
+        description,
+        exclusion_mode,
+        path_exclusion_type,
+        group_ids,
+        site_ids,
     )
 
     # Parse response into context & content entries
@@ -3560,7 +3840,10 @@ def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Dashboard Threat Summary", context_entries, removeNull=True, headerTransform=pascalToSpace
+            "Sentinel One - Dashboard Threat Summary",
+            context_entries,
+            removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="SentinelOne.Threat",
         outputs_key_field="ID",
@@ -3589,10 +3872,18 @@ def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
         # Build multi-section markdown (each dict → single row table)
         readable_output = ""
         if agent_detection_info:
-            readable_output += tableToMarkdown("SentinelOne - Agent Detection Info", [agent_detection_info], removeNull=True)
+            readable_output += tableToMarkdown(
+                "SentinelOne - Agent Detection Info",
+                [agent_detection_info],
+                removeNull=True,
+            )
 
         if agent_realtime_info:
-            readable_output += tableToMarkdown("SentinelOne - Agent Realtime Info", [agent_realtime_info], removeNull=True)
+            readable_output += tableToMarkdown(
+                "SentinelOne - Agent Realtime Info",
+                [agent_realtime_info],
+                removeNull=True,
+            )
 
         if threat_info:
             readable_output += tableToMarkdown("SentinelOne - Threat Info", [threat_info], removeNull=True)
@@ -3610,6 +3901,48 @@ def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=threat_analysis_response,
     )
+
+
+def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResults | list]:
+    threat_id: str = str(args.get("threat_id"))
+    timeline = client.threat_export_raw_threat_timeline(threat_id)
+    file_result = fileResult(
+        filename=f"{threat_id}_timeline.json",
+        data=json.dumps(timeline),
+        file_type=EntryType.ENTRY_INFO_FILE,
+    )
+    context_entry = {"ThreatId": threat_id, "Filename": f"{threat_id}_timeline.json", "Timeline": file_result}
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Sentinel One - Threat Timeline", context_entry, removeNull=False),
+            outputs_prefix="SentinelOne.Export.Timeline",
+            outputs_key_field="ThreatId",
+            outputs=context_entry,
+            raw_response=file_result,
+        ),
+        *[file_result],
+    ]
+
+
+def export_threat_events(client: Client, args: dict) -> list[CommandResults | list]:
+    threat_id: str = str(args.get("threat_id"))
+    threat_events = client.threat_export_events(threat_id)
+    file_result = fileResult(
+        filename=f"threats_{threat_id}.json",
+        data=json.dumps(threat_events),
+        file_type=EntryType.ENTRY_INFO_FILE,
+    )
+    context_entry = {"ThreatId": threat_id, "Filename": f"threats_{threat_id}.json", "Events": file_result}
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Sentinel One - Threat Events", context_entry, removeNull=False),
+            outputs_prefix="SentinelOne.Export.Events",
+            outputs_key_field="ThreatId",
+            outputs=context_entry,
+            raw_response=file_result,
+        ),
+        *[file_result],
+    ]
 
 
 # Agents Commands
@@ -3675,7 +4008,10 @@ def get_agent_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Get Agent Details", context_entries, headerTransform=pascalToSpace, removeNull=True
+            "Sentinel One - Get Agent Details",
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Agent",
         outputs_key_field="ID",
@@ -3937,7 +4273,11 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
 
     # using the CommandResults.to_context in order to get the correct outputs key
     context.update(
-        CommandResults(outputs_prefix="SentinelOne.Event", outputs_key_field=["ProcessID", "EventID"], outputs=contents)
+        CommandResults(
+            outputs_prefix="SentinelOne.Event",
+            outputs_key_field=["ProcessID", "EventID"],
+            outputs=contents,
+        )
         .to_context()
         .get("EntryContext", {})
     )
@@ -3945,7 +4285,9 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     context.update({"Event(val.ID && val.ID === obj.ID)": event_standards})
 
     return CommandResults(
-        readable_output=tableToMarkdown("SentinelOne Events", contents, removeNull=True), outputs=context, raw_response=events
+        readable_output=tableToMarkdown("SentinelOne Events", contents, removeNull=True),
+        outputs=context,
+        raw_response=events,
     )
 
 
@@ -4046,7 +4388,10 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 source=args.get("source"),
             )
 
-            status = {"hash": sha1 or sha256, "status": f"Added to {scope_str} blocklist"}
+            status = {
+                "hash": sha1 or sha256,
+                "status": f"Added to {scope_str} blocklist",
+            }
             if sha1:
                 status["sha1"] = sha1
             if sha256:
@@ -4099,7 +4444,10 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                     status["sha256"] = sha256
                 result = js
             elif code == 4000010 and title == "Validation Error":
-                status = {"hash": sha1 or sha256, "status": f"Error: Invalid siteId - {detail}"}
+                status = {
+                    "hash": sha1 or sha256,
+                    "status": f"Error: Invalid siteId - {detail}",
+                }
                 if sha1:
                     status["sha1"] = sha1
                 if sha256:
@@ -4123,7 +4471,12 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
 
 
 def get_hash_ids_from_blocklist(
-    client: Client, hash_value: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
+    client: Client,
+    hash_value: str,
+    os_type: str = None,
+    site_ids: str = None,
+    group_ids: str = None,
+    account_ids: str = None,
 ) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
@@ -4226,7 +4579,10 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
                 numRemoved += 1
                 result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
 
-            status = {"hash": ", ".join(hash_values), "status": f"Removed {numRemoved} entries from blocklist"}
+            status = {
+                "hash": ", ".join(hash_values),
+                "status": f"Removed {numRemoved} entries from blocklist",
+            }
 
     except DemistoException as e:
         # Handle validation error for invalid siteId (4000010 error code)
@@ -4238,7 +4594,10 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
             and (error := errors[0]).get("code") == 4000010
             and error.get("title") == "Validation Error"
         ):
-            status = {"hash": ", ".join(hash_values), "status": f"Error: Invalid siteId - {error.get('detail')}"}
+            status = {
+                "hash": ", ".join(hash_values),
+                "status": f"Error: Invalid siteId - {error.get('detail')}",
+            }
             result = js
         else:
             # Reraise the exception if it's not the expected validation error
@@ -4404,7 +4763,10 @@ def get_accounts(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Sentinel One - Get Accounts Details", context_entries, headerTransform=pascalToSpace, removeNull=True
+            "Sentinel One - Get Accounts Details",
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.Accounts",
         outputs_key_field="ID",
@@ -4451,7 +4813,12 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown("SentinelOne - Run Remote Script", run_remote_script, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown(
+            "SentinelOne - Run Remote Script",
+            run_remote_script,
+            headers=headers,
+            removeNull=True,
+        ),
         outputs_prefix="SentinelOne.RunRemoteScript",
         outputs=run_remote_script,
         raw_response=run_remote_script,
@@ -4480,7 +4847,10 @@ def get_remote_script_status(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "SentinelOne - Get Remote Scripts Tasks Status", remote_script_statuses, headers=headers, removeNull=True
+            "SentinelOne - Get Remote Scripts Tasks Status",
+            remote_script_statuses,
+            headers=headers,
+            removeNull=True,
         ),
         outputs_prefix="SentinelOne.GetRemoteScript",
         outputs=remote_script_statuses,
@@ -4504,15 +4874,26 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
             response = requests.get(url=result.get("downloadUrl"))
             zip_file_data = response.content
             file_results.append(
-                fileResult(filename=result.get("fileName", ""), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+                fileResult(
+                    filename=result.get("fileName", ""),
+                    data=zip_file_data,
+                    file_type=EntryType.ENTRY_INFO_FILE,
+                )
             )
             context_entries.append(
-                {"taskId": result.get("taskId"), "fileName": result.get("fileName"), "downloadUrl": result.get("downloadUrl")}
+                {
+                    "taskId": result.get("taskId"),
+                    "fileName": result.get("fileName"),
+                    "downloadUrl": result.get("downloadUrl"),
+                }
             )
     return [
         CommandResults(
             readable_output=tableToMarkdown(
-                "SentinelOne - Get Remote Scripts Results", results, headers=headers, removeNull=True
+                "SentinelOne - Get Remote Scripts Results",
+                results,
+                headers=headers,
+                removeNull=True,
             ),
             outputs_prefix="SentinelOne.RemoteScriptResults",
             outputs_key_field="taskId",
@@ -4546,7 +4927,12 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         if isinstance(output, dict):
             parent_task_id = output.get("parentTaskId")
             args["parent_task_id"] = parent_task_id
-        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval,
+            args=args,
+            timeout_in_seconds=timeout,
+        )
         command_results.scheduled_command = scheduled_command
         return command_results
 
@@ -4572,7 +4958,12 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         final_command_results = get_remote_script_results(client, results_args)
         return final_command_results
     else:
-        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval,
+            args=args,
+            timeout_in_seconds=timeout,
+        )
         return CommandResults(scheduled_command=scheduled_command)
 
 
@@ -4610,7 +5001,12 @@ def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, qu
             raw_response=query_response,
         )
     else:
-        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval,
+            args=args,
+            timeout_in_seconds=timeout,
+        )
         return CommandResults(scheduled_command=scheduled_command)
 
 
@@ -4794,7 +5190,11 @@ def get_service_users_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "SentinelOne - Get Service Users", context_entries, headerTransform=pascalToSpace, removeNull=True, metadata=meta
+            "SentinelOne - Get Service Users",
+            context_entries,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=meta,
         ),
         outputs_prefix="SentinelOne.ServiceUsers",
         outputs_key_field="ID",
@@ -4823,7 +5223,12 @@ def _is_uam_alert(mirrored_object: dict) -> bool:
     return "node" in mirrored_object
 
 
-def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str, close_xsoar_incident: bool):
+def set_xsoar_incident_entries(
+    mirrored_object: dict,
+    entries: list,
+    remote_incident_id: str,
+    close_xsoar_incident: bool,
+):
     incident_type = "UAM_ALERT" if _is_uam_alert(mirrored_object) else "THREAT"
     demisto.debug(
         f"set_xsoar_incident_entries: id={remote_incident_id}, type={incident_type}, close_enabled={close_xsoar_incident}"
@@ -5425,14 +5830,14 @@ def to_incident(type, data):
         incident_info = data.get("threatInfo", {}) if IS_VERSION_2_1 else data
         return {
             "rawJSON": json.dumps(data),
-            "name": f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}',
+            "name": f"Sentinel One {type}: {incident_info.get('classification', 'Not classified')}",
             "occurred": incident_info.get("createdAt"),
         }
 
     elif type == "Alert":
         return {
             "rawJSON": json.dumps(data),
-            "name": f'Sentinel One {type}: {data.get("ruleInfo").get("name")}',
+            "name": f"Sentinel One {type}: {data.get('ruleInfo').get('name')}",
             "occurred": data.get("alertInfo").get("createdAt"),
         }
 
@@ -5444,7 +5849,7 @@ def to_incident(type, data):
         data["id"] = node.get("id", "")
         return {
             "rawJSON": json.dumps(data),
-            "name": f'Sentinel One {type}: {node.get("name")}',
+            "name": f"Sentinel One {type}: {node.get('name')}",
             "occurred": node.get("createdAt"),
             "severity": UAM_SEVERITY_MAPPING.get(raw_severity, 0),  # type: ignore[assignment]
             "CustomFields": build_uam_custom_fields(node),  # type: ignore[assignment]
@@ -5609,6 +6014,8 @@ def main():
             "sentinelone-threat-download-from-cloud": threat_download_from_cloud,
             "sentinelone-update-uam-alert-status": update_uam_alert_status,
             "sentinelone-update-uam-alert-verdict": update_uam_alert_analyst_verdict,
+            "sentinelone-export-full-threat-timeline": export_full_threat_timeline,
+            "sentinelone-export-threat-events": export_threat_events,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,
