@@ -200,7 +200,7 @@ script:
       description: The connection type for the session.
       type: String
     - contextPath: GravityZone.Endpoint.ActiveSessions.StartTime
-      description: The session start time, if available.
+      description: The session start time, if available (e.g., "2021-05-19T10:37:56Z").
       type: Date
     - contextPath: GravityZone.Endpoint.ActiveSessions.UserSID
       description: The Security Identifier (SID) of the logged-in user, if available.
@@ -239,10 +239,11 @@ script:
       default: false
     - name: polling
       isArray: false
-      description: "Controls whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated. Default and recommended value: true."
+      description: "Whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated."
       required: false
       secret: false
       default: false
+      defaultValue: true
     outputs:
     - contextPath: GravityZone.MemoryDump.TaskID
       description: The memory dump task ID.
@@ -260,10 +261,10 @@ script:
       description: The endpoint hostname.
       type: String
     - contextPath: GravityZone.MemoryDump.StartDate
-      description: The date and time when the memory dump task started.
+      description: The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z").
       type: Date
     - contextPath: GravityZone.MemoryDump.EndDate
-      description: The date and time when the memory dump task ended, if available.
+      description: The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z").
       type: Date
     - contextPath: GravityZone.MemoryDump.ErrorCode
       description: An error code if the memory dump task fails, or Success if the task completes successfully.
@@ -1032,7 +1033,7 @@ script:
       default: false
     outputs: []
   - name: gz-poll-endpoint-users-loggedin-status
-    description: Verifies the status of a task initiated via gz-endpoint-users-loggedin. This command is invoked automatically and is not available for direct use.
+    description: Verifies the status of a task initiated via gz-endpoint-users-loggedin. This command is invoked automatically and is not intended for direct use.
     polling: true
     arguments:
     - name: task_id
@@ -1066,10 +1067,11 @@ script:
       default: false
     - name: polling
       isArray: false
-      description: "Controls whether the command waits for the gz-endpoint-create-memory-dump task completion. If set to true, the command returns the final result after the task completes successfully or fails. If set to false, the command returns immediately, providing only the task status. Default and recommended value: true."
+      description: "Whether the command waits for the gz-endpoint-create-memory-dump task completion. If set to true, the command returns the final result after the task completes successfully or fails. If set to false, the command returns immediately, providing only the task status."
       required: false
       secret: false
       default: false
+      defaultValue: true
     outputs:
     - contextPath: GravityZone.MemoryDump.TaskID
       description: The ID of the task started through gz-endpoint-create-memory-dump.
@@ -1087,10 +1089,10 @@ script:
       description: The endpoint hostname.
       type: String
     - contextPath: GravityZone.MemoryDump.StartDate
-      description: The date and time when the memory dump creation task started.
+      description: The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z").
       type: Date
     - contextPath: GravityZone.MemoryDump.EndDate
-      description: The date and time when the memory dump creation task ended, if available.
+      description: The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z").
       type: Date
     - contextPath: GravityZone.MemoryDump.ErrorCode
       description: An error code if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully.

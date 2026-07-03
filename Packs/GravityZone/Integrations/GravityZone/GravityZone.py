@@ -130,7 +130,6 @@ MEMORY_DUMP_STATUS_PENDING = "Pending"
 
 
 class Client(BaseClient):
-    @logger
     def __init__(
         self,
         url: str,
@@ -998,7 +997,7 @@ def check_task_status(
                 task_output,
                 metadata,
                 error_code=next(
-                    (subtask["errorCode"] for subtask in task_output.get("subtasks", []) if subtask.get("status") == 2),
+                    (subtask["errorCode"] for subtask in (task_output.get("subtasks") or []) if subtask.get("status") == 2),
                     None,
                 ),
             )
@@ -1763,7 +1762,7 @@ def generate_processed_task_command_result(
     task_output_prefix = f"GravityZone.Command.{command_name_from_task_type}"
     outputs = []
     hosts = []
-    for subtask in task_output.get("subtasks", []):
+    for subtask in task_output.get("subtasks") or []:
         data = generate_task_output(
             task_id=task_id,
             task_type=command_name_from_task_type,
@@ -1839,7 +1838,7 @@ def generate_task_output(
 
 def _extract_active_sessions_from_task(task_output: dict[str, Any]) -> list[dict[str, Any]]:
     sessions: list[dict[str, Any]] = []
-    for subtask in task_output.get("subtasks", []):
+    for subtask in task_output.get("subtasks") or []:
         if subtask.get("status") != TASK_STATUS_PROCESSED:
             continue
 
@@ -1879,7 +1878,7 @@ def _extract_endpoint_summary_from_task(task_output: dict[str, Any], endpoint_id
     resolved_endpoint_id = endpoint_id
     resolved_hostname = ""
 
-    for subtask in task_output.get("subtasks", []):
+    for subtask in task_output.get("subtasks") or []:
         subtask_endpoint_id = subtask.get("endpointId") or ""
         subtask_hostname = subtask.get("endpointName") or ""
 
@@ -1983,7 +1982,7 @@ def _extract_memory_dump_summary(
     processed_subtask: dict[str, Any] = {}
     download_url = ""
 
-    for subtask in task_output.get("subtasks", []):
+    for subtask in task_output.get("subtasks") or []:
         subtask_endpoint_id = subtask.get("endpointId") or ""
         subtask_hostname = subtask.get("endpointName") or ""
 
@@ -2022,7 +2021,7 @@ def _build_memory_dump_results(
 
     if memory_dump_subtask is None:
         available_endpoint_ids = [
-            subtask.get("endpointId") for subtask in task_output.get("subtasks", []) if subtask.get("endpointId")
+            subtask.get("endpointId") for subtask in (task_output.get("subtasks") or []) if subtask.get("endpointId")
         ]
         if endpoint_id:
             return CommandResults(
