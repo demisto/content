@@ -1,3 +1,4 @@
+import json
 import pytest
 import demistomock as demisto
 from unittest.mock import Mock, patch
@@ -3069,9 +3070,63 @@ class TestCommands:
 
         result = model_security_scans_create_command(mock_client, {"model_uri": "hf://bert", "security_group_uuid": "sg-1"})
 
+        # scan_origin defaults to MODEL_SECURITY_API when not provided.
+        assert mock_http.call_args.kwargs["json_data"]["scan_origin"] == "MODEL_SECURITY_API"
         assert result.outputs_prefix == "PrismaAIRs.ModelSecurityScanCreate"
         assert result.outputs_key_field == "uuid"
         assert result.outputs["uuid"] == "scan-1"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_create_scan_origin_override(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-create passes an explicit scan_origin through to the request body.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "scan-2", "status": "PENDING"}
+
+        model_security_scans_create_command(
+            mock_client,
+            {"model_uri": "hf://bert", "security_group_uuid": "sg-1", "scan_origin": "HUGGING_FACE"},
+        )
+
+        assert mock_http.call_args.kwargs["json_data"]["scan_origin"] == "HUGGING_FACE"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_scans_create_with_labels(self, mock_http: Mock, mock_client: Client) -> None:
+        """model-security-scans-create passes labels through and echoes them in context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        labels = [{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}]
+        mock_http.return_value = {"uuid": "scan-3", "status": "PENDING", "labels": labels}
+
+        result = model_security_scans_create_command(
+            mock_client,
+            {"model_uri": "hf://bert", "security_group_uuid": "sg-1", "labels": json.dumps(labels)},
+        )
+
+        assert mock_http.call_args.kwargs["json_data"]["labels"] == labels
+        assert result.outputs["labels"] == labels
+
+    def test_model_security_scans_create_invalid_labels(self, mock_client: Client) -> None:
+        """model-security-scans-create rejects malformed labels.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="labels must be a valid JSON array"):
+            model_security_scans_create_command(
+                mock_client, {"model_uri": "hf://bert", "security_group_uuid": "sg-1", "labels": "not-json"}
+            )
+        with pytest.raises(ValueError, match="each with 'key' and 'value'"):
+            model_security_scans_create_command(
+                mock_client,
+                {"model_uri": "hf://bert", "security_group_uuid": "sg-1", "labels": '[{"key": "env"}]'},
+            )
 
     @patch.object(Client, "http_request")
     def test_model_security_scans_get_command(self, mock_http: Mock, mock_client: Client) -> None:

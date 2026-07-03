@@ -2846,16 +2846,18 @@ Create a new model security scan to check a model for supply chain security issu
 | --- | --- | --- |
 | model_uri | Model URI (HuggingFace URL like https://huggingface.co/microsoft/DialoGPT-medium or local path). | Required |
 | security_group_uuid | Security group UUID to use for scanning. | Required |
-| scan_origin | Scan origin identifier. Default is XSOAR_INTEGRATION. | Optional |
+| scan_origin | Scan origin identifier. Possible values are: MODEL_SECURITY_SDK, MODEL_SECURITY_API, MODEL_SECURITY_FRONTEND, HUGGING_FACE. Default is MODEL_SECURITY_API. | Optional |
 | model_name | Model name (optional metadata). | Optional |
 | model_author | Model author (optional metadata). | Optional |
 | model_version | Model version (optional metadata). | Optional |
+| labels | Labels to tag the scan, as a JSON array of key/value objects, e.g. \[{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}\]. Keys (\<=128 chars) and values (\<=256 chars) must match ^\[a-zA-Z0-9_-\]+$. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.ModelSecurityScanCreate.uuid | String | Scan UUID. |
+| PrismaAIRs.ModelSecurityScanCreate.labels | Unknown | Labels (key/value pairs) applied to the scan. |
 | PrismaAIRs.ModelSecurityScanCreate.model_uri | String | Model URI that was scanned. |
 | PrismaAIRs.ModelSecurityScanCreate.security_group_uuid | String | Security group UUID used for scanning. |
 | PrismaAIRs.ModelSecurityScanCreate.security_group_name | String | Security group name. |

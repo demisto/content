@@ -2207,7 +2207,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
     """
     model_uri = args.get("model_uri")
     security_group_uuid = args.get("security_group_uuid")
-    scan_origin = args.get("scan_origin", "XSOAR_INTEGRATION")
+    scan_origin = args.get("scan_origin", "MODEL_SECURITY_API")
 
     if not model_uri:
         raise ValueError("model_uri is required")
@@ -2231,6 +2231,20 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
         request_body["model_author"] = args.get("model_author")
     if args.get("model_version"):
         request_body["model_version"] = args.get("model_version")
+
+    # Optional labels: array of {key, value} objects (same JSON format as model-security-labels-add).
+    # API constraints: key <= 128 chars, value <= 256 chars, both matching ^[a-zA-Z0-9_-]+$.
+    if args.get("labels"):
+        labels_json = args.get("labels")
+        try:
+            labels = json.loads(labels_json or "")
+        except (json.JSONDecodeError, ValueError) as e:
+            raise ValueError(f"labels must be a valid JSON array: {e}")
+        if not isinstance(labels, list) or not all(
+            isinstance(label, dict) and "key" in label and "value" in label for label in labels
+        ):
+            raise ValueError("labels must be a JSON array of objects, each with 'key' and 'value' fields")
+        request_body["labels"] = labels
 
     # Call Model Security Data API to create scan
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/model-security/scans-client.ts
@@ -2257,6 +2271,10 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
         "updated_at": response.get("updated_at"),
         "tsg_id": response.get("tsg_id"),
     }
+
+    # Add labels if returned by the API
+    if response.get("labels"):
+        scan_info["labels"] = response.get("labels")
 
     # Add eval_summary if present
     eval_summary = response.get("eval_summary")

@@ -2470,7 +2470,13 @@ script:
     - name: scan_origin
       required: false
       description: Scan origin identifier.
-      defaultValue: 'XSOAR_INTEGRATION'
+      defaultValue: 'MODEL_SECURITY_API'
+      auto: PREDEFINED
+      predefined:
+      - 'MODEL_SECURITY_SDK'
+      - 'MODEL_SECURITY_API'
+      - 'MODEL_SECURITY_FRONTEND'
+      - 'HUGGING_FACE'
     - name: model_name
       required: false
       description: Model name (optional metadata).
@@ -2480,10 +2486,16 @@ script:
     - name: model_version
       required: false
       description: Model version (optional metadata).
+    - name: labels
+      required: false
+      description: 'Labels to tag the scan, as a JSON array of key/value objects, e.g. [{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}]. Keys (<=128 chars) and values (<=256 chars) must match ^[a-zA-Z0-9_-]+$.'
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityScanCreate.uuid
       description: Scan UUID.
       type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.labels
+      description: Labels (key/value pairs) applied to the scan.
+      type: Unknown
     - contextPath: PrismaAIRs.ModelSecurityScanCreate.model_uri
       description: Model URI that was scanned.
       type: String
