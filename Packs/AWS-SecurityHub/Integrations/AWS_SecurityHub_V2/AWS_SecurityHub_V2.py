@@ -14,6 +14,7 @@ DEFAULT_RETRIES = 5
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 50
+FETCH_SORT_CRITERIA = [{"Field": "finding_info.created_time_dt", "SortOrder": "asc"}]
 
 # OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
 # OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
@@ -526,77 +527,24 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     )
 
 
-def fetch_incidents(client: BotoClient, params: dict) -> None:
-    """Fetch AWS Security Hub V2 findings as XSOAR incidents.
+def dedup_findings(findings: list, last_fetch: str, fetched_ids: list) -> tuple[list, list]:
+    """Filter already-seen findings and build XSOAR incidents from the new ones.
+
+    Two dedup rules are applied against the previous fetch boundary:
+      * STALE: a finding created strictly before ``last_fetch`` was covered by an earlier window and is dropped.
+      * ALREADY-SEEN BOUNDARY: a finding created exactly at ``last_fetch`` whose uid is in ``fetched_ids`` was
+        already ingested on the previous run (the fetch window uses an inclusive ``Start``) and is dropped.
+
+    Args:
+        findings (list): Raw OCSF findings returned by ``get_findings_v2``.
+        last_fetch (str): ISO8601 boundary timestamp from the previous run (the fetch window's inclusive Start).
+        fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary timestamp.
+
+    Returns:
+        tuple[list, list]: ``(new_findings, incidents)`` - the surviving raw findings and their XSOAR incident dicts.
     """
-    demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-    last_run = demisto.getLastRun()
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
-                  f" fetch_filters={params.get('fetch_filters')}, {max_fetch=}")
-    first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
-    format_first_fetch = parse(f"{first_fetch} UTC")
-    # last_fetch = last_run.get("last_fetch")
-    last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()  # type: ignore
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: no previous last_fetch; {first_fetch=} resolved to {last_fetch=}")
-
-    next_token = last_run.get("next_token")
-    fetched_ids = last_run.get("fetched_ids")
-
-    raw_filters = last_run.get("filters") or {}
-    filters = json.loads(raw_filters) if isinstance(raw_filters, str) else raw_filters
-
-    # if not last_fetch:
-    #     first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
-    #     lf = parse(f"{first_fetch} UTC")
-    #     last_fetch = lf.isoformat()  # type: ignore
-    #     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: no previous last_fetch; {first_fetch=} resolved to {last_fetch=}")
-
-    # max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-    # demisto.debug(
-    #     f"[AWS_Security_Hub_V2] Fetch: parsed state -> {last_fetch=}, {next_token=}, {max_fetch=}"
-    #     f"min_severity={params.get('min_severity')}, fetch_filters={params.get('fetch_filters')}"
-    # )
-
-    if next_token:
-        demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
-        try:
-            response = client.get_findings_v2(NextToken=next_token, MaxResults=max_fetch, Filters=filters)
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: token query succeeded.")
-        except client.exceptions.ClientError as e:
-            error = e.response.get("Error", {})
-            error_code = error.get("Code", "")
-            error_message = error.get("Message", "")
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Fetch: token query raised {type(e).__name__} "
-                f"(Code={error_code}, Message={error_message})."
-            )
-            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
-    else:
-        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings.")
-        try:
-            # last_fetch = last_fetch or format_first_fetch.isoformat() # type: ignore
-            # demisto.debug(f"[AWS_Security_Hub_V2] Fetch: no previous last_fetch; {first_fetch=} resolved to {last_fetch=}")
-            filters = build_fetch_filters(
-                start_time=last_fetch,
-                end_time=datetime.now(UTC).isoformat(),
-                min_severity=params.get("min_severity"),
-                additional_filters=params.get("fetch_filters"),
-            )
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
-
-            response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters)
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
-        except client.exceptions.ClientError as e:
-            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
-
-    findings = response.get("Findings", [])
-    new_next_token = response.get("NextToken")
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
-
-    # dedup
-    incidents = []
-    new_findings = []
+    incidents: list = []
+    new_findings: list = []
     skipped_count = 0
     for finding in findings:
         finding_info = finding.get("finding_info") or {}
@@ -606,13 +554,13 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
         if created_time and last_fetch and created_time < last_fetch:
             skipped_count += 1
             demisto.debug(
-                f"[AWS_Security_Hub_V2] Fetch: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
+                f"[AWS_Security_Hub_V2] Dedup: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
             )
             continue
         if created_time and last_fetch and created_time == last_fetch and uid in fetched_ids:
             skipped_count += 1
             demisto.debug(
-                f"[AWS_Security_Hub_V2] Fetch: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
+                f"[AWS_Security_Hub_V2] Dedup: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
             )
             continue
 
@@ -626,11 +574,71 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             }
         )
         demisto.debug(
-            f"[AWS_Security_Hub_V2] Fetch: created incident uid={uid}, created={created_time}, "
+            f"[AWS_Security_Hub_V2] Dedup: created incident uid={uid}, created={created_time}, "
             f"severity_id={finding.get('severity_id')} -> xsoar_severity={xsoar_severity}."
         )
 
         new_findings.append(finding)
+
+    return new_findings, incidents
+
+
+def fetch_incidents(client: BotoClient, params: dict) -> None:
+    """Fetch AWS Security Hub V2 findings as XSOAR incidents.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    last_run = demisto.getLastRun()
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
+                  f" fetch_filters={params.get('fetch_filters')}, {max_fetch=}")
+    first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
+    format_first_fetch = parse(f"{first_fetch} UTC")
+    last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()  # type: ignore
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: {last_fetch=}")
+
+    next_token = last_run.get("next_token")
+    fetched_ids: list = list(last_run.get("fetched_ids") or [])
+
+    raw_filters = last_run.get("filters") or {}
+    filters = json.loads(raw_filters) if isinstance(raw_filters, str) else raw_filters
+
+    if next_token:
+        demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
+        try:
+            response = client.get_findings_v2(
+                NextToken=next_token, MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA
+            )
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: token query succeeded.")
+        except client.exceptions.ClientError as e:
+            error = e.response.get("Error", {})
+            error_code = error.get("Code", "")
+            error_message = error.get("Message", "")
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Fetch: token query raised {type(e).__name__} "
+                f"(Code={error_code}, Message={error_message})."
+            )
+            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
+    else:
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings.")
+        try:
+            filters = build_fetch_filters(
+                start_time=last_fetch,
+                end_time=datetime.now(UTC).isoformat(),
+                min_severity=params.get("min_severity"),
+                additional_filters=params.get("fetch_filters"),
+            )
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
+
+            response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA)
+            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
+        except client.exceptions.ClientError as e:
+            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
+
+    findings = response.get("Findings", [])
+    new_next_token = response.get("NextToken")
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
+
+    new_findings, incidents = dedup_findings(findings, last_fetch, fetched_ids)
 
     sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
     matching_uids = fetched_ids
@@ -643,16 +651,16 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             if (finding.get("finding_info") or {}).get("created_time_dt") == first_created_time
         ]
 
-    # if no findings:
-    # last_fetch -> last_fetch
-    # next_token -> null
-    # fetched_ids -> the one stored already
-    # filters = {}
-    new_last_run = {"last_fetch": last_fetch, "next_token": new_next_token, "fetched_ids": matching_uids,
-                    "filters": json.dumps(filters) if new_next_token else {}}
+        last_fetch = first_created_time
+
+    new_last_run = {
+        "last_fetch": last_fetch,
+        "next_token": new_next_token if new_findings else None,
+        "fetched_ids": matching_uids,
+        "filters": json.dumps(filters) if new_next_token else {}}
 
     demisto.debug(
-        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents, skipped {skipped_count}; "
+        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; "
         f"new lastRun -> {new_last_run=}"
     )
     demisto.setLastRun(new_last_run)
