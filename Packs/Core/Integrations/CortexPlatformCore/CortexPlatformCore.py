@@ -3603,7 +3603,15 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
     if error_messages:
         return_results(command_results)
-        return_error(f"The following fields could not be updated:\n{error_messages}")
+        # The fields failed validation (unknown field, invalid value/type, system field),
+        # so surface a standardized INVALID_ARGUMENT error_code while keeping the
+        # original human-readable message for backward compatibility.
+        error = CortexInvalidArgError(
+            "custom_fields",
+            reason=error_messages,
+            override_message=f"The following fields could not be updated:\n{error_messages}",
+        )
+        return_error(error.build_message(), error=error)
 
     return command_results
 
