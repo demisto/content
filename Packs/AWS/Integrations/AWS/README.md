@@ -5,9 +5,9 @@ This integration was integrated and tested with version 1.0.0 of AWS.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Access Key | The AWS Access Key ID \(username\) and Secret Access Key \(password\) paired together. Used for authentication when configuring the integration in Cortex XSOAR or Cortex XSIAM \(version &amp;lt; 3.0\). If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials. | False |
+| Access Key | The AWS Access Key ID \(username\) and Secret Access Key \(password\) paired together. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials. | False |
 | Secret Key |  | False |
-| Role ARN | The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. Used when configuring the integration in Cortex XSOAR or Cortex XSIAM \(version &lt; 3.0\) Marketplaces \(not required when running through a Cortex Platform \(Cortex Cloud or Cortex XSIAM version &gt;=3.0\) connector\). | False |
+| Role ARN | The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. | False |
 | Role Session Name | Role session name to be used for authentication |  |
 | Role Session Duration | Max role session duration | False |
 | Default AWS region. | The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands. Default value is us-east-1 |  |
