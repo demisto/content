@@ -6119,6 +6119,7 @@
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
+        "Tenable.sc": "Invalid License/credentials",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",
