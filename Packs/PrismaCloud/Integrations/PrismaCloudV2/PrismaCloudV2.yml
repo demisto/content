@@ -7,6 +7,7 @@ commonfields:
 name: PrismaCloud v2
 display: Prisma Cloud v2
 category: Network Security
+provider: Palo Alto Networks
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:
 - additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'
@@ -75,7 +76,7 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -87,13 +88,19 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR.
+  hidden:
+  - marketplacev2
+  - platform
+- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. Cortex XSOAR only parameter.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud.
   defaultvalue: 'false'
   display: Close Mirrored Prisma Cloud Alert
@@ -112,7 +119,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -840,6 +847,13 @@ script:
     - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
       name: include_additional_resource_fields
       defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Enable heuristic search optimization for faster results. Default is true.'
+      name: heuristic_search
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -3852,4 +3866,5 @@ tests:
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
-hybrid: true
+hybrid:marketplacev2: true
+hybrid: false

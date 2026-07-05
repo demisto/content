@@ -1,6 +1,5 @@
 import email
 import hashlib
-import subprocess
 from email import _header_value_parser as parser
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
@@ -196,7 +195,6 @@ def get_client_from_params(params: dict) -> EWSClient:
         azure_cloud=azure_cloud,
         tenant_id=tenant_id,
         self_deployed=self_deployed,
-        log_memory=is_debug_mode(),
         app_name=APP_NAME,
         insecure=insecure,
         proxy=proxy,
@@ -327,6 +325,52 @@ def email_ec(item):
     }
 
 
+def is_item_duplicate(item, exclude_ids, incident_filter):
+    """
+    Checks if an item is a duplicate based on ID and Timestamp.
+
+    RFC 5322 defines Message-ID values as ``<id@domain>``, but in practice the same
+    message may appear in different forms across fetches — such as ``id@domain``,
+    ``<id@domain>``, ``id@domain>``, or ``<id@domain`` — and they might change between fetches.
+    To avoid duplicate incidents, we verify all possible forms in exclude_ids.
+
+    Features:
+    1. Smart ID Lookup: Checks both Clean ID (abc) and Bracketed ID (<abc>, <abc, abc>).
+    2. Legacy Handling: Handles cases where stored value is "" (if last run is list not dict).
+    3. Timestamp Logic: Compares stored time vs item time.
+
+    Returns:
+        tuple[bool, str | None]: A tuple containing:
+            - is_duplicate (bool): True if item is a duplicate (skip it), False if it should be processed.
+            - stored_time (str | None): The stored fetch time for the item, or None if not found/not a duplicate.
+    """
+    if not item.message_id or not exclude_ids:
+        return False, None
+
+    clean_id = item.message_id.strip().strip("<>")
+
+    found_key = None
+    for candidate in (clean_id, f"<{clean_id}>", f"{clean_id}>", f"<{clean_id}"):
+        if candidate in exclude_ids:
+            found_key = candidate
+            break
+
+    if found_key is None:
+        return False, None
+    demisto.debug(f"Dedup match: {item.message_id=}, {found_key=}, {clean_id=}")
+    stored_time = exclude_ids[found_key]
+
+    # If stored_time is "" or None, it means it was from an old fetch (List format).
+    # We treat it as an existing duplicate and SKIP it.
+    if not stored_time:
+        return True, stored_time
+
+    current_item_time = (
+        item.datetime_created.ewsformat() if incident_filter == RECEIVED_FILTER else item.last_modified_time.ewsformat()
+    )
+    return stored_time >= current_item_time, stored_time
+
+
 def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
     """
     Parses an exchangelib item as a dict
@@ -358,7 +402,6 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             raw_dict[field] = value
     raw_dict["id"] = item.id
     demisto.debug(f"checking for attachments in email with id {item.id}")
-    log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
 
@@ -554,18 +597,17 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
 """ Command Functions """
 
 
-def fetch_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None, identifiers_filter=""
-):  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, args: dict):  # pragma: no cover
     """
     Fetches attachments for a message
     :param client: EWS Client
-    :param item_id: item id
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) attachment_ids: attachment ids
-    :param (Optional) identifiers_filter: attachment ids or content ids to create a fileResult
+    :param args: dict of command arguments
     :return: list of parsed entries
     """
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
+    attachment_ids = args.get("attachment_ids")
+    identifiers_filter = args.get("identifiers_filter", "")
     identifiers_filter = argToList(identifiers_filter)
     attachment_ids = argToList(attachment_ids)
     account = client.get_account(target_mailbox)
@@ -597,28 +639,20 @@ def fetch_attachments_for_message(
     return entries
 
 
-def search_items_in_mailbox(
-    client: EWSClient,
-    query=None,
-    message_id=None,
-    folder_path="",
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    selected_fields="all",
-):  # pragma: no cover
+def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
     """
     Search items in mailbox
     :param client: EWS Client
-    :param (Optional) query: query to execute
-    :param (Optional) message_id: message ids to search
-    :param (Optional) folder_path: folder path to search
-    :param (Optional) limit: max amount of items to fetch
-    :param (Optional) target_mailbox: mailbox containing the items
-    :param (Optional) is_public: is the targeted folder public
-    :param (Optional) selected_fields: Selected fields
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    query = args.get("query")
+    message_id = args.get("message_id")
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    selected_fields = args.get("selected_fields", "all")
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -674,23 +708,25 @@ def search_items_in_mailbox(
         for item in searched_items_result:
             item["itemId"] = item.pop("id", "")
 
+    hr_items = escape_hr_item_ids([{**item} for item in searched_items_result])
     readable_output = tableToMarkdown(
         "Searched items",
-        searched_items_result,
+        hr_items,
         headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None,
     )
     output = {CONTEXT_UPDATE_EWS_ITEM: searched_items_result}
     return readable_output, output, searched_items_result
 
 
-def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no cover
+def get_contacts(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve contacts of the target mailbox or client mailbox
     :param client: EWS Client
-    :param limit: max amount of contacts to retrieve
-    :param (Optional) target_mailbox: Target mailbox
+    :param args: dict of command arguments
     :return:
     """
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
 
     def parse_physical_address(address):
         result = {}
@@ -732,13 +768,14 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
     return readable_output, output, contacts
 
 
-def find_folders(client: EWSClient, target_mailbox=None):
+def find_folders(client: EWSClient, args: dict):
     """
     Finds folders in the mailbox
     :param client: EWS Client
-    :param (Optional) target_mailbox: target mailbox
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    target_mailbox = args.get("target_mailbox")
     account = client.get_account(target_mailbox)
     root = account.root
 
@@ -754,24 +791,18 @@ def find_folders(client: EWSClient, target_mailbox=None):
     return readable_output, output, folders
 
 
-def get_items_from_folder(
-    client: EWSClient,
-    folder_path,
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    get_internal_item="no",
-):  # pragma: no cover
+def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve items from folder path
     :param client: EWS Client
-    :param folder_path: folder path
-    :param (Optional) limit: max amount of items to retrieve
-    :param (Optional) target_mailbox: target mailbox
-    :param (Optional) is_public: is the folder public
-    :param (Optional) get_internal_item: should also retrieve internal items ("no" by default)
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    folder_path = args.get("folder_path", "")
+    limit = args.get("limit", 100)
+    target_mailbox = args.get("target_mailbox")
+    is_public = args.get("is_public")
+    get_internal_item = args.get("get_internal_item", "no")
     account = client.get_account(target_mailbox)
     limit = int(limit)
     get_internal_item = get_internal_item == "yes"
@@ -805,26 +836,29 @@ def get_items_from_folder(
         "toRecipients",
         "itemId",
     ]
-    readable_output = tableToMarkdown("Items in folder " + folder_path, items_result, headers=hm_headers)
+    hr_items = escape_hr_item_ids([{**item} for item in items_result])
+    readable_output = tableToMarkdown("Items in folder " + folder_path, hr_items, headers=hm_headers)
     output = {CONTEXT_UPDATE_EWS_ITEM: items_result}
     return readable_output, output, items_result
 
 
-def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no cover
+def get_items(client: EWSClient, args: dict):  # pragma: no cover
     """
     Get items from target mailbox or client mailbox
     :param client: EWS Client
-    :param item_ids: item ids to retrieve
-    :param (Optional) target_mailbox: target mailbox to retrieve items from
+    :param args: dict of command arguments
     :return:
     """
+    item_ids = args.get("item_ids", "")
+    target_mailbox = args.get("target_mailbox")
     item_ids = argToList(item_ids)
     account = client.get_account(target_mailbox)
     items = client.get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
     items_as_incidents = [parse_incident_from_item(x) for x in items]
     items_to_context = [parse_item_as_dict(x, account.primary_smtp_address, True, True) for x in items]
-    readable_output = tableToMarkdown("Get items", items_to_context, ITEMS_RESULTS_HEADERS)
+    hr_items = escape_hr_item_ids([{**item} for item in items_to_context])
+    readable_output = tableToMarkdown("Get items", hr_items, ITEMS_RESULTS_HEADERS)
     output = {
         CONTEXT_UPDATE_EWS_ITEM: items_to_context,
         "Email": [email_ec(item) for item in items],
@@ -1082,36 +1116,28 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(
-    client: EWSClient,
-    to=None,
-    subject="",
-    body="",
-    bcc=None,
-    cc=None,
-    htmlBody=None,
-    attachIDs="",
-    attachCIDs="",
-    attachNames="",
-    manualAttachObj=None,
-    transientFile=None,
-    transientFileContent=None,
-    transientFileCID=None,
-    templateParams=None,
-    additionalHeader=None,
-    raw_message=None,
-    from_address=None,
-    replyTo=None,
-    importance=None,
-    renderBody=False,
-    handle_inline_image=True,
-):  # pragma: no cover
-    to = argToList(to)
-    cc = argToList(cc)
-    bcc = argToList(bcc)
-    reply_to = argToList(replyTo)
-    render_body = argToBoolean(renderBody)
-    handle_inline_image = argToBoolean(handle_inline_image)
+def send_email(client: EWSClient, args: dict):  # pragma: no cover
+    to = argToList(args.get("to"))
+    subject = args.get("subject", "")
+    body = args.get("body", "")
+    bcc = argToList(args.get("bcc"))
+    cc = argToList(args.get("cc"))
+    htmlBody = args.get("htmlBody")
+    attachIDs = args.get("attachIDs", "")
+    attachCIDs = args.get("attachCIDs", "")
+    attachNames = args.get("attachNames", "")
+    manualAttachObj = args.get("manualAttachObj")
+    transientFile = args.get("transientFile")
+    transientFileContent = args.get("transientFileContent")
+    transientFileCID = args.get("transientFileCID")
+    templateParams = args.get("templateParams")
+    additionalHeader = args.get("additionalHeader")
+    raw_message = args.get("raw_message")
+    from_address = args.get("from_address")
+    reply_to = argToList(args.get("replyTo"))
+    importance = args.get("importance")
+    render_body = argToBoolean(args.get("renderBody", False))
+    handle_inline_image = argToBoolean(args.get("handle_inline_image", True))
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1175,25 +1201,19 @@ def send_email(
     return results
 
 
-def reply_mail(
-    client: EWSClient,
-    to,
-    inReplyTo,
-    subject="",
-    body="",
-    bcc=None,
-    cc=None,
-    htmlBody=None,
-    attachIDs="",
-    attachCIDs="",
-    attachNames="",
-    manualAttachObj=None,
-    handle_inline_image=True,
-):  # pragma: no cover
-    to = argToList(to)
-    cc = argToList(cc)
-    bcc = argToList(bcc)
-    handle_inline_image: bool = argToBoolean(handle_inline_image)
+def reply_mail(client: EWSClient, args: dict):  # pragma: no cover
+    to = argToList(args.get("to", ""))
+    inReplyTo = args.get("inReplyTo", "")
+    subject = args.get("subject", "")
+    body = args.get("body", "")
+    bcc = argToList(args.get("bcc"))
+    cc = argToList(args.get("cc"))
+    htmlBody = args.get("htmlBody")
+    attachIDs = args.get("attachIDs", "")
+    attachCIDs = args.get("attachCIDs", "")
+    attachNames = args.get("attachNames", "")
+    manualAttachObj = args.get("manualAttachObj")
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
@@ -1210,14 +1230,15 @@ def reply_mail(
     )
 
 
-def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
+def get_item_as_eml(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve item as an eml
     :param client: EWS Client
-    :param item_id: Item id to retrieve
-    :param (Optional) target_mailbox: target mailbox
+    :param args: dict of command arguments
     :return: Output tuple
     """
+    item_id = args.get("item_id", "")
+    target_mailbox = args.get("target_mailbox")
     account = client.get_account(target_mailbox)
     item = client.get_item_from_mailbox(account, item_id)
 
@@ -1381,7 +1402,6 @@ def parse_incident_from_item(item):  # pragma: no cover
     incident = {}
     labels = []
     demisto.debug(f"starting to parse the email with id {item.id} into an incident")
-    log_memory()
     try:
         incident["details"] = item.text_body or item.body
     except AttributeError:
@@ -1587,9 +1607,7 @@ def parse_incident_from_item(item):  # pragma: no cover
 
     incident["labels"] = labels
     demisto.debug(f"Starting to generate rawJSON for incident, from email with id {item.id}")
-    log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
-    log_memory()
     demisto.debug(f"Finished generating rawJSON from email with id {item.id}")
 
     return incident
@@ -1602,7 +1620,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     :param last_run: last run dict
     :return:
     """
-    log_memory()
     last_run = get_last_run(client, last_run)
     demisto.debug(f"get_last_run: {last_run=}")
     last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -1698,7 +1715,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
-            mark_item_as_read(client, emails_ids)
+            mark_item_as_read(client, {"item_ids": emails_ids})
 
         return incidents
 
@@ -1727,7 +1744,6 @@ def fetch_last_emails(
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
-    log_memory()
     if since_datetime:
         if incident_filter == RECEIVED_FILTER:
             qs = qs.filter(datetime_received__gte=since_datetime)
@@ -1760,27 +1776,21 @@ def fetch_last_emails(
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
-            if item.message_id in exclude_ids:
+            is_duplicate, previous_fetch_time = is_item_duplicate(item, exclude_ids, incident_filter)
+            if is_duplicate:
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
-                if not exclude_ids.get(item.message_id) or exclude_ids.get(item.message_id) >= (
-                    received_time if incident_filter == RECEIVED_FILTER else modified_time
-                ):
-                    # If it's the first fetch using a dictionary instead of a list, it implies the IDs have no associated time.
-                    # Alternatively, an item is excluded if it was previously fetched and its received/modification
-                    # time has not changed since then.
-                    demisto.debug(
-                        f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
-                        f"{exclude_ids.get(item.message_id)}, (if no time - because of the transition from list to dict). "
-                        f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
-                    )
-                    continue
-            demisto.debug(f"Appending {item.subject=}")
+                demisto.debug(
+                    f"{item.subject=} with {item.message_id=} was excluded. previous fetch time: "
+                    f"{previous_fetch_time}, (if no time - because of the transition from list to dict). "
+                    f"current fetch time: {received_time if incident_filter == RECEIVED_FILTER else modified_time}"
+                )
+                continue
+            demisto.debug(f"Appending {item.subject=} with {item.message_id=}")
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
     demisto.debug(f"{APP_NAME} - Got total of {len(result)} from ews query.")
-    log_memory()
     return result
 
 
@@ -1815,7 +1825,14 @@ def test_module(client: EWSClient, max_fetch):  # pragma: no cover
                 "Check user permissions. You can try !ews-find-folders command to "
                 "get all the folders structure that the user has permissions to"
             )
-
+    except Exception as e:
+        if "403" in str(e):
+            error_message_simple = (
+                "Got invalid response with status code: 403."
+                " Please make sure you have the right permissions to your application.\n"
+            )
+            raise DemistoException(error_message_simple)
+        raise DemistoException(str(e))
     return "ok"
 
 
@@ -1886,7 +1903,7 @@ def sub_main():  # pragma: no cover
             demisto.incidents(incidents)
 
         elif command == "send-mail":
-            commands_res = send_email(client, **args)
+            commands_res = send_email(client, args)
             return_results(commands_res)
 
         elif command == "ews-move-item-between-mailboxes":
@@ -1897,25 +1914,21 @@ def sub_main():  # pragma: no cover
             return_results(
                 move_item_between_mailboxes(
                     src_client=client,
-                    item_id=args.get("item_id", ""),
-                    destination_mailbox=args.get("destination_mailbox", ""),
-                    destination_folder_path=args.get("destination_folder_path", ""),
+                    args=args,
                     dest_client=dest_client,
-                    source_mailbox=args.get("source_mailbox", None),
-                    is_public=args.get("is_public", None),  # type: ignore[assignment]
                 )
             )
 
         # special outputs commands
         elif command in special_output_commands:
-            demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
+            demisto.results(special_output_commands[command](client, args))  # type: ignore[operator]
 
         elif command == "ews-auth-reset":
             return_results(reset_auth())
 
         # normal commands
         else:
-            output = normal_commands[command](client, **args)  # type: ignore[operator]
+            output = normal_commands[command](client, args)  # type: ignore[operator]
             if isinstance(output, tuple):  # Legacy, some commands return a tuple for return outputs
                 return_outputs(*output)
             else:
@@ -2016,11 +2029,6 @@ def main():  # pragma: no cover
             demisto.error(f"Failed starting Process: {ex}")
     else:
         sub_main()
-
-
-def log_memory():
-    if is_debug_mode():
-        demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss,vsz"])!s}')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

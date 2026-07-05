@@ -4,6 +4,7 @@ commonfields:
 name: Sekoia XDR
 display: Sekoia XDR
 category: Analytics & SIEM
+provider: Sekoia
 sectionorder:
 - Connect
 - Collect
@@ -203,13 +204,16 @@ configuration:
   name: mirror_direction
   defaultvalue: None
   type: 15
-  required: true
-  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
+  required: false
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR). Cortex XSOAR only parameter.'
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming and Outgoing
+  hidden:
+  - marketplacev2
+  - platform
 - section: Collect
   advanced: true
   display: Include events in the mirroring of the alerts.
@@ -241,7 +245,10 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident.
+  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
 - section: Collect
   display: Close notes.
   name: close_notes
@@ -1172,6 +1179,12 @@ script:
       description: Method to use with the http request (GET,POST,etc).
       defaultValue: GET
     - name: url_sufix
+      required: false
+      description: |
+          The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
+          DEPRECATED: Use 'url_suffix' instead. This parameter is kept for backward compatibility.
+      deprecated: true
+    - name: url_suffix
       required: true
       description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
     - name: parameters
@@ -1181,7 +1194,7 @@ script:
       description: Body of the request.
       type: string
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   subtype: python3

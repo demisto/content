@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed incident_info parameter from anyrun-get-analysis-report command and all ANYRUN detonate playbooks (ANYRUN Detonate File Windows, ANYRUN Detonate File Linux, ANYRUN Detonate File Android, ANYRUN Detonate Url Windows, ANYRUN Detonate Url Linux, ANYRUN Detonate Url Android). Removed integration configuration parameters: soar_fqdn, soar_api_key, soar_api_key_id. Custom playbooks using ANYRUN detonate playbooks as sub-playbooks must be updated to remove the incident_info input parameter."
+}

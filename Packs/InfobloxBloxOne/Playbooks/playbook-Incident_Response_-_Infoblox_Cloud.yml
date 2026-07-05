@@ -1,0 +1,1000 @@
+id: Incident Response - Infoblox Cloud
+version: -1
+name: Incident Response - Infoblox Cloud
+description: |
+  This playbook is used to initiate the incident response. This playbook runs when an incident is selected for investigation. It will change the state from pending to active and it will list the available indicators, events, assets, and comments from Infoblox corresponding to the incident. If incident severity is found to be higher than or equivalent to medium, it will create a ServiceNow incident otherwise the given incident will be assigned to an analyst.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 897e5aae-77c5-41b9-8223-1be355d0f435
+    type: start
+    task:
+      id: 897e5aae-77c5-41b9-8223-1be355d0f435
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": -355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ac2bdc44-3c7e-49d2-867a-f4c3c256ee37
+    type: title
+    task:
+      id: ac2bdc44-3c7e-49d2-867a-f4c3c256ee37
+      version: -1
+      name: Extract SOC Insight id and collect SOC Insight details
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": -5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 20a1bc86-1bb4-424f-835a-4cec1dbb799f
+    type: regular
+    task:
+      id: 20a1bc86-1bb4-424f-835a-4cec1dbb799f
+      version: -1
+      name: Collect SOC Insight indicators from provided SOC Insight id
+      description: List indicators for the provided incident.
+      script: '|||infobloxcloud-soc-insight-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      soc_insight_id:
+        complex:
+          root: inputs.soc_insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d9ec8522-fcd8-4dfa-841d-67e475e3f252
+    type: regular
+    task:
+      id: d9ec8522-fcd8-4dfa-841d-67e475e3f252
+      version: -1
+      name: Collect SOC Insight events from provided SOC Insight id
+      description: List events for the provided incident.
+      script: '|||infobloxcloud-soc-insight-event-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      soc_insight_id:
+        complex:
+          root: inputs.soc_insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 008a2ecb-6210-49ff-8425-525f0be935cd
+    type: regular
+    task:
+      id: 008a2ecb-6210-49ff-8425-525f0be935cd
+      version: -1
+      name: Collect SOC Insight assets from provided SOC Insight id
+      description: List assets for the provided incident.
+      script: '|||infobloxcloud-soc-insight-asset-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      soc_insight_id:
+        complex:
+          root: inputs.soc_insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4fd55c8e-db0d-4927-8877-fe868cf1a044
+    type: condition
+    task:
+      id: 4fd55c8e-db0d-4927-8877-fe868cf1a044
+      version: -1
+      name: Check for incident severity
+      description: Check if the incident severity is equal or higher than 2. If true then create a ServiceNow ticket otherwise assign the incident to an analyst.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: "no"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ed99c4f2-40dc-4691-8a82-c48cce2fb9ff
+    type: regular
+    task:
+      id: ed99c4f2-40dc-4691-8a82-c48cce2fb9ff
+      version: -1
+      name: Collect SOC Insight comments from provided SOC Insight id
+      description: List comments for the provided incident.
+      script: '|||infobloxcloud-soc-insight-comment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      soc_insight_id:
+        complex:
+          root: inputs.soc_insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 00052f15-29ee-439f-8d4e-fc4b0051581e
+    type: regular
+    task:
+      id: 00052f15-29ee-439f-8d4e-fc4b0051581e
+      version: -1
+      name: Assign an analyst to the incident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      onCall:
+        complex:
+          root: inputs.onCall
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 89d96a05-a72c-4c34-895a-1464eba40e10
+    type: playbook
+    task:
+      id: 89d96a05-a72c-4c34-895a-1464eba40e10
+      version: -1
+      name: Create ServiceNow Ticket
+      description: "Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket and incident fields. To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+      playbookName: Create ServiceNow Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+      - "15"
+      - "16"
+    scriptarguments:
+      Comment:
+        simple: |-
+          Security Incident Alert - Suspicious SOC Insight Detected
+
+          Incident Summary:
+          A suspicious security insight has been identified through automated analysis of network events and requires immediate analyst review.
+          ${insight_details.indicators}
+          ${insight_details.events}
+          ${insight_details.assets}
+          ${insight_details.comments}
+      FieldPolling:
+        simple: "false"
+      Impact:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+      MirrorCommentTags:
+        simple: comments,work_notes,ForServiceNow
+      MirrorDirection:
+        simple: Both
+      'Severity ':
+        complex:
+          root: inputs.incident_severity
+      ShortDescription:
+        complex:
+          root: incident
+          accessor: infobloxcloudthreatclass
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Threat class: '
+              suffix:
+                value:
+                  simple: ' - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Threat type: '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.infobloxcloudthreattype
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' - Threat family: '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.infobloxcloudthreatfamily
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Infoblox - Suspicious SOC Insight Detected - '
+              suffix: {}
+      SyncTicket:
+        simple: Blank
+      TicketType:
+        simple: incident
+      Urgency:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9aeba70e-151b-4e5b-8d6e-c25e5d1b4f5a
+    type: title
+    task:
+      id: 9aeba70e-151b-4e5b-8d6e-c25e5d1b4f5a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2da8b1ec-8102-43d4-850f-5c5a0d7199f2
+    type: title
+    task:
+      id: 2da8b1ec-8102-43d4-850f-5c5a0d7199f2
+      version: -1
+      name: Extract incident severity and trigger corresponding tasks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: baf9af2c-78e6-488a-80cf-ba454268a5bf
+    type: regular
+    task:
+      id: baf9af2c-78e6-488a-80cf-ba454268a5bf
+      version: -1
+      name: Update description of ServiceNow ticket
+      description: Updates the description of the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      description:
+        simple: |-
+          Security Incident Alert - Suspicious SOC Insight Detected
+
+          Incident Summary:
+          A suspicious security insight has been identified through automated analysis of network events and requires immediate analyst review.
+
+          Top 5 Critical Indicators:
+          ${insight_indicators}
+
+          Top 5 Impacted Systems:
+          ${insight_assets}
+
+          Top 5 Related Events:
+          ${insight_events}
+
+          Top 5 Comments:
+          ${insight_comments}
+
+          XSOAR Incident ID: ${incident.id}
+
+          Infoblox SOC Insight Link: ${incident.incidentlink}
+
+          Next Steps for Analyst:
+          1. Review the indicators and correlate with known threat intelligence
+          2. Analyze affected assets for signs of compromise
+          3. Examine the event timeline for attack progression
+          4. Validate findings and escalate if confirmed malicious
+          5. Update case with investigation findings
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f33d3353-9d63-40b7-88e5-3f1e6b8faeae
+    type: regular
+    task:
+      id: f33d3353-9d63-40b7-88e5-3f1e6b8faeae
+      version: -1
+      name: Extract indicator details for ticket description
+      description: Extract top 5 indicator values from SOC Insight indicators list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_indicators
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.Indicator
+          accessor: indicator
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0c4eb3ad-585c-48ef-8bf0-77e6c70e0140
+    type: regular
+    task:
+      id: 0c4eb3ad-585c-48ef-8bf0-77e6c70e0140
+      version: -1
+      name: Extract event details for ticket description
+      description: Extract top 5 event device IP values from SOC Insight events list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_events
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.Event
+          accessor: deviceIp
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 9d67034b-3718-4b2a-8cea-b15500485561
+    type: regular
+    task:
+      id: 9d67034b-3718-4b2a-8cea-b15500485561
+      version: -1
+      name: Extract asset details for ticket description
+      description: Extract top 5 asset IP values from SOC Insight assets list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_assets
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.Asset
+          accessor: qip
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 54a4256c-9145-43f7-89d9-50826e022819
+    type: regular
+    task:
+      id: 54a4256c-9145-43f7-89d9-50826e022819
+      version: -1
+      name: Extract comment details for ticket description
+      description: Extract top 5 comments from SOC Insight comments list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_comments
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.Comment
+          accessor: newComment
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1775,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7b67dd6f-bb08-4ad2-8be5-4fc974e77585
+    type: condition
+    task:
+      id: 7b67dd6f-bb08-4ad2-8be5-4fc974e77585
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox Threat Defense with DDI integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2e93e0f1-1b5b-4d84-87e0-deb4c8f1b27d
+    type: condition
+    task:
+      id: 2e93e0f1-1b5b-4d84-87e0-deb4c8f1b27d
+      version: -1
+      name: Is ServiceNow v2 integration enabled?
+      description: Checks whether ServiceNow v2 integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_9_#default#": 0.61,
+      "19_8_yes": 0.81,
+      "19_9_#default#": 0.28
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1780,
+        "width": 2105,
+        "x": 50,
+        "y": -355
+      }
+    }
+  }
+inputs:
+- key: soc_insight_id
+  value:
+    complex:
+      root: incident.infobloxcloudinsightid
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.infobloxcloudinsightid
+            iscontext: true
+  required: false
+  description: Collect incident severity from incident.
+  playbookInputQuery:
+- key: incident_severity
+  value:
+    complex:
+      root: incident.severity
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+  required: false
+  description: Collect incident severity from incident.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "50"
+  required: false
+  description: No of indicators, events, assets or comments to fetch of the provided SOC Insight.
+  playbookInputQuery:
+- key: onCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the user that is currently on shift. Default is False.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

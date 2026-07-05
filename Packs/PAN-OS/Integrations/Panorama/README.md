@@ -383,6 +383,7 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional |
 | query | Query string. | Optional |
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional |
+| newname | The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.| Optional |
 
 #### Context Output
 
@@ -444,14 +445,18 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| device-group | Panorama only. Limits the commit scope to the specified device group(s), so only pending changes for those device groups are committed. If omitted, all pending changes are committed. | Optional |
+| template | Panorama only. Limits the commit scope to the specified template(s), so only pending changes for those templates are committed. If omitted, all pending changes are committed. | Optional |
 | description | The commit description. | Optional |
 | admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
 | force_commit | Forces a commit. Possible values are: true, false. | Optional |
 | exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional |
 | exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional |
 | polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional |
 | timeout | The timeout (in seconds) when polling. Default is 120. | Optional |
 | interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional |
+| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional |
 
 #### Context Output
 
@@ -460,6 +465,8 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 | Panorama.Commit.JobID | Number | The job ID to commit. |
 | Panorama.Commit.Status | String | The commit status. |
 | Panorama.Commit.Description | String | The commit description from the the command input. |
+| Panorama.Commit.Scope | String | Whether the commit is partial. |
+| Panorama.Commit.Details | String | The summary of the targeted device group and templates. |
 
 #### Command example with polling
 
@@ -483,7 +490,9 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
         "Commit": {
             "JobID": "12345",
             "Status": "Success",
-            "Description": "test"
+            "Description": "test",
+            "Scope": "Full",
+            "Details": "Full commit"
         }
     }
 }
@@ -509,7 +518,9 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
         "Commit": {
             "JobID": "12345",
             "Status": "Pending",
-            "Description": "test"
+            "Description": "test",
+            "Scope": "Full",
+            "Details": "Full commit"
         }
     }
 }
@@ -2692,45 +2703,6 @@ Returns a list of applications.
 >|Id|Name|Risk|Category|SubCategory|Technology|Description|
 >|---|---|---|---|---|---|---|
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
-
-### pan-os-commit
-
-***
-Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
-
-#### Base Command
-
-`pan-os-commit`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| description | The commit description. | Optional |
-| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Forces a commit. Possible values are: true, false. | Optional |
-| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional |
-| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional |
-| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
-| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional |
-| timeout | The timeout (in seconds) when polling. Default is 120. | Optional |
-| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.Commit.JobID | Number | The job ID to commit. |
-| Panorama.Commit.Status | String | The commit status. |
-| Panorama.Commit.Description | String | The commit description from the the command input. |
-
-#### Command example
-
-```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
-
-#### Human Readable Output
-
->Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 
@@ -5848,7 +5820,7 @@ Gets information from all PAN-OS systems in the topology.
 ### pan-os-platform-get-device-groups
 
 ***
-Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
+Gets operational information for all device groups in the Panorama topology, including group names, hierarchy, and associated firewalls. If no filter is provided, the command returns all device groups within the Panorama instance.
 
 #### Base Command
 
@@ -5858,7 +5830,7 @@ Gets the operational information of the device groups in the topology(only devic
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| device_filter_string | The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported). | Optional |
 
 #### Context Output
 
@@ -10239,6 +10211,7 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | rules | Comma-separated list of rule names to check.  Returns results for all rules if left blank. Default is all. | Optional |
 | unused_only | If set to true, only returns rules with a hit count of 0. Possible values are: true, false. Default is false. | Optional |
 | no_new_hits_since | Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS). | Optional |
+| pre_post | The pre-rule or post-rule (Panorama instances only). When set, only rules pushed from Panorama at the specified position are returned. Possible values are: pre-rulebase, post-rulebase. | Optional |
 
 #### Context Output
 

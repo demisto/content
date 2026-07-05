@@ -1,7 +1,7 @@
 The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
 Analysis:
-- Enriches the IP and the account, providing additional context and information about these indicators.
+- Enriches the Indicators and the account, providing additional context and information about these indicators.
 
 Verdict:
 - Determines the appropriate verdict based on the data collected from the enrichment phase.
@@ -21,29 +21,28 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud IAM Enrichment - Generic
+* Account Enrichment - Generic v2.1
 * Azure - User Investigation
 * Cloud Credentials Rotation - Azure
+* Cloud IAM Enrichment - Generic
 * Containment Plan
-* Okta - User Investigation
-* Account Enrichment - Generic v2.1
 * Get entity alerts by MITRE tactics
+* Okta - User Investigation
 
 ### Integrations
 
 * CortexCoreIR
-* CoreIOCs
 
 ### Scripts
 
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
 
 ### Commands
 
 * closeInvestigation
-* ip
 * core-get-cloud-original-alerts
+* extractIndicators
 
 ## Playbook Inputs
 

@@ -2,8 +2,8 @@ import json as js
 import threading
 from unittest.mock import MagicMock
 from datetime import datetime, UTC
-import aiohttp
 import pytest
+from pytest_mock.plugin import MockerFixture
 import slack_sdk
 from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
@@ -1115,6 +1115,64 @@ def test_mirror_investigation_existing_investigation(mocker):
     assert our_mirror == new_mirror
 
 
+def test_mirror_investigation_existing_mirror_combined_type_only(mocker):
+    """
+    Given:
+        - An existing mirror in the context with non-default values (auto_close=False).
+        - The mirror-investigation command is invoked with only the `type` argument, containing a
+          combined "<mirror_type>:<mirror_direction>" value (e.g. "all:FromDemisto") - XSUP-70395.
+    When:
+        - Running mirror_investigation.
+    Then:
+        - The `type` value is split into mirror_type and mirror_direction.
+        - The existing `auto_close` and `mirror_to` values are preserved from the context and are NOT
+          overridden with the command defaults.
+    """
+    from SlackV3 import mirror_investigation
+
+    # Set - an existing mirror with auto_close=False (differs from the "true" default)
+    mirrors = [
+        {
+            "channel_id": "GKQ86DVPH",
+            "channel_name": "incident-681",
+            "channel_topic": "incident-681",
+            "investigation_id": "681",
+            "mirror_type": "all",
+            "mirror_direction": "both",
+            "mirror_to": "channel",
+            "auto_close": False,
+            "mirrored": True,
+        }
+    ]
+    set_integration_context({"mirrors": js.dumps(mirrors), "users": USERS, "conversations": CONVERSATIONS, "bot_id": "W12345678"})
+
+    def api_call(method: str, http_verb: str = "POST", file: str = None, params=None, json=None, data=None):
+        return None
+
+    # Only the `type` argument is provided, with a combined "<type>:<direction>" value.
+    mocker.patch.object(demisto, "args", return_value={"type": "chat:FromDemisto"})
+    mocker.patch.object(demisto, "investigation", return_value={"id": "681", "users": ["spengler"]})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "getIntegrationContext", side_effect=get_integration_context)
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, "api_call", side_effect=api_call)
+
+    # Arrange
+    mirror_investigation()
+
+    # Assert
+    new_context = demisto.setIntegrationContext.call_args[0][0]
+    new_mirrors = js.loads(new_context["mirrors"])
+    our_mirror = next(m for m in new_mirrors if m["investigation_id"] == "681")
+
+    # The combined type was split correctly
+    assert our_mirror["mirror_type"] == "chat"
+    assert our_mirror["mirror_direction"] == "FromDemisto"
+    # The existing values were preserved and NOT overridden with the defaults ("true" / "group")
+    assert our_mirror["auto_close"] is False
+    assert our_mirror["mirror_to"] == "channel"
+
+
 def test_mirror_investigation_existing_channel(mocker):
     from SlackV3 import mirror_investigation
 
@@ -1329,7 +1387,7 @@ def test_check_for_mirrors(mocker):
 
     new_user = {
         "name": "perikles",
-        "profile": {"email": "perikles@acropoli.com", "display_name": "Dingus", "real_name": "Lingus"},
+        "profile": {"email": "perikles@acropoli.com", "display_name": "Dingus", "real_name": "Lingus", "status_text": ""},
         "id": "U012B3CUI",
     }
 
@@ -3941,6 +3999,7 @@ def test_get_user(mocker):
             "Name": "Egon Spengler",
             "DisplayName": "spengler",
             "Email": "spengler@ghostbusters.example.com",
+            "StatusText": "Print is dead",
         }
     }
 
@@ -5059,11 +5118,11 @@ def test_list_channels(mocker):
 def test_conversation_history(mocker):
     """
     Given:
-        A set of conversations.
+        A set of conversations without pagination.
     When:
         Listing conversation history.
     Assert:
-        Conversations are returned.
+        Conversations are returned with proper CommandResults format.
     """
     import SlackV3
 
@@ -5073,25 +5132,28 @@ def test_conversation_history(mocker):
         "send_slack_request_sync",
         side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
     )
-    mocker.patch.object(demisto, "args", return_value={"channel_id": 1, "conversation_id": 1, "limit": 1})
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
     mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
-    mocker.patch.object(demisto, "results")
+    return_results_mock = mocker.patch("SlackV3.return_results")
 
     SlackV3.conversation_history()
 
-    assert (
-        demisto.results.call_args[0][0]["HumanReadable"] == "### Channel details from Channel ID "
-        "- 1\n|FullName|HasReplies|Name|Text|ThreadTimeStamp"
-        "|TimeStamp|Type|UserId|\n|---|---|---|---|---|"
-        "---|---|---|\n| spengler | No | spengler | There"
-        " are two types of people in this world, those"
-        " who can extrapolate from incomplete data... | N/A "
-        "| 1690479909.804939 | message | U047D5QSZD4 |\n|"
-        " spengler | Yes | spengler | Give me a fresh dad joke"
-        " | 1690479887.647239 | 1690479887.647239 | message "
-        "| U047D5QSZD4 |\n"
-    )
-    assert demisto.results.call_args[0][0]["ContentsFormat"] == "json"
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have only 1 CommandResult (no pagination token)
+    assert len(results) == 1
+
+    # Verify the CommandResults structure
+    command_result = results[0]
+    assert command_result.outputs_prefix == "Slack.Messages"
+    assert len(command_result.outputs) == 2  # Two messages in MESSAGES
+    assert command_result.raw_response == json.loads(MESSAGES)
+
+    # Verify readable output contains expected content
+    assert "Channel details from Channel ID - C12345" in command_result.readable_output
+    assert "spengler" in command_result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -5167,15 +5229,8 @@ def test_conversation_replies(mocker):
 SAMPLE_PAYLOAD = json.loads(load_test_data("./test_data/entitlement_response_payload.txt"))
 
 
-@pytest.fixture
-async def client_session():
-    session = aiohttp.ClientSession()
-    yield session
-    await session.close()
-
-
 @pytest.mark.asyncio
-async def test_listen(client_session):
+async def test_listen():
     """
     Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
     Slack events correctly.
@@ -5199,7 +5254,8 @@ async def test_listen(client_session):
         '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
         '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
         '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
-        '"Successful"}'
+        '"Successful", "submitting_user": {"id": "UAALZT5D2", "username": "andrew", '
+        '"name": "andrew", "team_id": "TABQMPKP0"}}'
     )
     req = SocketModeRequest(type="event", payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
@@ -5209,6 +5265,7 @@ async def test_listen(client_session):
         mock.patch.object(requests, "post") as mock_send_slack_request,
         mock.patch.object(SlackV3, "reset_listener_health"),
         mock.patch.object(demisto, "handleEntitlementForUser") as mock_result,
+        mock.patch.object(SlackV3, "handle_assistant_interactions"),
     ):
         # Set the return value of the mocked get_user_details function
         mock_user = {"id": "mock_user_id", "name": "mock_user"}
@@ -5387,6 +5444,82 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
         resolve_conversation_id_from_name("nonexistent")
 
 
+def test_conversation_history_with_pagination(mocker):
+    """
+    Given:
+        A set of conversations with pagination cursor.
+    When:
+        Listing conversation history with pagination.
+    Assert:
+        Conversations and pagination token are returned in separate CommandResults.
+    """
+    import SlackV3
+
+    slack_response_mock = {
+        "ok": True,
+        "messages": json.loads(MESSAGES),
+        "response_metadata": {"next_cursor": "dGVhbTpDQ0M3UENUTks="},
+    }
+    mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    return_results_mock = mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have 2 CommandResults (messages + pagination token)
+    assert len(results) == 2
+
+    # Verify first CommandResult (messages)
+    messages_result = results[0]
+    assert messages_result.outputs_prefix == "Slack.Messages"
+    assert len(messages_result.outputs) == 2
+
+    # Verify second CommandResult (pagination token)
+    pagination_result = results[1]
+    assert pagination_result.outputs_prefix == "SlackConversationHistory"
+    assert pagination_result.outputs_key_field == "NextPageToken"
+    assert pagination_result.outputs == {"NextPageToken": "dGVhbTpDQ0M3UENUTks="}
+
+
+def test_conversation_history_with_page_token(mocker):
+    """
+    Given:
+        A pageToken parameter to continue pagination.
+    When:
+        Listing conversation history with a page token.
+    Assert:
+        The cursor is passed to the Slack API request.
+    """
+    import SlackV3
+
+    slack_response_mock = {"ok": True, "messages": json.loads(MESSAGES)}
+    send_request_mock = mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10, "page_token": "dGVhbTpDQ0M3UENUTks="})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Verify the cursor was passed in the API request
+    # Access kwargs from the first call to send_slack_request_sync
+    api_call_kwargs = send_request_mock.call_args_list[0].kwargs
+    assert "body" in api_call_kwargs
+    assert api_call_kwargs["body"]["cursor"] == "dGVhbTpDQ0M3UENUTks="
+
+
 class TestToUnixSecondsStr:
     def test_valid_unix_timestamp_string(self):
         result = to_unix_seconds_str("1609459200")
@@ -5420,3 +5553,354 @@ class TestToUnixSecondsStr:
         with pytest.raises(ValueError) as exc_info:
             to_unix_seconds_str("not_a_number")
         assert "Could not parse time string" in str(exc_info.value)
+
+
+# ============================================================================
+# Test Assistant-Related Functions (New in this PR)
+# ============================================================================
+
+
+def test_send_agent_response(mocker: MockerFixture):
+    """
+    Given:
+        Valid arguments for send-agent-response command with messages list.
+    When:
+        Calling send_agent_response function.
+    Then:
+        Calls handler's send_agent_response with correct parameters.
+    """
+    import SlackV3
+    from SlackV3 import send_agent_response
+
+    messages = [
+        {"content": "Test response", "response_type": "model", "is_final": True, "message_id": "msg1"},
+    ]
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "channel_id": "C123",
+            "thread_id": "1234567890.123456",
+            "messages": messages,
+        },
+    )
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(SlackV3.slack_assistant_handler, "send_agent_response")
+
+    send_agent_response()
+
+    assert SlackV3.slack_assistant_handler.send_agent_response.call_count == 1
+    call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
+    assert call_args["channel_id"] == "C123"
+    assert call_args["thread_id"] == "1234567890.123456"
+    assert call_args["messages"] == messages
+
+
+def test_send_agent_response_with_agent_name(mocker: MockerFixture):
+    """
+    Given:
+        Arguments including agent_name.
+    When:
+        Calling send_agent_response function.
+    Then:
+        Formats bot_name using AGENT_BOT_NAME_FORMAT.
+    """
+    import SlackV3
+    from SlackV3 import send_agent_response
+    from CortexAssistantApiModule import AssistantMessages
+
+    messages = [{"content": "Test", "response_type": "model", "is_final": True}]
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "channel_id": "C123",
+            "thread_id": "1234567890.123456",
+            "messages": messages,
+            "agent_name": "Security Analyst",
+        },
+    )
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(SlackV3.slack_assistant_handler, "send_agent_response")
+
+    send_agent_response()
+
+    call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
+    expected_bot_name = AssistantMessages.AGENT_BOT_NAME_FORMAT.format("Security Analyst")
+    assert call_args["agent_name"] == expected_bot_name
+
+
+@pytest.mark.asyncio
+async def test_slack_assistant_handler_format_user_mention():
+    """
+    Given:
+        User ID.
+    When:
+        Formatting user mention.
+    Then:
+        Returns Slack mention format.
+    """
+    from SlackV3 import slack_assistant_handler
+
+    result = slack_assistant_handler.format_user_mention("U123")
+    assert result == "<@U123>"
+
+
+@pytest.mark.asyncio
+async def test_slack_assistant_handler_normalize_message():
+    """
+    Given:
+        Message with HTML entities.
+    When:
+        Normalizing message from user.
+    Then:
+        Decodes HTML entities.
+    """
+    from SlackV3 import slack_assistant_handler
+
+    result = slack_assistant_handler.normalize_message_from_user("<test>")
+    assert result == "<test>"
+
+
+@pytest.mark.asyncio
+async def test_handle_assistant_interactions_bot_mention(mocker: MockerFixture):
+    """
+    Given:
+        Event with bot mention and AI Assistant enabled.
+    When:
+        Handling assistant interactions.
+    Then:
+        Calls handler's handle_bot_mention method.
+    """
+    import SlackV3
+    from SlackV3 import handle_assistant_interactions
+
+    SlackV3.ENABLED_AI_ASSISTANT = True
+
+    data = {"user": {"id": "U123"}, "view": {}}
+    event = {"text": "<@BOT123> help me", "channel": "C123", "ts": "1234567890.123456"}
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_id": '"BOT123"'})
+    mocker.patch.object(SlackV3, "get_user_details", return_value={"profile": {"email": "user@example.com"}})
+    mocker.patch.object(SlackV3.slack_assistant_handler, "handle_bot_mention", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    await handle_assistant_interactions(data, event, "U123", [], "event")
+
+    assert SlackV3.slack_assistant_handler.handle_bot_mention.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_assistant_interactions_action(mocker: MockerFixture):
+    """
+    Given:
+        Assistant action (agent selection or approval).
+    When:
+        Handling assistant interactions.
+    Then:
+        Calls handler's handle_action method.
+    """
+    import SlackV3
+    from SlackV3 import handle_assistant_interactions
+    from CortexAssistantApiModule import AssistantActionIds
+
+    SlackV3.ENABLED_AI_ASSISTANT = True
+
+    data = {"user": {"id": "U123"}, "view": {}, "trigger_id": "trigger123", "message": {"ts": "1234567890.123456"}}
+    event = {"text": "", "channel": "C123", "ts": "1234567890.123456"}
+    actions = [{"action_id": AssistantActionIds.FEEDBACK.value}]
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_id": '"BOT123"'})
+    mocker.patch.object(SlackV3, "get_user_details", return_value={"profile": {"email": "user@example.com"}})
+    mocker.patch.object(SlackV3.slack_assistant_handler, "handle_action", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    await handle_assistant_interactions(data, event, "U123", actions, "interactive")
+
+    assert SlackV3.slack_assistant_handler.handle_action.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_assistant_interactions_modal_submission(mocker: MockerFixture):
+    """
+    Given:
+        Modal submission event (feedback modal).
+    When:
+        Handling assistant interactions.
+    Then:
+        Calls handle_assistant_modal_submission.
+    """
+    import SlackV3
+    from SlackV3 import handle_assistant_interactions
+    from CortexAssistantApiModule import AssistantActionIds
+
+    SlackV3.ENABLED_AI_ASSISTANT = True
+
+    data = {
+        "user": {"id": "U123"},
+        "view": {
+            "callback_id": AssistantActionIds.FEEDBACK_MODAL_CALLBACK_ID,
+            "private_metadata": '{"message_id": "msg123", "channel_id": "C123", "thread_ts": "thread123"}',
+            "state": {"values": {}},
+        },
+    }
+    event = {"text": "", "channel": "C123"}
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_id": '"BOT123"'})
+    mocker.patch.object(SlackV3, "get_user_details", return_value={"profile": {"email": "user@example.com"}})
+    mocker.patch.object(SlackV3, "handle_assistant_modal_submission")
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    await handle_assistant_interactions(data, event, "U123", [], "interactive")
+
+    assert SlackV3.handle_assistant_modal_submission.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_assistant_interactions_disabled(mocker: MockerFixture):
+    """
+    Given:
+        AI Assistant disabled.
+    When:
+        Handling assistant interactions.
+    Then:
+        Returns without processing.
+    """
+    import SlackV3
+    from SlackV3 import handle_assistant_interactions
+
+    SlackV3.ENABLED_AI_ASSISTANT = False
+
+    data = {"user": {"id": "U123"}, "view": {}}
+    event = {"text": "<@BOT123> help"}
+
+    mocker.patch.object(SlackV3.slack_assistant_handler, "handle_bot_mention")
+
+    await handle_assistant_interactions(data, event, "U123", [], "event")
+
+    assert SlackV3.slack_assistant_handler.handle_bot_mention.call_count == 0
+
+
+@pytest.mark.asyncio
+async def test_handle_assistant_interactions_saves_context_when_modified(mocker: MockerFixture):
+    """
+    Given:
+        Assistant interaction that modifies context.
+    When:
+        Handling assistant interactions.
+    Then:
+        Saves updated context to integration context.
+    """
+    import SlackV3
+    from SlackV3 import handle_assistant_interactions
+
+    SlackV3.ENABLED_AI_ASSISTANT = True
+
+    data = {"user": {"id": "U123"}, "view": {}}
+    event = {"text": "<@BOT123> help", "channel": "C123", "ts": "1234567890.123456"}
+
+    modified_context = {"conv1": {"status": "awaiting_backend_response"}}
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_id": '"BOT123"'})
+    mocker.patch.object(SlackV3, "get_user_details", return_value={"profile": {"email": "user@example.com"}})
+    mocker.patch.object(SlackV3.slack_assistant_handler, "handle_bot_mention", return_value=modified_context)
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    await handle_assistant_interactions(data, event, "U123", [], "event")
+
+    assert demisto.setIntegrationContext.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
+    """
+    Given:
+        Invalid blocks that cause SlackApiError.
+    When:
+        Posting agent response.
+    Then:
+        Falls back to sending plain text message.
+    """
+    import SlackV3
+    from slack_sdk.errors import SlackApiError
+
+    # First call fails with invalid_blocks, second call succeeds
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[SlackApiError("invalid_blocks", {"error": "invalid_blocks"}), {"ts": "1234567890.123456"}],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[{"invalid": "block"}],
+        attachments=[],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "1234567890.123456"}
+    assert SlackV3.send_message_to_destinations.call_count == 2
+    # Second call should use fallback_text
+    second_call = SlackV3.send_message_to_destinations.call_args_list[1]
+    assert second_call[0][1] == "This is the fallback message"
+
+
+def test_send_agent_response_adds_user_mention_for_model_type(mocker):
+    """
+    Given:
+        Model type messages list with user_id in assistant context.
+    When:
+        Calling send_agent_response command.
+    Then:
+        Passes user_id from assistant context to handler.
+    """
+    import SlackV3
+    from SlackV3 import send_agent_response
+
+    messages = [{"content": "Test response", "response_type": "model", "is_final": True}]
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "channel_id": "C123",
+            "thread_id": "1234567890.123456",
+            "messages": messages,
+        },
+    )
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value={"assistant_context": '{"C123_1234567890.123456": {"user": "U123"}}'}
+    )
+    mocker.patch.object(SlackV3.slack_assistant_handler, "send_agent_response")
+
+    send_agent_response()
+
+    call_args = SlackV3.slack_assistant_handler.send_agent_response.call_args[1]
+    assert call_args["user_id"] == "U123"
+
+
+def test_create_script_notice_ui():
+    """
+    Given:
+        A SlackAssistantHandler instance.
+    When:
+        Creating a script availability notice UI block.
+    Then:
+        Returns a rich_text block with a quoted notice containing the expected text.
+    """
+    from SlackV3 import slack_assistant_handler
+    from CortexAssistantApiModule import AssistantMessages
+
+    result = slack_assistant_handler.create_script_notice_ui()
+
+    assert result is not None
+    assert result["type"] == "rich_text"
+    elements = result["elements"]
+    assert len(elements) == 1
+    quote_block = elements[0]
+    assert quote_block["type"] == "rich_text_quote"
+    text_element = quote_block["elements"][1]
+    assert AssistantMessages.SCRIPT_AVAILABLE_NOTICE in text_element["text"]

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+import os
 import shutil
 
 
@@ -96,7 +97,7 @@ class Client(BaseClient):
                     "link": link,
                     "metadata": {"title": title, "docAuthor": author, "description": description, "docSource": source},
                 }
-                response = self._http_request(method="POST", url_suffix="/v1/document/raw-text", json_data=data)
+                response = self._http_request(method="POST", url_suffix="/v1/document/upload-link", json_data=data)
             finally:
                 if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{title}]")
@@ -108,11 +109,12 @@ class Client(BaseClient):
         return response  # pylint: disable=E0601
 
     def document_upload_file(self, entry_id):
+        file_name = ""
         try:
             headers = self._headers
             del headers["Content-Type"]
             file_path = demisto.getFilePath(entry_id)["path"]
-            file_name = demisto.getFilePath(entry_id)["name"]
+            file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
             try:
                 exists = False
                 document_name("custom-documents", file_name, self.document_list())
@@ -133,7 +135,11 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            try:
+                if file_name:
+                    os.remove(file_name)
+            except OSError:
+                pass
 
         return response  # pylint: disable=E0601
 
@@ -638,7 +644,7 @@ def document_upload_file_command(client: Client, args: dict) -> CommandResults:
 
 
 def document_upload_link_command(client: Client, args: dict) -> CommandResults:
-    response = client.document_upload_text(args["link"], args["title"], args["description"], args["author"], args["source"])
+    response = client.document_upload_link(args["link"], args["title"], args["description"], args["author"], args["source"])
     return CommandResults(outputs_prefix="AnythingLLM.upload_link", readable_output=DictMarkdown(response, ""), outputs=response)
 
 

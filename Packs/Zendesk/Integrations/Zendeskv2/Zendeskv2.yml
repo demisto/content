@@ -4,6 +4,7 @@ commonfields:
 name: Zendesk v2
 display: Zendesk v2
 category: Case Management
+provider: Zendesk
 description: IT service management.
 detaileddescription: Zendesk integration requires the API key and a username.
 sectionorder:
@@ -1598,7 +1599,7 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   subtype: python3
   ismappable: true

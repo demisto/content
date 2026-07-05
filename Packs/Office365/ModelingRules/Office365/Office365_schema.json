@@ -603,6 +603,14 @@
         "Workload": {
             "type": "string",
             "is_array": false
+        },
+        "SourceRelativeUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "ListTitle": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_o365_dlp_raw": {

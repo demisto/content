@@ -9,6 +9,7 @@ To set up a Check Point HEC instance, please provide the SMART API url based on 
 * United Kingdom (UK): https://smart-api-production-1-euw2.avanan.net
 * United Arab Emirates (UAE): https://smart-api-production-1-mec1.avanan.net
 * India: https://smart-api-production-1-aps1.avanan.net
+* Singapore: https://smart-api-production-1-apse1.avanan.net
 
 You can also use Check Point Infinity API Credentials instead of the SMART API. To do so, please provide one of the following urls based on your region:
 
@@ -17,8 +18,9 @@ You can also use Check Point Infinity API Credentials instead of the SMART API. 
 * Australia: https://cloudinfra-gw.ap.portal.checkpoint.com
 * Canada: https://cloudinfra-gw.ca.portal.checkpoint.com
 * United Kingdom (UK): https://cloudinfra-gw.uk.portal.checkpoint.com
-* United Arab Emirates (UAE): https://cloudinfra-gw.me.portal.checkpoint.com
+* United Arab Emirates (UAE): https://cloudinfra-gw.ae.portal.checkpoint.com
 * India: https://cloudinfra-gw.in.portal.checkpoint.com
+* Singapore: https://cloudinfra-gw.sg.portal.checkpoint.com
 
 If you have several portals in different regions, you will need to use an instance per region
 

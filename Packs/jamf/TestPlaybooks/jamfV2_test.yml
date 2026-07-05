@@ -441,8 +441,8 @@ tasks:
     scriptarguments:
       limit:
         simple: "5"
-      match:
-        simple: '"Computer 9*"'
+      filter:
+        simple: 'general.name=="Computer 9*"'
     separatecontext: false
     view: |-
       {

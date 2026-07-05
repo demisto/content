@@ -356,9 +356,9 @@ def test_fetch_incidents_alerts_success(http_request, client):
         "severities": ["CRITICAL"],
         "object_types": ["Node"],
     }
-    raw_response = util_load_json(
-        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json")
-    )["alerts"]
+    raw_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json"))[
+        "alerts"
+    ]
     http_request.return_value = raw_response
 
     _, incidents = fetch_incidents(client, {}, params, is_test=False)
@@ -374,9 +374,9 @@ def test_fetch_incidents_events_success(http_request, client):
         "events"
     ]
     params = {"fetch_type": "Event", "max_fetch": "5", "first_fetch": "2 days ago", "event_types": ["Alert Triggered"]}
-    raw_response = util_load_json(
-        os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json")
-    )["events"]
+    raw_response = util_load_json(os.path.join(os.path.dirname(__file__), "test_data", "test_fetch_incidents_raw_response.json"))[
+        "events"
+    ]
     http_request.return_value = raw_response
 
     _, incidents = fetch_incidents(client, {}, params, is_test=False)

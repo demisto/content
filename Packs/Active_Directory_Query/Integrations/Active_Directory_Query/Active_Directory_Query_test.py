@@ -1001,3 +1001,102 @@ def test_search_users_with_msDSUserAccountControlComputed(mocker):
         .get("PASSWORD_EXPIRED")
         is True
     )
+
+
+def test_base_dn_verified_success(mocker):
+    """
+    Given:
+        A valid base DN and a successful LDAP connection.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns True and uses BASE scope with optimized parameters.
+    """
+    import Active_Directory_Query
+    from ldap3 import BASE
+
+    search_args = []
+    search_kwargs = {}
+
+    class ConnectionMocker:
+        result = {"description": "success"}
+
+        def search(self, *args, **kwargs):
+            nonlocal search_args, search_kwargs
+            search_args = args
+            search_kwargs = kwargs
+            return True
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    mocker.patch.object(demisto, "info")
+
+    result = Active_Directory_Query.base_dn_verified("dc=example,dc=com")
+
+    # Verify the function returns True
+    assert result is True
+
+    # Verify the search was called with optimized parameters
+    assert search_kwargs.get("search_base") == "dc=example,dc=com"
+    assert search_kwargs.get("search_filter") == "(objectClass=*)"
+    assert search_kwargs.get("search_scope") == BASE  # Verify BASE scope is used
+    assert search_kwargs.get("size_limit") == 1  # Verify size limit is 1
+    assert search_kwargs.get("attributes") == ["1.1"]  # Verify no attributes are fetched
+
+
+def test_base_dn_verified_failure(mocker):
+    """
+    Given:
+        An invalid base DN that causes the LDAP search to fail.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns False and logs the failure.
+    """
+    import Active_Directory_Query
+
+    class ConnectionMocker:
+        result = {"description": "noSuchObject"}
+
+        def search(self, *args, **kwargs):
+            return False
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    info_mock = mocker.patch.object(demisto, "info")
+
+    result = Active_Directory_Query.base_dn_verified("dc=invalid,dc=com")
+
+    # Verify the function returns False
+    assert result is False
+
+    # Verify that the failure was logged
+    assert info_mock.call_count == 1
+    assert "Base DN verification failed" in info_mock.call_args[0][0]
+
+
+def test_base_dn_verified_exception(mocker):
+    """
+    Given:
+        A base DN that causes an exception during LDAP search.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns False and logs the error.
+    """
+    import Active_Directory_Query
+
+    class ConnectionMocker:
+        def search(self, *args, **kwargs):
+            raise Exception("Connection timeout")
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    error_mock = mocker.patch.object(demisto, "error")
+
+    result = Active_Directory_Query.base_dn_verified("dc=example,dc=com")
+
+    # Verify the function returns False
+    assert result is False
+
+    # Verify that the error was logged
+    assert error_mock.call_count == 1
+    assert "Error during Base DN verification" in error_mock.call_args[0][0]
+    assert "Connection timeout" in error_mock.call_args[0][0]

@@ -1,33 +1,47 @@
-import pytest
 from unittest.mock import patch
+from CommonServerPython import CommandResults
 from SetIndicatorAgentix import set_indicator_if_exist
 
 
 class TestSetIndicator:
     def test_no_arguments_provided(self):
-        """Test that function returns error when no valid arguments are provided"""
+        """Test that function returns CommandResults with error message when no valid arguments are provided"""
         args = {"value": "1.1.1.1"}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        assert result.outputs["Value"] == "1.1.1.1"
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     def test_empty_arguments(self):
-        """Test that function returns error when completely empty arguments"""
-        args = {}
+        """Test that function returns CommandResults with error message when completely empty arguments"""
+        args: dict = {}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
-        """Test that function returns error when indicator does not exist"""
+        """Test that function returns a CommandResults with 'does not exist' message when indicator is not found"""
         args = {"value": "nonexistent.com", "type": "Domain"}
         mock_execute.return_value = None
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
 
         mock_execute.assert_called_once_with("findIndicators", {"value": "nonexistent.com"})
+        assert result.outputs["Value"] == "nonexistent.com"
+        assert result.outputs["Result"] == "Indicator does not exist."
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_type_only(self, mock_execute):
@@ -88,9 +102,13 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {  # core-get-issues response
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response: [[issues], [metadata]]
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -102,8 +120,14 @@ class TestSetIndicator:
         assert results[0].outputs["Value"] == "1.1.1.1"
 
         # Verify associateIndicatorsToAlert was called for each issue
-        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "123", "indicatorsValues": "1.1.1.1"})
-        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "456", "indicatorsValues": "1.1.1.1"})
+        mock_execute.assert_any_call(
+            "associateIndicatorsToAlert",
+            {"issueId": "123", "indicatorsValues": "1.1.1.1"},
+        )
+        mock_execute.assert_any_call(
+            "associateIndicatorsToAlert",
+            {"issueId": "456", "indicatorsValues": "1.1.1.1"},
+        )
 
     @patch("SetIndicatorAgentix.execute_command")
     @patch("SetIndicatorAgentix.argToList")
@@ -114,9 +138,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {  # core-get-issues response - only issue 123 exists
-                "alerts": [{"alert_fields": {"internal_id": "123"}}]
-            },
+            [  # core-get-issues response: [[issues], [metadata]] - only issue 123 exists
+                [{"internal_id": "123"}],
+                {"filtered_count": 1, "returned_count": 1},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
         ]
 
@@ -148,9 +173,13 @@ class TestSetIndicator:
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
             {},  # setIndicator response
-            {  # core-get-issues response
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response: [[issues], [metadata]]
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -175,9 +204,13 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            {  # core-get-issues response - only 123 and 456 exist
-                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
-            },
+            [  # core-get-issues response: [[issues], [metadata]] - only 123 and 456 exist
+                [
+                    {"internal_id": "123"},
+                    {"internal_id": "456"},
+                ],
+                {"filtered_count": 2, "returned_count": 2},
+            ],
             {},  # associateIndicatorsToAlert for issue 123
             {},  # associateIndicatorsToAlert for issue 456
         ]
@@ -201,7 +234,7 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {"alerts": []},  # core-get-issues response - no issues found
+            [],  # core-get-issues response - no issues found
         ]
 
         results = set_indicator_if_exist(args)
@@ -240,9 +273,10 @@ class TestSetIndicator:
 
             mock_execute.side_effect = [
                 {"data": [{"value": "example.com"}]},  # findIndicators response
-                {  # core-get-issues response
-                    "alerts": [{"alert_fields": {"internal_id": "123"}}]
-                },
+                [  # core-get-issues response: [[issues], [metadata]]
+                    [{"internal_id": "123"}],
+                    {"filtered_count": 1, "returned_count": 1},
+                ],
                 {},  # associateIndicatorsToAlert response
             ]
 
@@ -255,7 +289,12 @@ class TestSetIndicator:
     @patch("SetIndicatorAgentix.execute_command")
     def test_multiple_properties_update(self, mock_execute):
         """Test updating multiple properties without related issues"""
-        args = {"value": "1.1.1.1", "type": "IP", "verdict": "malicious", "tags": "botnet,malware"}
+        args = {
+            "value": "1.1.1.1",
+            "type": "IP",
+            "verdict": "malicious",
+            "tags": "botnet,malware",
+        }
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
@@ -274,13 +313,13 @@ class TestSetIndicator:
     @patch("SetIndicatorAgentix.execute_command")
     @patch("SetIndicatorAgentix.argToList")
     def test_core_get_issues_returns_none_alerts(self, mock_arg_to_list, mock_execute):
-        """Test when core-get-issues returns structure without alerts key"""
+        """Test when core-get-issues returns an empty list"""
         args = {"value": "1.1.1.1", "related_issues": "123"}
         mock_arg_to_list.return_value = ["123"]
 
         mock_execute.side_effect = [
             {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
-            {},  # core-get-issues response without alerts key
+            [],  # core-get-issues response - empty list
         ]
 
         results = set_indicator_if_exist(args)
@@ -298,12 +337,10 @@ class TestSetIndicator:
 
         mock_execute.side_effect = [
             {"data": [{"value": "example.com"}]},  # findIndicators response
-            {  # core-get-issues response with malformed alert
-                "alerts": [
-                    {"alert_fields": {}}  # Missing internal_id
-                ]
-            },
-            None,
+            [  # core-get-issues response: [[issues], [metadata]] - issue missing internal_id
+                [{"some_other_field": "value"}],
+                {"filtered_count": 1, "returned_count": 1},
+            ],
         ]
 
         results = set_indicator_if_exist(args)

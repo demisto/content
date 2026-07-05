@@ -4,6 +4,7 @@ commonfields:
 name: GLPI
 display: GLPI
 category: Case Management
+provider: Open Source
 description: GLPI open source ITSM solution.
 defaultclassifier: GLPI - Classifier
 defaultmapperin: GLPI - Incoming Mapper
@@ -66,13 +67,16 @@ configuration:
   display: Incident Mirror Direction
   defaultvalue: None
   type: 15
-  additionalinfo:
+  additionalinfo: Cortex XSOAR only parameter.
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - name: work_notes_tag
   display: Tag used for work note mirroring
   defaultvalue: work_notes

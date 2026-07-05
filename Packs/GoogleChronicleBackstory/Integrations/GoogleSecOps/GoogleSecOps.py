@@ -13,6 +13,7 @@ from google.oauth2 import service_account
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+IOC_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
@@ -41,6 +42,7 @@ CONFIDENCE_LEVEL_PRIORITY = {"unknown_severity": 0, "informational": 1, "low": 2
 VALID_DATA_TABLE_COLUMN_TYPE = ["STRING", "REGEX", "CIDR", "NUMBER"]
 
 SECOPS_V1_ALPHA_URL = "https://chronicle.{}.rep.googleapis.com/v1alpha"
+OLDER_SECOPS_V1_ALPHA_URL = "https://{}-chronicle.googleapis.com/v1alpha"
 
 SECOPS_OUTPUT_PATHS = {
     "Rules": "GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)",
@@ -154,9 +156,14 @@ class Client:
 
         region = params.get("region", "us").lower()
         other_region = params.get("other_region", "").strip()
+
         self.project_location = region if region.lower() != "other" else other_region
 
         self.project_instance_id = params.get("secops_project_instance_id", "")
+        secops_project_number = params.get("secops_project_number", "")
+        self.project_number = secops_project_number if secops_project_number else self.project_id
+        url_format = params.get("url_format", "<chronicle>.<REGION>.<rep.googleapis.com>").lower()
+        self.use_new_url_format = url_format == "<chronicle>.<region>.<rep.googleapis.com>"
 
     def _implement_retry(
         self, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False
@@ -309,6 +316,10 @@ def validate_configuration_parameters(params: dict[str, Any]):
     project_location = params.get("region", "us").lower()
     if project_location == "other":
         project_location = params.get("other_region", "").lower()
+
+    project_number = params.get("secops_project_number", "")
+    if project_number and (not project_number.isnumeric() or project_number == "0"):
+        raise ValueError("Google SecOps Project Number should be a positive number.")
 
     if not project_instance_id:
         raise ValueError("Please Provide the Google SecOps Project Instance ID.")
@@ -796,13 +807,16 @@ def create_url_path(client: Client) -> str:
     :return: The constructed URL path.
     :rtype: str
     """
-    project_id = client.project_id
+    project_number = client.project_number
     project_instance_id = client.project_instance_id
     project_location = client.project_location
 
-    parent = f"projects/{project_id}/locations/{project_location}/instances/{project_instance_id}"
+    parent = f"projects/{project_number}/locations/{project_location}/instances/{project_instance_id}"
 
-    url = SECOPS_V1_ALPHA_URL.format(project_location)
+    if client.use_new_url_format:
+        url = SECOPS_V1_ALPHA_URL.format(project_location)
+    else:
+        url = OLDER_SECOPS_V1_ALPHA_URL.format(project_location)
 
     return f"{url}/{parent}"
 
@@ -828,7 +842,7 @@ def generate_delayed_start_time(time_window: str, start_time: str) -> str:
     return delayed_start_time
 
 
-def add_diff_time_to_end_time(start_time: str, end_time: str) -> str:
+def add_diff_time_to_end_time(start_time: str, end_time: str) -> tuple[str, bool]:
     """
     Calculate the difference between start_time and end_time and add half of the difference to end_time.
 
@@ -837,18 +851,32 @@ def add_diff_time_to_end_time(start_time: str, end_time: str) -> str:
     :type end_time: str
     :param end_time: End time of request.
 
-    :rtype: str
-    :return: End time after adding half of the difference between start_time and end_time.
+    :rtype: tuple[str, bool]
+    :return: End time after adding half of the difference between start_time and end_time, time_diff_one_microsecond
     """
 
     start_time_obj = datetime.strptime(start_time, DATE_FORMAT)
     end_time_obj = datetime.strptime(end_time, DATE_FORMAT)
+    time_diff_one_microsecond = False
 
     time_diff = end_time_obj - start_time_obj
 
-    dealyed_end_time_obj = start_time_obj + time_diff / 2
+    # Check if time difference is less than 1 microsecond
+    if time_diff.total_seconds() <= 0.000001:  # 1 microsecond = 0.000001 seconds
+        delayed_end_time_obj = start_time_obj + timedelta(microseconds=1)
+        result = delayed_end_time_obj.strftime(DATE_FORMAT)
+        demisto.debug(f"Final delayed end time with 1 microsecond difference: {result}")
+        time_diff_one_microsecond = True
+        return result, time_diff_one_microsecond
 
-    return dealyed_end_time_obj.strftime(DATE_FORMAT)
+    # Calculate half of the time difference
+    half_diff = time_diff / 2
+    # Add half of the difference to start_time to get the delayed end time
+    delayed_end_time_obj = start_time_obj + half_diff
+
+    result = delayed_end_time_obj.strftime(DATE_FORMAT)
+    demisto.debug(f"Final delayed end time: {result}")
+    return result, time_diff_one_microsecond
 
 
 def multiline_logs_for_list(array: list, prefix: str = ""):
@@ -997,7 +1025,8 @@ def get_informal_time(date: str) -> str:
     :rtype: str
     """
     current_time = datetime.utcnow()
-    previous_time = parse_date_string(date)
+    date_format = DATE_FORMAT if "." in date else IOC_DATE_FORMAT
+    previous_time = parse_date_string(date, date_format=date_format)
 
     total_time = (current_time - previous_time).total_seconds()
 
@@ -4074,7 +4103,7 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
     all_last_run = demisto.getLastRun()
     last_run = all_last_run.get("ioc_domain_matches", {})
     demisto.debug(
-        f"Fetch IoCs: Configration Parameters - First Fetch: {first_fetch}, Max Fetch: {max_fetch}, Time Window: {time_window}"
+        f"Fetch IoCs: Configuration Parameters - First Fetch: {first_fetch}, Max Fetch: {max_fetch}, Time Window: {time_window}"
     )
 
     if last_run:
@@ -4093,7 +4122,7 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
 
     while index == 1 and no_of_tries < TOTAL_TRIES:
         demisto.debug(
-            f"Fetch IoCs: {no_of_tries + 1}. Adjusting time interval Start time {delayed_start_time}, End time {end_time}"
+            f"Fetch IoCs: Attempt {no_of_tries + 1}. Adjusting time interval Start time {delayed_start_time}, End time {end_time}"
         )
         events, more_data_available = get_ioc_domain_matches(
             client_obj, delayed_start_time, end_time, MAX_IOCS_FETCH_SIZE, is_raw=True
@@ -4101,25 +4130,37 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
 
         if is_test:
             return [], {}
-
-        if not more_data_available:
+        if not more_data_available or len(events) < MAX_IOCS_FETCH_SIZE:
             demisto.debug(
-                f"Fetch IoCs: The current time interval has data less than {MAX_IOCS_FETCH_SIZE} IoCs data, "
-                "so it will be used for fetching IoCs."
+                f"Fetch IoCs: Time interval contains {len(events)} IoCs (less than {MAX_IOCS_FETCH_SIZE}). "
+                f"More data available: {more_data_available}. Using this interval for fetching."
             )
             exited_early = True
             break
 
         demisto.debug(
-            f"Fetch IoCs: The current time interval has more than {MAX_IOCS_FETCH_SIZE} IoCs data, so reducing the end time."
+            f"Fetch IoCs: Time interval contains {len(events)} IoCs (exceeds {MAX_IOCS_FETCH_SIZE}). "
+            f"More data available: {more_data_available}. Reducing end time."
         )
-        end_time = add_diff_time_to_end_time(delayed_start_time, end_time)
+        end_time, time_diff_one_microsecond = add_diff_time_to_end_time(delayed_start_time, end_time)
+
+        if time_diff_one_microsecond:
+            demisto.debug(
+                f"Fetch IoCs: Time difference is less than 1 microsecond. Processing first {MAX_IOCS_FETCH_SIZE} records only. "
+                f"More data available: {more_data_available}. Records beyond {MAX_IOCS_FETCH_SIZE} will be skipped."
+            )
+            exited_early = True
+            break
+
         no_of_tries += 1
 
         # Check if now - current_time > 4 minutes
         now = datetime.now()
         if (now - current_time_dt).total_seconds() > 240:
-            demisto.debug("Fetch IoCs: Exiting loop because adjusting the time interval took more than 4 minutes.")
+            demisto.debug(
+                "Fetch IoCs: Time interval adjustment exceeded 4 minutes. "
+                "Exiting loop and will continue from this point in the next fetch cycle."
+            )
             break
 
     demisto.debug(f"Fetch IoCs: Calling API with Start time {delayed_start_time}, End time {end_time}")
@@ -4131,20 +4172,20 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
     page_size = min(MAX_IOCS_FETCH_SIZE, max_fetch * index)  # type: ignore
     events, more_data_available = get_ioc_domain_matches(client_obj, delayed_start_time, end_time, page_size)
 
-    demisto.debug(f"Fetch IoCs: Number of IoCs retrieved from API: {len(events)}")
+    demisto.debug(f"Fetch IoCs: Retrieved {len(events)} IoCs from API. More data available: {more_data_available}")
     ingested_artifacts, duplicate_artifacts = [], []
     incidents: list = []
 
     if not events and current_time == end_time:
-        demisto.debug("Fetch IoCs: No data retrived with end time as current time, so not updating last run.")
+        demisto.debug("Fetch IoCs: No data retrieved with end time as current time. Last run will not be updated.")
         return incidents, all_last_run
 
     if not events:
-        demisto.debug("Fetch IoCs: No data retrived, so updating start time in last run with the end time.")
+        demisto.debug("Fetch IoCs: No data retrieved, so updating start time in last run with the end time.")
         last_run.pop("end_time", None)
         last_run.update({"start_time": end_time, "index": 1})
         demisto.debug(
-            f"Fetch IoCs: Setting Last Run Start time: {last_run.get('start_time')}, End time: {last_run.get('end_time')}, "
+            f"Fetch IoCs: Updated Last Run - Start time: {last_run.get('start_time')}, End time: {last_run.get('end_time')}, "
             f"Index: {last_run.get('index')}"
         )
 
@@ -4162,7 +4203,8 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
 
         if len(incidents) == max_fetch:
             demisto.debug(
-                f"Fetch IoCs: Max incidents reached: {max_fetch}. So skipping further incidents and not incrementing index."
+                f"Fetch IoCs: Maximum incident limit of {max_fetch} reached. "
+                f"Remaining incidents will be processed in the next fetch cycle. Index will not be incremented."
             )
             increment_index = False
             break
@@ -4177,22 +4219,34 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
         ingested_artifacts.append(artifact_name)
         incidents.append(incident)
 
-    demisto.debug(f"Fetch IoCs: Ingested {len(ingested_artifacts)} artifacts:\n")
+    demisto.debug(f"Fetch IoCs: Successfully fetched {len(ingested_artifacts)} artifacts:\n")
     multiline_logs_for_list(ingested_artifacts, "Ingested Artifacts: ")
     demisto.debug(f"Fetch IoCs: Skipped {len(duplicate_artifacts)} duplicate artifacts:\n")
     multiline_logs_for_list(duplicate_artifacts, "Duplicate Artifacts: ")
     last_run.update({"previous_artifact_values": previous_artifact_values})
 
+    start_time_obj = datetime.strptime(delayed_start_time, DATE_FORMAT)
+    end_time_obj = datetime.strptime(end_time, DATE_FORMAT)
+    is_diff_one_microsecond = False
+    time_diff = end_time_obj - start_time_obj
+    # Check if time difference is less than 1 microsecond
+    if time_diff.total_seconds() <= 0.000001:
+        is_diff_one_microsecond = True
+
+    demisto.debug(
+        f"Fetch IoCs: Checking last run update condition - is_diff_one_microsecond={is_diff_one_microsecond}, "
+        f"more_data_available={more_data_available}, page_size={page_size}"
+    )
     # Update start_time and index if moreDataAvailable is false and no incidents are fetched
-    if not incidents and not more_data_available:
-        demisto.debug("Fetch IoCs: All IoCs data of the current time interval has been fetched.")
+    if not incidents and (not more_data_available or (is_diff_one_microsecond and page_size == MAX_IOCS_FETCH_SIZE)):
+        demisto.debug("Fetch IoCs: All IoCs for the current time interval have been fetched.")
         last_run.pop("end_time", None)
         last_run.update({"start_time": end_time, "index": 1})
     else:
         last_run.update({"start_time": start_time, "end_time": end_time, "index": index + 1 if increment_index else index})
 
     demisto.debug(
-        f"Fetch IoCs: Setting 'Last Run' - Start time: {last_run.get('start_time')}, End time: {last_run.get('end_time')}, "
+        f"Fetch IoCs: Final Last Run - Start time: {last_run.get('start_time')}, End time: {last_run.get('end_time')}, "
         f"Index: {last_run.get('index')}"
     )
 

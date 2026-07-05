@@ -156,10 +156,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -341,10 +357,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -626,10 +658,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -811,10 +859,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -1042,10 +1106,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -1227,10 +1307,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -1512,10 +1608,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -1697,10 +1809,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -1928,10 +2056,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -2113,10 +2257,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -2398,10 +2558,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }
@@ -2583,10 +2759,26 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "add_utc_timezone": {},
-                                    "dayfirst": {},
-                                    "fuzzy": {},
-                                    "yearfirst": {}
+                                    "add_utc_timezone": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "yearfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
                                 },
                                 "operator": "DateStringToISOFormat"
                             }

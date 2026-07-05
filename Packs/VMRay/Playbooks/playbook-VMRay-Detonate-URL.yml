@@ -301,6 +301,12 @@ tasks:
           accessor: Sample.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -410,6 +416,12 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -450,6 +462,12 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     continueonerrortype: ""
     view: |-

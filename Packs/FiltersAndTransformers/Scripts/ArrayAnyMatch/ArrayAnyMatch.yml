@@ -22,6 +22,7 @@ args:
   description: An array in which to check if an element is in the left list.
   isArray: true
 scripttarget: 0
+isllm: false
 runas: DBotWeakRole
 fromversion: 6.10.0
 tests:

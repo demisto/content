@@ -31,7 +31,14 @@ def mock_client_with_valid_token(mocker) -> Client:
         "BitwardenPasswordManager.get_integration_context", return_value={"token": "access_token", "expires": "1715032135"}
     )
 
-    return Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False)
+    return Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        proxy=False,
+        self_hosted=False,
+    )
 
 
 def test_login_when_token_creation(mocker):
@@ -45,7 +52,14 @@ def test_login_when_token_creation(mocker):
     mocker.patch.object(Client, "_http_request", return_value=mock_response)
     mocker.patch("BitwardenPasswordManager.get_integration_context", return_value={})
 
-    client = Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False)
+    client = Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        proxy=False,
+        self_hosted=False,
+    )
 
     assert client.token == "access_token"
 
@@ -94,6 +108,7 @@ def test_create_new_token(mocker, base_url: str, full_url: str):
     client._base_url = base_url
     client._verify = False
     client._proxy = False
+    client.self_hosted = False
 
     # Test data for token creation
     json_data = {
@@ -122,6 +137,124 @@ def test_create_new_token(mocker, base_url: str, full_url: str):
     context_call_args = mock_set_context.call_args[1]["context"]
     assert context_call_args["token"] == "access_token"
     assert "expires" in context_call_args
+
+
+@freeze_time("2024-04-25 00:00:00")
+@pytest.mark.parametrize(
+    "base_url, expected_url",
+    [
+        ("https://vault.customer.com", "https://vault.customer.com/identity/connect/token"),
+        ("https://vault.customer.com/", "https://vault.customer.com/identity/connect/token"),
+        ("https://bitwarden.example.org", "https://bitwarden.example.org/identity/connect/token"),
+    ],
+)
+def test_create_new_token_self_hosted(mocker, base_url: str, expected_url: str):
+    """
+    Given: A client configured for a self-hosted Bitwarden instance
+    When: create_new_token is called with self_hosted=True
+    Then: The authentication URL is constructed from the base_url
+    """
+    from BitwardenPasswordManager import Client
+
+    # Mock the HTTP response for token creation
+    mock_response = util_load_json("test_data/mock_response_login_token_creation.json")
+    mock_http_request = mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mock_set_context = mocker.patch("BitwardenPasswordManager.set_integration_context")
+    mock_get_current_time = mocker.patch("BitwardenPasswordManager.get_current_time")
+
+    # Set a fixed time for consistent testing
+    from datetime import datetime
+
+    fixed_time = datetime(2024, 4, 25, 0, 0, 0)
+    mock_get_current_time.return_value = fixed_time
+
+    # Create client instance with self_hosted=True
+    client = Client.__new__(Client)
+    client._base_url = base_url
+    client._verify = False
+    client._proxy = False
+    client.self_hosted = True
+
+    # Test data for token creation
+    json_data = {
+        "client_id": MOCK_CLIENT_ID,
+        "client_secret": MOCK_CLIENT_SECRET,
+        "grant_type": "client_credentials",
+        "scope": "api.organization",
+    }
+
+    # Call the method under test
+    result_token = client.create_new_token(json_data)
+
+    # Verify the HTTP request was made with the self-hosted URL
+    mock_http_request.assert_called_once_with(
+        method="POST",
+        full_url=expected_url,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=json_data,
+    )
+
+    # Verify the token was returned correctly
+    assert result_token == "access_token"
+
+    # Verify the context was set with the token and expiration
+    mock_set_context.assert_called_once()
+    context_call_args = mock_set_context.call_args[1]["context"]
+    assert context_call_args["token"] == "access_token"
+    assert "expires" in context_call_args
+
+
+@freeze_time("2024-04-25 00:00:00")
+def test_client_initialization_with_self_hosted(mocker):
+    """
+    Given: Configuration parameters for a self-hosted Bitwarden instance
+    When: Client is initialized with self_hosted=True
+    Then: The client is created with the self_hosted flag set correctly
+    """
+    from BitwardenPasswordManager import Client
+
+    # Mock the HTTP response for token creation
+    mock_response = util_load_json("test_data/mock_response_login_token_creation.json")
+    mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mocker.patch("BitwardenPasswordManager.get_integration_context", return_value={})
+    mocker.patch("BitwardenPasswordManager.set_integration_context")
+
+    # Create client with self_hosted=True
+    client = Client(
+        base_url="https://vault.customer.com",
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        proxy=False,
+        self_hosted=True,
+    )
+
+    # Verify the self_hosted flag is set
+    assert client.self_hosted is True
+    assert client.token == "access_token"
+
+
+@freeze_time("2024-04-25 00:00:00")
+def test_client_initialization_without_self_hosted(mocker):
+    """
+    Given: Configuration parameters for a cloud-hosted Bitwarden instance
+    When: Client is initialized without self_hosted parameter (defaults to False)
+    Then: The client is created with the self_hosted flag set to False (backward compatibility)
+    """
+    from BitwardenPasswordManager import Client
+
+    # Mock the HTTP response for token creation
+    mock_response = util_load_json("test_data/mock_response_login_token_creation.json")
+    mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mocker.patch("BitwardenPasswordManager.get_integration_context", return_value={})
+    mocker.patch("BitwardenPasswordManager.set_integration_context")
+
+    # Create client without self_hosted parameter (should default to False)
+    client = Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False)
+
+    # Verify the self_hosted flag defaults to False
+    assert client.self_hosted is False
+    assert client.token == "access_token"
 
 
 @freeze_time("2024-04-25 00:00:00")

@@ -4,6 +4,7 @@ commonfields:
 name: Email Hippo
 display: Email Hippo
 category: Data Enrichment & Threat Intelligence
+provider: EmailHippo
 description: "This is the Email Hippo integration used to verify email sources as fake emails that were used as part of phishing attacks."
 configuration:
 - section: Connect

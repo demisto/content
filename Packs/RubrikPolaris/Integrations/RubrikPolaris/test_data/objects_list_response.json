@@ -64,7 +64,7 @@
               "logicalPath": [
                 {
                   "fid": "f325106b-892b-59df-b786-e06ab8ae6dfd",
-                  "name": "Ganesh Balabharathi",
+                  "name": "Ganesh Testmanbharathi",
                   "objectType": "VSphereFolder"
                 },
                 {
@@ -262,7 +262,7 @@
       "logicalPath": [
         {
           "fid": "f325106b-892b-59df-b786-e06ab8ae6dfd",
-          "name": "Ganesh Balabharathi",
+          "name": "Ganesh Testmanbharathi",
           "objectType": "VSphereFolder"
         },
         {

@@ -1,0 +1,102 @@
+[
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "beab9fadb100a44b3bc8ea4df3249aa6d93e710193be437adb5e47c2e201c1ef",
+        "name": "Blocked Hash beab9fadb100a44b3bc8ea4df3249aa6d93e710193be437adb5e47c2e201c1ef"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "951354d865d719f4d1c2dab01a7c88b5469e1de86449983aa7d359a3ff86f971",
+        "name": "Blocked Hash 951354d865d719f4d1c2dab01a7c88b5469e1de86449983aa7d359a3ff86f971"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "2d78cff191bc989cec83ad64f326e94b5a9ea6d14c4aaa815fc6aa1a37e728c8",
+        "name": "Blocked Hash 2d78cff191bc989cec83ad64f326e94b5a9ea6d14c4aaa815fc6aa1a37e728c8"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "6cbfdabb52e0d9352b1dbae85d0d8d512f05472263ee6f06155579c6e6853f85",
+        "name": "Blocked Hash 6cbfdabb52e0d9352b1dbae85d0d8d512f05472263ee6f06155579c6e6853f85"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "2a73a336b3dcac5f0c81323517cf155b0633f3a1cbfeac33d82eaa4b50e8d9ea",
+        "name": "Blocked Hash 2a73a336b3dcac5f0c81323517cf155b0633f3a1cbfeac33d82eaa4b50e8d9ea"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "22c4b5c00e00b8741e94fed3b32cce04679e54d829ff21e935ed4a407c55b2c6",
+        "name": "Blocked Hash 22c4b5c00e00b8741e94fed3b32cce04679e54d829ff21e935ed4a407c55b2c6"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "d50350c898292d87db6a2d21064d4f85c28c3e24e8d8eb610f6d568432f2afed",
+        "name": "Blocked Hash d50350c898292d87db6a2d21064d4f85c28c3e24e8d8eb610f6d568432f2afed"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "a35807a311d53e88fcf83765c6f49739d07df10d1129f1fe90af959285c55ff9",
+        "name": "Blocked Hash a35807a311d53e88fcf83765c6f49739d07df10d1129f1fe90af959285c55ff9"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "fbc6e9e5c1fb4720d4c9449c4c2927b2aa4424485df11fd77daea082a87e1313",
+        "name": "Blocked Hash fbc6e9e5c1fb4720d4c9449c4c2927b2aa4424485df11fd77daea082a87e1313"
+    },
+    {
+        "source": "Test",
+        "type": "SHA256",
+        "method": "EQUALS",
+        "validUntil": "2026-04-28T08:17:48.062976Z",
+        "description": "Test blocked hashes have higher FP rates than delivered",
+        "creator": "joe@test.com",
+        "value": "54f8cb38b48e9416e5da8328dd0452dd928c3f88d7212b53f35693fc875ae7d6",
+        "name": "Blocked Hash 54f8cb38b48e9416e5da8328dd0452dd928c3f88d7212b53f35693fc875ae7d6"
+    }
+]

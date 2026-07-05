@@ -1,1012 +1,2380 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+"""Unit tests for DatadogCloudSIEM integration.
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
+Pytest Unit Tests: all function names must start with "test_"
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
 """
 
 import datetime
-import json
-import os
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 import pytest
 from CommonServerPython import CommandResults, DemistoException
-from datadog_api_client.v1.model.metric_metadata import MetricMetadata
-from datadog_api_client.v1.model.metric_search_response import MetricSearchResponse
-from datadog_api_client.v1.model.metric_search_response_results import (
-    MetricSearchResponseResults,
-)
-from datadog_api_client.v1.model.metrics_list_response import MetricsListResponse
 from DatadogCloudSIEM import (
-    DEFAULT_PAGE_SIZE,
-    PAGE_NUMBER_ERROR_MSG,
-    PAGE_SIZE_ERROR_MSG,
-    active_metrics_list_command,
-    add_tags_to_host_command,
+    Assignee,
+    Comment,
+    Log,
+    SecurityRule,
+    SecuritySignal,
+    Triage,
+    add_security_signal_comment_command,
+    add_utc_offset,
+    as_list,
+    calculate_limit,
     convert_datetime_to_str,
-    create_event_command,
-    create_incident_command,
-    delete_host_tags_command,
-    delete_incident_command,
-    event_for_lookup,
-    fetch_incidents,
-    get_events_command,
-    get_host_tags_command,
-    get_incident_command,
-    get_metric_metadata_command,
-    get_paginated_results,
-    get_tags_command,
-    incident_for_lookup,
-    is_within_time,
-    metric_command_results,
-    metrics_search_command,
-    module_test,
-    pagination,
-    query_timeseries_points_command,
-    table_header,
-    tags_context_and_readable_output,
-    update_host_tags_command,
-    update_incident_command,
-    update_metric_metadata_command,
+    flatten_tag_map,
+    get_security_rule_command,
+    get_security_signal_command,
+    get_security_signal_list_command,
+    list_security_signal_comments_command,
+    logs_query_command,
+    map_severity_to_xsoar,
+    test_module,
+    parse_log,
+    parse_security_comment,
+    parse_security_rule,
+    parse_security_signal,
+    remove_none_values,
+    security_signals_search_query,
+    update_security_signal_assignee_command,
+    update_security_signal_state_command,
 )
-from test_data.inputs import (
-    ACTIVE_METRIC_LIST_CONTEXT,
-    ACTIVE_METRIC_LIST_RESPONSE,
-    CREATE_INCIDENT_CONTEXT,
-    CREATE_INCIDENT_RESPONSE,
-    EVENT_CREATE_CONTEXT,
-    EVENT_CREATE_RESPONSE,
-    EVENT_GET_CONTEXT,
-    EVENT_GET_RESPONSE,
-    EVENT_LIST_CONTEXT,
-    EVENT_LIST_RESPONSE,
-    EVENT_MOCK,
-    EXPECTED_EVENT_MOCK,
-    GET_INCIDENT_CONTEXT,
-    GET_INCIDENT_RESPONSE,
-    HOST_TAG_CREATE_CONTEXT,
-    HOST_TAG_GET_CONTEXT,
-    HOST_TAG_UPDATE_CONTEXT,
-    INCIDENT_LOOKUP_DATA,
-    INCIDENT_LOOKUP_DATA_EXPECTED,
-    LIST_INCIDENT_CONTEXT,
-    LIST_INCIDENT_RESPONSE,
-    METRIC_COMMAND_RESULT_INPUT,
-    METRIC_COMMAND_RESULT_OUTPUT,
-    METRIC_METADATA_GET_CONTEXT,
-    METRIC_METADATA_GET_RESPONSE,
-    METRIC_METADATA_UPDATE_CONTEXT,
-    METRIC_METADATA_UPDATE_RESPONSE,
-    METRIC_SEARCH_CONTEXT,
-    METRIC_SEARCH_RESPONSE,
-    TAGS_CONTEXT_READABLE_OUTPUT,
-    TAGS_LIST_CONTEXT,
-    TIME_SERIES_POINT_QUERY_CONTEXT,
-    TIME_SERIES_POINT_QUERY_RESPONSE,
-    UPDATE_INCIDENT_CONTEXT,
-    UPDATE_INCIDENT_RESPONSE,
-)
-
-
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
-
-
-DATADOG_API_CLIENT_MOCK = MagicMock()
-
-TAGS_LIST_RESPONSE = util_load_json("test_data/tag-list.json")
-HOST_TAG_CREATE_RESPONSE = util_load_json("test_data/host-tag-create.json")
-HOST_TAG_GET_RESPONSE = util_load_json("test_data/host-tag-get.json")
-HOST_TAG_UPDATE_RESPONSE = util_load_json("test_data/host-tag-update.json")
-
-
-class Datadog:
-    """
-    A class representing a Datadog object, which stores key-value pairs as attributes.
-
-    Attributes:
-    **kwargs (key-value pairs): The key-value pairs to store as attributes of the Datadog object.
-
-    Methods:
-    to_dict(): Converts the Datadog object to a dictionary, where the keys are the attribute names
-    and the values are the attribute values.
-    """
-
-    def __init__(self, **kwargs):
-        """
-        Initializes the Datadog object with the given key-value pairs as attributes.
-
-        Args:
-        **kwargs (key-value pairs): The key-value pairs to store as attributes of the Datadog object.
-        """
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def to_dict(self):
-        """
-        Converts the Datadog object to a dictionary, where the keys are the attribute names and
-        the values are the attribute values.
-
-        Returns:
-        dict: A dictionary representation of the Datadog object.
-        """
-        return {
-            attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")
-        }
 
 
 @pytest.fixture
 def configuration():
+    """Mock Datadog API configuration."""
+    config = MagicMock()
+    config.api_key = {"apiKeyAuth": "test_api_key", "appKeyAuth": "test_app_key"}
+    # Add attributes that the Datadog API client expects to avoid initialization issues
+    config.assert_hostname = None
+    config.ssl_ca_cert = None
+    config.cert_file = None
+    config.key_file = None
+    config.verify_ssl = True
+    config.proxy = None
+    config.proxy_headers = None
+    config.safe_chars_for_path_param = ""
+    config.retries = None
+    return config
+
+
+@pytest.fixture
+def mock_api_client():
+    """Mock ApiClient for Datadog API calls."""
     return MagicMock()
 
 
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_CREATE_RESPONSE, EVENT_CREATE_CONTEXT)])
-def test_create_event_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the create_event_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the create_event_command function against the expected output.
-    """
-    args = {
-        "title": "Event Title",
-        "text": "Event Text",
-        "alert_type": "info",
-        "date_happened": "1 hour ago",
-        "device_name": "DESKTOP-IIQVPJ7",
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "test:123",
-    }
-    raw_obj = Datadog(**EVENT_CREATE_RESPONSE)
-    DATADOG_API_CLIENT_MOCK.create_event.return_value = raw_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    with open(
-        os.path.join("test_data", "readable_outputs/create_event_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    result = create_event_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT)])
-def test_list_events_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the list_events function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the list_events function against the expected output.
-    """
-    args = {
-        "start_date": "1 month ago",
-        "end_date": "now",
-        "priority": "low",
-        "sources": "dotnet",
-        "tags": "test:123",
-        "limit": "2",
-    }
-    new_raw = [Datadog(**obj) for obj in raw_resp.get("events")]
-    DATADOG_API_CLIENT_MOCK.list_events.return_value = {"events": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_events_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/list_events_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_GET_RESPONSE, EVENT_GET_CONTEXT)])
-def test_get_events_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_events_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_events_command function against the expected output.
-    """
-    args = {"event_id": "6995647921883593635"}
-    new_raw = Datadog(**raw_resp.get("event"))
-    DATADOG_API_CLIENT_MOCK.get_event.return_value = {"event": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_events_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_events_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_CREATE_RESPONSE, HOST_TAG_CREATE_CONTEXT)])
-def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the add_tags_to_host_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the add_tags_to_host_command function against the expected output.
-    """
-    args = {
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "env:prod,environment:production12,environment:production13,region:east,source:my_apps,test:123",
-    }
-
-    DATADOG_API_CLIENT_MOCK.create_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = add_tags_to_host_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/add_tags_to_host_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_GET_RESPONSE, HOST_TAG_GET_CONTEXT)])
-def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_host_tags_command function against the expected output.
-    """
-    args = {"host_name": "DESKTOP-IIQVPJ7"}
-
-    DATADOG_API_CLIENT_MOCK.get_host_tags.return_value = HOST_TAG_GET_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_host_tags_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_host_tags_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_UPDATE_RESPONSE, HOST_TAG_UPDATE_CONTEXT)])
-def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_host_tags_command function against the expected output.
-    """
-    args = {
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "env:prod,environment:production1234,environment:production1354,region:west,source:my_apps,test:123",
-    }
-
-    DATADOG_API_CLIENT_MOCK.update_host_tags.return_value = HOST_TAG_UPDATE_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_host_tags_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_host_tags_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(ACTIVE_METRIC_LIST_RESPONSE, ACTIVE_METRIC_LIST_CONTEXT)])
-def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the active_metrics_list_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the active_metrics_list_command function against the expected output.
-    """
-    args = {"from": "2 days ago"}
-    resp_obj = MetricsListResponse(_from=raw_resp.get("_from"), metrics=raw_resp.get("metrics"))
-    DATADOG_API_CLIENT_MOCK.list_active_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = active_metrics_list_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/active_metrics_list_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-# check readable output
-@pytest.mark.parametrize("raw_resp, expected", [(METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT)])
-def test_metrics_search_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the metrics_search_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the metrics_search_command function against the expected output.
-    """
-    args = {"query": "datadog.agent.python.version"}
-    resp_obj = MetricSearchResponse(results=MetricSearchResponseResults(metrics=raw_resp["results"]["metrics"]))
-    DATADOG_API_CLIENT_MOCK.list_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = metrics_search_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/metrics_search_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(METRIC_METADATA_GET_RESPONSE, METRIC_METADATA_GET_CONTEXT)])
-def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_metric_metadata_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_metric_metadata_command function against the expected output.
-    """
-    args = {"metric_name": "datadog.agent.python.version"}
-
-    resp_obj = MetricMetadata(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.get_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_metric_metadata_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_metric_metadata_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize(
-    "raw_resp, expected",
-    [(METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT)],
-)
-def test_update_metric_metadata_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_metric_metadata_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_metric_metadata_command function against the expected output.
-    """
-    args = {
-        "metric_name": "datadog.agent.python.version",
-        "description": "description",
-        "per_unit": "instance",
-        "short_name": "python",
-        "statsd_interval": 60,
-        "type": "gauge",
-    }
-
-    resp_obj = MetricMetadata(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.update_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_metric_metadata_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_metric_metadata_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(TAGS_LIST_RESPONSE, TAGS_LIST_CONTEXT)])
-def test_get_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_tags_command function against the expected output.
-    """
-    args = {
-        "page": "1",
-        "page_size": "50",
-        "limit": "100",
-        "source": "test",
-    }
-    DATADOG_API_CLIENT_MOCK.list_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_tags_command(configuration, args)
-    with open(os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize(
-    "raw_resp, expected",
-    [(TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT_QUERY_CONTEXT)],
-)
-def test_query_timeseries_points_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the query_timeseries_points_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the query_timeseries_points_command function against the expected output.
-    """
-    args = {"from": "2 days ago", "query": "datadog.agent.running", "to": "now"}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.query_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = query_timeseries_points_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/query_timeseries_points_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result[0], CommandResults)
-    assert isinstance(result[1], dict)
-    assert result[0].readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(None, "### Host tags deleted successfully!\n")])
-def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the delete_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the delete_host_tags_command function against the expected output.
-    """
-    args = {"host_name": "DESKTOP-IIQVPJ7"}
-    DATADOG_API_CLIENT_MOCK.delete_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = delete_host_tags_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.readable_output == expected
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(None, "### Incident deleted successfully!\n")])
-def test_delete_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the delete_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the delete_incident_command function against the expected output.
-    """
-    args = {"incident_id": "8d00d025-6d73-50f3-b93d-c9c3e40afce3"}
-    DATADOG_API_CLIENT_MOCK.delete_incident.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = delete_incident_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.readable_output == expected
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(CREATE_INCIDENT_RESPONSE, CREATE_INCIDENT_CONTEXT)])
-def test_create_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the create_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the create_incident_command function against the expected output.
-    """
-    args = {
-        "customer_impacted": False,
-        "title": "Incident title",
-        "content": "Incident content",
-        "detection_method": "customer",
-        "display_name": "datadog",
-        "handle": "abc@domain.com",
-        "important": True,
-        "root_cause": "cause",
-        "severity": "SEV-1",
-        "state": "active",
-        "summary": "summary",
-    }
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.create_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = create_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/create_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT)])
-def test_update_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_incident_command function against the expected output.
-    """
-    args = {
-        "customer_impact_end": "now",
-        "customer_impact_scope": "impact scope",
-        "customer_impact_start": "1 day ago",
-        "customer_impacted": True,
-        "detected": "now",
-        "detection_method": "monitor",
-        "display_name": "datadog",
-        "handle": "xyz@domain.com",
-        "root_cause": "the root cause",
-        "severity": "SEV-2",
-        "state": "active",
-        "summary": "summary text",
-        "title": "updated title",
-    }
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.update_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT)])
-def test_get_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_incident_command function against the expected output.
-    """
-    args = {"incident_id": "37ad8b5b-b251-5d46-9978-2edbdac3cdb1"}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.get_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
-def test_list_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the incident list function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the incident list function against the expected output.
-    """
-    args = {"limit": 2}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/list_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.outputs == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
-def test_fetch_incidents(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the fetch_incidents function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the fetch_incidents function against the expected output.
-    """
-    args = {"first_fetch_time": "3 days", "fetch_limit": 50}
-    resp_obj = Datadog(**raw_resp)
-    mocker.patch.object(demisto, "getLastRun", return_value={"lastRun": "2023-04-27 10:41:04.316926"})
-    DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = fetch_incidents(configuration, args)
-    assert result == "OK"
-
-
-def test_test_module(mocker, configuration):
-    """
-    Test function for the test_module function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the test_module function against the expected output.
-    """
-    DATADOG_API_CLIENT_MOCK.list_events.return_value = {}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = module_test(configuration)
-    assert result == "ok"
-    assert isinstance(result, str)
-
-
-@pytest.mark.parametrize(
-    "results, offset, limit, expected",
-    [
-        ([1, 2, 3, 4, 5], 0, 3, [1, 2, 3]),
-        ([1, 2, 3, 4, 5], 2, 2, [3, 4]),
-        ([1, 2, 3, 4, 5], 5, 10, []),
-        ([], 0, 5, []),
-    ],
-)
-def test_get_paginated_results(results, offset, limit, expected):
-    """
-    Test function for the get_paginated_results function in DatadogCloudSIEM.
-
-    Args:
-    results: The list of object.
-    limit: Records per page.
-    offset: The number of records to be skipped.
-    expected: The expected result of the command.
-
-    Returns:
-    None. The function asserts the output of the get_paginated_results function against the expected output.
-    """
-    assert get_paginated_results(results, offset, limit) == expected
-
-
-@pytest.mark.parametrize(
-    "sub_context, page, page_size, expected",
-    [
-        ("Test", None, None, "Test"),
-        (
-            "Test",
-            1,
-            10,
-            "Test List\nCurrent page size: 10\nShowing page 1 out of others that may exist",
-        ),
-        (
-            "Test",
-            2,
-            20,
-            "Test List\nCurrent page size: 20\nShowing page 2 out of others that may exist",
-        ),
-        ("Test", -1, 10, "Test"),
-        ("Test", 1, -1, "Test"),
-        ("Test", -1, -1, "Test"),
-    ],
-)
-def test_table_header(sub_context, page, page_size, expected):
-    """
-    Test function for the table_header function in DatadogCloudSIEM.
-
-    Args:
-    sub_context: The sub-context of the results to display in the table header.
-    page: The page number of the results.
-    page_size: The number of results per page.
-    expected: The expected result of the table_header function.
-
-    Returns:
-    None. The function asserts the output of the table_header function against the expected output.
-    """
-    assert table_header(sub_context, page, page_size) == expected
-
-
-@pytest.mark.parametrize(
-    "timestamp, time, expected",
-    [
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=12)).timestamp()),
-            14,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=4)).timestamp()),
-            6,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=2)).timestamp()),
-            10,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=12)).timestamp()),
-            1,
-            False,
-        ),
-    ],
-)
-def test_is_within_time(timestamp, time, expected):
-    """
-    Test function for the is_within_time function in DatadogCloudSIEM.
-
-    Args:
-    timestamp: The timestamp to check if it's within the given time window.
-    time: The time window to check against, in minutes.
-    expected: The expected result of the is_within_time function.
-
-    Returns:
-    None. The function asserts the output of the is_within_time function against the expected output.
-    """
-    assert is_within_time(timestamp, time) == expected
-
-
-@pytest.mark.parametrize("raw, expected", [(EVENT_MOCK, EXPECTED_EVENT_MOCK)])
-def test_event_for_lookup(raw, expected):
-    """
-    Test function for the event_for_lookup function in DatadogCloudSIEM.
-
-    Args:
-    raw: The raw event data to be processed.
-    expected: The expected output of the event_for_lookup function.
-
-    Returns:
-    None. The function asserts the output of the event_for_lookup function against the expected output.
-    """
-    assert event_for_lookup(raw) == expected
-
-
-@pytest.mark.parametrize("raw, expected", [(INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED)])
-def test_incident_for_lookup(raw, expected):
-    """
-    Test function for the incident_for_lookup function in DatadogCloudSIEM.
-
-    Args:
-    raw: The raw event data to be processed.
-    expected: The expected output of the event_for_lookup function.
-
-    Returns:
-    None. The function asserts the output of the incident_for_lookup function against the expected output.
-    """
-    assert incident_for_lookup(raw) == expected
-
-
-@pytest.mark.parametrize(
-    "limit, page, page_size, expected",
-    [
-        (50, 1, 10, (10, 0)),
-        (None, 2, 5, (5, 5)),
-        (10, 3, None, (10, 100)),
-        (20, 4, -1, DemistoException(PAGE_SIZE_ERROR_MSG)),
-        (50, -1, -3, DemistoException(PAGE_NUMBER_ERROR_MSG)),
-        (None, None, None, (DEFAULT_PAGE_SIZE, 0)),
-    ],
-)
-def test_pagination(limit: int | None, page: int | None, page_size: int | None, expected):
-    """
-    Test function for the pagination function in DatadogCloudSIEM.
-
-    Args:
-    limit: The maximum number of results to retrieve.
-    page: The page number of the results to retrieve.
-    page_size: The number of results per page.
-    expected: The expected output of the pagination function.
-    If an exception is expected, the value should be an Exception object.
-
-    Returns:
-    None. The function asserts the output of the pagination function against the expected output.
-    """
-    if isinstance(expected, Exception):
-        with pytest.raises(DemistoException):
-            pagination(limit, page, page_size)
-    else:
-        assert pagination(limit, page, page_size) == expected
-
-
-@pytest.mark.parametrize(
-    "raw, metric_name, expected",
-    [(METRIC_COMMAND_RESULT_INPUT, "system.cpu.idle", METRIC_COMMAND_RESULT_OUTPUT)],
-)
-def test_metric_command_results(raw, metric_name, expected):
-    """
-    Test function for the 'metric_command_results' function.
-
-    Args:
-        raw (dict): A dictionary of Datadog API credentials.
-        metric_name (str): The name of the metric to search for.
-        expected (Any): The expected result of the function.
-
-    Raises:
-        AssertionError: If the result of the function is not an instance of CommandResults, or if the
-        'Contents' key of the result's context dictionary is not equal to the expected value.
-
-    Returns:
-        None
-    """
-    result = metric_command_results(Datadog(**raw), metric_name)
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-
-
-@pytest.mark.parametrize(
-    "raw, expected",
-    [
-        (
-            {"date": datetime.datetime(2022, 4, 13, 12, 0, 0)},
-            {"date": "2022-04-13T12:00:00+00:00"},
-        ),
-        (
-            {
-                "date1": datetime.datetime(2022, 4, 13, 12, 0, 0),
-                "date2": datetime.datetime(2022, 4, 14, 12, 0, 0),
+@pytest.fixture
+def security_signal_response():
+    """Sample security signal API response."""
+    return {
+        "data": {
+            "id": "AQAAAYvz-1234567890",
+            "event_id": "AQAAAYvz-1234567890",
+            "type": "signal",
+            "attributes": {
+                "event_tracker_id": "AQAAAYvz-1234567890",
+                "event_id": "AQAAAYvz-1234567890",
+                "timestamp": "2024-01-15T10:30:00.000Z",
+                "message": "Suspicious login attempt detected from unusual location",
+                "status": "high",
+                "host": "web-server-01",
+                "service": "auth-service",
+                "tags": [
+                    "security:threat",
+                    "env:production",
+                    "source:aws",
+                ],
+                "custom": {
+                    "title": "Brute Force Login Detection",
+                    "workflow": {
+                        "rule": {
+                            "id": "abc-123-def",
+                            "name": "Brute Force Login Detection",
+                            "ruleType": "log_detection",
+                            "ruleTags": ["attack:credential_access", "technique:T1110"],
+                        },
+                        "triage": {
+                            "state": "open",
+                            "archiveComment": "",
+                            "archiveReason": "",
+                            "assignee": {
+                                "id": 12345,
+                                "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                                "name": "security_analyst",
+                                "handle": "analyst@example.com",
+                            },
+                        },
+                    },
+                },
             },
-            {"date1": "2022-04-13T12:00:00+00:00", "date2": "2022-04-14T12:00:00+00:00"},
-        ),
-        ({"name": "John", "age": 30}, {"name": "John", "age": 30}),
-        (
+        }
+    }
+
+
+@pytest.fixture
+def security_signals_list_response():
+    """Sample security signals list API response."""
+    return {
+        "data": [
             {
-                "date": datetime.datetime(2022, 4, 13, 12, 0, 0),
-                "nested": {"date": datetime.datetime(2022, 4, 14, 12, 0, 0)},
+                "id": "AQAAAYvz-1234567890",
+                "event_id": "AQAAAYvz-1234567890",
+                "type": "signal",
+                "attributes": {
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "message": "Suspicious login attempt detected",
+                    "status": "high",
+                    "tags": ["security:threat", "env:production"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {
+                                "id": "abc-123",
+                                "name": "Brute Force Detection",
+                                "ruleType": "log_detection",
+                                "ruleTags": ["attack:credential_access"],
+                            },
+                            "triage": {
+                                "state": "open",
+                                "archiveComment": "",
+                                "archiveReason": "",
+                            },
+                        }
+                    },
+                },
             },
-            {"date": "2022-04-13T12:00:00+00:00", "nested": {"date": "2022-04-14T12:00:00+00:00"}},
-        ),
-    ],
-)
-def test_convert_datetime_to_str(raw, expected):
-    """
-    Test the `convert_datetime_to_str` function with the given datetime object and expected string value.
-    The function should convert the datetime object to a string in ISO 8601 format and
-    return the expected string.
+            {
+                "id": "AQAAAYvz-0987654321",
+                "event_id": "AQAAAYvz-0987654321",
+                "type": "signal",
+                "attributes": {
+                    "timestamp": "2024-01-15T09:15:00.000Z",
+                    "message": "Malicious file download detected",
+                    "status": "critical",
+                    "tags": ["security:threat", "env:production"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {
+                                "id": "xyz-456",
+                                "name": "Malware Detection",
+                                "ruleType": "log_detection",
+                                "ruleTags": ["attack:execution"],
+                            },
+                            "triage": {
+                                "state": "under_review",
+                                "archiveComment": "",
+                                "archiveReason": "",
+                            },
+                        }
+                    },
+                },
+            },
+        ],
+        "meta": {
+            "page": {
+                "after": "next_page_cursor",
+            }
+        },
+    }
 
-    :param raw: The datetime object to be converted to a string.
-    :type raw: datetime
-    :param expected: The expected string value of the converted datetime object.
-    :type expected: str
-    """
-    assert convert_datetime_to_str(raw) == expected
+
+# Test classes organized by command
 
 
-@pytest.mark.parametrize("raw, expected", [(HOST_TAG_CREATE_RESPONSE, TAGS_CONTEXT_READABLE_OUTPUT)])
-def test_tags_context_and_readable_output(raw, expected):
-    """
-    Test the `tags_context_and_readable_output` function with the given raw data and
-    expected results. The function should parse the input data, create a context object
-    and a readable output object with the appropriate format, and return a dictionary
-    that matches the expected value.
+class TestGetSecuritySignalCommand:
+    """Tests for datadog-signal-get command."""
 
-    :param raw: A dictionary containing raw data to be parsed and formatted.
-    :type raw: dict
-    :param expected: The expected output of the function, as a dictionary.
-    :type expected: dict
-    """
-    assert tags_context_and_readable_output(raw) == expected
+    def test_get_security_signal_command_success(self, configuration, security_signal_response):
+        """Test get_security_signal_command with valid signal ID.
+
+        Given: A valid signal ID and mocked API response
+        When: The get_security_signal_command is executed
+        Then: The command should return the signal data with correct ID and attributes
+        """
+        args = {"signal_id": "AQAAAYvz-1234567890"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = security_signal_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+            result = get_security_signal_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+            assert result.outputs["severity"] == "high"  # type: ignore
+            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(signal_id="AQAAAYvz-1234567890")
+
+    def test_get_security_signal_command_not_found(self, configuration):
+        """Test get_security_signal_command when signal is not found.
+
+        Given: A non-existent signal ID
+        When: The get_security_signal_command is executed
+        Then: The command should return a "not found" message with empty outputs
+        """
+        args = {"signal_id": "non_existent_id"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"data": {}}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+            result = get_security_signal_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert "No security signal found" in result.readable_output
+            assert result.outputs == {}  # type: ignore
+
+    def test_get_security_signal_command_missing_signal_id(self, configuration):
+        """Test get_security_signal_command without signal_id in args or incident context.
+
+        Given: No signal_id provided in args and no incident context
+        When: The get_security_signal_command is executed
+        Then: The command should raise a DemistoException with helpful message
+        """
+        args = {}
+
+        with (
+            patch("DatadogCloudSIEM.demisto.incident", return_value={"CustomFields": {}}),
+            pytest.raises(DemistoException, match="signal_id is required"),
+        ):
+            get_security_signal_command(configuration, args)
+
+    def test_get_security_signal_command_from_incident_context(self, configuration, security_signal_response):
+        """Test get_security_signal_command retrieves signal_id from incident context.
+
+        Given: No signal_id in args but valid signal_id in incident custom fields
+        When: The get_security_signal_command is executed
+        Then: The command should use the signal_id from incident and return signal data
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = security_signal_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+            patch(
+                "DatadogCloudSIEM.demisto.incident",
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalid": "AQAAAYvz-1234567890"}},
+            ),
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+            result = get_security_signal_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+
+    def test_get_security_signal_command_api_error(self, configuration):
+        """Test get_security_signal_command handles API errors gracefully.
+
+        Given: A signal_id that causes an API error
+        When: The get_security_signal_command is executed
+        Then: The command should raise a DemistoException with error details
+        """
+        args = {"signal_id": "error_signal"}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+            pytest.raises(DemistoException, match="Failed to get security signal"),
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.side_effect = Exception("API Error")
+
+            get_security_signal_command(configuration, args)
+
+
+class TestGetSecuritySignalListCommand:
+    """Tests for datadog-signal-list command."""
+
+    def test_get_security_signal_list_command_success(self, configuration, security_signals_list_response):
+        """Test get_security_signal_list_command with default parameters.
+
+        Given: Default limit parameter and mocked API response with 2 signals
+        When: The get_security_signal_list_command is executed
+        Then: The command should return a list of 2 security signals with correct IDs
+        """
+        args = {"limit": "50"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = security_signals_list_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+            patch("DatadogCloudSIEM.fetch_security_signals") as mock_fetch,
+        ):
+            # Mock the helper function that parses signals
+            mock_signal1 = MagicMock()
+            mock_signal1.to_dict.return_value = {"id": "signal1"}
+            mock_signal1.to_display_dict.return_value = {"ID": "signal1"}
+
+            mock_signal2 = MagicMock()
+            mock_signal2.to_dict.return_value = {"id": "signal2"}
+            mock_signal2.to_display_dict.return_value = {"ID": "signal2"}
+
+            mock_fetch.return_value = [mock_signal1, mock_signal2]
+
+            result = get_security_signal_list_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert isinstance(result.outputs, list)  # type: ignore
+            assert len(result.outputs) == 2  # type: ignore
+
+    def test_get_security_signal_list_command_with_filters(self, configuration, security_signals_list_response):
+        """Test get_security_signal_list_command with severity and state filters.
+
+        Given: State and severity filter parameters
+        When: The get_security_signal_list_command is executed
+        Then: The command should call fetch_security_signals with correct filter query containing state and severity
+        """
+        args = {
+            "state": "open",
+            "severity": "high",
+            "limit": "50",
+        }
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = security_signals_list_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+            patch("DatadogCloudSIEM.fetch_security_signals") as mock_fetch,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+
+            # Mock fetch to return signals
+            mock_signal = MagicMock()
+            mock_signal.to_dict.return_value = {"id": "signal1"}
+            mock_signal.to_display_dict.return_value = {"ID": "signal1"}
+            mock_fetch.return_value = [mock_signal]
+
+            result = get_security_signal_list_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            # Verify that fetch_security_signals was called with the correct filter query
+            mock_fetch.assert_called_once()
+            call_kwargs = mock_fetch.call_args[1]
+            filter_query = call_kwargs.get("filter_query")
+            # Verify the filter query contains the expected filters
+            assert "@workflow.triage.state:open" in filter_query
+            assert "status:(high OR critical)" in filter_query
+
+    def test_get_security_signal_list_command_no_results(self, configuration):
+        """Test get_security_signal_list_command when no signals are found.
+
+        Given: A valid request that returns no signals
+        When: The get_security_signal_list_command is executed
+        Then: The command should return a "no signals found" message with empty outputs
+        """
+        args = {"limit": "50"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"data": [], "meta": {}}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+
+            results = get_security_signal_list_command(configuration, args)
+
+            assert isinstance(results, CommandResults)
+            assert "No security signals found" in results.readable_output
+            assert results.outputs == []  # type: ignore
+
+    def test_get_security_signal_list_command_with_custom_query(self, configuration):
+        """Test get_security_signal_list_command with custom query parameter.
+
+        Given: A custom query string parameter
+        When: The get_security_signal_list_command is executed
+        Then: The command should include the custom query in the filter
+        """
+        args = {"query": "host:web-server-01", "limit": "10"}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+            patch("DatadogCloudSIEM.fetch_security_signals") as mock_fetch,
+        ):
+            mock_signal = MagicMock()
+            mock_signal.to_dict.return_value = {"id": "signal1"}
+            mock_signal.to_display_dict.return_value = {"ID": "signal1"}
+            mock_fetch.return_value = [mock_signal]
+
+            get_security_signal_list_command(configuration, args)
+
+            call_kwargs = mock_fetch.call_args[1]
+            filter_query = call_kwargs.get("filter_query")
+            assert "host:web-server-01" in filter_query
+
+    def test_get_security_signal_list_command_invalid_sort(self, configuration):
+        """Test get_security_signal_list_command with invalid sort parameter.
+
+        Given: An invalid sort parameter (not 'asc' or 'desc')
+        When: The get_security_signal_list_command is executed
+        Then: The command should raise a DemistoException
+        """
+        args = {"sort": "invalid", "limit": "50"}
+
+        with pytest.raises(DemistoException, match="Sort must be either 'asc' or 'desc'"):
+            get_security_signal_list_command(configuration, args)
+
+    def test_get_security_signal_list_command_with_page_size(self, configuration):
+        """Test get_security_signal_list_command using page_size instead of limit.
+
+        Given: A page_size parameter instead of limit
+        When: The get_security_signal_list_command is executed
+        Then: The command should use page_size as the limit
+        """
+        args = {"page_size": "25"}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+            patch("DatadogCloudSIEM.fetch_security_signals") as mock_fetch,
+        ):
+            mock_fetch.return_value = []
+
+            get_security_signal_list_command(configuration, args)
+
+            call_kwargs = mock_fetch.call_args[1]
+            assert call_kwargs["limit"] == 25
+
+
+class TestUpdateSecuritySignalCommand:
+    """Tests for datadog-signal-update command."""
+
+    def test_update_security_signal_assignee_command_success(self, configuration):
+        """Test update_security_signal_assignee_command with valid assignee parameter.
+
+        Given: A valid signal ID and assignee username
+        When: The update_security_signal_assignee_command is executed
+        Then: The command should call the update API with correct payload, then fetch fresh signal data
+        """
+        args = {
+            "signal_id": "AQAAAYvz-1234567890",
+            "assignee": "security_analyst",
+        }
+
+        # Mock the get_security_monitoring_signal response (called AFTER update to fetch fresh data)
+        mock_get_response = MagicMock()
+        mock_get_response.to_dict.return_value = {
+            "data": {
+                "id": "AQAAAYvz-1234567890",
+                "event_id": "AQAAAYvz-1234567890",
+                "type": "signal",
+                "attributes": {
+                    "event_tracker_id": "AQAAAYvz-1234567890",
+                    "event_id": "AQAAAYvz-1234567890",
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "message": "Test signal",
+                    "tags": ["test:tag"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {"id": "rule-123", "name": "Test Rule"},
+                            "triage": {
+                                "state": "under_review",
+                                "assignee": {
+                                    "name": "security_analyst",
+                                    "handle": "analyst@example.com",
+                                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                                },
+                            },
+                        }
+                    },
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+            patch("DatadogCloudSIEM.UsersApi") as mock_users_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            # The GET call happens after the update to fetch fresh data
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
+
+            # Mock user lookup
+            mock_users_instance = MagicMock()
+            mock_users_api.return_value = mock_users_instance
+            # list_users returns a dict-like object
+            mock_users_instance.list_users.return_value = {
+                "data": [
+                    {
+                        "id": "user-123",
+                        "attributes": {
+                            "name": "security_analyst",
+                            "email": "analyst@example.com",
+                        },
+                    }
+                ]
+            }
+
+            result = update_security_signal_assignee_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+
+            # Verify the update API was called with correct assignee payload
+            mock_api_instance.edit_security_monitoring_signal_assignee.assert_called_once()
+            call_args = mock_api_instance.edit_security_monitoring_signal_assignee.call_args
+            assert call_args[1]["signal_id"] == "AQAAAYvz-1234567890"
+            # Verify the body contains the correct assignee UUID from user lookup
+            body = call_args[1]["body"]
+            assert body.data.attributes.assignee.uuid == "user-123"
+
+            # Verify that after the update, a fresh GET was called to retrieve the updated signal
+            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(signal_id="AQAAAYvz-1234567890")
+
+    def test_update_security_signal_state_command_success(self, configuration):
+        """Test update_security_signal_state_command with valid state parameter.
+
+        Given: A valid signal ID, state, archive reason and comment
+        When: The update_security_signal_state_command is executed
+        Then: The command should update the signal state and return the updated signal with archive details
+        """
+        args = {
+            "signal_id": "AQAAAYvz-1234567890",
+            "state": "archived",
+            "reason": "false_positive",
+            "comment": "This was a false positive alert",
+        }
+
+        # Mock the get_security_monitoring_signal response
+        mock_get_response = MagicMock()
+        mock_get_response.to_dict.return_value = {
+            "data": {
+                "id": "AQAAAYvz-1234567890",
+                "event_id": "AQAAAYvz-1234567890",
+                "type": "signal",
+                "attributes": {
+                    "event_tracker_id": "AQAAAYvz-1234567890",
+                    "event_id": "AQAAAYvz-1234567890",
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "message": "Test signal",
+                    "tags": ["test:tag"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {"id": "rule-123", "name": "Test Rule"},
+                            "triage": {
+                                "state": "archived",
+                                "archiveReason": "false_positive",
+                                "archiveComment": "This was a false positive alert",
+                            },
+                        }
+                    },
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
+
+            result = update_security_signal_state_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+            assert result.outputs["triage"]["state"] == "archived"  # type: ignore
+            assert result.outputs["triage"]["archive_reason"] == "false_positive"  # type: ignore
+
+    def test_update_security_signal_unassign(self, configuration):
+        """Test update_security_signal_assignee_command with empty assignee to unassign.
+
+        Given: A signal ID and empty string for assignee parameter
+        When: The update_security_signal_assignee_command is executed
+        Then: The command should unassign the signal (empty UUID)
+        """
+        args = {
+            "signal_id": "AQAAAYvz-1234567890",
+            "assignee": "",
+        }
+
+        mock_get_response = MagicMock()
+        mock_get_response.to_dict.return_value = {
+            "data": {
+                "id": "AQAAAYvz-1234567890",
+                "event_id": "AQAAAYvz-1234567890",
+                "attributes": {
+                    "event_tracker_id": "AQAAAYvz-1234567890",
+                    "event_id": "AQAAAYvz-1234567890",
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "custom": {
+                        "workflow": {
+                            "rule": {"id": "rule-123"},
+                            "triage": {"state": "open"},
+                        }
+                    },
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
+
+            result = update_security_signal_assignee_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            # Verify assignee update was called with empty UUID
+            call_args = mock_api_instance.edit_security_monitoring_signal_assignee.call_args
+            body = call_args[1]["body"]
+            assert body.data.attributes.assignee.uuid == ""
+
+    def test_update_security_signal_invalid_state(self, configuration):
+        """Test update_security_signal_state_command with invalid state parameter.
+
+        Given: A signal ID and invalid state value
+        When: The update_security_signal_state_command is executed
+        Then: The command should raise a DemistoException with valid states
+        """
+        args = {"signal_id": "AQAAAYvz-1234567890", "state": "invalid_state"}
+
+        with pytest.raises(DemistoException, match="Invalid state"):
+            update_security_signal_state_command(configuration, args)
+
+    def test_update_security_signal_multiple_users_found(self, configuration):
+        """Test update_security_signal_assignee_command when user lookup returns multiple results.
+
+        Given: A signal ID and assignee that matches multiple users
+        When: The update_security_signal_assignee_command is executed
+        Then: The command should raise a DemistoException indicating ambiguity
+        """
+        args = {"signal_id": "AQAAAYvz-1234567890", "assignee": "john"}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+            patch("DatadogCloudSIEM.UsersApi") as mock_users_api,
+            pytest.raises(DemistoException, match="Could not determine the user to assign"),
+        ):
+            mock_users_instance = MagicMock()
+            mock_users_api.return_value = mock_users_instance
+            mock_users_instance.list_users.return_value = {
+                "data": [
+                    {
+                        "id": "user-1",
+                        "attributes": {
+                            "name": "John Doe",
+                            "email": "john.doe@example.com",
+                        },
+                    },
+                    {
+                        "id": "user-2",
+                        "attributes": {
+                            "name": "John Smith",
+                            "email": "john.smith@example.com",
+                        },
+                    },
+                ]
+            }
+
+            update_security_signal_assignee_command(configuration, args)
+
+    def test_update_security_signal_user_not_found(self, configuration):
+        """Test update_security_signal_assignee_command when user lookup returns no results.
+
+        Given: A signal ID and assignee that matches no users
+        When: The update_security_signal_assignee_command is executed
+        Then: The command should raise a DemistoException
+        """
+        args = {"signal_id": "AQAAAYvz-1234567890", "assignee": "nonexistent"}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+            patch("DatadogCloudSIEM.UsersApi") as mock_users_api,
+            pytest.raises(DemistoException, match="Could not determine any user"),
+        ):
+            mock_users_instance = MagicMock()
+            mock_users_api.return_value = mock_users_instance
+            mock_users_instance.list_users.return_value = {"data": []}
+
+            update_security_signal_assignee_command(configuration, args)
+
+
+class TestGetSecurityRuleCommand:
+    """Tests for datadog-rule-get command."""
+
+    def test_get_security_rule_command_success(self, configuration):
+        """Test get_security_rule_command with valid rule ID.
+
+        Given: A valid rule ID and mocked API response
+        When: The get_security_rule_command is executed
+        Then: The command should return the rule data with correct ID and details
+        """
+        args = {"rule_id": "rule-abc-123"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "id": "rule-abc-123",
+            "name": "Brute Force Login Detection",
+            "type": "log_detection",
+            "isEnabled": True,
+            "createdAt": "2024-01-01T00:00:00+00:00",
+            "message": "Detects brute force login attempts",
+            "queries": [{"query": "source:auth status:error"}],
+            "tags": ["security", "authentication"],
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_rule.return_value = mock_response
+
+            result = get_security_rule_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "rule-abc-123"  # type: ignore
+            assert result.outputs["name"] == "Brute Force Login Detection"  # type: ignore
+            assert result.outputs["type"] == "log_detection"  # type: ignore
+            mock_api_instance.get_security_monitoring_rule.assert_called_once_with(rule_id="rule-abc-123")
+
+    def test_get_security_rule_command_from_incident(self, configuration):
+        """Test get_security_rule_command retrieves rule_id from incident context.
+
+        Given: No rule_id in args but valid rule_id in incident custom fields
+        When: The get_security_rule_command is executed
+        Then: The command should use the rule_id from incident and return rule data
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "id": "rule-from-incident",
+            "name": "Test Rule",
+            "type": "log_detection",
+            "isEnabled": True,
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+            patch(
+                "DatadogCloudSIEM.demisto.incident",
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalruleid": "rule-from-incident"}},
+            ),
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_rule.return_value = mock_response
+
+            result = get_security_rule_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "rule-from-incident"  # type: ignore
+
+    def test_get_security_rule_command_not_found(self, configuration):
+        """Test get_security_rule_command when rule is not found.
+
+        Given: A non-existent rule ID
+        When: The get_security_rule_command is executed
+        Then: The command should return a "not found" message
+        """
+        args = {"rule_id": "non-existent-rule"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_rule.return_value = mock_response
+
+            result = get_security_rule_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert "No security rule found" in result.readable_output
+
+
+class TestSecuritySignalCommentCommands:
+    """Tests for datadog-signal-comment-add and datadog-signal-comment-list commands."""
+
+    def test_add_security_signal_comment_command_success(self, configuration):
+        """Test add_security_signal_comment_command with valid parameters.
+
+        Given: A valid event ID and comment text with mocked API response
+        When: The add_security_signal_comment_command is executed
+        Then: The command should add the comment and return the comment data with user information
+        """
+        args = {
+            "event_id": "AQAAAYvz-1234567890",
+            "comment": "Investigating this security signal",
+        }
+
+        # Mock requests.post response
+        mock_requests_response = MagicMock()
+        mock_requests_response.ok = True
+        mock_requests_response.json.return_value = {
+            "data": {
+                "id": "comment-123",
+                "attributes": {
+                    "comment_id": "comment-123",
+                    "created_at": "2024-01-15T10:30:00+00:00",
+                    "user_uuid": "user-uuid-123",
+                    "text": "Investigating this security signal",
+                },
+            }
+        }
+
+        # Mock UsersApi response for user lookup
+        mock_user_response = MagicMock()
+        mock_user_response.to_dict.return_value = {
+            "data": {
+                "id": "user-uuid-123",
+                "attributes": {
+                    "name": "John Doe",
+                    "handle": "john.doe@example.com",
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.requests.post", return_value=mock_requests_response),
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.UsersApi") as mock_users_api,
+        ):
+            mock_users_instance = MagicMock()
+            mock_users_api.return_value = mock_users_instance
+            mock_users_instance.get_user.return_value = mock_user_response
+
+            result = add_security_signal_comment_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["id"] == "comment-123"  # type: ignore
+            assert result.outputs["text"] == "Investigating this security signal"  # type: ignore
+            assert result.outputs["user"]["name"] == "John Doe"  # type: ignore
+
+    def test_add_security_signal_comment_command_missing_comment(self, configuration):
+        """Test add_security_signal_comment_command without comment text.
+
+        Given: An event ID but no comment text
+        When: The add_security_signal_comment_command is executed
+        Then: The command should raise a DemistoException
+        """
+        args = {"event_id": "AQAAAYvz-1234567890"}
+
+        with pytest.raises(DemistoException, match="comment is required"):
+            add_security_signal_comment_command(configuration, args)
+
+    def test_add_security_signal_comment_command_api_error(self, configuration):
+        """Test add_security_signal_comment_command when API request fails.
+
+        Given: Valid parameters but API request fails
+        When: The add_security_signal_comment_command is executed
+        Then: The command should raise a DemistoException with API error details
+        """
+        args = {"event_id": "AQAAAYvz-1234567890", "comment": "Test comment"}
+
+        mock_requests_response = MagicMock()
+        mock_requests_response.ok = False
+        mock_requests_response.status_code = 403
+        mock_requests_response.text = "Forbidden"
+
+        with (
+            patch("DatadogCloudSIEM.requests.post", return_value=mock_requests_response),
+            pytest.raises(DemistoException, match="API request failed with status 403"),
+        ):
+            add_security_signal_comment_command(configuration, args)
+
+    def test_list_security_signal_comments_command_success(self, configuration):
+        """Test list_security_signal_comments_command with valid event ID.
+
+        Given: A valid event ID and mocked API response with 2 comments
+        When: The list_security_signal_comments_command is executed
+        Then: The command should return a list of 2 comments with user information resolved
+        """
+        args = {"event_id": "AQAAAYvz-1234567890"}
+
+        # Mock requests.get response
+        mock_requests_response = MagicMock()
+        mock_requests_response.json.return_value = {
+            "data": [
+                {
+                    "id": "comment-123",
+                    "attributes": {
+                        "comment_id": "comment-123",
+                        "created_at": "2024-01-15T10:30:00+00:00",
+                        "user_uuid": "user-uuid-123",
+                        "text": "First comment",
+                    },
+                },
+                {
+                    "id": "comment-456",
+                    "attributes": {
+                        "comment_id": "comment-456",
+                        "created_at": "2024-01-15T11:00:00+00:00",
+                        "user_uuid": "user-uuid-456",
+                        "text": "Second comment",
+                    },
+                },
+            ]
+        }
+
+        # Mock UsersApi responses for user lookups
+        mock_user1_response = MagicMock()
+        mock_user1_response.to_dict.return_value = {
+            "data": {
+                "id": "user-uuid-123",
+                "attributes": {
+                    "name": "John Doe",
+                    "handle": "john.doe@example.com",
+                },
+            }
+        }
+
+        mock_user2_response = MagicMock()
+        mock_user2_response.to_dict.return_value = {
+            "data": {
+                "id": "user-uuid-456",
+                "attributes": {
+                    "name": "Jane Smith",
+                    "handle": "jane.smith@example.com",
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.requests.get", return_value=mock_requests_response),
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.UsersApi") as mock_users_api,
+        ):
+            mock_users_instance = MagicMock()
+            mock_users_api.return_value = mock_users_instance
+            # Return different user data based on which UUID is requested
+            mock_users_instance.get_user.side_effect = [
+                mock_user1_response,
+                mock_user2_response,
+            ]
+
+            result = list_security_signal_comments_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert isinstance(result.outputs, list)  # type: ignore
+            assert len(result.outputs) == 2  # type: ignore
+            assert result.outputs[0]["id"] == "comment-123"  # type: ignore
+            assert result.outputs[0]["text"] == "First comment"  # type: ignore
+            assert result.outputs[1]["id"] == "comment-456"  # type: ignore
+
+    def test_list_security_signal_comments_command_no_comments(self, configuration):
+        """Test list_security_signal_comments_command when no comments exist.
+
+        Given: A valid event ID with no comments
+        When: The list_security_signal_comments_command is executed
+        Then: The command should return a "no comments found" message
+        """
+        args = {"event_id": "AQAAAYvz-1234567890"}
+
+        mock_requests_response = MagicMock()
+        mock_requests_response.json.return_value = {"data": []}
+
+        with (
+            patch("DatadogCloudSIEM.requests.get", return_value=mock_requests_response),
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.UsersApi"),
+        ):
+            result = list_security_signal_comments_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert "No comments found" in result.readable_output
+            assert result.outputs == []  # type: ignore
+
+
+class TestLogsQueryCommand:
+    """Tests for datadog-logs-query command."""
+
+    @pytest.fixture
+    def logs_query_response(self):
+        """Sample logs search API response."""
+        return {
+            "data": [
+                {
+                    "id": "log-12345",
+                    "type": "log",
+                    "attributes": {
+                        "timestamp": "2024-01-15T10:30:00.000Z",
+                        "message": "User login attempt from 192.168.1.100",
+                        "service": "auth-service",
+                        "host": "web-server-01",
+                        "source": "nginx",
+                        "status": "info",
+                        "tags": ["env:production", "team:security"],
+                    },
+                },
+                {
+                    "id": "log-12346",
+                    "type": "log",
+                    "attributes": {
+                        "timestamp": "2024-01-15T10:31:00.000Z",
+                        "message": "Failed login attempt detected",
+                        "service": "auth-service",
+                        "host": "web-server-01",
+                        "source": "nginx",
+                        "status": "warn",
+                        "tags": ["env:production", "team:security"],
+                    },
+                },
+            ],
+            "meta": {"page": {"after": "next_cursor"}},
+        }
+
+    def test_logs_query_command_success(self, configuration, logs_query_response):
+        """Test logs_query_command with default parameters.
+
+        Given: A basic query and limit parameter with mocked API response containing 2 logs
+        When: The logs_query_command is executed
+        Then: The command should return a list of 2 logs with correct IDs and verify query is passed to API
+        """
+        args = {"query": "*", "limit": "50"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = logs_query_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.LogsApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.list_logs.return_value = mock_response
+
+            result = logs_query_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert isinstance(result.outputs, list)  # type: ignore
+            assert len(result.outputs) == 2  # type: ignore
+            assert result.outputs[0]["id"] == "log-12345"  # type: ignore
+
+            # Verify that the API was called with the correct query in the body
+            mock_api_instance.list_logs.assert_called_once()
+            call_args = mock_api_instance.list_logs.call_args
+            body = call_args[1]["body"]
+            assert body.filter.query == "*"
+
+    def test_logs_query_command_with_filters(self, configuration, logs_query_response):
+        """Test logs_query_command with complex query filters.
+
+        Given: A complex query string with service and status filters
+        When: The logs_query_command is executed
+        Then: The command should call list_logs API with the exact query string in the body
+        """
+        args = {
+            "query": "service:auth-service status:warn host:web-server-01",
+            "limit": "50",
+        }
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = logs_query_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.LogsApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.list_logs.return_value = mock_response
+
+            result = logs_query_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert isinstance(result.outputs, list)  # type: ignore
+            # Verify that the API was called with the correct query in the body
+            mock_api_instance.list_logs.assert_called_once()
+            call_args = mock_api_instance.list_logs.call_args
+            body = call_args[1]["body"]
+            assert body.filter.query == "service:auth-service status:warn host:web-server-01"
+
+    def test_logs_query_command_no_results(self, configuration):
+        """Test logs_query_command when no logs are found.
+
+        Given: A valid query that returns no logs
+        When: The logs_query_command is executed
+        Then: The command should return a "no logs found" message
+        """
+        args = {"query": "*", "limit": "50"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {"data": [], "meta": {}}
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.LogsApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.list_logs.return_value = mock_response
+
+            result = logs_query_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert "No logs found" in result.readable_output
+
+    def test_logs_query_command_from_incident_rule(self, configuration, logs_query_response):
+        """Test logs_query_command without query parameter, using rule from incident.
+
+        Given: No query parameter but valid rule_id in incident context
+        When: The logs_query_command is executed
+        Then: The command should extract query from the rule and use it for log search
+        """
+        args = {}
+
+        mock_rule_response = MagicMock()
+        mock_rule_response.to_dict.return_value = {
+            "id": "rule-123",
+            "name": "Test Rule",
+            "type": "log_detection",
+            "isEnabled": True,
+            "queries": [{"query": "source:nginx status:error"}],
+        }
+
+        mock_logs_response = MagicMock()
+        mock_logs_response.to_dict.return_value = logs_query_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_security_api,
+            patch("DatadogCloudSIEM.LogsApi") as mock_logs_api,
+            patch(
+                "DatadogCloudSIEM.demisto.incident",
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalruleid": "rule-123"}},
+            ),
+        ):
+            mock_security_instance = MagicMock()
+            mock_security_api.return_value = mock_security_instance
+            mock_security_instance.get_security_monitoring_rule.return_value = mock_rule_response
+
+            mock_logs_instance = MagicMock()
+            mock_logs_api.return_value = mock_logs_instance
+            mock_logs_instance.list_logs.return_value = mock_logs_response
+
+            result = logs_query_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            # Verify rule was fetched and query was extracted
+            mock_security_instance.get_security_monitoring_rule.assert_called_once_with(rule_id="rule-123")
+            # Verify logs were queried with extracted query
+            call_args = mock_logs_instance.list_logs.call_args
+            body = call_args[1]["body"]
+            assert body.filter.query == "source:nginx status:error"
+
+    def test_logs_query_command_no_query_no_incident(self, configuration):
+        """Test logs_query_command without query and without incident context.
+
+        Given: No query parameter and no incident context
+        When: The logs_query_command is executed
+        Then: The command should raise a DemistoException
+        """
+        args = {}
+
+        with (
+            patch("DatadogCloudSIEM.demisto.incident", return_value={"CustomFields": {}}),
+            pytest.raises(DemistoException, match="query is required"),
+        ):
+            logs_query_command(configuration, args)
+
+
+class TestFetchIncidents:
+    """Tests for fetch-incidents functionality."""
+
+    def test_fetch_incidents_first_fetch(self, configuration, mocker):
+        """Test fetch_incidents on first run (no last_run).
+
+        Given: First fetch with no previous last_run timestamp
+        When: fetch_incidents is executed
+        Then: Incidents should be created and last_run should be updated with signal timestamp
+        """
+        params = {
+            "first_fetch": "3 days",
+            "max_fetch": 10,
+            "fetch_severity": "high,critical",
+            "fetch_state": "open",
+            "fetch_query": "",
+        }
+
+        # Mock demisto functions
+        mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "debug")
+
+        # Mock fetch_security_signals helper
+        mock_signal = MagicMock()
+        mock_signal.id = "signal-123"
+        mock_signal.event_id = "signal-123"
+        mock_signal.title = "Test Security Signal"
+        mock_signal.severity = "high"
+        mock_signal.timestamp = datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC)
+        mock_signal.message = "Test message content"
+        mock_signal.host = "test-host"
+        mock_signal.tags = ["test:tag"]
+        mock_signal.url = "https://app.datadoghq.com/security/signal?event=signal-123"
+        mock_signal.to_dict.return_value = {
+            "id": "signal-123",
+            "event_id": "signal-123",
+            "title": "Test Security Signal",
+            "severity": "high",
+            "timestamp": "2024-01-15T10:30:00+00:00",
+            "message": "Test message content",
+            "host": "test-host",
+            "tags": ["test:tag"],
+            "url": "https://app.datadoghq.com/security/signal?event=signal-123",
+        }
+
+        with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[mock_signal]):
+            from DatadogCloudSIEM import fetch_incidents
+
+            fetch_incidents(configuration, params)
+
+            # Verify demisto functions were called
+            mock_get_last_run.assert_called_once()
+            mock_set_last_run.assert_called_once()
+            mock_incidents.assert_called_once()
+
+            # Verify incidents were created
+            incidents_arg = mock_incidents.call_args[0][0]
+            assert len(incidents_arg) == 1
+            assert incidents_arg[0]["name"] == "Test Security Signal"
+            assert incidents_arg[0]["severity"] == 3  # High severity maps to 3
+            assert incidents_arg[0]["dbotMirrorId"] == "signal-123"
+            assert incidents_arg[0]["details"] == "Test message content"
+            # Verify rawJSON contains the signal data
+            import json
+
+            raw_json = json.loads(incidents_arg[0]["rawJSON"])
+            assert raw_json["id"] == "signal-123"
+            assert raw_json["event_id"] == "signal-123"
+
+    def test_fetch_incidents_incremental_fetch(self, configuration, mocker):
+        """Test fetch_incidents with existing last_run timestamp.
+
+        Given: Existing last_run with previous fetch timestamp
+        When: fetch_incidents is executed
+        Then: New incidents should be fetched from the last timestamp and last_run should be updated
+        """
+        params = {
+            "first_fetch": "3 days",
+            "max_fetch": 10,
+            "fetch_severity": "",
+            "fetch_state": "open",
+            "fetch_query": "",
+        }
+        # Mock demisto functions - simulate incremental fetch with previous timestamp
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"last_fetch_time": "2024-01-14T10:00:00+00:00"},
+        )
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "debug")
+
+        # Mock fetch_security_signals helper
+        mock_signal = MagicMock()
+        mock_signal.id = "signal-456"
+        mock_signal.event_id = "signal-456"
+        mock_signal.title = "New Security Signal"
+        mock_signal.severity = "critical"
+        mock_signal.timestamp = datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC)
+        mock_signal.message = "New signal message"
+        mock_signal.host = "test-host"
+        mock_signal.tags = ["test:tag"]
+        mock_signal.url = "https://app.datadoghq.com/security/signal?event=signal-456"
+        mock_signal.to_dict.return_value = {
+            "id": "signal-456",
+            "event_id": "signal-456",
+            "title": "New Security Signal",
+            "severity": "critical",
+            "timestamp": "2024-01-15T10:30:00+00:00",
+            "message": "New signal message",
+            "host": "test-host",
+            "tags": ["test:tag"],
+            "url": "https://app.datadoghq.com/security/signal?event=signal-456",
+        }
+
+        with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[mock_signal]):
+            from DatadogCloudSIEM import fetch_incidents
+
+            fetch_incidents(configuration, params)
+
+            # Verify last_run was updated with new timestamp (as Unix timestamp)
+            mock_set_last_run.assert_called_once()
+            updated_last_run = mock_set_last_run.call_args[0][0]
+            # Expected Unix timestamp for 2024-01-15T10:30:00+00:00
+            assert updated_last_run["last_fetch_time"] == 1705314600
+
+    def test_fetch_incidents_no_results(self, configuration, mocker):
+        """Test fetch_incidents when no new signals are found during incremental fetch.
+
+        Given: An incremental fetch request with existing last_run that returns no new signals
+        When: fetch_incidents is executed
+        Then: An empty incidents list should be sent to XSOAR and last_run should not change
+        """
+        params = {
+            "first_fetch": "1 day",
+            "max_fetch": 50,
+            "fetch_severity": "",
+            "fetch_state": "open",
+            "fetch_query": "",
+        }
+
+        # Mock demisto functions - simulate incremental fetch with previous timestamp
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"last_fetch_time": "2024-01-14T10:00:00+00:00"},
+        )
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "debug")
+
+        with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[]):
+            from DatadogCloudSIEM import fetch_incidents
+
+            fetch_incidents(configuration, params)
+
+            # Verify empty incidents list was sent
+            mock_incidents.assert_called_once_with([])
+            # Verify last_run was not updated (no new incidents)
+            mock_set_last_run.assert_not_called()
+
+    def test_fetch_incidents_first_fetch_no_results(self, configuration, mocker):
+        """Test fetch_incidents on first run with no results.
+
+        Given: First fetch with no previous last_run timestamp and no signals returned
+        When: fetch_incidents is executed
+        Then: Empty incidents list should be sent and last_run should be set to from_datetime
+        """
+        params = {
+            "first_fetch": "1 day",
+            "max_fetch": 50,
+            "fetch_severity": "",
+            "fetch_state": "open",
+            "fetch_query": "",
+        }
+
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "debug")
+
+        with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[]):
+            from DatadogCloudSIEM import fetch_incidents
+
+            fetch_incidents(configuration, params)
+
+            # Verify empty incidents list was sent
+            mock_incidents.assert_called_once_with([])
+            # Verify last_run was set even with no incidents (first run)
+            mock_set_last_run.assert_called_once()
+
+
+# Helper functions and dataclass tests
+
+
+class TestHelperFunctions:
+    """Tests for helper utility functions."""
+
+    def test_remove_none_values(self):
+        """Test remove_none_values recursively removes None values.
+
+        Given: A nested dictionary with None values at various levels
+        When: remove_none_values is called
+        Then: All None values should be removed while preserving non-None values
+        """
+        data = {
+            "key1": "value1",
+            "key2": None,
+            "key3": {
+                "nested1": "value",
+                "nested2": None,
+                "nested3": {"deep": None, "keep": "value"},
+            },
+            "key4": [{"item1": "value", "item2": None}, None, "string"],
+        }
+
+        result = remove_none_values(data)
+
+        assert "key1" in result
+        assert "key2" not in result
+        assert "nested2" not in result["key3"]
+        assert "deep" not in result["key3"]["nested3"]
+        assert "keep" in result["key3"]["nested3"]
+        assert len(result["key4"]) == 2
+        assert "item2" not in result["key4"][0]
+
+    def test_add_utc_offset(self):
+        """Test add_utc_offset adds timezone.utc timezone to datetime string.
+
+        Given: An ISO format datetime string without timezone
+        When: add_utc_offset is called
+        Then: The datetime string should have +00:00 timezone.utc offset appended
+        """
+        dt_str = "2024-01-15T10:30:00"
+        result = add_utc_offset(dt_str)
+
+        assert "+00:00" in result or "Z" in result
+        assert "2024-01-15" in result
+        assert "10:30:00" in result
+
+    def test_convert_datetime_to_str(self):
+        """Test convert_datetime_to_str converts datetime objects to ISO strings.
+
+        Given: A dictionary containing datetime objects
+        When: convert_datetime_to_str is called
+        Then: All datetime objects should be converted to ISO format strings
+        """
+        dt = datetime.datetime(2024, 1, 15, 10, 30, 0)
+        data = {"timestamp": dt, "nested": {"date": dt}, "string": "keep me"}
+
+        result = convert_datetime_to_str(data)
+
+        assert isinstance(result["timestamp"], str)
+        assert "2024-01-15" in result["timestamp"]
+        assert isinstance(result["nested"]["date"], str)
+        assert result["string"] == "keep me"
+
+    def test_as_list(self):
+        """Test as_list converts various inputs to list format.
+
+        Given: Various input types (None, single value, list)
+        When: as_list is called
+        Then: Correct list representation should be returned
+        """
+        assert as_list(None) == []
+        assert as_list("single") == ["single"]
+        assert as_list([1, 2, 3]) == [1, 2, 3]
+        assert as_list(42) == [42]
+
+    def test_flatten_tag_map(self):
+        """Test flatten_tag_map converts tag dictionary to key:value strings.
+
+        Given: A dictionary with various value types (string, list)
+        When: flatten_tag_map is called
+        Then: A flat list of "key:value" strings should be returned
+        """
+        tag_map = {"env": "prod", "team": ["security", "ops"], "version": 1}
+
+        result = flatten_tag_map(tag_map)
+
+        assert "env:prod" in result
+        assert "team:security" in result
+        assert "team:ops" in result
+        assert "version:1" in result
+        assert len(result) == 4
+
+    def test_security_signals_search_query(self):
+        """Test security_signals_search_query builds correct query string.
+
+        Given: Arguments with various filter parameters (state, severity, source, query)
+        When: security_signals_search_query is called
+        Then: A properly formatted Datadog search query string should be returned with all filters
+        """
+        # Test with multiple filters
+        args = {
+            "state": "open",
+            "severity": "high",
+            "source": "aws",
+            "query": "host:web-server",
+        }
+        query = security_signals_search_query(args)
+        assert "@workflow.triage.state:open" in query
+        assert "status:(high OR critical)" in query
+        assert "source:aws" in query
+        assert "host:web-server" in query
+        assert " AND " in query
+
+        # Test with no filters (should still have the default rule type filter)
+        query_empty = security_signals_search_query({})
+        assert '@workflow.rule.type:("Log Detection" OR "Signal Correlation")' in query_empty
+
+    def test_calculate_limit(self):
+        """Test calculate_limit function.
+
+        Given: Various combinations of limit and page_size parameters
+        When: calculate_limit is called
+        Then: The correct limit value should be returned with proper precedence rules
+        """
+        # page_size takes precedence
+        assert calculate_limit(100, 50) == 50
+
+        # Use limit when no page_size
+        assert calculate_limit(100, None) == 100
+
+        # Use default when both None
+        assert calculate_limit(None, None) == 50
+
+        # Test page_size of zero falls through to default (0 is falsy in Python)
+        assert calculate_limit(None, 0) == 50
+
+        # Test invalid page_size (negative)
+        with pytest.raises(DemistoException, match="page size should be greater than zero"):
+            calculate_limit(None, -1)
+
+    def test_map_severity_to_xsoar(self):
+        """Test map_severity_to_xsoar function.
+
+        Given: Various Datadog severity levels (info, low, medium, high, critical, unknown, None)
+        When: map_severity_to_xsoar is called
+        Then: The correct XSOAR severity number should be returned for each level
+        """
+        assert map_severity_to_xsoar("info") == 1
+        assert map_severity_to_xsoar("low") == 1
+        assert map_severity_to_xsoar("medium") == 2
+        assert map_severity_to_xsoar("high") == 3
+        assert map_severity_to_xsoar("critical") == 4
+        assert map_severity_to_xsoar("unknown") == 0
+        assert map_severity_to_xsoar(None) == 0
+        assert map_severity_to_xsoar("") == 0
+
+
+class TestParsingFunctions:
+    """Tests for parsing functions."""
+
+    def test_parse_security_comment(self):
+        """Test parse_security_comment extracts comment data correctly.
+
+        Given: Raw comment data from Datadog API
+        When: parse_security_comment is called
+        Then: A Comment object with correct attributes should be returned
+        """
+        data = {
+            "id": "comment-123",
+            "attributes": {
+                "comment_id": "comment-456",
+                "created_at": "2024-01-15T10:30:00+00:00",
+                "user_uuid": "user-uuid-123",
+                "text": "Test comment",
+            },
+        }
+
+        comment = parse_security_comment(data)
+
+        assert isinstance(comment, Comment)
+        assert comment.id == "comment-123"
+        assert comment.created_at == "2024-01-15T10:30:00+00:00"
+        assert comment.user_uuid == "user-uuid-123"
+        assert comment.text == "Test comment"
+
+    def test_parse_security_rule(self):
+        """Test parse_security_rule extracts rule data correctly.
+
+        Given: Raw rule data from Datadog API
+        When: parse_security_rule is called
+        Then: A SecurityRule object with correct attributes should be returned
+        """
+        data = {
+            "id": "rule-123",
+            "name": "Test Rule",
+            "type": "log_detection",
+            "isEnabled": True,
+            "createdAt": "2024-01-01T00:00:00+00:00",
+            "queries": [{"query": "source:nginx"}],
+            "tags": ["security", "auth"],
+        }
+
+        rule = parse_security_rule(data)
+
+        assert isinstance(rule, SecurityRule)
+        assert rule.id == "rule-123"
+        assert rule.name == "Test Rule"
+        assert rule.type == "log_detection"
+        assert rule.is_enabled is True
+        assert len(rule.tags) == 2  # type: ignore
+
+    def test_parse_security_signal(self, security_signal_response):
+        """Test parse_security_signal extracts signal data correctly.
+
+        Given: Raw signal data from Datadog API with nested workflow and triage
+        When: parse_security_signal is called
+        Then: A SecuritySignal object with correct nested attributes should be returned
+        """
+        signal = parse_security_signal(security_signal_response["data"])
+
+        assert isinstance(signal, SecuritySignal)
+        assert signal.id == "AQAAAYvz-1234567890"
+        assert signal.event_id == "AQAAAYvz-1234567890"
+        assert signal.severity == "high"
+        assert signal.title == "Brute Force Login Detection"
+        assert signal.triage is not None
+        assert signal.triage.state == "open"
+        assert signal.triage.assignee is not None
+        assert signal.triage.assignee.name == "security_analyst"
+        assert signal.rule_id == "abc-123-def"
+
+    def test_parse_log(self):
+        """Test parse_log extracts log data correctly.
+
+        Given: Raw log data from Datadog API
+        When: parse_log is called
+        Then: A Log object with correct attributes should be returned
+        """
+        data = {
+            "id": "log-123",
+            "attributes": {
+                "timestamp": "2024-01-15T10:30:00.000Z",
+                "message": "Test log message",
+                "service": "web-service",
+                "host": "server-01",
+                "source": "nginx",
+                "status": "info",
+                "tags": ["env:prod", "team:ops"],
+            },
+        }
+
+        log = parse_log(data)
+
+        assert isinstance(log, Log)
+        assert log.id == "log-123"
+        assert log.message == "Test log message"
+        assert log.service == "web-service"
+        assert log.host == "server-01"
+        assert len(log.tags) == 2  # type: ignore
+
+
+class TestDataclassMethods:
+    """Tests for dataclass methods (to_dict, to_display_dict, build_url)."""
+
+    def test_security_signal_build_url(self):
+        """Test SecuritySignal.build_url constructs correct URLs.
+
+        Given: A SecuritySignal object with a signal ID
+        When: build_url method is called
+        Then: A properly formatted Datadog security signal URL should be returned
+        """
+        signal = SecuritySignal(
+            id="signal-123",
+            event_id="signal-123",
+            bits_investigator_verdict="",
+            timestamp=datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC),
+            host="",
+            service="",
+            severity="high",
+            title="",
+            message="",
+            rule_id="",
+            triage=Triage(state="open", archive_comment="", archive_reason="", assignee=Assignee("", "")),
+            tags=[],
+            triggering_log_id="",
+            raw={},
+        )
+        url = signal.build_url()
+
+        assert url == "https://app.datadoghq.com/security/signal?event=signal-123"
+
+    def test_security_signal_to_dict(self):
+        """Test SecuritySignal.to_dict converts signal to dictionary.
+
+        Given: A SecuritySignal object with nested triage and assignee
+        When: to_dict method is called
+        Then: A properly formatted dictionary with all fields should be returned
+        """
+        triage = Triage(
+            state="open",
+            archive_comment="",
+            archive_reason="",
+            assignee=Assignee("John", "john@example.com"),
+        )
+        signal = SecuritySignal(
+            id="signal-123",
+            event_id="event-123",
+            bits_investigator_verdict="",
+            timestamp=datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC),
+            host="test-host",
+            service="test-service",
+            severity="high",
+            title="Test Signal",
+            message="Test message",
+            rule_id="rule-123",
+            triage=triage,
+            tags=["test:tag"],
+            triggering_log_id="log-123",
+            raw={},
+        )
+
+        result = signal.to_dict()
+
+        assert result["id"] == "signal-123"
+        assert result["severity"] == "high"
+        assert result["triage"]["state"] == "open"
+        assert result["triage"]["assignee"]["name"] == "John"
+        assert result["rule"]["id"] == "rule-123"
+
+    def test_security_rule_extract_query(self):
+        """Test SecurityRule.extract_query combines multiple queries with OR.
+
+        Given: A SecurityRule with multiple query objects
+        When: extract_query method is called
+        Then: Queries should be combined with OR operator
+        """
+        rule = SecurityRule(
+            id="rule-123",
+            name="Test",
+            type="log_detection",
+            is_enabled=True,
+            created_at=datetime.datetime(2024, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            message="Test rule",
+            queries=[{"query": "source:nginx"}, {"query": "source:apache"}],
+            cases=[],
+            options={},
+            tags=[],
+            raw={},
+        )
+
+        query = rule.extract_query()
+
+        assert query == "(source:nginx) OR (source:apache)"
+
+    def test_security_rule_extract_query_single(self):
+        """Test SecurityRule.extract_query with single query returns query directly.
+
+        Given: A SecurityRule with one query object
+        When: extract_query method is called
+        Then: The single query string should be returned without OR
+        """
+        rule = SecurityRule(
+            id="rule-123",
+            name="Test",
+            type="log_detection",
+            is_enabled=True,
+            created_at=datetime.datetime(2024, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            message="Test rule",
+            queries=[{"query": "source:nginx"}],
+            cases=[],
+            options={},
+            tags=[],
+            raw={},
+        )
+
+        query = rule.extract_query()
+
+        assert query == "source:nginx"
+
+    def test_security_rule_extract_query_no_queries(self):
+        """Test SecurityRule.extract_query with no queries returns wildcard.
+
+        Given: A SecurityRule with no queries
+        When: extract_query method is called
+        Then: A wildcard "*" should be returned
+        """
+        rule = SecurityRule(
+            id="rule-123",
+            name="Test",
+            type="log_detection",
+            is_enabled=True,
+            created_at=datetime.datetime(2024, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            message="Test rule",
+            queries=[],
+            cases=[],
+            options={},
+            tags=[],
+            raw={},
+        )
+
+        query = rule.extract_query()
+
+        assert query == "*"
+
+    def test_log_to_dict(self):
+        """Test Log.to_dict converts log to dictionary.
+
+        Given: A Log object with timestamp and tags
+        When: to_dict method is called
+        Then: A properly formatted dictionary should be returned
+        """
+        log = Log(
+            id="log-123",
+            timestamp=datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC),
+            message="Test message",
+            service="web-service",
+            host="test-host",
+            source="nginx",
+            status="info",
+            tags=["env:prod"],
+            raw={},
+        )
+
+        result = log.to_dict()
+
+        assert result["id"] == "log-123"
+        assert "timestamp" in result
+        assert result["message"] == "Test message"
+        assert result["service"] == "web-service"
+        assert len(result["tags"]) == 1
+
+    def test_log_build_url(self):
+        """Test Log.build_url constructs correct log URLs.
+
+        Given: A Log object with log ID
+        When: build_url method is called
+        Then: A properly formatted Datadog log URL should be returned
+        """
+        log = Log(
+            id="log-123",
+            timestamp=datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=datetime.UTC),
+            message="",
+            service="",
+            host="",
+            source="",
+            status="",
+            tags=[],
+            raw={},
+        )
+        url = log.build_url()
+
+        assert url == "https://app.datadoghq.com/logs?event=log-123"
+
+    def test_comment_to_dict(self):
+        """Test Comment.to_dict converts comment to dictionary.
+
+        Given: A Comment object with user information
+        When: to_dict method is called
+        Then: A properly formatted dictionary with user sub-object should be returned
+        """
+        comment = Comment(
+            id="comment-123",
+            created_at="2024-01-15T10:30:00+00:00",
+            user_uuid="user-123",
+            text="Test comment",
+            user_name="John Doe",
+            user_handle="john@example.com",
+        )
+
+        result = comment.to_dict()
+
+        assert result["id"] == "comment-123"
+        assert result["text"] == "Test comment"
+        assert result["user"]["name"] == "John Doe"
+        assert result["user"]["handle"] == "john@example.com"
+
+
+class TestModule:
+    """Tests for test-module command."""
+
+    def test_module_success(self, configuration):
+        """Test module_test with valid authentication.
+
+        Given: Valid API configuration
+        When: module_test is executed
+        Then: Should return "ok" indicating successful authentication
+        """
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.AuthenticationApi") as mock_auth_api,
+        ):
+            mock_auth_instance = MagicMock()
+            mock_auth_api.return_value = mock_auth_instance
+            mock_auth_instance.validate.return_value = None
+
+            result = test_module(configuration)
+
+            assert result == "ok"
+            mock_auth_instance.validate.assert_called_once()
+
+    def test_module_authentication_error(self, configuration):
+        """Test test_module with invalid authentication.
+
+        Given: Invalid API configuration
+        When: test_module is executed
+        Then: Should return authentication error message
+        """
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.AuthenticationApi") as mock_auth_api,
+        ):
+            mock_auth_instance = MagicMock()
+            mock_auth_api.return_value = mock_auth_instance
+            mock_auth_instance.validate.side_effect = Exception("Invalid API Key")
+
+            result = test_module(configuration)
+
+            assert "Authentication Error" in result
+
+
+class TestGetSecuritySignalInvestigationCommand:
+    """Tests for datadog-signal-investigation-get command."""
+
+    def test_get_security_signal_investigation_command_success(self, configuration):
+        """Test get_security_signal_investigation_command with valid signal ID.
+
+        Given: A valid signal ID and mocked API response with investigation data
+        When: The get_security_signal_investigation_command is executed
+        Then: The command should return the investigation data with verdict and summary
+        """
+        args = {"signal_id": "signal-123"}
+
+        mock_requests_response = MagicMock()
+        mock_requests_response.ok = True
+        mock_requests_response.json.return_value = {
+            "data": {
+                "id": "inv-123",
+                "type": "investigation",
+                "attributes": {
+                    "verdict": "malicious",
+                    "steps": [],
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.requests.get", return_value=mock_requests_response),
+            patch("DatadogCloudSIEM.ApiClient"),
+        ):
+            from DatadogCloudSIEM import get_security_signal_investigation_command
+
+            result = get_security_signal_investigation_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert result.outputs["signal_id"] == "signal-123"  # type: ignore
+            assert result.outputs["verdict"] == "malicious"  # type: ignore
+
+    def test_get_security_signal_investigation_command_api_error(self, configuration):
+        """Test get_security_signal_investigation_command when API request fails.
+
+        Given: A valid signal ID but API request fails
+        When: The get_security_signal_investigation_command is executed
+        Then: The command should raise a DemistoException with error details
+        """
+        args = {"signal_id": "signal-123"}
+
+        mock_requests_response = MagicMock()
+        mock_requests_response.ok = False
+        mock_requests_response.status_code = 404
+        mock_requests_response.text = "Not found"
+
+        with (
+            patch("DatadogCloudSIEM.requests.get", return_value=mock_requests_response),
+            pytest.raises(DemistoException, match="API request failed with status 404"),
+        ):
+            from DatadogCloudSIEM import get_security_signal_investigation_command
+
+            get_security_signal_investigation_command(configuration, args)
+
+
+class TestUpdateRuleSuppressionCommand:
+    """Tests for datadog-suppression-update command."""
+
+    def test_update_rule_suppression_command_success(self, configuration):
+        """Test update_rule_suppression_command with valid parameters.
+
+        Given: A valid suppression ID and update parameters
+        When: The update_rule_suppression_command is executed
+        Then: The command should update the suppression and return the updated data
+        """
+        args = {
+            "suppression_id": "suppression-123",
+            "enabled": "true",
+            "name": "Updated Suppression",
+            "description": "Updated description",
+        }
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "data": {
+                "id": "suppression-123",
+                "type": "suppressions",
+                "attributes": {
+                    "enabled": True,
+                    "name": "Updated Suppression",
+                    "description": "Updated description",
+                },
+            }
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.update_security_monitoring_suppression.return_value = mock_response
+
+            from DatadogCloudSIEM import update_rule_suppression_command
+
+            result = update_rule_suppression_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            mock_api_instance.update_security_monitoring_suppression.assert_called_once()
+
+    def test_update_rule_suppression_command_missing_id(self, configuration):
+        """Test update_rule_suppression_command without suppression ID.
+
+        Given: No suppression ID provided
+        When: The update_rule_suppression_command is executed
+        Then: The command should raise a DemistoException
+        """
+        args = {"enabled": "true"}
+
+        with pytest.raises(DemistoException, match="suppression_id is required"):
+            from DatadogCloudSIEM import update_rule_suppression_command
+
+            update_rule_suppression_command(configuration, args)
+
+
+class TestSuppressionsListCommand:
+    """Tests for datadog-suppression-list command."""
+
+    def test_suppressions_list_command_success(self, configuration):
+        """Test suppressions_list_command returns list of suppressions.
+
+        Given: Valid API configuration with rule_id
+        When: The suppressions_list_command is executed
+        Then: The command should return a list of suppressions
+        """
+        args = {"rule_id": "rule-123"}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "data": [
+                {
+                    "id": "suppression-1",
+                    "type": "suppressions",
+                    "attributes": {
+                        "enabled": True,
+                        "name": "Suppression 1",
+                        "description": "Test suppression",
+                        "data_exclusion_query": "source:test",
+                        "suppression_type": "signal",
+                    },
+                },
+                {
+                    "id": "suppression-2",
+                    "type": "suppressions",
+                    "attributes": {
+                        "enabled": False,
+                        "name": "Suppression 2",
+                        "description": "Another test suppression",
+                        "data_exclusion_query": "",
+                        "suppression_type": "signal",
+                    },
+                },
+            ]
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.list_security_monitoring_suppressions.return_value = mock_response
+
+            from DatadogCloudSIEM import suppressions_list_command
+
+            result = suppressions_list_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+            assert isinstance(result.outputs, list)  # type: ignore
+
+
+class TestListSecurityFilterCommand:
+    """Tests for datadog-filter-list command."""
+
+    def test_list_security_filter_command_success(self, configuration):
+        """Test list_security_filter_command returns list of filters.
+
+        Given: Valid API configuration
+        When: The list_security_filter_command is executed
+        Then: The command should return a list of security filters
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "data": [
+                {
+                    "id": "filter-1",
+                    "type": "security_filters",
+                    "attributes": {
+                        "name": "Filter 1",
+                        "query": "source:aws",
+                        "is_enabled": True,
+                    },
+                }
+            ]
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.list_security_filters.return_value = mock_response
+
+            from DatadogCloudSIEM import list_security_filter_command
+
+            result = list_security_filter_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+
+
+class TestListSignalNotificationRuleCommand:
+    """Tests for datadog-signal-notification-rule-list command."""
+
+    def test_list_signal_notification_rule_command_success(self, configuration):
+        """Test list_signal_notification_rule_command returns list of notification rules.
+
+        Given: Valid API configuration
+        When: The list_signal_notification_rule_command is executed
+        Then: The command should return a list of signal notification rules
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.get.return_value = [
+            {
+                "id": "rule-1",
+                "type": "notification_rules",
+                "attributes": {
+                    "name": "Notification Rule 1",
+                    "query": "status:high",
+                },
+            }
+        ]
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_signal_notification_rules.return_value = mock_response
+
+            from DatadogCloudSIEM import list_signal_notification_rule_command
+
+            result = list_signal_notification_rule_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+
+
+class TestListVulnerabilityNotificationRuleCommand:
+    """Tests for datadog-vulnerability-notification-rule-list command."""
+
+    def test_list_vulnerability_notification_rule_command_success(self, configuration):
+        """Test list_vulnerability_notification_rule_command returns list of vulnerability notification rules.
+
+        Given: Valid API configuration
+        When: The list_vulnerability_notification_rule_command is executed
+        Then: The command should return a list of vulnerability notification rules
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.get.return_value = [
+            {
+                "id": "vuln-rule-1",
+                "type": "vulnerability_notification_rules",
+                "attributes": {
+                    "name": "Vulnerability Rule 1",
+                    "query": "severity:critical",
+                },
+            }
+        ]
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_vulnerability_notification_rules.return_value = mock_response
+
+            from DatadogCloudSIEM import list_vulnerability_notification_rule_command
+
+            result = list_vulnerability_notification_rule_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+
+
+class TestListRiskScoresCommand:
+    """Tests for datadog-risk-scores-list command."""
+
+    def test_list_risk_scores_command_success(self, configuration):
+        """Test list_risk_scores_command returns list of risk scores.
+
+        Given: Valid API configuration
+        When: The list_risk_scores_command is executed
+        Then: The command should return a list of risk scores
+        """
+        args = {}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "data": [
+                {
+                    "id": "risk-1",
+                    "type": "risk_scores",
+                    "attributes": {
+                        "entity_id": "entity-123",
+                        "score": 85,
+                        "risk_level": "high",
+                    },
+                }
+            ]
+        }
+
+        with (
+            patch("DatadogCloudSIEM.requests.get") as mock_get,
+            patch("DatadogCloudSIEM.ApiClient"),
+        ):
+            mock_get.return_value.json.return_value = mock_response.to_dict()
+
+            from DatadogCloudSIEM import list_risk_scores_command
+
+            result = list_risk_scores_command(configuration, args)
+
+            assert isinstance(result, CommandResults)
+
+
+class TestMirroringCommands:
+    """Tests for mirroring commands (get-remote-data, get-modified-remote-data, get-mapping-fields)."""
+
+    def test_get_remote_data_command_success(self, configuration, security_signal_response):
+        """Test get_remote_data_command retrieves signal data for mirroring.
+
+        Given: A valid signal ID in args and params
+        When: The get_remote_data_command is executed
+        Then: The command should return GetRemoteDataResponse with signal data
+        """
+        args = {"id": "AQAAAYvz-1234567890", "lastUpdate": "0"}
+        params = {"close_incident": False}
+
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = security_signal_response
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+            from DatadogCloudSIEM import get_remote_data_command
+
+            result = get_remote_data_command(configuration, args, params)
+
+            from CommonServerPython import GetRemoteDataResponse
+
+            assert isinstance(result, GetRemoteDataResponse)
+
+    def test_get_modified_remote_data_command_success(self, configuration, mocker):
+        """Test get_modified_remote_data_command retrieves modified signal IDs.
+
+        Given: A lastUpdate timestamp in args
+        When: The get_modified_remote_data_command is executed
+        Then: The command should return GetModifiedRemoteDataResponse with modified signal IDs
+        """
+        args = {"lastUpdate": "2024-01-14T00:00:00Z"}
+
+        # Mock demisto.debug to prevent output
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "error")
+
+        # Create a proper signal response with all required fields
+        mock_response = MagicMock()
+        mock_response.to_dict.return_value = {
+            "data": [
+                {
+                    "id": "signal-1",
+                    "event_id": "signal-1",
+                    "attributes": {
+                        "event_tracker_id": "signal-1",
+                        "event_id": "signal-1",
+                        "timestamp": "2024-01-15T10:00:00Z",
+                        "message": "Test signal",
+                        "status": "high",
+                        "tags": ["test:tag"],
+                        "custom": {
+                            "title": "Test Signal",
+                            "workflow": {
+                                "rule": {
+                                    "id": "rule-1",
+                                    "name": "Test Rule",
+                                },
+                                "triage": {
+                                    "state": "open",
+                                    "archiveComment": "",
+                                    "archiveReason": "",
+                                },
+                            },
+                        },
+                    },
+                }
+            ],
+            "meta": {},
+        }
+
+        with (
+            patch("DatadogCloudSIEM.ApiClient"),
+            patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+        ):
+            mock_api_instance = MagicMock()
+            mock_api.return_value = mock_api_instance
+            mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+
+            from DatadogCloudSIEM import get_modified_remote_data_command
+
+            result = get_modified_remote_data_command(configuration, args)
+
+            from CommonServerPython import GetModifiedRemoteDataResponse
+
+            assert isinstance(result, GetModifiedRemoteDataResponse)
+            assert len(result.modified_incident_ids) == 1
+            assert result.modified_incident_ids[0] == "signal-1"
+
+    def test_get_mapping_fields_command_success(self):
+        """Test get_mapping_fields_command returns field mappings.
+
+        Given: No arguments needed
+        When: The get_mapping_fields_command is executed
+        Then: The command should return GetMappingFieldsResponse with incident field mappings
+        """
+        from DatadogCloudSIEM import get_mapping_fields_command
+        from CommonServerPython import GetMappingFieldsResponse
+
+        result = get_mapping_fields_command()
+
+        assert isinstance(result, GetMappingFieldsResponse)

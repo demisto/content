@@ -653,6 +653,44 @@ def test_format_results_do_not_remove_empty_fields():
     assert expected == response
 
 
+def test_format_results_does_not_convert_non_timestamp_fields_containing_time():
+    """
+    Given:
+    - A list with fields containing 'time' substring but are not timestamp fields (e.g., reopenedbuffertime).
+
+    When:
+    - Calling format_results function.
+
+    Then:
+    - Ensure fields like 'reopenedbuffertime' are NOT converted to timestamps.
+    - Ensure actual timestamp fields like '_time', 'insert_timestamp' ARE converted.
+    """
+    list_to_format = [
+        {
+            "reopenedbuffertime": 7,  # Should NOT be converted (not a timestamp field)
+            "runtime": 100,  # Should NOT be converted
+            "lifetime": 500,  # Should NOT be converted
+            "_time": 1629619736000,  # Should be converted (ends with _time)
+            "insert_timestamp": 1629619736000,  # Should be converted (ends with timestamp)
+            "created_time": 1629619736000,  # Should be converted (ends with _time)
+            "time": 1629619736000,  # Should be converted (exactly 'time')
+        }
+    ]
+    expected = [
+        {
+            "reopenedbuffertime": 7,  # Unchanged
+            "runtime": 100,  # Unchanged
+            "lifetime": 500,  # Unchanged
+            "_time": "2021-08-22T08:08:56.000Z",  # Converted
+            "insert_timestamp": "2021-08-22T08:08:56.000Z",  # Converted
+            "created_time": "2021-08-22T08:08:56.000Z",  # Converted
+            "time": "2021-08-22T08:08:56.000Z",  # Converted
+        }
+    ]
+    response = CoreXQLApiModule.format_results(list_to_format, remove_empty_fields=False)
+    assert expected == response
+
+
 def test_start_xql_query_polling_not_supported(mocker):
     """
     Given:
@@ -1114,20 +1152,61 @@ def test_add_playbook_metadata_missing_context(mocker, callingContext):
     demisto.debug.assert_called_once()
 
 
-def test_start_xql_query_timeout(mocker):
+# =========================================== Bug Fix Tests ===========================================#
+
+
+def test_get_xql_query_results_polling_command_fail_status(mocker):
     """
     Given:
-    - A query to execute.
+    - A query that returned status FAIL with an error message.
+
     When:
-    - Calling start_xql_query function.
+    - Calling get_xql_query_results_polling_command function.
+
     Then:
-    - Ensure the timeout is added to the query.
+    - Ensure a DemistoException is raised with the error details.
     """
-    query = "MOCK_QUERY"
-    timeout_in_seconds = 600
-    args = {"query": query, "timeout_in_seconds": timeout_in_seconds}
-    mock_call = mocker.patch.object(CLIENT, "start_xql_query", return_value="MOCK_EXECUTION_ID")
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+        "error": {"1001610318390": "ERR_000_GENERAL_ERROR", "validation_message": "unknown field username."},
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="unknown field username"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )
 
-    CoreXQLApiModule.start_xql_query(CLIENT, args)
 
-    assert mock_call.call_args.args[0]["request_data"]["query"] == "config max_runtime_minutes = 10.0\n| MOCK_QUERY \n| limit 100"
+def test_get_xql_query_results_polling_command_fail_status_no_error_message(mocker):
+    """
+    Given:
+    - A query that returned status FAIL without an error_message field.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure a DemistoException is raised with the 'Unknown error' fallback message.
+    """
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="Unknown error"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )

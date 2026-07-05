@@ -19,19 +19,20 @@ Further information is available from CyberArk at:
 2. Search for CyberArkCCP.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description**                                                                                              | **Required** |
-| --- |--------------------------------------------------------------------------------------------------------------| --- |
-| url | Server URL and Port \(e.g., https://example.net:1234\)                                                       | True |
-| app_id | AppID as configured in CCP                                                                                   | False |
-| folder | Folder to search in safe                                                                                     | True |
-| safe | Safe to search in                                                                                            | True |
-| credential_names | Credential names \- comma\-separated list of credentials names in the safe. Partial names are not supported. | False |
-| credentials | Username                                                                                                     | False |
-| cert_text | Certificate file as text                                                                                     | False |
-| key_text | Key file as text                                                                                             | False |
-| isFetchCredentials | Fetches credentials                                                                                          | False |
-| insecure | Trust any certificate \(not secure\)                                                                         | False |
-| proxy | Use system proxy settings                                                                                    | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- |--------------|
+| Server URL and Port (e.g., https://example.net:1234) |  | True         |
+| AppID as configured in AIM |  | False        |
+| Folder to search in safe |  | False        |
+| Safe to search in |  | False        |
+| A comma-separated list of credential names in the safe. | Partial names are not supported. If left empty, no credentials will be fetched. | False        |
+| Username |  | False        |
+| Password |  | False        |
+| Certificate File as Text | Add a certificate file in text format to use to connect to the CyberArk AIM server. | False        |
+| Key File as Text |  | False        |
+| Fetch credentials |  | False        |
+| Trust any certificate (not secure) |  | False        |
+| Use system proxy settings |  | False        |
 
 ## Commands
 

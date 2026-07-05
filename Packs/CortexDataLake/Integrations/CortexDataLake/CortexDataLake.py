@@ -1570,7 +1570,7 @@ def main():
     fetch_table = params.get("fetch_table")
     fetch_fields = params.get("fetch_fields") or "*"
     command = demisto.command()
-    LOG(f"command is {command}")
+    demisto.debug(f"Command called {command}")
     # needs to be executed before creating a Client
     if command == "cdl-reset-authentication-timeout":
         Client.reset_failure_times()

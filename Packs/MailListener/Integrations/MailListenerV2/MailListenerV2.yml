@@ -1,4 +1,5 @@
 category: Messaging and Conferencing
+provider: Open Source
 sectionorder:
 - Connect
 - Collect
@@ -96,6 +97,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Fetch by email date
+  name: date_fetch
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Whether to fetch by email date.
 - defaultvalue: 'true'
   display: Use TLS for connection (defaults to True)
   name: TLS_connection
@@ -175,7 +183,7 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.3205634
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   isfetch: true
   runonce: false
   script: '-'

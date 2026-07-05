@@ -10,12 +10,12 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
 | Cloudflare Access Client Secret |  | False |
 | AIRS API URL | Leave blank if AIRS is not being used | False |
 | AIRS API Key | Leave blank if AIRS is not being used | False |
-| Sync Scan LLM Prompts with AIRS |  | False |
-| Sync Scan LLM Response with AIRS |  | False |
+| Sync Scan LLM Prompts with AIRS | Have AIRS scan all LLM prompts and throw exeception if BLOCK is returned | False |
+| Sync Scan LLM Response with AIRS | Have AIRS scan all LLM responses and throw exeception if BLOCK is returned | False |
 | AIRS Profile Name for Scan Requests | The profile must be created in the AIRS console | False |
-| AIRS Application Name for Scan Requests |  | False |
-| AIR User for Scan Requests |  | False |
-| Anything LLM Model in use for Scan Requests |  | False |
+| AIRS Application Name for Scan Requests | Provide an application name to identify XSOAR scan requests in AIRS | False |
+| AIR User for Scan Requests | Provide a user name to include in XSOAR scan requests in AIRS | False |
+| Anything LLM Model in use | Provide the LLM model being used for scan requests in AIRS | False |
 
 ## Commands
 

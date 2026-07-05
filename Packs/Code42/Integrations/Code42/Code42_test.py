@@ -23,11 +23,13 @@ from Code42 import (
     add_user_to_watchlist_command,
     remove_user_from_watchlist_command,
     download_file_command,
+    download_file_by_xfc_id_command,
     fetch_incidents,
     Code42AlertNotFoundError,
     Code42UserNotFoundError,
     Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
+    Code42FileDownloadError,
     file_events_search_command,
     file_events_to_table_command,
     run_command,
@@ -750,6 +752,49 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(incydr_sdk_
     client = _create_incydr_client(incydr_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
+
+
+def test_download_file_by_xfc_id(incydr_file_events_mock, mocker):
+    """
+    Scenario: User attempts to download a file using a valid XFC ID.
+    Given:
+     - User has provided a valid XFC ID.
+    When:
+     - The command is called with an XFC ID.
+    Then:
+     - Ensure that the underlying SDK method is called once.
+     - Ensure that the underlying SDK method is called with the given XFC ID.
+     - Ensure that a fileResult is created.
+     - Ensure the XFC ID is used as the returned file's filename.
+    """
+    fr = mocker.patch("Code42.fileResult")
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.return_value = create_mock_requests_response(mocker, "")
+    client = _create_incydr_client(incydr_file_events_mock)
+    _ = download_file_by_xfc_id_command(client, {"xfc_id": "b6312dbe4aa4212da94523ccb28c5c16"})
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16")
+    fr.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16", data=b"")
+
+
+def test_download_file_by_xfc_id_raises_exception(incydr_file_events_mock, mocker):
+    """
+    Scenario: User attempts to download a file using an invalid XFC ID.
+    Given:
+     - User has provided an invalid XFC ID.
+    When:
+     - The command is called with an invalid XFC ID.
+     - The underlying SDK method raises an exception.
+    Then:
+     - Ensure that the underlying SDK method is called once.
+     - Ensure that the underlying SDK method is called with the given XFC ID.
+     - Ensure that a Code42FileDownloadError is raised.
+    """
+    fr = mocker.patch("Code42.fileResult")
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.side_effect = Exception
+    client = _create_incydr_client(incydr_file_events_mock)
+    with pytest.raises(Code42FileDownloadError):
+        _ = download_file_by_xfc_id_command(client, {"xfc_id": "b6312dbe4aa4212da94523ccb28c5c16"})
+        incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16")
+        assert fr.call_count == 1
 
 
 def test_list_watchlists_command(incydr_watchlists_mock):

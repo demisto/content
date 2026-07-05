@@ -1,9 +1,9 @@
 import os
-import shlex
 import shutil
 import sys
 import zipfile as z
 from os.path import isdir, isfile
+from pathlib import Path
 from subprocess import PIPE, Popen
 from tempfile import mkdtemp
 
@@ -124,10 +124,10 @@ def extract_using_unrar(file_path, dir_path, password=None):
     :param password: password if the zip file is encrypted
     """
     if password:
-        cmd = f"unrar x -p{password} {file_path} {dir_path}"
+        cmd = ["unrar", "x", f"-p{password}", file_path, dir_path]
     else:
-        cmd = f"unrar x -p- {file_path} {dir_path}"
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+        cmd = ["unrar", "x", "-p-", file_path, dir_path]
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
@@ -141,13 +141,13 @@ def extract_using_unrar(file_path, dir_path, password=None):
 
 def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     if ".tar.gz" in file_name:
-        cmd = f"tar -xzvf {file_path} -C {dir_path}"
+        cmd = ["tar", "-xzvf", file_path, "-C", dir_path, "--no-same-owner", "--no-same-permissions"]
     elif file_name.endswith(".tar"):
-        cmd = f"tar -xf {file_path} -C {dir_path}"
+        cmd = ["tar", "-xf", file_path, "-C", dir_path, "--no-same-owner", "--no-same-permissions"]
     else:
-        cmd = ""
+        cmd = []
         demisto.debug(f"{file_name=} didn't match any condition. {cmd=}")
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
     if stderr:
@@ -161,8 +161,8 @@ def extract_using_7z(file_path, dir_path, password=None):
     :param dir_path: directory that the file will be extract to
     :param password: password if the zip file is encrypted
     """
-    cmd = f"7z x -p{password} -o{dir_path} {file_path}"
-    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    cmd = ["7z", "x", f"-p{password}", f"-o{dir_path}", file_path]
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
@@ -232,11 +232,20 @@ def upload_files(excluded_dirs, excluded_files, dir_path):
         results = []
         # extracted files can be in sub directories so we save the base names of
         # the files and also the full path of the file
-        files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
+        # Filter out symlinks and out-of-tree entries before building outputs
+        safe_base = os.path.realpath(dir_path) + os.sep
+        safe_files_dic = {}
         for file_path, file_name in files_dic.items():
+            real = os.path.realpath(file_path)
+            if Path(file_path).is_symlink() or not real.startswith(safe_base):
+                demisto.debug(f"Skipping out-of-tree entry: {file_path} -> {real}")
+                continue
+            safe_files_dic[file_path] = file_name
             with open(file_path, "rb") as _file:
                 demisto.results(fileResult(file_name, _file.read()))
+        # Build outputs from the filtered (safe) set only
+        files_base_names = list(safe_files_dic.values())  # noqa: F812
         results.append(
             {
                 "Type": entryTypes["note"],
@@ -245,7 +254,8 @@ def upload_files(excluded_dirs, excluded_files, dir_path):
                 "EntryContext": {"ExtractedFiles": files_base_names, 'File(val.EntryID=="' + file_entry_id + '").Unzipped': True},
                 "ReadableContentsFormat": formats["markdown"],
                 "HumanReadable": tableToMarkdown(
-                    "Extracted Files", [{"name": file_name, "path": file_path} for file_path, file_name in files_dic.items()]
+                    "Extracted Files",
+                    [{"name": file_name, "path": file_path} for file_path, file_name in safe_files_dic.items()],
                 ),
             }
         )
@@ -281,6 +291,16 @@ def main():
         file_info = get_zip_path(args)
         password = get_password(args)
         excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=password, zip_tool=zip_tool)
+        # Remove symlinks before uploading - use pure Python to avoid dependency on 'find' command
+        for root, dirs, files_in_dir in os.walk(dir_path):
+            for name in files_in_dir + dirs:
+                full_path = Path(root) / name
+                if full_path.is_symlink():
+                    try:
+                        full_path.unlink()
+                        demisto.debug(f"Removed symlink: {full_path}")
+                    except OSError:
+                        demisto.debug(f"Failed to remove symlink: {full_path}")
         upload_files(excluded_dirs, excluded_files, dir_path)
 
     except Exception as e:

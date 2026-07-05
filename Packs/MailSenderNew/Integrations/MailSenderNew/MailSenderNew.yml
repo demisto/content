@@ -1,4 +1,5 @@
 category: Email
+provider: Open Source
 commonfields:
   id: Mail Sender (New)
   version: -1
@@ -113,13 +114,16 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: The sender address to use for the email. If provided, it overrides the default sender address configured in the integration instance.
+      name: sender
+      required: false
     description: Send an email.
     name: send-mail
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.7090913
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0

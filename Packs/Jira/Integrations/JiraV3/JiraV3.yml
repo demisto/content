@@ -7,6 +7,7 @@ sectionorder:
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
+provider: Atlassian
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
 - name: server_url
@@ -221,6 +222,26 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
+  - arguments:
+    - description: |-
+        The search string to match against users and groups. For users, performs a case-insensitive substring match on display name and email address. For groups, performs a case-sensitive substring match on group name.
+        Note: if a user has hidden their email address, an exact email match is required.
+      type: String
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      type: Number
+      name: limit
+      defaultValue: '50'
+    description: Searches for users and groups in Jira that match the query string.
+    name: jira-user-group-search
+    outputs:
+    - contextPath: Jira.UsersAndGroups.Users
+      description: The users that match the query string.
+      type: Object
+    - contextPath: Jira.UsersAndGroups.Groups
+      description: The groups that match the query string.
+      type: Object
   - arguments:
     - description: Deprecated. Please use issue_id or issue_key.
       name: issueIdOrKey
@@ -1834,7 +1855,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.5185022
+  dockerimage: demisto/btfl-soup:1.0.1.10120494
   isfetch: true
   ismappable: true
   isremotesyncin: true

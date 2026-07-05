@@ -16,6 +16,7 @@ args:
 - name: left
   description: The IPv4 address to check (can be used instead of the value argument).
 scripttarget: 0
+isllm: false
 dockerimage: demisto/netutils:1.0.0.3562043
 runas: DBotWeakRole
 tests:

@@ -1083,13 +1083,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "",
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "xsiam",
-        "agentix"
-    ]
+    "description": ""
 }

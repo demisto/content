@@ -1,0 +1,29 @@
+{
+    "id": "Datadog Cloud SIEM V2",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Datadog Cloud SIEM V2",
+    "prevName": "Datadog Cloud SIEM V2",
+    "color": "#AA00FF",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Datadog Cloud SIEM V2 Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.8.0"
+}

@@ -4,12 +4,13 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 from polyswarm_api.api import PolyswarmAPI
+from polyswarm_api import settings as polyswarm_settings
 
 import socket
 import io
 
 """ CONSTANTS """
-POLYSWARM_DEMISTO_VERSION = "0.2.0"
+POLYSWARM_DEMISTO_VERSION = "2.0.11"
 ERROR_ENDPOINT = "Error with endpoint: "
 
 
@@ -28,7 +29,12 @@ class PolyswarmConnector:
         self.config["base_url"] = demisto.params().get("base_url")
         self.config["polyswarm_community"] = demisto.params().get("polyswarm_community")
 
-        self.polyswarm_api = PolyswarmAPI(key=self.config["polyswarm_api_key"], uri=self.config["base_url"])
+        polyswarm_ua = f"{polyswarm_settings.DEFAULT_USER_AGENT} xsoar-PolySwarmV2/{POLYSWARM_DEMISTO_VERSION}"
+        self.polyswarm_api = PolyswarmAPI(
+            key=self.config["polyswarm_api_key"],
+            uri=self.config["base_url"],
+            user_agent=polyswarm_ua,
+        )
 
     def _get_results(
         self, object_name: str, title: str, total_scans: int, positives: int, permalink: str, artifact: str, indicator: object

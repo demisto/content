@@ -16,27 +16,26 @@ SORT_TYPE_DICT = {"asc": 1, "desc": -1}
 
 class Client:
     def __init__(
-            self,
-            urls: list[str],
-            username: str,
-            password: str,
-            database: str,
-            ssl: bool = False,
-            insecure: bool = False,
-            auth_source: str = None,
-            timeout: int = 5000
+        self,
+        urls: list[str],
+        username: str,
+        password: str,
+        database: str,
+        ssl: bool = False,
+        insecure: bool = False,
+        auth_source: str = None,
+        timeout: int = 5000,
     ):
         if insecure and not ssl:
-            raise DemistoException(
-                '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
-        
+            raise DemistoException('"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+
         # Configure the connection arguments
         connection_args: dict[str, Any] = {
             "host": urls,
             "username": username,
             "password": password,
             "ssl": ssl,
-            "socketTimeoutMS": timeout
+            "socketTimeoutMS": timeout,
         }
         if insecure:
             connection_args["tlsAllowInvalidCertificates"] = True
@@ -578,13 +577,13 @@ def main():
     args = demisto.args()
     command = demisto.command()
     client = Client(
-        urls=argToList(params.get('urls')),
-        username=params.get('credentials', {}).get('identifier'),
-        password=params.get('credentials', {}).get('password'),
-        database=params['database'],
-        ssl=bool(params.get('use_ssl', False)),
-        insecure=bool(params.get('insecure', False)),
-        auth_source=params.get('auth_source', None)
+        urls=argToList(params.get("urls")),
+        username=params.get("credentials", {}).get("identifier"),
+        password=params.get("credentials", {}).get("password"),
+        database=params["database"],
+        ssl=bool(params.get("use_ssl", False)),
+        insecure=bool(params.get("insecure", False)),
+        auth_source=params.get("auth_source", None),
     )
     commands = {
         "test-module": test_module,

@@ -1,9 +1,13 @@
 commonfields:
   id: Remedy AR
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: Remedy AR
 display: BMC Remedy AR
 category: Case Management
+provider: BMC Software
 description: BMC Remedy AR System is a professional development environment that leverages the recommendations of the IT Infrastructure Library (ITIL) and provides a foundation for Business Service Management (BSM) solutions. For incident management (i.e. create, fetch, update), please refer to Remedy On-Demand integration.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -11,19 +15,23 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
+  section: Connect
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -53,7 +61,7 @@ script:
       description: Server name.
       type: string
     description: Retrieves server details.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

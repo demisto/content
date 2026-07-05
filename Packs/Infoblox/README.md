@@ -1,6 +1,61 @@
-Note: Support for this Pack will was moved to Partner starting October 15, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
+Note: Support for this Pack was moved to Partner starting October 15, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
 
 # Infoblox NIOS
+
+The Infoblox NIOS integration enables network security and DNS based controls through the Infoblox NIOS platform. This integration provides capabilities for IP information retrieval, DNS firewall management via Response Policy Zones (RPZs), and network infrastructure monitoring within your Cortex XSOAR environment.
+
+#### DNS Security & Firewall
+
+- Manages DNS Firewall by configuring Response Policy Zones (RPZs) to control DNS resolution behavior
+- Blocks DNS resolution for malicious or unauthorized hostnames to prevent access to harmful destinations
+- Redirects clients to walled gardens by substituting DNS responses for enhanced security control
+- Provides comprehensive rule management including creation, updates, enabling/disabling, and deletion
+- Supports multiple substitute record types (A, AAAA, MX, NAPTR, PTR, SRV, TXT, IPv4, IPv6) for advanced DNS response control
+- Enables rule searching and object field inspection for detailed policy management
+
+#### IP Information & Network Monitoring
+
+- Retrieves detailed metadata about IP addresses including status, network associations, and device information
+- Provides comprehensive IP address information for both IPv4 and IPv6 addresses
+- Supports network information lookup and related object searches
+- Enables DHCP lease lookups for network troubleshooting and analysis
+
+#### Host Record Management
+
+- Creates new host records with IPv4 and IPv6 address assignments
+- Lists and retrieves existing host records with detailed configuration information
+- Supports host record configuration including DNS settings, aliases, and extended attributes
+- Manages host record associations with network views and DNS zones
+
+#### Network Infrastructure Integration
+
+- Integrates with Infoblox NIOS appliances for DNS and network security management
+- Provides API access to manage DNS security policies through Response Policy Zones
+- Enables integration with security workflows for policy management
+
+#### Pack Use-cases
+
+- Retrieve detailed IP address information and network metadata for security investigations
+- Create and manage Response Policy Zones (RPZs) for DNS based threat blocking
+- Configure DNS firewall rules to block, redirect, or allow specific domains and IP addresses
+- Create advanced substitute records (A, AAAA, MX, NAPTR, PTR, SRV, TXT) for sophisticated DNS response control
+- Update existing RPZ rules and policies to adapt to changing security requirements
+- Enable, disable, search, and delete RPZ rules for comprehensive policy lifecycle management
+- Monitor network infrastructure and retrieve IP address status information
+- Create new host records for DNS management and network asset tracking
+- List and manage existing host records with comprehensive configuration details
+- Integrate DNS security policy management with security workflows and automation
+- Implement DNS based security controls as part of a layered defense strategy
+- Perform DHCP lease lookups for network troubleshooting and security analysis
+
+#### Support
+
+- For technical support or troubleshooting, please contact Infoblox Support at [https://www.infoblox.com/support/](https://www.infoblox.com/support/)
+- For documentation and resources, visit [https://docs.infoblox.com/](https://docs.infoblox.com/)
+
+#### Contact
+
+- For more information about Infoblox NIOS, visit [https://www.infoblox.com/products/nios](https://www.infoblox.com/products/nios)
 
 <~XSIAM>
 This pack includes XSIAM content.

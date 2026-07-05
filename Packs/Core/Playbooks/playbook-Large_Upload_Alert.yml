@@ -328,13 +328,11 @@ tasks:
                 - operator: RegexGroups
                   args:
                     flags: {}
-                    groups:
-                      value:
-                        simple: "1"
+                    groups: {}
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
+                        simple: uploaded\s(?:\d+(?:[.]\d+)?(MB|GB|TB))\b
             iscontext: true
           right:
             value:
@@ -350,13 +348,11 @@ tasks:
                 - operator: RegexGroups
                   args:
                     flags: {}
-                    groups:
-                      value:
-                        simple: "1"
+                    groups: {}
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
+                        simple: uploaded\s(?:\d+(?:[.]\d+)?(MB|GB|TB))\b
             iscontext: true
           right:
             value:
@@ -3976,10 +3972,6 @@ marketplaces:
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
 - agentix
 - cloud
 - cloud_posture

@@ -1,0 +1,29 @@
+{
+    "url": "https://example.com/test",
+    "domain_blacklist": {
+        "engines": {"0": {"name": "test", "detected": false, "reference": "https://example.com"}},
+        "detections": 0,
+        "engines_count": 10
+    },
+    "html_info": {"title": "Example Domain", "description": "Example website", "keywords": "example, test"},
+    "server_details": {
+        "ip": "93.184.216.34",
+        "hostname": "example.com",
+        "isp": "Edgecast Inc.",
+        "country_name": "United States",
+        "country_code": "US",
+        "continent_name": "North America",
+        "continent_code": "NA",
+        "region_name": "California",
+        "city_name": "Los Angeles",
+        "latitude": "34.0522",
+        "longitude": "-118.2437"
+    },
+    "security_checks": {"is_domain_blacklisted": false, "is_suspicious_domain": false, "is_phishing_heuristic": false},
+    "risk_score": {"result": 0},
+    "url_parts": {"host": "example.com", "scheme": "https", "path": "/test", "port": 443},
+    "dns_records": {
+        "ns": [{"target": "ns1.example.com", "ip": "1.2.3.4"}],
+        "mx": [{"target": "mx1.example.com", "ip": "5.6.7.8"}]
+    }
+}

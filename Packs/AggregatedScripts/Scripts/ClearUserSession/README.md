@@ -15,8 +15,9 @@ This script clears user sessions across multiple integrations for a list of user
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| user_name | List of names of the users to retrieve. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.  For multi-select provide a comma-separated list. For example: "Okta v2,Microsoft Graph User". |
+| user_name | A list of usernames to run the session clearance operation for. |
+| user_id | A list of user ids to run the session clearance operation for. |
+| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.  For multi-select provide a comma-separated list. For example: "Okta v2,Microsoft Graph User".     |
 | verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to retrieve human readable entry only for the final result. |
 
 ## Outputs
@@ -29,3 +30,4 @@ This script clears user sessions across multiple integrations for a list of user
 | SessionClearResults.Result | The result of the session clearing process for the user (*Success* or *Failed*). | String |
 | SessionClearResults.Brand | The integration (e.g., *Microsoft Graph*, *Okta v2*) where the session clearing succeeded. | String |
 | SessionClearResults.UserName | The username for which the session clearing process was executed. | String |
+| SessionClearResults.UserId | The user id for which the session clearing process was executed. | String |

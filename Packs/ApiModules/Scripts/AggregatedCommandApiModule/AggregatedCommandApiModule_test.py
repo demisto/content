@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from CommonServerPython import DemistoException, entryTypes, Common
+from CommonServerPython import DemistoException, entryTypes
 from AggregatedCommandApiModule import *
 from datetime import datetime, timedelta, UTC
 
@@ -13,9 +13,6 @@ class DummyModule(AggregatedCommand):
         pass
 
     def run(self):
-        pass
-
-    def validate_input(self) -> None:
         pass
 
 
@@ -63,15 +60,10 @@ def make_entry_result(name, brand, status, msg):
     return EntryResult(command_name=name, args="", brand=brand, status=status, message=msg)
 
 
-def make_dbot(indicator, vendor, score):
-    """A helper to create DBotScore dicts for tests."""
-    return {"Indicator": indicator, "Vendor": vendor, "Score": score}
-
-
 # =================================================================================================
 # == Global Mocks & Fixtures
 # =================================================================================================
-default_indicator = Indicator(
+default_indicator = IndicatorSchema(
     type="indicator", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={"Score": "Score"}
 )
 
@@ -88,8 +80,8 @@ def module_factory():
         factory_defaults = {
             "args": {},
             "brands": [],
-            "indicator": default_indicator,
-            "data": [],
+            "indicator_schema": default_indicator,
+            "indicator_instances": [],
             "final_context_path": "ctx",
             "external_enrichment": False,
             "additional_fields": False,
@@ -111,6 +103,30 @@ def module_factory():
 # -- Level 1: Standalone Helper Functions
 # -------------------------------------------------------------------------------------------------
 # --- Validation Tests ---
+@pytest.mark.parametrize(
+    "values, mapping, expected",
+    [
+        # Match first value
+        (["md5", "sha256"], {"MD5": "md5"}, "md5"),
+        # Match second value
+        (["md5", "sha256"], {"SHA256": "sha256"}, "sha256"),
+        # Case-insensitive match
+        (["AaA"], {"MD5": "aAa"}, "AaA"),
+    ],
+)
+def test_map_back_to_input_basic(values, mapping, expected):
+    """
+    Given:
+        - A list of original values and a mapping of hash field -> value.
+    When:
+        - Calling map_back_to_input.
+    Then:
+        - Returns the first original value that matches one of the mapping values (case-insensitive),
+          or empty string if none match.
+    """
+    assert map_back_to_input(values, mapping) == expected
+
+
 @pytest.mark.parametrize(
     "data, indicator_type, extracted, expected_set",
     [
@@ -143,8 +159,8 @@ def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
-    data = extract_indicators(data, indicator_type)
-    assert set(data) == expected_set
+    instances, _ = create_and_extract_indicators(data, indicator_type)
+    assert {instance.extracted_value for instance in instances} == expected_set
 
 
 @pytest.mark.parametrize(
@@ -158,12 +174,12 @@ def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted
         (["https://a.com", "https://b.com"], "URL", {}),
     ],
 )
-def test_extract_input_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
+def test_create_and_extract_indicators_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
     """
     Given:
         - extractIndicators returns no items for the requested indicator type.
     When:
-        - Calling extract_input.
+        - Calling create_and_extract_indicators.
     Then:
         - Raises ValueError("No valid indicators found in the input data.").
     """
@@ -172,23 +188,300 @@ def test_extract_input_raises_when_no_valid_indicators(mocker, data, indicator_t
         return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
 
-    with pytest.raises(ValueError, match="No valid indicators found in the input data"):
-        data = extract_indicators(data, indicator_type)
+    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
+        data, _ = create_and_extract_indicators(data, indicator_type)
 
 
-def test_extract_input_raises_on_empty_execute_command_result(mocker):
+def test_create_and_extract_indicators_raises_on_empty_result(mocker):
     """
     Given:
-        - execute_command('extractIndicators', ...) returns a falsy/empty result.
+        - execute_command('extractIndicators', ...) returns a empty result.
     When:
-        - Calling extract_input.
+        - Calling create_and_extract_indicators.
     Then:
         - Raises DemistoException with a validation failure message.
     """
     mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
 
-    with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
-        extract_indicators(["https://a.com"], "url")
+    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
+        create_and_extract_indicators(["https://a.com"], "url")
+
+
+def test_mismatched_types_allowed_when_flag_false(mocker):
+    """
+    Given:
+        - extractIndicators returns both the expected type and another type.
+        - mark_mismatched_type_as_invalid = False.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - The input is treated as valid.
+        - Only the expected type is turned into IndicatorInstance objects.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "URL": ["https://a.com"],
+                        "IP": ["1.1.1.1"],
+                    }
+                }
+            }
+        ],
+    )
+
+    instances, _ = create_and_extract_indicators(
+        ["https://a.com"],
+        "URL",
+        mark_mismatched_type_as_invalid=False,
+    )
+
+    assert len(instances) == 1
+    assert instances[0].extracted_value == "https://a.com"
+    assert getattr(instances[0], "final_status", None) in (None, Status.SUCCESS)
+
+
+def test_mismatched_types_marked_invalid_when_flag_true(mocker):
+    """
+    Given:
+        - extractIndicators returns both the expected type and another type.
+        - mark_mismatched_type_as_invalid = True.
+    When:
+        - Calling _process_single_input.
+    Then:
+        - The input is treated as invalid.
+        - A failure IndicatorInstance with hr_message="Invalid" is created.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=(
+            {"URL": ["example"], "IP": ["1.1.1.1"]},
+            "HR_FRAGMENT",
+            None,
+        ),
+    )
+
+    valid_set: set[str] = set()
+    invalid_set: set[str] = set()
+
+    instances, hr = _process_single_input(
+        raw="example",
+        expected_type_lower="url",
+        mark_mismatched_type_as_invalid=True,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+    assert len(instances) == 1
+
+    inst = instances[0]
+    assert inst.raw_input == "example"
+    assert inst.hr_message == "Invalid"
+    assert inst.final_status == Status.FAILURE
+
+    assert "example" in invalid_set
+    assert not valid_set  # no valid indicators were added
+
+
+def test_process_single_input_marks_failure_on_extraction_error(mocker):
+    """
+    Given:
+        - _execute_extraction returns an error_message for the raw input.
+    When:
+        - Calling _process_single_input.
+    Then:
+        - A failure IndicatorInstance is created with context_message
+          'extractIndicators Failed' and the error_message set.
+        - The raw input is added to invalid_set.
+        - valid_set remains unchanged.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=({}, "HR_FRAGMENT", "boom error"),
+    )
+
+    valid_set: set[str] = set()
+    invalid_set: set[str] = set()
+
+    instances, hr = _process_single_input(
+        raw="example",
+        expected_type_lower="url",
+        mark_mismatched_type_as_invalid=False,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+    assert len(instances) == 1
+
+    inst = instances[0]
+    assert inst.raw_input == "example"
+    assert inst.context_message == "extractIndicators Failed"
+    assert inst.error_message == "boom error"
+    assert inst.final_status == Status.FAILURE
+
+    assert "example" in invalid_set
+    assert not valid_set
+
+
+@pytest.mark.parametrize(
+    "raw, expected_type_lower, extracted_ctx, mark_invalid_flag, is_valid, expected_values",
+    [
+        # 1) Exact match
+        ("https://a.com", "url", {"URL": ["https://a.com"]}, False, True, {"https://a.com"}),
+        # 2) Case-insensitive type match
+        ("https://a.com", "URL", {"URL": ["https://a.com"]}, False, True, {"https://a.com"}),
+        # 3) Expected + other types → still valid when flag=False
+        ("https://a.com", "url", {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, False, True, {"https://a.com"}),
+        # 4) Only other types → invalid
+        ("a", "url", {"Domain": ["a.com"]}, False, False, set()),
+        # 5) Expected + other types → invalid when flag=True
+        ("https://a.com", "url", {"URL": ["https://a.com"], "IP": ["1.1.1.1"]}, True, False, set()),
+    ],
+)
+def test_process_single_input_parametrized(
+    mocker, raw, expected_type_lower, extracted_ctx, mark_invalid_flag, is_valid, expected_values
+):
+    """
+    Given:
+        - A raw input and an extractIndicators context.
+    When:
+        - Calling _process_single_input with different combinations of expected types
+          and the mark_mismatched_type_as_invalid flag.
+    Then:
+        - Valid inputs produce IndicatorInstances with extracted_value.
+        - Invalid inputs produce a failure IndicatorInstance.
+        - valid_set / invalid_set are updated correctly.
+    """
+    from AggregatedCommandApiModule import _process_single_input
+
+    # Mock extraction to return our parametrized extracted context
+    mocker.patch(
+        "AggregatedCommandApiModule._execute_extraction",
+        return_value=(extracted_ctx, "HR_FRAGMENT", None),
+    )
+
+    valid_set = set()
+    invalid_set = set()
+
+    instances, hr = _process_single_input(
+        raw=raw,
+        expected_type_lower=expected_type_lower.lower(),
+        mark_mismatched_type_as_invalid=mark_invalid_flag,
+        valid_set=valid_set,
+        invalid_set=invalid_set,
+    )
+
+    assert hr == "HR_FRAGMENT"
+
+    if is_valid:
+        # Should produce expected extracted values
+        assert {inst.extracted_value for inst in instances} == expected_values
+        assert raw not in invalid_set
+        assert valid_set == expected_values
+    else:
+        # Should produce exactly one invalid instance
+        assert len(instances) == 1
+        inst = instances[0]
+        assert inst.final_status == Status.FAILURE
+        assert raw in invalid_set
+        assert not valid_set
+
+
+def test_split_expected_and_other_types_only_expected(mocker):
+    """
+    Given:
+        - extractIndicators returns only the expected type.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - The indicators are treated as valid and returned as instances.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "URL": ["https://a.com", "https://b.com"],
+                    }
+                }
+            }
+        ],
+    )
+
+    instances, _ = create_and_extract_indicators(
+        ["https://a.com"],
+        "URL",
+        mark_mismatched_type_as_invalid=True,  # should still be fine, no other types
+    )
+
+    values = {inst.extracted_value for inst in instances}
+    assert values == {"https://a.com", "https://b.com"}
+
+
+def test_mixed_valid_and_error_inputs(mocker):
+    """
+    Given:
+        - Two inputs: one 'good' and one 'bad'.
+        - 'good' returns a valid URL.
+        - 'bad' raises an error in extractIndicators.
+    When:
+        - Calling create_and_extract_indicators.
+    Then:
+        - No exception is raised.
+        - We get one successful IndicatorInstance for the valid URL.
+        - We get one failure IndicatorInstance for the error case.
+        - The markdown HR contains both inputs and the error message.
+    """
+
+    def _exec_side_effect(command, args, extract_contents=False):
+        assert command == "extractIndicators"
+        text = args["text"]
+        if text == "google":
+            return [
+                {
+                    "EntryContext": {
+                        "ExtractedIndicators": {
+                            "URL": ["google"],
+                        }
+                    }
+                }
+            ]
+        if text == "bad":
+            raise Exception("extract failed for bad")
+        raise AssertionError(f"Unexpected input: {text}")
+
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        side_effect=_exec_side_effect,
+    )
+
+    instances, hr = create_and_extract_indicators(["google", "bad"], "URL")
+
+    # 1) Valid instances
+    valid_values = {i.extracted_value for i in instances if getattr(i, "extracted_value", None) is not None}
+    assert valid_values == {"google"}
+
+    # 2) Error / failure instance
+    failure_instances = [i for i in instances if getattr(i, "final_status", None) == Status.FAILURE]
+    assert len(failure_instances) == 1
+    failure = failure_instances[0]
+    assert failure.raw_input == "bad"
+    assert failure.context_message == "extractIndicators Failed"
+    assert failure.error_message == "extract failed for bad"
+
+    # 3) HR contains both sections and the error
+    assert "Result for name=extractIndicators args='text': google" in hr
+    assert "Result for name=extractIndicators args='text': bad" in hr
+    assert "Error Message: extract failed for bad" in hr
 
 
 @pytest.mark.parametrize(
@@ -352,6 +645,29 @@ def test_remove_empty_elements_with_exceptions(data, exceptions, expected):
     assert result == expected
 
 
+@pytest.mark.parametrize(
+    "input_val, expected",
+    [
+        ("d41d8cd98f00b204e9800998ecf8427e", {"MD5": "d41d8cd98f00b204e9800998ecf8427e"}),
+        ("da39a3ee5e6b4b0d3255bfef95601890afd80709", {"SHA1": "da39a3ee5e6b4b0d3255bfef95601890afd80709"}),
+        (None, {}),
+        ("", {}),
+    ],
+)
+def test_build_hash_dict(input_val, expected):
+    """
+    Given:
+        - A hash string (MD5 or SHA1) or empty.
+    When:
+        - build_hash_dict is called.
+    Then:
+        - Returns a dict with the correct hash type key (upper case).
+    """
+    # Note: 'get_hash_type' comes from CommonServerPython.
+    # If mocking is needed, patch it. Usually it's available in unit tests via import.
+    assert build_hash_dict(input_val) == expected
+
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 2: Core Class Units (Command + EntryResult)
 # -------------------------------------------------------------------------------------------------
@@ -469,19 +785,21 @@ def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
         - The TIM entry inside "Results" had its Status and ModifiedTime popped out.
         - Non-TIM entries are unchanged.
     """
-    indicator = Indicator(
+    indicator_schema = IndicatorSchema(
         type="url",
         value_field="Data",
         context_path_prefix="URL(",
         context_output_mapping={"Score": "Score", "CVSS": "CVSS"},
     )
-    builder = ContextBuilder(indicator=indicator, final_context_path="X")
+    builder = ContextBuilder(indicator_schema=indicator_schema, final_context_path="X")
     tim = {"Brand": "TIM", "Score": 2, "CVSS": {"Score": 7.1}, "Status": "Fresh", "ModifiedTime": "2025-09-01T00:00:00Z"}
     brand_a = {"Brand": "A", "Score": 3, "Data": "a.com"}
     brand_b = {"Brand": "B", "Score": 1, "Data": "b.com"}
-    builder.tim_context = {"indicator1": [tim, brand_a, brand_b]}
-
-    out = builder.create_indicator()
+    instance = IndicatorInstance(
+        raw_input="indicator1", extracted_value="indicator1", created=True, enriched=True, tim_context=[tim, brand_a, brand_b]
+    )
+    builder.add_indicator_instances([instance])
+    out = builder.build_indicators_context()
     assert len(out) == 1
     item = out[0]
     # Top-level lifted fields
@@ -500,23 +818,62 @@ def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
     assert item["Results"][2] == brand_b
 
 
-def test_add_tim_context():
+def test_create_indicator_file_type_adds_hashes_from_tim():
     """
     Given:
-        - A ContextBuilder instance.
+        - A ContextBuilder for a file indicator with multiple hash fields.
+        - TIM context with a TIM entry that has MD5, SHA1, and SHA256.
     When:
-        - add_tim_context is called with TIM and DBot score data.
+        - create_indicator() is called.
     Then:
-        - The internal state should be updated with the provided data.
+        - The resulting item has:
+            - Value set to the tim_context key.
+            - A 'Hashes' dict with all available hash values.
+            - Status and ModifiedTime lifted to the top level.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
-    tim_ctx = {"indicator1": [{"Brand": "brandA", "data": "value"}]}
-    dbot_list = [make_dbot("indicator1", "brandA", 2)]
+    file_indicator = IndicatorSchema(
+        type="file",
+        value_field=["MD5", "SHA1", "SHA256"],
+        context_path_prefix="File(",
+        context_output_mapping={"Score": "Score"},
+    )
+    builder = ContextBuilder(
+        indicator_schema=file_indicator,
+        final_context_path="FileEnrichmentV2(val.Value && val.Value == obj.Value)",
+    )
 
-    builder.add_tim_context(tim_ctx, dbot_list)
+    tim_entry = {
+        "Brand": "TIM",
+        "MD5": "md5-value",
+        "SHA1": "sha1-value",
+        "SHA256": "sha256-value",
+        "Score": 2,
+        "Status": "Fresh",
+        "ModifiedTime": "2025-09-01T00:00:00Z",
+    }
+    file_instance = IndicatorInstance(
+        raw_input="file-indicator-key", extracted_value="file-indicator-key", enriched=True, created=True, tim_context=[tim_entry]
+    )
 
-    assert builder.tim_context == tim_ctx
-    assert builder.dbot_context == dbot_list
+    builder.add_indicator_instances([file_instance])
+
+    out = builder.build_indicators_context()
+    assert len(out) == 1
+    item = out[0]
+
+    # Top-level value should be the key from tim_context
+    assert item["Value"] == "file-indicator-key"
+
+    # Hashes aggregated from the TIM entry
+    assert item["Hashes"] == {
+        "MD5": "md5-value",
+        "SHA1": "sha1-value",
+        "SHA256": "sha256-value",
+    }
+
+    # Status / ModifiedTime lifted
+    assert item["Status"] == "Fresh"
+    assert item["ModifiedTime"] == "2025-09-01T00:00:00Z"
 
 
 def test_add_other_commands_results():
@@ -528,7 +885,7 @@ def test_add_other_commands_results():
     Then:
         - The internal other_context dictionary should be correctly updated.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator_schema=default_indicator, final_context_path="Test.Path")
 
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
     builder.add_other_commands_results({"Command2": {"data": "value2"}})
@@ -537,14 +894,20 @@ def test_add_other_commands_results():
 
 
 def test_build_preserves_exception_keys_when_empty():
-    indicator = Indicator(
+    indicator = IndicatorSchema(
         type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS": "CVSS"}
     )
-    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator_schema=indicator, final_context_path="Test.Path")
 
     # TIM entry where TIM has no CVSS and explicit None ModifiedTime
-    tim_ctx = {"v1": [{"Brand": "TIM", "Score": 2, "ModifiedTime": None, "CVSS": None, "Status": None}]}
-    builder.add_tim_context(tim_ctx, dbot_scores=[])
+    instance = IndicatorInstance(
+        raw_input="v1",
+        extracted_value="v1",
+        enriched=True,
+        created=True,
+        tim_context=[{"Brand": "TIM", "Score": 2, "ModifiedTime": None, "CVSS": None, "Status": None}],
+    )
+    builder.add_indicator_instances([instance])
 
     final_context = builder.build()
     item = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
@@ -558,6 +921,112 @@ def test_build_preserves_exception_keys_when_empty():
     assert item["Status"] is None
 
 
+def test_create_indicator_success_happy_path():
+    """
+    Given:
+        - A Valid input (valid=True).
+        - Successfully Enriched (enriched=True).
+        - Found in TIM (found=True).
+    When:
+        - ContextBuilder.create_indicator() is called.
+    Then:
+        - The result should NOT be an Error.
+        - The Status should be lifted from the TIM context (e.g., 'Fresh').
+        - The Value should match the extracted value.
+    """
+    # 1. Setup Instance
+    # "found=True" means tim_context is not None/Empty
+    tim_data = {"Brand": "TIM", "Status": "Fresh", "Score": 2, "Value": "8.8.8.8"}
+
+    instance = IndicatorInstance(
+        raw_input="8.8.8.8",
+        extracted_value="8.8.8.8",
+        created=True,  # or False, doesn't matter if found+enriched
+        enriched=True,
+        tim_context=[tim_data],
+    )
+
+    # 2. Setup Builder
+    # Schema doesn't matter much for the logic flow, just need defaults
+    schema = IndicatorSchema("ip", "Address", "IP(", {})
+    builder = ContextBuilder(schema, "IPEnrichment")
+    builder.add_indicator_instances([instance])
+
+    # 3. Execute
+    results = builder.build_indicators_context()
+
+    # 4. Assertions
+    assert len(results) == 1
+    res = results[0]
+
+    assert res.get("Status") == "Fresh"  # Came from TIM object
+    assert res.get("Value") == "8.8.8.8"
+    assert res.get("Message") is None  # No error message on success
+
+
+@pytest.mark.parametrize(
+    "valid, created, enriched, found, expected_msg_part",
+    [
+        # --- Case 1: Invalid Input ---
+        # Logic: if not valid -> Error
+        # (Other flags don't matter)
+        (False, False, False, False, "Invalid"),
+        # --- Case 2: Creation Failed ---
+        # Logic: not created and not enriched and not found -> probably not created
+        (True, False, False, False, "Failed To Create"),
+        # --- Case 3: Enrichment Failed (But Found) ---
+        # Logic: not created and not enriched and found
+        # (Means it existed in TIM, but the enrichment command failed/wasn't run)
+        (True, False, False, True, "Failed to Enrich"),
+        # --- Case 4: Enrichment Failed (Created) ---
+        # Logic: created and not enriched
+        # (Means we created it, but enrichment failed)
+        (True, True, False, False, "Failed to Enrich"),
+        (True, True, False, True, "Failed to Enrich"),  # Found doesn't matter if didn't enriched
+        # --- Case 5: Extraction Failed ---
+        # Logic: enriched and not found
+        # (Means enrichment command said 'Success', but TIM search returned nothing)
+        (True, True, True, False, "Failed to extract"),
+        (True, False, True, False, "Failed to extract"),
+    ],
+)
+def test_create_indicator_failure_scenarios(valid, created, enriched, found, expected_msg_part):
+    """
+    Given:
+        - Various combinations of flags resulting in failure.
+    When:
+        - ContextBuilder.create_indicator() is called.
+    Then:
+        - The result Status should always be 'Error'.
+        - The result Message should match the specific logic branch taken.
+    """
+    # 1. Setup Data
+    extracted = "1.1.1.1" if valid else None
+    tim_ctx = [{"Brand": "TIM", "Status": "Fresh"}] if found else None
+
+    instance = IndicatorInstance(
+        raw_input="raw_input", extracted_value=extracted, created=created, enriched=enriched, tim_context=tim_ctx, hr_message=""
+    )
+    # 2. Setup Builder
+    schema = IndicatorSchema("ip", "Address", "IP(", {})
+    builder = ContextBuilder(schema, "IPEnrichment")
+    builder.add_indicator_instances([instance])
+
+    # 3. Execute
+    results = builder.build_indicators_context()
+
+    # 4. Assertions
+    assert len(results) == 1
+    res = results[0]
+
+    # All these cases must result in Error
+    assert res.get("Status") == "Error"
+
+    # Check that the specific error logic path was taken
+    actual_msg = res.get("Message", "")
+    assert expected_msg_part in actual_msg
+
+
 # --- Tests for the build() method and its helpers ---
 def test_build_extract_tim_score():
     """
@@ -566,26 +1035,28 @@ def test_build_extract_tim_score():
     When:
         - The build() method is called.
     Then:
-        - TIMScore is computed only from entries where Brand == "TIM" (max over those), ignoring others.
+        - TIMScore is computed only from entries where Brand == "TIM", ignoring others.
     """
-    indicator_with_score = Indicator(
+    indicator_with_score = IndicatorSchema(
         type="test",
         value_field="ID",
         context_path_prefix="Test(",
         context_output_mapping={"Score": "Score"},
     )
-    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
-
-    # Only the TIM scores (5 and 3) should be considered => max is 5
-    tim_ctx = {
-        "indicator1": [
+    builder = ContextBuilder(indicator_schema=indicator_with_score, final_context_path="Test.Path")
+    instance = IndicatorInstance(
+        raw_input="indicator1",
+        extracted_value="indicator1",
+        enriched=True,
+        created=True,
+        tim_context=[
             {"Score": 5, "Brand": "TIM"},
             {"Score": 8, "Brand": "brandA"},  # should be ignored for TIMScore
-            {"Score": 3, "Brand": "TIM"},
-        ]
-    }
-    builder.add_tim_context(tim_ctx, dbot_scores=[])
+        ],
+    )
 
+    builder.add_indicator_instances([instance])
+    # Only the TIM scores (5 and 3) should be considered => max is 5
     final_context = builder.build()
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
 
@@ -610,10 +1081,12 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     Then:
         - The final output is enriched with the correct MaxScore and MaxVerdict.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator_schema=default_indicator, final_context_path="Test.Path")
+    instance = IndicatorInstance(
+        raw_input="indicator1", extracted_value="indicator1", enriched=True, created=True, tim_context=results
+    )
 
-    tim_ctx = {"indicator1": results}
-    builder.add_tim_context(tim_ctx, dbot_scores=[])
+    builder.add_indicator_instances([instance])
 
     final_context = builder.build()
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
@@ -622,42 +1095,47 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     assert final_indicator["MaxVerdict"] == expected_verdict
 
 
-def test_build_without_tim_context_carries_dbot_and_other():
+def test_build_without_tim_context_carries_other():
     """
     Given:
         - No TIM context.
-        - Only DBot and Other results present.
     When:
         - build() is called.
     Then:
-        - Final context contains DBot + Other but no TIM key.
+        - Final context contains Other but no TIM key.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path")
-    builder.add_tim_context({}, dbot_scores=[make_dbot("ind1", "V", 1)])
+    builder = ContextBuilder(indicator_schema=default_indicator, final_context_path="Final.Path")
     builder.add_other_commands_results({"K1": {"v": 2}})
 
     final_ctx = builder.build()
     assert "Final.Path(val.Value && val.Value == obj.Value)" not in final_ctx
-    assert Common.DBotScore.CONTEXT_PATH in final_ctx
     assert final_ctx["K1"]["v"] == 2
 
 
 def test_build_assembles_all_context_types():
     """
     Given:
-        - Data for TIM results, DBot scores, and other commands.
+        - Data for TIM results, and other commands.
     When:
         - The build() method is called.
     Then:
-        - The final context should contain all three types of data in the correct paths.
+        - The final context should contain all two types of data in the correct paths.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator_schema=default_indicator, final_context_path="Test.Path")
 
     # Add all types of context
-    builder.add_tim_context(
-        tim_ctx={"indicator1": [{"Score": 3, "Brand": "TIM"}]},
-        dbot_scores=[make_dbot("indicator1", "TIM", 3)],
+    builder.add_indicator_instances(
+        [
+            IndicatorInstance(
+                raw_input="indicator1",
+                extracted_value="indicator1",
+                created=True,
+                enriched=True,
+                tim_context=[{"Score": 3, "Brand": "TIM"}],
+            )
+        ]
     )
+
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
 
     final_context = builder.build()
@@ -665,8 +1143,6 @@ def test_build_assembles_all_context_types():
     # Assert all parts are present
     assert "Test.Path(val.Value && val.Value == obj.Value)" in final_context
     assert final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]["Value"] == "indicator1"
-    assert Common.DBotScore.CONTEXT_PATH in final_context
-    assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "TIM"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
 
@@ -850,6 +1326,71 @@ def test_unsupported_enrichment_brands_various(
 # -------------------------------------------------------------------------------------------------
 
 
+def test_internal_enrichment_brands_injected_when_no_brands_and_external_false(module_factory, mocker):
+    """
+    Given:
+        - internal_enrichment_brands configured (e.g., WildFire).
+        - No brands explicitly requested.
+        - external_enrichment is False.
+        - BrandManager.enabled_brands includes the internal enrichment brand.
+        - There is also an INTERNAL command with its own brand.
+    When:
+        - Instantiating ReputationAggregatedCommand.
+    Then:
+        - self.brands should include both the internal_enrichment_brands and the INTERNAL command brands.
+        - prepare_commands_batches should include both INTERNAL and EXTERNAL commands.
+    """
+    # Patch enabled_brands to simulate active integrations
+    mocker.patch("AggregatedCommandApiModule.BrandManager.enabled_brands", return_value={"WildFire-v2", "OtherBrand"})
+
+    cmd_internal = Command(
+        name="core-get-hash-analytics-prevalence", args={}, brand="Cortex Core - IR", command_type=CommandType.INTERNAL
+    )
+    cmd_external = Command(name="enrichIndicators", args={}, command_type=CommandType.EXTERNAL)
+
+    module = module_factory(
+        brands=[],  # simulate user didn't pass brands
+        external_enrichment=False,
+        internal_enrichment_brands=["WildFire-v2"],
+        indicator_schema=default_indicator,
+        commands=[[cmd_internal, cmd_external]],
+    )
+
+    # Brands list should now be union of active internal_enrichment_brands and INTERNAL command brands
+    assert set(module.brands) == {"WildFire-v2", "Cortex Core - IR"}
+
+    # And prepare_commands_batches should now include both INTERNAL and EXTERNAL commands
+    batches = module.prepare_commands_batches(external_enrichment=False)
+    flattened = [c for batch in batches for c in batch]
+    assert {c.name for c in flattened} == {"core-get-hash-analytics-prevalence", "enrichIndicators"}
+
+
+def test_internal_enrichment_brands_not_applied_when_brands_given(module_factory, mocker):
+    """
+    Given:
+        - internal_enrichment_brands configured.
+        - User explicitly passes brands in the command args.
+        - external_enrichment is False.
+        - internal_enrichment_brands are enabled.
+    When:
+        - Instantiating ReputationAggregatedCommand.
+    Then:
+        - self.brands remains the user-provided brands (no auto-injection).
+    """
+    mocker.patch("AggregatedCommandApiModule.BrandManager.enabled_brands", return_value={"WildFire-v2"})
+
+    cmd_internal = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
+    module = module_factory(
+        brands=["UserBrand"],
+        external_enrichment=False,
+        internal_enrichment_brands=["WildFire-v2"],
+        indicator_schema=default_indicator,
+        commands=[[cmd_internal]],
+    )
+
+    assert module.brands == ["UserBrand"]
+
+
 # --- Prepare Commands Tests ---
 @pytest.mark.parametrize(
     "requested_brands, external_enrichment, expected_names",
@@ -874,13 +1415,13 @@ def test_prepare_commands_various(module_factory, requested_brands, external_enr
         - If no brands and external_enrichment=true all commands return.
         - If brands are requested, only the requested internal commands are returned + external commands (e.g., enrichIndicators).
     """
-    indicator = Indicator(type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={})
+    indicator = IndicatorSchema(type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={})
     cmd_intA = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
     cmd_intB = Command(name="intB", args={}, brand="B", command_type=CommandType.INTERNAL)
     cmd_ext = Command(name="enrichIndicators", args={"indicatorsValues": "example.com"}, command_type=CommandType.EXTERNAL)
 
     all_commands = [cmd_intA, cmd_intB, cmd_ext]
-    module = module_factory(brands=requested_brands, indicator=indicator, commands=[all_commands])
+    module = module_factory(brands=requested_brands, indicator_schema=indicator, commands=[all_commands])
 
     batches = module.prepare_commands_batches(external_enrichment=external_enrichment)
     flattened = [c for batch in batches for c in batch]
@@ -898,7 +1439,7 @@ def test_prepare_commands_includes_builtin(module_factory):
         - The builtin command is included in the first batch.
     """
     cmd_bi = Command(name="createNewIndicator", command_type=CommandType.BUILTIN)
-    module = module_factory(commands=[[cmd_bi]], brands=["Whatever"], indicator=Indicator("url", "Data", "URL(", {}))
+    module = module_factory(commands=[[cmd_bi]], brands=["Whatever"], indicator_schema=IndicatorSchema("url", "Data", "URL(", {}))
     batches = module.prepare_commands_batches(external_enrichment=False)
     assert any(c.name == "createNewIndicator" for c in batches[0])
 
@@ -908,7 +1449,7 @@ def test_prepare_commands_includes_builtin(module_factory):
     [
         (  # Success
             (
-                {"EntryContext": {"DBotScore": [make_dbot("a.com", "VendorA", 2)], "URL": {"Data": "a.com"}}},
+                {"EntryContext": {"URL": {"Data": "a.com"}}},
                 "Human Readable for success",
                 "",
             ),
@@ -924,7 +1465,7 @@ def test_prepare_commands_includes_builtin(module_factory):
         ),
         (  # Failure with partial context
             (
-                {"EntryContext": {"DBotScore": [make_dbot("b.com", "VendorB", 3)]}},
+                {"EntryContext": {}},
                 "Human Readable for error",
                 "Command failed",
             ),
@@ -983,74 +1524,58 @@ def test_process_single_command_result(
 
 # -- TIM Logic --
 @pytest.mark.parametrize(
-    "iocs,status,message",
+    "search_return_value",
     [
-        (None, Status.FAILURE, "boom"),
-        ([], Status.SUCCESS, "no results"),
-        ([], Status.FAILURE, "empty failure"),
-        ([{"value": "x"}], Status.FAILURE, "failed despite hits"),
+        ([]),  # Standard case: Search returns empty list
+        (None),  # Edge case: Search returns None
     ],
 )
-def test_get_indicators_from_tim_early_return(module_factory, mocker, iocs, status, message):
+def test_get_indicators_from_tim_early_return(module_factory, mocker, search_return_value):
     """
     Given:
-        - Different IOCs and status from search_indicators_in_tim.
+        - search_indicators_in_tim returns an empty list or None.
     When:
         - Calling get_indicators_from_tim.
     Then:
-        - Should not process on FAILURE or empty IOCs.
+        - process_tim_results should NOT be called.
+        - The method should return immediately.
     """
-    mod = module_factory(indicator=default_indicator)
-    mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, status, message))
+    mod = module_factory(indicator_schema=default_indicator)
+
+    mocker.patch.object(mod, "search_indicators_in_tim", return_value=search_return_value)
+
     proc = mocker.patch.object(mod, "process_tim_results")
 
-    ctx, entries = mod.get_indicators_from_tim()
-
-    # Shouldn't process on FAILURE or empty IOCs
+    mod.get_indicators_from_tim()
     proc.assert_not_called()
-    assert ctx == {}
-    assert isinstance(entries, list)
-    assert len(entries) == 1
-
-    entry = entries[0]
-    assert entry.command_name == "search-indicators-in-tim"
-    assert entry.args == ",".join(mod.data)  # preserves order & comma-join
-    assert entry.brand == "TIM"
-    # Status on the entry mirrors the status returned by search_indicators_in_tim
-    assert entry.status == status
-    assert entry.message == message
 
 
 def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
     """
     Given:
-        - IndicatorsSearcher returns IOCs and Status.SUCCESS.
+        - search_indicators_in_tim returns a non-empty list of IOCs.
     When:
         - Calling get_indicators_from_tim.
     Then:
-        - Returns IOCs and Status.SUCCESS.
+        - The IOCs are passed directly to process_tim_results.
     """
+    # 1. Setup
     iocs = [{"value": "https://a.com"}]
+    mod = module_factory(indicator_schema=default_indicator)
 
-    mod = module_factory(indicator=default_indicator)
+    # NEW: search_indicators_in_tim returns just the list of IOCs now
+    mocker.patch.object(mod, "search_indicators_in_tim", return_value=iocs)
 
-    mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, Status.SUCCESS, "ok"))
+    # NEW: process_tim_results is a void method (updates state via side effects)
+    # We just need to mock it to assert it was called.
+    proc = mocker.patch.object(mod, "process_tim_results")
 
-    expected_ctx = {"TIM": {"some": "context"}}
-    expected_entries = [object()]  # sentinel list we can identity-check
+    # 2. Execution
+    mod.get_indicators_from_tim()
 
-    proc = mocker.patch.object(
-        mod,
-        "process_tim_results",
-        return_value=(expected_ctx, expected_entries),
-    )
-
-    ctx, entries = mod.get_indicators_from_tim()
-
+    # 3. Assertion
+    # Verify the "Happy Path": Data flowed from Search -> Process
     proc.assert_called_once_with(iocs)
-    assert ctx == expected_ctx
-    # Ensure exact passthrough of the entries list
-    assert entries is expected_entries
 
 
 @pytest.mark.parametrize(
@@ -1071,7 +1596,7 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
                 "BrandB": ([{"Value": "from_brand_b"}]),
             },
             [
-                {"Brand": "TIM", "Score": 2},
+                {"Brand": "TIM", "Score": 2, "Value": "ioc.example.com"},
                 {"Value": "from_brand_a"},
                 {"Value": "from_brand_b"},
             ],
@@ -1081,7 +1606,7 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
             build_ioc(value="1.1.1.1", score=1, scores={}),
             {"Brand": "TIM", "Score": 1},
             {},
-            [{"Brand": "TIM", "Score": 1}],
+            [{"Brand": "TIM", "Score": 1, "Value": "1.1.1.1"}],
             "No matching indicators found.",
         ),
     ],
@@ -1101,31 +1626,34 @@ def test_process_single_tim_ioc(
     When:
         - Calling _process_single_tim_ioc with the IOC.
     Then:
-        - Ensure the returned tuple of (parsed_indicators, entry_result) is correct.
+        - Ensure the returned tuple is (parsed_indicators, value_string, message_string).
         - The indicators list should include results from both the main TIM object and brand-specific contexts.
-        - The EntryResult message should reflect which brands were processed.
+        - The returned message should reflect which brands were processed.
     """
-    # Arrange
+    # 1. Arrange
     module = module_factory()
-    mocker.patch.object(module, "create_tim_indicator", return_value=mock_tim_indicator_return)
+
+    # The new code does: value = tim_indicator.get("Value", "")
+    # We must ensure the mock return dict has the 'Value' so the assertion matches the input.
+    if "Value" not in mock_tim_indicator_return:
+        mock_tim_indicator_return["Value"] = ioc_input.get("value")
+
+    mocker.patch.object(module, "create_tim_indicator", return_value=(mock_tim_indicator_return, 0))
 
     def side_effect(entry_context, brand, reliability, score):
-        # The tuple return is based on the original code's signature for parse_indicator
         return mock_parse_indicator_side_effect.get(brand, [])
 
     mocker.patch.object(module, "parse_indicator", side_effect=side_effect)
 
-    # Act
-    indicators, entry = module._process_single_tim_ioc(ioc_input)
+    # 2. Act
+    # NEW Signature: returns (list[dict], str, str)
+    indicators, score, value, message = module._process_single_tim_ioc(ioc_input)
 
-    # Assert
+    # 3. Assert
     assert indicators == expected_indicators
-    assert isinstance(entry, EntryResult)
-    assert entry.command_name == "search-indicators-in-tim"
-    assert entry.brand == "TIM"
-    assert entry.status == Status.SUCCESS
-    assert entry.args == ioc_input.get("value")
-    assert entry.message == expected_entry_msg
+    # Verify values returned directly in the tuple
+    assert value == ioc_input.get("value")
+    assert message == expected_entry_msg
 
 
 def test_search_indicators_in_tim_exception_path(module_factory, mocker):
@@ -1135,56 +1663,63 @@ def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     When:
         - Calling search_indicators_in_tim.
     Then:
-        - Returns empty IOCs, a FAILURE status, and the exception message.
+        - Returns an empty list [].
+        - Updates the relevant indicator_instances with the error message.
     """
-    mod = module_factory()
-    mod.data = ["example.com"]
+    # 1. Setup
+    # We must provide instances so the code has something to update with the error
+    instance = IndicatorInstance(raw_input="example.com", extracted_value="example.com")
+    mod = module_factory(indicator_instances=[instance])
 
-    # Make IndicatorsSearcher blow up
+    # 2. Mock Exception
     mocker.patch(
         "AggregatedCommandApiModule.IndicatorsSearcher",
         side_effect=Exception("Failed to search TIM"),
     )
 
-    iocs, status, msg = mod.search_indicators_in_tim()
+    # 3. Execution
+    iocs = mod.search_indicators_in_tim()
 
+    # 4. Assertions
+    # New code returns empty list on exception
     assert iocs == []
-    assert status == Status.FAILURE
-    assert msg == "Failed to search TIM"
+
+    # New code updates the instance state with the error
+    assert instance.hr_message is not None
+    assert "Failed to search TIM" in instance.hr_message
 
 
 @pytest.mark.parametrize(
-    "data, pages, expected_iocs, expected_msg",
+    "data, pages, expected_iocs",
     [
         # Scenario 1: Search succeeds but finds no matching indicators
         (
             ["a.com", "b.com"],
             [{"iocs": []}],  # iterable yields one page with no iocs
             [],
-            "No matching indicators found.",
         ),
         # Scenario 2: Search succeeds and finds indicators (across multiple pages)
         (
             ["a.com", "b.com"],
             [{"iocs": [{"value": "a.com"}]}, {"iocs": [{"value": "b.com"}]}],
             [{"value": "a.com"}, {"value": "b.com"}],
-            "",
         ),
     ],
 )
-def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, expected_iocs, expected_msg):
+def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, expected_iocs):
     """
     Given:
-        - A list of indicator values to search for.
+        - A list of indicator instances to search for.
     When:
         - Calling the search_indicators_in_tim method.
     Then:
-        - It constructs IndicatorsSearcher with the correct query/size.
-        - It flattens 'iocs' from pages and returns expected results/message.
+        - It constructs IndicatorsSearcher with the correct query.
+        - It flattens 'iocs' from pages and returns just the list of IOCs.
     """
-    mod = module_factory()
-    mod.data = data
-    mod.indicator.type = "URL"
+    instances = [IndicatorInstance(raw_input=val, extracted_value=val) for val in data]
+    schema = IndicatorSchema(type="URL", value_field="Value", context_path_prefix="URL(", context_output_mapping={})
+
+    mod = module_factory(indicator_instances=instances, indicator_schema=schema)
 
     captured = {}
 
@@ -1201,18 +1736,18 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
         "AggregatedCommandApiModule.IndicatorsSearcher",
         side_effect=_searcher_ctor,
     )
-    iocs, status, msg = mod.search_indicators_in_tim()
+
+    iocs = mod.search_indicators_in_tim()
 
     assert searcher_mock.call_count == 1
 
     q = captured.get("query", "")
-    assert f"type:{mod.indicator.type}" in q
+    assert f"type:{schema.type}" in q
+    assert "value:(" in q
     for val in data:
-        assert f"value:{val}" in q
+        assert f'"{val}"' in q
 
     assert iocs == expected_iocs
-    assert status == Status.SUCCESS
-    assert msg == expected_msg
 
 
 def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
@@ -1230,14 +1765,92 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
 
     status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH.value)
 
-    res = mod.create_tim_indicator(ioc)
+    res, indicator_score = mod.create_tim_indicator(ioc)
 
     status_mock.assert_called_once_with(ioc)
     assert res["Status"] == IndicatorStatus.FRESH.value
     assert res["Brand"] == "TIM"
     assert res["Score"] == 2
-    assert res["Data"] == "indicator1"
+    assert res[default_indicator.value_field] == "indicator1"
     assert res["ModifiedTime"] is None
+    assert indicator_score == 2
+
+
+def test_create_tim_indicator_file_type_maps_value_using_hashes(module_factory, mocker):
+    """
+    Given:
+        - A ReputationAggregatedCommand configured for type='file' with multiple hash fields.
+        - self.valid_inputs contains the original input hash (MD5) derived from indicator_instances.
+        - The TIM IOC 'value' is SHA256, and CustomFields include both md5/sha256.
+    When:
+        - create_tim_indicator is called.
+    Then:
+        - The resulting TIM indicator:
+            - Has Brand='TIM'.
+            - Has MD5/SHA256 fields mapped from CustomFields.
+            - Has Value equal to the original input hash (MD5), via map_back_to_input logic.
+    """
+    # 1. Define Schema
+    file_indicator = IndicatorSchema(
+        type="file",
+        value_field=["MD5", "SHA256"],
+        context_path_prefix="File(",
+        context_output_mapping={
+            "MD5": "MD5",
+            "SHA256": "SHA256",
+            "Score": "Score",
+        },
+    )
+
+    original_md5 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    sha256_val = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+    # 2. Setup Instance (New Architecture)
+    # The module extracts 'valid_inputs' from these instances
+    instance = IndicatorInstance(raw_input=original_md5, extracted_value=original_md5)
+
+    # 3. Initialize Module
+    mod = module_factory(
+        indicator_schema=file_indicator,
+        indicator_instances=[instance],
+    )
+
+    # 4. Input IOC from TIM (Main value is SHA256)
+    ioc = {
+        "score": 3,
+        "value": sha256_val,
+        "modifiedTime": "2025-09-01T00:00:00Z",
+        "CustomFields": {
+            "md5": original_md5,
+            "sha256": sha256_val,
+        },
+    }
+
+    # 5. Mock Status Helper
+    status_mock = mocker.patch.object(
+        mod,
+        "get_indicator_status_from_ioc",
+        return_value=IndicatorStatus.FRESH.value,
+    )
+
+    # 6. Execute
+    res, _ = mod.create_tim_indicator(ioc)
+
+    # 7. Assertions
+    status_mock.assert_called_once_with(ioc)
+
+    assert res["Brand"] == "TIM"
+    assert res["Score"] == 3
+    assert res["Status"] == IndicatorStatus.FRESH.value
+    assert res["ModifiedTime"] == "2025-09-01T00:00:00Z"
+
+    # Hash fields mapped from CustomFields
+    assert res["MD5"] == original_md5
+    assert res["SHA256"] == sha256_val
+
+    # For file indicators, Value is mapped back to the original input (MD5)
+    # instead of the TIM 'value' (SHA256)
+    assert res["Value"] == original_md5
 
 
 @pytest.mark.parametrize(
@@ -1325,13 +1938,104 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
     assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.STALE.value
 
 
-# --- Summarize Command Results Tests ---
+def test_update_indicator_instances_status_logic(module_factory):
+    """
+    Given:
+        - A module with indicator instances.
+        - EntryResults simulating command executions:
+            1. CreateNewIndicatorsOnly -> Success
+            2. enrichIndicators -> Failure
+    When:
+        - update_indicator_instances_status is called.
+    Then:
+        - The instances should be updated:
+            - created = True
+            - enriched = False
+            - error_message should contain the enrichment error.
+            - final_status should be FAILURE (because of error).
+    """
+    # 1. Setup
+    instance = IndicatorInstance(raw_input="8.8.8.8", extracted_value="8.8.8.8")
+    mod = module_factory(indicator_instances=[instance])
+
+    # Simulate command results already stored in the module
+    mod.entry_results = [
+        EntryResult(command_name="CreateNewIndicatorsOnly", brand="Builtin", status=Status.SUCCESS, message="Created", args={}),
+        EntryResult(command_name="enrichIndicators", brand="External", status=Status.FAILURE, message="Quota exceeded", args={}),
+    ]
+
+    # 2. Execute
+    mod.update_indicator_instances_status()
+
+    # 3. Assertions
+    assert instance.created is True
+    assert instance.enriched is False
+    assert instance.error_message
+    assert "Quota exceeded" in instance.error_message
+    assert instance.final_status == Status.FAILURE
+
+
 @pytest.mark.parametrize(
-    "entries, expect_error",
+    "schema_type, indicator_score, expected_field_name",
     [
-        # all failed -> error
-        ([make_entry_result("c1", "A", Status.FAILURE, "Error"), make_entry_result("c2", "B", Status.FAILURE, "Error")], True),
-        # mix of failures + 'No matching...' -> still error (no actual success)
+        ("ip", 2, "TIM Score"),
+        ("cve", 7.1, "TIM CVSS"),
+    ],
+)
+def test_create_indicators_entry_results_sets_score_fields(module_factory, schema_type, indicator_score, expected_field_name):
+    """
+    Given:
+        - IndicatorInstances with specific final statuses.
+        - Existing command entry results.
+    When:
+        - create_indicators_entry_results is called.
+    Then:
+        - New EntryResult objects (Brand='TIM') are PREPENDED to the list.
+    """
+    # 1. Setup
+    instance = IndicatorInstance(
+        raw_input="v",
+        extracted_value="v",
+        final_status=Status.SUCCESS,
+        hr_message="Found",
+        indicator_score=indicator_score,
+    )
+    schema = IndicatorSchema(type=schema_type, value_field="Value", context_path_prefix="X(", context_output_mapping={})
+    mod = module_factory(indicator_schema=schema, indicator_instances=[instance])
+
+    # Existing entry (e.g., from an enrichment command)
+    existing_entry = EntryResult("cmd", {}, "brand", Status.SUCCESS, "")
+    mod.entry_results = [existing_entry]
+
+    # 2. Execute
+    mod.create_indicators_entry_results()
+
+    # 3. Assertions
+    assert len(mod.entry_results) == 2
+
+    # The TIM entry should be first
+    tim_entry = mod.entry_results[0]
+    assert tim_entry.brand == "TIM"
+    assert tim_entry.status == Status.SUCCESS
+    assert tim_entry.message == "Found"
+    assert tim_entry.score == indicator_score
+
+    # The existing entry remains
+    assert mod.entry_results[1] == existing_entry
+
+
+@pytest.mark.parametrize(
+    "entries, expected_is_error",
+    [
+        # 1. All failed -> Error
+        (
+            [
+                make_entry_result("c1", "A", Status.FAILURE, "Error"),
+                make_entry_result("c2", "B", Status.FAILURE, "Error"),
+            ],
+            True,
+        ),
+        # 2. Mix of failures + 'No matching...' (soft failure) -> Error (because no actual success occurred)
         (
             [
                 make_entry_result("c1", "A", Status.FAILURE, "Error"),
@@ -1339,11 +2043,22 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
             ],
             True,
         ),
-        # at least one real success (status=Success, empty message) -> success
-        ([make_entry_result("c1", "A", Status.SUCCESS, ""), make_entry_result("c2", "B", Status.FAILURE, "Error")], False),
-        # single real success -> success
-        ([make_entry_result("c1", "A", Status.SUCCESS, "")], False),
-        # Only no matching indicators -> success
+        # 3. At least one real success (Status.SUCCESS + empty/valid message) -> Success
+        (
+            [
+                make_entry_result("c1", "A", Status.SUCCESS, ""),
+                make_entry_result("c2", "B", Status.FAILURE, "Error"),
+            ],
+            False,
+        ),
+        # 4. Single real success -> Success
+        (
+            [
+                make_entry_result("c1", "A", Status.SUCCESS, ""),
+            ],
+            False,
+        ),
+        # 5. Only 'No matching indicators found' -> Success (valid state, not system error)
         (
             [
                 make_entry_result("c1", "A", Status.SUCCESS, "No matching indicators found."),
@@ -1353,22 +2068,215 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         ),
     ],
 )
-def test_summarize_command_results_error_condition(module_factory, mocker, entries, expect_error):
+def test_is_final_result_error(module_factory, entries, expected_is_error):
     """
     Given:
         - A list of entries with different statuses and messages.
     When:
-        - Calling summarize_command_results.
+        - Calling _is_error_result.
     Then:
-        - Returns an error entry if all commands failed or no indicators were found.
-        - Returns a success entry if at least one command was successful.
+        - Returns True only when there was at least one FAILURE and
+          all entries are either FAILURE or 'No matching indicators found.'.
     """
     mod = module_factory()
+
+    assert mod._is_final_result_error(entries) == expected_is_error
+
+
+def test_reputation_aggregated_command_redundant_error_raising_true(module_factory):
+    """
+    Given:
+        - A ReputationAggregatedCommand instance created with redundant_error_raising=True.
+        - A mix of entries: one FAILURE and one SUCCESS with the message "No matching indicators found.".
+    When:
+        - Calling _is_final_result_error.
+    Then:
+        - Returns False, because when redundant_error_raising is True the soft-failure
+          message "No matching indicators found." is NOT treated as a failure, so not
+          all entries are failures.
+    """
+    mod = module_factory(redundant_error_raising=True)
+
+    entries = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.SUCCESS, "No matching indicators found."),
+    ]
+
+    # Sanity: the flag is stored on the instance and defaults to False elsewhere.
+    assert mod.redundant_error_raising is True
+    # Behavior: with the flag on, a mixed result is NOT considered a final error.
+    assert mod._is_final_result_error(entries) is False
+    # And when ALL entries are real failures, it should still be considered an error.
+    all_failures = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.FAILURE, "Error"),
+    ]
+    assert mod._is_final_result_error(all_failures) is True
+
+
+def test_reputation_aggregated_command_redundant_error_raising_false(module_factory):
+    """
+    Given:
+        - A ReputationAggregatedCommand instance created without specifying the flag
+          (so redundant_error_raising defaults to False).
+        - A mix of entries: one FAILURE and one SUCCESS with the message
+          "No matching indicators found.".
+    When:
+        - Calling _is_final_result_error.
+    Then:
+        - Returns True, preserving the legacy behavior where "No matching indicators found."
+          is treated as a soft failure and a mixed result is reported as an error.
+    """
+    mod = module_factory()
+
+    entries = [
+        make_entry_result("c1", "A", Status.FAILURE, "Error"),
+        make_entry_result("c2", "B", Status.SUCCESS, "No matching indicators found."),
+    ]
+
+    # Sanity: the flag defaults to False.
+    assert mod.redundant_error_raising is False
+    # Behavior: with the flag off (legacy), a mixed result IS considered a final error.
+    assert mod._is_final_result_error(entries) is True
+
+
+def test_summarize_command_results_uses_is_error_result_for_entry_type(module_factory, mocker):
+    """
+    Given:
+        - A module instance with some entry_results.
+    When:
+        - summarize_command_results is called.
+    Then:
+        - A DemistoException is raised iff _is_final_result_error returns True.
+        - Otherwise a success CommandResults (non-error entry type) is returned.
+    """
+    mod = module_factory()
+    # Don't let these mutate entry_results, we want to control it
+    mocker.patch.object(mod, "create_indicators_entry_results")
+    mocker.patch.object(mod, "_inject_unsupported_brands")
+
+    # Avoid depending on markdown formatting
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    res = mod.summarize_command_results(entries, verbose_outputs=[], final_context={"ctx": 1})
+    # Case 1: _is_final_result_error -> True => raises DemistoException
+    mocker.patch.object(mod, "_is_final_result_error", return_value=True)
+    mod.entry_results = [make_entry_result("c1", "A", Status.FAILURE, "Error")]
+    with pytest.raises(DemistoException, match=r"Error: All commands failed or no indicators found\."):
+        mod.summarize_command_results(final_context={"ctx": 1})
 
-    assert (res.entry_type == entryTypes["error"]) == expect_error
+    # Case 2: _is_final_result_error -> False => success (default entry type)
+    mocker.patch.object(mod, "_is_final_result_error", return_value=False)
+    mod.entry_results = [make_entry_result("c2", "B", Status.SUCCESS, "")]
+    res = mod.summarize_command_results(final_context={"ctx": 1})
+    assert res.entry_type != entryTypes["error"]
+
+
+def test_inject_unsupported_brands_adds_failure_entries(module_factory, mocker):
+    """
+    Given:
+        - Unsupported enrichment brands exist ('X', 'Y').
+    When:
+        - _inject_unsupported_brands is called.
+    Then:
+        - EntryResult objects are added for each unsupported brand as failures
+          with the 'Unsupported Command' message.
+    """
+    mod = module_factory(brands=["X", "Y"])
+
+    # Make BrandManager return our fake unsupported brands when property is evaluated
+    mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
+
+    # Assume we already have one valid entry
+    mod.entry_results = [make_entry_result("c1", "A", Status.SUCCESS, "")]
+
+    # Act
+    mod._inject_unsupported_brands()
+
+    # Assert: we now have 3 entries: original + X + Y
+    assert len(mod.entry_results) == 3
+
+    by_brand = {e.brand: e for e in mod.entry_results}
+    for brand in ("X", "Y"):
+        assert brand in by_brand
+        unsupported = by_brand[brand]
+        assert unsupported.status == Status.FAILURE
+        assert "Unsupported Command" in (unsupported.message or "")
+
+
+def test_build_final_human_readable_includes_unsupported_brands(module_factory, mocker):
+    """
+    Given:
+        - EntryResults including unsupported enrichment brands.
+    When:
+        - _build_final_human_readable is called.
+    Then:
+        - The table rows include one entry per unsupported brand with failure status.
+    """
+    mod = module_factory()
+
+    # We simulate after _inject_unsupported_brands already ran:
+    mod.entry_results = [
+        make_entry_result("c1", "A", Status.SUCCESS, ""),
+        make_entry_result(
+            "c2", "X", Status.FAILURE, "Unsupported Command: Verify you have proper integrations enabled to support it"
+        ),
+        make_entry_result(
+            "c3", "Y", Status.FAILURE, "Unsupported Command: Verify you have proper integrations enabled to support it"
+        ),
+    ]
+
+    tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
+
+    # Only brandful entries are passed into the table
+    final_entries = [e for e in mod.entry_results if e.brand]
+    _ = mod._build_final_human_readable(final_entries)
+
+    args, kwargs = tbl.call_args
+    table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
+
+    for brand in ("X", "Y"):
+        row = next(r for r in table_rows if r.get("Brand") == brand)
+        assert row.get("Status") == Status.FAILURE.value
+        assert "Unsupported Command" in (row.get("Message") or "")
+
+
+@pytest.mark.parametrize(
+    "schema_type, expected_header",
+    [
+        ("ip", "TIM Score"),
+        ("cve", "TIM CVSS"),
+    ],
+)
+def test_build_final_human_readable_uses_dynamic_score_header(module_factory, mocker, schema_type, expected_header):
+    """
+    Given:
+        - A module configured with an IndicatorSchema of a specific type:
+            * type="ip"   -> should render "TIM Score" column in the HR table headers.
+            * type="cve"  -> should render "TIM CVSS" column in the HR table headers.
+        - A TIM EntryResult with score_field_name aligned to the expected header.
+
+    When:
+        - Calling _build_final_human_readable with the TIM entry.
+
+    Then:
+        - tableToMarkdown is called with headers that include the expected dynamic score header
+          ("TIM Score" for non-CVE, "TIM CVSS" for CVE).
+    """
+    schema = IndicatorSchema(type=schema_type, value_field="Value", context_path_prefix="X(", context_output_mapping={})
+    mod = module_factory(indicator_schema=schema)
+
+    tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
+
+    entries = [
+        EntryResult(
+            command_name="", args="v", brand="TIM", status=Status.SUCCESS, message="m", score_field_name=expected_header, score=5
+        )
+    ]
+    _ = mod._build_final_human_readable(entries)
+
+    _, kwargs = tbl.call_args
+    headers = kwargs["headers"]
+    assert expected_header in headers
 
 
 def test_summarize_command_results_appends_unsupported_enrichment_row(module_factory, mocker):
@@ -1378,27 +2286,27 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     When:
         - summarize_command_results is called.
     Then:
-        - The HR table includes a row for the unsupported brands.
+        - The HR table includes a row for each unsupported brand.
     """
     mod = module_factory(brands=["X", "Y"])
-    # Make the property return our list
+    # Make the property return our list via BrandManager
     mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
 
     tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    entries = [make_entry_result("c1", "A", Status.SUCCESS, "")]
-    res = mod.summarize_command_results(entries, verbose_outputs=[], final_context={"ctx": 1})
+    mod.entry_results = [make_entry_result("c1", "A", Status.SUCCESS, "")]
+    res = mod.summarize_command_results(final_context={"ctx": 1})
     assert res.readable_output == "TBL"
 
     # Inspect the table rows passed to tableToMarkdown
     args, kwargs = tbl.call_args
     table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
-    assert any(
-        row.get("Brand") == "X,Y"
-        and row.get("Status") == Status.FAILURE.value
-        and "Unsupported Command" in (row.get("Message") or "")
-        for row in table_rows
-    )
+
+    # There should be separate rows for X and Y, each marked as failure with the unsupported message
+    for brand in ("X", "Y"):
+        row = next(r for r in table_rows if r.get("Brand") == brand)
+        assert row.get("Status") == Status.FAILURE.value
+        assert "Unsupported Command" in (row.get("Message") or "")
 
 
 # -- Context Mapping --
@@ -1479,3 +2387,352 @@ def test_map_command_context_indicator_flag(module_factory, mapping, entry, is_i
         assert result["AdditionalFields"] == expected["AdditionalFields"]
     else:
         assert "AdditionalFields" not in result
+
+
+# -------------------------------------------------------------------------------------------------
+# -- Tests for create_and_extract_indicators_batch
+# -------------------------------------------------------------------------------------------------
+
+
+def test_create_and_extract_indicators_batch_empty_data():
+    """
+    Given:
+        - An empty data list.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string,
+          without calling extractIndicators.
+    """
+    instances, hr = create_and_extract_indicators_batch([], "IP")
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
+
+
+def test_create_and_extract_indicators_batch_valid_ips(mocker):
+    """
+    Given:
+        - A list of valid IP addresses.
+    When:
+        - Calling create_and_extract_indicators_batch with indicator_type="IP".
+    Then:
+        - Returns one IndicatorInstance per extracted IP, with raw_input == extracted_value
+          and the default SUCCESS state, plus a non-empty HR string.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1", "8.8.8.8"]}}}],
+    )
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
+
+    assert len(instances) == 2
+    assert all(isinstance(i, IndicatorInstance) for i in instances)
+    assert [i.extracted_value for i in instances] == ["1.1.1.1", "8.8.8.8"]
+    assert [i.raw_input for i in instances] == ["1.1.1.1", "8.8.8.8"]
+    # Default state for valid extracted indicators
+    assert all(i.final_status == Status.SUCCESS for i in instances)
+    assert all(i.created is False for i in instances)
+    assert all(i.enriched is False for i in instances)
+    assert all(i.tim_context is None for i in instances)
+    assert isinstance(hr, str)
+
+
+def test_create_and_extract_indicators_batch_no_matching_type(mocker):
+    """
+    Given:
+        - extractIndicators returns indicators but none match the requested type.
+    When:
+        - Calling create_and_extract_indicators_batch with indicator_type="Domain".
+    Then:
+        - Returns an empty list of IndicatorInstance objects (no matching type found).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
+    )
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
+    assert instances == []
+    assert isinstance(hr, str)
+    assert hr
+
+
+def test_create_and_extract_indicators_batch_extract_fails(mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) returns None/empty.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list of IndicatorInstance objects (no exception raised) and an HR.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=None)
+
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+    assert instances == []
+    assert isinstance(hr, str)
+    assert hr
+
+
+def test_create_and_extract_indicators_batch_extract_exception(mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) raises an exception.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Raises DemistoException whose message includes both the validation failure
+          prefix and the original underlying error message.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=Exception("connection error"))
+
+    with pytest.raises(
+        DemistoException,
+        match=r"Failed to validate input using extractIndicators: connection error",
+    ):
+        create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+
+def test_create_and_extract_indicators_batch_case_insensitive_type_key(mocker):
+    """
+    Given:
+        - extractIndicators returns the matched type under a key with different casing
+          than the requested indicator_type (e.g. "ip" vs "IP").
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - The matching is case-insensitive and IndicatorInstance objects are returned for
+          every value under that key.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"ip": ["1.1.1.1", "8.8.8.8"]}}}],
+    )
+    instances, _ = create_and_extract_indicators_batch(["1.1.1.1", "8.8.8.8"], "IP")
+
+    assert len(instances) == 2
+    assert all(isinstance(i, IndicatorInstance) for i in instances)
+    assert {i.extracted_value for i in instances} == {"1.1.1.1", "8.8.8.8"}
+
+
+def test_create_and_extract_indicators_batch_empty_extracted_ctx(mocker):
+    """
+    Given:
+        - extractIndicators returns a result whose ExtractedIndicators dict is empty.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string,
+          taking the new "no matched indicators" early-return path without raising.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {}}}],
+    )
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
+
+
+def test_create_and_extract_indicators_batch_missing_extracted_indicators_key(mocker):
+    """
+    Given:
+        - extractIndicators returns a result whose EntryContext does not contain the
+          "ExtractedIndicators" key at all.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Returns an empty list of IndicatorInstance objects and a non-empty HR string
+          (defensive `or {}` fallback path).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {}}],
+    )
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "IP")
+
+    assert instances == []
+    assert isinstance(hr, str)
+    assert "extractIndicators" in hr
+
+
+def test_create_and_extract_indicators_batch_no_matching_type_logs_debug(mocker):
+    """
+    Given:
+        - extractIndicators returns indicators only for a non-requested type.
+    When:
+        - Calling create_and_extract_indicators_batch with a different indicator_type.
+    Then:
+        - The new "No valid indicators returned" debug log is emitted on the early-return
+          path, an empty list is returned, and the HR contains the extracted-indicators
+          table built from extracted_ctx (which is non-empty).
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
+    )
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    instances, hr = create_and_extract_indicators_batch(["1.1.1.1"], "Domain")
+
+    assert instances == []
+    assert isinstance(hr, str)
+    # The HR should still include the table built from extracted_ctx
+    assert "Extracted Indicators" in hr
+    assert "1.1.1.1" in hr
+    # The new early-return debug log should have been emitted
+    debug_messages = [call.args[0] for call in debug_mock.call_args_list if call.args]
+    assert any("No valid indicators returned" in msg for msg in debug_messages)
+
+
+def test_create_and_extract_indicators_batch_ignores_other_types(mocker):
+    """
+    Given:
+        - extractIndicators returns multiple indicator types but we request only one.
+    When:
+        - Calling create_and_extract_indicators_batch.
+    Then:
+        - Only IndicatorInstances for the requested type are returned.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[
+            {
+                "EntryContext": {
+                    "ExtractedIndicators": {
+                        "IP": ["1.1.1.1"],
+                        "URL": ["https://example.com"],
+                        "Domain": ["example.com"],
+                    }
+                }
+            }
+        ],
+    )
+    instances, _ = create_and_extract_indicators_batch(["1.1.1.1", "https://example.com"], "URL")
+
+    assert len(instances) == 1
+    assert isinstance(instances[0], IndicatorInstance)
+    assert instances[0].extracted_value == "https://example.com"
+
+
+def _stub_single_tim_ioc(mocker, module, returned_value: str):
+    """
+    Patch _process_single_tim_ioc to deterministically return one parsed indicator with a known
+    value, score and message. The `returned_value` controls the key used to look up instances
+    in `indicator_mapping` inside process_tim_results (it is `.lower()`-ed before lookup).
+    """
+    parsed_indicators = [{"Value": returned_value, "Brand": "TIM", "Score": 2}]
+    score = 2
+    message = "Found indicator from brands: TIM."
+    mocker.patch.object(
+        module,
+        "_process_single_tim_ioc",
+        return_value=(parsed_indicators, score, returned_value, message),
+    )
+    return parsed_indicators, score, message
+
+
+def test_process_tim_results_handles_case_insensitive_duplicates_in_same_call(module_factory, mocker):
+    """
+    Given:
+        - Two IndicatorInstance objects whose extracted_value differ only in case
+          ("Test1.com" and "test1.com"), built into the same ReputationAggregatedCommand call.
+        - TIM returns a single IOC for the lower-cased value "test1.com".
+    When:
+        - process_tim_results is invoked with that single IOC.
+    Then:
+        - BOTH instances must have tim_context populated.
+        - BOTH must have indicator_score set.
+        - BOTH must have hr_message set (no "Failed to extract from TIM" failure path triggered).
+        - compute_status() afterwards must mark both as Status.SUCCESS (neither falls into the
+          missing-tim_context failure path).
+    """
+    inst_upper = IndicatorInstance(raw_input="Test1.com", extracted_value="Test1.com", enriched=True, created=True)
+    inst_lower = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+
+    module = module_factory(indicator_instances=[inst_upper, inst_lower])
+
+    # Sanity: the mapping must keep BOTH instances under the same lower-cased key.
+    bucket = module.indicator_mapping["test1.com"]
+    assert isinstance(bucket, list)
+    assert bucket == [inst_upper, inst_lower]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="test1.com")
+
+    module.process_tim_results([{"value": "test1.com"}])
+
+    for inst in (inst_upper, inst_lower):
+        assert inst.tim_context == parsed_indicators
+        assert inst.indicator_score == score
+        assert inst.hr_message == message
+
+    # And neither should be flagged as the "TIM failure" once status is computed.
+    for inst in (inst_upper, inst_lower):
+        inst.compute_status()
+        assert inst.final_status == Status.SUCCESS
+        # The "Failed to extract from TIM using findIndicator." message comes from _build_failure_context
+        # when tim_context is missing; ensure it did NOT slip into the context_message.
+        assert "Failed to extract from TIM" not in (inst.context_message or "")
+
+
+def test_process_tim_results_single_value_still_works(module_factory, mocker):
+    """
+    Given:
+        - A single IndicatorInstance with extracted_value="test1.com" (lowercase).
+        - TIM returns one IOC whose canonical value is "Test1.com" (different case).
+    When:
+        - process_tim_results is invoked.
+    Then:
+        - The single instance is enriched (tim_context populated, score and hr_message set).
+        This guards the original regression fix (KeyError → safe case-insensitive lookup).
+    """
+    inst = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+    module = module_factory(indicator_instances=[inst])
+
+    assert module.indicator_mapping["test1.com"] == [inst]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="Test1.com")
+
+    module.process_tim_results([{"value": "Test1.com"}])
+
+    assert inst.tim_context == parsed_indicators
+    assert inst.indicator_score == score
+    assert inst.hr_message == message
+
+
+def test_process_tim_results_three_way_case_variants(module_factory, mocker):
+    """
+    Given:
+        - Three IndicatorInstance objects sharing the same lower-cased value but each with a
+          distinct casing: "TEST1.com", "Test1.com", "test1.com".
+        - TIM returns a single IOC for the value "Test1.com".
+    When:
+        - process_tim_results is invoked.
+    Then:
+        - All three instances receive tim_context, indicator_score and hr_message.
+        - All three keep their original extracted_value casing (no case mutation).
+    """
+    inst_a = IndicatorInstance(raw_input="TEST1.com", extracted_value="TEST1.com", enriched=True, created=True)
+    inst_b = IndicatorInstance(raw_input="Test1.com", extracted_value="Test1.com", enriched=True, created=True)
+    inst_c = IndicatorInstance(raw_input="test1.com", extracted_value="test1.com", enriched=True, created=True)
+
+    module = module_factory(indicator_instances=[inst_a, inst_b, inst_c])
+
+    bucket = module.indicator_mapping["test1.com"]
+    assert bucket == [inst_a, inst_b, inst_c]
+
+    parsed_indicators, score, message = _stub_single_tim_ioc(mocker, module, returned_value="Test1.com")
+
+    module.process_tim_results([{"value": "Test1.com"}])
+
+    for inst in (inst_a, inst_b, inst_c):
+        assert inst.tim_context == parsed_indicators
+        assert inst.indicator_score == score
+        assert inst.hr_message == message
+
+    # Original casings must be preserved per instance.
+    assert inst_a.extracted_value == "TEST1.com"
+    assert inst_b.extracted_value == "Test1.com"
+    assert inst_c.extracted_value == "test1.com"

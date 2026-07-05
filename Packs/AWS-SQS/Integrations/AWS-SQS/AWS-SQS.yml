@@ -7,6 +7,7 @@ sectionorder:
 name: AWS - SQS
 display: AWS - SQS
 category: IT Services
+provider: Amazon
 description: Amazon Web Services Simple Queuing Service (SQS).
 configuration:
 - display: AWS Default Region
@@ -33,6 +34,7 @@ configuration:
   required: false
 - display: Access Key
   name: credentials
+  section: Connect
   type: 9
   displaypassword: Secret Key
   required: false
@@ -94,6 +96,7 @@ configuration:
   section: Collect
   defaultvalue: 7 days
   required: false
+  hidden: true
 - display: Incident type
   name: incidentType
   type: 13
@@ -275,7 +278,7 @@ script:
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Deletes the messages in a queue specified by the QueueURL parameter.
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.10325753
   isfetch: true
 tests:
 - AWS - SQS Test Playbook

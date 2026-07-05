@@ -1,6 +1,6 @@
 {
     "Contents": {
-        "count": 1001,
+        "count": 201,
         "data": {
             "ipaddr": [],
             "name": "panw-bulletproof-ip-list",
@@ -21,11 +21,11 @@
                 "192.168.0.0-192.168.0.255"
             ],
             "Content_Version": 1,
-            "Count": 1001,
+            "Count": 201,
             "Name": "test"
         }
     },
-    "HumanReadable": "### ThreatVault EDL Results for: test\n\n|Content_Version|Count|Name|\n|---|---|---|\n| 1 | 1001 | test |\n",
+    "HumanReadable": "### ThreatVault EDL Results for: test\n\n|Content_Version|Count|Name|\n|---|---|---|\n| 1 | 201 | test |\n",
     "IgnoreAutoExtract": false,
     "IndicatorTimeline": [],
     "Note": false,

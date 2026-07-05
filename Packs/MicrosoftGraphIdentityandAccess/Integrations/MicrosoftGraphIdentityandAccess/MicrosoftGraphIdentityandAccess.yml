@@ -1,4 +1,5 @@
 category: Authentication & Identity Management
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -122,6 +123,28 @@ configuration:
   name: fetch_filter_expression
   type: 0
   advanced: true
+  required: false
+- section: Collect
+  display: Override Microsoft Entra ID Protection risk level
+  name: override_issue_severity
+  type: 8
+  defaultvalue: 'true'
+  additionalinfo: By default, Microsoft Entra ID Protection risk level is used as Cortex XSOAR/XSIAM issue severity. Select this option to override original risk level reported by Microsoft Entra ID Protection.
+  advanced: true
+  required: false
+- section: Collect
+  display: Issue severity
+  name: issue_severity
+  options:
+  - critical
+  - high
+  - medium
+  - low
+  defaultvalue: medium
+  type: 15
+  additionalinfo: "Severity of the Cortex XSOAR/XSIAM issue to be created if Microsoft Entra ID Protection risk level override has been selected. Severity will be the same for all Microsoft Entra ID Protection alerts."
+  advanced: true
+  hidden: false
   required: false
 description: Use the Entra ID Identity And Access integration to manage roles and members (formerly Azure Active Directory Identity And Access).
 display: Entra ID Identity And Access
@@ -262,11 +285,13 @@ script:
     name: msgraph-identity-ip-named-locations-create
     arguments:
     - name: ips
-      description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
+      description: 'A comma-separated list of IP ranges to add to the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).'
+      isArray: true
     - name: is_trusted
-      description: Boolean that indicates if the ip can be trusted.
+      description: Whether the IPs can be trusted.
+      defaultValue: 'false'
     - name: display_name
-      description: The disply name for the named ip location.
+      description: The display name for the IP location.
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
       description: The time when an ip named location was created.
@@ -293,11 +318,12 @@ script:
       description: The id of the named ip location to get from the api.
       required: true
     - name: ips
-      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: 'A comma-separated list of IP ranges to set on the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).'
+      isArray: true
     - name: is_trusted
-      description: Boolean that indicates if the ip can be trusted.
+      description: Whether the IPs can be trusted.
     - name: display_name
-      description: The disply name for the named ip location.
+      description: The display name for the IP location.
   - description: Retrieve all the detected risks.
     name: msgraph-identity-protection-risks-list
     arguments:
@@ -453,6 +479,79 @@ script:
       type: Boolean
     - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
       description: Unique ID of the risky user.
+      type: string
+  - description: Retrieve Microsoft Entra ID sign-in event.
+    name: msgraph-identity-audit-signin-event-get
+    arguments:
+    - name: id
+      description: Unique ID representing the sign-in event.
+      required: true
+    outputs:
+    - contextPath: MSGraphIdentity.AuditLog.signIns.appDisplayName
+      description: App name displayed in the Microsoft Entra admin center.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.appId
+      description: Unique GUID that represents the app ID in the Microsoft Entra ID.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.appliedConditionalAccessPolicies
+      description: List of conditional access policies that the corresponding sign-in activity triggers.
+      type: array
+    - contextPath: MSGraphIdentity.AuditLog.signIns.clientAppUsed
+      description: Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.conditionalAccessStatus
+      description: Reports status of activated conditional access policy. Possible values are success, failure, notApplied, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.correlationId
+      description: The request ID sent from the client when the sign-in is initiated. Used to troubleshoot sign-in activity.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.createdDateTime
+      description: Date and time (UTC) the sign-in was initiated.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.deviceDetail
+      description: Device information from where the sign-in occurred; includes device ID, operating system, and browser.
+      type: object
+    - contextPath: MSGraphIdentity.AuditLog.signIns.id
+      description: Unique ID representing the sign-in activity.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.ipAddress
+      description: IP address of the client used to sign in.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.isInteractive
+      description: Indicates whether a sign-in is interactive.
+      type: boolean
+    - contextPath: MSGraphIdentity.AuditLog.signIns.location
+      description: Provides the city, state, and country code where the sign-in originated.
+      type: object
+    - contextPath: MSGraphIdentity.AuditLog.signIns.resourceDisplayName
+      description: Name of the resource the user signed into.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.riskDetail
+      description: The reason behind a specific state of a risky user, sign-in, or a risk event. The value none means that Microsoft Entra risk detection did not flag the user or the sign-in as a risky event so far.
+      type: array
+    - contextPath: MSGraphIdentity.AuditLog.signIns.riskEventTypes_v2
+      description: The list of risk event types associated with the sign-in.
+      type: array
+    - contextPath: MSGraphIdentity.AuditLog.signIns.riskLevelAggregated
+      description: Aggregated risk level. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.riskLevelDuringSignIn
+      description: Risk level during sign-in. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.riskState
+      description: Reports status of the risky user, sign-in, or a risk event.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.status
+      description: Sign-in status. Includes the error code and description of the error (if a sign-in failure occurs).
+      type: object
+    - contextPath: MSGraphIdentity.AuditLog.signIns.userDisplayName
+      description: Display name of the user that initiated the sign-in.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.userId
+      description: ID of the user that initiated the sign-in.
+      type: string
+    - contextPath: MSGraphIdentity.AuditLog.signIns.userPrincipalName
+      description: User principal name of the user that initiated the sign-in. This value is always in lowercase.
       type: string
   - description: Delete an ip named location by id.
     name: msgraph-identity-protection-risky-user-confirm-compromised
@@ -830,7 +929,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.10120494
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier

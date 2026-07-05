@@ -2,16 +2,18 @@ Use the Entra ID Identity And Access (formerly Azure Active Directory Identity A
 
 ## Configure Entra ID Identity and Access in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Application ID | False |
-| Private Key | False |
-| Certificate Thumbprint | False |
-| Use Azure Managed Identities | False |
-| Azure Managed Identities Client ID | False |
-| Azure AD endpoint | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter** | **Required** | **Default value** |
+| --- | --- | --- |
+| Application ID | False | |
+| Private Key | False | |
+| Certificate Thumbprint | False | |
+| Use Azure Managed Identities | False | |
+| Azure Managed Identities Client ID | False | |
+| Azure AD endpoint | False | |
+| Trust any certificate (not secure) | False | |
+| Use system proxy settings | False | |
+| Override Microsoft Entra ID Protection risk level | True |True |
+| Issue severity | False | medium |
 
 ## Required Permissions
 
@@ -23,6 +25,7 @@ To use this integration, the following permissions are required on the Azure app
 - `Policy.ReadWrite.ConditionalAccess`
 - `Policy.Read.All`
 - `Application.Read.All`
+- `AuditLog.Read.All`
 
 ## Commands
 
@@ -266,7 +269,7 @@ There is no context output for this command.
 ### msgraph-identity-ip-named-locations-create
 
 ***
-Creates an ip named location.
+Create an ip named location.
 
 #### Base Command
 
@@ -274,30 +277,22 @@ Creates an ip named location.
 
 #### Input
 
-| **Argument Name** | **Description**                                        | **Required** |
-|-------------------|--------------------------------------------------------| --- |
-| display_name      | The display name for the ip named location.            | Required |
-| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
-| ips               | The ip ranges for the ip named location.               | Required |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ips | A comma-separated list of IP ranges to add to the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations). | Optional |
+| is_trusted | Whether the IPs can be trusted. Default is false. | Optional |
+| display_name | The display name for the IP location. | Optional |
 
 #### Context Output
 
-| **Path**                                                    | **Type** | **Description** |  
-|-------------------------------------------------------------| --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.time_created     | Date | The time of the ip named location creation. |
-| MSGraph.conditionalAccess.namedIpLocations.time_modified    | Date | The time the ip named location was last modified. |
-| MSGraph.conditionalAccess.namedIpLocations.display_name     | String | The ip named location display name. |
-| MSGraph.conditionalAccess.namedIpLocations.id               | String | The unique identifier of the ip named location. |
-| MSGraph.conditionalAccess.namedIpLocations.is_trusted       | String | The ip named location trust status. |
-| MSGraph.conditionalAccess.namedIpLocations.ip_ranges        | Array | The ip named location ip ranges. |
-
-#### Command Example
-
-```!msgraph-identity-ip-named-locations-create ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True:```
-
-#### Human Readable Output
-
->created Ip named location 'ID': :ipNamedLocation:  
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time when an ip named location was created. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time when an ip named location was updated. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The display name of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | Abollean that taled if the ip named location is a trusted source. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | List of ip ranges for the ip named location. |
 
 ### msgraph-identity-ip-named-locations-get
 
@@ -369,35 +364,27 @@ Updates an ip named location.
 
 `msgraph-identity-ip-named-locations-update`
 
-#### Input
-
-| **Argument Name** | **Description**                                        | **Required** |
-|-------------------|--------------------------------------------------------| --- |
-| ip_id             | The id of the ip named location to delete.             | Required |
-| display_name      | The display name for the ip named location.            | Required |
-| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
-| ips               | The ip ranges for the ip named location.               | Required |
-
-#### Context Output
-
-No context output
-
-#### Command Example
-
-```!msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-9XXXXXXXXXX```
-
-#### Human Readable Output
-
->Successfully updated IP named location '006cc9bf-8391-4ff3-8cff-ee87f06b7b02'
-
-### msgraph-identity-ip-named-locations-list
+### msgraph-identity-ip-named-locations-update
 
 ***
-Lists an ip named locations.
+update an ip named location by id.
 
 #### Base Command
 
-`msgraph-identity-ip-named-locations-list`
+`msgraph-identity-ip-named-locations-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_id | The id of the named ip location to get from the api. | Required |
+| ips | A comma-separated list of IP ranges to set on the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See [the Microsoft Graph documentation](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations). | Optional |
+| is_trusted | Whether the IPs can be trusted. | Optional |
+| display_name | The display name for the IP location. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
 
 #### Input
 
@@ -1112,3 +1099,63 @@ There is no context output for this command.
 #### Human Readable Output
 >
 >Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
+
+### msgraph-identity-audit-signin-event-get
+
+***
+Retrieve Microsoft Entra ID sign-in event.
+
+#### Base Command
+
+`msgraph-identity-audit-signin-event-get`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:AuditLog.Read.All`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+
+### msgraph-identity-audit-signin-event-get
+
+***
+Retrieve Microsoft Entra ID sign-in event.
+
+#### Base Command
+
+`msgraph-identity-audit-signin-event-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Unique ID representing the sign-in event. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.AuditLog.signIns.appDisplayName | string | App name displayed in the Microsoft Entra admin center. |
+| MSGraphIdentity.AuditLog.signIns.appId | string | Unique GUID that represents the app ID in the Microsoft Entra ID. |
+| MSGraphIdentity.AuditLog.signIns.appliedConditionalAccessPolicies | array | List of conditional access policies that the corresponding sign-in activity triggers. |
+| MSGraphIdentity.AuditLog.signIns.clientAppUsed | string | Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients. |
+| MSGraphIdentity.AuditLog.signIns.conditionalAccessStatus | string | Reports status of activated conditional access policy. Possible values are success, failure, notApplied, and unknownFutureValue. |
+| MSGraphIdentity.AuditLog.signIns.correlationId | string | The request ID sent from the client when the sign-in is initiated. Used to troubleshoot sign-in activity. |
+| MSGraphIdentity.AuditLog.signIns.createdDateTime | string | Date and time \(UTC\) the sign-in was initiated. |
+| MSGraphIdentity.AuditLog.signIns.deviceDetail | object | Device information from where the sign-in occurred; includes device ID, operating system, and browser. |
+| MSGraphIdentity.AuditLog.signIns.id | string | Unique ID representing the sign-in activity. |
+| MSGraphIdentity.AuditLog.signIns.ipAddress | string | IP address of the client used to sign in. |
+| MSGraphIdentity.AuditLog.signIns.isInteractive | boolean | Indicates whether a sign-in is interactive. |
+| MSGraphIdentity.AuditLog.signIns.location | object | Provides the city, state, and country code where the sign-in originated. |
+| MSGraphIdentity.AuditLog.signIns.resourceDisplayName | string | Name of the resource the user signed into. |
+| MSGraphIdentity.AuditLog.signIns.riskDetail | array | The reason behind a specific state of a risky user, sign-in, or a risk event. The value none means that Microsoft Entra risk detection did not flag the user or the sign-in as a risky event so far. |
+| MSGraphIdentity.AuditLog.signIns.riskEventTypes_v2 | array | The list of risk event types associated with the sign-in. |
+| MSGraphIdentity.AuditLog.signIns.riskLevelAggregated | string | Aggregated risk level. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection. |
+| MSGraphIdentity.AuditLog.signIns.riskLevelDuringSignIn | string | Risk level during sign-in. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection. |
+| MSGraphIdentity.AuditLog.signIns.riskState | string | Reports status of the risky user, sign-in, or a risk event. |
+| MSGraphIdentity.AuditLog.signIns.status | object | Sign-in status. Includes the error code and description of the error \(if a sign-in failure occurs\). |
+| MSGraphIdentity.AuditLog.signIns.userDisplayName | string | Display name of the user that initiated the sign-in. |
+| MSGraphIdentity.AuditLog.signIns.userId | string | ID of the user that initiated the sign-in. |
+| MSGraphIdentity.AuditLog.signIns.userPrincipalName | string | User principal name of the user that initiated the sign-in. This value is always in lowercase. |

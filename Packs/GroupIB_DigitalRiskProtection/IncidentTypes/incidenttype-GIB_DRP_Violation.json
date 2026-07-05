@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#01A2EC",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB DRP Violation",
+    "layout": "GIB DRP Violation Layout",
+    "locked": false,
+    "name": "GIB DRP Violation",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}

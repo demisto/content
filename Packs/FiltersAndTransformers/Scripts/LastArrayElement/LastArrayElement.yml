@@ -17,6 +17,7 @@ args:
   description: An array for which to return the last value.
   isArray: true
 scripttarget: 0
+isllm: false
 runas: DBotWeakRole
 tests:
 - TestGetArrayElements

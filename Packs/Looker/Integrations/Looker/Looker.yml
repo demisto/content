@@ -1,21 +1,29 @@
 category: Analytics & SIEM
+provider: Google
 commonfields:
   id: Looker
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: API URL and port (e.g., https://example.looker.com:19999)
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API3 Client ID
   name: client_id
-  required: true
+  required: false
+  hidden: true
   type: 0
+  section: Connect
 - display: API3 Client Secret
   name: client_secret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API3 Client ID
   name: credentials_api3_client
   type: 9
@@ -26,10 +34,12 @@ configuration:
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Use the Looker integration to query an explore, save queries as looks, run looks, and fetch look results as incidents.
 display: Looker
 name: Looker
@@ -102,13 +112,13 @@ script:
     - description: Name of the view or explore. Can be found in the explore's URL.
       name: view
       required: true
-    - description: 'List of fields to display. (Field name format: "object_name.field_name")'
+    - description: 'List of fields to display. (Field name format: "object_name.field_name").'
       isArray: true
       name: fields
     - description: 'Filters for the query, passed as a semicolon-separated list with the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
       isArray: true
       name: filters
-    - description: 'List of pivots. (Field name format: "object_name.field_name")'
+    - description: 'List of pivots. (Field name format: "object_name.field_name").'
       isArray: true
       name: pivots
     - description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
@@ -155,7 +165,7 @@ script:
       required: true
     - description: Description of the look.
       name: look_description
-    - description: ID of the space that will contain the look
+    - description: ID of the space that will contain the look.
       name: look_space_id
       required: true
     description: Creates a look from a query.
@@ -176,7 +186,7 @@ script:
     - contextPath: Looker.Look.LastUpdated
       description: The time that the look was last updated.
       type: Date
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10325753
   runonce: false
   script: '-'
   type: python

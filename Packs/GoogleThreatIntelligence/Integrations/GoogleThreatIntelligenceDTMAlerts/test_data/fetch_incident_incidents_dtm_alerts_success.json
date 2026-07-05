@@ -1,0 +1,455 @@
+{
+    "alerts": [
+        {
+            "id": "dummy_00",
+            "monitor_id": "dummy_monitor_00",
+            "monitor_name": "Initial Access Broker",
+            "doc": {
+                "__id": "dummy_doc_00",
+                "__type": "message",
+                "body": "this is body message for dummy alert 00",
+                "description":"This is description for dummay aler_00.",
+                "item_type":"mail",
+                "raw_text":"This is raw text for dummy alert 00.",
+                "title":"alert title for dtm alert 00",
+                "channel": {
+                    "channel_id": "-1001596019399",
+                    "channel_info": {
+                        "description": "Google ADS Team"
+                    },
+                    "channel_url": "https://dummyurl.com",
+                    "invite_url": "https://dummyurl.com",
+                    "messenger": {
+                        "id": "google",
+                        "name": "Google"
+                    },
+                    "name": "googleadsenseteam"
+                },
+                "ingested": "dummy_date_00",
+                "message_id": "dummy_message_id_00",
+                "messenger": {
+                    "id": "google",
+                    "name": "Google"
+                },
+                "sender": {
+                    "identity": {
+                        "first_name": "Officer",
+                        "last_name": "Pnc",
+                        "name": "Officer Pnc"
+                    },
+                    "Google": {
+                        "name": "test",
+                        "user_id": 8353632129
+                    }
+                },
+                "source": "dummy_source",
+                "timestamp": "2025-08-19T14:26:37Z"
+            },
+            "labels": [
+                {
+                    "id": "dummy_label_id_00",
+                    "classifier": "classifier-content",
+                    "version": "2-0-0",
+                    "label": "prose",
+                    "confidence": 100,
+                    "element_path": "body"
+                }
+            ],
+            "topics": [
+                {
+                    "id": "dummy_topic_id_00",
+                    "type": "url",
+                    "value": "https://dummyurl.com",
+                    "extractor": "dtm-ma",
+                    "extractor_version": "1.0.650",
+                    "entity_locations": [
+                        {
+                            "element_path": "channel.channel_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        },
+                        {
+                            "element_path": "channel.invite_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "topic_matches": [
+                {
+                    "topic_id": "dummy_topic_id_00",
+                    "value": "googleadsenseteam",
+                    "term": "google",
+                    "offsets": [
+                        0,
+                        17
+                    ]
+                },
+                {
+                    "topic_id": "doc_type:message",
+                    "value": "message"
+                }
+            ],
+            "doc_matches": [
+                {
+                    "match_path": "body",
+                    "locations": [
+                        {
+                            "offsets": [
+                                23,
+                                27
+                            ],
+                            "value": "root"
+                        },
+                        {
+                            "offsets": [
+                                28,
+                                34
+                            ],
+                            "value": "access"
+                        }
+                    ]
+                }
+            ],
+            "created_at": "2025-08-10T14:30:45.97Z",
+            "updated_at": "2025-08-19T14:34:52.148Z",
+            "labels_url": "https://dummyurl.com",
+            "topics_url": "https://dummyurl.com",
+            "doc_url": "https://dummyurl.com",
+            "status": "closed",
+            "alert_type": "Message",
+            "alert_summary": "alert summary for dtm alert",
+            "title": "alert title for dtm alert",
+            "email_sent_at": "",
+            "indicator_mscore": 0,
+            "severity": "low",
+            "confidence": 0.20239817591320391,
+            "aggregated_under_id": "dummy_aggregated_id",
+            "has_analysis": false,
+            "ai_doc_summary": "This message suggests the potential sale of unauthorized root access to Indonesian government websites (go.id) running cPanel and WHM, potentially bundled with a warranty of sorts, indicating a high-risk compromise.\n",
+            "similarity_score": 1,
+            "severity_reasoning": {
+                "rule": ""
+            },
+            "confidence_reasoning": {
+                "version": "",
+                "response_count": 0,
+                "malicious_count": 0,
+                "benign_count": 0
+            },
+            "ignore": false,
+            "monitor_version": 1
+        },
+        {
+            "id": "dummy_id_01",
+            "monitor_id": "dummy_monitor_id_01",
+            "monitor_name": "Initial Access Broker",
+            "doc": {
+                "__id": "dummy_id_01",
+                "__type": "message",
+                "body": "this is body message for dummy alert 01",
+                "description":"This is description for dummay aler_01.",
+                "item_type":"mail",
+                "raw_text":"This is raw text for dummy alert 01.",
+                "title":"alert title for dtm alert 00",
+                "channel": {
+                    "channel_id": "-1001596019399",
+                    "channel_info": {
+                        "description": "Google ADS Team"
+                    },
+                    "channel_url": "https://dummyurl.com",
+                    "invite_url": "https://dummyurl.com",
+                    "messenger": {
+                        "id": "google",
+                        "name": "Google"
+                    },
+                    "name": "googleadsenseteam"
+                },
+                "ingested": "dummy_date_01",
+                "message_id": "dummy_message_id_01",
+                "messenger": {
+                    "id": "google",
+                    "name": "Google"
+                },
+                "sender": {
+                    "identity": {
+                        "first_name": "Officer",
+                        "last_name": "Pnc",
+                        "name": "Officer Pnc"
+                    },
+                    "Google": {
+                        "name": "test",
+                        "user_id": 8353632129
+                    }
+                },
+                "source": "dummy_source",
+                "timestamp": "2025-08-19T14:26:37Z"
+            },
+            "labels": [
+                {
+                    "id": "dummy_label_id_01",
+                    "classifier": "classifier-content",
+                    "version": "2-0-0",
+                    "label": "prose",
+                    "confidence": 100,
+                    "element_path": "body"
+                },
+                {
+                    "id": "dummy_label_id_02",
+                    "classifier": "classifier-language",
+                    "version": "1-0-0",
+                    "label": "en",
+                    "confidence": 67,
+                    "element_path": "body"
+                }
+            ],
+            "topics": [
+                {
+                    "id": "dummy_topic_id_00",
+                    "type": "url",
+                    "value": "https://dummyurl.com",
+                    "extractor": "dtm-ma",
+                    "extractor_version": "1.0.650",
+                    "entity_locations": [
+                        {
+                            "element_path": "channel.channel_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        },
+                        {
+                            "element_path": "channel.invite_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "topic_matches": [
+                {
+                    "topic_id": "dummy_topic_id_01",
+                    "value": "googleadsenseteam",
+                    "term": "google",
+                    "offsets": [
+                        0,
+                        17
+                    ]
+                },
+                {
+                    "topic_id": "dummy_topic_id_02",
+                    "value": "message"
+                }
+            ],
+            "doc_matches": [
+                {
+                    "match_path": "body",
+                    "locations": [
+                        {
+                            "offsets": [
+                                23,
+                                27
+                            ],
+                            "value": "root"
+                        },
+                        {
+                            "offsets": [
+                                28,
+                                34
+                            ],
+                            "value": "access"
+                        }
+                    ]
+                }
+            ],
+            "created_at": "2025-08-19T14:30:45.97Z",
+            "updated_at": "2025-08-19T14:34:52.148Z",
+            "labels_url": "https://dummyurl.com",
+            "topics_url": "https://dummyurl.com",
+            "doc_url": "https://dummyurl.com",
+            "status": "closed",
+            "alert_type": "Message",
+            "alert_summary": "alert summary for dtm alert",
+            "title": "alert title for dtm alert",
+            "email_sent_at": "",
+            "indicator_mscore": 0,
+            "severity": "medium",
+            "confidence": 0.20239817591320391,
+            "aggregated_under_id": "dummy_aggregated_id",
+            "has_analysis": false,
+            "ai_doc_summary": "This message suggests the potential sale of unauthorized root cPanel and WHM, potentially bundled with a warranty of sorts, indicating a high-risk compromise.\n",
+            "similarity_score": 1,
+            "severity_reasoning": {
+                "rule": ""
+            },
+            "confidence_reasoning": {
+                "version": "",
+                "response_count": 0,
+                "malicious_count": 0,
+                "benign_count": 0
+            },
+            "ignore": false,
+            "monitor_version": 1
+        },
+        {
+            "id": "dummyid_0001",
+            "monitor_id": "dummy_monitor_id_01",
+            "monitor_name": "Initial Access Broker",
+            "doc": {
+                "__id": "dummy_doc_00",
+                "__type": "message",
+                "body": "dummy body with multiple lines\ndummy body with multiple lines\ndummy body with multiple lines",
+                "description":"This is description for dummay aler_0001.",
+                "raw_text":"This is raw text for dummy alert 0001.",
+                "title":"alert title for dtm alert 0001",
+                "item_type":"mail",
+                "channel": {
+                    "channel_id": "-1001596019399",
+                    "channel_info": {
+                        "description": "Google ADS Team"
+                    },
+                    "channel_url": "https://dummyurl.com",
+                    "invite_url": "https://dummyurl.com",
+                    "messenger": {
+                        "id": "google",
+                        "name": "google"
+                    },
+                    "name": "dummy_channel_name_00"
+                },
+                "ingested": "dummy_date_00",
+                "message_id": "dummy_id_00",
+                "messenger": {
+                    "id": "google",
+                    "name": "google"
+                },
+                "sender": {
+                    "identity": {
+                        "first_name": "Officer",
+                        "last_name": "Pnc",
+                        "name": "Officer Pnc"
+                    },
+                    "Google": {
+                        "name": "test",
+                        "user_id": 8353632129
+                    }
+                },
+                "source": "dummy_source_00",
+                "timestamp": "dummy timestamp"
+            },
+            "labels": [
+                {
+                    "id": "dummy_label_id_00",
+                    "classifier": "classifier-content",
+                    "version": "2-0-0",
+                    "label": "prose",
+                    "confidence": 100,
+                    "element_path": "body"
+                },
+                {
+                    "id": "dummy_label_id_01",
+                    "classifier": "classifier-language",
+                    "version": "1-0-0",
+                    "label": "en",
+                    "confidence": 67,
+                    "element_path": "body"
+                }
+            ],
+            "topics": [
+                {
+                    "id": "dummy_topic_id_00",
+                    "type": "url",
+                    "value": "https://dummyurl.com",
+                    "extractor": "dtm-ma",
+                    "extractor_version": "1.0.650",
+                    "entity_locations": [
+                        {
+                            "element_path": "channel.channel_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        },
+                        {
+                            "element_path": "channel.invite_url",
+                            "offsets": [
+                                0,
+                                30
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "topic_matches": [
+                {
+                    "topic_id": "dummy_topic_id_00",
+                    "value": "googleadsenseteam",
+                    "term": "google",
+                    "offsets": [
+                        0,
+                        17
+                    ]
+                },
+                {
+                    "topic_id": "doc_type:message",
+                    "value": "message"
+                }
+            ],
+            "doc_matches": [
+                {
+                    "match_path": "body",
+                    "locations": [
+                        {
+                            "offsets": [
+                                23,
+                                27
+                            ],
+                            "value": "root"
+                        },
+                        {
+                            "offsets": [
+                                28,
+                                34
+                            ],
+                            "value": "access"
+                        }
+                    ]
+                }
+            ],
+            "created_at": "2025-08-19T14:30:45.97Z",
+            "updated_at": "2025-08-19T14:34:52.148Z",
+            "labels_url": "https://dummyurl.com",
+            "topics_url": "https://dummyurl.com",
+            "doc_url": "https://dummyurl.com",
+            "status": "closed",
+            "alert_type": "Message",
+            "alert_summary": "alert summary for dtm alert 02",
+            "title": "alert title for dtm alert 02",
+            "email_sent_at": "",
+            "indicator_mscore": 0,
+            "severity": "high",
+            "confidence": 0.20239817591320391,
+            "aggregated_under_id": "dummy_aggregated_id",
+            "has_analysis": false,
+            "ai_doc_summary": "This message suggests the potential sale of unauthorized root access to Indonesian governmen, potentially bundled with a warranty of sorts, indicating a high-risk compromise.\n",
+            "similarity_score": 1,
+            "severity_reasoning": {
+                "rule": ""
+            },
+            "confidence_reasoning": {
+                "version": "",
+                "response_count": 0,
+                "malicious_count": 0,
+                "benign_count": 0
+            },
+            "ignore": false,
+            "monitor_version": 1
+        }
+    ]
+}

@@ -4,7 +4,8 @@ commonfields:
 name: Packetsled
 display: Packetsled
 category: Network Security
-description: Packetsled Network Security API commands
+provider: Mixmode
+description: Packetsled Network Security API commands.
 configuration:
 - display: The protocol and domain of the packetsled instance.
   name: ApiServer
@@ -64,43 +65,43 @@ script:
     - name: stop_time
       description: Stop time to query for incidents.
     - name: probe
-      description: The probe number
+      description: The probe number.
     - name: envid
-      description: The environment id
+      description: The environment id.
     outputs:
     - contextPath: Packetsled.Incidents
-      description: The list of incidents
+      description: The list of incidents.
     - contextPath: Packetsled.Incidents.id
-      description: The id of the incident
+      description: The id of the incident.
     - contextPath: Packetsled.Incidents.entity
-      description: The entity of the incident
+      description: The entity of the incident.
     - contextPath: Packetsled.Incidents.log
-      description: The log types for the incident
+      description: The log types for the incident.
     - contextPath: Packetsled.Incidents.start_time
-      description: The beginning of the time range containing the incident
+      description: The beginning of the time range containing the incident.
     - contextPath: Packetsled.Incidents.stop_time
-      description: The end of the time range containing the incident
+      description: The end of the time range containing the incident.
     - contextPath: Packetsled.Incidents.envid
-      description: The environment id of the incident
+      description: The environment id of the incident.
     - contextPath: Packetsled.Incidents.probe
-      description: The probe number of the incident
+      description: The probe number of the incident.
     description: Query for incidents by time range and severity
   - name: packetsled-sensors
     arguments: []
     outputs:
     - contextPath: Packetsled.Sensors
-      description: The list of sensors
+      description: The list of sensors.
     - contextPath: Packetsled.Sensors.label
-      description: The label of the sensor
+      description: The label of the sensor.
     - contextPath: Packetsled.Sensors.envid
-      description: The environment id of the sensor
+      description: The environment id of the sensor.
     - contextPath: Packetsled.Sensors.probe
-      description: The probe number of the sensor
+      description: The probe number of the sensor.
     description: List the sensors attached to the packetsled platform.
   - name: packetsled-get-flows
     arguments:
     - name: entity
-      description: The ip of the entity to query flows for
+      description: The ip of the entity to query flows for.
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -168,7 +169,7 @@ script:
       - mysql
       - irc
       - sip
-      description: The protocol
+      description: The protocol.
     - name: family
       auto: PREDEFINED
       predefined:
@@ -189,7 +190,7 @@ script:
       - database
       - chat
       - voice
-      description: The protocol family
+      description: The protocol family.
     - name: log
       auto: PREDEFINED
       predefined:
@@ -255,36 +256,36 @@ script:
       - udp
       - weird
       - x509
-      description: The log name
+      description: The log name.
     - name: geo
-      description: The 2-digit geo code,' local', or 'private'
+      description: The 2-digit geo code,' local', or 'private'.
     - name: port
-      description: The port number
+      description: The port number.
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
       description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: envid
-      description: The environment id of the probe to search
+      description: The environment id of the probe to search.
     - name: probe
-      description: The probe number of the probe to search
+      description: The probe number of the probe to search.
     - name: limit
-      description: Limit the number of search results
+      description: Limit the number of search results.
       defaultValue: "5000"
     outputs:
     - contextPath: Packetsled.Flows
-      description: Flow metadata
+      description: Flow metadata.
     - contextPath: Packetsled.Flows._id
-      description: The unique id of the flow
+      description: The unique id of the flow.
     - contextPath: Packetsled.Flows.src_ip
-      description: The originator of the flow
+      description: The originator of the flow.
     - contextPath: Packetsled.Flows.dest_ip
-      description: The respondant of the flow
+      description: The respondant of the flow.
     description: Query packetsled sensor metadata
   - name: packetsled-get-files
     arguments:
     - name: entity
-      description: The ip of the entity to query flows for
+      description: The ip of the entity to query flows for.
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -352,7 +353,7 @@ script:
       - mysql
       - irc
       - sip
-      description: The protocol
+      description: The protocol.
     - name: family
       auto: PREDEFINED
       predefined:
@@ -373,7 +374,7 @@ script:
       - database
       - chat
       - voice
-      description: The protocol family
+      description: The protocol family.
     - name: log
       auto: PREDEFINED
       predefined:
@@ -439,27 +440,27 @@ script:
       - udp
       - weird
       - x509
-      description: The log name
+      description: The log name.
     - name: geo
-      description: The 2-digit geo code,' local', or 'private'
+      description: The 2-digit geo code,' local', or 'private'.
     - name: port
-      description: The port number
+      description: The port number.
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
       description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: envid
-      description: The environment id of the probe to search
+      description: The environment id of the probe to search.
     - name: probe
-      description: The probe number of the probe to search
+      description: The probe number of the probe to search.
     - name: limit
-      description: Limit the number of search results
+      description: Limit the number of search results.
       defaultValue: "5000"
     description: Query packetsled extracted files
   - name: packetsled-get-pcaps
     arguments:
     - name: entity
-      description: The ip of the entity to query flows for
+      description: The ip of the entity to query flows for.
     - name: protocol
       auto: PREDEFINED
       predefined:
@@ -527,21 +528,21 @@ script:
       - mysql
       - irc
       - sip
-      description: The protocol
+      description: The protocol.
     - name: port
-      description: The port number
+      description: The port number.
     - name: start_time
       description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: stop_time
       description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
     - name: limitbytes
-      description: The upper bound on the number of bytes to return from the query
+      description: The upper bound on the number of bytes to return from the query.
     - name: limitpkts
-      description: The upper bound on the number of packets to process from the query
+      description: The upper bound on the number of packets to process from the query.
     - name: envid
-      description: The environment id of the probe to search
+      description: The environment id of the probe to search.
     - name: probe
-      description: The probe number of the probe to search
+      description: The probe number of the probe to search.
     description: Query packetsled for full packet
   - name: packetsled-get-events
     arguments:
@@ -549,18 +550,18 @@ script:
       required: true
       description: The uid to retrieve logs for. Use the _id attribute from a flow for this parameter value.
     - name: envid
-      description: The environment id of the probe to search
+      description: The environment id of the probe to search.
     - name: probe
-      description: The probe number of the probe to search
+      description: The probe number of the probe to search.
     outputs:
     - contextPath: Packetsled.Events
-      description: Retrieve all logs for a single flow
+      description: Retrieve all logs for a single flow.
     - contextPath: Packetsled.Events._id
-      description: The unique id of the Event
+      description: The unique id of the Event.
     - contextPath: Packetsled.Events.src_ip
-      description: The originator of the Events
+      description: The originator of the Events.
     - contextPath: Packetsled.Events.dest_ip
-      description: The respondant of the Events
+      description: The respondant of the Events.
     description: Get all of the events for a given uid
   isfetch: true
   dockerimage: demisto/python3:3.12.8.3296088

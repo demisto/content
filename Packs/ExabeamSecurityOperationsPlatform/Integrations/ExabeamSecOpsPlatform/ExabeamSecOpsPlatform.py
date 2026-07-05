@@ -290,23 +290,24 @@ def process_string(input_str: str) -> str:
     Returns:
         str: The processed string where each part is transformed using the transform_string function.
     """
-    logical_operators = ["AND", "OR", "NOT", "TO"]
+    # Use word boundaries to match operators only as standalone words, not as substrings
+    pattern = r"\b(AND|OR|NOT|TO)\b"
+    logical_operators = {"AND", "OR", "NOT", "TO"}
+
+    # Split the input string by logical operators while keeping the operators
+    parts = re.split(pattern, input_str)
+
     transformed_parts = []
-    start_index = 0
-
-    for end_index in range(len(input_str)):
-        if any(op in input_str[start_index:end_index] for op in logical_operators):
-            part = input_str[start_index:end_index].strip()
-            operator = next(op for op in logical_operators if op in part)
-            part = part.replace(operator, "").strip()
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        # Check if the part is a logical operator using set membership (O(1) lookup)
+        if part in logical_operators:
+            transformed_parts.append(part)
+        else:
+            # Transform non-operator parts
             transformed_parts.append(transform_string(part))
-            transformed_parts.append(operator)
-            start_index = end_index + 1
-
-    if start_index < len(input_str):
-        remaining_part = input_str[start_index:].strip()
-        if remaining_part:
-            transformed_parts.append(transform_string(remaining_part))
 
     return " ".join(transformed_parts)
 
@@ -1110,6 +1111,115 @@ def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no co
         raise DemistoException("Access Token Generation Failure.")
 
 
+def get_threat_summary(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-get-threat-summary`; gets Exabeam Threat Summary for a given ID
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing a human-readable threat summary.
+    """
+    data = json.dumps({"alertId": args.get("alert_id")})
+    full_url = f"{client._base_url}/threat-center/v1/alerts/threat-explainer/prompt"
+    response = client.request(method="POST", full_url=full_url, data=data, timeout=60)
+
+    data_response = response.get("message")
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Alert.Summary", outputs_key_field="", outputs=data_response, readable_output=data_response
+    )
+
+
+def update_case_details(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-update-case-details`; Update details for a specific case, as identified by case ID.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing human-readable case details.
+    """
+    caseId = args.pop("case_id")
+    newargs = {
+        "alertDesciption": args.get("alert_desciption"),
+        "alertName": args.get("alert_name"),
+        "priority": args.get("priority"),
+        "stage": args.get("stage"),
+        "closedReason": args.get("closed_reason"),
+        "supportingReason": args.get("supporting_reason"),
+        "assignee": args.get("assignee"),
+        "queue": args.get("queue"),
+    }
+
+    if newargs["stage"] == "CLOSED" and newargs["closedReason"] is None:
+        demisto.error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+        return_error("A 'Closed Reason' must be provided when setting 'Stage' to 'CLOSED'")
+
+    request_data = json.dumps(newargs)
+    full_url = f"{client._base_url}/threat-center/v2/cases/{caseId}"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Event",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case ID: " + caseId, t=response),
+    )
+
+
+def list_case_notes(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-list-case-notes`; Retrieve a list of notes associated with the specified caseId.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing case notes
+    """
+    caseId = args.pop("case_id")
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="GET", full_url=full_url)
+    keys_to_remove = ["case_id", "is_deleted", "is_edited", "last_modified_timestamp", "text_rt"]
+    filtered_response = []
+
+    for i in response:
+        filtered_response.append({key: value for key, value in i.items() if key not in keys_to_remove})
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=filtered_response),
+    )
+
+
+def create_case_note(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-create-case-note`; Add a new note to the specified case.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results showing the new case note
+    """
+    caseId = args.pop("case_id")
+    request_data = json.dumps(args)
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=response[0]),
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -1168,6 +1278,14 @@ def main() -> None:  # pragma: no cover
             return_results(table_record_list_command(client, args))
         elif command == "exabeam-platform-table-record-create":
             return_results(table_record_create_command(args, client))
+        elif command == "exabeam-get-threat-summary":
+            return_results(get_threat_summary(client, args))
+        elif command == "exabeam-update-case-details":
+            return_results(update_case_details(client, args))
+        elif command == "exabeam-platform-list-case-notes":
+            return_results(list_case_notes(client, args))
+        elif command == "exabeam-platform-create-case-note":
+            return_results(create_case_note(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

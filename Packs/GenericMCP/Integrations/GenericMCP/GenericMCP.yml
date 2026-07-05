@@ -1,0 +1,132 @@
+category: Utilities
+provider: Open Source
+sectionorder:
+- Connect
+commonfields:
+  id: Generic MCP
+  version: -1
+configuration:
+  - name: base_url
+    section: Connect
+    display: Server URL
+    type: 0
+    required: true
+  - name: auth_type
+    section: Connect
+    display: Authentication Type
+    type: 15
+    required: true
+    options:
+      - Basic
+      - Token
+      - Bearer
+      - Api-Key
+      - RawToken
+      - OAuth 2.0 Dynamic Client Registration
+      - OAuth 2.0 Authorization Code
+      - OAuth 2.0 Client Credentials
+      - No Authorization
+    additionalinfo: Select the authentication method.
+  - name: oauth_credentials
+    type: 9
+    display: Client ID
+    displaypassword: Client Secret
+    section: Connect
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization code
+    hiddenusername: true
+    section: Connect
+  - name: redirect_uri
+    section: Connect
+    defaultvalue: https://oproxy.demisto.ninja/authcode
+    display: Redirect URI
+    type: 0
+    advanced: true
+  - name: custom_headers
+    section: Connect
+    display: Custom headers 
+    additionalinfo: |-
+      Add custom headers to be sent with each API request.
+      Enter each header on a new line in the format: HeaderName: HeaderValue.
+    type: 12
+    advanced: true
+  - name: authorization_endpoint
+    section: Connect
+    display: Authorization Endpoint
+    type: 0
+    advanced: true
+    additionalinfo: |
+      The URL for the OAuth 2.0 authorization endpoint. If not provided, the default will be the origin of the `Server URL` followed by `/oauth2/authorize`.
+      For example, if `Server URL` is `https://example.com/mcp`, the default `Authorization Endpoint` will be `https://example.com/oauth2/authorize`.
+  - name: token_endpoint
+    section: Connect
+    display: Token Endpoint
+    type: 0
+    advanced: true
+    additionalinfo: |
+      The URL for the OAuth 2.0 token endpoint. If not provided, the default will be the origin of the `Server URL` followed by `/oauth2/token`.
+      For example, if `Server URL` is `https://example.com/mcp`, the default `Token Endpoint` will be `https://example.com/oauth2/token`.
+  - name: scope
+    section: Connect
+    display: Scope
+    type: 0
+    advanced: true
+    additionalinfo: Space-separated permission identifiers.
+  - name: token
+    type: 9
+    displaypassword: API Token / API Key
+    hiddenusername: true
+    required: false
+    additionalinfo: API Token or API Key to access the service REST API.
+    section: Connect
+  - name: credentials
+    display: Username
+    type: 9
+    required: false
+    section: Connect
+    displaypassword: Password
+    additionalinfo: Username & Password to use for basic authentication.
+  - name: server_name
+    section: Connect
+    display: Server Name
+    type: 0
+    additionalinfo: The name to use for the server in tool names. If not provided, the default name returned by the server will be used.
+    advanced: true
+  - name: insecure
+    section: Connect
+    display: Trust any certificate (not secure)
+    type: 8
+    required: false
+    advanced: true
+description: Use this integration to connect to an MCP server and automatically discover its available tools.
+display: Generic MCP
+name: Generic MCP
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: Generate an authentication login URL.
+    name: generic-mcp-generate-login-url
+  - description: Test the authentication configuration with the MCP server.
+    name: generic-mcp-auth-test
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.6978288
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)

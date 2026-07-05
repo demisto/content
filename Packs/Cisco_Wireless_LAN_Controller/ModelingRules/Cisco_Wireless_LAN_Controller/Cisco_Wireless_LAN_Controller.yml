@@ -4,3 +4,5 @@ name: Cisco WLC Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

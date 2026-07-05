@@ -184,7 +184,7 @@ def test_module(client: CymruClient) -> str:
     message: str = ""
     try:
         result = client.lookup("8.8.8.8")
-        if result and result.get("owner") == "GOOGLE, US":
+        if result and result.get("owner") == "GOOGLE - Google LLC, US":
             demisto.info("ok")
             message = "ok"
     except DemistoException as e:

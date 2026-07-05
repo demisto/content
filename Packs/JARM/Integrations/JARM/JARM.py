@@ -76,6 +76,12 @@ def jarm_fingerprint_command(client: Client, args: dict[str, Any]) -> CommandRes
                 }
             }
 
+        def to_minimum_context(self) -> dict[str, Any]:
+            return {
+                "Indicator": self._jarm,
+                "Type": "jarm",
+            }
+
     host = args.get("host")
     if not host:
         raise ValueError("Host name (IP or domain) not specified")

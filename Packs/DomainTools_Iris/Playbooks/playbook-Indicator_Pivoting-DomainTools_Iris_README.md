@@ -1,21 +1,27 @@
 Gathers data through pivots that share a common attribute with a domain. For instance, pivoting on an IP address will give you back all domains related to that IP address.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * DomainTools Iris
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * domaintoolsiris-pivot
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
@@ -35,6 +41,7 @@ This playbook does not use any scripts.
 | PivotThreshold | The threshold for matches less than to pivot on.  | 500 | - | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -127,5 +134,6 @@ This playbook does not use any scripts.
 | DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode | The tracking code of Google Analytics. | Number |
 
 ## Playbook Image
+
 ---
 ![Indicator_Pivoting-DomainTools_Iris](../doc_files/Indicator_Pivoting-DomainTools_Iris.png)

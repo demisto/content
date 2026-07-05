@@ -68,7 +68,8 @@ filter
     xdm.intermediate.location.city = json_extract_scalar(auth_device, "$.location.city"),
     xdm.intermediate.location.region = json_extract_scalar(auth_device, "$.location.state"),
     xdm.auth.mfa.method = factor,
-    xdm.auth.service = "IDP";
+    xdm.auth.service = "IDP",
+    xdm.network.ip_protocol=XDM_CONST.IP_PROTOCOL_TCP;
 filter
     eventtype = "administrator"
 | alter

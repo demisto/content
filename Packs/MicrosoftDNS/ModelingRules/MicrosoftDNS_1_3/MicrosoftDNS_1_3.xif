@@ -50,7 +50,7 @@ filter provider_name = "Microsoft-Windows-DNSServer" OR provider_name = "Microso
     xdm.source.user.domain = json_extract_scalar(user, "$.domain"),
     xdm.source.user.username = json_extract_scalar(user, "$.name"),
     xdm.source.user.user_type = if(userType ~= "user|User",XDM_CONST.USER_TYPE_REGULAR, userType ~= "service|Service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT , userType ~= "computer|Computer",XDM_CONST.USER_TYPE_MACHINE_ACCOUNT , to_string(userType)),
-	xdm.event.log_level = if(log_level ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "err", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode,log_level))),
+	xdm.event.log_level = if(log_level ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "err", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(to_string(opcode),log_level))),
     xdm.event.type = channel,
     xdm.event.description = message,
     xdm.source.host.hostname = coalesce(host_name, computer_name, dns_host),

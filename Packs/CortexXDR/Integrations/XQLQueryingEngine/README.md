@@ -128,6 +128,12 @@ There are no input arguments for this command.
 | PaloAltoNetworksXQL.Quota.license_quota | Number | Amount of daily quota allocated to your tenant based on your license type and size. |
 | PaloAltoNetworksXQL.Quota.additional_purchased_quota | Number | Amount of query quota purchased. |
 | PaloAltoNetworksXQL.Quota.used_quota | Number | Amount of query quota used over the past 24 hours. |
+| PaloAltoNetworksXQL.Quota.eval_quota | Number | Amount of evaluation query quota. |
+| PaloAltoNetworksXQL.Quota.total_daily_running_queries | Number | Total number of daily running queries. |
+| PaloAltoNetworksXQL.Quota.total_daily_concurrent_rejected_queries | Number | Total number of daily concurrent rejected queries. |
+| PaloAltoNetworksXQL.Quota.current_concurrent_active_queries | Unknown | Currently active concurrent queries with their XQL statements and durations. |
+| PaloAltoNetworksXQL.Quota.current_concurrent_active_queries_count | Number | Amount of currently active concurrent queries. |
+| PaloAltoNetworksXQL.Quota.max_daily_concurrent_active_query_count | Number | Maximum number of daily concurrent active queries. |
 
 #### Command Example
 
@@ -142,7 +148,17 @@ There are no input arguments for this command.
             "additional_purchased_quota": 0,
             "eval_quota": 0,
             "license_quota": 1000,
-            "used_quota": 0.00299
+            "used_quota": 0.00299,
+            "total_daily_running_queries": 4,
+            "total_daily_concurrent_rejected_queries": 8,
+            "current_concurrent_active_queries": {
+                "debee6b0c41f47_911_inv": {
+                    "xql": "config timeframe = 1mo | dataset=xdr_data | limit 1000000",
+                    "duration": 61
+                }
+            },
+            "current_concurrent_active_queries_count": 1,
+            "max_daily_concurrent_active_query_count": 4
         }
     }
 }
@@ -965,3 +981,80 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-07-31T01:47:07.000Z | PANW |  |  | ISRAEL | LOCAL_IP | REMOTE_IP | 80 |  |  |  |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  | IP |  |  | 2021-07-31T01:48:03.000Z |
+>
+### xdr-xql-library-list
+
+***
+Gets a list of XQL queries from the library.
+
+#### Base Command
+
+`xdr-xql-library-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| extra_data | Whether to return an extended view. Possible values are: true, false. | Optional |
+| xql_query_name | A comma-separated list of XQL query names to search for. If searching by xql_query_name, you cannot search by xql_query_tag in the same call. | Optional |
+| xql_query_tag | A comma-separated list of XQL tag names to search for. If searching by xql_query_tag, you cannot search by xql_query_name in the same call. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXQL.Library.id | Number | The unique identifier of the saved query. |
+| PaloAltoNetworksXQL.Library.name | String | The name of the XQL query. |
+| PaloAltoNetworksXQL.Library.description | String | A description of what the query searches for. |
+| PaloAltoNetworksXQL.Library.query_text | String | The actual XQL query syntax. |
+| PaloAltoNetworksXQL.Library.created_at | Date | The date and time when the query was created \(in Unix Epoch format\). |
+| PaloAltoNetworksXQL.Library.modified_at | Date | The date and time when the query was last modified \(in Unix Epoch format\). |
+| PaloAltoNetworksXQL.Library.created_by | String | The email address of the user who created the query. |
+| PaloAltoNetworksXQL.Library.modified_by | String | The email address of the user who last modified the query. |
+| PaloAltoNetworksXQL.Library.created_by_pretty | String | The display name that created the query. |
+| PaloAltoNetworksXQL.Library.modified_by_pretty | String | The display name that last modified the query. |
+| PaloAltoNetworksXQL.Library.is_private | Boolean | Whether the query is private to the user or shared. |
+| PaloAltoNetworksXQL.Library.content_global_id | String | The global content identifier. |
+| PaloAltoNetworksXQL.Library.labels | String | A list of labels associated with the query. |
+
+### xdr-xql-library-create
+
+***
+Creates or updates XQL query in the library.
+
+#### Base Command
+
+`xdr-xql-library-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| override_existing | Whether to override existing queries. Possible values are: true, false. | Optional |
+| xql_query | The new XQL query. For example: "dataset = xdr_data \|limit 1". | Optional |
+| xql_query_name | The name of the new XQL query. The XQL query name should be unique. | Optional |
+| xql_query_tag | A new XQL query tags. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### xdr-xql-library-delete
+
+***
+Deletes XQL queries from the library.
+
+#### Base Command
+
+`xdr-xql-library-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| xql_query_name | A comma-separated list of XQL query names to delete. When using this argument, you cannot delete queries by xql_query_tag in the same request. | Optional |
+| xql_query_tag | A comma-separated list of XQL query tags. When using this argument, you cannot delete queries by xql_query_name in the same request. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

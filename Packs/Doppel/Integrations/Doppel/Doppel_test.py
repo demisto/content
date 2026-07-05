@@ -20,6 +20,7 @@ from Doppel import (
     _get_last_fetch_datetime,
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
+    Client,
 )
 
 from CommonServerPython import *
@@ -767,16 +768,22 @@ def test_doppel_create_abuse_alert_command_failure(mocker):
 
 def test_get_modified_remote_data_command(mocker):
     """
-    Test that `get_modified_remote_data_command` raises NotImplementedError.
+    Test that `get_modified_remote_data_command` returns modified incident IDs.
     """
+    mock_client = MagicMock()
+    mock_alerts = [
+        {"id": "alert-001", "name": "Alert 1"},
+        {"id": "alert-002", "name": "Alert 2"},
+    ]
+    mock_client.get_alerts.return_value = {"alerts": mock_alerts}
 
-    # Mock the required arguments
-    mock_client = mocker.Mock()
-    args = {}
+    args = {"lastUpdate": "2025-02-24T14:30:00Z"}
 
-    # Assert that the function raises NotImplementedError
-    with pytest.raises(NotImplementedError, match='The command "get-modified-remote-data" is not implemented'):
-        get_modified_remote_data_command(mock_client, args)
+    mocker.patch.object(demisto, "debug")
+
+    result = get_modified_remote_data_command(mock_client, args)
+
+    assert result.modified_incident_ids == ["alert-001", "alert-002"]
 
 
 def test_doppel_update_alert_both_alert_id_and_entity(mocker):
@@ -975,3 +982,124 @@ def test_get_remote_updated_incident_data_with_entry():
 
     # Assertions
     assert updated_alert or updated_alert is None, "Updated alert should be either valid or None"
+
+
+def test_client_initialization_with_proxy(mocker):
+    """Test Client initialization with proxy enabled."""
+    base_url = "https://api.doppel.com/v1"
+    api_key = "test-api-key"
+
+    # Mock BaseClient.__init__ to verify proxy is passed correctly
+    mock_base_init = mocker.patch("Doppel.BaseClient.__init__", return_value=None)
+
+    # Create client with proxy enabled
+    Client(base_url=base_url, api_key=api_key, proxy=True, verify=True)
+
+    # Verify BaseClient was initialized with proxy=True
+    mock_base_init.assert_called_once()
+    call_kwargs = mock_base_init.call_args[1]
+    assert call_kwargs["proxy"]
+    assert call_kwargs["verify"]
+
+
+def test_client_initialization_without_proxy(mocker):
+    """Test Client initialization with proxy disabled."""
+    base_url = "https://api.doppel.com/v1"
+    api_key = "test-api-key"
+
+    # Mock BaseClient.__init__
+    mock_base_init = mocker.patch("Doppel.BaseClient.__init__", return_value=None)
+
+    # Create client with proxy disabled
+    Client(base_url=base_url, api_key=api_key, proxy=False, verify=True)
+
+    # Verify BaseClient was initialized with proxy=False
+    mock_base_init.assert_called_once()
+    call_kwargs = mock_base_init.call_args[1]
+    assert call_kwargs["proxy"] is False
+
+
+def test_client_initialization_proxy_default_none(mocker):
+    """Test Client initialization with proxy parameter not specified (defaults to None)."""
+    base_url = "https://api.doppel.com/v1"
+    api_key = "test-api-key"
+
+    # Mock BaseClient.__init__
+    mock_base_init = mocker.patch("Doppel.BaseClient.__init__", return_value=None)
+
+    # Create client without specifying proxy
+    Client(base_url=base_url, api_key=api_key, verify=True)
+
+    # Verify BaseClient was initialized with proxy=None
+    mock_base_init.assert_called_once()
+    call_kwargs = mock_base_init.call_args[1]
+    assert call_kwargs["proxy"] is None
+
+
+def test_main_function_with_proxy_enabled(mocker):
+    """Test main function when proxy is enabled in params."""
+    # Mock demisto functions
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.doppel.com",
+            "credentials": {"password": "test-api-key"},
+            "proxy": True,
+            "insecure": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+
+    # Mock Client initialization
+    mock_client_init = mocker.patch("Doppel.Client")
+
+    # Mock test_module to return 'ok'
+    mocker.patch("Doppel.test_module", return_value="ok")
+    mocker.patch("Doppel.return_results")
+
+    # Call main
+    from Doppel import main
+
+    main()
+
+    # Verify Client was called with proxy=True
+    mock_client_init.assert_called_once()
+    call_kwargs = mock_client_init.call_args[1]
+    assert call_kwargs["proxy"] is True
+    assert call_kwargs["verify"] is True
+
+
+def test_main_function_with_proxy_disabled(mocker):
+    """Test main function when proxy is disabled in params."""
+    # Mock demisto functions
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.doppel.com",
+            "credentials": {"password": "test-api-key"},
+            "proxy": False,
+            "insecure": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+
+    # Mock Client initialization
+    mock_client_init = mocker.patch("Doppel.Client")
+
+    # Mock test_module to return 'ok'
+    mocker.patch("Doppel.test_module", return_value="ok")
+    mocker.patch("Doppel.return_results")
+
+    # Call main
+    from Doppel import main
+
+    main()
+
+    # Verify Client was called with proxy=False
+    mock_client_init.assert_called_once()
+    call_kwargs = mock_client_init.call_args[1]
+    assert call_kwargs["proxy"] is False

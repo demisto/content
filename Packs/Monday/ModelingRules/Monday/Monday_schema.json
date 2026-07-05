@@ -1,0 +1,40 @@
+{
+    "monday_monday_raw": {
+      "activity_metadata": {
+        "type": "string",
+        "is_array": false
+      },
+      "data": {
+        "type": "string",
+        "is_array": false
+      },
+      "event": {
+        "type": "string",
+        "is_array": false
+      },
+      "ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "user_agent": {
+        "type": "string",
+        "is_array": false
+      },
+      "os_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "os_version": {
+        "type": "string",
+        "is_array": false
+      },
+      "user_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "event_type": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

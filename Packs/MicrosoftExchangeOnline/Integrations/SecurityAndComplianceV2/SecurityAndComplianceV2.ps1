@@ -280,12 +280,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
-    [string]$app_secret
     [string]$tenant_id
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
                             [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
-                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -296,7 +295,6 @@ class OAuth2DeviceCodeClient {
         $this.insecure = $insecure
         $this.proxy = $proxy
         $this.application_id = $application_id
-        $this.app_secret = $app_secret
         $this.tenant_id = $tenant_id
         <#
             .DESCRIPTION
@@ -346,10 +344,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret, $tenant_id)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $tenant_id)
 
         return $client
         <#
@@ -591,11 +589,14 @@ class SecurityAndComplianceClient {
     [string]$access_token
     [string]$upn
     [string]$tenant_id
+    [string]$upn_password
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
+    [bool]$using_delegated
 
-    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$upn_password, [bool]$using_delegated ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         $this.access_token = $access_token
 
@@ -606,6 +607,14 @@ class SecurityAndComplianceClient {
         } else {
             $this.tenant_id = $null
         }
+
+        if ($upn_password) {
+            $this.upn_password = $upn_password
+        } else {
+            $this.upn_password = $null
+        }
+
+        $this.using_delegated = $using_delegated
 
         if ($connection_uri) {
             $this.connection_uri = $connection_uri
@@ -624,15 +633,33 @@ class SecurityAndComplianceClient {
         }
     }
 
-    CreateDelegatedSession([string]$CommandName){
-        $cmd_params = @{
-            "UserPrincipalName" = $this.upn
-            "Organization" = $this.organization
-            "AccessToken" = $this.access_token
-            "ConnectionUri" = $this.connection_uri
-            "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+    VerifyRequiredDelegatedSession(){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
         }
-        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+    }
+
+    CreateDelegatedSession([string]$CommandName)
+    {
+        if ($this.using_delegated -eq $true)
+        {
+            # Use UPN and password (interactive delegated auth)
+            $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
+            $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
+
+            Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        }
+        else {
+            # Use access token (app-only / token-based auth)
+            $cmd_params = @{
+                "UserPrincipalName" = $this.upn
+                "Organization" = $this.organization
+                "AccessToken" = $this.access_token
+                "ConnectionUri" = $this.connection_uri
+                "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+            }
+            Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        }
     }
 
     DisconnectSession(){
@@ -918,6 +945,7 @@ class SecurityAndComplianceClient {
                               [string]$share_point_archive_format, [string]$format,
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
+        $this.VerifyRequiredDelegatedSession()
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
@@ -932,32 +960,8 @@ class SecurityAndComplianceClient {
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
-        } elseif ($action -eq "Export") {
-            $cmd_params.Export = $true
-            $cmd_params.Confirm = $false
-            if ($share_point_archive_format) {
-                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
-            }
-            if ($format) {
-                $cmd_params.Format = $format
-            }
-            if ($include_sharepoint_document_versions -eq "true") {
-                $cmd_params.IncludeSharePointDocumentVersions = $true
-            }
-            if ($notify_email) {
-                $cmd_params.NotifyEmail = $notify_email
-            }
-            if ($notify_email_cc) {
-                $cmd_params.NotifyEmailCC = $notify_email_cc
-            }
-            if ($scenario) {
-                $cmd_params.Scenario = $scenario
-            }
-            if ($scope) {
-                $cmd_params.Scope = $scope
-            }
         } else {
-            throw "New action must include valid action - Preview/Purge/Export"
+            throw "New action must include valid action - Preview/Purge"
         }
         $response = New-ComplianceSearchAction @cmd_params
 
@@ -973,7 +977,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
+            Search action type - Preview (Showing results) / Purge (Delete found emails)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -981,7 +985,6 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
-            $client.NewSearchAction("search-name", "Export")
          #>
 
             .OUTPUTS
@@ -1204,6 +1207,9 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
+
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldPolicy")
         $cmd_params = @{
@@ -1316,6 +1322,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
         # Execute command
@@ -1351,6 +1359,8 @@ class SecurityAndComplianceClient {
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
+        $this.VerifyRequiredDelegatedSession()
+
         $this.CreateDelegatedSession("Set-CaseHoldPolicy")
       $cmd_params = @{}
   
@@ -1370,6 +1380,8 @@ class SecurityAndComplianceClient {
 
 
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldRule")
         $cmd_params = @{
@@ -1455,6 +1467,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
+        $this.VerifyRequiredDelegatedSession()
+
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldRule")
         # Execute command
@@ -1490,10 +1504,22 @@ class SecurityAndComplianceClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand () {
-    $raw_response = $null
-    $human_readable = "The test module does not work for MFA auth. Use the command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization and !$script:COMMAND_PREFIX-auth-test to instead."
+function TestModuleCommand ([SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
+
     $entry_context = $null
+    if ($using_delegated -eq $false){
+        $human_readable = "To test your connection, if you are using app-only authentication use the command !$script:COMMAND_PREFIX-auth-start and follow the instructions. If you are using UPN and password authentication, run the command !$script:COMMAND_PREFIX-auth-test to verify the connection."
+        $raw_response = $null
+    } else {
+        $human_readable = "Test Ok!"
+        $raw_response = $true
+        try {
+            $cs_client.CreateDelegatedSession("Start-ComplianceSearch")
+        }
+        finally {
+            $cs_client.DisconnectSession()
+        }
+    }
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -1521,8 +1547,14 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     return $human_readable, $entry_context, $raw_response
 }
 
-function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    $raw_response = $oclient.RefreshTokenRequest()
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
+
+    if ($using_delegated -eq $false){
+        $raw_response = $oclient.RefreshTokenRequest()
+    } else {
+        $raw_response = $null
+    }
+
     $human_readable = "**Test ok!**"
     $entry_context = @{}
     try {
@@ -1864,6 +1896,7 @@ function CaseHoldRuleCreateCommand([SecurityAndComplianceClient]$client, [hashta
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
 }
+
 function CaseHoldRuleListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     $identity = $kwargs.identity
     $policy = $kwargs.policy
@@ -2101,6 +2134,38 @@ function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
     return HandleSearchStatus $client $search_name $search $entry_context $polling_args $polling_first_run
 }
 
+<#
+.SYNOPSIS
+Handles OAuth2 authentication commands for the Security and Compliance integration.
+
+.DESCRIPTION
+Executes the appropriate OAuth2 authentication flow based on the provided command.§
+
+.PARAMETER command
+The authentication command to execute. Supported values:
+- "$script:COMMAND_PREFIX-auth-start"
+- "$script:COMMAND_PREFIX-auth-complete"
+
+.PARAMETER using_delegated
+Boolean flag indicating whether interactive delegated authentication is enabled
+(i.e., using UPN and password).
+
+.PARAMETER oauth2_client
+The OAuth2 client object used to perform authentication operations.
+
+.EXAMPLE
+Handle-OAuth2AuthCommand "$script:COMMAND_PREFIX-auth-start" $false $oauth2_client
+#>
+function Handle-OAuth2AuthCommand($command, [bool]$using_delegated, [OAuth2DeviceCodeClient]$oauth2_client) {
+    if ($using_delegated) {
+        throw "When using UPN and password for authentication, you don't need to run this command. Please run $script:COMMAND_PREFIX-auth-test to verify that the authentication is successful."
+    }
+
+    switch ($command) {
+        "$script:COMMAND_PREFIX-auth-start"   { return StartAuthCommand $oauth2_client }
+        "$script:COMMAND_PREFIX-auth-complete" { return CompleteAuthCommand $oauth2_client }
+    }
+}
 
 #### INTEGRATION COMMANDS MANAGER ####
 
@@ -2108,7 +2173,7 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $upn_password = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
     $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
     $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
@@ -2119,30 +2184,38 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
+        $using_delegated = -not [string]::IsNullOrWhiteSpace($upn_password)
+
+        $Demisto.Debug("Security and Compliance being using_delegated is $using_delegated")
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
-            $app_id, $app_secret, $tenant_id)
+            $app_id, $tenant_id)
+
 
         # Executing oauth2 commands
         switch ($command) {
             "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
             "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
         }
 
         # Refreshing tokens if expired
-        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+        if (($command -ne "$script:COMMAND_PREFIX-auth-start") -and (-not $using_delegated))
         {
             $oauth2_client.RefreshTokenIfExpired()
         }
+
 
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $tenant_id,
+            $upn_password,
+            $using_delegated,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
@@ -2150,10 +2223,10 @@ function Main {
         # Executing command
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-auth-test" {
-                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
+                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-new-search" {
                 ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments

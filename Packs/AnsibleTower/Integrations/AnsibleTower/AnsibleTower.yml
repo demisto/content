@@ -1,24 +1,38 @@
 category: IT Services
+provider: IBM
 commonfields:
   id: AnsibleTower
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
+- display: Is AAP Gateway
+  name: is_aap_gateway
+  type: 8
+  required: false
+  section: Connect
+  additionalinfo: Whether to connect to an Ansible Automation Platform 2.6+ Gateway.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Scale IT automation, manage complex deployments, and speed productivity.
 display: Ansible Automation Platform
 name: AnsibleTower
@@ -435,7 +449,7 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output
+      description: Indicates the state of the job if it was not able to run and capture the standard output.
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -505,10 +519,10 @@ script:
       description: Inventory ID.
       type: Number
     - contextPath: AnsibleAWX.Job.project
-      description: Project ID
+      description: Project ID.
       type: Number
     - contextPath: AnsibleAWX.Job.playbook
-      description: Playbook name
+      description: Playbook name.
       type: String
     - contextPath: AnsibleAWX.Job.limit
       description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
@@ -547,7 +561,7 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output
+      description: Indicates the state of the job if it was not able to run and capture the standard output.
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -1029,7 +1043,7 @@ script:
       description: Indicates the state of the job if it was not able to run and capture the standard output.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.execution_node
-      description: The node the job executed on
+      description: The node the job executed on.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.controller_node
       description: The instance that managed the isolated execution environment.
@@ -1326,9 +1340,9 @@ script:
       description: Ending line number of the execution.
       type: Number
     - contextPath: AnsibleAWX.JobEvents.event_data
-      description: Job's raw event data
+      description: Job's raw event data.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.9059085
   runonce: false
   script: '-'
   subtype: python3

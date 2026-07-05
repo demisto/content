@@ -1,0 +1,119 @@
+{
+    "result": {
+        "report_layout": {
+            "report_id": "1234",
+            "report_name": "Activity log(1)",
+            "report_description": "A log of all activities within Guardium",
+            "report_headers": [
+                {
+                    "header_id": "2001",
+                    "header_name": "PerformedBy",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_PERFORMED_BY_DESCRIPTION",
+                        "nls_value": "The user who performs the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_PERFORMED_BY",
+                        "nls_value": "Performed by"
+                    },
+                    "sequence": 1
+                },
+                {
+                    "header_id": "2003",
+                    "header_name": "ActionTaken",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_ACTION_TAKEN_DESCRIPTION",
+                        "nls_value": "The action taken by the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_ACTION_TAKEN",
+                        "nls_value": "Action taken"
+                    },
+                    "sequence": 2
+                },
+                {
+                    "header_id": "2005",
+                    "header_name": "Activity",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_ACTIVITY_DESCRIPTION",
+                        "nls_value": "The detailed context of the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_ACTIVITY",
+                        "nls_value": "Activity"
+                    },
+                    "sequence": 3
+                },
+                {
+                    "header_id": "2007",
+                    "header_name": "CreationTimeUTC",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_CREATIONTIMEUTC_DESCRIPTION",
+                        "nls_value": "Date and time the activity was created"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_CREATIONTIMEUTC",
+                        "nls_value": "Date created (local time)"
+                    },
+                    "sequence": 4
+                },
+                {
+                    "header_id": "2006",
+                    "header_name": "AuditTrailID",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_AUDIT_TRAIL_ID_DESCRIPTION",
+                        "nls_value": "The audited trail id of the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_AUDIT_TRAIL_ID",
+                        "nls_value": "Audit trail ID"
+                    },
+                    "sequence": 5
+                },
+                {
+                    "header_id": "2004",
+                    "header_name": "ContextDescription",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_CONTEXT_DESCRIPTION_DESCRIPTION",
+                        "nls_value": "The detailed context description of the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_CONTEXT_DESCRIPTION",
+                        "nls_value": "Context description"
+                    },
+                    "sequence": 6
+                },
+                {
+                    "header_id": "2002",
+                    "header_name": "Context",
+                    "header_description": {
+                        "nls_key": "ACTIVITY_LOG_CONTEXT_COLUMN_DESCRIPTION",
+                        "nls_value": "The service context of the activity"
+                    },
+                    "field_name": {
+                        "nls_key": "ACTIVITY_LOG_CONTEXT",
+                        "nls_value": "Context"
+                    },
+                    "sequence": 7
+                }
+            ],
+            "runtime_param_list": [
+                {
+                    "key": "QUERY_FROM_DATE",
+                    "label": "Time From",
+                    "runtime_parameter_type": "DATE_UTC",
+                    "runtime_parameter_type_length": 10,
+                    "operator_type": "GREATER_THAN_OR_EQUAL"
+                },
+                {
+                    "key": "QUERY_TO_DATE",
+                    "label": "Time To",
+                    "runtime_parameter_type": "DATE_UTC",
+                    "runtime_parameter_type_length": 10,
+                    "operator_type": "LESS_THAN"
+                }
+            ]
+        },
+        "final_result": true
+    }
+}

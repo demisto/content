@@ -8,7 +8,15 @@ This integration was integrated and tested with version 01 of Bitsight for Secur
 | API Key |  | True |
 | Company's GUID | Use "bitsight-companies-guid-get" command to retrieve the company's GUID. | False |
 | First fetch time in days | Enter the number in days. When the fetch incident runs for first time, incidents will be fetched for a given number of days. | False |
+| Mirroring Direction | The mirroring direction in which to mirror the findings. You can mirror "Incoming" \(from Bitsight to XSOAR\), "Outgoing" \(from XSOAR to Bitsight\), or in both directions. | False |
+| Mirror Tag for Notes | The tag value should be used to mirror XSOAR incident notes to Bitsight finding comments by adding the same tag in the notes.<br/><br/>Note: This parameter is required when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Bitsight User Email Address | Provide the Bitsight user email address to be used for sending XSOAR incident notes as Bitsight finding comments.<br/><br/>Note: This parameter is required when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Bitsight Remediation Status for Incident Opening | Remediation status to set in Bitsight when opening incidents in XSOAR. Default value is 'Open'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Reopen incident based on Bitsight Remediation Status | If selected, closed incidents will be reopened in XSOAR when finding remediation status on Bitsight platform matches the configured 'Remediation Status for Incident Opening'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
+| Bitsight Remediation Status for Incident Closure | Remediation status to set in Bitsight when closing incidents in XSOAR. Default value is 'Resolved'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Close incident based on Bitsight Remediation Status | If selected, active incidents will be closed in XSOAR when finding remediation status on Bitsight platform matches the configured 'Remediation Status for Incident Closure'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
 | Max Fetch | Maximum number of incidents to fetch. The maximum value is 200. | False |
+| Findings Affect Rating Reason | Filter by the affect rating reason of the findings to fetch. | False |
 | Findings Minimum Severity | Minimum severity of the findings to fetch. | False |
 | Findings Minimum Asset Category | Filter by the asset category \(critical, high, medium, low\). | False |
 | Findings Grade | Filter the result by the value of grade. | False |
@@ -17,6 +25,41 @@ This integration was integrated and tested with version 01 of Bitsight for Secur
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+
+### Notes for mirroring
+
+- This feature is compliant with XSOAR version 6.1.0 and above.
+- When mirroring incidents, you can make changes in Bitsight that will be reflected in Cortex XSOAR, or vice versa.
+- The mirroring direction can be set to "Incoming" (from Bitsight to XSOAR), "Outgoing" (from XSOAR to Bitsight), or "Incoming And Outgoing" for bidirectional synchronization.
+- New notes from the Cortex XSOAR incident will be created as comments in the Bitsight findings. Updates to existing notes in the Cortex XSOAR incident will not be reflected in the Bitsight findings.
+- New comments from the Bitsight findings will be created as notes in the Cortex XSOAR incident. Updates to existing comments in the Bitsight findings will create new notes in the Cortex XSOAR incident.
+- When outgoing mirroring is enabled, the remediation status in Bitsight will be updated based on the Remediation status parameter in XSOAR:
+  - Opening incidents in XSOAR will set the remediation status in Bitsight according to the "Bitsight Remediation Status for Incident Opening" parameter (default: "Open").
+  - Closing incidents in XSOAR will set the remediation status in Bitsight according to the "Bitsight Remediation Status for Incident Closure" parameter (default: "Resolved").
+- If an active Cortex XSOAR incident is tied to a specific BitSight finding, and the finding's remediation status matches the "Bitsight Remediation Status for Incident Closure" parameter:
+  - If the "Reopen incident based on BitSight Remediation Status" parameter is selected and "Incoming Mirroring" is enabled, the incident will be closed in XSOAR.
+- If a closed Cortex XSOAR incident is tied to a specific BitSight finding, and the finding's remediation status matches the "Bitsight Remediation Status for Incident Opening" parameter:
+  - If the "Reopen incident based on BitSight Remediation Status" parameter is selected and "Incoming Mirroring" is enabled, the incident will be reopened in XSOAR.
+- The mirroring settings apply only for incidents that are fetched after applying the settings.
+- The mirroring is strictly tied to Incident type "BitSight Findings" & Incoming mapper "BitSight - Incoming Mapper". If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
+- If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
+- Following new fields are introduced in the response of the incident to enable the mirroring:
+  - **mirror_direction:** This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_tags:** This field determines what would be the tag needed to mirror the Cortex XSOAR entry out to Bitsight. It is a required field for XSOAR to enable mirroring support.
+  - **mirror_instance:** This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+
+### Troubleshooting
+
+The following are tips for handling issues with mirroring incidents between Bitsight and Cortex XSOAR.
+
+| **Issue** | **Recommendation** |
+| --- | --- |
+| Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (incoming, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags.|
+| Required fields are not getting sent or not visible in UI. | This may be a mapping issue, specifically if you have used a custom mapper make sure you've covered all the out of box mapper fields. |
+| Notes from Cortex XSOAR have not been mirrored in Bitsight | Tag is required for mirroring notes from Cortex XSOAR to Bitsight. There might be a reason the note is not tagged as the tag needs to be added manually in Cortex XSOAR.<br>Click **Actions** > **Tags** and add the "note" tag (OR the specific tag name which was set up in the Instance Configuration).|
+| Server experiencing high load due to mirroring. | Consider increasing the mirroring interval to reduce server load. The default mirroring interval is 1 minute, which can be adjusted by updating the `sync.mirror.job.delay` field in the Integration Server Configuration to a higher value based on your server capacity and requirements. For more information, see [Integration Server Configurations (XSOAR 6.x)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/Integration-Server-Configurations) or [Server Configurations (XSOAR 8.x)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Server-configurations). |
+| No new findings are being fetched after updating filter parameters (e.g., Findings Minimum Severity, Findings Minimum Asset Category, Findings Grade, Findings Affect Rating Reason). | When you modify filter parameters in the integration configuration, the existing instance continues using the previous first fetch time and offset. This may not retrieve findings based on the new filters. To resolve this:<br>**Option 1:** Reset the instance's last run. This will restart fetching from the beginning with the new filter settings.<br>**Option 2:** Create a new integration instance with the updated filter parameters. This ensures a fresh start without affecting the existing instance's fetch history. |
 
 ## Commands
 
@@ -490,7 +533,7 @@ Bitsight command to get company findings.
 | first_seen | Filter the findings that were seen on and after this date. Format accepted: YYYY-MM-DD, Example: 2021-01-01. | Required |
 | last_seen | Filter the findings that were seen on and prior to this date. Format accepted: YYYY-MM-DD, Example: 2021-01-01. | Required |
 | severity | Minimum Severity of the findings. Possible values are: minor, moderate, material, severe. | Optional |
-| grade | Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral. | Optional |
+| grade | Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad, neutral and na. | Optional |
 | asset_category | Minimum Asset Category of the findings.<br/><br/>Example: If low is selected from the options then low, medium, high, and critical will be considered in retrieving results. Possible values are: low, medium, high, critical. | Optional |
 | risk_vector_label | Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications, Web Application Security, DMARC. | Optional |
 | limit | Set the maximum number of results to be retrieved. The maximum value is 1000.<br/><br/>Note: If a negative value is provided then the default value of 100 will be used. Default is 100. | Optional |

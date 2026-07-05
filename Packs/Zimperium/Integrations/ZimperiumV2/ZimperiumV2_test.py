@@ -1,28 +1,28 @@
 import pytest
 from freezegun import freeze_time
-
-from CommonServerPython import *
 from ZimperiumV2 import (
     Client,
-    users_search_command,
-    devices_search_command,
-    report_get_command,
-    threat_search_command,
     app_version_list_command,
-    get_devices_by_cve_command,
     devices_os_version_command,
+    devices_search_command,
+    fetch_incidents,
     get_cves_by_device_command,
+    get_devices_by_cve_command,
+    main,
+    policy_app_settings_get_command,
+    policy_device_inactivity_get_command,
+    policy_device_inactivity_list_command,
     policy_group_list_command,
+    policy_phishing_get_command,
     policy_privacy_get_command,
     policy_threat_get_command,
-    policy_phishing_get_command,
-    policy_app_settings_get_command,
-    policy_device_inactivity_list_command,
-    policy_device_inactivity_get_command,
-    fetch_incidents,
+    report_get_command,
+    threat_search_command,
+    users_search_command,
     vulnerability_get_command,
-    main,
 )
+
+from CommonServerPython import *
 
 SERVER_URL = "https://test_url.com/api"
 
@@ -35,7 +35,7 @@ def util_load_json(path):
 @pytest.fixture()
 def client(requests_mock):
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    return Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False)
+    return Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module="ZIPS")
 
 
 def test_users_search_command(client, requests_mock):
@@ -442,3 +442,85 @@ def test_proxy_parameter_setup(proxy, result, mocker):
     client = mocker.patch("ZimperiumV2.Client")
     main()
     assert client.call_args.kwargs.get("proxy") == result
+
+
+@pytest.mark.parametrize(
+    "client_module,command_module,expected_module",
+    [
+        (None, None, None),  # Both None - module omitted
+        ("ZIPS", None, "zips"),  # Client module only
+        ("EMM", None, "emm"),  # Client module with different value
+        ("ZIPS", "EMM", "emm"),  # Command argument takes priority over client module
+        (None, "ZIPS", "zips"),  # Command argument when client has no module
+    ],
+)
+def test_module_parameter_with_command_argument_override(client_module, command_module, expected_module, requests_mock):
+    """
+    Test module parameter behavior for commands that support module as a command argument.
+
+    Validates:
+    - When both client and command module are None, module is omitted from requests
+    - When module is set (ZIPS/EMM), it should be included in requests (lowercase)
+    - Command argument should take priority over client module parameter
+
+    This test uses policy_group_list_command as a representative command that supports
+    module as both a client parameter and a command argument.
+
+    Args:
+        client_module: Module value passed to Client constructor (None, "ZIPS", or "EMM")
+        command_module: Module value passed as command argument (None, "ZIPS", or "EMM")
+        expected_module: Expected module value in the API request (None or lowercase string)
+    """
+    requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
+
+    mock_response = util_load_json("./test_data/policy_group_list.json")
+    requests_mock.get(f"{SERVER_URL}/mtd-policy/public/v1/groups/page", json=mock_response)
+
+    args = {"module": command_module} if command_module is not None else {}
+    policy_group_list_command(client=client, args=args)
+
+    # Verify the module parameter in the request
+    actual_module = requests_mock.last_request.qs.get("module")
+    expected_value = [expected_module] if expected_module is not None else None
+    assert actual_module == expected_value, f"Expected module={expected_value}, but got {actual_module}"
+
+
+@pytest.mark.parametrize(
+    "client_module,expected_module",
+    [
+        (None, None),  # Client module None - module omitted
+        ("ZIPS", "zips"),  # Client module set to ZIPS
+        ("EMM", "emm"),  # Client module set to EMM
+    ],
+)
+def test_module_parameter_from_client_only(client_module, expected_module, requests_mock):
+    """
+    Test module parameter behavior for commands that only use the client-level module parameter.
+
+    Validates:
+    - When client module is None, module is omitted from requests
+    - When client module is set (ZIPS/EMM), it should be included in requests (lowercase)
+
+    This test uses threat_search_command as a representative command that:
+    - Previously had hardcoded module="ZIPS"
+    - Now uses the configurable client module parameter
+    - Does not support module as a command argument
+
+    Args:
+        client_module: Module value passed to Client constructor (None, "ZIPS", or "EMM")
+        expected_module: Expected module value in the API request (None or lowercase string)
+    """
+    requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
+
+    mock_response = util_load_json("./test_data/threat_search.json")
+    requests_mock.get(f"{SERVER_URL}/threats/public/v1/threats", json=mock_response)
+
+    args = {"after": "3 month"}
+    threat_search_command(client=client, args=args)
+
+    # Verify the module parameter in the request
+    actual_module = requests_mock.last_request.qs.get("module")
+    expected_value = [expected_module] if expected_module is not None else None
+    assert actual_module == expected_value, f"Expected module={expected_value}, but got {actual_module}"

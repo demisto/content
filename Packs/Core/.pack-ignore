@@ -41,6 +41,27 @@ ignore=SC105
 [file:CoreUnisolateEndpoint.yml]
 ignore=SC105
 
+[file:playbook-T1059_-_Command_and_Scripting_Interpreter.yml]
+ignore=GR109
+
+[file:playbook-T1036_-_Masquerading.yml]
+ignore=GR109
+
+[file:playbook-Local_Analysis_alert_Investigation.yml]
+ignore=GR109
+
+[file:playbook-WildFire_Malware.yml]
+ignore=GR109
+
+[file:playbook-Possible_External_RDP_Brute-Force.yml]
+ignore=GR109
+
+[file:playbook-Ransomware_Enrich_and_Contain.yml]
+ignore=GR109
+
+[file:playbook-Remote_PsExec_with_Lolbin_Command_Execution_alert.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule

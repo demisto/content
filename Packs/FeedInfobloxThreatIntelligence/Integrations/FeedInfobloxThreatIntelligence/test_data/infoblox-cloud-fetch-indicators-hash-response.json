@@ -1,0 +1,27 @@
+{
+    "threat": [
+        {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "type": "HASH",
+            "hash": "0000000000000000000000000000000000000000000000000000000000000001",
+            "hash_type": "SHA256",
+            "profile": "IID",
+            "property": "MalwareC2_Azorult",
+            "class": "MalwareC2",
+            "threat_level": 100,
+            "expiration": "2025-08-25T20:00:34.12Z",
+            "detected": "2024-08-25T20:00:34.12Z",
+            "received": "2024-08-25T20:01:35.75Z",
+            "imported": "2024-08-25T20:01:35.75Z",
+            "up": "true",
+            "confidence": 100,
+            "batch_id": "00000000-0000-0000-0000-000000000005",
+            "extended": {
+                "attack_chain": "SAMPLE",
+                "cyberint_guid": "00000000000000000000000000000005",
+                "notes": "The file(sha256: 0000000000000000000000000000000000000000000000000000000000000001) uses Living off the Land (LotL) methods, a malicious technique that involves abusing pre-built software on the victim’s machine to execute attacks. This binary matches the threat signature \"azorult\".",
+                "sample_sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+            }
+        }
+    ]
+}

@@ -239,13 +239,13 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                     "id": 1112166,
                     "last_activity_at": "2020-10-20T18:46:30.547Z",
                     "name": "PyOTRS",
-                    "name_with_namespace": "Robert Habermann / PyOTRS",
+                    "name_with_namespace": "Robert Testmann / PyOTRS",
                     "namespace": {
                         "avatar_url": "https://secure.gravatar.com/avatar/fd996be0107aa697f0ca5753aa7b5d1f?s=80&d=identicon",
                         "full_path": "rhab",
                         "id": 599974,
                         "kind": "user",
-                        "name": "Robert Habermann",
+                        "name": "Robert Testmann",
                         "parent_id": null,
                         "path": "rhab",
                         "web_url": "https://gitlab.com/rhab"
@@ -594,11 +594,11 @@ Gets a list of repository branches from a project, sorted by name alphabetically
             {
                 "can_push": true,
                 "commit": {
-                    "author_email": "amahmoud@paloaltonetworks.com",
+                    "author_email": "amahmoud@example.com",
                     "author_name": "test user",
                     "authored_date": "2020-09-09T14:53:17.000+00:00",
                     "committed_date": "2020-09-09T14:53:17.000+00:00",
-                    "committer_email": "amahmoud@paloaltonetworks.com",
+                    "committer_email": "amahmoud@example.com",
                     "committer_name": "test user",
                     "created_at": "2020-09-09T14:53:17.000+00:00",
                     "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
@@ -669,11 +669,11 @@ Gets a list of repository branches from a project, sorted by name alphabetically
             {
                 "can_push": true,
                 "commit": {
-                    "author_email": "amahmoud@paloaltonetworks.com",
+                    "author_email": "amahmoud@example.com",
                     "author_name": "test user",
                     "authored_date": "2020-09-09T14:56:09.000+00:00",
                     "committed_date": "2020-09-09T14:56:09.000+00:00",
-                    "committer_email": "amahmoud@paloaltonetworks.com",
+                    "committer_email": "amahmoud@example.com",
                     "committer_name": "test user",
                     "created_at": "2020-09-09T14:56:09.000+00:00",
                     "id": "405fc6ea44910177f48db9b2eb6839efb4211743",
@@ -703,10 +703,10 @@ Gets a list of repository branches from a project, sorted by name alphabetically
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
 >| true | id: 3ccb453019594b9a56ae8090663af76dcac4cc0c<br/>short_id: 3ccb4530<br/>created_at: 2020-09-09T05:39:00.000+00:00<br/>parent_ids: null<br/>title: Create atom.py<br/>message: Create atom.py<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:39:00.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:39:00.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c | false | false | false | false | codeql | false | https://gitlab.com/test-user/moon/-/tree/codeql |
->| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T14:53:17.000+00:00<br/>parent_ids: null<br/>title: Update ReadME<br/>message: Update ReadME<br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:53:17.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:53:17.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | true | false | false | false | master | true | https://gitlab.com/test-user/moon/-/tree/master |
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T14:53:17.000+00:00<br/>parent_ids: null<br/>title: Update ReadME<br/>message: Update ReadME<br/>author_name: test user<br/>author_email: amahmoud@example.com<br/>authored_date: 2020-09-09T14:53:17.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@example.com<br/>committed_date: 2020-09-09T14:53:17.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | true | false | false | false | master | true | https://gitlab.com/test-user/moon/-/tree/master |
 >| true | id: 24ddc466d4736222407585a5d947b48b30265fe4<br/>short_id: 24ddc466<br/>created_at: 2020-09-09T05:40:27.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:40:27.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:40:27.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4 | false | false | false | false | prisma | false | https://gitlab.com/test-user/moon/-/tree/prisma |
 >| true | id: fb3f67b779ead6bff43c8a5002de516a2e8ca99b<br/>short_id: fb3f67b7<br/>created_at: 2020-09-09T05:49:46.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:49:46.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:49:46.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b | false | false | false | false | prisma-cloud | false | https://gitlab.com/test-user/moon/-/tree/prisma-cloud |
->| true | id: 405fc6ea44910177f48db9b2eb6839efb4211743<br/>short_id: 405fc6ea<br/>created_at: 2020-09-09T14:56:09.000+00:00<br/>parent_ids: null<br/>title: Test PR<br/>message: Test PR<br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:56:09.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:56:09.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743 | false | false | false | false | vulnerable | false | https://gitlab.com/test-user/moon/-/tree/vulnerable |
+>| true | id: 405fc6ea44910177f48db9b2eb6839efb4211743<br/>short_id: 405fc6ea<br/>created_at: 2020-09-09T14:56:09.000+00:00<br/>parent_ids: null<br/>title: Test PR<br/>message: Test PR<br/>author_name: test user<br/>author_email: amahmoud@example.com<br/>authored_date: 2020-09-09T14:56:09.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@example.com<br/>committed_date: 2020-09-09T14:56:09.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743 | false | false | false | false | vulnerable | false | https://gitlab.com/test-user/moon/-/tree/vulnerable |
 
 ### gitlab-projects-create-repository-branch
 
@@ -745,11 +745,11 @@ Create a new branch in the repository.
         "Branches": {
             "can_push": true,
             "commit": {
-                "author_email": "amahmoud@paloaltonetworks.com",
+                "author_email": "amahmoud@example.com",
                 "author_name": "test user",
                 "authored_date": "2020-09-09T18:53:17.000+04:00",
                 "committed_date": "2020-09-09T18:53:17.000+04:00",
-                "committer_email": "amahmoud@paloaltonetworks.com",
+                "committer_email": "amahmoud@example.com",
                 "committer_name": "test user",
                 "created_at": "2020-09-09T18:53:17.000+04:00",
                 "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
@@ -779,7 +779,7 @@ Create a new branch in the repository.
 >
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
->| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/test-user/moon/-/tree/feature1 |
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: test user<br/>author_email: amahmoud@example.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: test user<br/>committer_email: amahmoud@example.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/test-user/moon/-/tree/feature1 |
 
 ### gitlab-projects-delete-repository-branch
 

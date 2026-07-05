@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Armis
 sectionorder:
 - Connect
 - Collect
@@ -23,7 +24,7 @@ configuration:
   name: max_fetch
   additionalinfo: Alerts and activity events.
   type: 0
-  defaultvalue: 100000
+  defaultvalue: 50000
   section: Collect
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
@@ -110,10 +111,12 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.10325753
 marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

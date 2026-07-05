@@ -1,4 +1,8 @@
 category: Endpoint
+provider: TrendAI™
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Trend Micro Deep Security
   version: -1
@@ -9,29 +13,36 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The API secret key
   display: API Secret
   name: api_secret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: API Secret
   name: credentials_api_secret
   additionalinfo: The API secret key
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Cloud Security Protection.
-display: Trend Micro Deep Security
+display: TrendAI™ Deep Security™
 name: Trend Micro Deep Security
 script:
   script: "-"
@@ -4059,7 +4070,7 @@ script:
       - contextPath: TrendMicro.ScheduledTask.ID
         description: The ID of the scheduled task.
         type: Number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   subtype: python3
   type: python

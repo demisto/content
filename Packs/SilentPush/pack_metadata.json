@@ -1,20 +1,32 @@
 {
     "name": "Silent Push",
     "description": "The Silent Push platform focuses on proactive threat intelligence and threat hunting.",
+    "created": "2026-06-01T00:00:00Z",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "2.0.0",
     "author": "Silent Push",
     "url": "https://www.silentpush.com/contact/",
     "email": "integrations@silentpush.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence",
+        "Free Enricher"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Silent Push"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "githubUser": []
+    "githubUser": [
+        "Jorgeley-SilentPush"
+    ],
+    "devEmail": [
+        "jorgeley@silentpush.com"
+    ]
 }

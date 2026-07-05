@@ -929,3 +929,259 @@ def test_create_permissions_error_entry_integer_zero_as_string(mocker):
     assert result["name"] == "valid.permission"
 
     demisto.info.assert_not_called()
+
+
+def test_is_gov_account_gov_partition_true(mocker):
+    """
+    Given: A connector_id, account_id, and accounts with GOV partition.
+    When: is_gov_account is called.
+    Then: It returns True for the account with GOV partition.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [
+        {"account_id": "account-1", "cloud_partition": "GOV"},
+        {"account_id": "account-2", "cloud_partition": "COMMERCIAL"},
+    ]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is True
+
+
+def test_is_gov_account_standard_partition_false(mocker):
+    """
+    Given: A connector_id, account_id, and accounts with COMMERCIAL partition.
+    When: is_gov_account is called.
+    Then: It returns False for the account with COMMERCIAL partition.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [
+        {"account_id": "account-1", "cloud_partition": "COMMERCIAL"},
+        {"account_id": "account-2", "cloud_partition": "GOV"},
+    ]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is False
+
+
+def test_is_gov_account_not_found_false(mocker):
+    """
+    Given: A connector_id, account_id, and accounts list without the requested account.
+    When: is_gov_account is called.
+    Then: It returns False for non-existent account.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1", "cloud_partition": "STANDARD"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-3")
+
+    # Verify result
+    assert result is False
+
+
+def test_is_gov_account_empty_accounts_list(mocker):
+    """
+    Given: A connector_id, account_id, and empty accounts list.
+    When: is_gov_account is called.
+    Then: It returns False for empty accounts list.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = []
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is False
+
+
+def test_is_gov_account_missing_cloud_partition(mocker):
+    """
+    Given: A connector_id, account_id, and account without cloud_partition field.
+    When: is_gov_account is called.
+    Then: It returns False for account missing cloud_partition.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is False
+
+
+def test_is_gov_account_null_cloud_partition(mocker):
+    """
+    Given: A connector_id, account_id, and account with None cloud_partition.
+    When: is_gov_account is called.
+    Then: It returns False for account with None cloud_partition.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1", "cloud_partition": None}, {"account_id": "account-2", "cloud_partition": "GOV"}]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is False
+
+
+def test_is_gov_account_case_sensitive_partition(mocker):
+    """
+    Given: A connector_id, account_id, and account with lowercase 'gov' partition.
+    When: is_gov_account is called.
+    Then: It returns True for non case-sensitive partition check.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1", "cloud_partition": "gov"}, {"account_id": "account-2", "cloud_partition": "GOV"}]
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "account-1")
+
+    # Verify result
+    assert result is True
+
+
+def test_is_gov_account_get_accounts_call_parameters(mocker):
+    """
+    Given: A connector_id and account_id.
+    When: is_gov_account is called.
+    Then: It calls get_accounts_by_connector_id with correct parameters.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = [{"account_id": "account-1", "cloud_partition": "GOV"}]
+    mock_get_accounts = mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    is_gov_account("test-connector-id", "account-1")
+
+    # Verify get_accounts_by_connector_id was called with correct parameters
+    mock_get_accounts.assert_called_once_with("test-connector-id", None)
+
+
+def test_is_gov_account_empty_accounts_list_no_account(mocker):
+    """
+    Given: A connector_id, no account_id, and empty accounts list.
+    When: is_gov_account is called.
+    Then: It returns False for empty accounts list.
+    """
+    from COOCApiModule import is_gov_account
+
+    # Mock get_accounts_by_connector_id
+    accounts = []
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=accounts)
+    mocker.patch.object(demisto, "debug")
+
+    # Call function
+    result = is_gov_account("test-connector-id", "")
+
+    # Verify result
+    assert result is False
+    debug_call_args = demisto.debug.call_args[0][0]
+    expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
+    assert expected_debug_log == debug_call_args
+
+
+@pytest.mark.parametrize(
+    "timeout,expected",
+    [
+        (None, (60, 10)),
+        ("", (60, 10)),
+        ("30", (30, 10)),
+        ("45,15", (45, 15)),
+        (120, (120, 10)),
+        (0, (0, 10)),
+        ("0", (0, 10)),
+        (" 30 ", (30, 10)),
+        ("45, 15", (45, 15)),
+        (" 45 , 15 ", (45, 15)),
+    ],
+)
+def test_get_timeout_valid_inputs(timeout, expected):
+    """
+    Given: Various valid timeout values (None, empty string, read-only string, read+connect string,
+        integer, zero, and strings containing surrounding spaces).
+    When: get_timeout is called.
+    Then: Returns the correct (read_timeout, connect_timeout) tuple.
+    """
+    from COOCApiModule import get_timeout
+
+    assert get_timeout(timeout) == expected
+
+
+def test_get_timeout_malformed_raises():
+    """
+    Given: A malformed (non-numeric) timeout string.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a message about read timeout.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="read timeout"):
+        get_timeout("not-a-number")
+
+
+def test_get_timeout_too_many_values_raises():
+    """
+    Given: A timeout string with more than 2 comma-separated values.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a message about too many values.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Too many timeout values"):
+        get_timeout("60,10,5")
+
+
+@pytest.mark.parametrize("bad_timeout", [-5, "-5", "60,-1"])
+def test_get_timeout_negative_raises(bad_timeout):
+    """
+    Given: A timeout value (int or string) containing a negative number.
+    When: get_timeout is called.
+    Then: Raises DemistoException because timeout values must not be negative.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Timeout values must not be negative."):
+        get_timeout(bad_timeout)

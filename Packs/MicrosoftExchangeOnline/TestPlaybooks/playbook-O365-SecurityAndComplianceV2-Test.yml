@@ -1,14 +1,16 @@
-description: This playbook test SecurityAndCompliance integration
 id: O365-SecurityAndComplianceV2-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: O365-SecurityAndComplianceV2-Test
+description: This playbook test SecurityAndCompliance integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0380c172-06a9-4008-8e91-ccf0de7e8028
+    taskid: e169eb61-5742-4392-8d45-e5fb59c022eb
     type: start
     task:
-      id: 0380c172-06a9-4008-8e91-ccf0de7e8028
+      id: e169eb61-5742-4392-8d45-e5fb59c022eb
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +19,7 @@ tasks:
       '#none#':
       - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d8
+    taskid: c511b059-cc6a-441e-837d-08cec0204011
     type: condition
     task:
-      id: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d8
+      id: c511b059-cc6a-441e-837d-08cec0204011
       version: -1
       name: Validate compliance search created
       description: 'Validate compliance search creation with all additional arguments. '
@@ -84,6 +87,7 @@ tasks:
           right:
             value:
               simple: Rodrigo
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -100,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5c86e0fd-5b8b-46ce-8ee8-905b478836fb
+    taskid: 554a5051-c227-40e7-8666-6868eb610af4
     type: regular
     task:
-      id: 5c86e0fd-5b8b-46ce-8ee8-905b478836fb
+      id: 554a5051-c227-40e7-8666-6868eb610af4
       version: -1
       name: Remove search
       description: Remove compliance search by name from the Security & Compliance
@@ -123,6 +127,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -139,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d2f408a6-1d08-43ef-8065-035b42a85a7g
+    taskid: 29eb4505-05ec-4352-86af-14471708d3a2
     type: regular
     task:
-      id: d2f408a6-1d08-43ef-8065-035b42a85a7g
+      id: 29eb4505-05ec-4352-86af-14471708d3a2
       version: -1
       name: Get search
       description: Get compliance search from the Security & Compliance Center.
@@ -161,6 +166,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -177,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ec1da44b-7f8a-483c-8f92-d9da2534e524
+    taskid: c9a5ddde-c130-435e-86e3-fb71f4e395f5
     type: condition
     task:
-      id: ec1da44b-7f8a-483c-8f92-d9da2534e524
+      id: c9a5ddde-c130-435e-86e3-fb71f4e395f5
       version: -1
       name: Validate !o365-sc-get-search and !o365-sc-set-search commands
       description: 'Validate compliance search modified with all additional arguments. '
@@ -204,6 +210,7 @@ tasks:
           right:
             value:
               simple: notexists@demistodev.onmicrosoft.com
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -220,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b9c86fad-4ad5-41d3-8c90-bd87535b5516
+    taskid: fe938e79-5101-423c-8427-bd16f379ca64
     type: regular
     task:
-      id: b9c86fad-4ad5-41d3-8c90-bd87535b5516
+      id: fe938e79-5101-423c-8427-bd16f379ca64
       version: -1
       name: Remove search
       description: Remove compliance search by name from the Security & Compliance
@@ -243,6 +250,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -259,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc5e14af-7416-40bf-8042-72e82548da24
+    taskid: 60118754-7fd5-4a0c-851b-34ab665eda57
     type: regular
     task:
-      id: bc5e14af-7416-40bf-8042-72e82548da24
+      id: 60118754-7fd5-4a0c-851b-34ab665eda57
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -274,6 +282,7 @@ tasks:
       message:
         simple: Fail executing test playbook
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -290,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: a6cc55e0-5108-424a-85b7-302b0feea09d
+    taskid: 3e9ae2ca-b6ef-4604-8763-4d17f531ccc0
     type: condition
     task:
-      id: a6cc55e0-5108-424a-85b7-302b0feea09d
+      id: 3e9ae2ca-b6ef-4604-8763-4d17f531ccc0
       version: -1
       name: Validate !o365-sc-new-search-action (Generic polling playbook) and !o365-sc-get-search-action
       type: condition
@@ -313,6 +322,7 @@ tasks:
             value:
               simple: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -329,13 +339,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: ec0d59f0-611c-4e4e-8c7e-301c08000078
+    taskid: e1e27d1e-37aa-44ef-8130-1f38db5a45d7
     type: regular
     task:
-      id: ec0d59f0-611c-4e4e-8c7e-301c08000078
+      id: e1e27d1e-37aa-44ef-8130-1f38db5a45d7
       version: -1
       name: Get search action
-      description: Get compliance search action from the Security & Compliance Center. This command must come after executing the command o365-sc-start-search.
+      description: Get compliance search action from the Security & Compliance Center.
+        This command must come after executing the command o365-sc-start-search.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
@@ -353,6 +364,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.SearchAction
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -369,14 +381,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b6f21599-2d87-426c-8072-c9ac2523d0c8
+    taskid: e2c924b0-b500-43da-8ad9-f7b332b712cd
     type: regular
     task:
-      id: b6f21599-2d87-426c-8072-c9ac2523d0c8
+      id: e2c924b0-b500-43da-8ad9-f7b332b712cd
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove a compliance search action by specifying its action name.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -392,6 +403,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.SearchAction
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -408,10 +420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: d8590049-3c13-4dfb-8423-43161ed74fdd
+    taskid: c6dc3c3a-5628-4029-851c-30e43c24da11
     type: regular
     task:
-      id: d8590049-3c13-4dfb-8423-43161ed74fdd
+      id: c6dc3c3a-5628-4029-851c-30e43c24da11
       version: -1
       name: Stop search
       description: Stop running compliance search in the Security & Compliance Center.
@@ -430,6 +442,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -446,10 +459,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 70c827d3-1c21-4ce5-8bfa-67c67267c01f
+    taskid: fefae982-36ce-486b-82e5-f86b3ff05a5b
     type: regular
     task:
-      id: 70c827d3-1c21-4ce5-8bfa-67c67267c01f
+      id: fefae982-36ce-486b-82e5-f86b3ff05a5b
       version: -1
       name: Set search
       description: Modify non-running compliance search in the Security & Compliance
@@ -472,6 +485,7 @@ tasks:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search.Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -488,10 +502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 93974714-bf76-459e-8bf0-2b707063b220
+    taskid: 34affed8-02c6-4527-8e2b-bc38fca6eb0f
     type: condition
     task:
-      id: 93974714-bf76-459e-8bf0-2b707063b220
+      id: 34affed8-02c6-4527-8e2b-bc38fca6eb0f
       version: -1
       name: Check if search action created
       type: condition
@@ -511,6 +525,7 @@ tasks:
             value:
               simple: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -527,14 +542,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e3a6250b-ff26-486e-891c-1f4e63704e64
+    taskid: 0ea17519-bb89-46a7-8c12-d7e16382c136
     type: regular
     task:
-      id: e3a6250b-ff26-486e-891c-1f4e63704e64
+      id: 0ea17519-bb89-46a7-8c12-d7e16382c136
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove a compliance search action by specifying its action name.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -550,6 +564,7 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.SearchAction
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -566,16 +581,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 04a48d34-6a5b-43c4-84c1-0b2c91483c94
+    taskid: 6b60649b-2c2b-4f8e-8150-e99e4335c49b
     type: title
     task:
-      id: 04a48d34-6a5b-43c4-84c1-0b2c91483c94
+      id: 6b60649b-2c2b-4f8e-8150-e99e4335c49b
       version: -1
       name: Test playbook finished successfully
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -592,10 +608,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca24
+    taskid: a4dc2221-8bea-45c6-8173-e9bf56dd0961
     type: playbook
     task:
-      id: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca24
+      id: a4dc2221-8bea-45c6-8173-e9bf56dd0961
       version: -1
       name: O365 - Security And Compliance - Search
       description: |-
@@ -627,13 +643,14 @@ tasks:
       kql:
         complex:
           root: inputs.kql
-      preview:
-        simple: "false"
       polling_interval:
         simple: "1"
       polling_timeout:
         simple: "10"
+      preview:
+        simple: "false"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -655,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e15a3448-13a7-4a4f-846a-4bf54e332554
+    taskid: 3f949c0e-38e6-4507-80eb-d29cd62e7dfb
     type: playbook
     task:
-      id: e15a3448-13a7-4a4f-846a-4bf54e332554
+      id: 3f949c0e-38e6-4507-80eb-d29cd62e7dfb
       version: -1
       name: O365 - Security And Compliance - Search Action - Preview
       description: |-
@@ -674,15 +691,16 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      search_name:
-        complex:
-          root: O365.SecurityAndCompliance.ContentSearch.Search
-          accessor: Name
       polling_interval:
         simple: "1"
       polling_timeout:
         simple: "10"
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -692,7 +710,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1285
         }
       }
     note: false
@@ -704,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6924f760-17a0-4224-81c2-6d48fcdf30eb
+    taskid: d4370a08-0c2b-4f30-8388-ee009d31f1db
     type: regular
     task:
-      id: 6924f760-17a0-4224-81c2-6d48fcdf30eb
+      id: d4370a08-0c2b-4f30-8388-ee009d31f1db
       version: -1
       name: Start search
       description: Starts stopped, completed, or not started compliance search in
@@ -718,13 +736,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "33"
     scriptarguments:
       search_name:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -739,13 +758,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "33":
+    id: "33"
+    taskid: f62f7626-0aac-432d-bcf6-52997557e2c5
+    type: regular
+    task:
+      id: f62f7626-0aac-432d-bcf6-52997557e2c5
+      version: -1
+      name: Sleep 2 Minutes
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2340,
+        "height": 2320,
         "width": 810,
         "x": 50,
         "y": 50
@@ -786,5 +839,5 @@ inputs:
   description: Mailboxes/distribution group to include, or you can use the value "All"
     to include all. (Comma separated)
   playbookInputQuery: null
-version: -1
+outputs: []
 fromversion: 5.5.0

@@ -13,7 +13,8 @@ OAUTH_URL = "/oauth_token.do"
 class ServiceNowClient(BaseClient):
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
@@ -26,7 +27,8 @@ class ServiceNowClient(BaseClient):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -39,12 +41,13 @@ class ServiceNowClient(BaseClient):
         """
         self.auth = None
         self.use_oauth = use_oauth
+        self.username = username
+        self.password = password
+
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
         else:
-            self.username = credentials.get("identifier")
-            self.password = credentials.get("password")
             self.auth = (self.username, self.password)
 
         self.jwt = self.create_jwt(jwt_params) if jwt_params else None
@@ -224,10 +227,20 @@ class ServiceNowClient(BaseClient):
             jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
         return jwt_token
 
-    def get_access_token(self):
+    def get_access_token(self, retry_attempted: bool = False):
         """
-        Get an access token that was previously created if it is still valid, else, generate a new access token from
-        the client id, client secret and refresh token.
+        Get an access token that was previously created if it is still valid, else, generate a new access token using
+        one of the following methods (in order of precedence):
+        1. Refresh token - if a refresh token exists in the integration context.
+        2. JWT assertion - if JWT parameters were configured.
+        3. Auto-login - if OAuth is enabled and username/password credentials are available,
+           automatically performs a login to obtain a new refresh token.
+
+        If the refresh token has expired and credentials are available, the method will automatically
+        re-login and retry once.
+
+        Args:
+            retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
         """
         ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
@@ -243,8 +256,14 @@ class ServiceNowClient(BaseClient):
                 data["refresh_token"] = previous_token.get("refresh_token")
                 data["grant_type"] = "refresh_token"
             elif not self.jwt:
+                if self.use_oauth and self.username and self.password and not retry_attempted:
+                    self.login(username=self.username, password=self.password)
+                    return self.get_access_token(retry_attempted=True)
+
                 raise Exception(
-                    "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+                    "Could not create an access token. The user may not be logged in. "
+                    "Please run the oauth-login command, or ensure that username and password "
+                    "parameters are set in your instance configuration to enable auto-login."
                 )
 
             try:
@@ -261,10 +280,19 @@ class ServiceNowClient(BaseClient):
                 except ValueError as exception:
                     raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
                 if "error" in res:
+                    # NOTE: This token regeneration logic is inherited by all integrations but currently relies on
+                    # the 'username' and 'password' fields. The Event Collector is the only integration that
+                    # supplies these fields under the OAuth method to utilize this retry logic.
+                    # Other inherited integrations require modification to function here
+                    if self.use_oauth and self.username and self.password and not retry_attempted:
+                        demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
+                        self.login(username=self.username, password=self.password)
+                        return self.get_access_token(retry_attempted=True)
+
+                    # If retry was already attempted or credentials not available, raise the error
                     return_error(
                         f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
-                        f"and try to run again the login command to generate a new refresh token as it "
-                        f"might have expired.\n{res}"
+                        f"and try to run again the login command to generate a new refresh token.\n{res}"
                     )
                 if res.get("access_token"):
                     expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")

@@ -209,6 +209,9 @@ tasks:
     nexttasks:
       '#none#':
       - "248"
+    scriptarguments:
+      fetch_query:
+        simple: "last_behavior:>='30 days ago'+product:'epp'+type:'ldt'"
     separatecontext: false
     continueonerrortype: ""
     view: |-
