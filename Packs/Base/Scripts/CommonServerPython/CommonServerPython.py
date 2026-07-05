@@ -11395,7 +11395,7 @@ class CortexError(DemistoException):
             self.details.setdefault(
                 EXTENDED_PAYLOAD_RETRYABLE_KEY, RetryGuidance.is_retryable(self.retry_guidance)
             )
-        super().__init__(self.build_message(), error_type=self.error_code, **kwargs)
+        super(CortexError, self).__init__(self.build_message(), error_type=self.error_code, **kwargs)
 
     def _base_message(self):
         """Return the *auto-generated* message body, ignoring any custom message.
@@ -11517,7 +11517,7 @@ class CortexMissingArgError(CortexError):
         else:
             details["require_one"] = require_one
 
-        super().__init__(override_message, details=details)
+        super(CortexMissingArgError, self).__init__(override_message, details=details)
 
     def _quoted_args(self):
         return ', '.join("'{}'".format(a) for a in self.arg_names)
@@ -11578,7 +11578,7 @@ class CortexInvalidArgError(CortexError):
         if allowed_values:
             details["allowed_values"] = [str(v) for v in allowed_values]
 
-        super().__init__(override_message, details=details)
+        super(CortexInvalidArgError, self).__init__(override_message, details=details)
 
     def _base_message(self):
         parts = ["Invalid value for argument '{}'".format(self.arg_name)]
@@ -11656,7 +11656,7 @@ class CortexConflictingArgsError(CortexError):
         if resolution:
             details["resolution"] = resolution
 
-        super().__init__(override_message, details=details)
+        super(CortexConflictingArgsError, self).__init__(override_message, details=details)
 
     def _quoted_args(self):
         return ', '.join("'{}'".format(a) for a in self.arguments)
@@ -11717,7 +11717,7 @@ class CortexResourceNotFoundError(CortexError):
     def __init__(self, resource_type, identifier=None, override_message=None):
         self.resource_type = resource_type
         self.identifier = identifier
-        super().__init__(override_message, details={
+        super(CortexResourceNotFoundError, self).__init__(override_message, details={
             "resource_type": resource_type,
             "identifier": str(identifier) if identifier else None,
         })
@@ -11816,7 +11816,7 @@ class CortexExternalApiError(CortexError):
                 self.error_code = CortexErrorCode.SERVICE_ERROR
                 details["api_error_type"] = CortexErrorCode.SERVICE_ERROR
 
-        super().__init__(override_message, details=details)
+        super(CortexExternalApiError, self).__init__(override_message, details=details)
 
     def _base_message(self):
         message = self._default_message
@@ -11848,7 +11848,7 @@ class CortexAuthError(CortexExternalApiError):
     _default_message = "Authentication failed. Check your credentials or API key."
 
     def __init__(self, override_message=None, **kwargs):
-        super().__init__(override_message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
+        super(CortexAuthError, self).__init__(override_message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
 
 
 class CortexRateLimitError(CortexExternalApiError):
@@ -11874,7 +11874,7 @@ class CortexRateLimitError(CortexExternalApiError):
 
     def __init__(self, override_message=None, retry_after=None, **kwargs):
         self.retry_after = retry_after
-        super().__init__(override_message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
+        super(CortexRateLimitError, self).__init__(override_message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
         if retry_after:
             self.details["retry_after_seconds"] = retry_after
 
@@ -11902,7 +11902,7 @@ class CortexTimeoutError(CortexExternalApiError):
     _default_message = "The request timed out. Please try again."
 
     def __init__(self, override_message=None, **kwargs):
-        super().__init__(override_message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
+        super(CortexTimeoutError, self).__init__(override_message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
 
 
 class CortexConnectionError(CortexExternalApiError):
@@ -11926,7 +11926,7 @@ class CortexConnectionError(CortexExternalApiError):
     _default_message = "Unable to connect to the service. Check network connectivity."
 
     def __init__(self, override_message=None, **kwargs):
-        super().__init__(override_message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
+        super(CortexConnectionError, self).__init__(override_message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
 
 
 class CortexParseError(CortexError):
