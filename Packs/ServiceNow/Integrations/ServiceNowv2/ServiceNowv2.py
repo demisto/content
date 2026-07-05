@@ -1908,6 +1908,7 @@ def get_ticket_notes_command(
 
 def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
     entries = []
+    comment_format = params.get("comment_format") or "source"
     for note in notes:
         if "Mirrored from Cortex XSOAR" not in note.get("value", ""):
             comments_context = {"comments_and_work_notes": note.get("value")}
@@ -1924,25 +1925,41 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                 else:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
+            rendered_value = note.get("value")
+            if comment_format and comment_format != "source":
+                if comment_format == "html" and isinstance(rendered_value, str):
+                    stripped = rendered_value.strip()
+                    if stripped.startswith("[code]") and stripped.endswith("[/code]"):
+                        rendered_value = stripped[len("[code]") : -len("[/code]")]
+                entry_format = comment_format
+            else:
+                entry_format = note.get("format")
 
-            human_readable = (
-                f"Type: {note.get('element')}\nCreated By: "
-                f"{note.get('sys_created_by')}\nCreated On: "
-                f"{note.get('sys_created_on')}\n{note.get('value')}"
-            )
-            entries.append(
-                {
-                    "Type": note.get("type", 1),
-                    "Category": note.get("category"),
-                    "HumanReadable": human_readable,
-                    "Contents": human_readable,
-                    "created": note.get("sys_created_on", ""),
-                    "ContentsFormat": note.get("format"),
-                    "Tags": tags,
-                    "Note": True,
-                    "EntryContext": comments_context,
-                }
-            )
+            if entry_format == "html":
+                contents = (
+                    f"Type: {note.get('element')}<br>Created By: "
+                    f"{note.get('sys_created_by')}<br>Created On: "
+                    f"{note.get('sys_created_on')}<br>{rendered_value}"
+                )
+            else:
+                contents = (
+                    f"Type: {note.get('element')}\nCreated By: "
+                    f"{note.get('sys_created_by')}\nCreated On: "
+                    f"{note.get('sys_created_on')}\n{rendered_value}"
+                )
+            entry = {
+                "Type": note.get("type", 1),
+                "Category": note.get("category"),
+                "created": note.get("sys_created_on", ""),
+                "Contents": contents,
+                "ContentsFormat": entry_format,
+                "Tags": tags,
+                "Note": True,
+                "EntryContext": comments_context,
+            }
+            if entry_format != "html":
+                entry["HumanReadable"] = contents
+            entries.append(entry)
 
     return entries
 
@@ -2979,6 +2996,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     demisto.debug(f"Getting update for remote {ticket_id}")
     last_update = arg_to_timestamp(arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     demisto.debug(f"last_update is {last_update}")
+    mark_attachments_as_note = argToBoolean(params.get("mark_attachments_as_note") or "false")
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
@@ -3025,6 +3043,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         for file in file_entries:
             if "_mirrored_from_xsoar" not in file.get("File"):
                 file["Tags"] = [params.get("file_tag_from_service_now")]
+                if mark_attachments_as_note:
+                    file["Note"] = True
+
                 entries.append(file)
 
     if client.use_display_value:
