@@ -171,5 +171,9 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "feed": false,
-    "defaultIncidentType": "Sysdig Runtime Event"
+    "defaultIncidentType": "Sysdig Runtime Event",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

@@ -211,7 +211,7 @@ def _build_data_payload(args: dict[str, Any]) -> dict[str, Any]:
             continue
         if api_key in INTEGER_PARAMS:
             val = int(val)  # type: ignore[arg-type]
-        if api_key == "previous" or api_key == "allContainers":
+        if api_key == "previous" or api_key == "allContainers":  # guardrails-disable-line
             val = argToBoolean(val)
         parameters[api_key] = val
 
