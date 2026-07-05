@@ -1288,3 +1288,43 @@ def test_download_operation_export_file_errors(mocker, mock_attrs, expected_erro
         _download_operation_export_file(client_mocker, operation)
 
     assert expected_error_msg in str(e.value)
+
+
+def test_download_export_file_resets_token_to_default_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file (which uses a non-default Purview scope).
+    When:
+        Calling download_export_file.
+    Then:
+        The download uses the Purview scope, and afterwards a default-scope token is fetched
+        to reset the shared refresh token and avoid token-scope drift (XSUP-71559).
+    """
+    mock_response = MagicMock()
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=mock_response)
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    result = client_mocker.download_export_file("https://fake-url.com/data")
+
+    assert result is mock_response
+    assert http_request.call_args.kwargs["scope"] == "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+    get_access_token.assert_called_once_with(scope=client_mocker.ms_client.scope)
+
+
+def test_download_export_file_reset_uses_default_not_purview_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file.
+    When:
+        Calling download_export_file.
+    Then:
+        The post-download token reset requests the client's default scope, not the Purview scope.
+    """
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=MagicMock())
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    client_mocker.download_export_file("https://fake-url.com/data")
+
+    reset_scope = get_access_token.call_args.kwargs["scope"]
+    assert reset_scope == client_mocker.ms_client.scope
+    assert reset_scope != "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
