@@ -17,6 +17,9 @@ MAX_GET_EVENTS_LIMIT = 1000  # Maximum limit accepted by get events API
 MAX_EVENT_API_REQS = 5
 AUDIT_TS = "ts"
 NETWORKING_TS = "timestamp"
+RATE_LIMIT_STATUS_CODE = 429
+NUM_OF_RETRIES = 3
+BACKOFF_FACTOR = 5  # Retry delays: 5s, 10s, 20s (formula: backoff_factor * 2^(retry_number-1))
 
 """ CLIENT CLASS """
 
@@ -33,6 +36,7 @@ class Client(BaseClient):
         self.user_name = user_name
         self.user_password = user_password
         self.customer_id = customer_id
+        self.total_api_call_count = 0
 
     def get_access_token(self, use_cached_token=True) -> str:
         """
@@ -89,6 +93,8 @@ class Client(BaseClient):
             "refresh_token": refresh_token,
         }
 
+        self.total_api_call_count += 1
+        demisto.debug("Making API call to refresh access token via /oauth2/token")
         try:
             token_resp = self._http_request(
                 method="POST",
@@ -138,6 +144,8 @@ class Client(BaseClient):
             "username": self.user_name,
             "password": self.user_password,
         }
+        self.total_api_call_count += 1
+        demisto.debug("Making API call for OAuth login via /oauth2/authorize/central/api/login")
         response: requests.Response = self._http_request(
             method="POST",
             url_suffix="/oauth2/authorize/central/api/login",
@@ -179,6 +187,8 @@ class Client(BaseClient):
         json_data = {
             "customer_id": self.customer_id,
         }
+        self.total_api_call_count += 1
+        demisto.debug("Making API call for OAuth auth code via /oauth2/authorize/central/api")
         response = self._http_request(
             method="POST",
             url_suffix="/oauth2/authorize/central/api",
@@ -210,6 +220,8 @@ class Client(BaseClient):
             "grant_type": "authorization_code",
             "code": auth_code,
         }
+        self.total_api_call_count += 1
+        demisto.debug("Making API call for OAuth access token via /oauth2/token")
         response = self._http_request(
             method="POST",
             url_suffix="/oauth2/token",
@@ -222,6 +234,7 @@ class Client(BaseClient):
     def http_request(self, method: str, url_suffix: str = "", params: dict = {}):
         """
         Make an http request to the Aruba Central API with the provided parameters.
+        Includes automatic retry with exponential backoff for 429 rate limit responses.
 
         Args:
             method (str): HTTP method to use (e.g., 'GET', 'POST')
@@ -236,12 +249,17 @@ class Client(BaseClient):
             "authorization": f"Bearer {self.get_access_token()}",
         }
 
+        self.total_api_call_count += 1
+        demisto.debug(f"Making {method} request to {url_suffix} with params={params}")
         try:
             response = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
                 params=params,
                 headers=headers,
+                retries=NUM_OF_RETRIES,
+                status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+                backoff_factor=BACKOFF_FACTOR,
             )
         except DemistoException as e:
             if "access token is invalid" in str(e):
@@ -252,6 +270,9 @@ class Client(BaseClient):
                     url_suffix=url_suffix,
                     params=params,
                     headers=headers,
+                    retries=NUM_OF_RETRIES,
+                    status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+                    backoff_factor=BACKOFF_FACTOR,
                 )
             else:
                 raise e
@@ -276,18 +297,32 @@ class Client(BaseClient):
             amount_to_fetch = MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT
         events = []
         offset = 0
+        api_call_count = 0
 
         demisto.debug(f"{amount_to_fetch=}")
         while amount_to_fetch > 0:
-            response = self.http_request(
-                method="GET",
-                url_suffix="/auditlogs/v1/events",
-                params={
-                    "limit": MAX_GET_AUDIT_LIMIT,
-                    "offset": offset,
-                    "start_time": start_time,
-                    "end_time": end_time,
-                },
+            api_call_count += 1
+            try:
+                response = self.http_request(
+                    method="GET",
+                    url_suffix="/auditlogs/v1/events",
+                    params={
+                        "limit": MAX_GET_AUDIT_LIMIT,
+                        "offset": offset,
+                        "start_time": start_time,
+                        "end_time": end_time,
+                    },
+                )
+            except DemistoException as e:
+                demisto.debug(
+                    f"Rate limit or API error during audit events fetch on api_call={api_call_count}: {e}. "
+                    f"Returning {len(events)} events collected so far."
+                )
+                break
+            demisto.debug(
+                f"Audit events pagination: api_call={api_call_count}, {offset=}, "
+                f"total={response.get('total')}, remaining_records={response.get('remaining_records')}, "
+                f"got {len(response.get('events', []))} events"
             )
             if response["total"] > amount_to_fetch + offset:
                 # manually skip to the end since the API has no option for ascending sort
@@ -305,6 +340,7 @@ class Client(BaseClient):
             if not response.get("remaining_records"):
                 break
 
+        demisto.debug(f"Audit events fetch complete: total api_calls={api_call_count}, total events collected={len(events)}")
         return events
 
     def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
@@ -325,21 +361,34 @@ class Client(BaseClient):
             amount_to_fetch = MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT
         events = []
         offset = 0
+        api_call_count = 0
 
         demisto.debug(f"{amount_to_fetch=}")
         while amount_to_fetch > 0:
-            response = self.http_request(
-                method="GET",
-                url_suffix="/monitoring/v2/events",
-                params={
-                    "limit": MAX_GET_EVENTS_LIMIT,
-                    "offset": offset,
-                    "from_timestamp": start_time,
-                    "to_timestamp": end_time,
-                    "sort": "+timestamp",
-                },
-            )
+            api_call_count += 1
+            try:
+                response = self.http_request(
+                    method="GET",
+                    url_suffix="/monitoring/v2/events",
+                    params={
+                        "limit": MAX_GET_EVENTS_LIMIT,
+                        "offset": offset,
+                        "from_timestamp": start_time,
+                        "to_timestamp": end_time,
+                        "sort": "+timestamp",
+                    },
+                )
+            except DemistoException as e:
+                demisto.debug(
+                    f"Rate limit or API error during networking events fetch on api_call={api_call_count}: {e}. "
+                    f"Returning {len(events)} events collected so far."
+                )
+                break
             response_events = response.get("events", [])
+            demisto.debug(
+                f"Networking events pagination: api_call={api_call_count}, {offset=}, "
+                f"got {len(response_events)} events"
+            )
             filtered_events = filter_networking_events(response_events, last_run)
             filtered_events = filtered_events[:amount_to_fetch]
 
@@ -349,6 +398,7 @@ class Client(BaseClient):
             if len(response_events) < MAX_GET_EVENTS_LIMIT:  # got the last events for this time frame
                 break
 
+        demisto.debug(f"Networking events fetch complete: total api_calls={api_call_count}, total events collected={len(events)}")
         return events
 
 
@@ -740,6 +790,7 @@ def main() -> None:  # pragma: no cover
 
             push_events(audit_events, networking_events)
             demisto.setLastRun(next_run)
+            demisto.debug(f"Fetch cycle complete: total API calls made={client.total_api_call_count}")
 
     # Log exceptions and return errors
     except Exception as e:
