@@ -1,8 +1,11 @@
 import json
 import os
+from typing import cast
 from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
+
+from CommonServerPython import CommandResults, EntryType
 
 
 SERVER_URL = "https://localhost"
@@ -299,6 +302,507 @@ def test_gz_endpoint_get_command(mock_demisto, requests_mock):
 
     # Assert command response
     assert_command_mocked_data("gz-endpoint-get", command_response)
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_users_loggedin_command(mock_demisto, requests_mock):
+    """
+    Given
+            All relevant arguments for the command that is executed
+    When
+            Calling gz-endpoint-users-loggedin command
+    Then
+            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_users_loggedin_command, gz_poll_endpoint_users_loggedin_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-users-loggedin"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-users-loggedin")
+    client = get_client()
+
+    # Execute command
+    command_response = gz_endpoint_users_loggedin_command(client=client, args={"id": "ENDPOINT_ID"})
+
+    # Assert command response
+    assert_command_mocked_data(
+        "gz-endpoint-users-loggedin",
+        command_response,
+        polling_func=gz_poll_endpoint_users_loggedin_status_command,
+        client=client,
+    )
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_create_memory_dump_command(mock_demisto, requests_mock):
+    """
+    Given
+            All relevant arguments for the command that is executed
+    When
+            Calling gz-endpoint-create-memory-dump command
+    Then
+            Make sure the outputs, outputs_prefix and outputs_key_field values are as expected.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_create_memory_dump_command, gz_endpoint_memory_dump_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-create-memory-dump"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-create-memory-dump")
+    client = get_client()
+
+    # Execute command
+    command_response = gz_endpoint_create_memory_dump_command(
+        client=client,
+        args={"id": "ENDPOINT_ID", "path": "C:\\dumps\\", "password": "ComplexPass123!"},
+    )
+
+    # Assert command response
+    assert_command_mocked_data(
+        "gz-endpoint-create-memory-dump",
+        command_response,
+        polling_func=lambda poll_args, poll_client: gz_endpoint_memory_dump_status_command(poll_client, poll_args),
+        client=client,
+    )
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_create_memory_dump_command_no_polling(mock_demisto, requests_mock):
+    from GravityZone import gz_endpoint_create_memory_dump_command
+    from CommonServerPython import CommandResults
+
+    mock_demisto.command.return_value = "gz-endpoint-create-memory-dump"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-create-memory-dump")
+    client = get_client()
+
+    command_response = cast(
+        CommandResults,
+        gz_endpoint_create_memory_dump_command(
+            client=client,
+            args={"id": "ENDPOINT_ID", "path": "C:\\dumps\\", "password": "ComplexPass123!", "polling": "false"},
+        ),
+    )
+
+    assert getattr(command_response, "scheduled_command", None) is None
+    context = command_response.to_context()
+    output = context["EntryContext"]["GravityZone.MemoryDump(val.EndpointID && val.EndpointID == obj.EndpointID)"]
+
+    assert output["TaskID"] == "TASK_ID"
+    assert output["TaskType"] == "CreateMemoryDump"
+    assert output["Status"] == "Pending"
+    assert output["EndpointID"] == "ENDPOINT_ID"
+    assert output["EndDate"] == ""
+    assert output["ErrorCode"] == ""
+    assert output["Error"] == ""
+    assert output["DownloadURL"] == ""
+
+
+@patch("GravityZone.check_endpoint_memory_dump_status")
+def test_gz_endpoint_memory_dump_status_command_defaults_polling_true(mock_check_status):
+    from GravityZone import gz_endpoint_memory_dump_status_command
+    from GravityZone import Client
+
+    client = cast(Client, object())
+
+    gz_endpoint_memory_dump_status_command(client, {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"})
+
+    mock_check_status.assert_called_once_with(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID", "polling": True},
+        client,
+    )
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_memory_dump_status_command(mock_demisto, requests_mock):
+    from GravityZone import gz_endpoint_memory_dump_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-memory-dump-status"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-memory-dump-status")
+    client = get_client()
+
+    command_response = gz_endpoint_memory_dump_status_command(
+        client,
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+    )
+
+    assert_command_mocked_data(
+        "gz-endpoint-memory-dump-status",
+        command_response,
+        polling_func=lambda poll_args, poll_client: gz_endpoint_memory_dump_status_command(poll_client, poll_args),
+        client=client,
+    )
+
+
+def test_check_endpoint_users_loggedin_status_returns_error_on_unexpected_task_type():
+    from GravityZone import check_endpoint_users_loggedin_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "type": 27, "subtasks": []}
+
+    result = check_endpoint_users_loggedin_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "unexpected type" in result.readable_output
+    assert "GetActiveSessions" in result.readable_output
+
+
+def test_check_endpoint_users_loggedin_status_returns_error_when_task_type_is_missing():
+    from GravityZone import check_endpoint_users_loggedin_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "subtasks": []}
+
+    result = check_endpoint_users_loggedin_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "does not have a type" in result.readable_output
+    assert "gz-poll-endpoint-users-loggedin-status" in result.readable_output
+
+
+def test_check_endpoint_memory_dump_status_returns_error_on_unexpected_task_type():
+    from GravityZone import check_endpoint_memory_dump_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "type": 26, "subtasks": []}
+
+    result = check_endpoint_memory_dump_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "unexpected type" in result.readable_output
+    assert "CreateMemoryDump" in result.readable_output
+
+
+def test_check_endpoint_memory_dump_status_returns_error_when_task_type_is_missing():
+    from GravityZone import check_endpoint_memory_dump_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "subtasks": []}
+
+    result = check_endpoint_memory_dump_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "does not have a type" in result.readable_output
+    assert "gz-endpoint-memory-dump-status" in result.readable_output
+
+
+def test_extract_active_sessions_from_task_handles_missing_optional_fields():
+    from GravityZone import _extract_active_sessions_from_task
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "result": [
+                    {
+                        "connection": {
+                            "started": "2021-05-19T10:37:56Z",
+                            "type": "local",
+                        },
+                        "user": {
+                            "displayName": "user@example.com",
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+
+    sessions = _extract_active_sessions_from_task(task_output)
+
+    assert len(sessions) == 1
+    assert sessions[0]["Username"] == "user@example.com"
+    assert sessions[0]["ConnectionType"] == "local"
+    assert sessions[0]["StartTime"] == "2021-05-19T10:37:56Z"
+    assert "UserSID" not in sessions[0]
+    assert "DomainSID" not in sessions[0]
+    assert "OrganizationalUnitDN" not in sessions[0]
+    assert "MemberOfSIDs" not in sessions[0]
+
+
+def test_extract_endpoint_summary_from_task_returns_hostname_for_matching_endpoint_id():
+    from GravityZone import _extract_endpoint_summary_from_task
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-2",
+                "endpointName": "host-2",
+            },
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1-updated",
+            },
+        ]
+    }
+
+    endpoint_id, hostname = _extract_endpoint_summary_from_task(task_output, "endpoint-1")
+
+    assert endpoint_id == "endpoint-1"
+    assert hostname == "host-1-updated"
+
+
+def test_build_users_loggedin_results_outputs_endpoint_scoped_context():
+    from GravityZone import _build_users_loggedin_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1-updated",
+                "status": 3,
+                "result": [],
+            }
+        ],
+    }
+
+    result = _build_users_loggedin_results(task_output, "endpoint-1")
+
+    assert result.outputs_prefix == "GravityZone.Endpoint"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs == {
+        "ID": "endpoint-1",
+        "Hostname": "host-1-updated",
+        "ActiveSessions": [],
+    }
+
+
+def test_extract_memory_dump_summary_uses_matching_endpoint_subtask_and_download_url():
+    from GravityZone import _extract_memory_dump_summary
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-other",
+                "status": 3,
+                "downloadURL": "https://example.com/other",
+            },
+            {
+                "endpointId": "endpoint-1",
+                "status": 3,
+                "downloadURL": "https://example.com/memory-dump",
+            },
+        ]
+    }
+
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-1")
+    assert endpoint_id == "endpoint-1"
+    assert endpoint_hostname == ""
+    assert subtask == {
+        "endpointId": "endpoint-1",
+        "status": 3,
+        "downloadURL": "https://example.com/memory-dump",
+    }
+    assert download_url == "https://example.com/memory-dump"
+
+
+def test_extract_memory_dump_summary_ignores_non_processed_subtask_for_download_url():
+    from GravityZone import _extract_memory_dump_summary
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "status": 2,
+                "downloadURL": "https://example.com/should-not-be-used",
+            }
+        ]
+    }
+
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-1")
+    assert endpoint_id == "endpoint-1"
+    assert endpoint_hostname == ""
+    assert subtask == {
+        "endpointId": "endpoint-1",
+        "status": 2,
+        "downloadURL": "https://example.com/should-not-be-used",
+    }
+    assert download_url == ""
+
+
+def test_extract_memory_dump_summary_returns_none_when_endpoint_not_found():
+    from GravityZone import _extract_memory_dump_summary
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "status": 3,
+                "downloadURL": "https://example.com/memory-dump",
+            }
+        ]
+    }
+
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-missing")
+    assert endpoint_id == "endpoint-missing"
+    assert endpoint_hostname == ""
+    assert subtask is None
+    assert download_url == ""
+
+
+def test_extract_memory_dump_task_id_from_string_result():
+    from GravityZone import _extract_memory_dump_task_id
+
+    assert _extract_memory_dump_task_id("TASK_ID") == "TASK_ID"
+
+
+def test_extract_memory_dump_task_id_raises_on_invalid_result():
+    from GravityZone import _extract_memory_dump_task_id
+
+    with pytest.raises(Exception, match="createMemoryDumpTask response is missing task ID"):
+        _extract_memory_dump_task_id({})
+
+
+def test_build_memory_dump_results_outputs_download_url_on_success():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "startDate": "2026-05-25T10:00:00",
+                "endDate": "2026-05-25T10:01:00",
+                "errorCode": "Success",
+                "errorMessage": "Success",
+                "downloadURL": "https://example.com/memory-dump",
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-1")
+
+    assert result.outputs_prefix == "GravityZone.MemoryDump"
+    assert result.outputs_key_field == "EndpointID"
+    assert result.outputs == {
+        "TaskID": "TASK_ID",
+        "TaskType": "CreateMemoryDump",
+        "Status": "Processed",
+        "EndpointID": "endpoint-1",
+        "Hostname": "host-1",
+        "StartDate": "2026-05-25T10:00:00Z",
+        "EndDate": "2026-05-25T10:01:00Z",
+        "ErrorCode": "Success",
+        "Error": "Success",
+        "DownloadURL": "https://example.com/memory-dump",
+    }
+
+
+def test_build_memory_dump_results_omits_download_url_when_unavailable():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 1,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 1,
+                "startDate": "2026-05-25T10:00:00",
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-1")
+
+    assert result.outputs == {
+        "TaskID": "TASK_ID",
+        "TaskType": "CreateMemoryDump",
+        "Status": "Pending",
+        "EndpointID": "endpoint-1",
+        "Hostname": "host-1",
+        "StartDate": "2026-05-25T10:00:00Z",
+        "EndDate": "",
+        "ErrorCode": "",
+        "Error": "",
+        "DownloadURL": "",
+    }
+
+
+def test_build_memory_dump_results_returns_error_when_endpoint_not_found():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "startDate": "2026-05-25T10:00:00",
+                "endDate": "2026-05-25T10:01:00",
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-missing")
+
+    assert result.entry_type == EntryType.ERROR
+    assert result.readable_output == "Invalid Endpoint ID. Available endpoint IDs for task 'TASK_ID': ['endpoint-1']"
+
+
+def test_build_memory_dump_results_returns_error_when_task_has_no_results():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "")
+
+    assert result.entry_type == EntryType.ERROR
+    assert result.readable_output == "Task 'TASK_ID' has no memory dump results."
+
+
+def test_generate_processed_task_command_result_maps_memory_dump_task_type():
+    from GravityZone import generate_processed_task_command_result
+
+    task_output = {
+        "type": 27,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "startDate": "2026-05-26T10:00:00",
+                "endDate": "2026-05-26T10:01:00",
+            }
+        ],
+    }
+
+    result = generate_processed_task_command_result("parent-task-id", task_output, {})
+
+    assert result.outputs_prefix == "GravityZone.Command.CreateMemoryDump"
 
 
 @patch("GravityZone.demisto")
