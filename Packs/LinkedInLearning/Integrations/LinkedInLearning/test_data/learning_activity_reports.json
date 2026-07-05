@@ -1,0 +1,94 @@
+{
+    "elements": [
+        {
+            "learnerDetails": {
+                "entity": {
+                    "profileUrn": "urn:li:enterpriseProfile:(urn:li:enterpriseAccount:12345,67890)"
+                },
+                "name": {
+                    "firstName": "John",
+                    "lastName": "Doe"
+                },
+                "emailAddress": "john.doe@example.com"
+            },
+            "contentDetails": {
+                "entity": {
+                    "contentUrn": "urn:li:learningCourse:123456"
+                },
+                "name": "Introduction to Python",
+                "contentSource": "LINKEDIN_LEARNING",
+                "contentType": "COURSE"
+            },
+            "engagementMetrics": {
+                "engagementType": "COMPLETED",
+                "firstEngagedAt": 1719792000000,
+                "lastEngagedAt": 1719878400000,
+                "engagementValue": 100,
+                "timeSpentInSeconds": 3600
+            },
+            "latestDataAt": 1719878400000
+        },
+        {
+            "learnerDetails": {
+                "entity": {
+                    "profileUrn": "urn:li:enterpriseProfile:(urn:li:enterpriseAccount:12345,67891)"
+                },
+                "name": {
+                    "firstName": "Jane",
+                    "lastName": "Smith"
+                },
+                "emailAddress": "jane.smith@example.com"
+            },
+            "contentDetails": {
+                "entity": {
+                    "contentUrn": "urn:li:learningCourse:789012"
+                },
+                "name": "Advanced Machine Learning",
+                "contentSource": "LINKEDIN_LEARNING",
+                "contentType": "COURSE"
+            },
+            "engagementMetrics": {
+                "engagementType": "IN_PROGRESS",
+                "firstEngagedAt": 1719705600000,
+                "lastEngagedAt": 1719964800000,
+                "engagementValue": 45,
+                "timeSpentInSeconds": 1800
+            },
+            "latestDataAt": 1719964800000
+        },
+        {
+            "learnerDetails": {
+                "entity": {
+                    "profileUrn": "urn:li:enterpriseProfile:(urn:li:enterpriseAccount:12345,67892)"
+                },
+                "name": {
+                    "firstName": "Bob",
+                    "lastName": "Johnson"
+                },
+                "emailAddress": "bob.johnson@example.com"
+            },
+            "contentDetails": {
+                "entity": {
+                    "contentUrn": "urn:li:learningVideo:345678"
+                },
+                "name": "Docker Fundamentals",
+                "contentSource": "LINKEDIN_LEARNING",
+                "contentType": "VIDEO"
+            },
+            "engagementMetrics": {
+                "engagementType": "COMPLETED",
+                "firstEngagedAt": 1719619200000,
+                "lastEngagedAt": 1720051200000,
+                "engagementValue": 100,
+                "timeSpentInSeconds": 900
+            },
+            "latestDataAt": 1720051200000
+        }
+    ],
+    "paging": {
+        "count": 100,
+        "start": 0,
+        "total": 3,
+        "links": []
+    }
+}
