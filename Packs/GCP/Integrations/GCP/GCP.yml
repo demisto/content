@@ -14,7 +14,7 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
-  additionalinfo: "The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM version < 3.0. For Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud), authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM & Admin > Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here."
+  additionalinfo: "The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM & Admin > Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here."
 - display: GCP Project ID
   name: project_id
   type: 0

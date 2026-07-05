@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). For Cortex Platform \(Cortex XSIAM \(version &amp;gt;= 3.0\) and Cortex Cloud\), authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | True |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM & Admin > Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here. | True |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -624,8 +624,6 @@ Returns a specific instance resource. To get a list of available instances, make
 | GCP.Compute.Instances.hostname | string | Hostname. |
 | GCP.Compute.Instances.kind | string | Type of the resource. Always compute\#instance for instances. |
 
-***
-
 ### gcp-storage-bucket-list
 
 ***
@@ -662,8 +660,6 @@ Retrieves the list of buckets in the project associated with the client. Require
 | GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
 | GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
 | GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
-
-#### Base Command
 
 ### gcp-storage-bucket-get
 
