@@ -34,6 +34,7 @@ FRONT_DOOR_UPSERT_PARAMS = {
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2020-05-01"
+UPSERT_API_VERSION = "2022-09-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 BASE_URL = "https://management.azure.com"
 POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -183,7 +184,9 @@ class AzureWAFClient:
                 res.append({"properties": f"Listing {subscription_id} threw Exception: {e!s}"})
         return res
 
-    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict) -> list[dict]:
+    def update_policy_upsert(
+        self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict, api_version: str = API_VERSION
+    ) -> list[dict]:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
         for resource_group_name in resource_group_names:
@@ -193,7 +196,7 @@ class AzureWAFClient:
                         method="PUT",
                         full_url=f"{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}",
                         data=data,
-                        params={"api-version": API_VERSION},
+                        params={"api-version": api_version},
                     )
                 )
             except Exception as e:
@@ -488,7 +491,11 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
 
     updated_policy = client.update_policy_upsert(
-        policy_name=policy_name, resource_group_names=resource_group_names, subscription_id=subscription_id, data=body
+        policy_name=policy_name,
+        resource_group_names=resource_group_names,
+        subscription_id=subscription_id,
+        data=body,
+        api_version=UPSERT_API_VERSION,
     )
 
     return CommandResults(

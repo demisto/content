@@ -3,6 +3,7 @@ import demistomock as demisto
 import pytest
 
 API_VERSION = "2020-05-01"
+UPSERT_API_VERSION = "2022-09-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 
 GET_COMMAND_DATA = [
@@ -122,7 +123,7 @@ UPSERT_COMMAND_DATA = [
             "method": "PUT",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": UPSERT_API_VERSION},
             "body": {"location": "east", "properties": {"managedRules": {"test": "test"}}},
         },  # expected
     ),
@@ -140,7 +141,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
             "method": "PUT",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": UPSERT_API_VERSION},
             "body": {"location": "east", "properties": {"customRules": {"test": "test"}, "managedRules": {"test": "test"}}},
         },  # expected
     ),
@@ -198,7 +199,7 @@ def test_policy_array_group_names_upsert_request(mocker):
         "method": "PUT",
         "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-        "params": {"api-version": API_VERSION},
+        "params": {"api-version": UPSERT_API_VERSION},
         "body": {
             "location": "east",
             "properties": {
