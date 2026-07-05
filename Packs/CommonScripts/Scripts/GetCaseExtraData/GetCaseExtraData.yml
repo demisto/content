@@ -189,3 +189,4 @@ supportedModules:
 - cloud_posture
 - cloud_runtime_security
 - edr
+toversion: 8.14.0
