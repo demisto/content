@@ -3248,6 +3248,6 @@ script:
 commonfields:
   id: GoogleDriveStandardConnector
   version: -1
-fromversion: 6.10.0
+fromversion: 8.15.0
 tests:
 - No tests
