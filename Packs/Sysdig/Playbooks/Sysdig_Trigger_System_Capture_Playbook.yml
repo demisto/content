@@ -412,7 +412,6 @@ supportedModules:
 - cloud
 - cloud_runtime_security
 - edr
-- xsoar
 - asm
 - xsiam
 - exposure_management
