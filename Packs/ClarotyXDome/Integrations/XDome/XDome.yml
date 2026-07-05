@@ -1,5 +1,8 @@
 category: Network Security
 provider: Claroty
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: XDome
   version: -1
@@ -8,29 +11,37 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: https://api.claroty.com/
   display: XDome API Base URL
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Token
   additionalinfo: The API token to use for connection
   name: credentials
   required: true
   hiddenusername: true
+  section: Connect
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: 7 days
   display: Initial Incidents Fetch Time
   name: first_fetch
@@ -41,11 +52,13 @@ configuration:
   defaultvalue: '50000'
   type: 0
   required: false
+  section: Collect
 - display: Fetch Only Unresolved Device-Alert Pairs
   name: fetch_only_unresolved
   type: 8
   required: false
   defaultvalue: 'true'
+  section: Collect
 - display: Alert Types Selection
   name: alert_types
   type: 16
@@ -82,6 +95,7 @@ configuration:
   - Retention Change
   - Enforcement Change
   required: false
+  section: Collect
 description: Use the xDome integration to manage assets and alerts.
 display: xDome
 name: XDome
