@@ -9978,6 +9978,40 @@ class NetworkFirewall:
         )
 
     @staticmethod
+    def update_subnet_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies the flag, SubnetChangeProtection, which indicates whether it is possible to change the subnets that the
+        firewall is associated with.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_change_protection,
+                and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with a success message
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+
+        print_debug_logs(client, f"Updating firewall subnet change protection with parameters: {kwargs.keys()}")
+        response = client.update_subnet_change_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The subnet change protection flag of the firewall was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
     def update_firewall_description_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the description for the specified firewall.
@@ -10006,6 +10040,100 @@ class NetworkFirewall:
 
         return CommandResults(
             readable_output="The firewall description was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def associate_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Associates the specified subnets in the Amazon VPC to the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_ids,
+                an optional ip_address_type, and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with the firewall subnet mappings
+        """
+        ip_address_type = args.get("ip_address_type")
+        subnet_mapping = {"SubnetId": None, "IPAddressType": ip_address_type}
+        subnet_mappings = [
+            remove_empty_elements({**subnet_mapping, "SubnetId": subnet_id}) for subnet_id in argToList(args.get("subnet_ids"))
+        ]
+
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetMappings": subnet_mappings,
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+
+        print_debug_logs(client, f"Associating subnets with parameters: {kwargs.keys()}")
+        response = client.associate_subnets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        response_outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=response_outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Associate Subnets",
+                response_outputs.get("SubnetMappings", []),
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def disassociate_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Removes the specified subnet associations from the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_ids,
+                and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with the remaining subnet mappings
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetIds": argToList(args.get("subnet_ids")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+
+        print_debug_logs(client, f"Disassociating subnets with parameters: {kwargs.keys()}")
+        response = client.disassociate_subnets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        response_outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=response_outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Disassociate Subnets",
+                response_outputs.get("SubnetMappings", []),
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
@@ -10223,6 +10351,9 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
     "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
     "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
+    "aws-network-firewall-subnet-change-protection-update": NetworkFirewall.update_subnet_change_protection_command,
+    "aws-network-firewall-subnets-associate": NetworkFirewall.associate_subnets_command,
+    "aws-network-firewall-subnets-disassociate": NetworkFirewall.disassociate_subnets_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10406,6 +10537,9 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:DeleteFirewall",
     "network-firewall:UpdateFirewallDeleteProtection",
     "network-firewall:UpdateFirewallDescription",
+    "network-firewall:UpdateSubnetChangeProtection",
+    "network-firewall:AssociateSubnets",
+    "network-firewall:DisassociateSubnets",
     "network-firewall:TagResource",
 ]
 

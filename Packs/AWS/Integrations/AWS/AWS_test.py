@@ -18312,3 +18312,356 @@ def test_update_firewall_description_command_api_error(mocker):
         NetworkFirewall.update_firewall_description_command(mock_client, args)
 
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_subnet_change_protection_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name and subnet change protection flag.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": True,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true"}
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(FirewallName="test-firewall", SubnetChangeProtection=True)
+
+
+def test_update_subnet_change_protection_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN and subnet change protection flag.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": False,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "subnet_change_protection": "false",
+    }
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall", SubnetChangeProtection=False
+    )
+
+
+def test_update_subnet_change_protection_command_success_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name, subnet change protection flag, and update token.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message and pass the update token.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": True,
+        "UpdateToken": "token-456",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true", "update_token": "token-123"}
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(
+        FirewallName="test-firewall", SubnetChangeProtection=True, UpdateToken="token-123"
+    )
+
+
+def test_update_subnet_change_protection_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: update_subnet_change_protection_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_change_protection": "true"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+
+def test_update_subnet_change_protection_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_subnet_change_protection_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_associate_subnets_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name and subnet IDs.
+    When: associate_subnets_command is called successfully.
+    Then: It should return CommandResults with the firewall subnet mappings.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-123",
+        "SubnetMappings": [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}],
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111"}
+
+    result = NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["SubnetMappings"] == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+    assert "ResponseMetadata" not in result.outputs
+    mock_client.associate_subnets.assert_called_once_with(
+        FirewallName="test-firewall", SubnetMappings=[{"SubnetId": "subnet-1111"}]
+    )
+
+
+def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token, multiple subnet IDs,
+        and an IP address type.
+    When: associate_subnets_command is called successfully.
+    Then: It should return CommandResults and apply the IP address type to every subnet mapping in the API call.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-456",
+        "SubnetMappings": [
+            {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "DUALSTACK"},
+        ],
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "update_token": "token-123",
+        "subnet_ids": "subnet-1111,subnet-2222",
+        "ip_address_type": "DUALSTACK",
+    }
+
+    result = NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs["SubnetMappings"]) == 2
+    mock_client.associate_subnets.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        SubnetMappings=[
+            {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "DUALSTACK"},
+        ],
+    )
+
+
+def test_associate_subnets_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: associate_subnets_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_ids": "subnet-1111"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.associate_subnets_command(mock_client, args)
+
+
+def test_associate_subnets_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: associate_subnets_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_disassociate_subnets_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name and subnet IDs.
+    When: disassociate_subnets_command is called successfully.
+    Then: It should return CommandResults with the remaining subnet mappings.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-123",
+        "SubnetMappings": [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}],
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-2222"}
+
+    result = NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["SubnetMappings"] == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+    assert "ResponseMetadata" not in result.outputs
+    mock_client.disassociate_subnets.assert_called_once_with(FirewallName="test-firewall", SubnetIds=["subnet-2222"])
+
+
+def test_disassociate_subnets_command_success_with_arn_and_multiple_subnets(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token and multiple subnet IDs.
+    When: disassociate_subnets_command is called successfully.
+    Then: It should return CommandResults and pass all arguments to the API call.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-456",
+        "SubnetMappings": [],
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "update_token": "token-123",
+        "subnet_ids": "subnet-1111,subnet-2222",
+    }
+
+    result = NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["SubnetMappings"] == []
+    mock_client.disassociate_subnets.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        SubnetIds=["subnet-1111", "subnet-2222"],
+    )
+
+
+def test_disassociate_subnets_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: disassociate_subnets_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_ids": "subnet-1111"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+
+def test_disassociate_subnets_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: disassociate_subnets_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
