@@ -19667,6 +19667,7 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.9059085
 supportsquickactions: true
 fromversion: 5.5.0
+source: 'cooc'
 tests:
 - No test - No playbook part of this release.
 sectionorder:
