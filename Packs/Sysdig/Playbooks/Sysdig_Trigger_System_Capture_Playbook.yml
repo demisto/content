@@ -407,3 +407,16 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+supportedModules: 
+- cloud_posture
+- cloud
+- cloud_runtime_security
+- edr
+- xsoar
+- asm
+- xsiam
+- exposure_management
+- agentix
+
+# IsIntegrationAvailable *not* on supportedModules: [cloud_appsec, tim, email_security, xti]
+# PrintErrorEntry *not* on supportedModules: [cloud_appsec, tim, email_security, xti]
