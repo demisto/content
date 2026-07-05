@@ -1262,5 +1262,3 @@ def test_http_request_preserves_explicit_retry_args(client, mocker):
     assert kwargs["retries"] == 0
     assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
     assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
-
-
