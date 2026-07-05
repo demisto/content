@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "lock-cloud-machines"
+  CURRENT_BRANCH_NAME: "fix/unlock-machines-on-retry"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "lock-cloud-machines"
+    ref: "fix/unlock-machines-on-retry"
     project: "${CI_PROJECT_NAMESPACE}/infra"
