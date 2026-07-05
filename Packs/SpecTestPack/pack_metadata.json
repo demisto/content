@@ -1,8 +1,8 @@
 {
     "name": "Spec Test Pack",
-    "description": "Test pack for validating the new 'spec' field on Integration and Script content items. Contains two integrations: one with spec field (large memory) and one without (default).",
+    "description": "Test pack for validating the new 'spec' field on Integration and Script content items. Contains two integrations and two scripts: one of each with spec field (large memory) and one without (default).",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
