@@ -10,14 +10,14 @@ Click Connect, then click Show advanced settings, and under Additional Security 
 | Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. | True |
 | Default Resource Group Name | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
 | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
-| Authentication Type | The type of authentication. Relevant only for Cortex XSOAR or Cortex XSIAM \(version &lt; 3.0\). For Cortex Platform \(Cortex XSIAM version &gt;= 3.0 and Cortex Cloud\), authentication is handled automatically and this field is ignored. Can be Client Credentials \(recommended\), Device Code, Authorization Code, or Azure Managed Identities. | False |
+| Authentication Type | The type of authentication. Can be Client Credentials (default authentication type), Device Code, Authorization Code, or Azure Managed Identities. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Tenant ID | The tenant ID of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM \(version &lt; 3.0\). | False |
-| Client Secret | The client secret of the Azure app registration. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\) when using the Client Credentials flow. | False |
-| Application redirect URI | The application redirect URI for the Authorization Code flow. Relevant only for Cortex XSOAR and Cortex XSIAM \(version &lt; 3.0\). | False |
-| Authorization code | The authorization code for the Authorization Code flow, received from the authorization step. Relevant only for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). See the Detailed Instructions \(?\) section. | False |
-| Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only when the integration is running on an Azure VM \(for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\)\). | False |
+| Tenant ID | The tenant ID of the Azure app registration. | False |
+| Client Secret | The client secret of the Azure app registration. Required when using the Client Credentials flow. | False |
+| Application redirect URI | The application redirect URI for the Authorization Code flow. | False |
+| Authorization code | The authorization code for the Authorization Code flow, received from the authorization step. See the Detailed Instructions (?) section. | False |
+| Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only when the integration is running on an Azure VM. | False |
 
 ## Commands
 
@@ -177,7 +177,7 @@ Sets properties for the blob service in a specific account storage. The command 
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment. Required permission: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
+Creates a policy assignment. Required permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -378,8 +378,6 @@ There is no context output for this command.
 
 ### azure-monitor-log-profile-update
 
-### azure-monitor-log-profile-update
-
 ***
 Updates a log profile in Azure Monitoring REST API. Required permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
 
@@ -412,6 +410,8 @@ Updates a log profile in Azure Monitoring REST API. Required permissions: Micros
 | Azure.Monitor.LogProfiles.properties.categories | Array | A list of categories of logs that are collected. |
 | Azure.Monitor.LogProfiles.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
 | Azure.Monitor.LogProfiles.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
+
+### azure-disk-update
 
 ***
 Updates a disk. The command is deprecated, please use azure-compute-disk-update. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write.
@@ -1231,8 +1231,6 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 
 ### azure-billing-usage-list
 
-### azure-billing-usage-list
-
 ***
 Returns actual usage and cost details for a given time period, optionally filtered by service name. Required permission: Microsoft.Consumption/usageDetails/read.
 
@@ -1397,6 +1395,8 @@ Lists configured budgets at the subscription or resource group level. Required p
 | Azure.Billing.Budget.properties.forecastSpend.amount | Number | Forecasted spend amount. |
 | Azure.Billing.Budget.properties.forecastSpend.unit | String | Currency unit for forecasted spend. |
 
+### azure-storage-container-property-get
+
 ***
 Retrieves properties for a specific Container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
@@ -1449,8 +1449,6 @@ There is no context output for this command.
 
 ### azure-storage-container-delete
 
-### azure-storage-container-delete
-
 ***
 Marks a specific Container for deletion. The Container and any Blobs contained within it will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
 
@@ -1470,6 +1468,8 @@ Marks a specific Container for deletion. The Container and any Blobs contained w
 #### Context Output
 
 There is no context output for this command.
+
+### azure-storage-container-blob-create
 
 ***
 Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
@@ -1668,8 +1668,6 @@ There is no context output for this command.
 
 ### azure-storage-blob-property-get
 
-### azure-storage-blob-property-get
-
 ***
 Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
@@ -1739,9 +1737,6 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 | Azure.Storage.Blob.Tag.Value | String | Tag value. |
 | Azure.Storage.Blob.name | String | Blob name. |
 | Azure.Storage.Blob.ContainerName | String | Container name. |
-
-***
-Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read.
 
 ### azure-compute-vm-list
 
@@ -2013,6 +2008,8 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | Azure.CosmosDB.DBAccounts.properties.virtualNetworkRules | Unknown | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.DBAccounts.properties.writeLocations | Unknown | An array that contains the write locations enabled for the Cosmos DB account. |
 
+### azure-keyvault-vault-update
+
 ***
 Updates a key vault in the specified subscription. The required permissions are: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write.
 
@@ -2086,6 +2083,8 @@ Gets all resource groups for a subscription. Required Permissions: Microsoft.Res
 | Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. |
 | Azure.ResourceManagement.ResourceGroups.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
 | Azure.ResourceManagement.ResourceGroups.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
+
+### azure-sqldb-security-alert-policy-update
 
 ***
 Updates a database's security alert policy. The required permissions are: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write.
@@ -2253,7 +2252,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
 | source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
 | description | A description to add to the rule. | Optional |
 
 #### Context Output
@@ -2399,6 +2398,11 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
+### azure-vn-security-rule-update
+
+***
+Update a security rule. If one does not exist, it will be created. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
+
 #### Base Command
 
 `azure-vn-security-rule-update`
@@ -2440,11 +2444,6 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
-
-### azure-vn-security-rules-list
-
-***
-Gets all security rules in a network security group. Required permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
 
 ### azure-vn-security-rules-list
 
@@ -2552,6 +2551,13 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 | Azure.VirtualNetworks.PublicIPAddresses.sku.tier | String | The public IP address's SKU tier. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |
 
+### azure-storage-blob-container-update
+
+***
+Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
+
+#### Base Command
+
 `azure-storage-blob-container-update`
 
 #### Input
@@ -2580,8 +2586,6 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 
 ### azure-storage-blob-create
 
-### azure-storage-blob-create
-
 ***
 Create a new Blob under the specified Container. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
@@ -2603,7 +2607,6 @@ Create a new Blob under the specified Container. Required permissions: Microsoft
 #### Context Output
 
 There is no context output for this command.
-***
 
 ### azure-storage-blob-get
 
@@ -2663,7 +2666,6 @@ Updates the tags for the specified Blob. The command can replace the entire tags
 #### Context Output
 
 There is no context output for this command.
-Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 ### azure-storage-blob-property-set
 
@@ -2695,8 +2697,6 @@ Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blo
 #### Context Output
 
 There is no context output for this command.
-
-#### Base Command
 
 ### azure-appservice-webapp-config-update
 
@@ -2968,6 +2968,13 @@ Updates a container registry. Required permissions: Microsoft.ContainerRegistry/
 | Azure.ContainerRegistry.Registries.tags | Unknown | The tags of the resource. |
 | Azure.ContainerRegistry.Registries.type | String | The type of the resource. |
 
+### azure-storage-blob-service-property-get
+
+***
+Run this command to get the blob service properties of a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read.
+
+#### Base Command
+
 `azure-storage-blob-service-property-get`
 
 #### Input
@@ -3036,7 +3043,7 @@ Sets properties for the blob service in a specific account storage. Required per
 ### azure-auth-test
 
 ***
-Tests the connectivity to Azure. Relevant only for Cortex XSOAR and Cortex XSIAM (version < 3.0).
+Tests the connectivity to Azure.
 
 #### Base Command
 
@@ -3053,7 +3060,7 @@ There is no context output for this command.
 ### azure-generate-login-url
 
 ***
-Generates the login URL used for authorization code flow. Relevant only for Cortex XSIAM (version < 3.0) and Cortex XSOAR (Authorization Code flow).
+Generates the login URL used for authorization code flow.
 
 #### Base Command
 
@@ -3070,7 +3077,7 @@ There is no context output for this command.
 ### azure-auth-complete
 
 ***
-Completes the authorization process. Should be used after running the azure-auth-start command. Relevant only for Cortex XSIAM (version < 3.0) and Cortex XSOAR (Device Code flow).
+Completes the authorization process for Device Code flow. Should be used after running the azure-auth-start command.
 
 #### Base Command
 
@@ -3087,7 +3094,7 @@ There is no context output for this command.
 ### azure-auth-reset
 
 ***
-Resets the authentication process. Relevant only for Cortex XSOAR and Cortex XSIAM (version < 3.0).
+Resets the authentication process.
 
 #### Base Command
 
@@ -3104,7 +3111,7 @@ There is no context output for this command.
 ### azure-auth-start
 
 ***
-Starts the authorization process. Follow the instructions in the command results. Relevant only for Cortex XSIAM (version < 3.0) and Cortex XSOAR (Device Code / Authorization Code flows).
+Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
 
 #### Base Command
 

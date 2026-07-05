@@ -618,8 +618,12 @@ class AzureClient:
             ms_resource: str | None
             if is_device_code:
                 token_retrieval_url = urllib.parse.urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token")
-                ms_scope = SCOPE_BY_CONNECTION["Device Code"]
-                ms_resource = "https://management.core.windows.net"  # disable-secrets-detection
+                # Use the per-command resource (management or storage) as the single source of truth,
+                # then derive the matching Device Code delegated scope from it (space-delimited form,
+                # unlike the `.default` form used by the other flows). This keeps storage-container
+                # commands storage-scoped under Device Code auth instead of always management-scoped.
+                ms_resource = (resource or DEFAULT_RESOURCE).rstrip("/")
+                ms_scope = f"{ms_resource}/user_impersonation offline_access user.read"
             else:
                 token_retrieval_url = None
                 ms_scope = scope
@@ -5439,20 +5443,45 @@ def _get_ms_client(client: AzureClient) -> "MicrosoftClient":
 def test_connection(client: AzureClient) -> str:
     """Validate the Azure connection by requesting an access token (marketplace flows).
 
-    Raises an exception (from MicrosoftApiModule) if authentication fails.
+    Args:
+        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
+
+    Returns:
+        str: "Success!" if an access token was retrieved successfully.
+
+    Raises:
+        Exception: Propagated from MicrosoftApiModule if authentication fails.
     """
     _get_ms_client(client).get_access_token()  # If fails, MicrosoftApiModule raises an error
     return "Success!"
 
 
 def start_auth(client: AzureClient) -> CommandResults:
-    """Start the interactive (Device Code) authorization process (marketplace flows)."""
+    """Start the interactive (Device Code) authorization process (marketplace flows).
+
+    Args:
+        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
+
+    Returns:
+        CommandResults: A result containing the device-code authorization instructions for the user,
+            who must then run the `!azure-auth-complete` command to finish the flow.
+    """
     result = _get_ms_client(client).start_auth("!azure-auth-complete")
     return CommandResults(readable_output=result)
 
 
 def complete_auth(client: AzureClient) -> str:
-    """Complete the interactive (Device Code) authorization process (marketplace flows)."""
+    """Complete the interactive (Device Code) authorization process (marketplace flows).
+
+    Args:
+        client (AzureClient): The Azure client used to obtain the underlying Microsoft client.
+
+    Returns:
+        str: A confirmation message indicating the authorization completed successfully.
+
+    Raises:
+        Exception: Propagated from MicrosoftApiModule if the access token cannot be retrieved.
+    """
     _get_ms_client(client).get_access_token()
     return "Authorization completed successfully."
 
@@ -5803,7 +5832,9 @@ def main():  # pragma: no cover
         elif command == "azure-auth-test":
             return_results(test_connection(client))
         elif command == "azure-generate-login-url":
-            return_results(generate_login_url(_get_ms_client(client)))
+            return_results(
+                generate_login_url(_get_ms_client(client), params.get("azure_ad_endpoint", "https://login.microsoftonline.com"))
+            )
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:

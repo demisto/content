@@ -23,7 +23,7 @@ To add a permission:
 3. Click **API permissions** > **Add permission**.
 4. Search for the specific Microsoft API and select the specific permission of type Delegated.
 
-### Authentication Using the Client Credentials Flow (Recommended)  
+### Authentication Using the Client Credentials Flow
 
 Configure an instance that uses this flow with a self-deployed Azure application.  
 
@@ -83,3 +83,5 @@ For authentication using a user-assigned managed identity:
 3. In the **Authentication Type** drop-down list, select *Azure Managed Identities*.
 4. Click **Test** to validate the connection.
 Click **Test** to validate the connection.
+
+More about Microsoft Integrations - Authentication Flows, See here: https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows

@@ -5817,13 +5817,15 @@ def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
     assert kwargs["connection_type"] == "Client Credentials"
 
 
-def test_azure_client_device_code_uses_device_scope(mocker):
+def test_azure_client_device_code_default_resource_derives_management_scope(mocker):
     """
-    Given: A client constructed with the Device Code flow.
+    Given: A Device Code client for a management (default) command, i.e. resource=DEFAULT_RESOURCE.
     When: AzureClient builds the MicrosoftClient.
-    Then: The MicrosoftClient receives the device-code scope and resource (not a per-command scope).
+    Then: The MicrosoftClient receives the management resource (no trailing slash) and a Device Code
+          delegated scope derived from it. Regression test: the branch derives scope/resource from
+          the per-command resource instead of hardcoding management-only values.
     """
-    from Azure import SCOPE_BY_CONNECTION
+    from Azure import DEFAULT_RESOURCE
 
     captured = {}
 
@@ -5832,10 +5834,36 @@ def test_azure_client_device_code_uses_device_scope(mocker):
         return mocker.Mock()
 
     mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
-    AzureClient(app_id="app", connection_type="Device Code", scope="should-be-ignored", resource="ignored")
+    AzureClient(app_id="app", connection_type="Device Code", resource=DEFAULT_RESOURCE)
 
-    assert captured["scope"] == SCOPE_BY_CONNECTION["Device Code"]
-    assert captured["resource"] == "https://management.core.windows.net"  # disable-secrets-detection
+    expected_resource = DEFAULT_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
+    assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_device_code_storage_resource_derives_storage_scope(mocker):
+    """
+    Given: A Device Code client for a storage-container command, i.e. resource=STORAGE_RESOURCE.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the storage resource (no trailing slash) and a Device Code
+          delegated scope derived from it, so storage commands are storage-scoped under Device Code
+          auth instead of always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", resource=STORAGE_RESOURCE)
+
+    expected_resource = STORAGE_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
     assert captured["token_retrieval_url"] is not None
 
 
@@ -5919,20 +5947,6 @@ def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params
 
     _, kwargs = mock_azure_client.call_args
     assert kwargs["managed_identities_client_id"] == MANAGED_IDENTITIES_SYSTEM_ASSIGNED
-
-
-def test_test_connection_on_platform_raises():
-    """
-    Given: A client built for the Cortex Platform path (headers set, no MicrosoftClient).
-    When: test_connection (an auth helper command) is called.
-    Then: A clear DemistoException is raised instead of an AttributeError.
-    """
-    client = AzureClient(headers={"Authorization": "Bearer token"})
-
-    with pytest.raises(DemistoException) as excinfo:
-        Azure.test_connection(client)
-
-    assert "Cortex XSOAR and Cortex XSIAM" in str(excinfo.value)
 
 
 def test_get_azure_client_credentials_none(mocker, mock_params):
