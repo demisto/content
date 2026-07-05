@@ -55,8 +55,6 @@ There is no context output for this command.
 
 ### aws-s3-bucket-delete
 
-### aws-s3-bucket-delete
-
 ***
 Delete AWS S3 bucket, the bucket must be empty from files. Required IAM Permission: s3:DeleteBucket.
 
@@ -131,7 +129,6 @@ Sets the access control list (ACL) permissions for an existing Amazon S3 bucket.
 #### Context Output
 
 There is no context output for this command.
-***
 
 ### aws-s3-bucket-logging-put
 
@@ -155,7 +152,6 @@ Configures logging settings for an AWS S3 bucket, enabling monitoring bucket acc
 #### Context Output
 
 There is no context output for this command.
-Sets the versioning state of an existing bucket. Required IAM permission: s3:PutBucketVersioning.
 
 ### aws-s3-bucket-versioning-put
 
@@ -202,8 +198,6 @@ Applies an Amazon S3 bucket policy to an Outposts bucket. Required IAM permissio
 
 There is no context output for this command.
 
-#### Base Command
-
 ### aws-s3-bucket-website-delete
 
 ***
@@ -246,7 +240,6 @@ Creates or modifies ownership controls for an Amazon S3 bucket. Required IAM per
 #### Context Output
 
 There is no context output for this command.
-`aws-s3-bucket-website-get`
 
 ### aws-s3-bucket-website-get
 
@@ -381,8 +374,6 @@ Adds or updates an inline policy document that is embedded in the specified IAM 
 
 There is no context output for this command.
 
-#### Input
-
 ### aws-iam-login-profile-delete
 
 ***
@@ -426,7 +417,6 @@ Adds or updates an inline policy document that is embedded in the specified IAM 
 #### Context Output
 
 There is no context output for this command.
-| **Argument Name** | **Description** | **Required** |
 
 ### aws-iam-role-from-instance-profile-remove
 
@@ -449,7 +439,6 @@ Removes the specified IAM role from the specified EC2 instance profile. Required
 #### Context Output
 
 There is no context output for this command.
-| --- | --- | --- |
 
 ### aws-iam-access-key-update
 
@@ -473,7 +462,6 @@ Changes the status of the specified access key from Active to Inactive, or vice 
 #### Context Output
 
 There is no context output for this command.
-| account_id | The AWS account ID. | Optional |
 
 ### aws-eks-cluster-config-update
 
@@ -497,7 +485,6 @@ Updates an Amazon EKS cluster configuration. Only one type of update is allowed 
 #### Context Output
 
 There is no context output for this command.
-| cluster_name | The name of the cluster to describe. | Required |
 
 ### aws-eks-cluster-describe
 
@@ -710,7 +697,6 @@ Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster set
 #### Context Output
 
 There is no context output for this command.
-| db_cluster_snapshot_identifier | The identifier for the DB cluster snapshot to modify the attributes for. | Required |
 
 ### aws-rds-db-cluster-snapshot-attribute-modify
 
@@ -735,7 +721,6 @@ Modifies the attributes associated with a DB cluster snapshot. Required IAM perm
 #### Context Output
 
 There is no context output for this command.
-| publicly_accessible | Whether the DB instance is publicly accessible. Possible values are: true, false. | Optional |
 
 ### aws-rds-db-instance-modify
 
@@ -766,7 +751,6 @@ Modifies an existing Amazon RDS DB instance. Enables updating the instance class
 #### Context Output
 
 There is no context output for this command.
-| limit | The maximum number of records to include in the response. If more records exist than the specified limit value, a pagination token is included in the response so that the remaining results can be retrieved. The minimum value is 20, the maximum is 100. | Optional |
 
 ### aws-rds-db-instances-describe
 
@@ -961,7 +945,6 @@ Adds or removes permission for the specified AWS account ID to restore the speci
 #### Context Output
 
 There is no context output for this command.
-| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional |
 
 ### aws-rds-event-subscription-modify
 
@@ -1183,7 +1166,6 @@ Revokes ingress rules in a security group. Required IAM permission: ec2:RevokeSe
 #### Context Output
 
 There is no context output for this command.
-| to_port | If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes). | Optional |
 
 ### aws-ec2-security-group-ingress-authorize
 
@@ -1211,7 +1193,6 @@ Adds specified inbound (ingress) rules to a security group. Required IAM permiss
 #### Context Output
 
 There is no context output for this command.
-| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation. | Optional |
 
 ### aws-ec2-security-group-egress-revoke
 
@@ -1290,7 +1271,6 @@ Adds or removes permission settings for a specified snapshot. Note: snapshots en
 #### Context Output
 
 There is no context output for this command.
-There is no context output for this command.
 
 ### aws-ec2-instance-attribute-modify
 
@@ -1315,7 +1295,6 @@ Modifies a specific attribute for a specific instance. You can define only one a
 
 #### Context Output
 
-There is no context output for this command.
 There is no context output for this command.
 
 ### aws-ec2-image-attribute-modify
@@ -1343,7 +1322,6 @@ Modifies a specific attribute of the specified AMI. Required IAM permission: ec2
 #### Context Output
 
 There is no context output for this command.
-***
 
 ### aws-ec2-instance-metadata-options-modify
 
@@ -1367,7 +1345,6 @@ Modifes the EC2 instance metadata parameters on a running or stopped instance. R
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.Snapshot.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. |
 
 ### aws-ec2-snapshot-create
 
@@ -1434,8 +1411,6 @@ Adds or removes permission settings for a specific snapshot. Required IAM permis
 
 There is no context output for this command.
 
-#### Base Command
-
 ### aws-ecs-cluster-settings-update
 
 ***
@@ -1488,7 +1463,6 @@ Modifies a subnet attribute. Required IAM permission: ec2:ModifySubnetAttribute.
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
 
 ### aws-ec2-vpcs-describe
 
@@ -1696,7 +1670,6 @@ Starts recording AWS API calls and log file delivery for a trail. For trails ena
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.Instances.EnaSupport | Boolean | Specifies whether enhanced networking with ENA is enabled. |
 
 ### aws-ec2-instances-describe
 
@@ -1860,7 +1833,6 @@ Stops an Amazon EBS-backed instance. Required IAM permission: ec2:StopInstances.
 #### Context Output
 
 There is no context output for this command.
-| **Argument Name** | **Description** | **Required** |
 
 ### aws-ec2-instances-terminate
 
@@ -1882,7 +1854,6 @@ Shuts down specific instances. This operation is idempotent; you can terminate a
 #### Context Output
 
 There is no context output for this command.
-| ebs_snapshot_id | The ID of the snapshot. | Optional |
 
 ### aws-ec2-instances-run
 
@@ -2185,7 +2156,6 @@ Adds or overwrites one or more tags for specific Amazon EC2 resources. When you 
 #### Context Output
 
 There is no context output for this command.
-| AWS.CloudTrail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
 
 ### aws-cloudtrail-trails-describe
 
@@ -2245,7 +2215,6 @@ Deletes the bucket policy from an Amazon S3 bucket, removing all policy-based ac
 #### Context Output
 
 There is no context output for this command.
-`aws-ec2-images-describe`
 
 ### aws-s3-public-access-block-get
 
@@ -2397,7 +2366,6 @@ Deregisters the specified Amazon Machine Image (AMI). After you deregister an AM
 #### Context Output
 
 There is no context output for this command.
-Waits until an AMI is in the 'available' state. This command polls the AMI status until it becomes available or the maximum wait time is reached. Required IAM Permission: ec2:DescribeImages.
 
 ### aws-ec2-image-copy
 
@@ -2457,7 +2425,6 @@ Waits until an AMI is in the 'available' state. This command polls the AMI statu
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. |
 
 ### aws-ec2-snapshots-describe
 
@@ -2584,7 +2551,6 @@ A waiter function that waits until the snapshot is complete. Required IAM Permis
 #### Context Output
 
 There is no context output for this command.
-| bucket | The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions. | Required |
 
 ### aws-s3-bucket-encryption-get
 
@@ -3096,7 +3062,6 @@ Deletes a Lambda function URL. When you delete a function URL, you can't recover
 #### Context Output
 
 There is no context output for this command.
-| AWS.Lambda.Functions.Runtime | string | The identifier of the function's runtime. |
 
 ### aws-lambda-function-create
 
@@ -3209,7 +3174,6 @@ Deletes a Lambda function. Required IAM Permission: lambda:DeleteFunction.
 #### Context Output
 
 There is no context output for this command.
-| s3_key | The Amazon S3 key of the layer archive. | Optional |
 
 ### aws-lambda-layer-version-delete
 
@@ -3232,8 +3196,6 @@ Deletes a version of a Lambda layer. Required IAM Permission: lambda:DeleteLayer
 #### Context Output
 
 There is no context output for this command.
-
-#### Base Command
 
 ### aws-lambda-layer-version-publish
 
@@ -3626,7 +3588,6 @@ Enables automatic rotation for a symmetric customer-managed KMS key. Not support
 #### Context Output
 
 There is no context output for this command.
-Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED). Required IAM permission: acm:UpdateCertificateOptions.
 
 ### aws-elb-load-balancer-attributes-modify
 
@@ -3940,7 +3901,6 @@ Creates a security group. Required IAM permission: ec2:CreateSecurityGroup.
 #### Context Output
 
 There is no context output for this command.
-| --- | --- | --- |
 
 ### aws-ec2-security-group-delete
 
@@ -3963,8 +3923,6 @@ Deletes a security group. Required IAM permission: ec2:DeleteSecurityGroup.
 #### Context Output
 
 There is no context output for this command.
-
-#### Input
 
 ### aws-ec2-security-groups-describe
 
@@ -4125,7 +4083,6 @@ Disassociates an Elastic IP address from the instance or network interface it's 
 #### Context Output
 
 There is no context output for this command.
-***
 
 ### aws-ec2-address-release
 
@@ -4241,7 +4198,6 @@ Waits until the specified EC2 instances reach the 'running' state. Checks the st
 #### Context Output
 
 There is no context output for this command.
-***
 
 ### aws-ec2-instance-status-ok-waiter
 
@@ -4291,7 +4247,6 @@ Waits until EC2 instances are in the 'stopped' state. Checks every `waiter_delay
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.IamInstanceProfileAssociationsNextToken | String | The token for the next set of results. |
 
 ### aws-ec2-instance-terminated-waiter
 
@@ -4316,7 +4271,6 @@ Waits until the specified EC2 instances reach the 'terminated' state. Checks eve
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.Instances.PasswordData.Timestamp | Date | The time the data was last updated. |
 
 ### aws-ec2-iam-instance-profile-associations-describe
 
@@ -4655,7 +4609,6 @@ Deletes the specified EBS volume. The volume must be in the available state (not
 #### Context Output
 
 There is no context output for this command.
-| iam_instance_profile_name | The name of the instance profile. | Optional |
 
 ### aws-ec2-launch-templates-describe
 
@@ -5038,7 +4991,6 @@ Modifies the specified EC2 Fleet. Required IAM Permission: ec2:ModifyFleet.
 #### Context Output
 
 There is no context output for this command.
-| asset_ids | A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts. | Optional |
 
 ### aws-ec2-key-pairs-describe
 
@@ -5190,7 +5142,6 @@ Deletes a specified VPC. You must detach or delete all gateways and resources th
 #### Context Output
 
 There is no context output for this command.
-| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsSpecifiedDomainSet | array | Indicates which of the private domains to create private hosted zones for and associate with the specified VPC. |
 
 ### aws-ec2-vpc-endpoint-create
 
@@ -5321,7 +5272,6 @@ Detaches an internet gateway from a VPC, disabling connectivity between the inte
 #### Context Output
 
 There is no context output for this command.
-| rule_number | The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number. | Required |
 
 ### aws-ec2-internet-gateway-delete
 
