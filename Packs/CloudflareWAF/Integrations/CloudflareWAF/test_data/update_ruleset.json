@@ -1,0 +1,25 @@
+{
+    "result": {
+        "id": "ruleset_id_1",
+        "name": "Updated Ruleset Name",
+        "kind": "custom",
+        "phase": "http_request_firewall_custom",
+        "description": "Updated description",
+        "version": "2",
+        "last_updated": "2023-04-01T12:00:00Z",
+        "rules": [
+            {
+                "id": "rule_id_1",
+                "action": "block",
+                "expression": "(ip.src eq 192.0.2.1)",
+                "description": "Block bad IP",
+                "enabled": true,
+                "version": "2",
+                "ref": "ref_1"
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}
