@@ -2059,7 +2059,13 @@ def get_cases_command(client: Client, args: dict[str, Any]):
 
 def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
     if sort_by_creation_time and sort_by_modification_time:
-        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
+        raise CortexConflictingArgsError(
+            override_message="Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both",
+            arguments=['sort_by_creation_time', 'sort_by_modification_time'],
+            reason="Only one sort field can be specified at a time.",
+            resolution="Provide either sort_by_creation_time or sort_by_modification_time, not both.",
+            mutually_exclusive=True,
+        )
 
     if sort_by_creation_time:
         sort_field = "CREATION_TIME"
@@ -3393,21 +3399,41 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
-        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
+        raise CortexMissingArgError(
+            'resolve_reason',
+            override_message="In order to set the case to resolved, you must provide a resolve reason.",
+        )
 
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
-        raise ValueError(
-            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved'."
+        conflicting = [arg for arg in ('resolve_reason', 'resolve_all_alerts', 'resolved_comment')
+                       if args.get(arg)]
+        raise CortexConflictingArgsError(
+            override_message=(
+                "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
+                "'resolved'."
+            ),
+            arguments=conflicting + ['status'],
+            reason="resolve_reason, resolve_all_alerts, and resolved_comment can only be used when status is 'resolved'.",
+            resolution="Set status to 'resolved' or remove the resolution-specific arguments.",
         )
 
     if status and not CaseManagement.STATUS.get(status):
-        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
+        raise CortexInvalidArgError(
+            'status',
+            value=status,
+            allowed_values=list(CaseManagement.STATUS.keys()),
+            override_message=f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}",
+        )
 
     if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
-        raise ValueError(
-            f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
-            f"{list(CaseManagement.SEVERITY.keys())}"
+        raise CortexInvalidArgError(
+            'user_defined_severity',
+            value=user_defined_severity,
+            allowed_values=list(CaseManagement.SEVERITY.keys()),
+            override_message=(
+                f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
+                f"{list(CaseManagement.SEVERITY.keys())}"
+            ),
         )
 
     valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
@@ -3429,7 +3455,12 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload:
-        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
+        raise CortexMissingArgError(
+            ['case_name', 'description', 'assignee', 'status', 'notes', 'starred',
+             'user_defined_severity', 'resolve_reason', 'resolved_comment', 'resolve_all_alerts', 'custom_fields'],
+            require_one=True,
+            override_message=f"No valid update parameters provided.\n{error_messages}",
+        )
 
     def is_bulk_update_allowed(case_update_payload: dict) -> bool:
         # Bulk update supports only those fields
@@ -3562,7 +3593,11 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
     if error_messages:
         return_results(command_results)
-        return_error(f"The following fields could not be updated:\n{error_messages}")
+        raise CortexInvalidArgError(
+        'custom_fields',
+        reason=error_messages,
+        override_message=f"The following fields could not be updated:\n{error_messages}",
+    )
 
     return command_results
 
