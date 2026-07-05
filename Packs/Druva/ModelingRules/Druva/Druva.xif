@@ -93,12 +93,6 @@ alter
     xdm.event.outcome_reason      = sec_errmsg,
     xdm.event.log_level           = if(to_string(syslogSeverity) = "3", XDM_CONST.LOG_LEVEL_ERROR, to_string(syslogSeverity) = "4", XDM_CONST.LOG_LEVEL_WARNING, to_string(syslogSeverity) = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, to_string(syslogSeverity));
 
-[RULE:druva_cybersecurity_events_specific_fields]
-alter
-    sec_mfamode = json_extract_scalar(to_json_string(details), "$.mfaMode")
-| alter
-    xdm.auth.mfa.method = sec_mfamode;
-
 [MODEL: dataset="druva_druva_raw"]
 filter eventType = "Alert"
 | call druva_common_fields
@@ -112,8 +106,10 @@ filter eventType = "Backup"
 filter category = "EVENT" 
 | call druva_security_common_fields;
 
+// Fallback filter to capture and process unhandled inSync events.
 filter eventType not in ("Alert", "Backup") and details = null
 | call druva_common_fields;
 
+// Fallback filter to capture and process unhandled security events.
 filter category = "EVENT" and feature not in ("Admin Event","Alerts And Notifications") and eventType = null
 | call druva_security_common_fields;
