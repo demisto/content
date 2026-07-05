@@ -3555,6 +3555,34 @@ class TestUniversalCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
+    def test_get_system_info_ignores_platform_injected_args(self, mocker):
+        """
+        Regression (CRTX-240383): when the command is invoked with a brand-scoped context
+        (e.g. as an Agentix action), the platform injects a 'using-brand' arg. The
+        pan-os-platform-get-system-info handler must not forward it to the typed
+        get_system_info() function (which would raise 'unexpected keyword argument').
+        """
+        import Panorama
+
+        mocker.patch.object(Panorama, "get_topology", return_value=MagicMock())
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"device_filter_string": "fw1", "target": "007", "using-brand": "Panorama"},
+        )
+        mocker.patch.object(demisto, "command", return_value="pan-os-platform-get-system-info")
+        mocker.patch.object(demisto, "params", return_value=integration_firewall_params)
+        get_system_info_mock = mocker.patch.object(Panorama, "get_system_info", return_value=MagicMock())
+        mocker.patch.object(Panorama, "return_results")
+
+        Panorama.main()
+
+        # Must have been called without raising, and without the platform-injected key.
+        get_system_info_mock.assert_called_once()
+        _, kwargs = get_system_info_mock.call_args
+        assert "using-brand" not in kwargs
+        assert kwargs == {"device_filter_string": "fw1", "target": "007"}
+
     def test_get_available_software(self, mock_topology):
         """
         Test we can convert result from PanDevice.software.check() into the correct dataclasses
