@@ -16,6 +16,7 @@ alter
     xdm.source.user.username = coalesce(userid, uid),
     xdm.source.user_agent = user_agent,
     xdm.intermediate.ipv4 = egress_ip,
+    xdm.intermediate.is_proxy = if(egress_ip != null and egress_ip != "", true), 
     xdm.intermediate.cloud.region = region,
     xdm.target.ipv4 = coalesce(origin_ip, dst_ip),
     xdm.target.port = to_integer(dst_from_port),
