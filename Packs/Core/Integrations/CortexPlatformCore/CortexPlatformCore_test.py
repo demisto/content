@@ -9010,9 +9010,10 @@ def test_update_case_command_status_resolved_without_reason_raises_error(mocker:
     WHEN:
         The update_case_command function is called.
     THEN:
-        ValueError is raised indicating resolve_reason is required.
+        CortexMissingArgError is raised indicating resolve_reason is required.
     """
     from CortexPlatformCore import update_case_command, Client
+    from CommonServerPython import CortexMissingArgError
 
     client = Client(base_url="", headers={})
 
@@ -9021,7 +9022,7 @@ def test_update_case_command_status_resolved_without_reason_raises_error(mocker:
         "status": "resolved",
     }
 
-    with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason"):
+    with pytest.raises(CortexMissingArgError, match="In order to set the case to resolved, you must provide a resolve reason"):
         update_case_command(client, args)
 
 
@@ -9032,9 +9033,10 @@ def test_update_case_command_resolve_reason_without_resolved_status_raises_error
     WHEN:
         The update_case_command function is called.
     THEN:
-        ValueError is raised indicating status must be resolved.
+        CortexConflictingArgsError is raised indicating status must be resolved.
     """
     from CortexPlatformCore import update_case_command, Client
+    from CommonServerPython import CortexConflictingArgsError
 
     client = Client(base_url="", headers={})
 
@@ -9044,7 +9046,7 @@ def test_update_case_command_resolve_reason_without_resolved_status_raises_error
         "resolve_reason": "false_positive",
     }
 
-    with pytest.raises(ValueError, match="the case status must be set to 'resolved'."):
+    with pytest.raises(CortexConflictingArgsError, match="the case status must be set to 'resolved'."):
         update_case_command(client, args)
 
 
@@ -9055,9 +9057,10 @@ def test_update_case_command_invalid_status_raises_error(mocker: MockerFixture):
     WHEN:
         The update_case_command function is called.
     THEN:
-        ValueError is raised indicating invalid status.
+        CortexInvalidArgError is raised indicating invalid status.
     """
     from CortexPlatformCore import update_case_command, Client
+    from CommonServerPython import CortexInvalidArgError
 
     client = Client(base_url="", headers={})
 
@@ -9066,7 +9069,7 @@ def test_update_case_command_invalid_status_raises_error(mocker: MockerFixture):
         "status": "invalid_status",
     }
 
-    with pytest.raises(ValueError, match="Invalid status 'invalid_status'"):
+    with pytest.raises(CortexInvalidArgError, match="Invalid status 'invalid_status'"):
         update_case_command(client, args)
 
 
@@ -9077,9 +9080,10 @@ def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture
     WHEN:
         The update_case_command function is called.
     THEN:
-        ValueError is raised indicating invalid severity.
+        CortexInvalidArgError is raised indicating invalid severity.
     """
     from CortexPlatformCore import update_case_command, Client
+    from CommonServerPython import CortexInvalidArgError
 
     client = Client(base_url="", headers={})
 
@@ -9088,7 +9092,7 @@ def test_update_case_command_invalid_severity_raises_error(mocker: MockerFixture
         "user_defined_severity": "invalid_severity",
     }
 
-    with pytest.raises(ValueError, match="Invalid user_defined_severity 'invalid_severity'"):
+    with pytest.raises(CortexInvalidArgError, match="Invalid user_defined_severity 'invalid_severity'"):
         update_case_command(client, args)
 
 
@@ -9099,16 +9103,33 @@ def test_update_case_command_no_valid_parameters_raises_error(mocker: MockerFixt
     WHEN:
         The update_case_command function is called.
     THEN:
-        ValueError is raised indicating no valid update parameters.
+        CortexMissingArgError is raised indicating no valid update parameters.
     """
     from CortexPlatformCore import update_case_command, Client
+    from CommonServerPython import CortexMissingArgError
 
     client = Client(base_url="", headers={})
 
     args = {"case_id": "123"}
 
-    with pytest.raises(ValueError, match="No valid update parameters provided."):
+    with pytest.raises(CortexMissingArgError, match="No valid update parameters provided."):
         update_case_command(client, args)
+
+
+def test_get_cases_sort_order_both_sort_args_raises_error():
+    """
+    GIVEN:
+        Both sort_by_creation_time and sort_by_modification_time are provided.
+    WHEN:
+        get_cases_sort_order is called.
+    THEN:
+        CortexConflictingArgsError is raised with the original message preserved.
+    """
+    from CortexPlatformCore import get_cases_sort_order
+    from CommonServerPython import CortexConflictingArgsError
+
+    with pytest.raises(CortexConflictingArgsError, match="Can't provide both"):
+        get_cases_sort_order(sort_by_creation_time="asc", sort_by_modification_time="desc")
 
 
 def test_update_case_command_non_bulk_fields_trigger_individual_update(mocker: MockerFixture):

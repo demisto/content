@@ -6221,3 +6221,24 @@ def test_render_bioc_description_simple_joins_pretty_names():
     ]
 
     assert render_bioc_description_simple(indicator) == "File Name = evil.exe"
+
+
+def test_get_issues_by_filter_custom_filter_completely_invalid_json_raises_error(requests_mock):
+    """
+    Given:
+        - Core client
+        - A custom_filter value that is completely invalid JSON (not fixable by the agent_id heuristic)
+    When:
+        - Running get_issues_by_filter_command
+    Then:
+        - CortexInvalidArgError is raised with the original message preserved via override_message
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+    from CommonServerPython import CortexInvalidArgError
+
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    args = {"custom_filter": "this is not json at all"}
+
+    with pytest.raises(CortexInvalidArgError, match="custom_filter format is not valid"):
+        get_issues_by_filter_command(client, args)
