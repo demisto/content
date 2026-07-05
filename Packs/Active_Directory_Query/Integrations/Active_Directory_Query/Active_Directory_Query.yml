@@ -521,9 +521,9 @@ script:
     - name: page-size
       description: The number of results to fetch per LDAP page. Also sets the total result cap. Use together with page-cookie for paginated retrieval.
     - name: page-cookie
-      description: An opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results.
+      description: The opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results.
     - name: memberof-limit
-      description: Maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting.
+      description: The maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting.
     outputs:
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.

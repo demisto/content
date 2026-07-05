@@ -840,7 +840,10 @@ def search_computers(default_base_dn, page_size):
         page_size = arg_to_number(args["page-size"])
         size_limit = page_size
 
-    memberof_limit = arg_to_number(args.get("memberof-limit")) or None  # 0 or unset both mean "no limit"
+    memberof_limit_raw = arg_to_number(args.get("memberof-limit"))
+    memberof_limit = (
+        memberof_limit_raw if memberof_limit_raw and memberof_limit_raw > 0 else None
+    )  # 0 or negative mean "no limit"
 
     if args.get("attributes"):
         custom_attributes = args["attributes"].split(",")

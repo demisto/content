@@ -1105,9 +1105,10 @@ def test_base_dn_verified_exception(mocker):
 @pytest.mark.parametrize(
     "memberof_limit, groups, expected_count",
     [
-        (2, ["g1", "g2", "g3", "g4"], 2),  # truncated to limit
-        (10, ["g1", "g2"], 2),  # limit higher than actual count — no truncation
-        (0, ["g1", "g2"], 2),  # limit of 0 means no limit applied (falsy)
+        pytest.param(2, ["g1", "g2", "g3", "g4"], 2, id="truncated_to_limit"),
+        pytest.param(10, ["g1", "g2"], 2, id="limit_higher_than_count_no_truncation"),
+        pytest.param(0, ["g1", "g2"], 2, id="zero_limit_means_no_limit"),
+        pytest.param(-1, ["g1", "g2"], 2, id="negative_limit_means_no_limit"),
     ],
 )
 def test_search_computers_memberof_limit(mocker, memberof_limit, groups, expected_count):

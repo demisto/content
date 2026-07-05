@@ -790,8 +790,8 @@ Requires `Read` and `Read and read all properties` permissions from `Computer ob
 | custom-field-data | The value to match against the attribute specified in custom-field-type. | Optional |
 | limit | The maximum total number of computer objects to return. Ignored when page-size is set. | Optional |
 | page-size | The number of results to fetch per LDAP page. Also sets the total result cap. Use together with page-cookie for paginated retrieval. | Optional |
-| page-cookie | An opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results. | Optional |
-| memberof-limit | Maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting. | Optional |
+| page-cookie | The opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results. | Optional |
+| memberof-limit | The maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting. | Optional |
 
 #### Context Output
 
