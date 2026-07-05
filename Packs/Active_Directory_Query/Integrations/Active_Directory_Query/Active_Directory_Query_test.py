@@ -1100,3 +1100,94 @@ def test_base_dn_verified_exception(mocker):
     assert error_mock.call_count == 1
     assert "Error during Base DN verification" in error_mock.call_args[0][0]
     assert "Connection timeout" in error_mock.call_args[0][0]
+
+
+@pytest.mark.parametrize(
+    "memberof_limit, groups, expected_count",
+    [
+        pytest.param(2, ["g1", "g2", "g3", "g4"], 2, id="truncated_to_limit"),
+        pytest.param(10, ["g1", "g2"], 2, id="limit_higher_than_count_no_truncation"),
+        pytest.param(0, ["g1", "g2"], 2, id="zero_limit_means_no_limit"),
+        pytest.param(-1, ["g1", "g2"], 2, id="negative_limit_means_no_limit"),
+    ],
+)
+def test_search_computers_memberof_limit(mocker, memberof_limit, groups, expected_count):
+    """
+    Given:
+        A computer entry whose memberOf list has a certain number of groups,
+        and a memberof-limit argument is provided.
+    When:
+        Running search_computers.
+    Then:
+        The memberOf list in the returned entry is capped to memberof-limit when the limit
+        is positive and smaller than the actual count; otherwise it is left unchanged.
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            import json as _json
+
+            return _json.dumps({"dn": "CN=pc1,DC=test,DC=com", "attributes": {"name": ["pc1"], "memberOf": groups}})
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {"controls": {"1.2.840.113556.1.4.319": {"value": {"cookie": None}}}}
+
+        def search(self, *args, **kwargs):
+            pass
+
+    mocker.patch.object(demisto, "args", return_value={"name": "pc1", "memberof-limit": str(memberof_limit)})
+    results_mock = mocker.patch.object(demisto, "results")
+    Active_Directory_Query.connection = ConnectionMocker()
+
+    Active_Directory_Query.search_computers("dc=test,dc=com", page_size=20)
+
+    # No size-guard warning — single demisto.results call with the data entry
+    results_call = results_mock.call_args[0][0]
+    returned_computers = results_call["EntryContext"]["ActiveDirectory.Computers(obj.dn == val.dn)"]
+    assert len(returned_computers[0]["memberOf"]) == expected_count
+
+
+def test_search_computers_response_size_guard(mocker):
+    """
+    Given:
+        A computer entry with a memberOf list, and the response size threshold is patched to 1 byte
+        so the guard always triggers.
+    When:
+        Running search_computers.
+    Then:
+        The memberOf attribute is stripped from the result and a warning CommandResults entry
+        is returned before the data entry.
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            import json
+
+            return json.dumps({"dn": "CN=pc1,DC=test,DC=com", "attributes": {"name": ["pc1"], "memberOf": ["g1", "g2"]}})
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {"controls": {"1.2.840.113556.1.4.319": {"value": {"cookie": None}}}}
+
+        def search(self, *args, **kwargs):
+            pass
+
+    mocker.patch.object(demisto, "args", return_value={"name": "pc1"})
+    results_mock = mocker.patch.object(demisto, "results")
+    mocker.patch.object(Active_Directory_Query, "MAX_COMPUTER_RESPONSE_BYTES", 1)
+    Active_Directory_Query.connection = ConnectionMocker()
+
+    Active_Directory_Query.search_computers("dc=test,dc=com", page_size=20)
+
+    # Two demisto.results calls: warning entry first, then data entry
+    assert results_mock.call_count == 2
+    warning_call = results_mock.call_args_list[0][0][0]
+    assert warning_call["Type"] == 11  # EntryType.WARNING
+    assert "memberOf" in warning_call["HumanReadable"]
+
+    data_call = results_mock.call_args_list[1][0][0]
+    returned_computers = data_call["EntryContext"]["ActiveDirectory.Computers(obj.dn == val.dn)"]
+    assert "memberOf" not in returned_computers[0]

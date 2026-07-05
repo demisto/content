@@ -507,21 +507,23 @@ script:
   - name: ad-get-computer
     arguments:
     - name: dn
-      description: The computer's DN.
+      description: The Distinguished Name (DN) of the computer to retrieve.
     - name: name
-      description: The name of the computer to return information about.
+      description: The name of the computer to retrieve (matches the AD name/cn attribute).
     - name: attributes
-      description: Adds AD attributes of the resulting objects to the default attributes.
-    - name: custom-field-data
-      description: Search computers by custom field data (relevant only if the `customFieldType` argument is provided).
+      description: A comma-separated list of additional AD attributes to include in the results alongside the default attributes (name, memberOf).
     - name: custom-field-type
-      description: Search the computer by custom field type.
+      description: The AD attribute name to filter computers by (e.g., operatingSystem). Must be used together with custom-field-data.
+    - name: custom-field-data
+      description: The value to match against the attribute specified in custom-field-type.
     - name: limit
-      description: The maximum number of records to return.
+      description: The maximum total number of computer objects to return. Ignored when page-size is set.
     - name: page-size
-      description: The page size to query. The limit value will be ignored.
+      description: The number of results to fetch per LDAP page. Also sets the total result cap. Use together with page-cookie for paginated retrieval.
     - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
+      description: The opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results.
+    - name: memberof-limit
+      description: The maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting.
     outputs:
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.

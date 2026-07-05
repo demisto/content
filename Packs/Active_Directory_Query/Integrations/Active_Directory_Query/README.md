@@ -783,14 +783,15 @@ Requires `Read` and `Read and read all properties` permissions from `Computer ob
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dn | The computer's DN. | Optional |
-| name | The name of the computer to return information about. | Optional |
-| attributes | Adds AD attributes of the resulting objects to the default attributes. | Optional |
-| custom-field-data | Search computers by custom field data (relevant only if the `customFieldType` argument is provided). | Optional |
-| custom-field-type | Search the computer by custom field type. | Optional |
-| limit | The maximum number of records to return. | Optional |
-| page-size | The page size to query. The value limit will be ignored. | Optional |
-| page-cookie | An opaque string received in a paged search, used for requesting subsequent entries. | Optional |
+| dn | The Distinguished Name (DN) of the computer to retrieve. | Optional |
+| name | The name of the computer to retrieve (matches the AD name/cn attribute). | Optional |
+| attributes | A comma-separated list of additional AD attributes to include in the results alongside the default attributes (name, memberOf). | Optional |
+| custom-field-type | The AD attribute name to filter computers by (e.g., operatingSystem). Must be used together with custom-field-data. | Optional |
+| custom-field-data | The value to match against the attribute specified in custom-field-type. | Optional |
+| limit | The maximum total number of computer objects to return. Ignored when page-size is set. | Optional |
+| page-size | The number of results to fetch per LDAP page. Also sets the total result cap. Use together with page-cookie for paginated retrieval. | Optional |
+| page-cookie | The opaque pagination token returned by a previous call. Pass this value to retrieve the next page of results. | Optional |
+| memberof-limit | The maximum number of groups to return in the memberOf attribute per computer entry. Use this to prevent oversized responses when computers belong to a large number of groups. If the total response exceeds 50MB, memberOf is stripped automatically regardless of this setting. | Optional |
 
 #### Context Output
 
