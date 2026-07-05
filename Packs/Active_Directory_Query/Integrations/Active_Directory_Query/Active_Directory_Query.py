@@ -76,6 +76,7 @@ DEFAULT_PERSON_ATTRIBUTES = ["name", "displayName", "memberOf", "mail", "sAMAcco
 DEFAULT_COMPUTER_ATTRIBUTES = ["name", "memberOf"]
 DEFAULT_GROUP_ATTRIBUTES = ["name", "memberOf"]
 FIELDS_THAT_CANT_BE_MODIFIED = ["dn", "cn", "ou"]
+MAX_COMPUTER_RESPONSE_BYTES = 50 * 1024 * 1024  # 50MB — guard against oversized memberOf payloads
 
 """ HELPER FUNCTIONS """
 
@@ -796,24 +797,49 @@ def search_computers(default_base_dn, page_size):
         page_size = arg_to_number(args["page-size"])
         size_limit = page_size
 
+    memberof_limit = arg_to_number(args.get("memberof-limit")) if args.get("memberof-limit") else None
+
     if args.get("attributes"):
         custom_attributes = args["attributes"].split(",")
     attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
 
-    demisto.debug(
-        f"ad-get-computer: starting search_with_paging. "
-        f"{query=}, {default_base_dn=}, {size_limit=}, {page_size=}, attributes={attributes}"
-    )
+    demisto.debug(f"ad-get-computer: starting search_with_paging. {query=}, {default_base_dn=}, {size_limit=}, {page_size=}, {attributes=}")
     entries = search_with_paging(
         query, default_base_dn, attributes=attributes, page_size=page_size, size_limit=size_limit, page_cookie=page_cookie
     )
-    demisto.debug(f"ad-get-computer: search_with_paging completed.\nReturned {len(entries.get('flat', []))} entries.")
+    demisto.debug(f"ad-get-computer: search_with_paging completed. Returned {len(entries.get('flat', []))} entries.")
+
+    # Option 2: cap memberOf per entry when memberof-limit is provided
+    if memberof_limit is not None:
+        for entry in entries["flat"]:
+            member_of = entry.get("memberOf")
+            if isinstance(member_of, list) and len(member_of) > memberof_limit:
+                demisto.debug(f"ad-get-computer: truncating memberOf for {entry.get('name', 'unknown')} ({len(member_of)} -> {memberof_limit})")
+                entry["memberOf"] = member_of[:memberof_limit]
+
+    results: list[CommandResults] = []
+
+    # Option 3: strip memberOf entirely and surface a warning if payload exceeds the size threshold
+    response_size_mb = len(str(entries["flat"]).encode("utf-8")) // (1024 * 1024)
+    if response_size_mb > MAX_COMPUTER_RESPONSE_BYTES // (1024 * 1024):
+        demisto.debug(f"ad-get-computer: response {response_size_mb}MB exceeds threshold — stripping memberOf")
+        for entry in entries["flat"]:
+            entry.pop("memberOf", None)
+        results.append(CommandResults(
+            readable_output=(
+                f"Response size ({response_size_mb}MB) exceeded the "
+                f"{MAX_COMPUTER_RESPONSE_BYTES // (1024 * 1024)}MB safety limit. "
+                f"The 'memberOf' attribute was stripped. "
+                f"Use 'memberof-limit' argument to cap group membership, or narrow the query with the 'name' or 'dn' arguments."
+            ),
+            entry_type=EntryType.WARNING,
+        ))
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries["flat"]]
     readable_output = tableToMarkdown("Active Directory - Get Computers", entries["flat"])
 
     if endpoints:
-        results = CommandResults(
+        results.append(CommandResults(
             readable_output=readable_output,
             outputs={
                 "ActiveDirectory.Computers(obj.dn == val.dn)": entries["flat"],
@@ -822,11 +848,9 @@ def search_computers(default_base_dn, page_size):
                 "ActiveDirectory(true)": {"ComputersPageCookie": entries["page_cookie"]},
             },
             raw_response=entries["raw"],
-        )
+        ))
     else:
-        results = CommandResults(
-            readable_output=readable_output,
-        )
+        results.append(CommandResults(readable_output=readable_output))
 
     return_results(results)
 
