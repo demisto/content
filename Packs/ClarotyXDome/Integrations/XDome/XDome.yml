@@ -47,6 +47,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '50000'
