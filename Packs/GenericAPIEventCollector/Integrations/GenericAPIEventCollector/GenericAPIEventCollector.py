@@ -6,6 +6,7 @@ from json import JSONDecodeError
 
 import urllib3
 from CommonServerPython import *
+from ContentClientApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -129,7 +130,7 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
     return copy_dict
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """
     Client class to interact with the service API
 
