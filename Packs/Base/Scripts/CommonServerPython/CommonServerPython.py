@@ -11378,7 +11378,7 @@ class CortexError(DemistoException):
     # "unknown" and no retry hint is added.
     retry_guidance = None  # type: Optional[str]
 
-    def __init__(self, override_message=None, *, error_code=None, details=None, **kwargs):
+    def __init__(self, override_message=None, error_code=None, details=None, **kwargs):
         # Respect an instance-level error_code already set by a subclass
         # __init__ (e.g. CortexExternalApiError status-code auto-classification) before
         # delegating here; then the explicit param; then the class default.
@@ -11499,7 +11499,7 @@ class CortexMissingArgError(CortexError):
     error_code = CortexErrorCode.MISSING_ARGUMENT
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, override_message=None, *, require_one=True):
+    def __init__(self, arg_name, override_message=None, require_one=True):
         # Normalize to a list internally while remembering whether the caller
         # passed a single name or several.
         if isinstance(arg_name, (list, tuple, set)):
@@ -11566,7 +11566,7 @@ class CortexInvalidArgError(CortexError):
     error_code = CortexErrorCode.INVALID_ARGUMENT
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None, override_message=None):
+    def __init__(self, arg_name, value=None, reason=None, allowed_values=None, override_message=None):
         self.arg_name = arg_name
         self.value = value
         self.reason = reason
@@ -11642,7 +11642,7 @@ class CortexConflictingArgsError(CortexError):
     error_code = CortexErrorCode.CONFLICTING_ARGUMENTS
     retry_guidance = RetryGuidance.RETRY_AFTER_FIX
 
-    def __init__(self, override_message=None, *, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
+    def __init__(self, override_message=None, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
         self.arguments = list(arguments or [])
         self.reason = reason
         self.resolution = resolution
@@ -11781,7 +11781,7 @@ class CortexExternalApiError(CortexError):
     # Default, auto-generated message used when no explicit message is supplied.
     _default_message = "An error occurred while communicating with the external API."
 
-    def __init__(self, override_message=None, *, status_code=None, api_error_type=None, response_body=None):
+    def __init__(self, override_message=None, status_code=None, api_error_type=None, response_body=None):
         self.status_code = status_code
         # Original error body returned by the API. It is appended to the built
         # (auto) message rather than exposed as a separate field, so the raw API
@@ -11872,7 +11872,7 @@ class CortexRateLimitError(CortexExternalApiError):
     retry_guidance = RetryGuidance.RETRY_LATER
     _default_message = "API rate limit exceeded. Please retry later."
 
-    def __init__(self, override_message=None, *, retry_after=None, **kwargs):
+    def __init__(self, override_message=None, retry_after=None, **kwargs):
         self.retry_after = retry_after
         super().__init__(override_message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
         if retry_after:
