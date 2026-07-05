@@ -168,12 +168,6 @@
             "memory_threshold": 150
         },
         {
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
-            "timeout": 400,
-            "integrations": "Cortex XDR - IR",
-            "memory_threshold": 120
-        },
-        {
             "integrations": [
                 "Cortex XDR - IR",
                 "Core REST API"
@@ -428,14 +422,6 @@
             "fromversion": "5.5.0",
             "memory_threshold": 300,
             "timeout": 1500
-        },
-        {
-            "integrations": "SecurityAndComplianceV2",
-            "playbookID": "O365-SecurityAndComplianceV2-Test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 300,
-            "pid_threshold": 40,
-            "timeout": 2500
         },
         {
             "integrations": "Azure Storage Container",
@@ -910,12 +896,6 @@
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130,
-            "timeout": 500
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -3840,12 +3820,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "TrendMicro Cloud App Security",
-            "playbookID": "playbook_TrendmicroCAS_Test",
-            "fromversion": "5.0.0",
-            "timeout": 300
-        },
-        {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
         },
@@ -5078,13 +5052,6 @@
             ]
         },
         {
-            "playbookID": "TestIPQualityScorePlaybook",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "IPQualityScore"
-            ]
-        },
-        {
             "integrations": "CrowdStrike Falcon Sandbox V2",
             "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500
@@ -5758,10 +5725,6 @@
             "playbookID": "Kaspersky Security Center - Test"
         },
         {
-            "integrations": "Forcepoint Security Management Center",
-            "playbookID": "ForcepointSecurityManagementCenter_test"
-        },
-        {
             "integrations": "AWS - Organizations",
             "playbookID": "Test - AWS_Organizations",
             "fromversion": "6.10.0"
@@ -5907,7 +5870,7 @@
         },
         {
             "playbookID": "DomainEnrichment-Test",
-            "integrations": ["VirusTotal (API v3)","AlienVault OTX v2"],
+            "integrations": ["VirusTotal (API v3)","CrowdStrike Falcon Intel v2"],
             "instance_names": [
                 "virus_total_v3"
             ],
@@ -5927,8 +5890,8 @@
             "playbookID": "IPEnrichment-Test",
             "integrations": [
                 "VirusTotal (API v3)",
-                "AlienVault OTX v2",
-                "CrowdstrikeFalcon"
+                "Palo Alto Networks Threat Vault v2",
+                "Cortex XDR - IR"
             ],
             "instance_names": [
                 "virus_total_v3"
@@ -5976,6 +5939,7 @@
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Deprecated. There is another implementation for V2",
+        "O365-SecurityAndComplianceV2-Test": "Deprecated. Use the Microsoft Graph Security integration instead.",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
@@ -6147,10 +6111,15 @@
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
         "Gmail Single User - Test": "CIAC-11417",
-        "AWS-securityhub Test": "The creds were expired CRTX-237114"
+        "AWS-securityhub Test": "The creds were expired CRTX-237114",
+        "Alienvault_OTX_v2 - Test": "API reliability issues",
+        "ForcepointSecurityManagementCenter_test": "No instance",
+        "AnsibleTower_Test_playbook": "Instance not working",
+        "playbook_TrendmicroCAS_Test": "Authentication token not found"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
+        "Tenable.sc": "Invalid License/credentials",
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "RedCanary": "No instance",
@@ -6422,8 +6391,7 @@
         "servicenow_test_v2",
         "Rasterize Test",
         "AbuseIPDB Test",
-        "AbuseIPDB PopulateIndicators Test",
-        "O365-SecurityAndComplianceV2-Test"
+        "AbuseIPDB PopulateIndicators Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
@@ -6563,3 +6531,4 @@
         "Onion address extraction test"
     ]
 }
+

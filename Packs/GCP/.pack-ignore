@@ -1,2 +1,2 @@
 [file:GCP.yml]
-ignore=ST111
+ignore=ST111,BA129
