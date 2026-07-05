@@ -1257,4 +1257,3 @@ Retrieves a User Profile schema which holds all of the user fields in the applic
 #### Context Output
 
 There is no context output for this command.
-

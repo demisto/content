@@ -765,6 +765,49 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         return iam_user_profile
 
 
+def limit_entries_attribute(entries: dict, attribute: str, limit: int | None, max_bytes: int) -> bool:
+    """Enforce per-entry attribute truncation and a total payload size guard.
+
+    Modifies *entries* in-place (both the 'flat' and 'raw' lists).
+
+    Args:
+        entries:   The dict returned by search_with_paging, containing 'flat' and 'raw' lists.
+        attribute: The multi-value AD attribute to guard (e.g. 'memberOf').
+        limit:     Optional per-entry cap on the number of values. None means no cap.
+        max_bytes: Maximum allowed serialized size of entries['flat'] in bytes.
+                   If exceeded, the attribute is stripped entirely from all entries.
+
+    Returns:
+        True if the attribute was stripped due to the size guard, False otherwise.
+    """
+    # Per-entry truncation (applied to both flat and raw representations)
+    if limit is not None:
+        for entry in entries["flat"]:
+            values = entry.get(attribute)
+            if isinstance(values, list) and len(values) > limit:
+                demisto.debug(f"Truncating {attribute} for {entry.get('name', 'unknown')} ({len(values)} -> {limit})")
+                entry[attribute] = values[:limit]
+        for raw_entry in entries["raw"]:
+            values = raw_entry.get("attributes", {}).get(attribute)
+            if isinstance(values, list) and len(values) > limit:
+                raw_entry["attributes"][attribute] = values[:limit]
+
+    # Total payload size guard — strip entirely if still too large
+    response_size = len(str(entries["flat"]).encode("utf-8"))
+    if response_size > max_bytes:
+        demisto.debug(
+            f"Response {response_size // (1024 * 1024)}MB exceeds {max_bytes // (1024 * 1024)}MB threshold. "
+            f"Stripping field: {attribute}."
+        )
+        for entry in entries["flat"]:
+            entry.pop(attribute, None)
+        for raw_entry in entries["raw"]:
+            raw_entry.get("attributes", {}).pop(attribute, None)
+        return True
+
+    return False
+
+
 def search_computers(default_base_dn, page_size):
     # this command is equivalent to ADGetComputer script
 
@@ -797,58 +840,52 @@ def search_computers(default_base_dn, page_size):
         page_size = arg_to_number(args["page-size"])
         size_limit = page_size
 
-    memberof_limit = arg_to_number(args.get("memberof-limit")) if args.get("memberof-limit") else None
+    memberof_limit = arg_to_number(args.get("memberof-limit")) or None  # 0 or unset both mean "no limit"
 
     if args.get("attributes"):
         custom_attributes = args["attributes"].split(",")
     attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
 
-    demisto.debug(f"ad-get-computer: starting search_with_paging. {query=}, {default_base_dn=}, {size_limit=}, {page_size=}, {attributes=}")
+    demisto.debug(f"Starting search_with_paging. {query=}, {default_base_dn=}, {size_limit=}, {page_size=}, {attributes=}")
     entries = search_with_paging(
         query, default_base_dn, attributes=attributes, page_size=page_size, size_limit=size_limit, page_cookie=page_cookie
     )
-    demisto.debug(f"ad-get-computer: search_with_paging completed. Returned {len(entries.get('flat', []))} entries.")
-
-    # Option 2: cap memberOf per entry when memberof-limit is provided
-    if memberof_limit is not None:
-        for entry in entries["flat"]:
-            member_of = entry.get("memberOf")
-            if isinstance(member_of, list) and len(member_of) > memberof_limit:
-                demisto.debug(f"ad-get-computer: truncating memberOf for {entry.get('name', 'unknown')} ({len(member_of)} -> {memberof_limit})")
-                entry["memberOf"] = member_of[:memberof_limit]
+    demisto.debug(f"Search_with_paging completed. Returned {len(entries.get('flat', []))} entries.")
 
     results: list[CommandResults] = []
 
-    # Option 3: strip memberOf entirely and surface a warning if payload exceeds the size threshold
-    response_size_mb = len(str(entries["flat"]).encode("utf-8")) // (1024 * 1024)
-    if response_size_mb > MAX_COMPUTER_RESPONSE_BYTES // (1024 * 1024):
-        demisto.debug(f"ad-get-computer: response {response_size_mb}MB exceeds threshold — stripping memberOf")
-        for entry in entries["flat"]:
-            entry.pop("memberOf", None)
-        results.append(CommandResults(
-            readable_output=(
-                f"Response size ({response_size_mb}MB) exceeded the "
-                f"{MAX_COMPUTER_RESPONSE_BYTES // (1024 * 1024)}MB safety limit. "
-                f"The 'memberOf' attribute was stripped. "
-                f"Use 'memberof-limit' argument to cap group membership, or narrow the query with the 'name' or 'dn' arguments."
-            ),
-            entry_type=EntryType.WARNING,
-        ))
+    memberof_stripped = limit_entries_attribute(
+        entries, attribute="memberOf", limit=memberof_limit, max_bytes=MAX_COMPUTER_RESPONSE_BYTES
+    )
+    if memberof_stripped:
+        results.append(
+            CommandResults(
+                readable_output=(
+                    f"The 'memberOf' attribute was stripped because the response exceeded the "
+                    f"{MAX_COMPUTER_RESPONSE_BYTES // (1024 * 1024)}MB safety limit. "
+                    f"Use 'memberof-limit' to cap group membership, "
+                    "or narrow the query with the 'name' or 'dn' arguments."
+                ),
+                entry_type=EntryType.WARNING,
+            )
+        )
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries["flat"]]
     readable_output = tableToMarkdown("Active Directory - Get Computers", entries["flat"])
 
     if endpoints:
-        results.append(CommandResults(
-            readable_output=readable_output,
-            outputs={
-                "ActiveDirectory.Computers(obj.dn == val.dn)": entries["flat"],
-                # 'backward compatability' with ADGetComputer script
-                "Endpoint(obj.ID == val.ID)": endpoints,
-                "ActiveDirectory(true)": {"ComputersPageCookie": entries["page_cookie"]},
-            },
-            raw_response=entries["raw"],
-        ))
+        results.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs={
+                    "ActiveDirectory.Computers(obj.dn == val.dn)": entries["flat"],
+                    # 'backward compatability' with ADGetComputer script
+                    "Endpoint(obj.ID == val.ID)": endpoints,
+                    "ActiveDirectory(true)": {"ComputersPageCookie": entries["page_cookie"]},
+                },
+                raw_response=None if memberof_stripped else entries["raw"],
+            )
+        )
     else:
         results.append(CommandResults(readable_output=readable_output))
 
