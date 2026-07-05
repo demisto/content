@@ -344,7 +344,7 @@ script:
     - defaultValue: 'False'
       description: "Whether to exclude Network Artifacts and File Artifacts from incident data."
       name: excluding_artifacts
-    description: This command is deprecated. Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+    description: This command is deprecated. Use "xdr-case-list extra_data=true" instead. Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     name: xdr-get-incident-extra-data
     deprecated: true
     outputs:
@@ -4212,10 +4212,10 @@ script:
     - description: A comma-separated list of case IDs to filter by.
       isArray: true
       name: case_id
-    - description: A comma-separated list of case domains to filter by.
+    - description: "A comma-separated list of case domains to filter by. Note: this filter is not applied when extra_data is set to true."
       isArray: true
       name: case_domain
-    - description: "A comma-separated list of severities to filter by."
+    - description: "A comma-separated list of severities to filter by. Note: this filter is not applied when extra_data is set to true."
       isArray: true
       name: severity
     - description: Filters cases that were created before this date. Supports natural language expressions such as "one year".
@@ -4226,7 +4226,7 @@ script:
       isArray: true
       name: status
     - auto: PREDEFINED
-      description: The field by which to sort the results.
+      description: "The field by which to sort the results. Note: sorting by severity is not supported when extra_data is set to true."
       name: sort_field
       predefined:
       - case_id
@@ -4244,6 +4244,13 @@ script:
       name: page_size
     - description: Page number for pagination.
       name: page
+    - description: Whether to retrieve extra case data including the associated issues, file artifacts, and network artifacts for each case.
+      name: extra_data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
     description: Returns a list of cases based on the specified filters.
     name: xdr-case-list
     outputs:
@@ -4300,6 +4307,162 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Case.starred
       description: Whether the case has been starred/flagged.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.high_severity_issue_count
+      description: The number of high-severity issues associated with the case. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.critical_severity_issue_count
+      description: The number of critical-severity issues associated with the case. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.resolved_timestamp
+      description: The time the case was resolved. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.assigned_user_mail
+      description: The email address of the user assigned to the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.assigned_user_pretty_name
+      description: The display name of the user assigned to the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.hosts
+      description: The hosts involved in the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.users
+      description: The users involved in the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.mitre_tactics_ids_and_names
+      description: The MITRE ATT&CK tactics associated with the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.mitre_techniques_ids_and_names
+      description: The MITRE ATT&CK techniques associated with the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.issue_categories
+      description: The categories of the issues associated with the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.resolve_comment
+      description: The comment provided when the case was resolved. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.notes
+      description: Notes associated with the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.manual_severity
+      description: The severity manually set for the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.manual_description
+      description: The description manually set for the case. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.rule_based_score
+      description: The rule-based risk score of the case. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.predicted_score
+      description: The predicted risk score of the case. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.issue_count
+      description: The total number of issues associated with the case. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.issue_id
+      description: The unique identifier of the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.case_id
+      description: The identifier of the case the issue belongs to. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.detection_timestamp
+      description: The detection time of the issue. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.name
+      description: The name of the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.category
+      description: The category of the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.severity
+      description: The severity of the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.source
+      description: The source of the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action
+      description: The action taken for the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_pretty
+      description: The human-readable action taken for the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.host_ip
+      description: The host IP addresses associated with the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.host_name
+      description: The host name associated with the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.user_name
+      description: The user name associated with the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_file_name
+      description: The file name involved in the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_file_path
+      description: The file path involved in the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.mitre_tactic_id_and_name
+      description: The MITRE ATT&CK tactic associated with the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.mitre_technique_id_and_name
+      description: The MITRE ATT&CK technique associated with the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.case_id
+      description: The identifier of the case associated with the file artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.type
+      description: The type of the file artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.file_name
+      description: The name of the file. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.file_sha256
+      description: The SHA256 hash of the file. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.file_wildfire_verdict
+      description: The WildFire verdict for the file. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.is_malicious
+      description: Whether the file has been identified as malicious. Returned when extra_data is set to true.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.is_process
+      description: Whether the file was a running process. Returned when extra_data is set to true.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.is_manual
+      description: Whether the file artifact was added manually. Returned when extra_data is set to true.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.file_signature_vendor_name
+      description: The vendor name from the file signature. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.file_signature_status
+      description: The status of the file digital signature. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.alert_count
+      description: The number of issues associated with the file artifact. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.case_id
+      description: The identifier of the case associated with the network artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.type
+      description: The type of the network artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.network_remote_ip
+      description: The remote IP address associated with the network artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.network_remote_port
+      description: The remote port associated with the network artifact. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.network_domain
+      description: The domain associated with the network artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.network_country
+      description: The country associated with the network artifact. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.alert_count
+      description: The number of issues associated with the network artifact. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.NetworkArtifacts.is_manual
+      description: Whether the network artifact was added manually. Returned when extra_data is set to true.
       type: Boolean
   - arguments:
     - description: The ID of the case to update.
