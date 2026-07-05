@@ -1,9 +1,5 @@
 [MODEL: dataset = menlo_security_ip_raw]
 alter
-    // `from`/`to` are reserved XQL tokens; alias before use.
-    tmp_from = from,
-    tmp_to = to,
-    tmp_delivered_to = delivered_to,
     tmp_request_type = uppercase(to_string(request_type)),
     tmp_action = lowercase(to_string(coalesce(pe_action, action))),
     tmp_risk_score = lowercase(to_string(risk_score)),
@@ -20,8 +16,6 @@ alter
     xdm.source.user.username = coalesce(userid, uid),
     xdm.source.user_agent = user_agent,
     xdm.intermediate.ipv4 = egress_ip,
-    xdm.intermediate.is_proxy = if(egress_ip != null and egress_ip != "", true),
-    xdm.intermediate.location.country = egress_country,
     xdm.intermediate.cloud.region = region,
     xdm.target.ipv4 = coalesce(origin_ip, dst_ip),
     xdm.target.port = to_integer(dst_from_port),
@@ -33,8 +27,8 @@ alter
     xdm.target.file.sha256 = sha256,
     xdm.target.file.size = coalesce(to_integer(file_size), to_integer(bytes)),
     xdm.target.file.file_type = coalesce(file_type, document_type),
-    xdm.email.sender = coalesce(tmp_from, reply_to),
-    xdm.email.recipients = arraycreate(coalesce(tmp_to, tmp_delivered_to)),
+    xdm.email.sender = coalesce(from, reply_to),
+    xdm.email.recipients = arraycreate(coalesce(to, delivered_to)),
     xdm.email.subject = subject,
     xdm.email.message_id = message_id,
     xdm.network.application_protocol = tmp_protocol,
