@@ -475,17 +475,61 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         return {
             "Authorization": f"{token}",
         }
+    if authentication == "OAuth 2.0":
+        # For OAuth 2.0 the access token is acquired and refreshed dynamically by the
+        # OAuth2ClientCredentialsHandler attached to the client (see get_oauth2_auth_handler).
+        # No static Authorization header is generated here.
+        demisto.debug("Authenticating with OAuth 2.0 (handled by OAuth2ClientCredentialsHandler)")
+        return {}
     if authentication == "No Authorization":
         demisto.debug("Connecting without Authorization")
         return {}
 
     err_msg = (
-        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-        f"No Authorization, got: {authentication}"
+        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken, "
+        f"OAuth 2.0, No Authorization, got: {authentication}"
     )
     demisto.error(err_msg)
     return_error(err_msg)
     return {}
+
+
+def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHandler | None:
+    """
+    Builds an OAuth2ClientCredentialsHandler for the OAuth 2.0 authentication method.
+
+    The handler is responsible for acquiring and refreshing the access token
+    against the configured token endpoint using the client credentials grant type.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        An OAuth2ClientCredentialsHandler when authentication is "OAuth 2.0", otherwise None.
+    """
+    if params.get("authentication") != "OAuth 2.0":
+        return None
+
+    token_url = params.get("oauth_token_url")
+    client_id = params.get("oauth_client_id")
+    client_secret = params.get("oauth_client_secret", {}).get("password")
+    scope = params.get("oauth_scopes") or None
+
+    if not token_url:
+        return_error("Oauth token url is required for OAuth 2.0 Authentication.")
+    if not client_id:
+        return_error("Oauth client id is required for OAuth 2.0 Authentication.")
+    if not client_secret:
+        return_error("Oauth client secret is required for OAuth 2.0 Authentication.")
+
+    add_sensitive_log_strs(client_secret)
+    demisto.debug(f"Building OAuth 2.0 client credentials handler for token url: {token_url}")
+    return OAuth2ClientCredentialsHandler(
+        token_url=str(token_url),
+        client_id=str(client_id),
+        client_secret=str(client_secret),
+        scope=scope,
+    )
 
 
 def get_events_command(
@@ -575,7 +619,16 @@ def main() -> None:  # pragma: no cover
         verify: bool = not argToBoolean(params.get("insecure", False))
 
         # Create a client object.
-        client = Client(base_url=base_url, verify=verify, headers=generate_headers(params), proxy=proxy)
+        # For OAuth 2.0, an auth_handler manages token acquisition/refresh dynamically;
+        # for all other methods, authentication is applied via static headers.
+        oauth2_auth_handler = get_oauth2_auth_handler(params)
+        client = Client(
+            base_url=base_url,
+            verify=verify,
+            headers=generate_headers(params),
+            proxy=proxy,
+            auth_handler=oauth2_auth_handler,
+        )
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()
         product: str = f"{raw_product}_generic"

@@ -30,6 +30,7 @@ configuration:
       - Api-Key
       - RawToken
       - No Authorization
+      - OAuth 2.0
     additionalinfo: Select the authentication method.
   - name: http_method
     section: Connect
@@ -55,6 +56,44 @@ configuration:
     section: Connect
     displaypassword: Password
     additionalinfo: Username & Password to use for basic authentication.
+  - name: oauth_token_url
+    section: Connect
+    display: Oauth token url
+    type: 0
+    required: false
+    additionalinfo: 'Auth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token.'
+  - name: oauth_client_id
+    section: Connect
+    display: Oauth client id
+    type: 0
+    required: false
+    additionalinfo: OAuth Client ID issued by the IdP.
+  - name: oauth_client_secret
+    section: Connect
+    display: Oauth client secret
+    type: 9
+    required: false
+    displaypassword: Oauth client secret
+    hiddenusername: true
+    additionalinfo: OAuth Client Secret.
+  - name: authorization_code
+    section: Connect
+    display: Authorization code
+    type: 0
+    required: false
+    additionalinfo: The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code.
+  - name: redirect_uri
+    section: Connect
+    display: Redirect uri
+    type: 0
+    required: false
+    additionalinfo: Used by Idp to provide an authorization code.
+  - name: oauth_scopes
+    section: Connect
+    display: Oauth scopes
+    type: 0
+    required: false
+    additionalinfo: 'Space-separated scopes, e.g. events:read alerts:read.'
   - name: add_fields_to_header
     section: Connect
     display: Add Fields To header
