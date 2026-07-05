@@ -1,7 +1,7 @@
 id: HelloWorld Scan
 version: -1
 name: HelloWorld Scan
-description: "Deprecated. No available replacement."
+description: "Deprecated. No available replacement. -testtttt"
 starttaskid: '0'
 tasks:
   '0':
