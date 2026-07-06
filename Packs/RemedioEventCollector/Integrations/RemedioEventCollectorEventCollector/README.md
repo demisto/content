@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of RemedioEventCollec
 
 ## Configure Remedio Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
@@ -30,8 +29,8 @@ Manual command to fetch misconfiguration events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| limit | Maximum number of misconfigurations to return. Default is 100. | Optional | 
+| should_push_events | Set this argument to True in order to push events to XSIAM, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
+| limit | Maximum number of misconfigurations to return. Default is 100. | Optional |
 
 #### Context Output
 

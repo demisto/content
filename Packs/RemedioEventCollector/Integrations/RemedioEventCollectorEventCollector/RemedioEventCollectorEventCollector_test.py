@@ -1,8 +1,11 @@
+import pytest
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import DemistoException
 from RemedioEventCollectorEventCollector import (
     Client,
     fetch_events,
     get_events_command,
+    main,
     test_module as module_test,
 )
 
@@ -225,6 +228,31 @@ class TestFetchEvents:
         events = mock_send.call_args[1]["events"]
         assert len(events) == 2
 
+    def test_fetch_events_send_failure_reraises(self, requests_mock, mocker):
+        """A send_events_to_xsiam failure is logged and re-raised."""
+        requests_mock.post(
+            "https://acme.gytpol.com/customer_api/v1/misconfigurations",
+            json={
+                "data": [{"misconfigurationId": "boom", "scores": {"cvss": 1.0}}],
+                "nextCursor": "",
+            },
+        )
+        mocker.patch(
+            "RemedioEventCollectorEventCollector.send_events_to_xsiam",
+            side_effect=Exception("XSIAM unreachable"),
+        )
+        mock_debug = mocker.patch.object(demisto, "debug")
+
+        client = Client(
+            base_url="https://acme.gytpol.com/customer_api/v1",
+            api_key="test-key",
+            verify=False,
+            proxy=False,
+        )
+        with pytest.raises(Exception, match="XSIAM unreachable"):
+            fetch_events(client, params={})
+        mock_debug.assert_called()
+
 
 class TestGetEventsCommand:
     def test_get_events_returns_command_results(self, requests_mock, mocker):
@@ -324,3 +352,72 @@ class TestTestModule:
         )
         result = module_test(client)
         assert "Authorization failed" in result
+
+    def test_module_forbidden(self, requests_mock):
+        """Remedio API returns 403."""
+        requests_mock.post(
+            "https://acme.gytpol.com/customer_api/v1/misconfigurations",
+            status_code=403,
+            json={"error": "Forbidden"},
+        )
+        client = Client(
+            base_url="https://acme.gytpol.com/customer_api/v1",
+            api_key="limited-key",
+            verify=False,
+            proxy=False,
+        )
+        result = module_test(client)
+        assert "Forbidden" in result
+
+    def test_module_connection_failure(self, mocker):
+        """A connection-level DemistoException reports a friendly message."""
+        client = Client(
+            base_url="https://acme.gytpol.com/customer_api/v1",
+            api_key="test-key",
+            verify=False,
+            proxy=False,
+        )
+        mocker.patch.object(
+            client, "test_connection", side_effect=DemistoException("Connection error")
+        )
+        result = module_test(client)
+        assert "Connection failed" in result
+
+
+class TestMain:
+    def test_main_fetch_events(self, requests_mock, mocker):
+        """main() wires params into a Client and dispatches fetch-events."""
+        requests_mock.post(
+            "https://acme.gytpol.com/customer_api/v1/misconfigurations",
+            json={
+                "data": [{"misconfigurationId": "m1", "scores": {"cvss": 2.0}}],
+                "nextCursor": "",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://acme.gytpol.com/",
+                "api_key": {"password": "test-key"},
+                "insecure": True,
+            },
+        )
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(demisto, "setLastRun")
+        mock_send = mocker.patch("RemedioEventCollectorEventCollector.send_events_to_xsiam")
+
+        main()
+
+        mock_send.assert_called_once()
+        assert mock_send.call_args[1]["events"][0]["misconfigurationId"] == "m1"
+
+    def test_main_handles_error(self, mocker):
+        """main() routes unexpected exceptions through return_error."""
+        mocker.patch.object(demisto, "params", return_value={"url": "https://acme.gytpol.com"})
+        mocker.patch.object(demisto, "command", return_value="unknown-command")
+        mock_return_error = mocker.patch("RemedioEventCollectorEventCollector.return_error")
+
+        main()
+
+        mock_return_error.assert_called_once()
