@@ -241,6 +241,8 @@ def test_fetch_incidents(mocker):
         ("warn", 0),
         ("unknown", 0),
         ("TEST", 0),
+        ("", 0),
+        (None, 0),
     ],
 )
 def test_convert_to_xsoar_severity(severity, expected):
