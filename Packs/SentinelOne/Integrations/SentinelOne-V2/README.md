@@ -973,7 +973,7 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | account_ids | A comma-separated list of account IDs. | Optional |
 | network_quarantine | Whether to enable the network quarantine of the STAR rule. Possible values are: true, false. | Required |
 | treatAsThreat | The treatAsThreat. Possible values are: Malicious, Suspicious, UNDEFINED. | Required |
-| query_lang | The query language version. Supported values are "1.0" and "2.0". Possible values are: 1.0, 2.0. | Optional |
+| query_lang | The query language version. Possible values are: 1.0, 2.0. | Optional |
 
 #### Context Output
 
