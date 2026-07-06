@@ -20,6 +20,8 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]{3
 | alter 
     tmp_timestamp_without_offset = arrayindex(regextract(_raw_log ,"\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"),0) 
 | alter 
+    tmp_timestamp_without_offset = replace(tmp_timestamp_without_offset, "T", " ")
+| alter 
     _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez",concat(tmp_timestamp_without_offset,"-00:00"))
 | fields -tmp*;
 
