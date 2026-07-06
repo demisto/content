@@ -20313,7 +20313,7 @@ def test_list_rule_groups_command_with_filters(mocker):
     When:
         - list_rule_groups_command is called.
     Then:
-        - The client is called once with the provided Scope, ManagedType, Type, and SubscriptionStatus.
+        - The client is called once with the provided Scope, ManagedType, and Type.
     """
     from AWS import NetworkFirewall
 
@@ -20585,7 +20585,7 @@ def test_create_rule_group_common_kwargs_scalar_fields():
     """
     from AWS import create_rule_group_common_kwargs
 
-    # Given
+    # Given — only scalar fields that are valid alongside 'rules' (no RuleGroup content fields)
     args = {
         "rule_group_name": "test-rg",
         "type": "STATEFUL",
@@ -20595,7 +20595,6 @@ def test_create_rule_group_common_kwargs_scalar_fields():
         "encryption_configuration_key_type": "CUSTOMER_KMS",
         "source_metadata_arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/src",
         "source_metadata_update_token": "token-abc",
-        "stateful_rule_options_rule_order": "STRICT_ORDER",
     }
 
     # When
@@ -20611,7 +20610,7 @@ def test_create_rule_group_common_kwargs_scalar_fields():
         "SourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/src",
         "SourceUpdateToken": "token-abc",
     }
-    assert result["RuleGroup"]["StatefulRuleOptions"] == {"RuleOrder": "STRICT_ORDER"}
+    assert "RuleGroup" not in result
 
 
 def test_create_rule_group_common_kwargs_type_conversions():
@@ -20627,8 +20626,9 @@ def test_create_rule_group_common_kwargs_type_conversions():
     """
     from AWS import create_rule_group_common_kwargs
 
-    # Given
+    # Given — include a minimal 'rules' value so the mutual-exclusion guard passes
     args = {
+        "rules": "pass tcp any any -> any any (sid:1;)",
         "analyze_rule_group": "true",
         "summary_configuration_rule_options": "Sid,RuleId",
     }
@@ -20641,30 +20641,147 @@ def test_create_rule_group_common_kwargs_type_conversions():
     assert result["SummaryConfiguration"] == {"RuleOptions": ["Sid", "RuleId"]}
 
 
-def test_create_rule_group_common_kwargs_empty_args():
+def test_create_rule_group_common_kwargs_invalid_json_argument():
     """
     Given:
-        - an empty args dictionary.
+        - args containing an invalid JSON string for the ip_sets argument.
     When:
         - create_rule_group_common_kwargs is called.
     Then:
-        - The full kwargs structure should be returned with None/empty values,
-          since the function does not strip empty elements.
+        - A DemistoException naming the offending argument should be raised.
     """
+    import pytest
     from AWS import create_rule_group_common_kwargs
+    from CommonServerPython import DemistoException
+
+    # Given
+    args = {"ip_sets": "{not-valid-json"}
+
+    # When / Then
+    with pytest.raises(DemistoException, match="Invalid JSON in 'ip_sets':"):
+        create_rule_group_common_kwargs(args)
+
+
+def test_create_rule_group_common_kwargs_empty_args():
+    """
+    Given:
+        - an empty args dictionary (neither 'rules' nor any RuleGroup content field provided).
+    When:
+        - create_rule_group_common_kwargs is called.
+    Then:
+        - A DemistoException should be raised because neither 'rules' nor a RuleGroup content
+          argument was supplied.
+    """
+    import pytest
+    from AWS import create_rule_group_common_kwargs
+    from CommonServerPython import DemistoException
+
+    # Given
+    args: dict = {}
+
+    # When / Then
+    with pytest.raises(DemistoException, match="You must provide either"):
+        create_rule_group_common_kwargs(args)
+
+
+def test_parse_json_arg_when_arg_missing_returns_none():
+    """
+    Given:
+        - An args dict that does not contain the requested key.
+    When:
+        - parse_json_arg is called with a key absent from args.
+    Then:
+        - It should return None without raising an exception.
+    """
+    from AWS import parse_json_arg
 
     # Given
     args: dict = {}
 
     # When
-    result = create_rule_group_common_kwargs(args)
+    result = parse_json_arg(args, "ip_sets")
 
     # Then
-    assert result["RuleGroupName"] is None
-    assert result["Type"] is None
-    assert result["RuleGroup"]["RuleVariables"] == {"IPSets": None, "PortSets": None}
-    assert result["RuleGroup"]["ReferenceSets"] == {"IPSetReferences": None}
-    assert result["RuleGroup"]["RulesSource"] is None
-    assert result["Rules"] is None
-    assert result["AnalyzeRuleGroup"] is None
-    assert result["SummaryConfiguration"] == {"RuleOptions": []}
+    assert result is None
+
+
+def test_parse_json_arg_when_arg_empty_string_returns_none():
+    """
+    Given:
+        - An args dict where the requested key maps to an empty string.
+    When:
+        - parse_json_arg is called with that key.
+    Then:
+        - It should return None without raising an exception.
+    """
+    from AWS import parse_json_arg
+
+    # Given
+    args = {"ip_sets": ""}
+
+    # When
+    result = parse_json_arg(args, "ip_sets")
+
+    # Then
+    assert result is None
+
+
+def test_parse_json_arg_when_valid_json_object_returns_dict():
+    """
+    Given:
+        - An args dict where the requested key maps to a valid JSON object string.
+    When:
+        - parse_json_arg is called with that key.
+    Then:
+        - It should return the parsed dict.
+    """
+    from AWS import parse_json_arg
+
+    # Given
+    args = {"ip_sets": '{"HOME_NET": {"Definition": ["10.0.0.0/8"]}}'}
+
+    # When
+    result = parse_json_arg(args, "ip_sets")
+
+    # Then
+    assert result == {"HOME_NET": {"Definition": ["10.0.0.0/8"]}}
+
+
+def test_parse_json_arg_when_valid_json_array_returns_list():
+    """
+    Given:
+        - An args dict where the requested key maps to a valid JSON array string.
+    When:
+        - parse_json_arg is called with that key.
+    Then:
+        - It should return the parsed list.
+    """
+    from AWS import parse_json_arg
+
+    # Given
+    args = {"rules_source": '[{"Action": "PASS"}]'}
+
+    # When
+    result = parse_json_arg(args, "rules_source")
+
+    # Then
+    assert result == [{"Action": "PASS"}]
+
+
+def test_parse_json_arg_when_invalid_json_raises_demisto_exception():
+    """
+    Given:
+        - An args dict where the requested key maps to a malformed JSON string.
+    When:
+        - parse_json_arg is called with that key.
+    Then:
+        - It should raise a DemistoException whose message names the offending argument.
+    """
+    from AWS import parse_json_arg
+
+    # Given
+    args = {"ip_sets": "{not valid json"}
+
+    # When / Then
+    with pytest.raises(DemistoException, match="Invalid JSON in 'ip_sets'"):
+        parse_json_arg(args, "ip_sets")

@@ -19782,17 +19782,18 @@ script:
       predefined:
         - STATELESS
         - STATEFUL
+        - STATEFUL_DOMAIN
     - name: capacity
       description: The maximum operating resources that this rule group can use. Rule group capacity is fixed at creation. When you update a rule group, you are limited to this capacity. When you reference a rule group from a firewall policy, Network Firewall reserves this capacity for the rule group. You can't change or exceed this capacity when you reference the rule group from a firewall policy.
       required: true
     - name: ip_sets
-      description: 'A JSON string specifying an object of IP addresses and address ranges, in CIDR notation. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+      description: 'A JSON string specifying an object of IP addresses and address ranges, in CIDR notation. This is part of a RuleVariables. For example: `{"string": {"Definition": ["string"]}}`.'
     - name: port_sets
-      description: 'A JSON string specifying an object of port ranges. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+      description: 'A JSON string specifying an object of port ranges. This is part of a RuleVariables. For example: `{"string": {"Definition": ["string"]}}`.'
     - name: ip_sets_references
-      description: 'A JSON string specifying an object of IP set references. For example: {\"string\": {\"ReferenceArn\": \"string\"}}.'
+      description: 'A JSON string specifying an object of IP set references. For example: `{"string": {"ReferenceArn": "string"}}`.'
     - name: rules_source
-      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. This argument is required if you choose to use the RuleGroup option. For example: {\"RulesString\": \"RulesString\", \"RulesSourceList\": \"Targets\": [\"string\",]}.'
+      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. This argument is required if you choose to use the RuleGroup option. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`.'
     - name: stateful_rule_options_rule_order
       description: Indicates how to manage the order of the rule evaluation for the rule group.
       auto: PREDEFINED
@@ -19800,7 +19801,7 @@ script:
         - DEFAULT_ACTION_ORDER
         - STRICT_ORDER
     - name: rules
-      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both.
+      description: 'A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both. For example: `pass tcp 10.0.0.0/8 any -> any any (sid:1;)`.'
     - name: description
       description: A description of the rule group.
     - name: tags
@@ -19919,7 +19920,7 @@ script:
       predefined:
         - STATELESS
         - STATEFUL
-    outputs: [ ]
+        - STATEFUL_DOMAIN
 
   - name: aws-network-firewall-rule-group-describe
     description: "Returns the data objects for the specified rule group. Required permissions: network-firewall:DescribeRuleGroup."
@@ -20185,14 +20186,15 @@ script:
       predefined:
         - STATELESS
         - STATEFUL
+        - STATEFUL_DOMAIN
     - name: ip_sets
-      description: 'A JSON string specifying an object of IP addresses and address ranges, in CIDR notation. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+      description: 'A JSON string specifying an object of IP addresses and address ranges, in CIDR notation. This is part of a RuleVariables. For example: `{"string": {"Definition": ["string"]}}`.'
     - name: port_sets
-      description: 'A JSON string specifying an object of port ranges. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+      description: 'A JSON string specifying an object of port ranges. This is part of a RuleVariables. For example: `{"string": {"Definition": ["string"]}}`.'
     - name: ip_sets_references
-      description: 'A JSON string specifying an object of IP set references. For example: {\"string\": {\"ReferenceArn\": \"string\"}}.'
+      description: 'A JSON string specifying an object of IP set references. For example: `{"string": {"ReferenceArn": "string"}}`.'
     - name: rules_source
-      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. For example: {\"RulesString\": \"RulesString\", \"RulesSourceList\": \"Targets\": [\"string\",]}.'
+      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`.'
     - name: stateful_rule_options_rule_order
       description: Indicates how to manage the order of the rule evaluation for the rule group.
       auto: PREDEFINED
@@ -20200,7 +20202,7 @@ script:
         - DEFAULT_ACTION_ORDER
         - STRICT_ORDER
     - name: rules
-      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either this argument or the rule_group arguments, but not both.
+      description: 'A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import your existing Suricata compatible rule groups. You must provide either ''rules'' argument or at least one of the ''rule_group'' arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both. For example: `pass tcp 10.0.0.0/8 any -> any any (sid:1;)`.'
     - name: description
       description: A description of the rule group.
     - name: encryption_configuration_key_id
@@ -20223,6 +20225,7 @@ script:
         - 'false'
     - name: summary_configuration_rule_options
       description: A comma-separated list of the rule options to include in the rule group summary.
+      isArray: true
     outputs:
     - contextPath: AWS.NetworkFirewall.RuleGroups.UpdateToken
       description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the rule group. The token marks the state of the rule group resource at the time of the request.

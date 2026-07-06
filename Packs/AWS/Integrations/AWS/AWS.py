@@ -899,6 +899,31 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
     return firewall_policy_object
 
 
+def parse_json_arg(args: dict, arg_name: str) -> dict | list | None:
+    """
+    Parses a single JSON-string command argument into its corresponding Python object, raising a clear
+    per-argument error when the value is not valid JSON so the user knows exactly which argument to fix.
+
+    Args:
+        args (dict): The command arguments dictionary to read the value from.
+        arg_name (str): The name of the command argument to read from ``args`` and parse as JSON.
+
+    Returns:
+        dict | list | None: The parsed Python object (typically a dict or list),
+            or None if the argument is missing or empty.
+
+    Raises:
+        DemistoException: If the argument value is present but is not valid JSON.
+    """
+    raw_value = args.get(arg_name)
+    if not raw_value:
+        return None
+    try:
+        return json.loads(raw_value)
+    except json.JSONDecodeError as error:
+        raise DemistoException(f"Invalid JSON in '{arg_name}': {error}")
+
+
 def create_rule_group_common_kwargs(args: dict) -> dict:
     """
     Builds the common keyword arguments shared by the AWS Network Firewall rule group create and update API calls.
@@ -911,40 +936,55 @@ def create_rule_group_common_kwargs(args: dict) -> dict:
     Returns:
         dict: A dictionary of keyword arguments representing the Network Firewall rule group.
     """
-    ip_sets_raw = args.get("ip_sets")
-    port_sets_raw = args.get("port_sets")
-    ip_sets_references_raw = args.get("ip_sets_references")
-    rules_source_raw = args.get("rules_source")
-    ip_sets = parse_json_string(ip_sets_raw) if ip_sets_raw else None
-    port_sets = parse_json_string(port_sets_raw) if port_sets_raw else None
-    ip_sets_references = parse_json_string(ip_sets_references_raw) if ip_sets_references_raw else None
-    rules_source = parse_json_string(rules_source_raw) if rules_source_raw else None
+    encryption_configuration_key_id = args.get("encryption_configuration_key_id")
+    encryption_configuration_key_type = args.get("encryption_configuration_key_type")
+    if encryption_configuration_key_id and not encryption_configuration_key_type:
+        raise DemistoException(
+            "When configuring encryption_configuration_key_id a encryption_configuration_key_type must be supplied as well."
+        )
 
-    return {
-        "RuleGroupName": args.get("rule_group_name"),
-        "Type": args.get("type"),
-        "RuleGroup": {
-            "RuleVariables": {
-                "IPSets": ip_sets,
-                "PortSets": port_sets,
+    ip_sets = parse_json_arg(args, "ip_sets")
+    port_sets = parse_json_arg(args, "port_sets")
+    ip_sets_references = parse_json_arg(args, "ip_sets_references")
+    rules_source = parse_json_arg(args, "rules_source")
+
+    rule_group_object = remove_empty_elements(
+        {
+            "RuleGroupName": args.get("rule_group_name"),
+            "Type": args.get("type"),
+            "RuleGroup": {
+                "RuleVariables": {
+                    "IPSets": ip_sets,
+                    "PortSets": port_sets,
+                },
+                "ReferenceSets": {"IPSetReferences": ip_sets_references},
+                "RulesSource": rules_source,
+                "StatefulRuleOptions": {"RuleOrder": args.get("stateful_rule_options_rule_order")},
             },
-            "ReferenceSets": {"IPSetReferences": ip_sets_references},
-            "RulesSource": rules_source,
-            "StatefulRuleOptions": {"RuleOrder": args.get("stateful_rule_options_rule_order")},
-        },
-        "Rules": args.get("rules"),
-        "Description": args.get("description"),
-        "EncryptionConfiguration": {
-            "KeyId": args.get("encryption_configuration_key_id"),
-            "Type": args.get("encryption_configuration_key_type"),
-        },
-        "SourceMetadata": {
-            "SourceArn": args.get("source_metadata_arn"),
-            "SourceUpdateToken": args.get("source_metadata_update_token"),
-        },
-        "AnalyzeRuleGroup": arg_to_bool_or_none(args.get("analyze_rule_group")),
-        "SummaryConfiguration": {"RuleOptions": argToList(args.get("summary_configuration_rule_options"))},
-    }
+            "Rules": args.get("rules"),
+            "Description": args.get("description"),
+            "EncryptionConfiguration": {
+                "KeyId": args.get("encryption_configuration_key_id"),
+                "Type": args.get("encryption_configuration_key_type"),
+            },
+            "SourceMetadata": {
+                "SourceArn": args.get("source_metadata_arn"),
+                "SourceUpdateToken": args.get("source_metadata_update_token"),
+            },
+            "AnalyzeRuleGroup": arg_to_bool_or_none(args.get("analyze_rule_group")),
+            "SummaryConfiguration": {"RuleOptions": argToList(args.get("summary_configuration_rule_options"))},
+        }
+    )
+
+    if ("Rules" in rule_group_object and "RuleGroup" in rule_group_object) or (
+        "Rules" not in rule_group_object and "RuleGroup" not in rule_group_object
+    ):
+        raise DemistoException(
+            "You must provide either 'rules' argument or at least one of the 'rule_group' arguments (ip_sets, port_sets, "
+            "ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both"
+        )
+
+    return rule_group_object
 
 
 class AWSErrorHandler:
@@ -10439,7 +10479,7 @@ class NetworkFirewall:
         kwargs = create_rule_group_common_kwargs(args)
         kwargs["Capacity"] = arg_to_number(args.get("capacity"))
         kwargs["Tags"] = parse_tag_field(args.get("tags", ""))
-        kwargs = remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
 
         print_debug_logs(client, f"Creating rule group with parameters: {kwargs.keys()}")
         response = client.create_rule_group(**kwargs)
@@ -10493,7 +10533,8 @@ class NetworkFirewall:
             return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
-            readable_output="The AWS Network Firewall rule group was deleted successfully.",
+            readable_output=f"The command was executed successfully. The current rule group status is "
+            f"{response.get('RuleGroupResponse', {}).get('RuleGroupStatus')}.",
             raw_response=response,
         )
 
@@ -10559,7 +10600,6 @@ class NetworkFirewall:
                 - scope: The scope of the request. Valid settings are MANAGED and ACCOUNT.
                 - managed_type: Indicates the general category of the Amazon Web Services managed rule group.
                 - type: Indicates whether the rule group is stateless or stateful.
-                - subscription_status: Indicates the selected option for managed rule group subscription status.
 
         Returns:
             CommandResults: Formatted results with rule groups information
@@ -10624,7 +10664,7 @@ class NetworkFirewall:
         kwargs = create_rule_group_common_kwargs(args)
         kwargs["UpdateToken"] = args.get("update_token")
         kwargs["RuleGroupArn"] = args.get("rule_group_arn")
-        kwargs = remove_empty_elements(kwargs)
+        remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"Updating rule group with parameters: {kwargs.keys()}")
         response = client.update_rule_group(**kwargs)
         response = serialize_response_with_datetime_encoding(response)
