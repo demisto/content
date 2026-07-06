@@ -3043,7 +3043,7 @@ Sets properties for the blob service in a specific account storage. Required per
 ### azure-auth-test
 
 ***
-Tests the connectivity to Azure.
+Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
 
 #### Base Command
 
@@ -3060,7 +3060,7 @@ There is no context output for this command.
 ### azure-generate-login-url
 
 ***
-Generates the login URL used for authorization code flow.
+Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
 
 #### Base Command
 
@@ -3077,7 +3077,7 @@ There is no context output for this command.
 ### azure-auth-complete
 
 ***
-Completes the authorization process for Device Code flow. Should be used after running the azure-auth-start command.
+Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
 
 #### Base Command
 
@@ -3094,7 +3094,7 @@ There is no context output for this command.
 ### azure-auth-reset
 
 ***
-Resets the authentication process.
+Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
 
 #### Base Command
 
