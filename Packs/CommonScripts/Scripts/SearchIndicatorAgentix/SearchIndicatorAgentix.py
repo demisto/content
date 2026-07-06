@@ -59,7 +59,7 @@ def build_query_for_indicator_values(args: dict) -> list:
         values_as_list = json.loads(values)
     except (json.JSONDecodeError, TypeError) as e:
         raise CortexInvalidArgError(
-            'value',
+            "value",
             value=values,
             reason=str(e),
             override_message=f"JSON decode failed for values {values}: {str(e)}.",

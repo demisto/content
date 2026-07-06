@@ -4485,7 +4485,7 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
 
         except Exception as e:
             raise CortexInvalidArgError(
-                'custom_filter',
+                "custom_filter",
                 value=custom_filter_str,
                 reason=str(e),
                 override_message=f"custom_filter format is not valid. got: {str(e)}",

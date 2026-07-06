@@ -2314,7 +2314,7 @@ def search_assets_command(client: Client, args):
         page_size = SEARCH_ASSETS_DEFAULT_LIMIT
     if page_size > SEARCH_ASSETS_MAX_LIMIT:
         raise CortexInvalidArgError(
-            'page_size',
+            "page_size",
             value=page_size,
             reason=f"must not exceed {SEARCH_ASSETS_MAX_LIMIT}",
             override_message=f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}",
