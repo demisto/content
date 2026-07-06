@@ -34,7 +34,8 @@ FRONT_DOOR_UPSERT_PARAMS = {
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2020-05-01"
-UPSERT_API_VERSION = "2022-09-01"
+API_VERSION_POLICIES = "2020-05-01"
+API_VERSION_INFRA = "2025-04-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 BASE_URL = "https://management.azure.com"
 POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -149,7 +150,7 @@ class AzureWAFClient:
                     self.http_request(
                         method="GET",
                         full_url=f"{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}",
-                        params={"api-version": API_VERSION},
+                        params={"api-version": API_VERSION_POLICIES},
                     )
                 )
             except Exception as e:
@@ -165,7 +166,7 @@ class AzureWAFClient:
                     self.http_request(
                         method="GET",
                         full_url=f"{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}",
-                        params={"api-version": API_VERSION},
+                        params={"api-version": API_VERSION_POLICIES},
                     )
                 )
             except Exception as e:
@@ -178,14 +179,21 @@ class AzureWAFClient:
             base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
             try:
                 res.append(
-                    self.http_request(method="GET", full_url=f"{base_url}/{POLICY_PATH}", params={"api-version": API_VERSION})
+                    self.http_request(
+                        method="GET", full_url=f"{base_url}/{POLICY_PATH}", params={"api-version": API_VERSION_POLICIES}
+                    )
                 )
             except Exception as e:
                 res.append({"properties": f"Listing {subscription_id} threw Exception: {e!s}"})
         return res
 
     def update_policy_upsert(
-        self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict, api_version: str = API_VERSION
+        self,
+        policy_name: str,
+        resource_group_names: list,
+        subscription_id: str,
+        data: dict,
+        api_version: str = API_VERSION_POLICIES,
     ) -> list[dict]:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
@@ -213,11 +221,14 @@ class AzureWAFClient:
 
     def subscriptions_list(self) -> dict:
         return self.http_request(
-            method="GET", return_empty_response=True, full_url=f"{BASE_URL}/subscriptions", params={"api-version": API_VERSION}
+            method="GET",
+            return_empty_response=True,
+            full_url=f"{BASE_URL}/subscriptions",
+            params={"api-version": API_VERSION_INFRA},
         )
 
     def resource_group_list(self, subscription_ids: list, tag: str, limit: int) -> list[dict]:
-        params = {"$top": limit, "api-version": API_VERSION}
+        params = {"$top": limit, "api-version": API_VERSION_INFRA}
         if tag:
             params["$filter"] = tag
         res = []
@@ -495,7 +506,7 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
         resource_group_names=resource_group_names,
         subscription_id=subscription_id,
         data=body,
-        api_version=UPSERT_API_VERSION,
+        api_version=API_VERSION_POLICIES,
     )
 
     return CommandResults(
