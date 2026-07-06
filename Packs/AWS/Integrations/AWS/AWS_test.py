@@ -19950,7 +19950,7 @@ def test_delete_rule_group_command_success_with_name(mocker):
     result = NetworkFirewall.delete_rule_group_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    assert "The command was executed successfully. The current rule group status is DELETING." in result.readable_output
     mock_client.delete_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATEFUL")
 
 
@@ -19979,7 +19979,7 @@ def test_delete_rule_group_command_success_with_arn(mocker):
     result = NetworkFirewall.delete_rule_group_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    assert "The command was executed successfully. The current rule group status is DELETING." in result.readable_output
     mock_client.delete_rule_group.assert_called_once_with(
         RuleGroupArn="arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
     )
