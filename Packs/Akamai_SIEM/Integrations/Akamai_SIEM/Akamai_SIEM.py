@@ -62,6 +62,7 @@ urllib3.disable_warnings()
 # filtered in the engine logs by the integration instance name.
 # ============================================================================
 import threading  # noqa: E402  # MEM DIAG (REMOVE — CIAC-17118)
+import sys  # noqa: E402  # MEM DIAG (REMOVE — CIAC-17118): used by _page_nbytes for true object size
 
 
 def _mem_rss() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
@@ -189,6 +190,26 @@ _MEM_BUILD_STAMP = "CIAC-17118-mem-probe-v1"  # MEM DIAG (REMOVE — CIAC-17118)
 def _mem_peak() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
     """Current run's RSS peak (from the background sampler), or live RSS if no sampler is active."""
     return _MEM_SAMPLER.peak if _MEM_SAMPLER is not None else _mem_rss()
+
+
+def _page_size_mb(page: list, sample: int = 200) -> float:  # MEM DIAG (REMOVE — CIAC-17118)
+    """Approx. true in-memory size of ONE page (list + its items) in MB, allocator-independent.
+
+    Uses sys.getsizeof (shallow) on the list container plus a sampled average of item sizes,
+    scaled to the full length, so it stays O(sample) not O(len(page)) on 10k-item pages.
+    This is the real Python-object footprint of the page, independent of OS/allocator RSS noise.
+    """
+    try:
+        n = len(page)
+        if n == 0:
+            return 0.0
+        container = sys.getsizeof(page)
+        step = max(1, n // sample)
+        sampled = [sys.getsizeof(page[i]) for i in range(0, n, step)]
+        avg_item = sum(sampled) / len(sampled)
+        return (container + avg_item * n) / 1024 / 1024
+    except Exception:
+        return -1.0
 
 
 # ============================================================================
@@ -1438,6 +1459,7 @@ def main():  # pragma: no cover
                     f"skip_decode={should_skip_decode_events} timeout_budget={_timeout_budget_seconds():.1f}s"
                 ),
             )
+            _prev_iter_baseline = _mem_rss()  # MEM DIAG (REMOVE — CIAC-17118): RSS entering the loop (== CYCLE_START floor)
             with _mem_sampler:  # use the local (never None) -> avoids pylint NoneType context-manager false positive
                 for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
                     fetch_events_command(
@@ -1452,11 +1474,32 @@ def main():  # pragma: no cover
                 ):
                     if events:
                         page_counter += 1
+                        # ===== MEM DIAG (REMOVE — CIAC-17118): per-iteration baseline + drift check (#3) =====
+                        # _iter_baseline is this iteration's RSS floor. drift = how much the floor moved vs the
+                        # PREVIOUS iteration's post-send floor -> if ~0 the prior page was freed; if it climbs each
+                        # page, memory is NOT being released between iterations.
+                        _iter_baseline = _mem_rss()
+                        _iter_drift = _iter_baseline - _prev_iter_baseline
+                        _mem_log(
+                            f"iter_start page={page_counter}",
+                            _MEM_T0,
+                            _mem_peak(),
+                            extra=f"iter_baseline={_iter_baseline:.1f}MB drift_vs_prev_iter={_iter_drift:+.1f}MB",
+                        )
+                        # ===== per-page size (#2): footprint of THIS page only, not the running total =====
+                        _page_events = len(events)
+                        _page_mb = _page_size_mb(events)  # true Python-object size (allocator-independent), MB
+                        _page_rss_delta = _mem_rss() - _iter_baseline  # OS-level RSS attributable to this page, MB
+                        _per_event_kb = (_page_mb * 1024 / _page_events) if _page_events else 0.0  # KB / event
                         _mem_log(  # RAM right after a page was fetched+decoded (held in memory), before the send
                             f"page_fetched page={page_counter}",
                             _MEM_T0,
                             _mem_peak(),
-                            extra=f"page_events={len(events)} total_so_far={total_events_count}",
+                            extra=(
+                                f"page_events={_page_events} total_so_far={total_events_count} "
+                                f"page_mb={_page_mb:.1f}MB page_rss_delta={_page_rss_delta:.1f}MB "
+                                f"per_event={_per_event_kb:.2f}KB"
+                            ),
                         )
                         post_latest_event_time(
                             latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using multithreads."
@@ -1493,6 +1536,19 @@ def main():  # pragma: no cover
                             f"Done sending {data_size} events to xsiam."
                             f"sent {total_events_count} events to xsiam in total during this interval."
                         )
+                        # ===== MEM DIAG (REMOVE — CIAC-17118): end-of-iteration freed floor (#3) =====
+                        # Measured AFTER the send completes. This becomes the baseline the NEXT iteration compares
+                        # against, so drift_vs_prev_iter reflects "did this page get released before the next fetch".
+                        # NOTE: observation only — we do NOT explicitly free here (that belongs on the fix branch).
+                        _iter_end_rss = _mem_rss()
+                        _freed = _iter_baseline - _iter_end_rss
+                        _mem_log(
+                            f"iter_end page={page_counter}",
+                            _MEM_T0,
+                            _mem_peak(),
+                            extra=f"iter_end_rss={_iter_end_rss:.1f}MB freed_since_iter_start={_freed:+.1f}MB",
+                        )
+                        _prev_iter_baseline = _iter_end_rss  # update so the next iteration's drift/delta are correct
             _mem_log(  # end-of-cycle summary: rss_peak + cgroup_peak are the headline before/after numbers
                 f"CYCLE_END build={_MEM_BUILD_STAMP}",
                 _MEM_T0,
