@@ -779,6 +779,32 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 
 `gcp-storage-bucket-policy-set`
 
+#### Usage
+
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
+> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
+
+#### Policy structure
+
+- **bindings**: Array of binding objects. Each binding:
+  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
+  - **members**: Array of strings. Allowed formats:
+    - `user:<email>` (e.g., `user:alice@example.com`)
+    - `group:<email>`
+    - `serviceAccount:<email>`
+    - `domain:<domain>` (e.g., `domain:example.com`)
+    - `allUsers` | `allAuthenticatedUsers`
+- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
+- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
+- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
+
+Notes:
+
+- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
+- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
