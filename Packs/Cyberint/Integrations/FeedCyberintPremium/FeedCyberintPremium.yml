@@ -320,7 +320,7 @@ script:
     - contextPath: CyberintPremium.Indicator.has_campaign
       description: Whether the indicator has an associated campaign.
       type: Boolean
-    description: Gets indicators from the infinity external risk management feed.
+    description: Gets indicators from the Infinity External Risk Management feed.
   - name: cyberint-premium-enrich
     arguments:
     - name: type

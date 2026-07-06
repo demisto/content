@@ -49,4 +49,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Check Point - Credential Leak Validation and Response](../doc_files/Check_Point_-_Credential_Leak_Validation_and_Response.png)
+![Check Point - Credential Leak Validation and Response](../doc_files/Check_Point_Credential_Leak_Validation_and_Response.png)

@@ -484,6 +484,8 @@ script:
       description: The leaked credential entries (password, source, URL) for the customer account.
       type: Unknown
     description: Looks up leaked employee or customer credentials associated with a company domain, using the Cyberint leaked-credentials API.
+    compliantpolicies:
+    - User Soft Remediation
   dockerimage: demisto/python3:3.12.13.8428455
   feed: true
   subtype: python3

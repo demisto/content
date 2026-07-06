@@ -1,6 +1,6 @@
-Use the Check Point EM ThreatCloud Intelligence Feed integration to ingest high-fidelity IOC indicators from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs and to enrich a single indicator on demand.
+Use the Check Point EM ThreatCloud Intelligence Feed integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management IOC APIs into your Cortex Threat Intelligence Module (Cortex XSOAR or Cortex XSIAM), and to enrich a single IOC on demand from the war room or a playbook task.
 
-## Configure Check Point EM ThreatCloud Intelligence Feed in Cortex XSOAR
+## Configure Check Point EM ThreatCloud Intelligence Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cyberint-premium-get-indicators
 
 ***
-Gets indicators from the premium feed.
+Gets indicators from the Infinity External Risk Management feed.
 
 #### Base Command
 

@@ -56,4 +56,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Check Point - IOC Enrichment and Triage](../doc_files/Check_Point_-_IOC_Enrichment_and_Triage.png)
+![Check Point - IOC Enrichment and Triage](../doc_files/Check_Point_IOC_Enrichment_and_Triage.png)

@@ -58,4 +58,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Check Point - Phishing Takedown](../doc_files/Check_Point_-_Phishing_Takedown.png)
+![Check Point - Phishing Takedown](../doc_files/Check_Point_Phishing_Takedown.png)

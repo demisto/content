@@ -1,7 +1,3 @@
-## Check Point EM ThreatCloud Intelligence Feed
-
-Use the **Check Point EM ThreatCloud Intelligence Feed** integration to ingest high-fidelity Indicators-of-Compromise from the Cyberint Infinity External Risk Management IOC APIs into your Cortex Threat Intelligence Module (Cortex XSOAR or Cortex XSIAM), and to enrich a single IOC on demand from the war room or a playbook task.
-
 ### Get your Cyberint API access token
 
 1. Sign in to your Cyberint Argos tenant at `https://<your-company>.cyberint.io`.
