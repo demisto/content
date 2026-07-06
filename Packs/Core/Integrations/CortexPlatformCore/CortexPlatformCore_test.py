@@ -980,11 +980,12 @@ def test_search_assets_page_size_exceeds_max_raises():
     WHEN:
         search_assets_command is invoked.
     THEN:
-        A ValueError is raised with a message mentioning the max value,
+        A CortexInvalidArgError is raised with a message mentioning the max value,
         and no request is sent to the API.
     """
     import pytest
 
+    from CommonServerPython import CortexInvalidArgError
     from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
 
     mock_client = Client(base_url="", headers={})
@@ -994,7 +995,7 @@ def test_search_assets_page_size_exceeds_max_raises():
     with (
         mock.patch.object(mock_client, "get_webapp_data") as mock_get_webapp_data,
         mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
-        pytest.raises(ValueError, match=str(SEARCH_ASSETS_MAX_LIMIT)),
+        pytest.raises(CortexInvalidArgError, match=str(SEARCH_ASSETS_MAX_LIMIT)),
     ):
         search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT + 1)})
 
