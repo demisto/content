@@ -49,9 +49,7 @@ def get_repo_root() -> str:
     must execute from the repository root. Without this, git rm --ignore-unmatch
     silently does nothing because the paths don't exist relative to the cwd.
     """
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True
-    )
+    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
     return result.stdout.strip()
 
 
