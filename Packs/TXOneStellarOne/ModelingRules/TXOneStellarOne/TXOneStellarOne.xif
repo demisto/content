@@ -1,113 +1,59 @@
 [MODEL:dataset="txone_stellarone_raw"]
-filter cefdeviceproduct = "StellarProtect" and cefname = "Agent Event"
+alter
+    get_user = coalesce(suser, username, activeuser, accessuser, threatuser),
+    get_host_os = coalesce(cs2, agentos),
+    get_target_file = arrayindex(regextract(tmp_file_name, "[^\\\/]+$"),0),
+    get_file_path = coalesce(filePath, accessimagepath, threatimagepath, path),
+    get_proc_id = coalesce(to_string(pid), processid),
+    get_cs1_event_msg = if(cs1 = "Detailed Event Message", cs1),
+    get_cs1_client_ip = if(cs1 = "clientIpAddress", cs1),
+    get_outcome = coalesce(to_string(status), to_string(actionresult), result)
 | alter
-    get_src_ip = agentip,
-    get_user = coalesce(accessuser, threatuser),
-    get_file_name = coalesce(filename, targetfile),
-    get_file_path = coalesce(filepath, accessimagepath, threatimagepath),
-    get_proc_id = coalesce(to_string(pid), processid)
-| alter
-    xdm.observer.vendor = cefdevicevendor,
-    xdm.observer.product = cefdeviceproduct,
+    get_file_name = coalesce(filename, get_target_file),
+    get_description = coalesce(get_cs1_event_msg, msg, detailmsg, `desc`),
+    get_src_ip = coalesce(src, clientip, agentip, get_cs1_client_ip)
+
+| alter //XDM Mapping
     xdm.observer.version = cefdeviceversion,
-    xdm.observer.name = serverip,
-    xdm.observer.type = cefname,
-    xdm.event.type = category,
-    xdm.event.id = to_string(cefdeviceeventclassid),
-    xdm.event.description = coalesce(msg, detailmsg),
+    xdm.observer.name = coalesce(dvchost, agentendpoint, dvc, serverip),
+    xdm.observer.unique_identifier = deviceexternalid,
+    xdm.event.type = cefname,
+    xdm.observer.action = act,
+    xdm.event.id = coalesce(eventid, cefdeviceeventclassid),
+    xdm.event.description = get_description,
     xdm.alert.severity = to_string(cefseverity),
     xdm.alert.name = threatname,
     xdm.alert.original_threat_name = threatname,
     xdm.alert.original_threat_id = threatattackid,
-    xdm.source.host.hostname = agentendpoint,
-    xdm.source.host.os = agentos,
+    xdm.source.host.hostname = get_host,
+    xdm.source.user.group.guid = agentgrpguid,
+    xdm.source.user.groups = arraycreate(coalesce(agentgrpname, userrole)),
+    xdm.source.host.os = get_host_os,
+    xdm.source.host.os_family = if(
+        get_host_os ~= "(?i)windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        get_host_os ~= "(?i)linux", XDM_CONST.OS_FAMILY_LINUX,
+        get_host_os ~= "(?i)mac|darwin", XDM_CONST.OS_FAMILY_MACOS,
+        get_host_os ~= "(?i)ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+        get_host_os),
     xdm.source.user.username = get_user,
-    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip, null),
-    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip, null),
+    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip),
+    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip),
+    xdm.target.ipv4 = if(is_ipv4(dst), dst),
+    xdm.target.ipv6 = if(is_ipv6(dst), dst),
+    xdm.target.host.hostname = if(is_ipv4(dst) = FALSE and is_ipv6(dst) = FALSE, dst),
     xdm.target.file.filename = get_file_name,
     xdm.target.file.path = get_file_path,
-    xdm.target.file.sha256 = filehash,
-    xdm.target.process.pid = to_integer(get_proc_id),
+    xdm.target.file.sha256 = fileHash,
+    xdm.target.process.pid = if(get_proc_id ~= "\d+", to_integer(get_proc_id)),
     xdm.target.process.name = blockedprocess,
-    xdm.event.outcome = if(to_string(actionresult) = null, null, to_string(actionresult) ~= "(?i)block|fail|denied", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS);
-
-filter cefdeviceproduct = "StellarProtect" and cefname = "Server Event"
-| alter
-    get_src_ip = clientip
-| alter
-    xdm.observer.vendor = cefdevicevendor,
-    xdm.observer.product = cefdeviceproduct,
-    xdm.observer.version = cefdeviceversion,
-    xdm.observer.name = serverip,
-    xdm.observer.type = cefname,
-    xdm.event.type = cefname,
-    xdm.event.id = to_string(cefdeviceeventclassid),
-    xdm.event.description = msg,
-    xdm.alert.severity = to_string(cefseverity),
-    xdm.source.user.username = username,
-    xdm.source.user.groups = arraycreate(userrole),
-    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip, null),
-    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip, null);
-
-filter cefdeviceproduct ~= "Legacy Mode"
-| alter
-    get_src_ip = coalesce(dvc, cs1),
-    get_user = suser
-| alter
-    xdm.observer.vendor = cefdevicevendor,
-    xdm.observer.product = cefdeviceproduct,
-    xdm.observer.version = cefdeviceversion,
-    xdm.observer.name = serverip,
-    xdm.observer.type = cefname,
-    xdm.event.type = cefname,
-    xdm.event.id = to_string(cefdeviceeventclassid),
-    xdm.event.description = msg,
-    xdm.alert.severity = to_string(cefseverity),
-    xdm.source.host.hostname = dvchost,
-    xdm.source.host.os = cs2,
-    xdm.source.user.username = get_user,
-    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip, null),
-    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip, null),
-    xdm.observer.action = act,
-    xdm.target.file.path = filepath,
-    xdm.target.file.sha256 = filehash;
-
-filter cefdeviceproduct = "StellarOne" and cefname = "Console Log"
-| alter
-    get_src_ip = clientip
-| alter
-    xdm.observer.vendor = cefdevicevendor,
-    xdm.observer.product = cefdeviceproduct,
-    xdm.observer.version = cefdeviceversion,
-    xdm.observer.name = serverip,
-    xdm.observer.type = cefname,
-    xdm.event.type = cefname,
-    xdm.event.id = to_string(cefdeviceeventclassid),
-    xdm.event.description = msg,
-    xdm.alert.severity = to_string(cefseverity),
-    xdm.source.user.username = username,
-    xdm.source.user.groups = arraycreate(userrole),
-    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip, null),
-    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip, null),
-    xdm.event.outcome = if(to_string(status) = "1", XDM_CONST.OUTCOME_SUCCESS, to_string(status) = "2", XDM_CONST.OUTCOME_FAILED, null);
-
-filter cefdeviceproduct = "StellarOne" and cefname != "Console Log"
-| alter
-    get_src_ip = coalesce(cs1, clientip),
-    get_user = coalesce(suser, username),
-    get_event_id = coalesce(if(cefdeviceeventclassid != "0", cefdeviceeventclassid, null), eventid)
-| alter
-    xdm.observer.vendor = cefdevicevendor,
-    xdm.observer.product = cefdeviceproduct,
-    xdm.observer.version = cefdeviceversion,
-    xdm.observer.name = serverip,
-    xdm.observer.unique_identifier = deviceexternalid,
-    xdm.observer.type = cefname,
-    xdm.event.type = cefname,
-    xdm.event.id = to_string(get_event_id),
-    xdm.event.description = msg,
-    xdm.alert.severity = to_string(cefseverity),
-    xdm.source.host.hostname = dvchost,
-    xdm.source.user.username = get_user,
-    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip, null),
-    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip, null);
+    xdm.target.process.parent_id = parentprocessid1,
+    xdm.target.host.device_category = devicetype,
+    xdm.event.outcome = if(
+        get_outcome = "0", XDM_CONST.OUTCOME_UNKNOWN,
+        get_outcome = "1", XDM_CONST.OUTCOME_SUCCESS,
+        get_outcome = "2", XDM_CONST.OUTCOME_FAILED,
+        get_outcome ~= "(?i)block|fail|denied",XDM_CONST.OUTCOME_FAILED,
+        get_outcome ~= "(?i)success|allow|approved", XDM_CONST.OUTCOME_SUCCESS,
+        get_outcome),
+    xdm.event.outcome_reason = get_outcome,
+    xdm.logon.logon_guid = logguid;
