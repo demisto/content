@@ -18,6 +18,9 @@
         "absolute",
         "secure endpoint"
     ],
+    "managed": false,
+    "managed:platform": true,
+    "source:platform": "cloud_managed",
     "marketplaces": [
         "xsoar",
         "marketplacev2",
