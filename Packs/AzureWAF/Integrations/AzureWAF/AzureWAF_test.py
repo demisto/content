@@ -2,7 +2,7 @@ import AzureWAF as waf
 import demistomock as demisto
 import pytest
 
-API_VERSION_POLICIES = "2020-05-01"
+API_VERSION_POLICIES = "2025-05-01"
 API_VERSION_INFRA = "2025-04-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 
