@@ -1,0 +1,125 @@
+category: Analytics & SIEM
+
+commonfields:
+  id: ETDXsoarConnector
+  version: -1
+
+name: ETDXsoarConnector
+
+display: ETDXsoarConnector
+
+description: Fetches malicious Cisco ETD email logs and creates incidents in Cortex XSOAR.
+
+provider: Cisco
+
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.111039
+  isfetch: true
+
+  commands:
+
+  - name: test-module
+    description: Test connectivity.
+
+  - name: test-fetch
+    description: Debug fetch incidents.
+
+  - name: etd-move-message
+    description: Reclassify and Remediate ETD message.
+
+    arguments:
+
+    - name: message_id
+      description: ETD message ID.
+      required: true
+
+    - name: verdict
+      description: New verdict.
+      required: true
+
+    - name: folder
+      description: New folder action.
+      required: true
+
+    outputs:
+
+    - contextPath: ETD.Message.ID
+      description: Message ID.
+      type: String
+
+    - contextPath: ETD.Message.Verdict
+      description: Updated verdict.
+      type: String
+
+    - contextPath: ETD.Message.Folder
+      description: Updated folder.
+      type: String
+
+
+configuration:
+
+- display: ETD Base URL
+  name: etd_base_url
+  type: 0
+  required: true
+
+- display: API Key
+  name: api_key
+  type: 9
+  required: true
+
+- display: Client ID
+  name: client_id
+  type: 0
+  required: true
+
+- display: Client Secret
+  name: client_secret
+  type: 9
+  required: true
+
+- display: First Fetch Time
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  required: false
+
+- display: Max fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: '50'
+
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  defaultvalue: 'true'
+
+
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: 60
+
+
+fromversion: 6.10.0
+
+marketplaces:
+- xsoar
+- marketplacev2
+
+tests:
+- No tests (auto formatted)

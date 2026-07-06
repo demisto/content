@@ -1,0 +1,206 @@
+id: ETD Email Reclassification And Remediation
+version: -1
+name: ETD Email Reclassification And Remediation
+description: Allows analysts to reclassify and remediate Cisco ETD emails.
+fromversion: 6.10.0
+tags:
+- ETD
+- Email
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fbb16e0e-906f-4621-88e6-22d0812feb5b
+    type: start
+    task:
+      id: fbb16e0e-906f-4621-88e6-22d0812feb5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 64279758-e97e-43a2-9940-d109407fb7bb
+    type: collection
+    task:
+      id: 64279758-e97e-43a2-9940-d109407fb7bb
+      version: -1
+      name: Collect Reclassification And Remediation
+      description: |-
+        Review the ETD email before remediation.
+
+        Message ID:
+        ${incident.etdmessageid}
+
+        Verify the email details and decide:
+
+        Reclassification:
+        - bec
+        - scam
+        - malicious
+        - phishing
+        - spam
+        - graymail
+        - neutral
+
+        Remediation:
+        - quarantine
+        - inbox
+        - junk
+        - trash
+        - delete
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: c48bafc9-4afb-4998-a787-bb5703a62142
+        label: ""
+        labelarg:
+          simple: Select new verdict
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: bec
+        - simple: scam
+        - simple: spam
+        - simple: malicious
+        - simple: phishing
+        - simple: graymail
+        - simple: neutral
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: 3a37b4d5-960b-4790-a7ac-ac0261822eb5
+        label: ""
+        labelarg:
+          simple: Select remediation action
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: quarantine
+        - simple: inbox
+        - simple: trash
+        - simple: junk
+        - simple: delete
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: ETD Email Reclassification And Remediation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4e38a992-120a-45e0-8ab7-9f1d356744e9
+    type: regular
+    task:
+      id: 4e38a992-120a-45e0-8ab7-9f1d356744e9
+      version: -1
+      name: etd-move-message
+      description: Reclassify and remediate ETD message.
+      script: ETDXsoarConnector|||etd-move-message
+      type: regular
+      iscommand: true
+      brand: ETDXsoarConnector
+    scriptarguments:
+      folder:
+        simple: ${ETD Email Reclassification And Remediation.Answers.1}
+      message_id:
+        simple: ${incident.etdmessageid}
+      verdict:
+        simple: ${ETD Email Reclassification And Remediation.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 420,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

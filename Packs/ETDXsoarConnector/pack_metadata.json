@@ -1,0 +1,20 @@
+{
+    "name": "ETD XSOAR Connector",
+    "description": "Cisco ETD XSOAR Connector fetches Cisco Email Threat Defense message events and creates incidents in Cortex XSOAR. The pack includes incident enrichment, ETD-specific incident fields, and a remediation playbook that allows analysts to reclassify email verdicts and perform remediation actions such as quarantine, inbox, junk, trash, or delete.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2026-05-20T17:50:49Z"
+}
