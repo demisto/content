@@ -1711,7 +1711,7 @@ def main():
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     args = demisto.args()
-    fetch_table = params.get("fetch_table")
+    fetch_table = params.get("fetch_table") or "firewall.threat"
     fetch_fields = params.get("fetch_fields") or "*"
     command = demisto.command()
     demisto.debug(f"Command called {command}")
@@ -1784,7 +1784,7 @@ def main():
         elif command == "fetch-incidents":
             first_fetch_timestamp = params.get("first_fetch_timestamp", "24 hours").strip()
             fetch_severity = params.get("firewall_severity")
-            fetch_table = params.get("fetch_table")
+            fetch_table = params.get("fetch_table") or "firewall.threat"
             fetch_fields = params.get("fetch_fields") or "*"
             fetch_subtype = params.get("firewall_subtype")
             fetch_limit = params.get("limit")
