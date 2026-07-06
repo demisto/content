@@ -1664,7 +1664,7 @@ class Client(BaseClient):
             data["message"] = response.get("errors", [{}])[0].get("detail", "An Unknown Error occurred")
         return data
 
-    def threat_export_raw_threat_timeline(self, threat_id: str) -> list[dict[str, str]]:
+    def threat_export_raw_threat_timeline(self, threat_id: str, max_entries: int = 5000) -> list[dict[str, str]]:
         endpoint_url = f"threats/{threat_id}/timeline"
         query_params = assign_params(
             skip=0,
@@ -1677,34 +1677,30 @@ class Client(BaseClient):
             params=query_params,
             retries=3,
             backoff_factor=5,
-            status_list_to_retry=[200, 202],
         )
         timeline: list = response.get("data", [])
         cursor = dict_safe_get(response, ["pagination", "nextCursor"])
-        while cursor:
+        while cursor and (max_entries == 0 or len(timeline) < max_entries):
             query_params["cursor"] = cursor
             response = self._http_request(
                 method="GET",
                 url_suffix=endpoint_url,
                 params=query_params,
-                retries=3,
-                backoff_factor=5,
-                status_list_to_retry=[200, 202],
             )
             timeline.extend(response.get("data", []))
             cursor = dict_safe_get(response, ["pagination", "nextCursor"])
-        return timeline
+
+        return timeline if len(timeline) <= max_entries or max_entries == 0 else timeline[:max_entries]
 
     def threat_export_events(self, threat_id: str) -> list[dict[str, str]]:
         endpoint_url = f"export/threats/{threat_id}/explore/events"
+
+        # The format parameter is mandatory. Options are CSV and JSON.
         query_params = assign_params(format="json", eventTypes="events")
         return self._http_request(
             method="GET",
             url_suffix=endpoint_url,
             params=query_params,
-            retries=3,
-            backoff_factor=5,
-            status_list_to_retry=[200, 202],
         )
 
 
@@ -3904,14 +3900,25 @@ def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
 
 
 def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResults | list]:
-    threat_id: str = str(args.get("threat_id"))
-    timeline = client.threat_export_raw_threat_timeline(threat_id)
+    """Retrieve the full timeline information for the threat
+
+    Args:
+        client (Client): SentinelOne API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults | list]: The Command Results including the file with the retrieved timeline entries
+    """
+
+    threat_id: str = args.get("threat_id", "")
+    max_entries: int = arg_to_number(args.get("limit")) or 5000
+    timeline = client.threat_export_raw_threat_timeline(threat_id, max_entries)
     file_result = fileResult(
         filename=f"{threat_id}_timeline.json",
         data=json.dumps(timeline),
         file_type=EntryType.ENTRY_INFO_FILE,
     )
-    context_entry = {"ThreatId": threat_id, "Filename": f"{threat_id}_timeline.json", "Timeline": file_result}
+    context_entry = {"ThreatId": threat_id, "Filename": f"{threat_id}_timeline.json"}
     return [
         CommandResults(
             readable_output=tableToMarkdown("Sentinel One - Threat Timeline", context_entry, removeNull=False),
@@ -3924,15 +3931,25 @@ def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResul
     ]
 
 
-def export_threat_events(client: Client, args: dict) -> list[CommandResults | list]:
-    threat_id: str = str(args.get("threat_id"))
+def export_threat_events(client: Client, args: dict[str, Any]) -> list[CommandResults | list]:
+    """Retrieves the events related to the Threat and returns them as a file
+
+    Args:
+        client (Client): SentinelOne API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults | list]: The Command Results including the file with the retrieved events
+    """
+
+    threat_id: str = args.get("threat_id", "")
     threat_events = client.threat_export_events(threat_id)
     file_result = fileResult(
         filename=f"threats_{threat_id}.json",
         data=json.dumps(threat_events),
         file_type=EntryType.ENTRY_INFO_FILE,
     )
-    context_entry = {"ThreatId": threat_id, "Filename": f"threats_{threat_id}.json", "Events": file_result}
+    context_entry = {"ThreatId": threat_id, "Filename": f"threats_{threat_id}.json"}
     return [
         CommandResults(
             readable_output=tableToMarkdown("Sentinel One - Threat Events", context_entry, removeNull=False),

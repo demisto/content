@@ -3131,6 +3131,9 @@ script:
     - name: threat_id
       required: true
       description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    - name: limit
+      required: false
+      description: "The max number of timeline entries to return. Set to `0` to return all, default is 5000"
     name: sentinelone-export-full-threat-timeline
     description: Exports the threat's full timeline as a JSON File.
     outputs:
@@ -3140,9 +3143,6 @@ script:
     - contextPath: SentinelOne.Export.Timeline.Filename
       description: The name of the file containing the Timeline.
       type: Boolean
-    - contextPath: SentinelOne.Export.Timeline.Timeline
-      description: Details of the Timeline file.
-      type: String
   - arguments:
     - name: threat_id
       required: true
@@ -3156,9 +3156,6 @@ script:
     - contextPath: SentinelOne.Export.Events.Filename
       description: The name of the file containing the Timeline.
       type: Boolean
-    - contextPath: SentinelOne.Export.Events.Events
-      description: Details of the Events file.
-      type: String
   dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   ismappable: true

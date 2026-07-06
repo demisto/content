@@ -993,8 +993,6 @@ Updates a custom STAR rule. Relevant for API version 2.1.
 | SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
 | SentinelOne.StarRule.QueryLanguage | String | The query language version for the STAR rule. |
 
-| SentinelOne.StarRule.UpdatedAt | String | The updated time for the STAR rule. |
-
 ### sentinelone-enable-star-rules
 
 ***
