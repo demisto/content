@@ -43,7 +43,9 @@ from Tenable_sc import (
     list_zones_command,
     generate_deterministic_uuid,
     parse_vulnerabilities,
-    populate_missing_uuids,
+    parse_assets,
+    add_vulnerability_composite_keys,
+    add_asset_composite_key,
     skip_fetch_assets,
     update_asset_command,
     validate_create_scan_inputs,
@@ -1639,18 +1641,19 @@ def test_generate_deterministic_uuid_handles_none_values():
     assert str(uuid_module.UUID(with_none)) == with_none
 
 
-def test_populate_missing_uuids_generates_when_absent():
+def test_add_vulnerability_composite_keys_adds_columns():
     """
     Given:
-    - A vulnerability record without hostUUID and vulnUUID (the XSUP-70558 scenario).
+    - A vulnerability record without hostUUID and vulnUUID (the XSUP-70558 network-scan scenario).
 
     When:
-    - Calling populate_missing_uuids.
+    - Calling add_vulnerability_composite_keys.
 
     Then:
-    - Both hostUUID and vulnUUID are populated with deterministic UUIDs derived from
-      the documented uniqueness fields (repository.id, ip, dnsName for host;
-      repository.id, ip, port, protocol, pluginID for vuln).
+    - hostUniqueness and vulnUniqueness composite-key columns are added with deterministic
+      UUIDs derived from the documented uniqueness fields (repository.id, ip, dnsName for host;
+      repository.id, ip, port, protocol, pluginID for vuln), and the raw hostUUID / vulnUUID
+      are left absent (untouched).
     """
     vuln = {
         "repository": {"id": "1", "name": "Repo"},
@@ -1661,25 +1664,29 @@ def test_populate_missing_uuids_generates_when_absent():
         "pluginID": "19506",
     }
 
-    populate_missing_uuids(vuln)
+    add_vulnerability_composite_keys(vuln)
 
     expected_host = generate_deterministic_uuid(["1", "10.233.4.186", "host.example.com"])
     expected_vuln = generate_deterministic_uuid(["1", "10.233.4.186", "443", "TCP", "19506"])
 
-    assert vuln["hostUUID"] == expected_host
-    assert vuln["vulnUUID"] == expected_vuln
+    assert vuln["hostUniqueness"] == expected_host
+    assert vuln["vulnUniqueness"] == expected_vuln
+    # Raw API UUID fields must remain untouched (absent here).
+    assert "hostUUID" not in vuln
+    assert "vulnUUID" not in vuln
 
 
-def test_populate_missing_uuids_does_not_override_existing():
+def test_add_vulnerability_composite_keys_preserves_native_uuids():
     """
     Given:
-    - A vulnerability record that already has hostUUID and vulnUUID (the common case).
+    - A vulnerability record that already has native hostUUID and vulnUUID.
 
     When:
-    - Calling populate_missing_uuids.
+    - Calling add_vulnerability_composite_keys.
 
     Then:
-    - The existing native UUIDs are preserved and not overwritten.
+    - The native UUIDs are preserved unchanged and the composite-key columns are added
+      alongside them.
     """
     vuln = {
         "repository": {"id": "1"},
@@ -1692,22 +1699,26 @@ def test_populate_missing_uuids_does_not_override_existing():
         "vulnUUID": "3e4c4c34-af3f-45b7-b59f-9369f570d93f",
     }
 
-    populate_missing_uuids(vuln)
+    add_vulnerability_composite_keys(vuln)
 
+    # Native UUIDs untouched.
     assert vuln["hostUUID"] == "0005f124-280d-4095-9240-194ccec04ad6"
     assert vuln["vulnUUID"] == "3e4c4c34-af3f-45b7-b59f-9369f570d93f"
+    # Composite keys added alongside.
+    assert vuln["hostUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", ""])
+    assert vuln["vulnUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", "0", "TCP", "19506"])
 
 
-def test_populate_missing_uuids_with_empty_repository():
+def test_add_vulnerability_composite_keys_with_empty_repository():
     """
     Given:
-    - A vulnerability record missing both UUIDs and without a repository object.
+    - A vulnerability record without a repository object.
 
     When:
-    - Calling populate_missing_uuids.
+    - Calling add_vulnerability_composite_keys.
 
     Then:
-    - UUIDs are still generated (repositoryID treated as empty) without raising.
+    - Composite keys are still generated (repositoryID treated as None) without raising.
     """
     vuln = {
         "ip": "10.233.4.186",
@@ -1717,23 +1728,96 @@ def test_populate_missing_uuids_with_empty_repository():
         "pluginID": "19506",
     }
 
-    populate_missing_uuids(vuln)
+    add_vulnerability_composite_keys(vuln)
 
-    assert vuln["hostUUID"] == generate_deterministic_uuid([None, "10.233.4.186", ""])
-    assert vuln["vulnUUID"] == generate_deterministic_uuid([None, "10.233.4.186", "0", "TCP", "19506"])
+    assert vuln["hostUniqueness"] == generate_deterministic_uuid([None, "10.233.4.186", ""])
+    assert vuln["vulnUniqueness"] == generate_deterministic_uuid([None, "10.233.4.186", "0", "TCP", "19506"])
 
 
-def test_parse_vulnerabilities_populates_missing_uuids():
+def test_add_asset_composite_key_adds_column():
     """
     Given:
-    - A list of vulnerability records, one missing hostUUID/vulnUUID and one with them.
+    - A host asset record from /hosts/search using ipAddress/dns field names.
+
+    When:
+    - Calling add_asset_composite_key.
+
+    Then:
+    - hostUniqueness composite-key column is added from repository.id, ipAddress, dns and
+      the raw uuid / tenableUUID fields are left untouched.
+    """
+    asset = {
+        "repository": {"id": "1", "name": "Repo"},
+        "ipAddress": "10.233.4.186",
+        "dns": "host.example.com",
+        "uuid": "0005f124-280d-4095-9240-194ccec04ad6",
+        "tenableUUID": "3e4c4c34-af3f-45b7-b59f-9369f570d93f",
+    }
+
+    add_asset_composite_key(asset)
+
+    assert asset["hostUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", "host.example.com"])
+    # Native UUID fields untouched.
+    assert asset["uuid"] == "0005f124-280d-4095-9240-194ccec04ad6"
+    assert asset["tenableUUID"] == "3e4c4c34-af3f-45b7-b59f-9369f570d93f"
+
+
+def test_add_asset_composite_key_with_empty_repository():
+    """
+    Given:
+    - A host asset record without a repository object.
+
+    When:
+    - Calling add_asset_composite_key.
+
+    Then:
+    - hostUniqueness is still generated (repositoryID treated as None) without raising.
+    """
+    asset = {
+        "ipAddress": "10.233.4.186",
+        "dns": "",
+    }
+
+    add_asset_composite_key(asset)
+
+    assert asset["hostUniqueness"] == generate_deterministic_uuid([None, "10.233.4.186", ""])
+
+
+def test_parse_assets_adds_composite_keys():
+    """
+    Given:
+    - A list of host asset records.
+
+    When:
+    - Calling parse_assets.
+
+    Then:
+    - Every asset gets a hostUniqueness composite-key column while native UUIDs remain.
+    """
+    assets = [
+        {"repository": {"id": "1"}, "ipAddress": "10.233.4.186", "dns": "a.example.com", "uuid": "u1"},
+        {"repository": {"id": "2"}, "ipAddress": "10.233.4.186", "dns": "b.example.com", "uuid": "u2"},
+    ]
+
+    result = parse_assets(assets)
+
+    assert result[0]["hostUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", "a.example.com"])
+    assert result[1]["hostUniqueness"] == generate_deterministic_uuid(["2", "10.233.4.186", "b.example.com"])
+    assert result[0]["uuid"] == "u1"
+    assert result[1]["uuid"] == "u2"
+
+
+def test_parse_vulnerabilities_adds_composite_keys():
+    """
+    Given:
+    - A list of vulnerability records, one without native UUIDs and one with them.
 
     When:
     - Calling parse_vulnerabilities.
 
     Then:
-    - The record missing UUIDs gets deterministic ones populated, while the record with
-      native UUIDs keeps them unchanged.
+    - Both records receive hostUniqueness / vulnUniqueness composite-key columns, and the
+      record with native hostUUID/vulnUUID keeps them unchanged.
     """
     vulns = [
         {
@@ -1747,8 +1831,8 @@ def test_parse_vulnerabilities_populates_missing_uuids():
         },
         {
             "pluginID": "19507",
-            "repository": {"id": "1"},
-            "ip": "10.233.4.187",
+            "repository": {"id": "2"},
+            "ip": "10.233.4.186",
             "dnsName": "",
             "port": "443",
             "protocol": "TCP",
@@ -1760,12 +1844,15 @@ def test_parse_vulnerabilities_populates_missing_uuids():
 
     result = parse_vulnerabilities(vulns)
 
-    # First record had no UUIDs - they must now be present and valid.
-    assert result[0]["hostUUID"]
-    assert result[0]["vulnUUID"]
-    assert result[0]["hostUUID"] == generate_deterministic_uuid(["1", "10.233.4.186", ""])
-    assert result[0]["vulnUUID"] == generate_deterministic_uuid(["1", "10.233.4.186", "0", "TCP", "19506"])
+    # First record has composite keys derived from its uniqueness fields.
+    assert result[0]["hostUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", ""])
+    assert result[0]["vulnUniqueness"] == generate_deterministic_uuid(["1", "10.233.4.186", "0", "TCP", "19506"])
+    # First record never had native UUIDs and they are not fabricated.
+    assert "hostUUID" not in result[0]
+    assert "vulnUUID" not in result[0]
 
-    # Second record kept its native UUIDs.
+    # Second record kept its native UUIDs and also gained composite keys.
     assert result[1]["hostUUID"] == "0005f124-280d-4095-9240-194ccec04ad6"
     assert result[1]["vulnUUID"] == "3e4c4c34-af3f-45b7-b59f-9369f570d93f"
+    assert result[1]["hostUniqueness"] == generate_deterministic_uuid(["2", "10.233.4.186", ""])
+    assert result[1]["vulnUniqueness"] == generate_deterministic_uuid(["2", "10.233.4.186", "443", "TCP", "19507"])
