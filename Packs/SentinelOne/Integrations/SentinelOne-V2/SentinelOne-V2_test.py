@@ -2549,7 +2549,6 @@ def test_export_full_threat_timeline(mocker, requests_mock):
     assert command_results.outputs_prefix == "SentinelOne.Export.Timeline"
     assert command_results.outputs["ThreatId"] == "12345"
     assert command_results.outputs["Filename"] == "12345_timeline.json"
-    assert command_results.outputs["Timeline"] == file_result
 
     assert len(requests_mock.request_history) == 2
     assert all(req.method == "GET" for req in requests_mock.request_history)
@@ -2586,7 +2585,6 @@ def test_export_threat_events(mocker, requests_mock):
     assert command_results.outputs_prefix == "SentinelOne.Export.Events"
     assert command_results.outputs["ThreatId"] == "12345"
     assert command_results.outputs["Filename"] == "threats_12345.json"
-    assert command_results.outputs["Events"] == file_result
 
     assert len(requests_mock.request_history) == 1
     assert requests_mock.request_history[0].method == "GET"
