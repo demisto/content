@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = "10"
+# shir is doing a test
 
 
 class Client(BaseClient):
