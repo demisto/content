@@ -41,10 +41,24 @@ RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
 # -----------------------------
 # Git utilities
 # -----------------------------
+def get_repo_root() -> str:
+    """Get the git repository root directory.
+
+    The workflow runs this script from .github/github_workflow_scripts/,
+    but git commands operating on repo-relative file paths (e.g. Packs/...)
+    must execute from the repository root. Without this, git rm --ignore-unmatch
+    silently does nothing because the paths don't exist relative to the cwd.
+    """
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True
+    )
+    return result.stdout.strip()
+
+
 def run_git_command(cmd, github_token, raise_on_error=True):
     log_cmd = [c.replace(github_token, "***") for c in cmd]
     print(f"Running: {' '.join(log_cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=get_repo_root())
 
     if result.returncode != 0 and raise_on_error:
         print(f"Error: {result.stderr}")
