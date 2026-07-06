@@ -39,6 +39,7 @@ configuration:
   type: 9
   required: false
   display: ""
+  hidden: true
   section: Connect
 - displaypassword: Registration ID
   name: credentials_reg_id
@@ -47,6 +48,14 @@ configuration:
   section: Connect
   required: false
   display: ""
+- displaypassword: Client Secret
+  additionalinfo: The client secret used for Cortex GW SCM authentication
+  name: credentials_client_secret
+  hiddenusername: true
+  type: 9
+  required: false
+  display: ""
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
