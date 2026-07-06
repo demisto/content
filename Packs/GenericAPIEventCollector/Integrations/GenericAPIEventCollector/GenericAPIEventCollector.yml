@@ -282,6 +282,9 @@ script:
           required: true
         - name: limit
           description: Maximum number of results to return.
+    - name: generate-login-url
+      description: Generate the login url used for Authorization code flow.
+      arguments: []
   runonce: false
   isfetchevents: true
   script: '-'

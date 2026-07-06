@@ -1,8 +1,10 @@
 import copy
 import enum
+import secrets
 from base64 import b64encode
 from collections import namedtuple
 from json import JSONDecodeError
+from urllib.parse import urlencode, urlparse, urlunparse
 
 import urllib3
 from CommonServerPython import *
@@ -499,7 +501,9 @@ def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHa
     Builds an OAuth2ClientCredentialsHandler for the OAuth 2.0 authentication method.
 
     The handler is responsible for acquiring and refreshing the access token
-    against the configured token endpoint using the client credentials grant type.
+    against the configured token endpoint. When both an authorization code and a
+    redirect uri are configured, the Authorization Code grant is used; otherwise
+    the Client Credentials grant is used.
 
     Args:
         params: The integration parameters.
@@ -514,6 +518,8 @@ def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHa
     client_id = params.get("oauth_client_id")
     client_secret = params.get("oauth_client_secret", {}).get("password")
     scope = params.get("oauth_scopes") or None
+    authorization_code = params.get("authorization_code")
+    redirect_uri = params.get("redirect_uri")
 
     if not token_url:
         return_error("Oauth token url is required for OAuth 2.0 Authentication.")
@@ -523,13 +529,85 @@ def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHa
         return_error("Oauth client secret is required for OAuth 2.0 Authentication.")
 
     add_sensitive_log_strs(client_secret)
-    demisto.debug(f"Building OAuth 2.0 client credentials handler for token url: {token_url}")
+
+    # When an authorization code and redirect uri are provided, use the
+    # OAuth 2.0 Authorization Code grant. The token request body is sent as
+    # application/x-www-form-urlencoded (handled by the underlying handler) with:
+    #   grant_type=authorization_code&code=...&redirect_uri=...&client_id=...&client_secret=...
+    auth_params: dict[str, str] | None = None
+    if authorization_code and redirect_uri:
+        add_sensitive_log_strs(str(authorization_code))
+        demisto.debug(f"Building OAuth 2.0 authorization code handler for token url: {token_url}")
+        auth_params = {
+            "grant_type": "authorization_code",
+            "code": str(authorization_code),
+            "redirect_uri": str(redirect_uri),
+        }
+    else:
+        demisto.debug(f"Building OAuth 2.0 client credentials handler for token url: {token_url}")
+
     return OAuth2ClientCredentialsHandler(
         token_url=str(token_url),
         client_id=str(client_id),
         client_secret=str(client_secret),
         scope=scope,
+        auth_params=auth_params,
     )
+
+
+def generate_login_url_command(params: dict[Any, Any]) -> CommandResults:
+    """
+    Generates the login URL used for the OAuth 2.0 Authorization Code flow.
+
+    The user should open the generated URL in a browser, authenticate and grant consent.
+    The IdP will then redirect to the configured redirect_uri with an authorization code
+    that should be pasted into the "Authorization code" integration parameter.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        CommandResults with the login URL as a human readable output.
+    """
+    token_url = params.get("oauth_token_url")
+    client_id = params.get("oauth_client_id")
+    redirect_uri = params.get("redirect_uri")
+    scope = params.get("oauth_scopes")
+
+    if not token_url:
+        return_error("Oauth token url is required to generate the login url.")
+    if not client_id:
+        return_error("Oauth client id is required to generate the login url.")
+    if not redirect_uri:
+        return_error("Redirect uri is required to generate the login url.")
+
+    # Derive the authorize endpoint from the token endpoint (replace the trailing path segment).
+    parsed = urlparse(str(token_url))
+    authorize_path = parsed.path.rsplit("/", 1)[0] + "/authorize" if parsed.path else "/authorize"
+    authorize_base = urlunparse((parsed.scheme, parsed.netloc, authorize_path, "", "", ""))
+
+    query_params: dict[str, str] = {
+        "response_type": "code",
+        "client_id": str(client_id),
+        "redirect_uri": str(redirect_uri),
+        "state": secrets.token_urlsafe(20),
+    }
+    if scope:
+        query_params["scope"] = str(scope)
+
+    login_url = f"{authorize_base}?{urlencode(query_params)}"
+    demisto.debug(f"Generated login url with authorize base: {authorize_base}")
+
+    readable_output = (
+        "### Authorization instructions\n"
+        "1. Click on the [login URL]"
+        f"({login_url}) to authorize the integration.\n"
+        "2. Complete the authentication and consent in your browser.\n"
+        "3. After being redirected, copy the `code` value from the redirect URL and paste it "
+        "into the **Authorization code** integration parameter.\n\n"
+        f"Login URL:\n{login_url}"
+    )
+    return CommandResults(readable_output=readable_output)
 
 
 def get_events_command(
@@ -695,6 +773,9 @@ def main() -> None:  # pragma: no cover
                 events = organize_events_to_xsiam_format(raw_events, events_keys)
                 demisto.debug(f"Sending {len(events)} events from command")
                 send_events_to_xsiam(events, vendor=vendor, product=product)  # noqa
+
+        elif command == "generate-login-url":
+            return_results(generate_login_url_command(params))
 
     except Exception as e:
         # Log exceptions and return errors
