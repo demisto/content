@@ -321,6 +321,47 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def _format_user_entity(entity: dict) -> str:
+    """
+    Builds a readable user identity from a User entity, retaining the full identity
+    (userPrincipalName or accountName) together with the domain, instead of only the domain name.
+
+    Args:
+        entity (dict): A single "User" entity from a Microsoft 365 Defender alert.
+
+    Returns:
+        str: A readable user identity, e.g. "username@domain (BOQDEVUSER.LOCAL)".
+             Returns an empty string if no identifying information is present.
+    """
+    user = entity.get("userPrincipalName") or entity.get("accountName") or ""
+    domain = entity.get("domainName") or ""
+    if user and domain:
+        return f"{user} ({domain})"
+    return user or domain
+
+
+def _get_impacted_entities(alerts_list: list) -> list:
+    """
+    Collects the impacted user entities across all alerts, keeping the full user identity
+    and preserving order while removing duplicates and empty values.
+
+    Args:
+        alerts_list (list): The alerts of a Microsoft 365 Defender incident.
+
+    Returns:
+        list: An ordered, de-duplicated list of readable user identities.
+    """
+    impacted_entities: list = []
+    for alert in alerts_list:
+        for entity in alert.get("entities", []):
+            if entity.get("entityType") != "User":
+                continue
+            formatted_user = _format_user_entity(entity)
+            if formatted_user and formatted_user not in impacted_entities:
+                impacted_entities.append(formatted_user)
+    return impacted_entities
+
+
 def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     """
     Calculated metadata for the gicen incident
@@ -351,14 +392,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
 
     return {
         "Categories": [alert.get("category", "") for alert in alerts_list],
-        "Impacted entities": list(
-            {
-                (entity.get("domainName", ""))
-                for alert in alerts_list
-                for entity in alert.get("entities")
-                if entity.get("entityType") == "User"
-            }
-        ),
+        "Impacted entities": _get_impacted_entities(alerts_list),
         "Active alerts": f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
         "Service sources": list({alert.get("serviceSource", "") for alert in alerts_list}),
         "Detection sources": list({alert.get("detectionSource", "") for alert in alerts_list}),

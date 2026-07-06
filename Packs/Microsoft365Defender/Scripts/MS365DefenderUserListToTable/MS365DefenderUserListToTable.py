@@ -7,7 +7,7 @@ def count_dict(value):
         return value
     users = value.split(",")
 
-    return [{"User": user for user in users}]
+    return [{"User": user} for user in users]
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
