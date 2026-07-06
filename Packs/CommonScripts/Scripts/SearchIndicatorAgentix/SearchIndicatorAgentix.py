@@ -58,7 +58,12 @@ def build_query_for_indicator_values(args: dict) -> list:
     try:
         values_as_list = json.loads(values)
     except (json.JSONDecodeError, TypeError) as e:
-        raise DemistoException(f"JSON decode failed for values {values}: {str(e)}.")
+        raise CortexInvalidArgError(
+            'value',
+            value=values,
+            reason=str(e),
+            override_message=f"JSON decode failed for values {values}: {str(e)}.",
+        )
 
     if not values_as_list:
         return []
