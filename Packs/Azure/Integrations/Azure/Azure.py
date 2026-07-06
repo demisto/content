@@ -5817,6 +5817,11 @@ def main():  # pragma: no cover
             account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
             if is_gov_account(connector_id, account_id):  # type: ignore
                 switch_to_gov_account()
+        else:
+            azure_ad_endpoint = params.get("azure_ad_endpoint") or "https://login.microsoftonline.com"
+            if azure_ad_endpoint.rstrip("/") != "https://login.microsoftonline.com":
+                demisto.debug(f"Non-commercial Azure AD endpoint configured ({azure_ad_endpoint}); switching to Gov account.")
+                switch_to_gov_account()
 
         if command == "azure-auth-reset":
             return return_results(reset_auth())
