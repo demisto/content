@@ -518,7 +518,7 @@ def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHa
     client_id = params.get("oauth_client_id")
     client_secret = params.get("oauth_client_secret", {}).get("password")
     scope = params.get("oauth_scopes") or None
-    authorization_code = params.get("authorization_code")
+    authorization_code = params.get("authorization_code").get("password")
     redirect_uri = params.get("redirect_uri")
 
     if not token_url:

@@ -78,8 +78,9 @@ configuration:
     additionalinfo: OAuth Client Secret.
   - name: authorization_code
     section: Connect
-    display: Authorization code
-    type: 0
+    type: 9
+    hiddenusername: true
+    displaypassword: Authorization code
     required: false
     additionalinfo: The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code.
   - name: redirect_uri
