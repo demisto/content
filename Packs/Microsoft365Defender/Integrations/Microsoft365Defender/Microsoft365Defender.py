@@ -32,13 +32,8 @@ MICROSOFT_365_DEFENDER_RESOURCE: dict[str, str] = {
     "dod": "https://api-gov-dod.security.microsoft.us/",
 }
 
-# Microsoft 365 Defender OAuth scope per Azure cloud environment.
-MICROSOFT_365_DEFENDER_SCOPE: dict[str, str] = {
-    "com": "offline_access https://security.microsoft.com/mtp/.default",
-    "gcc": "offline_access https://security.microsoft.com/mtp/.default",
-    "gcc-high": "offline_access https://security.microsoft.us/mtp/.default",
-    "dod": "offline_access https://security.microsoft.us/mtp/.default",
-}
+# The MTP scope is the same across all clouds — the resource principal is globally registered.
+SCOPE = "offline_access https://security.microsoft.com/mtp/.default"
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
@@ -107,7 +102,7 @@ class Client:
         resolved_base_url = cloud_base_url if (not base_url or base_url == BASE_URL) else base_url
         resource_uri = MICROSOFT_365_DEFENDER_RESOURCE.get(cloud_abbreviation, BASE_URL)
         managed_identities_resource = MICROSOFT_365_DEFENDER_RESOURCE.get(cloud_abbreviation, Resources.security)
-        scope = MICROSOFT_365_DEFENDER_SCOPE.get(cloud_abbreviation, "offline_access https://security.microsoft.com/mtp/.default")
+        scope = SCOPE
 
         demisto.debug(
             f"Microsoft 365 Defender - Using azure_cloud={cloud_abbreviation}, "
