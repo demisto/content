@@ -54,8 +54,10 @@ CRITICAL_FOLDERS: tuple[PurePosixPath, ...] = (
 )
 
 # Marker used to find / update the sticky reminder comment so we don't spam the PR
-# with a new comment on every workflow run.
-COMMENT_MARKER = "<!-- commonserverpython-nightly-reminder -->"
+# with a new comment on every workflow run. Named 'common-server' rather than
+# 'commonserverpython' because the reminder is triggered by changes to any of
+# the runtime-injected helpers (Python + JS + PowerShell), not just Python.
+COMMENT_MARKER = "<!-- common-server-nightly-reminder -->"
 
 REMINDER_COMMENT_BODY = (
     f"{COMMENT_MARKER}\n"
