@@ -1935,18 +1935,16 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
             else:
                 entry_format = note.get("format")
 
-            if entry_format == "html":
-                contents = (
-                    f"Type: {note.get('element')}<br>Created By: "
-                    f"{note.get('sys_created_by')}<br>Created On: "
-                    f"{note.get('sys_created_on')}<br>{rendered_value}"
-                )
-            else:
-                contents = (
-                    f"Type: {note.get('element')}\nCreated By: "
-                    f"{note.get('sys_created_by')}\nCreated On: "
-                    f"{note.get('sys_created_on')}\n{rendered_value}"
-                )
+            is_html = entry_format == "html"
+            separator = "<br>" if is_html else "\n"
+            contents = separator.join(
+                [
+                    f"Type: {note.get('element')}",
+                    f"Created By: {note.get('sys_created_by')}",
+                    f"Created On: {note.get('sys_created_on')}",
+                    str(rendered_value),
+                ]
+            )
             entry = {
                 "Type": note.get("type", 1),
                 "Category": note.get("category"),
@@ -1957,7 +1955,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                 "Note": True,
                 "EntryContext": comments_context,
             }
-            if entry_format != "html":
+            if not is_html:
                 entry["HumanReadable"] = contents
             entries.append(entry)
 
