@@ -10112,7 +10112,7 @@ class NetworkFirewall:
             "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(args, "firewall")
 
         print_debug_logs(client, f"Updating firewall subnet change protection with parameters: {kwargs.keys()}")
         response = client.update_subnet_change_protection(**kwargs)
@@ -10475,7 +10475,7 @@ class NetworkFirewall:
             "SubnetMappings": subnet_mappings,
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(args, "firewall")
 
         print_debug_logs(client, f"Associating subnets with parameters: {kwargs.keys()}")
         response = client.associate_subnets(**kwargs)
@@ -10519,7 +10519,7 @@ class NetworkFirewall:
             "SubnetIds": argToList(args.get("subnet_ids")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
+        validate_network_firewall_identifier(args, "firewall")
 
         print_debug_logs(client, f"Disassociating subnets with parameters: {kwargs.keys()}")
         response = client.disassociate_subnets(**kwargs)

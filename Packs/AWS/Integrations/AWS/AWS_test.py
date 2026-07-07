@@ -19985,7 +19985,7 @@ def test_update_subnet_change_protection_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"subnet_change_protection": "true"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
 
 
@@ -20102,7 +20102,7 @@ def test_associate_subnets_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"subnet_ids": "subnet-1111"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.associate_subnets_command(mock_client, args)
 
 
@@ -20209,7 +20209,7 @@ def test_disassociate_subnets_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"subnet_ids": "subnet-1111"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.disassociate_subnets_command(mock_client, args)
 
 
