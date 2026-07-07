@@ -1,2 +1,5 @@
+[pack]
+ignore=RN107
+
 [file: 1_0_3.md]
 ignore=RN113,RN114
