@@ -8,6 +8,8 @@ from AWS_SecurityHub_V2 import (
     findings_batch_update_command,
     findings_get_command,
     generate_filters_for_get_findings,
+    get_modified_remote_data_command,
+    get_remote_data_command,
     parse_date_filters,
     parse_filters,
     parse_finding_identifiers,
@@ -713,3 +715,137 @@ def test_fetch_incidents_no_results(mocker):
     assert last_run["last_fetch"] == "2024-01-01T00:00:00.000Z"
     assert last_run["fetched_ids"] == ["uid-x"]
     assert last_run["next_token"] is None
+
+
+def test_fetch_incidents_tags_mirror_metadata(mocker):
+    """
+    Given: mirror_direction set to Incoming and a client returning one finding.
+    When: fetch_incidents is called.
+    Then: The incident rawJSON carries mirror_direction=In and mirror_instance.
+    """
+    import json
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 4,
+                "finding_info": {"title": "t", "created_time_dt": "2024-01-02T00:00:00.000Z"},
+            }
+        ]
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 50, "mirror_direction": "Incoming"})
+
+    incident = incidents_mock.call_args[0][0][0]
+    raw = json.loads(incident["rawJSON"])
+    assert raw["mirror_direction"] == "In"
+    assert raw["mirror_instance"] == "instance-1"
+
+
+def test_fetch_incidents_no_mirror_when_direction_none(mocker):
+    """
+    Given: mirror_direction set to None and a client returning one finding.
+    When: fetch_incidents is called.
+    Then: The incident rawJSON does NOT carry mirror metadata.
+    """
+    import json
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 4,
+                "finding_info": {"title": "t", "created_time_dt": "2024-01-02T00:00:00.000Z"},
+            }
+        ]
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 50, "mirror_direction": "None"})
+
+    incident = incidents_mock.call_args[0][0][0]
+    raw = json.loads(incident["rawJSON"])
+    assert "mirror_direction" not in raw
+    assert "mirror_instance" not in raw
+
+
+def test_get_modified_remote_data_command_returns_changed_uids(mocker):
+    """
+    Given: A client returning several findings modified since lastUpdate.
+    When: get_modified_remote_data_command is called.
+    Then: It issues a single get_findings_v2 call filtered on the modified-time field and returns all uids.
+    """
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {"metadata": {"uid": "uid-1"}},
+            {"metadata": {"uid": "uid-2"}},
+        ]
+    }
+
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2024-01-01T00:00:00Z"})
+
+    assert result.modified_incident_ids == ["uid-1", "uid-2"]
+    assert mock_client.get_findings_v2.call_count == 1
+    call_kwargs = mock_client.get_findings_v2.call_args[1]
+    date_filter = call_kwargs["Filters"]["CompositeFilters"][0]["DateFilters"][0]
+    assert date_filter["FieldName"] == "finding_info.modified_time_dt"
+    assert "Start" in date_filter["Filter"] and "End" in date_filter["Filter"]
+
+
+def test_get_modified_remote_data_command_no_changes(mocker):
+    """
+    Given: A client returning no modified findings.
+    When: get_modified_remote_data_command is called.
+    Then: It returns an empty id list.
+    """
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {"Findings": []}
+
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2024-01-01T00:00:00Z"})
+
+    assert result.modified_incident_ids == []
+
+
+def test_get_remote_data_command_returns_finding(mocker):
+    """
+    Given: A client returning a single finding for the requested uid.
+    When: get_remote_data_command is called.
+    Then: It fetches by metadata.uid and returns the finding as the mirrored object.
+    """
+    mock_client = mocker.Mock()
+    finding = {"metadata": {"uid": "uid-1"}, "status_id": 4}
+    mock_client.get_findings_v2.return_value = {"Findings": [finding]}
+
+    result = get_remote_data_command(mock_client, {"id": "uid-1", "lastUpdate": "2024-01-01T00:00:00Z"})
+
+    assert result.mirrored_object == finding
+    string_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["StringFilters"][0]
+    assert string_filter["FieldName"] == "metadata.uid"
+    assert string_filter["Filter"]["Value"] == "uid-1"
+
+
+def test_get_remote_data_command_no_finding(mocker):
+    """
+    Given: A client returning no finding for the requested uid.
+    When: get_remote_data_command is called.
+    Then: It returns an empty mirrored object.
+    """
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {"Findings": []}
+
+    result = get_remote_data_command(mock_client, {"id": "missing", "lastUpdate": "2024-01-01T00:00:00Z"})
+
+    assert result.mirrored_object == {}

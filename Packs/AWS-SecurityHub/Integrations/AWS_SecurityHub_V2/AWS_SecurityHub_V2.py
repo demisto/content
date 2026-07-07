@@ -16,6 +16,18 @@ DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 50
 FETCH_SORT_CRITERIA = [{"Field": "finding_info.created_time_dt", "SortOrder": "asc"}]
 
+# ----- Mirroring (incoming: AWS Security Hub -> XSOAR) -----
+# Maps the human-readable mirror direction (integration param) to the value XSOAR stores on incidents.
+# Only incoming mirroring is currently supported, so "Incoming" is the meaningful non-None option.
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+}
+# The maximum number of changed findings to return in a single get-modified-remote-data call.
+MIRROR_LIMIT = 200
+# OCSF field holding the time a finding was last modified; used by incoming mirroring to detect changes.
+MODIFIED_TIME_FIELD = "finding_info.modified_time_dt"
+
 # OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
 # OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
 # XSOAR: 0=Unknown, 0.5=Informational, 1=Low, 2=Medium, 3=High, 4=Critical.
@@ -527,7 +539,7 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     )
 
 
-def dedup_findings(findings: list, last_fetch: str, fetched_ids: list) -> tuple[list, list]:
+def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_direction: str | None = None) -> tuple[list, list]:
     """Filter already-seen findings and build XSOAR incidents from the new ones.
 
     Two dedup rules are applied against the previous fetch boundary:
@@ -535,10 +547,15 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list) -> tuple[
       * ALREADY-SEEN BOUNDARY: a finding created exactly at ``last_fetch`` whose uid is in ``fetched_ids`` was
         already ingested on the previous run (the fetch window uses an inclusive ``Start``) and is dropped.
 
+    When ``mirror_direction`` is set, each surviving finding is tagged with the mirroring metadata
+    (``mirror_direction`` and ``mirror_instance``) XSOAR needs to route subsequent mirror updates.
+
     Args:
         findings (list): Raw OCSF findings returned by ``get_findings_v2``.
         last_fetch (str): ISO8601 boundary timestamp from the previous run (the fetch window's inclusive Start).
         fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary timestamp.
+        mirror_direction (str | None): The XSOAR mirror direction (``In``/``Out``/``Both``) to stamp on each
+            incident, or ``None`` to disable mirroring tagging.
 
     Returns:
         tuple[list, list]: ``(new_findings, incidents)`` - the surviving raw findings and their XSOAR incident dicts.
@@ -564,6 +581,14 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list) -> tuple[
             )
             continue
 
+        if mirror_direction:
+            finding["mirror_direction"] = mirror_direction
+            finding["mirror_instance"] = demisto.integrationInstance()
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Dedup: tagged uid={uid} for mirroring "
+                f"(mirror_direction={mirror_direction}, mirror_instance={finding['mirror_instance']})."
+            )
+
         xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN)
         incidents.append(
             {
@@ -584,13 +609,14 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list) -> tuple[
 
 
 def fetch_incidents(client: BotoClient, params: dict) -> None:
-    """Fetch AWS Security Hub V2 findings as XSOAR incidents.
-    """
+    """Fetch AWS Security Hub V2 findings as XSOAR incidents."""
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     last_run = demisto.getLastRun()
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
-                  f" fetch_filters={params.get('fetch_filters')}, {max_fetch=}")
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
+        f" fetch_filters={params.get('fetch_filters')}, {max_fetch=}"
+    )
     first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
     format_first_fetch = parse(f"{first_fetch} UTC")
     last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()  # type: ignore
@@ -608,7 +634,7 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             response = client.get_findings_v2(
                 NextToken=next_token, MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA
             )
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: token query succeeded.")
+            demisto.debug("[AWS_Security_Hub_V2] Fetch: token query succeeded.")
         except client.exceptions.ClientError as e:
             error = e.response.get("Error", {})
             error_code = error.get("Code", "")
@@ -619,7 +645,7 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             )
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
     else:
-        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query for findings.")
+        demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query for findings.")
         try:
             filters = build_fetch_filters(
                 start_time=last_fetch,
@@ -630,7 +656,7 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
 
             response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA)
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
+            demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
         except client.exceptions.ClientError as e:
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
 
@@ -638,7 +664,13 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     new_next_token = response.get("NextToken")
     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
 
-    new_findings, incidents = dedup_findings(findings, last_fetch, fetched_ids)
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Fetch: mirror_direction param={params.get('mirror_direction', 'None')} "
+        f"-> resolved dbot direction={mirror_direction} "
+        f"({'incidents will be enrolled in mirroring' if mirror_direction else 'mirroring disabled'})."
+    )
+    new_findings, incidents = dedup_findings(findings, last_fetch, fetched_ids, mirror_direction)
 
     sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
     matching_uids = fetched_ids
@@ -657,15 +689,150 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
         "last_fetch": last_fetch,
         "next_token": new_next_token if new_findings else None,
         "fetched_ids": matching_uids,
-        "filters": json.dumps(filters) if new_next_token else {}}
+        "filters": json.dumps(filters) if new_next_token else {},
+    }
 
     demisto.debug(
-        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; "
-        f"new lastRun -> {new_last_run=}"
+        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; " f"new lastRun -> {new_last_run=}"
     )
     demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
+
+
+def get_modified_remote_data_command(client: BotoClient, args: dict) -> GetModifiedRemoteDataResponse:
+    """Return the UIDs of all findings changed since the last mirror check, in a single API call.
+
+    Unlike the per-incident polling used by V1, this issues one ``get_findings_v2`` request filtered on
+    the OCSF ``finding_info.modified_time_dt`` field to retrieve the whole batch of findings that changed
+    since ``lastUpdate``. XSOAR then runs ``get-remote-data`` for each returned UID to pull the updated data.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. ``lastUpdate`` - the ISO8601 timestamp of the previous mirror run.
+
+    Returns:
+        GetModifiedRemoteDataResponse: The list of finding UIDs (``metadata.uid``) that changed since ``lastUpdate``.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-modified-remote-data START =====")
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: raw lastUpdate arg={last_update}, MIRROR_LIMIT={MIRROR_LIMIT}")
+
+    last_update_dt = parse(last_update, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+    if not last_update_dt:
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-in: could not parse lastUpdate={last_update}; returning no ids. "
+            "===== get-modified-remote-data END ====="
+        )
+        return GetModifiedRemoteDataResponse([])
+
+    start_time = last_update_dt.isoformat()
+    end_time = datetime.now(UTC).isoformat()
+    filters = {
+        "CompositeFilters": [
+            {
+                "DateFilters": [
+                    {
+                        "FieldName": MODIFIED_TIME_FIELD,
+                        "Filter": {"Start": start_time, "End": end_time},
+                    }
+                ],
+                "Operator": "AND",
+            }
+        ],
+        "CompositeOperator": "AND",
+    }
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Mirror-in: querying changed findings on {MODIFIED_TIME_FIELD} in window "
+        f"[{start_time} .. {end_time}]. Filters object: {json.dumps(filters)}"
+    )
+
+    try:
+        response = client.get_findings_v2(
+            Filters=filters,
+            MaxResults=MIRROR_LIMIT,
+            SortCriteria=[{"Field": MODIFIED_TIME_FIELD, "SortOrder": "asc"}],
+        )
+        demisto.debug("[AWS_Security_Hub_V2] Mirror-in: get_findings_v2 query succeeded.")
+    except client.exceptions.ClientError as e:
+        error = e.response.get("Error", {})
+        error_code = error.get("Code", "")
+        error_message = error.get("Message", "")
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-in: query raised {type(e).__name__} " f"(Code={error_code}, Message={error_message})."
+        )
+        raise DemistoException(error_message)
+
+    findings = response.get("Findings", [])
+    modified_ids = [uid for finding in findings if (uid := finding.get("metadata", {}).get("uid"))]
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Mirror-in: API returned {len(findings)} finding(s); "
+        f"extracted {len(modified_ids)} uid(s) to mirror: {modified_ids}"
+    )
+    demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-modified-remote-data END =====")
+    return GetModifiedRemoteDataResponse(modified_ids)
+
+
+def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResponse:
+    """Fetch the current state of a single mirrored finding and return it for incoming mirroring.
+
+    XSOAR invokes this command (once per UID returned by ``get-modified-remote-data``) to pull the latest
+    version of a finding. The finding is fetched by its OCSF ``metadata.uid`` via ``get_findings_v2``.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve; ``lastUpdate`` -
+            the timestamp of the last mirror sync (unused for filtering here, the UID lookup is authoritative).
+
+    Returns:
+        GetRemoteDataResponse: The updated finding object to apply to the XSOAR incident.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
+    remote_args = GetRemoteDataArgs(args)
+    finding_uid = remote_args.remote_incident_id
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: fetching finding uid={finding_uid}, lastUpdate={remote_args.last_update}")
+
+    filters = {
+        "CompositeFilters": [
+            {
+                "StringFilters": [{"FieldName": "metadata.uid", "Filter": {"Value": finding_uid, "Comparison": "EQUALS"}}],
+                "Operator": "AND",
+            }
+        ],
+        "CompositeOperator": "AND",
+    }
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: get-remote-data Filters object: {json.dumps(filters)}")
+
+    try:
+        response = client.get_findings_v2(Filters=filters, MaxResults=1)
+        demisto.debug("[AWS_Security_Hub_V2] Mirror-in: get_findings_v2 query succeeded.")
+    except client.exceptions.ClientError as e:
+        error = e.response.get("Error", {})
+        error_code = error.get("Code", "")
+        error_message = error.get("Message", "")
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-in: get-remote-data query raised {type(e).__name__} "
+            f"(Code={error_code}, Message={error_message})."
+        )
+        raise DemistoException(error_message)
+
+    findings = response.get("Findings", [])
+    if not findings:
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-in: no finding found for uid={finding_uid}; nothing to mirror. "
+            "===== get-remote-data END ====="
+        )
+        return GetRemoteDataResponse(mirrored_object={}, entries=[])
+
+    finding = findings[0]
+    modified_time = (finding.get("finding_info") or {}).get("modified_time_dt")
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Mirror-in: returning updated finding uid={finding_uid} "
+        f"(modified_time_dt={modified_time}, status_id={finding.get('status_id')}, "
+        f"severity_id={finding.get('severity_id')}). ===== get-remote-data END ====="
+    )
+    return GetRemoteDataResponse(mirrored_object=finding, entries=[])
 
 
 def test_module(client: BotoClient) -> str:
@@ -715,6 +882,10 @@ def main():  # pragma: no cover
             return_results(findings_batch_update_command(client, args))
         elif command == "fetch-incidents":
             fetch_incidents(client, params)
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, args))
+        elif command == "get-remote-data":
+            return_results(get_remote_data_command(client, args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

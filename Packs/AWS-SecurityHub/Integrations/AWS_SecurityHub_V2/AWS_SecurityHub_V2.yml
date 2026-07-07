@@ -142,6 +142,16 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  additionalinfo: 'Choose the direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex XSOAR). Only incoming mirroring is currently supported.'
+  type: 15
+  section: Collect
+  options:
+  - None
+  - Incoming
+  defaultvalue: None
+  required: false
 script:
   commands:
   - name: aws-securityhub-security-hub-enable
@@ -244,12 +254,30 @@ script:
     - contextPath: AWS.SecurityHub.BatchUpdateFindings.UnprocessedFindings
       description: The list of findings that could not be updated, including the error for each.
       type: Unknown
+  - name: get-modified-remote-data
+    description: 'Returns, in a single API call, the IDs of all AWS Security Hub V2 findings that changed since the last check. Used for incoming mirroring. This command is used for mirroring and is not intended to be run manually.'
+    arguments:
+    - name: lastUpdate
+      description: A date string in local time representing the last time the incident was updated. Findings modified after this timestamp are returned.
+      required: false
+  - name: get-remote-data
+    description: 'Returns the updated data of a single mirrored AWS Security Hub V2 finding. This command is used for mirroring and is not intended to be run manually.'
+    arguments:
+    - name: id
+      description: The finding metadata UID to retrieve.
+      required: true
+    - name: lastUpdate
+      description: A date string in local time representing the last time the incident was updated.
+      required: false
   dockerimage: demisto/boto3py3:1.0.0.7704170
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: AWS Security Hub v2 - Incoming Mapper
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
