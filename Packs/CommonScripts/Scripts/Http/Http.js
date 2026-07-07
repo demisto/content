@@ -46,7 +46,7 @@ var res = http(url, requestObj, unsecure, proxy);
 var fileName;
 if (args.filename) {
     fileName = args.filename;
-} else if (res.Headers['Content-disposition']) {
+} else if (res && res.Headers && res.Headers['Content-disposition']) {
     fileName = res.Headers['Content-disposition'][0];
 } else {
     fileName = 'http-file';
