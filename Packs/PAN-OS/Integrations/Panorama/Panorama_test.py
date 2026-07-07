@@ -3573,6 +3573,7 @@ class TestUniversalCommand:
         mocker.patch.object(demisto, "command", return_value="pan-os-platform-get-system-info")
         mocker.patch.object(demisto, "params", return_value=integration_firewall_params)
         get_system_info_mock = mocker.patch.object(Panorama, "get_system_info", return_value=MagicMock())
+        mocker.patch.object(Panorama, "dataclasses_to_command_results", return_value=MagicMock())
         mocker.patch.object(Panorama, "return_results")
 
         Panorama.main()
@@ -3897,6 +3898,7 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(requests, "request", return_value=request_result)
     command_result: CommandResults = apply_dns_signature_policy_command(args)
 
@@ -3919,6 +3921,7 @@ def test_panorama_apply_dns_command2(mocker):
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(Panorama, "http_request", return_value={})
     apply_dns_signature_policy_command({"anti_spyware_profile_name": "fake_profile_name"})
 
