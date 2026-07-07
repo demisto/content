@@ -648,13 +648,16 @@ class MsGraphClient:
             requests.Response: The raw HTTP response object (resp_type="response"),
                 which can be streamed or saved to disk by the caller.
         """
-        return self.ms_client.http_request(
+        response = self.ms_client.http_request(
             method="GET",
             headers={"X-AllowWithAADToken": "true"},
             full_url=download_url,
             resp_type="response",
             scope="b26e684c-5068-4120-a679-64a5d2c909d9/.default",
         )
+        # Force refresh token reset to default scope and avoid token-scope drift.
+        self.ms_client.get_access_token(scope=self.ms_client.scope)
+        return response
 
 
 """ HELPER FUNCTIONS """

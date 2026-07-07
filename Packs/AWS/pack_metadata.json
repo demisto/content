@@ -24,5 +24,7 @@
         "xsoar",
         "marketplacev2",
         "platform"
-    ]
+    ],
+    "source": "cooc",
+    "managed": true
 }

@@ -120,7 +120,10 @@ class MsGraphClient:
         private_key: Optional[str] = None,
         managed_identities_client_id: Optional[str] = None,
     ):
-        if not managed_identities_client_id:
+        # Under UCP (ConnectUs) the auth secrets are not supplied via
+        # demisto.params() - they are injected per-request by the platform
+
+        if not managed_identities_client_id and not should_use_ucp_auth():
             if not self_deployed and not enc_key:
                 raise DemistoException(
                     "Key must be provided. For further information see "
@@ -1698,7 +1701,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    base_url: str = params.get("host", "").rstrip("/") + "/v1.0/"
+    base_url: str = params.get("host", "https://graph.microsoft.com").rstrip("/") + "/v1.0/"
     tenant = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_id = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id")
     enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")

@@ -427,6 +427,76 @@ def parse_tag_field(tags_string: str | None) -> list:
     return tags
 
 
+def parse_resource_arn_priority_field(refs_string: str | None) -> list:
+    """
+    Parses a list representation of stateless rule group references with the form of
+    'ResourceArn=<arn>,Priority=<priority>;ResourceArn=<arn>,Priority=<priority>'.
+
+    Args:
+        refs_string: The references list string.
+    Returns:
+        A list of dicts with the form {"ResourceArn": <arn>, "Priority": <priority>}.
+    """
+    references: list = []
+    list_refs = argToList(refs_string, separator=";")
+    regex = re.compile(r"^ResourceArn=(arn:aws.*),Priority=(\d+)$", flags=re.UNICODE)
+    for ref in list_refs:
+        match_ref = regex.match(ref)
+        if match_ref is None:
+            raise ValueError(
+                f"Could not parse field: {ref}. Please make sure you provided like so: "
+                "ResourceArn=arn:aws1,Priority=priority1;ResourceArn=arn:aws2,Priority=priority2"
+            )
+        references.append({"ResourceArn": match_ref.group(1), "Priority": int(match_ref.group(2))})
+
+    return references
+
+
+def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
+    """
+    Parses a list representation of stateful rule group references with the form of
+    'ResourceArn=<arn>,Priority=<priority>,Override=<action>,DeepThreatInspection=<bool>;ResourceArn=<arn>,Priority=<priority>'.
+
+    Each reference is separated by ';' and its fields by ','. Only ResourceArn is required; Priority, Override
+    (mapped to {"Action": <action>}) and DeepThreatInspection are optional and dropped when not provided.
+
+    Args:
+        refs_string: The references list string.
+    Returns:
+        A list of dicts with the form
+        {"ResourceArn": <arn>, "Priority": <priority>, "Override": {"Action": <action>}, "DeepThreatInspection": <bool>}.
+    """
+    references: list = []
+    list_refs = argToList(refs_string, separator=";")
+    for ref in list_refs:
+        fields = {}
+        for field in argToList(ref, separator=","):
+            key, sep, value = field.partition("=")
+            if not sep or not value:
+                raise ValueError(
+                    f"Could not parse field: {ref}. Please make sure you provided like so: "
+                    "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
+                    "ResourceArn=arn:aws2,Priority=priority2"
+                )
+            fields[key.strip()] = value.strip()
+
+        if "ResourceArn" not in fields:
+            raise ValueError(f"Could not parse field: {ref}. ResourceArn is required for each rule group reference.")
+
+        if not re.match(r"^arn:aws", fields["ResourceArn"]):
+            raise ValueError(f"Could not parse field: {ref}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
+
+        reference = {
+            "ResourceArn": fields.get("ResourceArn"),
+            "Priority": arg_to_number(fields.get("Priority")),
+            "Override": {"Action": fields.get("Override")},
+            "DeepThreatInspection": arg_to_bool_or_none(fields.get("DeepThreatInspection")),
+        }
+        references.append(remove_empty_elements(reference))
+
+    return references
+
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
@@ -815,16 +885,60 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def validate_network_firewall_identifier(kwargs: dict):
+def validate_network_firewall_identifier(args: dict, obj: str):
     """
-    Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
+    Validates that at least one of the network firewall identifiers is provided and raises
     a DemistoException otherwise.
 
     Args:
-        kwargs (dict): The arguments dictionary containing the firewall identifiers.
+        args (dict): The command arguments dictionary containing the firewall identifiers.
+        obj (str): The identifier object (firewall, firewall policy, etc.).
     """
-    if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
-        raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+    if f"{obj}_name" not in args and f"{obj}_arn" not in args:
+        raise DemistoException("Please enter at least one of the network firewall identifier arguments.")
+
+
+def create_network_firewall_policy_obj(args: dict) -> dict:
+    """
+    Builds an AWS Network Firewall policy object from the provided command arguments. Parses the JSON-string
+    arguments (stateless custom actions and policy rule variables), the comma/semicolon-separated stateful rule
+    group references, assembles the firewall policy structure, and removes any empty elements before returning it.
+
+    Args:
+        args (dict): The command arguments containing the firewall policy configuration.
+
+    Returns:
+        dict: A dictionary representing the Network Firewall policy, with empty elements removed.
+    """
+    stateless_custom_actions_raw = args.get("stateless_custom_actions")
+    rule_variables_raw = args.get("policy_rule_variables")
+
+    stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
+    rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
+
+    firewall_policy_object = remove_empty_elements(
+        {
+            "StatelessRuleGroupReferences": parse_resource_arn_priority_field(args.get("stateless_rule_group_references")),
+            "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
+            "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
+            "StatelessCustomActions": stateless_custom_actions,
+            "StatefulRuleGroupReferences": parse_stateful_rule_group_references_field(args.get("stateful_rule_group_references")),
+            "StatefulDefaultActions": argToList(args.get("stateful_default_actions")),
+            "StatefulEngineOptions": {
+                "RuleOrder": args.get("stateful_engine_options_rule_order"),
+                "StreamExceptionPolicy": args.get("stateful_engine_options_stream_exception_policy"),
+                "FlowTimeouts": {
+                    "TcpIdleTimeoutSeconds": arg_to_number(args.get("stateful_engine_options_tcp_idle_timeout")),
+                },
+            },
+            "TLSInspectionConfigurationArn": args.get("tls_inspection_configuration_arn"),
+            "PolicyVariables": {"RuleVariables": rule_variables},
+            "EnableTLSSessionHolding": arg_to_bool_or_none(args.get("enable_tls_session_holding")),
+        }
+    )
+    if not firewall_policy_object:
+        raise DemistoException("Please specify at least one of the characterize firewall policy arguments.")
+    return firewall_policy_object
 
 
 class AWSErrorHandler:
@@ -9755,9 +9869,9 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
         print_debug_logs(client, f"Describing firewall with parameters: {kwargs.keys()}")
         response = client.describe_firewall(**kwargs)
 
@@ -9927,12 +10041,12 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "FirewallName": args.get("firewall_name"),
             "FirewallArn": args.get("firewall_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
         print_debug_logs(client, f"Deleting firewall with parameters: {kwargs.keys()}")
         response = client.delete_firewall(**kwargs)
 
@@ -9957,6 +10071,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -9964,7 +10079,6 @@ class NetworkFirewall:
             "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
 
         print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs.keys()}")
         response = client.update_firewall_delete_protection(**kwargs)
@@ -10023,6 +10137,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10030,7 +10145,6 @@ class NetworkFirewall:
             "Description": args.get("description"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs)
 
         print_debug_logs(client, f"Updating firewall description with parameters: {kwargs.keys()}")
         response = client.update_firewall_description(**kwargs)
@@ -10040,6 +10154,298 @@ class NetworkFirewall:
 
         return CommandResults(
             readable_output="The firewall description was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def list_firewall_policies_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the metadata for the firewall policies that you have defined.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing:
+                - limit: The maximum number of objects that you want Network Firewall to return for this request.
+                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are
+                    still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value
+                    in the response.
+
+        Returns:
+            CommandResults: Formatted results with firewall policies information
+        """
+        kwargs = build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100)
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing firewall policies with parameters: {kwargs}")
+        response = client.list_firewall_policies(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall_policies = response.get("FirewallPolicies", [])
+
+        updated_firewall_policies = [
+            {"FirewallPolicyName": policy.get("Name"), "FirewallPolicyArn": policy.get("Arn")} for policy in firewall_policies
+        ]
+
+        outputs = {
+            "AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)": updated_firewall_policies,
+            "AWS.NetworkFirewall(true)": {"FirewallPoliciesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policies",
+                updated_firewall_policies,
+                headers=["FirewallPolicyName", "FirewallPolicyArn"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns the data objects for the specified firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        validate_network_firewall_identifier(args, "firewall_policy")
+        kwargs = {"FirewallPolicyName": args.get("firewall_policy_name"), "FirewallPolicyArn": args.get("firewall_policy_arn")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing firewall policy with parameters: {kwargs}")
+        response = client.describe_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        raw_response = copy.deepcopy(response)
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
+        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
+        firewall_policy_response.update(response.get("FirewallPolicy", {}))
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policy",
+                firewall_policy_response,
+                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=raw_response,
+        )
+
+    @staticmethod
+    def create_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates the firewall policy for the firewall according to the specifications.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing the firewall policy name, the stateless and stateful
+                rule group references and default actions, the stateful engine options, the TLS inspection configuration
+                ARN, the policy rule variables, a description, tags, and the encryption configuration.
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        firewall_policy = create_network_firewall_policy_obj(args)
+
+        encryption_configuration = remove_empty_elements(
+            {
+                "KeyId": args.get("encryption_configuration_key_id"),
+                "Type": args.get("encryption_configuration_key_type"),
+            }
+        )
+
+        kwargs = remove_empty_elements(
+            {
+                "FirewallPolicyName": args.get("firewall_policy_name"),
+                "FirewallPolicy": firewall_policy,
+                "Description": args.get("description"),
+                "Tags": parse_tag_field(args.get("tags", "")),
+                "EncryptionConfiguration": encryption_configuration,
+            }
+        )
+
+        print_debug_logs(client, f"Creating firewall policy with parameters: {kwargs}")
+        response = client.create_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        raw_response = copy.deepcopy(response)
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
+        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policy",
+                firewall_policy_response,
+                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=raw_response,
+        )
+
+    @staticmethod
+    def associate_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Associates a FirewallPolicy to a Firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, firewall_policy_arn,
+                and optionally update_token
+
+        Returns:
+            CommandResults: Formatted results with firewall policy association information
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "FirewallPolicyArn": args.get("firewall_policy_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Associating firewall policy with parameters: {kwargs}")
+        response = client.associate_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output="The firewall policy was associated with the firewall successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes the specified FirewallPolicy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        validate_network_firewall_identifier(args, "firewall_policy")
+        kwargs = {
+            "FirewallPolicyName": args.get("firewall_policy_name"),
+            "FirewallPolicyArn": args.get("firewall_policy_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Deleting firewall policy with parameters: {kwargs}")
+        response = client.delete_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The command was executed successfully. The current firewall policy status is "
+            f"{response.get('FirewallPolicyResponse', {}).get('FirewallPolicyStatus')}.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates the properties of the specified firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing the update token, the firewall policy name or ARN,
+                the stateless and stateful rule group references and default actions, the stateful engine options,
+                the TLS inspection configuration ARN, the policy rule variables, a description, the encryption
+                configuration, and a dry run flag.
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        validate_network_firewall_identifier(args, "firewall_policy")
+        firewall_policy = create_network_firewall_policy_obj(args)
+        kwargs = remove_empty_elements(
+            {
+                "UpdateToken": args.get("update_token"),
+                "FirewallPolicyArn": args.get("firewall_policy_arn"),
+                "FirewallPolicyName": args.get("firewall_policy_name"),
+                "FirewallPolicy": firewall_policy,
+                "Description": args.get("description"),
+                "EncryptionConfiguration": {
+                    "KeyId": args.get("encryption_configuration_key_id"),
+                    "Type": args.get("encryption_configuration_key_type"),
+                },
+            }
+        )
+
+        print_debug_logs(client, f"Updating firewall policy with parameters: {kwargs}")
+        response = client.update_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The firewall policy was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_firewall_policy_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn, and
+                firewall_policy_change_protection
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Updating firewall policy change protection with parameters: {kwargs}")
+        response = client.update_firewall_policy_change_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The change protection flag of the firewall was updated successfully.",
             raw_response=response,
         )
 
@@ -10351,6 +10757,13 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
     "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
     "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
+    "aws-network-firewall-firewall-policy-describe": NetworkFirewall.describe_firewall_policy_command,
+    "aws-network-firewall-firewall-policies-list": NetworkFirewall.list_firewall_policies_command,
+    "aws-network-firewall-firewall-policy-create": NetworkFirewall.create_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-associate": NetworkFirewall.associate_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-update": NetworkFirewall.update_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-change-protection-update": NetworkFirewall.update_firewall_policy_change_protection_command,  # noqa: E501
     "aws-network-firewall-subnet-change-protection-update": NetworkFirewall.update_subnet_change_protection_command,
     "aws-network-firewall-subnets-associate": NetworkFirewall.associate_subnets_command,
     "aws-network-firewall-subnets-disassociate": NetworkFirewall.disassociate_subnets_command,
@@ -10533,6 +10946,7 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:TagResource",
     "network-firewall:DescribeFirewall",
     "network-firewall:ListFirewalls",
+    "network-firewall:DescribeFirewallPolicy",
     "network-firewall:CreateFirewall",
     "network-firewall:DeleteFirewall",
     "network-firewall:UpdateFirewallDeleteProtection",
@@ -10541,6 +10955,12 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:AssociateSubnets",
     "network-firewall:DisassociateSubnets",
     "network-firewall:TagResource",
+    "network-firewall:ListFirewallPolicies",
+    "network-firewall:CreateFirewallPolicy",
+    "network-firewall:UpdateFirewallPolicy",
+    "network-firewall:DeleteFirewallPolicy",
+    "network-firewall:AssociateFirewallPolicy",
+    "network-firewall:UpdateFirewallPolicyChangeProtection",
 ]
 
 COMMAND_SERVICE_MAP = {
