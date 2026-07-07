@@ -361,7 +361,7 @@ configuration:
   name: comment_format
   section: Collect
   defaultvalue: source
-  additionalinfo:  Define the format of the ServiceNow comments. Per default the format is supplied by ServiceNow during the fetch as part of the comments data (Source). This can be overwritten to a specific format for all comments. The available options are Source, Text, and HTML. Use HTML if a html editor is used within ServiceNow to add comments. Defaults to Source.
+  additionalinfo: The format of the ServiceNow comments. By default, the format is supplied by ServiceNow during the fetch as part of the comments data (Source). This can be overwritten to a specific format for all comments. The available options are Source, Text, and HTML. Use HTML if an HTML editor is used within ServiceNow to add comments.
   type: 15
   required: false
   options:
@@ -371,10 +371,10 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- section: Collect
-  display: Mark attachment as note
+- display: Mark attachment as note
   name: mark_attachments_as_note
-  additionalinfo: Mark attachments as note. Set this to yes if you prefer to mark file attachments from ServiceNow as Notes.
+  section: Collect
+  additionalinfo: Whether to mark file attachments from ServiceNow as notes.
   defaultvalue: "false"
   type: 8
   hidden:
