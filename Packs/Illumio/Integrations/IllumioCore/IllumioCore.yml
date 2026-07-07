@@ -1401,7 +1401,7 @@ script:
     - contextPath: Illumio.Rule.resolve_labels_as.consumers
       description: Consumers resolve labels.
       type: String
-  dockerimage: demisto/illumio:1.0.0.3539881
+  dockerimage: demisto/illumio:1.0.0.10133006
   runonce: false
   script: '-'
   subtype: python3
