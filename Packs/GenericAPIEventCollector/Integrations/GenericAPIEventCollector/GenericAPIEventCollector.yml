@@ -61,21 +61,21 @@ configuration:
     display: Oauth token url
     type: 0
     required: false
-    additionalinfo: 'Auth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token.'
+    additionalinfo: 'The Auth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token.'
   - name: oauth_client_id
     section: Connect
     display: Oauth client id
     type: 0
     required: false
-    additionalinfo: OAuth Client ID issued by the IdP.
+    additionalinfo: The OAuth Client ID issued by the IdP.
   - name: oauth_client_secret
     section: Connect
-    display: Oauth client secret
+    display: The Oauth client secret
     type: 14
     required: false
-    displaypassword: Oauth client secret
+    displaypassword: The Oauth client secret
     hiddenusername: true
-    additionalinfo: OAuth Client Secret.
+    additionalinfo: The OAuth Client Secret.
   - name: authorization_code
     section: Connect
     type: 14
@@ -88,7 +88,7 @@ configuration:
     display: Redirect uri
     type: 0
     required: false
-    additionalinfo: Used by Idp to provide an authorization code.
+    additionalinfo: The URI used by the IdP to provide an authorization code.
   - name: oauth_scopes
     section: Connect
     display: Oauth scopes
@@ -284,7 +284,7 @@ script:
         - name: limit
           description: Maximum number of results to return.
     - name: generate-login-url
-      description: Generate the login url used for Authorization code flow.
+      description: Generate the login URL used for the Authorization Code flow.
       arguments: []
   runonce: false
   isfetchevents: true

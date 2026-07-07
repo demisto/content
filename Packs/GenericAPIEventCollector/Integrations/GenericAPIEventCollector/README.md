@@ -374,7 +374,7 @@ There is no context output for this command.
 ### generate-login-url
 
 ***
-Generate the login url used for Authorization code flow.
+Generate the login URL used for the Authorization Code flow.
 
 #### Base Command
 

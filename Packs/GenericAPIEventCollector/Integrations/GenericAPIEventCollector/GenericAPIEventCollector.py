@@ -99,7 +99,7 @@ def timestamp_format_to_datetime(dt: str, timestamp_format: str) -> datetime:
     parsed = arg_to_datetime(dt)
     if parsed is None:
         demisto.error(f"time data {dt!r} could not be parsed, falling back to current time")
-        return datetime.now()
+        return datetime.now(timezone.utc)
     return parsed.replace(tzinfo=None)
 
 
@@ -424,12 +424,12 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
         if password:
-            demisto.debug("Adding Password to sensitive logs strings")
+            demisto.debug("[auth] Adding Password to sensitive logs strings")
             add_sensitive_log_strs(password)
         else:
             demisto.error("Password is required for Basic Authentication.")
             return_error("Password is required for Basic Authentication.")
-        demisto.debug(f"Authenticating with Basic Authentication, username: {username}")
+        demisto.debug(f"[auth] Authenticating with Basic Authentication, username: {username}")
         # encode username and password in a basic authentication method
         auth_credentials = f"{username}:{password}"
         encoded_credentials = b64encode(auth_credentials.encode()).decode("utf-8")
@@ -438,9 +438,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Basic {encoded_credentials}",
         }
     if authentication == "Bearer":
-        demisto.debug("Authenticating with Bearer Authentication")
+        demisto.debug("[auth] Authenticating with Bearer Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -449,9 +449,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Bearer {token}",
         }
     if authentication == "Token":
-        demisto.debug("Authenticating with Token Authentication")
+        demisto.debug("[auth] Authenticating with Token Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -460,9 +460,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Token {token}",
         }
     if authentication == "Api-Key":
-        demisto.debug("Authenticating with Api-Key Authentication")
+        demisto.debug("[auth] Authenticating with Api-Key Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -471,9 +471,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "api-key": f"{token}",
         }
     if authentication == "RawToken":
-        demisto.debug("Authenticating with raw token")
+        demisto.debug("[auth] Authenticating with raw token")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -485,10 +485,10 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         # For OAuth 2.0 the access token is acquired and refreshed dynamically by the
         # OAuth2ClientCredentialsHandler attached to the client (see get_oauth2_auth_handler).
         # No static Authorization header is generated here.
-        demisto.debug("Authenticating with OAuth 2.0 (handled by OAuth2ClientCredentialsHandler)")
+        demisto.debug("[auth] Authenticating with OAuth 2.0 (handled by OAuth2ClientCredentialsHandler)")
         return {}
     if authentication == "No Authorization":
-        demisto.debug("Connecting without Authorization")
+        demisto.debug("[auth] Connecting without Authorization")
         return {}
 
     err_msg = (
