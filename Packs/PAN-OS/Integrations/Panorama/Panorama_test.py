@@ -3516,10 +3516,10 @@ class TestPanoramaCommand:
     @patch("Panorama.run_op_command")
     def test_get_template_stacks_without_hostname(self, patched_run_op_command, mock_topology):
         """Given the output XML for show template-stacks without hostname, assert it is parsed into the dataclasses correctly."""
-        from Panorama import PanoramaCommand
+        import Panorama
 
         patched_run_op_command.return_value = load_xml_root_from_test_file("test_data/show_template_stack_without_hostname.xml")
-        result = PanoramaCommand.get_template_stacks(mock_topology)
+        result = Panorama.PanoramaCommand.get_template_stacks(mock_topology)
         assert len(result) == 2
         assert result[0].name
         assert not result[0].hostname
