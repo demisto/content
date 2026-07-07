@@ -257,7 +257,7 @@ metadata:
     interpolation_mapping: "ucpparamname:xsoar.path.with.names,ucpparamname2:otherfield"
 ```
 
-- **Left of the colon (`<ucp_param>`)** — the field's `metadata.auth.parameter` value (e.g. `username`, `app_password`). **Only auth fields** (fields carrying `metadata.auth`) appear in the mapping — never `engine`/`engine_group`/`proxy`/`insecure`.
+- **Left of the colon (`<ucp_param>`)** — the field's `metadata.auth.parameter` value (e.g. `username`, `app_password`). **Only auth fields** (fields carrying `metadata.auth`) appear in the mapping — never `engine`/`engineGroup`/`proxy`/`insecure`.
 - **Right of the colon (`<xsoar_path>`)** — a **dotted path** into the legacy `demisto.params()` structure where the runtime injects the value. The path is **free-form** — it must match exactly what the integration code reads.
 
 **Path levels.** The feature was built forward-thinking to support arbitrarily nested paths; **today expect only 1 or 2 levels**:
@@ -470,7 +470,7 @@ A field's `metadata` is a free-form bag, classified for pub/sub forwarding:
 - **Mutually exclusive with `metadata.auth`** — secrets always flow through get-credentials.
 - **Shape**: exactly `{ publish: <boolean> }`.
 
-> **Migration rule**: **every** connection-profile field MUST carry `metadata.event.publish: true`, with **two exceptions**: (1) `engine_mode` (the radio control), and (2) any field carrying `metadata.auth`. So `engine`, `engine_group`, `proxy`, `insecure`, server URL, region, etc. are published; secrets are not.
+> **Migration rule**: **every** connection-profile field MUST carry `metadata.event.publish: true`, with **two exceptions**: (1) `engine_mode` (the radio control), and (2) any field carrying `metadata.auth`. So `engine`, `engineGroup`, `proxy`, `insecure`, server URL, region, etc. are published; secrets are not.
 
 When the platform builds the event for handler **H**, the field's other metadata is classified per the table above (handler-specific keys included only if they match H's module).
 
@@ -680,25 +680,22 @@ Every fetch type requires the integration's automation. So for **each** collecti
 - **Effect**: `{ read_only: true, enabled: true }` on `automation-and-remediation_<i>` — `enabled: true` turns it on (selected), `read_only: true` locks it so the user can't clear it while the dependency is active.
 - **Message** (verbatim): *"A selected capability enables this setting. Clear the active dependency to disable it"*.
 
-The effect is reversible (§2.10): when no collection sub-capability of the integration is selected, the lock and auto-enable are lifted and `automation-and-remediation_<i>` returns to its prior state. Emit **one such trigger per collection sub-capability** the integration contributes, all targeting the same `automation-and-remediation_<i>`.
+The effect is reversible (§2.10): when no collection sub-capability of the integration is selected, the lock and auto-enable are lifted and `automation-and-remediation_<i>` returns to its prior state. Emit **one such trigger per handler with 'OR' in between fetch sub-capabilities** the integration contributes, all targeting the same `automation-and-remediation_<i>`.
 
 ```yaml
 # triggers.yaml — collection sub-capability auto-enables + locks automation-and-remediation
 triggers:
   - conditions:
-      id: "fetch-issues_<i>"
-      operator: "eq"
-      behavior: "selected"
-      value: "true"
-    effects:
-      - id: "automation-and-remediation_<i>"
-        action: { read_only: true, enabled: true }
-        message: "A selected capability enables this setting. Clear the active dependency to disable it"
-  - conditions:
-      operator: "eq"
-      behavior: "selected"
-      id: "log-collection_<i>"
-      value: "true"
+    operator: OR
+    children:
+      - id: "fetch-issues_<i>"
+        operator: "eq"
+        behavior: "selected"
+        value: "true"
+      - operator: "eq"
+        behavior: "selected"
+        id: "log-collection_<i>"
+        value: "true"
     effects:
       - id: "automation-and-remediation_<i>"
         action: { read_only: true, enabled: true }
@@ -725,7 +722,7 @@ A `type: 9` credential renders as two leaves — an identifier (`<id>.identifier
 
 #### All connection params live inside the profile
 
-**Do NOT use `connection.yaml general_configurations`.** Every connection parameter — auth secrets, server URL/domain, `proxy`, `engine`/`engine_group`, `insecure` — is declared in `profiles[].configurations[].fields[]`, **once per profile**.
+**Do NOT use `connection.yaml general_configurations`.** Every connection parameter — auth secrets, server URL/domain, `proxy`, `engine`/`engineGroup`, `insecure` — is declared in `profiles[].configurations[].fields[]`, **once per profile**.
 
 **`metadata.event.publish: true` is MANDATORY on every profile field** except (1) `engine_mode` and (2) any `metadata.auth` secret (§2.17).
 
@@ -736,7 +733,7 @@ Some integrations need a connection profile to collect **non-secret** connection
 1. **Profile type: `passthrough`.** With no secret to manage, neither `plain` nor `api_key` fits. Use `passthrough` (§2.6.1) — here it stores only non-secret connection params and the platform performs no token exchange.
 2. **No `metadata.auth` fields.** Every field is a non-secret connection param (`url`/`domain`, `proxy`, `insecure`, engine fields). None carry `metadata.auth.parameter`. Consequently the `getCredentials` `parameters` object (§2.6.1) is **empty**.
 3. **`metadata.event.publish: true` on every field** (except `engine_mode`, per §2.17). Since there are no secrets, **all** profile fields are published.
-4. **`interpolation_mapping` is empty / omitted.** Per §2.6.2 the mapping covers **only** auth fields — `proxy`/`insecure`/`engine`/`engine_group` are never mapped, and a server URL is resolved from the profile field directly. With no auth fields, there is nothing to map, so emit no `metadata.xsoar.interpolation_mapping` (or an empty one). The legacy code reads `url`/`proxy` from `demisto.params()` as published profile values.
+4. **`interpolation_mapping` is empty / omitted.** Per §2.6.2 the mapping covers **only** auth fields — `proxy`/`insecure`/`engine`/`engineGroup` are never mapped, and a server URL is resolved from the profile field directly. With no auth fields, there is nothing to map, so emit no `metadata.xsoar.interpolation_mapping` (or an empty one). The legacy code reads `url`/`proxy` from `demisto.params()` as published profile values.
 5. **`test_connection` is still required** (§2.8 — only `auth_options[].id: "none"` waives it, which mass migration does not emit). For a `passthrough` profile the handler implements the test connection itself (§2.6.1), verifying connectivity using just the URL/proxy.
 
 > **FLAG IT.** This "connection params but no credentials" shape is **not** a first-class, separately-documented pattern — it is assembled from the `passthrough` + `event.publish` building blocks above. It is also distinct from the §6 open item *"skip the connection screen for integrations that have no auth/connection"* (that covers integrations with **no** connection at all; here a connection screen is still needed). Surface it in **Gap Analysis / Decisions Needed** (§5.2) so the reviewer confirms the chosen modeling.
@@ -770,7 +767,7 @@ profiles:
               mask: false
               default_value: false
               help_text: "Use system proxy settings is enabled only when an engine or engine group are chosen."
-      # engine_mode / engine / engine_group emitted per §3.7 (unless Appendix G/H applies)
+      # engine_mode / engine / engineGroup emitted per §3.7 (unless Appendix G/H applies)
 ```
 
 #### view_groups (Grouped connectors)
@@ -798,7 +795,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 
 1. For each profile, follow §2.2 and the auth-parameter tagging in §2.6.
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
-3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance. `proxy` & `insecure` will only be used if the integration YML has defined them.
+3. **`engine`/`engineGroup`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance. `proxy` & `insecure` will only be used if the integration YML has defined them.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
@@ -815,7 +812,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 
 #### Principles
 
-1. **All params in manifest** — including backend-managed ones (`engine`, `engine_group`, etc.).
+1. **All params in manifest** — including backend-managed ones (`engine`, `engineGroup`, etc.).
 2. **One field per `fields` block (one field per UI row).** Each field MUST be the sole entry of its own `fields:` block. **Reason**: every `fields` block renders as a **single UI row**; putting more than one field in a block puts them on the same row, and since we don't control the rendered layout this causes weird layout bugs. This applies **everywhere fields are emitted** — `configurations.yaml` (per-capability and `general_configurations`) **and** `connection.yaml` profile `configurations[].fields[]`. (Sole exception: a `checkbox_group`'s inner `fields[]` lists its checkbox items — that is one field/row by design.)
 
    ```yaml
@@ -886,7 +883,7 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 5. **Required** = `required`.
 6. **Description** = `additionalinfo` → `options.description`/`help_text`.
 7. **Select options** — YML `options` → `{key, label}` pairs.
-8. **Exclude** hidden-on-platform params, and auth-related params (type-9 credentials, domain/URL auth fields). For Appendix G integrations, also omit `proxy`/`engine`/`engine_group` entirely; for all others, `proxy`/`insecure` live in the connection profile (§3.6), not here.
+8. **Exclude** hidden-on-platform params, and auth-related params (type-9 credentials, domain/URL auth fields). For Appendix G integrations, also omit `proxy`/`engine`/`engineGroup` entirely; for all others, `proxy`/`insecure` live in the connection profile (§3.6), not here.
 9. **Searchable/clearable** — every `select` and `multi_select` field MUST set `options.searchable: true` and `options.clearable: true`.
 
 #### Instance-level properties (now explicit in the manifest)
@@ -895,7 +892,7 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 |---|---|---|---|---|
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` (one per integration; Standard connectors: no `view_group`) | `select` | `"backend"` | Off/Debug/Verbose. |
 | `defaultIgnore` | `configurations.yaml`, under the `automation-and-remediation_<integration>` sub-capability | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
-| `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
+| `engine` / `engineGroup` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
 | `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
 | `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
 | `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
@@ -910,13 +907,13 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 |---|---|---|---|---|
 | `engine_mode` | `radio` (horizontal) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
 | `engine` | `select` + `dynamic_values` (`dynamicField: engine`) | — | ✅ | `backend` |
-| `engine_group` | `select` + `dynamic_values` (`dynamicField: engine-group`) | — | ✅ | `backend` |
+| `engineGroup` | `select` + `dynamic_values` (`dynamicField: engine-group`) | — | ✅ | `backend` |
 
-`engine_mode` options: `no_engine` ("No engine"), `engine` ("Engine"), `engine_group` ("Engine Group").
+`engine_mode` options: `no_engine` ("No engine"), `engine` ("Engine"), `engineGroup` ("Engine Group").
 
-**Mandatory** empty-state messages: `engine` → `empty_values_message: "No engines available"`; `engine_group` → `"No engine groups available"`.
+**Mandatory** empty-state messages: `engine` → `empty_values_message: "No engines available"`; `engineGroup` → `"No engine groups available"`.
 
-**Visibility** via `triggers.yaml`: hide `engine` when `engine_mode != "engine"`; hide `engine_group` when `engine_mode != "engine_group"`.
+**Visibility** via `triggers.yaml`: hide `engine` when `engine_mode != "engine"`; hide `engineGroup` when `engine_mode != "engineGroup"`.
 
 ```yaml
 # connection.yaml — inside a profile's configurations[].fields[]
@@ -930,7 +927,7 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
     values:
       - { key: no_engine, label: "No engine" }
       - { key: engine, label: "Engine" }
-      - { key: engine_group, label: "Engine Group" }
+      - { key: engineGroup, label: "Engine Group" }
 - id: engine
   field_type: select
   title: Engine
@@ -943,7 +940,7 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
       params: { integrationID: "<integration-id>", dynamicField: engine }
   options:
     empty_values_message: "No engines available"
-- id: engine_group
+- id: engineGroup
   field_type: select
   title: Engine Group
   metadata:
@@ -962,8 +959,8 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 triggers:
   - conditions: { type: condition, id: engine_mode, operator: neq, behavior: { value: engine } }
     effects: [{ id: engine, action: { hidden: true } }]
-  - conditions: { type: condition, id: engine_mode, operator: neq, behavior: { value: engine_group } }
-    effects: [{ id: engine_group, action: { hidden: true } }]
+  - conditions: { type: condition, id: engine_mode, operator: neq, behavior: { value: engineGroup } }
+    effects: [{ id: engineGroup, action: { hidden: true } }]
 ```
 
 #### Proxy field — conditional read-only
@@ -971,7 +968,7 @@ triggers:
 The `proxy` field (a `checkbox`) lives in the same connection profile alongside the engine fields. Its title is **"Use system proxy settings"**. Proxy routing is only meaningful when traffic flows through an engine or engine group, so:
 
 - **`proxy` is `read_only` (locked, unchecked) while `engine_mode == "no_engine"`** (i.e. no engine and no engine group is chosen).
-- **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engine_group"`), `proxy` becomes editable so the user can check it.
+- **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engineGroup"`), `proxy` becomes editable so the user can check it.
 - A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
 - proxy is only a field in the profile if the integration YML has this field defined
 
@@ -1002,7 +999,7 @@ The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `
     - id: engine
       behavior: value
       operator: is_not_empty
-    - id: engine_group
+    - id: engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -1011,7 +1008,7 @@ The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `
       read_only: false
 ```
 
-> The trigger is reversible (§2.10): when `engine_mode` changes away from `no_engine` (to `engine` or `engine_group`), the `read_only` lock is lifted and the user can toggle `proxy`.
+> The trigger is reversible (§2.10): when `engine_mode` changes away from `no_engine` (to `engine` or `engineGroup`), the `read_only` lock is lifted and the user can toggle `proxy`.
 
 #### Insecure field — always editable
 
@@ -1036,7 +1033,7 @@ The `insecure` field (a `checkbox`) also lives in the same connection profile. I
     edit_modifiers: { required: false, read_only: false, hidden: false }
 ```
 
-**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`).
+**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engineGroup` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`).
 
 #### BE-auto-added params (now explicit)
 
@@ -1754,7 +1751,7 @@ The following vendor connectors are owned jointly with the SaaS team. SaaS alrea
 
 ## Appendix G: Engine / EngineGroup / Proxy Exclusion List
 
-Integrations listed below must have **no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all** in their connector manifest — none of the three engine fields from the §3.7 "Engine handling — 3-field pattern" sub-section, and no `proxy` field either. They run as long-running servers/listeners or are platform-native handlers. Match is case-insensitive against the integration `commonfields.id`.
+Integrations listed below must have **no `engine_mode`, `engine`, `engineGroup`, or `proxy` fields emitted at all** in their connector manifest — none of the three engine fields from the §3.7 "Engine handling — 3-field pattern" sub-section, and no `proxy` field either. They run as long-running servers/listeners or are platform-native handlers. Match is case-insensitive against the integration `commonfields.id`.
 
 > **Note**: the `AWS` family (`AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`), `Azure`, and `GCP` are **not** listed here because they are **fully excluded from migration** (cooc — see [Appendix D](#appendix-d-excluded-integrations-out-of-scope)).
 
@@ -1774,11 +1771,11 @@ Integrations listed below must have **no `engine_mode`, `engine`, `engine_group`
 | `Microsoft Teams` | Platform-native handler — networking handled outside the standard engine/proxy model. |
 | `AWS-SNS-Listener` | Long-running AWS SNS push listener. |
 
-If the author encounters one of these integrations during automated migration, it must skip the `engine_mode`, `engine`, `engine_group`, and `proxy` field rules entirely for that integration (no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all) and note the exclusion in the Gap Analysis output.
+If the author encounters one of these integrations during automated migration, it must skip the `engine_mode`, `engine`, `engineGroup`, and `proxy` field rules entirely for that integration (no `engine_mode`, `engine`, `engineGroup`, or `proxy` fields emitted at all) and note the exclusion in the Gap Analysis output.
 
 ## Appendix H: Single-Engine Integrations
 
-The legacy FE constant `SINGLE_ENGINE_INTEGRATIONS` disables the *engine group* option for the integrations below, allowing only a single engine to be selected. These integrations maintain stateful connections that would break if load-balanced across multiple engines. **For these integrations, the migration must emit only two fields from the §3.7 "Engine handling — 3-field pattern": (1) `engine_mode` with the radio reduced to 2 options (`no_engine` + `engine`, dropping the `engine_group` option entirely), and (2) the `engine` dropdown (`select` + `metadata.dynamic_values` provider `xsoar` / `dynamicField: "engine"`). The `engine_group` field must NOT be emitted.**
+The legacy FE constant `SINGLE_ENGINE_INTEGRATIONS` disables the *engine group* option for the integrations below, allowing only a single engine to be selected. These integrations maintain stateful connections that would break if load-balanced across multiple engines. **For these integrations, the migration must emit only two fields from the §3.7 "Engine handling — 3-field pattern": (1) `engine_mode` with the radio reduced to 2 options (`no_engine` + `engine`, dropping the `engineGroup` option entirely), and (2) the `engine` dropdown (`select` + `metadata.dynamic_values` provider `xsoar` / `dynamicField: "engine"`). The `engineGroup` field must NOT be emitted.**
 
 Matching rule: case-insensitive exact match against the integration `commonfields.id`.
 
@@ -1791,7 +1788,7 @@ Matching rule: case-insensitive exact match against the integration `commonfield
 | `mattermost` | Maintains websocket connection to Mattermost — must not be load-balanced. |
 | `duo` | Stateful Duo authentication session. |
 
-The `engine_group` carve-out in §3.7 "Engine handling — 3-field pattern" supersedes the default *"emit all three engine fields (`engine_mode`, `engine`, `engine_group`)"* behavior for any integration in this list — emit only `engine_mode` (2-option radio: `no_engine` + `engine`) and the `engine` dropdown. If an integration also appears in [Appendix G](#appendix-g-engine--enginegroup--proxy-exclusion-list), Appendix G wins (no `engine_mode`, `engine`, `engine_group`, or `proxy` fields at all).
+The `engineGroup` carve-out in §3.7 "Engine handling — 3-field pattern" supersedes the default *"emit all three engine fields (`engine_mode`, `engine`, `engineGroup`)"* behavior for any integration in this list — emit only `engine_mode` (2-option radio: `no_engine` + `engine`) and the `engine` dropdown. If an integration also appears in [Appendix G](#appendix-g-engine--enginegroup--proxy-exclusion-list), Appendix G wins (no `engine_mode`, `engine`, `engineGroup`, or `proxy` fields at all).
 
 ## Appendix I: Server-Style Integrations
 
@@ -1845,7 +1842,7 @@ The following fields — and **only** these fields — MUST carry `metadata.xsoa
 | Field ID | Where it lives | Notes |
 |---|---|---|
 | `engine` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine`). |
-| `engineGroup` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine-group`). Field id `engine_group` in the manifest. |
+| `engineGroup` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine-group`). Field id `engineGroup` in the manifest. |
 | `mappingId` | `configurations.yaml`, under the `fetch-issues` sub-capability | Classifier — `select` + `dynamic_values` (`dynamicField: classifier`). |
 | `incomingMapperId` | `configurations.yaml`, under the `fetch-issues` sub-capability | Mapper (incoming) — `select` + `dynamic_values` (`dynamicField: mapper-incoming`). |
 | `outgoingMapperId` | `configurations.yaml` (mirroring — see §3.2) | Mapper (outgoing). **Mirroring is out of scope on Platform**; listed here only because it is backend-managed when present. |
