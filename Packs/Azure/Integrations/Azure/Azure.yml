@@ -111,14 +111,24 @@ script:
   commands:
   - description: Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
     name: azure-auth-start
+    hidden:
+      - platform
   - description: Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
     name: azure-auth-complete
+    hidden:
+      - platform
   - description: Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
     name: azure-auth-test
+    hidden:
+      - platform
   - description: Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
     name: azure-auth-reset
+    hidden:
+      - platform
   - description: Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
     name: azure-generate-login-url
+    hidden:
+      - platform
   - arguments:
     - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: subscription_id
