@@ -71,14 +71,14 @@ class _MockPullRequest:
 
 
 # ---------------------------------------------------------------------------
-# pr_changes_protected_files
+# pr_changes_critical_files
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
     "changed_files, expected",
     [
-        # No protected folder touched - nothing returned.
+        # No critical folder touched - nothing returned.
         (["Packs/SomePack/Integrations/Foo/Foo.py", "README.md"], []),
         # CommonServerPython source touched - returned.
         (
@@ -90,8 +90,8 @@ class _MockPullRequest:
             ["Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1"],
             ["Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1"],
         ),
-        # Companion files inside protected folders (tests, YAMLs, fixtures,
-        # READMEs) must also be treated as protected changes.
+        # Companion files inside critical folders (tests, YAMLs, fixtures,
+        # READMEs) must also be treated as critical changes.
         (
             [
                 "Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py",
@@ -112,8 +112,8 @@ class _MockPullRequest:
                 "Packs/Base/Scripts/CommonServer/README.md",
             ],
         ),
-        # Multiple protected helpers touched alongside unrelated files -
-        # only files under protected folders are returned, in PR order.
+        # Multiple critical helpers touched alongside unrelated files -
+        # only files under critical folders are returned, in PR order.
         (
             [
                 "Packs/Base/Scripts/CommonServerPython/CommonServerPython.py",
@@ -125,7 +125,7 @@ class _MockPullRequest:
                 "Packs/Base/Scripts/CommonServer/CommonServer.js",
             ],
         ),
-        # A file that merely *shares a prefix* with a protected folder name
+        # A file that merely *shares a prefix* with a critical folder name
         # (e.g. a sibling folder like ``CommonServerPythonExtras``) must NOT
         # match, because the folder prefix ends with a trailing slash.
         (
@@ -137,25 +137,25 @@ class _MockPullRequest:
         ),
     ],
 )
-def test_pr_changes_protected_files(changed_files, expected):
+def test_pr_changes_critical_files(changed_files, expected):
     """
     Given:
         - A pull request whose changed files vary between unrelated paths,
-          protected source files, companion files (tests / YAMLs / fixtures /
-          READMEs) inside the protected folders, and lookalike sibling
-          folders that only *share a prefix* with a protected folder.
+          critical source files, companion files (tests / YAMLs / fixtures /
+          READMEs) inside the critical folders, and lookalike sibling
+          folders that only *share a prefix* with a critical folder.
     When:
-        - ``pr_changes_protected_files`` is called.
+        - ``pr_changes_critical_files`` is called.
     Then:
-        - Every file that lives under a protected folder is returned in PR
+        - Every file that lives under a critical folder is returned in PR
           order; unrelated files and prefix-lookalikes are excluded.
     """
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
-        pr_changes_protected_files,
+        pr_changes_critical_files,
     )
 
     pr = _MockPullRequest(files=[_MockFile(p) for p in changed_files])
-    assert pr_changes_protected_files(pr) == expected
+    assert pr_changes_critical_files(pr) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -343,9 +343,9 @@ def test_delete_reminder_comment_if_present_removes_all_duplicates():
 def test_post_then_delete_full_lifecycle():
     """
     Given:
-        - A PR where the reminder was posted (protected file was modified),
+        - A PR where the reminder was posted (critical file was modified),
           and then the developer reverted the change so the PR no longer
-          touches any protected folder.
+          touches any critical folder.
     When:
         - ``post_reminder_comment_once`` runs (posts), followed later by
           ``delete_reminder_comment_if_present`` (cleanup after revert).
@@ -376,22 +376,22 @@ def test_post_then_delete_full_lifecycle():
 # ---------------------------------------------------------------------------
 
 
-def test_protected_folders_includes_commonserverpython():
-    """``CommonServerPython/`` is the primary trigger folder and must be protected."""
+def test_critical_folders_includes_commonserverpython():
+    """``CommonServerPython/`` is the primary trigger folder and must be marked critical."""
     from pathlib import PurePosixPath
 
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
-        PROTECTED_FOLDERS,
+        CRITICAL_FOLDERS,
     )
 
-    assert PurePosixPath("Packs/Base/Scripts/CommonServerPython") in PROTECTED_FOLDERS
+    assert PurePosixPath("Packs/Base/Scripts/CommonServerPython") in CRITICAL_FOLDERS
 
 
-def test_protected_folders_are_pureposixpath():
+def test_critical_folders_are_pureposixpath():
     """
-    Every entry in ``PROTECTED_FOLDERS`` must be a :class:`PurePosixPath`.
+    Every entry in ``CRITICAL_FOLDERS`` must be a :class:`PurePosixPath`.
 
-    This is the invariant that lets :func:`pr_changes_protected_files` use
+    This is the invariant that lets :func:`pr_changes_critical_files` use
     :meth:`PurePosixPath.is_relative_to` semantics rather than raw string
     matching. In particular, using :class:`PurePosixPath` (and NOT the plain
     strings we previously stored) is what makes prefix-lookalike sibling
@@ -401,13 +401,13 @@ def test_protected_folders_are_pureposixpath():
     from pathlib import PurePosixPath
 
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
-        PROTECTED_FOLDERS,
+        CRITICAL_FOLDERS,
     )
 
-    for folder in PROTECTED_FOLDERS:
+    for folder in CRITICAL_FOLDERS:
         assert isinstance(
             folder, PurePosixPath
-        ), f"protected folder {folder!r} must be a PurePosixPath, got {type(folder).__name__}"
+        ), f"critical folder {folder!r} must be a PurePosixPath, got {type(folder).__name__}"
 
 
 def test_nightly_run_passed_label_constant():

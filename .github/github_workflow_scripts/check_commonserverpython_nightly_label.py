@@ -3,7 +3,7 @@ Verifies that PRs which modify CommonServerPython.py (or its JS/PS counterparts 
 considered runtime-injected helpers) have been validated against the content nightly
 pipeline. The check:
 
-  1. Detects whether the PR touches any of the protected CommonServer* files.
+  1. Detects whether the PR touches any of the critical CommonServer* files.
   2. If yes, ensures the `nightly-run-passed` label is set on the PR (added manually
      by the developer / reviewer once the content nightly pipeline has run green).
   3. Posts (or updates) a sticky reminder comment on the PR explaining the
@@ -47,7 +47,7 @@ NIGHTLY_RUN_PASSED_LABEL = "nightly-run-passed"
 # filenames we compare against come from GitHub's PR API and are always
 # forward-slash-separated, so we want POSIX semantics regardless of whether the
 # workflow runs on Linux, macOS, or Windows.
-PROTECTED_FOLDERS: tuple[PurePosixPath, ...] = (
+CRITICAL_FOLDERS: tuple[PurePosixPath, ...] = (
     PurePosixPath("Packs/Base/Scripts/CommonServerPython"),
     PurePosixPath("Packs/Base/Scripts/CommonServerPowerShell"),
     PurePosixPath("Packs/Base/Scripts/CommonServer"),
@@ -88,23 +88,21 @@ def arguments_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def pr_changes_protected_files(pr: PullRequest) -> list[str]:
+def pr_changes_critical_files(pr: PullRequest) -> list[str]:
     """
     Return the list of files modified by the PR that live under any of the
-    :data:`PROTECTED_FOLDERS` (empty if none).
+    :data:`CRITICAL_FOLDERS` (empty if none).
 
     Matching uses :meth:`pathlib.PurePosixPath.is_relative_to`, which is the
     canonical "is this path inside that directory?" check - equivalent to a
-    ``<folder>/**`` glob. Any file inside a protected folder (source, test,
-    YAML, README, arbitrarily-nested fixtures, …) counts as a protected
+    ``<folder>/**`` glob. Any file inside a critical folder (source, test,
+    YAML, README, arbitrarily-nested fixtures, …) counts as a critical
     change. Sibling folders that merely share a name *prefix*
     (e.g. ``CommonServerHelper/`` vs ``CommonServer/``) correctly do NOT
-    match, because they are not path-relative to the protected folder.
+    match, because they are not path-relative to the critical folder.
     """
     return [
-        f.filename
-        for f in pr.get_files()
-        if any(PurePosixPath(f.filename).is_relative_to(folder) for folder in PROTECTED_FOLDERS)
+        f.filename for f in pr.get_files() if any(PurePosixPath(f.filename).is_relative_to(folder) for folder in CRITICAL_FOLDERS)
     ]
 
 
@@ -136,7 +134,7 @@ def delete_reminder_comment_if_present(pr: PullRequest) -> int:
     Delete every previously-posted reminder comment on ``pr`` (identified by
     :data:`COMMENT_MARKER`) and return how many were removed.
 
-    This is called when the current PR diff **no longer touches any protected
+    This is called when the current PR diff **no longer touches any critical
     folder** - e.g. the developer initially modified ``CommonServerPython.py``
     (triggering the reminder) and then reverted that change in a follow-up
     push. Without this cleanup the sticky comment would stay on the PR
@@ -154,7 +152,7 @@ def delete_reminder_comment_if_present(pr: PullRequest) -> int:
     if deleted:
         print(
             f"Deleted {deleted} stale CommonServerPython nightly reminder comment(s) "
-            f"from PR #{pr.number} (protected files are no longer modified)."
+            f"from PR #{pr.number} (critical files are no longer modified)."
         )
     return deleted
 
@@ -167,18 +165,18 @@ def main() -> None:
     content_repo: Repository = github_client.get_repo("demisto/content")
     pr: PullRequest = content_repo.get_pull(pr_number)
 
-    changed_protected = pr_changes_protected_files(pr)
-    if not changed_protected:
+    changed_critical = pr_changes_critical_files(pr)
+    if not changed_critical:
         print(f"PR #{pr_number} does not modify CommonServerPython or related helpers. Nothing to enforce.")
-        # Housekeeping: if a previous push touched a protected file and the
+        # Housekeeping: if a previous push touched a critical file and the
         # reminder was posted, but the current PR diff no longer contains any
-        # protected change (e.g. the developer reverted it), remove the stale
+        # critical change (e.g. the developer reverted it), remove the stale
         # comment so the PR isn't left with a misleading warning.
         delete_reminder_comment_if_present(pr)
         sys.exit(0)
 
     print(
-        f"PR #{pr_number} modifies protected files: {', '.join(changed_protected)}. "
+        f"PR #{pr_number} modifies critical files: {', '.join(changed_critical)}. "
         "Verifying that the content nightly pipeline has been run and labeled."
     )
 
