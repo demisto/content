@@ -35,7 +35,8 @@ FRONT_DOOR_UPSERT_PARAMS = {
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2020-05-01"
 API_VERSION_POLICIES = "2025-05-01"
-API_VERSION_INFRA = "2025-04-01"
+API_VERSION_SUBSCRIPTIONS = "2022-12-01"
+API_VERSION_RESOURCE_GROUPS = "2021-04-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 BASE_URL = "https://management.azure.com"
 POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -193,7 +194,6 @@ class AzureWAFClient:
         resource_group_names: list,
         subscription_id: str,
         data: dict,
-        api_version: str = API_VERSION_POLICIES,
     ) -> list[dict]:
         base_url = f"{BASE_URL}/subscriptions/{subscription_id}"
         res = []
@@ -204,7 +204,7 @@ class AzureWAFClient:
                         method="PUT",
                         full_url=f"{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}",
                         data=data,
-                        params={"api-version": api_version},
+                        params={"api-version": API_VERSION_POLICIES},
                     )
                 )
             except Exception as e:
@@ -224,11 +224,11 @@ class AzureWAFClient:
             method="GET",
             return_empty_response=True,
             full_url=f"{BASE_URL}/subscriptions",
-            params={"api-version": API_VERSION_INFRA},
+            params={"api-version": API_VERSION_SUBSCRIPTIONS},
         )
 
     def resource_group_list(self, subscription_ids: list, tag: str, limit: int) -> list[dict]:
-        params = {"$top": limit, "api-version": API_VERSION_INFRA}
+        params = {"$top": limit, "api-version": API_VERSION_RESOURCE_GROUPS}
         if tag:
             params["$filter"] = tag
         res = []
@@ -506,7 +506,6 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
         resource_group_names=resource_group_names,
         subscription_id=subscription_id,
         data=body,
-        api_version=API_VERSION_POLICIES,
     )
 
     return CommandResults(
