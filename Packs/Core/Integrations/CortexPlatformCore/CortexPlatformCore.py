@@ -15,6 +15,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
+SEARCH_ASSETS_MAX_LIMIT = 5000
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
@@ -685,10 +686,10 @@ class Client(CoreClient):
 
     def test_module(self):
         """
-        Performs basic get request to get item samples
+        Performs basic get request to get health_check samples
         """
         try:
-            self.get_endpoints(limit=1)
+            self.get_health_check()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -2302,7 +2303,15 @@ def search_assets_command(client: Client, args):
     asset_types = argToList(args.get("asset_types", ""))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
-    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    if page_size is None:
+        page_size = SEARCH_ASSETS_DEFAULT_LIMIT
+    if page_size > SEARCH_ASSETS_MAX_LIMIT:
+        raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
+
+    if page_size == 0:  # 0 Maps to max in the API, we will maintain this behavior with our max value instead
+        page_size = SEARCH_ASSETS_MAX_LIMIT
+
     page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
     on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
@@ -3590,6 +3599,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         f["CUSTOM_FIELD_CLI_NAME"]: {
             "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+            "select_values": (f.get("CUSTOM_FIELD_FIELD_DATA") or {}).get("selectValues") or [],
         }
         for f in fields_data
         if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
@@ -3608,15 +3618,29 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             )
         elif field_name in custom_fields:
             field_type = custom_fields[field_name]["field_type"]
-            if field_type == "multiSelect" and not isinstance(field_value, list):
-                error_messages.append(
-                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
-                    f" Received: {field_value!r}"
-                )
+            select_values = custom_fields[field_name]["select_values"]
+
+            if field_type == "multiSelect":
+                # Auto-coerce plain string → single-element list for multiSelect fields
+                if not isinstance(field_value, list):
+                    demisto.debug(
+                        f"Field '{field_name}' is of type multiSelect but received a non-list value {field_value!r}. "
+                        f"Auto-converting to list: [{field_value!r}]"
+                    )
+                    field_value = [field_value]
+                if select_values:
+                    invalid_values = [v for v in field_value if v not in select_values]
+                    if invalid_values:
+                        error_messages.append(
+                            f"Field '{field_name}' contains invalid value(s): {invalid_values}."
+                            f" Allowed values are: {select_values}"
+                        )
+                        continue
+                valid_fields[field_name] = field_value
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
-                    f" Provide a single value instead."
+                    f" Provide a single string value instead."
                 )
             else:
                 valid_fields[field_name] = field_value
