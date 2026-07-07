@@ -3487,6 +3487,7 @@ def main():  # pragma: no cover
                         snapshot_id=snapshot_id,
                         items_count=str(items_count),
                         should_update_health_module=False,
+                        add_proxy_to_request=proxy,
                     )
 
                 elif not assets_fetch_in_progress:
@@ -3505,6 +3506,7 @@ def main():  # pragma: no cover
                             snapshot_id=snapshot_id,
                             items_count=str(cumulative_total),
                             should_update_health_module=False,
+                            add_proxy_to_request=proxy,
                         )
 
                 # Send vulnerabilities to XSIAM using snapshot-based ingestion so UVEM can
@@ -3537,6 +3539,7 @@ def main():  # pragma: no cover
                         snapshot_id=vuln_snapshot_id,
                         items_count=str(vuln_items_count),
                         should_update_health_module=False,
+                        add_proxy_to_request=proxy,
                     )
 
                 elif not vulns_fetch_in_progress:
