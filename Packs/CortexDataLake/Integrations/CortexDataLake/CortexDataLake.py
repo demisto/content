@@ -86,7 +86,10 @@ def build_scm_signature(encryption_key_b64: str, client_secret: Optional[str], t
     Returns:
         The base64-encoded (gcm_nonce + ciphertext) signature.
     """
-    encryption_key = base64.b64decode(encryption_key_b64)
+    try:
+        encryption_key = base64.b64decode(encryption_key_b64)
+    except Exception as e:
+        raise DemistoException("Invalid Encryption Key: must be a valid base64 string.") from e
     if len(encryption_key) != 32:
         raise DemistoException("Invalid Encryption Key: the key must be the base64 value of exactly 32 raw bytes.")
     nonce = base64.b64encode(os.urandom(16)).decode("ascii")
@@ -196,9 +199,13 @@ class Client(BaseClient):
             status_code = e.res.status_code if e.res is not None else None
             demisto.debug(f"CDL SCM request failed with status_code={status_code}")
             if status_code == 429:
-                raise DemistoException("SCM rate limit exceeded (60 requests/min per registration_id) - try again shortly.")
+                raise DemistoException(
+                    "SCM rate limit exceeded (60 requests/min per registration_id) - try again shortly."
+                ) from e
             if status_code == 401:
-                raise DemistoException("SCM authentication failed (check Registration ID, Encryption Key, and Client Secret).")
+                raise DemistoException(
+                    "SCM authentication failed (check Registration ID, Encryption Key, and Client Secret)."
+                ) from e
             raise
 
         raw_text = raw_response.text or ""
