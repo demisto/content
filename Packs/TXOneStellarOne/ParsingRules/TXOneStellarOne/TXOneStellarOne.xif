@@ -1,3 +1,10 @@
+// TXOne StellarOne, StellarProtect, and StellarProtect (Legacy Mode) all forward
+// CEF logs into the SAME dataset (txone_stellarone_raw). To avoid duplicating logs,
+// each product is matched by its own INGEST header (vendor + product), so a given
+// event is claimed by exactly one rule. no_hit=drop discards events that do not
+// match any header instead of ingesting them twice or as raw. The per-product split
+// also lets each product use its correct timestamp field (start vs rt), falling back
+// to the string eventtime when the epoch field is absent.
 [INGEST:vendor="TXOne Networks", product="StellarProtect", target_dataset="txone_stellarone_raw", no_hit=drop]
 alter
     _time = coalesce(to_timestamp(to_integer(start), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));

@@ -22,8 +22,8 @@ Data normalization capabilities:
 
 ### Supported timestamp formats
 
-* Epoch milliseconds (13-digit), e.g. `1765893322000` (audit/system/agent events).
-* `%b %d %Y %H:%M:%S GMT%Ez`, e.g. `Jan 01 2026 20:00:28 GMT+00:00` (console log events).
+* Epoch milliseconds (13-digit), e.g. `1765893322000`.
+* `%b %d %Y %H:%M:%S GMT%Ez`, e.g. `Jan 01 2026 20:00:28 GMT+00:00`.
 
 ***
 

@@ -32,15 +32,7 @@
             "type": "string",
             "is_array": false
         },
-        "agentgrppath": {
-            "type": "string",
-            "is_array": false
-        },
         "agentip": {
-            "type": "string",
-            "is_array": false
-        },
-        "agentlocation": {
             "type": "string",
             "is_array": false
         },
@@ -48,39 +40,11 @@
             "type": "string",
             "is_array": false
         },
-        "agentrt": {
-            "type": "string",
-            "is_array": false
-        },
-        "agentvendor": {
-            "type": "string",
-            "is_array": false
-        },
-        "allastupdateat": {
-            "type": "string",
-            "is_array": false
-        },
         "blockedprocess": {
             "type": "string",
             "is_array": false
         },
-        "cat": {
-            "type": "string",
-            "is_array": false
-        },
-        "category": {
-            "type": "string",
-            "is_array": false
-        },
         "cefdeviceeventclassid": {
-            "type": "string",
-            "is_array": false
-        },
-        "cefdeviceproduct": {
-            "type": "string",
-            "is_array": false
-        },
-        "cefdevicevendor": {
             "type": "string",
             "is_array": false
         },
@@ -96,10 +60,6 @@
             "type": "string",
             "is_array": false
         },
-        "cefversion": {
-            "type": "string",
-            "is_array": false
-        },
         "clientip": {
             "type": "string",
             "is_array": false
@@ -108,23 +68,7 @@
             "type": "string",
             "is_array": false
         },
-        "cs1label": {
-            "type": "string",
-            "is_array": false
-        },
         "cs2": {
-            "type": "string",
-            "is_array": false
-        },
-        "cs2label": {
-            "type": "string",
-            "is_array": false
-        },
-        "cs3": {
-            "type": "string",
-            "is_array": false
-        },
-        "cs3label": {
             "type": "string",
             "is_array": false
         },
@@ -140,19 +84,11 @@
             "type": "string",
             "is_array": false
         },
-        "deviceinfo": {
-            "type": "string",
-            "is_array": false
-        },
         "devicetype": {
             "type": "string",
             "is_array": false
         },
         "dst": {
-            "type": "string",
-            "is_array": false
-        },
-        "dstpath": {
             "type": "string",
             "is_array": false
         },
@@ -164,15 +100,7 @@
             "type": "string",
             "is_array": false
         },
-        "errcode": {
-            "type": "string",
-            "is_array": false
-        },
         "eventid": {
-            "type": "string",
-            "is_array": false
-        },
-        "eventpolicyversion": {
             "type": "string",
             "is_array": false
         },
@@ -180,15 +108,7 @@
             "type": "string",
             "is_array": false
         },
-        "filecreatetime": {
-            "type": "string",
-            "is_array": false
-        },
         "filehash": {
-            "type": "string",
-            "is_array": false
-        },
-        "filemodificationtime": {
             "type": "string",
             "is_array": false
         },
@@ -200,79 +120,11 @@
             "type": "string",
             "is_array": false
         },
-        "filesize": {
-            "type": "string",
-            "is_array": false
-        },
-        "filespassed": {
-            "type": "int",
-            "is_array": false
-        },
-        "filesscanned": {
-            "type": "int",
-            "is_array": false
-        },
-        "foldersscanned": {
-            "type": "int",
-            "is_array": false
-        },
-        "frameworkname": {
-            "type": "string",
-            "is_array": false
-        },
-        "lastmodifierpath": {
-            "type": "string",
-            "is_array": false
-        },
-        "learningtime": {
-            "type": "string",
-            "is_array": false
-        },
-        "legacyagentseverity": {
-            "type": "string",
-            "is_array": false
-        },
         "logguid": {
             "type": "string",
             "is_array": false
         },
         "msg": {
-            "type": "string",
-            "is_array": false
-        },
-        "nextupdateat": {
-            "type": "string",
-            "is_array": false
-        },
-        "obadlevel": {
-            "type": "string",
-            "is_array": false
-        },
-        "obadmode": {
-            "type": "string",
-            "is_array": false
-        },
-        "originalversion": {
-            "type": "string",
-            "is_array": false
-        },
-        "parentprocess1": {
-            "type": "string",
-            "is_array": false
-        },
-        "parentprocess2": {
-            "type": "string",
-            "is_array": false
-        },
-        "parentprocess3": {
-            "type": "string",
-            "is_array": false
-        },
-        "parentprocess4": {
-            "type": "string",
-            "is_array": false
-        },
-        "patchfilename": {
             "type": "string",
             "is_array": false
         },
@@ -284,28 +136,8 @@
             "type": "string",
             "is_array": false
         },
-        "policyversion": {
-            "type": "string",
-            "is_array": false
-        },
         "processid": {
             "type": "string",
-            "is_array": false
-        },
-        "product": {
-            "type": "string",
-            "is_array": false
-        },
-        "quarantinepath": {
-            "type": "string",
-            "is_array": false
-        },
-        "rebootrequired": {
-            "type": "int",
-            "is_array": false
-        },
-        "regularfiles": {
-            "type": "int",
             "is_array": false
         },
         "result": {
@@ -320,15 +152,7 @@
             "type": "string",
             "is_array": false
         },
-        "sn": {
-            "type": "string",
-            "is_array": false
-        },
         "src": {
-            "type": "string",
-            "is_array": false
-        },
-        "srcpath": {
             "type": "string",
             "is_array": false
         },
@@ -344,22 +168,6 @@
             "type": "string",
             "is_array": false
         },
-        "symboliclinks": {
-            "type": "int",
-            "is_array": false
-        },
-        "targetarguments": {
-            "type": "string",
-            "is_array": false
-        },
-        "targetfile": {
-            "type": "string",
-            "is_array": false
-        },
-        "targetprocess": {
-            "type": "string",
-            "is_array": false
-        },
         "threatattackid": {
             "type": "string",
             "is_array": false
@@ -372,31 +180,7 @@
             "type": "string",
             "is_array": false
         },
-        "threatsdetected": {
-            "type": "int",
-            "is_array": false
-        },
-        "threattype": {
-            "type": "string",
-            "is_array": false
-        },
         "threatuser": {
-            "type": "string",
-            "is_array": false
-        },
-        "trustedtype": {
-            "type": "string",
-            "is_array": false
-        },
-        "type": {
-            "type": "string",
-            "is_array": false
-        },
-        "updatesource": {
-            "type": "string",
-            "is_array": false
-        },
-        "updateversion": {
             "type": "string",
             "is_array": false
         },
@@ -405,10 +189,6 @@
             "is_array": false
         },
         "userrole": {
-            "type": "string",
-            "is_array": false
-        },
-        "vid": {
             "type": "string",
             "is_array": false
         }
