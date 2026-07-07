@@ -54,7 +54,10 @@ The supported authentication types include:
 - Bearer token
 - Api-Key token
 - Raw Token (for custom token-based authentication)
+- OAuth 2.0 (Client Credentials and Authorization Code flows)
 - No Authorization (for publicly accessible data)
+
+For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
 
 ### Pagination
 
@@ -363,6 +366,23 @@ Gets events from 3rd-party vendor.
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------|
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required     |
 | limit              | Maximum number of results to return.                                                                                              | Optional     |
+
+#### Context Output
+
+There is no context output for this command.
+
+### generate-login-url
+
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
 
 #### Context Output
 
