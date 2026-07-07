@@ -3540,11 +3540,11 @@ class TestUniversalCommand:
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
         """Given the output XML for show system info, assert it is parsed into the dataclasses correctly."""
-        from Panorama import UniversalCommand
+        import Panorama
 
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
 
-        result = UniversalCommand.get_system_info(mock_topology)
+        result = Panorama.UniversalCommand.get_system_info(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
             for value in result_dataclass.__dict__.values():
