@@ -15,7 +15,7 @@ permissions:
   issues: write          # PR comments are issue comments
 
 jobs:
-  check_commonserverpython_nightly_label_job:
+  check_common_server_nightly_label_job:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content'
     steps:
