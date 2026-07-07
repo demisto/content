@@ -49,7 +49,7 @@ configuration:
   required: false
   display: ""
 - displaypassword: Client Secret
-  additionalinfo: The client secret used for Cortex GW SCM authentication
+  additionalinfo: The client secret used for Cortex GW SCM authentication.
   name: credentials_client_secret
   hiddenusername: true
   type: 9
