@@ -30,14 +30,20 @@ print = timestamped_print  # noqa: A001 - intentional, matches existing scripts
 
 NIGHTLY_RUN_PASSED_LABEL = "nightly-run-passed"
 
-# Paths whose changes MUST be validated against the content nightly pipeline.
+# Folders whose contents MUST be validated against the content nightly pipeline.
 # CommonServerPython is the primary trigger; the other helpers are included
 # because they are runtime-injected the same way and a change to any of them
 # can impact most/all content.
-PROTECTED_PATHS = (
-    "Packs/Base/Scripts/CommonServerPython/CommonServerPython.py",
-    "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1",
-    "Packs/Base/Scripts/CommonServer/CommonServer.js",
+#
+# We intentionally match on the *folder prefix* rather than an exact filename
+# list so that companion files (unit tests like ``*_test.py`` /
+# ``*.Tests.ps1``, the entity ``*.yml`` config, ``README.md``, ``conftest.py``,
+# ``test_data/`` fixtures, etc.) also trigger the check - any of them can
+# meaningfully affect the runtime-injected helper or its validation.
+PROTECTED_FOLDERS = (
+    "Packs/Base/Scripts/CommonServerPython/",
+    "Packs/Base/Scripts/CommonServerPowerShell/",
+    "Packs/Base/Scripts/CommonServer/",
 )
 
 # Marker used to find / update the sticky reminder comment so we don't spam the PR
@@ -76,9 +82,15 @@ def arguments_handler() -> argparse.Namespace:
 
 
 def pr_changes_protected_files(pr: PullRequest) -> list[str]:
-    """Return the list of protected files modified by the PR (empty if none)."""
-    changed = [f.filename for f in pr.get_files()]
-    return [path for path in PROTECTED_PATHS if path in changed]
+    """
+    Return the list of files modified by the PR that live under any of the
+    :data:`PROTECTED_FOLDERS` (empty if none).
+
+    Matching is done by folder-prefix, i.e. equivalent to a
+    ``<folder>/**`` glob - any file inside a protected folder (source,
+    test, YAML, README, fixtures, …) counts as a protected change.
+    """
+    return [f.filename for f in pr.get_files() if any(f.filename.startswith(folder) for folder in PROTECTED_FOLDERS)]
 
 
 def reminder_comment_already_posted(pr: PullRequest) -> bool:

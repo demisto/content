@@ -60,19 +60,42 @@ class _MockPullRequest:
 @pytest.mark.parametrize(
     "changed_files, expected",
     [
-        # No protected file touched - nothing returned.
+        # No protected folder touched - nothing returned.
         (["Packs/SomePack/Integrations/Foo/Foo.py", "README.md"], []),
-        # CommonServerPython touched - returned.
+        # CommonServerPython source touched - returned.
         (
             ["Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"],
             ["Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"],
         ),
-        # CommonServerPowerShell touched - returned.
+        # CommonServerPowerShell source touched - returned.
         (
             ["Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1"],
             ["Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1"],
         ),
-        # Multiple protected helpers touched - all returned.
+        # Companion files inside protected folders (tests, YAMLs, fixtures,
+        # READMEs) must also be treated as protected changes.
+        (
+            [
+                "Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py",
+                "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml",
+                "Packs/Base/Scripts/CommonServerPython/test_data/some_fixture.json",
+                "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.Tests.ps1",
+                "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.yml",
+                "Packs/Base/Scripts/CommonServer/CommonServer.yml",
+                "Packs/Base/Scripts/CommonServer/README.md",
+            ],
+            [
+                "Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py",
+                "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml",
+                "Packs/Base/Scripts/CommonServerPython/test_data/some_fixture.json",
+                "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.Tests.ps1",
+                "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.yml",
+                "Packs/Base/Scripts/CommonServer/CommonServer.yml",
+                "Packs/Base/Scripts/CommonServer/README.md",
+            ],
+        ),
+        # Multiple protected helpers touched alongside unrelated files -
+        # only files under protected folders are returned, in PR order.
         (
             [
                 "Packs/Base/Scripts/CommonServerPython/CommonServerPython.py",
@@ -84,17 +107,30 @@ class _MockPullRequest:
                 "Packs/Base/Scripts/CommonServer/CommonServer.js",
             ],
         ),
+        # A file that merely *shares a prefix* with a protected folder name
+        # (e.g. a sibling folder like ``CommonServerPythonExtras``) must NOT
+        # match, because the folder prefix ends with a trailing slash.
+        (
+            [
+                "Packs/Base/Scripts/CommonServerPythonExtras/foo.py",
+                "Packs/Base/Scripts/CommonServerHelper/CommonServer.js.bak",
+            ],
+            [],
+        ),
     ],
 )
 def test_pr_changes_protected_files(changed_files, expected):
     """
     Given:
-        - A pull request whose changed files vary between unrelated paths
-          and the protected CommonServer* helpers.
+        - A pull request whose changed files vary between unrelated paths,
+          protected source files, companion files (tests / YAMLs / fixtures /
+          READMEs) inside the protected folders, and lookalike sibling
+          folders that only *share a prefix* with a protected folder.
     When:
         - ``pr_changes_protected_files`` is called.
     Then:
-        - Only the protected files (in declaration order) are returned.
+        - Every file that lives under a protected folder is returned in PR
+          order; unrelated files and prefix-lookalikes are excluded.
     """
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
         pr_changes_protected_files,
@@ -207,13 +243,27 @@ def test_post_reminder_comment_once_is_idempotent_across_runs():
 # ---------------------------------------------------------------------------
 
 
-def test_protected_paths_includes_commonserverpython():
-    """``CommonServerPython.py`` is the primary trigger and must be protected."""
+def test_protected_folders_includes_commonserverpython():
+    """``CommonServerPython/`` is the primary trigger folder and must be protected."""
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
-        PROTECTED_PATHS,
+        PROTECTED_FOLDERS,
     )
 
-    assert "Packs/Base/Scripts/CommonServerPython/CommonServerPython.py" in PROTECTED_PATHS
+    assert "Packs/Base/Scripts/CommonServerPython/" in PROTECTED_FOLDERS
+
+
+def test_protected_folders_all_end_with_trailing_slash():
+    """
+    Every entry in ``PROTECTED_FOLDERS`` must end with ``/`` so that the
+    prefix-match logic can't accidentally match a sibling folder that merely
+    shares a name prefix (e.g. ``CommonServer`` vs ``CommonServerHelper``).
+    """
+    from github_workflow_scripts.check_commonserverpython_nightly_label import (
+        PROTECTED_FOLDERS,
+    )
+
+    for folder in PROTECTED_FOLDERS:
+        assert folder.endswith("/"), f"protected folder {folder!r} must end with '/'"
 
 
 def test_nightly_run_passed_label_constant():
