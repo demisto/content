@@ -3238,7 +3238,7 @@ script:
     - contextPath: GoogleDrive.File.parents
       description: The list of parent folder IDs.
       type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.8516410
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   isfetch: true
   runonce: false
   script: "-"
