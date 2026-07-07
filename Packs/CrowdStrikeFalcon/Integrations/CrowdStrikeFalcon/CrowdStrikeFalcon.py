@@ -77,6 +77,7 @@ PARAMS = demisto.params()
 PROXY = PARAMS.get("proxy", False)
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier") or PARAMS.get("client_id")
 SECRET = PARAMS.get("credentials", {}).get("password") or PARAMS.get("secret")
+SECRET_V2 = PARAMS.get("credentials_v2", {}).get("password_v2") or PARAMS.get("secret_v2")
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS["url"].removesuffix("/")
