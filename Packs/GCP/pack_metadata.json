@@ -1,6 +1,6 @@
 {
     "name": "GCP",
-    "description": "Google Cloud Platform Services",
+    "description": "Manage and secure your Google Cloud Platform (GCP) environment from Cortex. This pack lets you automate cloud operations across GCP services.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
