@@ -159,7 +159,7 @@ script:
     - contextPath: AlibabaCloud.AliInstanceInfo.ids
       description: List of ECS instance IDs.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.3262406
+  dockerimage: demisto/ansible-runner:1.0.0.10189215
   script: ''
   subtype: python3
   type: python
