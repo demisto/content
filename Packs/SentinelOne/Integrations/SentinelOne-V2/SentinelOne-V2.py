@@ -664,6 +664,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     ):
         endpoint_url = "cloud-detection/rules"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -683,6 +684,8 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
+        if query_lang:
+            payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -706,6 +709,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     ):
         endpoint_url = f"cloud-detection/rules/{rule_id}"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -725,6 +729,8 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
+        if query_lang:
+            payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="PUT", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -2099,6 +2105,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
     expiration_date = args.get("expiration_date")
     network_quarantine = argToBoolean(args.get("network_quarantine"))
     treatAsThreat = args.get("treatAsThreat")
+    query_lang = args.get("query_lang")
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
@@ -2117,6 +2124,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     )
     if rule:
         context = {
@@ -2132,6 +2140,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
+            "Query Language": rule.get("queryLang"),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Create star rule", context, removeNull=True),
@@ -2217,6 +2226,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
     expiration_date = args.get("expiration_date")
     network_quarantine = argToBoolean(args.get("network_quarantine"))
     treatAsThreat = args.get("treatAsThreat")
+    query_lang = args.get("query_lang")
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
@@ -2236,6 +2246,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
         expiration_date,
         network_quarantine,
         treatAsThreat,
+        query_lang,
     )
     if rule:
         context = {
@@ -2251,6 +2262,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
+            "Query Language": rule.get("queryLang"),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Updated star rule", context, removeNull=True),
@@ -5345,17 +5357,31 @@ def fetch_handler(client: Client, args):
     last_fetch = last_run.get("time")
     uam_last_fetch = last_run.get("uam_time")
 
-    if last_fetch is None:
-        last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
-        if not last_fetch:
-            raise DemistoException("Please provide an initial First fetch timestamp")
-        last_fetch = int(last_fetch.timestamp() * 1000)
+    fetch_type = args.get("fetch_type")
+    fetch_uam = args.get("fetch_uam_alert_type")
 
-    if uam_last_fetch is None:
-        uam_last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+    # Only initialize time-based timestamps for active fetch types.
+    # This avoids freezing a stale timestamp for a fetch type that isn't enabled yet.
+    # if the user enables it later, it will start fresh from first_fetch_time at that point.
+    if fetch_type in ("Both", "Alerts", "Threats"):
+        if not last_fetch:
+            last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+            if not last_fetch:
+                raise DemistoException("Please provide an initial First fetch timestamp")
+            last_fetch = int(last_fetch.timestamp() * 1000)
+    else:
+        # fetch_type not active — preserve existing timestamp or default to 0
+        last_fetch = last_fetch or 0
+
+    if fetch_uam:
         if not uam_last_fetch:
-            raise DemistoException("Please provide an initial First fetch timestamp")
-        uam_last_fetch = int(uam_last_fetch.timestamp() * 1000)
+            uam_last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+            if not uam_last_fetch:
+                raise DemistoException("Please provide an initial First fetch timestamp")
+            uam_last_fetch = int(uam_last_fetch.timestamp() * 1000)
+    else:
+        # UAM not active — preserve existing timestamp or default to 0
+        uam_last_fetch = uam_last_fetch or 0
 
     current_fetch = last_fetch
     uam_current_fetch = uam_last_fetch
@@ -5368,9 +5394,7 @@ def fetch_handler(client: Client, args):
     args["uam_current_fetch"] = uam_current_fetch
 
     incidents = []
-    current_fetch = 0
-    uam_current_fetch = 0
-    if args.get("fetch_type") == "Both":
+    if fetch_type == "Both":
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
 
@@ -5378,21 +5402,18 @@ def fetch_handler(client: Client, args):
 
         incidents = alert_incidents + threat_incidents
 
-    elif args.get("fetch_type") == "Alerts":
+    elif fetch_type == "Alerts":
         incidents, current_fetch = fetch_alerts(client, args)
-    elif args.get("fetch_type") == "Threats":
+    elif fetch_type == "Threats":
         incidents, current_fetch = fetch_threats(client, args)
 
     # Fetch UAM alerts independently
-    if args.get("fetch_uam_alert_type"):
+    if fetch_uam:
         uam_incidents, uam_current_fetch = fetch_uam_alerts(client, args)
         incidents += uam_incidents
     # Debug log if no incidents
     if not incidents:
-        demisto.debug(
-            f"{args.get('fetch_type')=}, {args.get('fetch_uam_alert_type')=} -> "
-            f"{incidents=} {current_fetch=} {uam_current_fetch=}"
-        )
+        demisto.debug(f"[Fetch] {fetch_type=}, {fetch_uam=} -> " f"{incidents=} {current_fetch=} {uam_current_fetch=}")
 
     demisto.setLastRun({"time": current_fetch, "uam_time": uam_current_fetch})
     demisto.incidents(incidents)
