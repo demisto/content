@@ -6544,3 +6544,239 @@ Modifies the description for the specified firewall. Required permissions: netwo
 #### Context Output
 
 There is no context output for this command.
+
+### aws-network-firewall-firewall-policies-list
+
+***
+Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| limit | The maximum number of objects that you want Network Firewall to return for this request. Default value is 50. | Optional |
+| next_token | The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.FirewallPoliciesNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName | String | The descriptive name of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn | String | The Amazon Resource Name \(ARN\) of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPoliciesNextToken | String | The token used to retrieve the next set of results from Network Firewall. Returns a NextToken value when the number of available objects exceeds the requested limit. |
+
+### aws-network-firewall-firewall-policy-create
+
+***
+Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the firewall policy characteristic arguments. Required permissions: network-firewall:CreateFirewallPolicy.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_policy_name | The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it. | Required |
+| stateless_rule_group_references | The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2. | Optional |
+| stateless_default_actions | A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy. | Optional |
+| stateless_fragment_default_actions | A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy. | Optional |
+| stateless_custom_actions | A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}]`. | Optional |
+| stateful_rule_group_references | A semicolon-separated list of stateful rule group references used in the policy. Each reference is a comma-separated list of fields where only ResourceArn is required; Priority, Override (the action) and DeepThreatInspection are optional. For example: ResourceArn=arn:aws:1,Priority=1,Override=DROP_TO_ALERT,DeepThreatInspection=True;ResourceArn=arn:aws:2,Priority=2. | Optional |
+| stateful_default_actions | A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules. | Optional |
+| stateful_engine_options_rule_order | The order of stateful rule evaluation for the policy. Possible values are: DEFAULT_ACTION_ORDER, STRICT_ORDER. | Optional |
+| stateful_engine_options_stream_exception_policy | The configuration of how Network Firewall processes traffic when a network connection breaks midstream. Possible values are: DROP, CONTINUE, REJECT. | Optional |
+| stateful_engine_options_tcp_idle_timeout | The number of seconds that can pass without any TCP traffic sent through the firewall before the firewall determines that the connection is idle. | Optional |
+| tls_inspection_configuration_arn | The Amazon Resource Name (ARN) of the TLS inspection configuration. | Optional |
+| policy_rule_variables | A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: `{"string": {"Definition": ["string",]}}`. | Optional |
+| description | The description of the firewall policy. | Optional |
+| tags | The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2. | Optional |
+| enable_tls_session_holding | Whether to prevent TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules. Requires an associated TLS Inspection configuration. Possible values are: true, false. | Optional |
+| encryption_configuration_key_id | The ID of the Amazon Web Services Key Management Service (KMS) customer managed key. | Optional |
+| encryption_configuration_key_type | The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources. Possible values are: CUSTOMER_KMS, AWS_OWNED_KMS_KEY. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.FirewallPolicies.UpdateToken | String | The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName | String | The descriptive name of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn | String | The Amazon Resource Name \(ARN\) of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId | String | The unique identifier for the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.Description | String | The description of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus | String | The current status of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.Tags | Unknown | The key:value pairs to associate with the resource. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity | Number | The number of capacity units currently consumed by the policy's stateless rules. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity | Number | The number of capacity units currently consumed by the policy's stateful rules. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity | Number | The total number of domain name specifications across all domain list rule groups in the firewall policy that use the stateful-domain-rulegroup resource type. |
+| AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations | Number | The number of firewalls that are associated with this firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime | String | The last time that the firewall policy was changed. |
+
+### aws-network-firewall-firewall-policy-describe
+
+***
+Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_policy_name | The descriptive name of the firewall policy. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_policy_arn | The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.FirewallPolicies.UpdateToken | String | The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName | String | The descriptive name of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn | String | The Amazon Resource Name \(ARN\) of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId | String | The unique identifier for the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.Description | String | The description of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus | String | The current status of the firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.Tags | Unknown | The key:value pairs to associate with the resource. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity | Number | The number of capacity units currently consumed by the policy's stateless rules. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity | Number | The number of capacity units currently consumed by the policy's stateful rules. |
+| AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity | Number | The total number of domain name specifications across all domain list rule groups in the firewall policy that use the stateful-domain-rulegroup resource type. |
+| AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations | Number | The number of firewalls that are associated with this firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime | String | The last time that the firewall policy was changed. |
+| AWS.NetworkFirewall.FirewallPolicies.StatelessRuleGroupReferences | Unknown | The references to the stateless rule groups that are used in the policy. |
+| AWS.NetworkFirewall.FirewallPolicies.StatelessDefaultActions | Unknown | The actions to take on a packet if it doesn't match any of the stateless rules in the policy. |
+| AWS.NetworkFirewall.FirewallPolicies.StatelessFragmentDefaultActions | Unknown | The actions to take on a fragmented UDP packet if it doesn't match any of the stateless rules in the policy. |
+| AWS.NetworkFirewall.FirewallPolicies.StatelessCustomActions | Unknown | The custom action definitions that are available for use in the firewall policy's stateless default actions setting. |
+| AWS.NetworkFirewall.FirewallPolicies.StatefulRuleGroupReferences | Unknown | The references to the stateful rule groups that are used in the policy. |
+| AWS.NetworkFirewall.FirewallPolicies.StatefulDefaultActions | Unknown | The default actions to take on a packet that doesn't match any stateful rules. |
+| AWS.NetworkFirewall.FirewallPolicies.StatefulEngineOptions | Unknown | The additional options governing how Network Firewall handles stateful rules. |
+| AWS.NetworkFirewall.FirewallPolicies.TLSInspectionConfigurationArn | String | The Amazon Resource Name \(ARN\) of the TLS inspection configuration. |
+| AWS.NetworkFirewall.FirewallPolicies.PolicyVariables | Unknown | The variables that you can use to override default Suricata settings in your firewall policy. |
+| AWS.NetworkFirewall.FirewallPolicies.EnableTLSSessionHolding | Boolean | Whether TCP and TLS packets are prevented from reaching destination servers until TLS Inspection has evaluated Server Name Indication \(SNI\) rules. |
+
+### aws-network-firewall-firewall-policy-update
+
+***
+Updates the properties of the specified firewall policy. Required permissions: network-firewall:UpdateFirewallPolicy.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| update_token | The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request. | Required |
+| firewall_policy_arn | The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_policy_name | The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it. You must specify the ARN or the name, and you can specify both. | Optional |
+| stateless_rule_group_references | The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2. | Optional |
+| stateless_default_actions | A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy. | Optional |
+| stateless_fragment_default_actions | A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy. | Optional |
+| stateless_custom_actions | A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}]`. | Optional |
+| stateful_rule_group_references | A semicolon-separated list of stateful rule group references used in the policy. Each reference is a comma-separated list of fields where only ResourceArn is required; Priority, Override (the action) and DeepThreatInspection are optional. For example: `ResourceArn=arn:aws:1,Priority=1,Override=DROP_TO_ALERT,DeepThreatInspection=True;ResourceArn=arn:aws:2,Priority=2`. | Optional |
+| stateful_default_actions | A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules. | Optional |
+| stateful_engine_options_rule_order | The order of stateful rule evaluation for the policy. Possible values are: DEFAULT_ACTION_ORDER, STRICT_ORDER. | Optional |
+| stateful_engine_options_stream_exception_policy | The configuration of how Network Firewall processes traffic when a network connection breaks midstream. Possible values are: DROP, CONTINUE, REJECT. | Optional |
+| stateful_engine_options_tcp_idle_timeout | The number of seconds that can pass without any TCP traffic sent through the firewall before the firewall determines that the connection is idle. | Optional |
+| tls_inspection_configuration_arn | The Amazon Resource Name (ARN) of the TLS inspection configuration. | Optional |
+| policy_rule_variables | A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: `{"string": {"Definition": ["string",]}}`. | Optional |
+| description | The description of the firewall policy. | Optional |
+| enable_tls_session_holding | When true, prevents TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules. Requires an associated TLS Inspection configuration. Possible values are: true, false. | Optional |
+| encryption_configuration_key_id | The ID of the Amazon Web Services Key Management Service (KMS) customer managed key. | Optional |
+| encryption_configuration_key_type | The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources. Possible values are: CUSTOMER_KMS, AWS_OWNED_KMS_KEY. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-firewall-policy-associate
+
+***
+Associates a firewall policy to a firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| update_token | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request. | Optional |
+| firewall_name | The descriptive name of the firewall. You can't change the name of a firewall after you create it. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_policy_arn | The Amazon Resource Name (ARN) of the firewall policy. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallPolicyArn | String | The Amazon Resource Name \(ARN\) of the firewall policy that was associated with the firewall. |
+| AWS.NetworkFirewall.Firewalls.UpdateToken | String | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request. |
+
+### aws-network-firewall-firewall-policy-change-protection-update
+
+***
+Modifies the ChangeProtection flag, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-change-protection-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| update_token | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request. | Optional |
+| firewall_name | The descriptive name of the firewall. You can't change the name of a firewall policy after you create it. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_policy_change_protection | Whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE. Possible values are: true, false. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-firewall-policy-delete
+
+***
+Deletes the specified FirewallPolicy. Required permissions: network-firewall:DeleteFirewallPolicy.
+
+#### Base Command
+
+`aws-network-firewall-firewall-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_policy_name | The descriptive name of the firewall policy. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_policy_arn | The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

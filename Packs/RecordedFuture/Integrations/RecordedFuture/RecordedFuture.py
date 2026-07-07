@@ -16,7 +16,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = "2.5.2"
+__version__ = "2.6.0"
 
 DEFAULT_THRESHOLD_BAD = 65
 DEFAULT_THRESHOLD_SUSPICIOUS = 25
@@ -38,7 +38,7 @@ class IndicatorThresholds:
     suspicious: Dict[str, int]
 
 
-def translate_score(*, score: int, threshold_bad: int, threshold_suspicious: int) -> DBotScoreDetails:
+def translate_score(*, score: int, threshold_bad: int, threshold_suspicious: int, benign: bool = False) -> DBotScoreDetails:
     """Translate Recorded Future score to DBot score and description."""
     # See https://support.recordedfuture.com/hc/en-us/articles/115000894468-Vulnerability-Risk-Rules.  # noqa
     if score >= threshold_bad:
@@ -50,6 +50,13 @@ def translate_score(*, score: int, threshold_bad: int, threshold_suspicious: int
         return DBotScoreDetails(
             score=Common.DBotScore.SUSPICIOUS,
             description=f"Score above {threshold_suspicious}",
+        )
+    elif benign:
+        # The Recorded Future SOAR API reported "No Risk Observed" (noKnownRisk)
+        # for this entity, a deterministic benign signal. See RFPD-112104.
+        return DBotScoreDetails(
+            score=Common.DBotScore.GOOD,
+            description="No Risk Observed",
         )
 
     return DBotScoreDetails(score=Common.DBotScore.NONE, description="")
@@ -112,8 +119,13 @@ def create_indicator(
     score: int,
     description: str = "",
     location: Dict[str, Any] = None,
+    benign: bool = False,
 ) -> Common.Indicator:
-    """Create an Indicator object."""
+    """Create an Indicator object.
+
+    ``benign`` is set by the backend when the SOAR API reports "No Risk Observed"
+    for the entity (RFPD-112104).
+    """
     demisto_params = demisto.params()
 
     if location is None:
@@ -124,6 +136,7 @@ def create_indicator(
         score=score,
         threshold_bad=indicator_thresholds.bad[entity_type],
         threshold_suspicious=indicator_thresholds.suspicious[entity_type],
+        benign=benign,
     )
     dbot_vendor = "Recorded Future v2"
     if entity_type == "ip":
@@ -188,6 +201,30 @@ def create_indicator(
         )
     else:
         raise Exception(f"Could not create indicator for this type of entity: {entity_type}")
+
+
+# Entity types for which the Recorded Future SOAR API exposes a deterministic
+# "No Risk Observed" (noKnownRisk) benign signal. See RFPD-112104.
+BENIGN_ELIGIBLE_TYPES = ("file", "url", "domain")
+
+
+def is_benign_action(action: Dict[str, Any]) -> bool:
+    """Detect the "No Risk Observed" (noKnownRisk) benign signal in a result action.
+
+    The reputation lookup surfaces this signal for ``file`` (hash), ``url`` and
+    ``domain`` entities with a zero risk score. It rides through the existing
+    response as an Evidence entry whose ``ruleid`` is ``noKnownRisk``.
+    """
+    create = action.get("create_indicator") or {}
+    if create.get("entity_type") not in BENIGN_ELIGIBLE_TYPES:
+        return False
+    if create.get("score", 0) != 0:
+        return False
+    outputs = (action.get("CommandResults") or {}).get("outputs")
+    if not isinstance(outputs, dict):
+        return False
+    evidence = outputs.get("Evidence") or []
+    return any(item.get("ruleid") == "noKnownRisk" for item in evidence)
 
 
 # === === === === === === === === === === === === === === ===
@@ -393,7 +430,9 @@ class Actions:
         command_results: List[CommandResults] = []
         for action in result_actions:
             if "create_indicator" in action:
-                indicator = create_indicator(**action["create_indicator"])
+                create_kwargs = dict(action["create_indicator"])
+                create_kwargs["benign"] = is_benign_action(action)
+                indicator = create_indicator(**create_kwargs)
                 if "CommandResults" in action:
                     # Custom CommandResults.
                     command_results_kwargs = action["CommandResults"]
@@ -519,7 +558,7 @@ def main() -> None:  # pragma: no cover
             "X-RF-User-Agent": (
                 f"RecordedFuture.py/{__version__} ({platform.platform()}) "
                 f"XSOAR/{__version__} "
-                f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'
+                f"RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()['version']})"
             ),
         }
         client = Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy)

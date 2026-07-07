@@ -18591,7 +18591,7 @@ script:
       description: The unique identifier for the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token used for optimistic locking to track the state of the firewall resource at the time of the request.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
@@ -19062,11 +19062,13 @@ script:
     description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19113,18 +19115,20 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
     - contextPath: AWS.NetworkFirewall.FirewallPoliciesNextToken
-      description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
+      description: The token used to retrieve the next set of results from Network Firewall. Returns a NextToken value when the number of available objects exceeds the requested limit.
       type: String
 
   - name: aws-network-firewall-firewall-policy-describe
     description: "Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19192,7 +19196,7 @@ script:
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
-      description: The number of capacity units currently consumed by the policy's stateful domain rules.
+      description: The total number of domain name specifications across all domain list rule groups in the firewall policy that use the stateful-domain-rulegroup resource type.
       type: Number
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
@@ -19228,21 +19232,23 @@ script:
       description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
       type: String
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.PolicyVariables
-      description: The variables that you can use to override default IP addresses and ports in stateful rule groups.
+      description: The variables that you can use to override default Suricata settings in your firewall policy.
       type: Unknown
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.EnableTLSSessionHolding
       description: Whether TCP and TLS packets are prevented from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
       type: Boolean
 
   - name: aws-network-firewall-firewall-policy-create
-    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the characterize firewall policy arguments. Required permissions: network-firewall:CreateFirewallPolicy."
+    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the firewall policy characteristic arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19289,9 +19295,9 @@ script:
       description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
       isArray: true
     - name: stateless_custom_actions
-      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: [{\"ActionName\": \"string\", \"ActionDefinition\": {\"PublishMetricAction\": {\"Dimensions\":[{\"Value\": \"string\"}]}}}].'
+      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}]`.'
     - name: stateful_rule_group_references
-      description: 'A JSON string specifying the stateful rule groups that are used in the policy. For example: [{\"ResourceArn\": \"string\", \"Priority\": 123, \"Override\": {\"Action\": \"DROP_TO_ALERT\"}, \"DeepThreatInspection\": \"True\"}].'
+      description: 'A semicolon-separated list of stateful rule group references used in the policy. Each reference is a comma-separated list of fields where only ResourceArn is required; Priority, Override (the action) and DeepThreatInspection are optional. For example: ResourceArn=arn:aws:1,Priority=1,Override=DROP_TO_ALERT,DeepThreatInspection=True;ResourceArn=arn:aws:2,Priority=2.'
     - name: stateful_default_actions
       description: A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules.
       isArray: true
@@ -19313,13 +19319,13 @@ script:
     - name: tls_inspection_configuration_arn
       description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
     - name: policy_rule_variables
-      description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: {\"string\": {\"Definition\": [\"string\",]}}.'
+      description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: `{"string": {"Definition": ["string",]}}`.'
     - name: description
       description: The description of the firewall policy.
     - name: tags
       description: The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2.
     - name: enable_tls_session_holding
-      description: Whether TCP and TLS packets are prevented from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
+      description: Whether to prevent TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules. Requires an associated TLS Inspection configuration.
       auto: PREDEFINED
       predefined:
         - "true"
@@ -19361,7 +19367,7 @@ script:
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
-      description: The number of capacity units currently consumed for the policy's stateful domain list rules.
+      description: The total number of domain name specifications across all domain list rule groups in the firewall policy that use the stateful-domain-rulegroup resource type.
       type: Number
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
@@ -19374,14 +19380,16 @@ script:
       type: String
 
   - name: aws-network-firewall-firewall-policy-associate
-    description: "Associates a FirewallPolicy to a Firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
+    description: "Associates a firewall policy to a firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19421,7 +19429,7 @@ script:
     - name: firewall_name
       description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
     - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall.
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     - name: firewall_policy_arn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       required: true
@@ -19436,18 +19444,20 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall policy that was associated with the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
       type: String
 
   - name: aws-network-firewall-firewall-policy-delete
     description: "Deletes the specified FirewallPolicy. Required permissions: network-firewall:DeleteFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19486,53 +19496,18 @@ script:
       description: The descriptive name of the firewall policy. You must specify the ARN or the name, and you can specify both.
     - name: firewall_policy_arn
       description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
-    outputs:
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
-      description: The descriptive name of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
-      description: The Amazon Resource Name (ARN) of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
-      description: The unique identifier for the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
-      description: The description of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
-      description: The current status of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
-      description: The key:value pairs to associate with the resource.
-      type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity
-      description: The number of capacity units currently consumed by the policy's stateless rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity
-      description: The number of capacity units currently consumed by the policy's stateful rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
-      description: The number of capacity units currently consumed for the policy's stateful domain list rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
-      description: The number of firewalls that are associated with this firewall policy.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
-      description: The complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
-      type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
-      description: The last time that the firewall policy was changed.
-      type: String
 
   - name: aws-network-firewall-firewall-policy-update
     description: "Updates the properties of the specified firewall policy. Required permissions: network-firewall:UpdateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19568,24 +19543,18 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: update_token
-      description: The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request. To make an unconditional change to the policy, omit the token in your update request. Without the token, Network Firewall performs your updates regardless of whether the policy has changed since you last retrieved it.
+      description: The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
       required: true
     - name: firewall_policy_arn
       description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
-    - name: firewall_policy_name
-      description: The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it. You must specify the ARN or the name, and you can specify both.
-    - name: stateless_rule_group_references
-      description: The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2.
-    - name: stateless_default_actions
-      description: A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy.
       isArray: true
     - name: stateless_fragment_default_actions
       description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
       isArray: true
     - name: stateless_custom_actions
-      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: [{\"ActionName\": \"string\", \"ActionDefinition\": {\"PublishMetricAction\": {\"Dimensions\":[{\"Value\": \"string\"}]}}}].'
+      description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: `[{"ActionName": "string", "ActionDefinition": {"PublishMetricAction": {"Dimensions":[{"Value": "string"}]}}}]`.'
     - name: stateful_rule_group_references
-      description: 'A JSON string specifying the stateful rule groups that are used in the policy. For example: [{\"ResourceArn\": \"string\", \"Priority\": 123, \"Override\": {\"Action\": \"DROP_TO_ALERT\"}, \"DeepThreatInspection\": \"True\"}].'
+      description: 'A semicolon-separated list of stateful rule group references used in the policy. Each reference is a comma-separated list of fields where only ResourceArn is required; Priority, Override (the action) and DeepThreatInspection are optional. For example: `ResourceArn=arn:aws:1,Priority=1,Override=DROP_TO_ALERT,DeepThreatInspection=True;ResourceArn=arn:aws:2,Priority=2`.'
     - name: stateful_default_actions
       description: A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules.
       isArray: true
@@ -19607,57 +19576,16 @@ script:
     - name: tls_inspection_configuration_arn
       description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
     - name: policy_rule_variables
-      description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: {\"string\": {\"Definition\": [\"string\",]}}.'
-    - name: description
-      description: The description of the firewall policy.
+      description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: `{"string": {"Definition": ["string",]}}`.'
+      predefined:
+        - 'true'
+        - 'false'
     - name: encryption_configuration_key_id
       description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
     - name: encryption_configuration_key_type
       description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
-      auto: PREDEFINED
-      predefined:
         - CUSTOMER_KMS
         - AWS_OWNED_KMS_KEY
-    outputs:
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
-      description: The token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
-      description: The descriptive name of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
-      description: The Amazon Resource Name (ARN) of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
-      description: The unique identifier for the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
-      description: The description of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
-      description: The current status of the firewall policy.
-      type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
-      description: The key:value pairs to associate with the resource.
-      type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity
-      description: The number of capacity units currently consumed by the policy's stateless rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity
-      description: The number of capacity units currently consumed by the policy's stateful rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
-      description: The number of capacity units currently consumed for the policy's stateful domain list rules.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
-      description: The number of firewalls that are associated with this firewall policy.
-      type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
-      description: The complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
-      type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
-      description: The last time that the firewall policy was changed.
-      type: String
 
   - name: aws-network-firewall-firewall-policy-change-protection-update
     description: "Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
@@ -20275,6 +20203,7 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.9059085
 supportsquickactions: true
 fromversion: 5.5.0
+source: 'cooc'
 tests:
 - No test - No playbook part of this release.
 sectionorder:

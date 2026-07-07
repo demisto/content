@@ -27,6 +27,8 @@ USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
 EVENT_HYPERLINK = '{}events/details/{}?clusterUuid="{}"'
 THREAT_MONITORING_HYPERLINK = "{}radar/threat_monitoring/{}"
 DSPM_VIOLATION_HYPERLINK = "{}sonar/data_risks/violations/{}/{}/{}/{}/details"
+IR_VIOLATION_HYPERLINK = "{}identity_resilience/violations/{}?violation_id={}"
+IR_ALERT_HYPERLINK = "{}identity_resilience/alerts/{}"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -127,10 +129,12 @@ DEFAULT_TIME_PERIOD = "7 days"
 MAX_MATCHES_PER_OBJECT = 100
 MAXIMUM_FILE_SIZE = 5000000
 MAXIMUM_PAGINATION_LIMIT = 1000
-DEFAULT_FETCH_TYPE = ["event", "threat monitoring object", "dspm violation"]
+DEFAULT_FETCH_TYPE = ["event", "threat monitoring object", "dspm violation", "ir violation"]
 EVENT_FETCH_TYPE = "event"
 THREAT_MONITORING_FETCH_TYPE = "threat monitoring object"
 DSPM_VIOLATION_FETCH_TYPE = "dspm violation"
+IR_VIOLATION_FETCH_TYPE = "ir violation"
+MAX_FETCH_APPLICABLE_FETCH_TYPES = [THREAT_MONITORING_FETCH_TYPE, DSPM_VIOLATION_FETCH_TYPE, IR_VIOLATION_FETCH_TYPE]
 IOC_MATCHES = ["MATCHES_FOUND", "NO_MATCHES", "UNSCANNED"]
 QUERANTINE_STATUS = ["QUARANTINED_MATCHES", "NO_QUARANTINED_MATCHES"]
 HUNT_STATUSES = ["ABORTED", "CANCELED", "CANCELING", "FAILED", "IN_PROGRESS", "PARTIALLY_SUCCEEDED", "PENDING", "SUCCEEDED"]
@@ -213,6 +217,51 @@ DSPM_VIOLATION_FILE_LIST_SORT_BY = [
     "STALE_FILES_WITH_HITS",
     "TOTAL_SENSITIVE_HITS",
 ]
+DEFAULT_IR_VIOLATION_STATUS = ["OPEN", "IN_PROGRESS"]
+IR_VIOLATION_STATUS = ["OPEN", "REMEDIATED", "DISMISSED", "IN_PROGRESS", "CLOSED"]
+IR_VIOLATION_SEVERITY = ["SEVERITY_UNSPECIFIED", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+IR_VIOLATION_CATEGORY = [
+    "CATEGORY_UNSPECIFIED",
+    "AUTHENTICATION_AND_SECRET_MANAGEMENT",
+    "IDENTITY_HYGIENE",
+    "EXCESSIVE_IDENTITY_RIGHTS",
+    "IDENTITY_PROVIDER_SECURITY",
+    "PRIVILEGED_ACCOUNT_RISK",
+    "IDENTITY_RISK",
+    "INFRASTRUCTURE_SECURITY",
+    "CONFIGURATION_SECURITY",
+    "MEMBERSHIP_CHANGE",
+    "GPO_CHANGE",
+]
+IR_VIOLATION_IDENTITY_PROVIDER = [
+    "IDP_UNSPECIFIED",
+    "ON_PREM_AD",
+    "ENTRA_ID",
+    "AWS",
+    "LOCAL_AD",
+    "SHAREPOINT",
+    "SYSTEM",
+    "OKTA",
+]
+IR_VIOLATION_IDENTITY_TAG = [
+    "IDENTITY_TAG_UNSPECIFIED",
+    "PRIVILEGED",
+    "AT_RISK",
+    "SENSITIVE",
+]
+IR_VIOLATION_POLICY_TYPE = ["IDENTITY", "IDP", "IDENTITY_EVENT", "CROWDSTRIKE", "MICROSOFT_DEFENDER"]
+IR_ALERT_POLICY_TYPES = ["IDENTITY_EVENT", "CROWDSTRIKE", "MICROSOFT_DEFENDER"]
+IR_VIOLATION_SORT_BY = [
+    "SEVERITY",
+    "HITS",
+    "DETECTION_TIME",
+    "UPDATE_TIME",
+    "IDENTITY_TYPE",
+    "TOTAL_HITS",
+    "EVENT_TIME",
+    "NAME",
+    "TYPE",
+]
 
 MESSAGES = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -286,6 +335,8 @@ OUTPUT_PREFIX = {
     "PAGE_TOKEN_DSPM_VIOLATION_FILE": "RubrikPolaris.PageToken.DSPMViolationFile",
     "DSPM_VIOLATION_CSV_DOWNLOAD": "RubrikPolaris.DSPMViolationCSVDownload",
     "DSPM_VIOLATION_LOG_DOWNLOAD": "RubrikPolaris.DSPMViolationRemediationLogDownload",
+    "IR_VIOLATION": "RubrikPolaris.IRViolation",
+    "PAGE_TOKEN_IR_VIOLATION": "RubrikPolaris.PageToken.IRViolation",
 }
 
 ERROR_MESSAGES = {
@@ -1803,6 +1854,355 @@ DOWNLOAD_DSPM_VIOLATION_REMEDIATION_LOG_MUTATION = """mutation DownloadDSPMViola
     remediationId
     __typename
   }
+}
+"""
+
+IR_VIOLATIONS_LIST_QUERY = """query IdentityResilienceViolationsListQuery(
+  $policyIds: [UUID!]
+  $resourceIds: [String!]
+  $statuses: [PolicyViolationStatus!]
+  $severities: [Severity!]
+  $categories: [Category!]
+  $policyTypes: [PolicyType!]!
+  $detectionDate: TimeRangeInput
+  $updateDate: TimeRangeInput
+  $first: Int
+  $after: String
+  $sortBy: PolicyViolationSortField
+  $sortOrder: SortOrder
+  $resourceMetadataFilter: ResourceMetadataFiltersInput
+) {
+  policyViolations(
+    policyIds: $policyIds
+    resourceIds: $resourceIds
+    statuses: $statuses
+    policySeverities: $severities
+    policyCategories: $categories
+    detectionDate: $detectionDate
+    updateDate: $updateDate
+    policyTypes: $policyTypes
+    first: $first
+    after: $after
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+    resourceMetadataFilter: $resourceMetadataFilter
+  ) {
+    edges {
+      node {
+        policyViolationId
+        violationSeverity
+        name
+        createdAt
+        resourceId
+        resourceType
+        status
+        lastUpdatedAt
+        policy {
+          policyId
+          name
+          description
+          policySeverity
+          policyCategory
+          policyType
+          frameworks
+          manualRemediationProcess
+          __typename
+        }
+        details {
+          ... on IdentityViolationDetails {
+            domainUniqueId
+            __typename
+          }
+          ... on IdpViolationDetails {
+            domainUniqueId
+            __typename
+          }
+          ... on CrowdStrikeAlertViolationDetails {
+            __typename
+            detectionTime
+            startTime
+            endTime
+            mitreTactic
+          }
+          ... on DefenderAlertViolationDetails {
+            __typename
+            detectionTime
+            startTime
+            endTime
+            mitreTactic
+          }
+          __typename
+        }
+        resourceMetadata {
+          metadata {
+            ... on IdentityMetadata {
+              displayName
+              domainName
+              idpType
+              principalType
+              privilegeType
+              userPrincipalName
+              status
+              title
+              source
+              identityTags
+              uniqueId
+              nativeType
+              __typename
+            }
+            ... on IdpMetadata {
+              domainName
+              idpType
+              rootDomainName
+              rootDomainId
+              __typename
+            }
+            ... on IdentityEventMetadata {
+              __typename
+              eventTime
+              idpType
+              actorIdentityId
+              actorIdentityName
+              actorIdentityType
+              actorPrivilegeType
+              actorState
+              targetIdentityUniqueIdentifier
+              targetIdentityName
+              targetIdentityType
+              targetIdentitySource
+              targetPrivilegeType
+              entityName
+              entityId
+            }
+            ... on CrowdStrikeAlertMetadata {
+              __typename
+              actorIdentityId
+              actorIdentityName
+              actorIdentityType
+              actorPrivilegeType
+              targetIdentityUniqueIdentifier
+              targetIdentityName
+              targetIdentitySource
+              targetIdentityStatus
+              targetIdentityType
+              targetIdpType
+              targetPrivilegeType
+            }
+            ... on DefenderAlertMetadata {
+              __typename
+              actorIdentityId
+              actorIdentityName
+              actorIdentityType
+              actorPrivilegeType
+              targetIdentityUniqueIdentifier
+              targetIdentityName
+              targetIdentitySource
+              targetIdentityStatus
+              targetIdentityType
+              targetIdpType
+              targetPrivilegeType
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      cursor
+      __typename
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      __typename
+    }
+    count
+    __typename
+  }
+}
+"""
+
+IR_VIOLATION_GET_QUERY = """query IdentityResilienceViolationsGetQuery(
+  $violationId: String!
+  $policyTypes: [PolicyType!]!
+) {
+  policyViolation(violationId: $violationId, policyTypes: $policyTypes) {
+    policyViolationId
+    violationSeverity
+    name
+    createdAt
+    resourceId
+    resourceType
+    status
+    lastUpdatedAt
+    policy {
+      policyId
+      name
+      description
+      policyType
+      policySeverity
+      policyCategory
+      frameworks
+      manualRemediationProcess
+      __typename
+    }
+    details {
+      ... on IdentityViolationDetails {
+        domainUniqueId
+        principalUniqueId
+        __typename
+      }
+      ... on IdpViolationDetails {
+        domainUniqueId
+        __typename
+      }
+      ... on CrowdStrikeAlertViolationDetails {
+        __typename
+        detectionTime
+        startTime
+        endTime
+        mitreTactic
+      }
+      ... on DefenderAlertViolationDetails {
+        __typename
+        detectionTime
+        startTime
+        endTime
+        mitreTactic
+      }
+      __typename
+    }
+    resourceMetadata {
+      metadata {
+        ... on IdentityMetadata {
+          displayName
+          domainName
+          idpType
+          principalType
+          privilegeType
+          userPrincipalName
+          status
+          title
+          source
+          identityTags
+          uniqueId
+          nativeType
+          __typename
+        }
+        ... on IdpMetadata {
+          domainName
+          domainUniqueId
+          idpType
+          rootDomainName
+          rootDomainId
+          __typename
+        }
+        ... on IdentityEventMetadata {
+          __typename
+          eventTime
+          idpType
+          actorIdentityId
+          actorIdentityName
+          actorIdentityType
+          actorPrivilegeType
+          actorState
+          targetIdentityUniqueIdentifier
+          targetIdentityName
+          targetIdentityType
+          targetIdentitySource
+          targetPrivilegeType
+          entityName
+          entityId
+        }
+        ... on CrowdStrikeAlertMetadata {
+          __typename
+          actorIdentityId
+          actorIdentityName
+          actorIdentityType
+          actorPrivilegeType
+          targetIdentityUniqueIdentifier
+          targetIdentityName
+          targetIdentitySource
+          targetIdentityStatus
+          targetIdentityType
+          targetIdpType
+          targetPrivilegeType
+        }
+        ... on DefenderAlertMetadata {
+          __typename
+          actorIdentityId
+          actorIdentityName
+          actorIdentityType
+          actorPrivilegeType
+          targetIdentityUniqueIdentifier
+          targetIdentityName
+          targetIdentitySource
+          targetIdentityStatus
+          targetIdentityType
+          targetIdpType
+          targetPrivilegeType
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+IR_VIOLATION_PRINCIPAL_SUMMARY_QUERY = """query GetPrincipalSummaryQuery($input: GetPrincipalSummaryReqInput!) {
+  principalSummary(input: $input) {
+    summary {
+      identityTags
+      sensitiveHits {
+        highRiskHits {
+          violatedHits
+          __typename
+        }
+        mediumRiskHits {
+          violatedHits
+          __typename
+        }
+        lowRiskHits {
+          violatedHits
+          __typename
+        }
+        noRiskHits {
+          violatedHits
+          __typename
+        }
+        totalHits {
+          violatedHits
+          __typename
+        }
+        __typename
+      }
+      ...DataCategoryChipRowFragment
+    }
+    __typename
+  }
+}
+
+fragment DataCategoryChipRowFragment on PrincipalSummary {
+  dataCategoryResults {
+    dataCategoryName
+    dataCategoryHits {
+      dataCategoryId
+      totalViolatedHits
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+IR_VIOLATION_STATUS_UPDATE_MUTATION = """mutation IdentityResilienceViolationsStatusUpdateMutation(
+  $input: BulkUpdatePolicyViolationsInput!
+) {
+  bulkUpdatePolicyViolations(input: $input)
 }
 """
 
@@ -3884,7 +4284,9 @@ def validate_comman_fetch_params(max_fetch: Optional[int], fetch_types: list):
     if any(fetch_type not in DEFAULT_FETCH_TYPE for fetch_type in fetch_types):
         raise ValueError(MESSAGES["INVALID_FETCH_TYPE"])
 
-    if (THREAT_MONITORING_FETCH_TYPE in fetch_types) and (not max_fetch or not MAX_FETCH_MIN <= max_fetch <= MAX_FETCH_MAX):
+    if set(MAX_FETCH_APPLICABLE_FETCH_TYPES) & set(fetch_types) and (
+        not max_fetch or not MAX_FETCH_MIN <= max_fetch <= MAX_FETCH_MAX
+    ):
         raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"])
 
 
@@ -3938,6 +4340,109 @@ def validate_dspm_violation_fetch_params(
         sensitivities.append(f"{sensitivity.upper()}_SENSITIVITY")
 
     return statuses, severities, sensitivities
+
+
+def validate_ir_violation_fetch_params(
+    violation_statuses: list,
+    violation_severities: list,
+    violation_policy_types: list,
+    violation_identity_providers: list,
+    violation_identity_tags: list,
+    is_fetch: bool = True,
+) -> tuple:
+    """
+    Validate and transform IR violation fetch parameters to API enum format.
+
+    :param violation_statuses: List of violation statuses to validate.
+    :type violation_statuses: list
+
+    :param violation_severities: List of violation severities to validate.
+    :type violation_severities: list
+
+    :param violation_policy_types: List of policy types to validate.
+    :type violation_policy_types: list
+
+    :param violation_identity_providers: List of identity providers to validate.
+    :type violation_identity_providers: list
+
+    :param violation_identity_tags: List of identity tags to validate.
+    :type violation_identity_tags: list
+
+    :param is_fetch: Whether this is called from fetch (True) or list command (False).
+    :type is_fetch: bool
+
+    :return: Tuple of (statuses, severities, policy_types, identity_providers, identity_tags) transformed to API enum format.
+    :rtype: tuple
+    :raises ValueError: If any parameter value is not in the allowed values.
+    """
+    status_arg_name = "ir_violation_status" if is_fetch else "status"
+    severity_arg_name = "ir_violation_severity" if is_fetch else "severity"
+    policy_type_arg_name = "ir_violation_policy_type" if is_fetch else "policy_type"
+    identity_provider_arg_name = "ir_violation_identity_provider" if is_fetch else "identity_provider"
+    identity_tag_arg_name = "ir_violation_identity_tag" if is_fetch else "identity_tag"
+
+    statuses = []
+    for status in violation_statuses:
+        if status.upper() not in IR_VIOLATION_STATUS:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(status, status_arg_name, IR_VIOLATION_STATUS))
+        statuses.append(f"POLICY_VIOLATION_STATUS_{status.upper()}")
+
+    severities = []
+    for severity in violation_severities:
+        if severity.upper() not in IR_VIOLATION_SEVERITY:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(severity, severity_arg_name, IR_VIOLATION_SEVERITY))
+        severities.append(severity.upper())
+
+    policy_types = []
+    for policy_type in violation_policy_types:
+        if policy_type.upper() not in IR_VIOLATION_POLICY_TYPE:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(policy_type, policy_type_arg_name, IR_VIOLATION_POLICY_TYPE))
+        policy_types.append(f"POLICY_TYPE_{policy_type.upper()}")
+
+    identity_providers = []
+    for identity_provider in violation_identity_providers:
+        if identity_provider.upper() not in IR_VIOLATION_IDENTITY_PROVIDER:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(
+                    identity_provider, identity_provider_arg_name, IR_VIOLATION_IDENTITY_PROVIDER
+                )
+            )
+        identity_providers.append(identity_provider.upper())
+
+    identity_tags = []
+    for identity_tag in violation_identity_tags:
+        if identity_tag.upper() not in IR_VIOLATION_IDENTITY_TAG:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(identity_tag, identity_tag_arg_name, IR_VIOLATION_IDENTITY_TAG)
+            )
+        identity_tags.append(identity_tag.upper())
+
+    return statuses, severities, policy_types, identity_providers, identity_tags
+
+
+def get_ir_violation_resource_display_name(node: dict) -> str:
+    """
+    Extract the available resource/entity display name from an IR violation.
+
+    Tries multiple metadata fields in priority order, and appends the target identity
+    name if present to form a combined display name.
+
+    :type node: ``dict``
+    :param node: A single IR violation node from the API response.
+
+    :rtype: ``str``
+    :return: The resolved display name for the violation's resource/entity.
+    """
+    resource_name = (
+        demisto.get(node, "resourceMetadata.metadata.displayName", "")
+        or demisto.get(node, "resourceMetadata.metadata.domainName", "")
+        or demisto.get(node, "resourceMetadata.metadata.entityName", "")
+        or demisto.get(node, "resourceMetadata.metadata.actorIdentityName", "")
+    )
+    target_entity_name = demisto.get(node, "resourceMetadata.metadata.targetIdentityName", "")
+    if target_entity_name:
+        resource_name = f"{resource_name} - {target_entity_name}" if resource_name else target_entity_name
+    return resource_name
 
 
 def validate_date_range(start_time: Optional[datetime], start_time_arg: str, end_time: Optional[datetime], end_time_arg: str):
@@ -4524,6 +5029,243 @@ def prepare_context_hr_data_security_violation_file_list(edges: list) -> tuple:
     return context, hr
 
 
+def validate_ir_violation_list_command_args(
+    limit: Optional[int],
+    sort_by: Optional[str],
+    sort_order: str,
+    detection_start_date: Optional[datetime],
+    detection_end_date: Optional[datetime],
+    resolved_start_date: Optional[datetime],
+    resolved_end_date: Optional[datetime],
+):
+    """
+    Validate the arguments of the rubrik-identity-resilience-violation-list command.
+
+    :type limit: ``Optional[int]``
+    :param limit: The number of results to return.
+
+    :type sort_by: ``Optional[str]``
+    :param sort_by: The field to sort by.
+
+    :type sort_order: ``str``
+    :param sort_order: The sort order (ASC or DESC).
+
+    :type detection_start_date: ``Optional[datetime]``
+    :param detection_start_date: The detection start date.
+
+    :type detection_end_date: ``Optional[datetime]``
+    :param detection_end_date: The detection end date.
+
+    :type resolved_start_date: ``Optional[datetime]``
+    :param resolved_start_date: The resolved start date.
+
+    :type resolved_end_date: ``Optional[datetime]``
+    :param resolved_end_date: The resolved end date.
+
+    :raises ValueError: If any parameter value is not valid.
+    """
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+    if sort_by and sort_by.upper() not in IR_VIOLATION_SORT_BY:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(sort_by, "sort_by", IR_VIOLATION_SORT_BY))
+
+    if sort_order.upper() not in (ASCENDING_SORT_ORDER, DESCENDING_SORT_ORDER):
+        raise ValueError(ERROR_MESSAGES["INVALID_SORT_ORDER"].format(sort_order))
+
+    if bool(detection_start_date) != bool(detection_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("detection_start_date", "detection_end_date"))
+
+    if bool(resolved_start_date) != bool(resolved_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("resolved_start_date", "resolved_end_date"))
+
+    validate_date_range(detection_start_date, "detection_start_date", detection_end_date, "detection_end_date")
+    validate_date_range(resolved_start_date, "resolved_start_date", resolved_end_date, "resolved_end_date")
+
+
+def prepare_context_hr_identity_resilience_violation_list(edges: list) -> tuple:
+    """
+    Prepare context and human readable output for the rubrik-identity-resilience-violation-list command.
+
+    :type edges: ``list``
+    :param edges: List of violation edges from the GraphQL response.
+
+    :return: Tuple of (context, human_readable)
+    :rtype: ``tuple``
+    """
+    hr_content = []
+    context = []
+    for edge in edges:
+        node = edge.get("node", {})
+        node = remove_empty_elements(node)
+        context.append(node)
+
+        status = node.get("status", "")
+        display_status = status.replace("POLICY_VIOLATION_STATUS_", "").replace("_", " ").title() if status else ""
+
+        severity = node.get("violationSeverity", "")
+        display_severity = severity.title() if severity else ""
+
+        metadata = demisto.get(node, "resourceMetadata.metadata") or {}
+
+        display_name = metadata.get("displayName")
+        domain = metadata.get("domainName")
+        actor_name = metadata.get("actorIdentityName")
+        target_name = metadata.get("targetIdentityName")
+        title = metadata.get("title")
+        root_domain = metadata.get("rootDomainName")
+        event_time = metadata.get("eventTime")
+        detected_on = node.get("createdAt")
+
+        policy_type = demisto.get(node, "policy.policyType", "")
+        display_policy_type = policy_type.replace("POLICY_TYPE_", "").replace("_", " ").title() if policy_type else ""
+
+        policy_category = demisto.get(node, "policy.policyCategory", "")
+        display_category = policy_category.replace("_", " ").title() if policy_category else ""
+
+        hr_content.append(
+            {
+                "ID": node.get("policyViolationId"),
+                "Policy Name": demisto.get(node, "policy.name"),
+                "Display Name": display_name,
+                "Domain": domain,
+                "Actor Name": actor_name,
+                "Target Name": target_name,
+                "Status": display_status,
+                "Severity": display_severity,
+                "Policy Type": display_policy_type,
+                "Category": display_category,
+                "Title": title,
+                "Root Domain": root_domain,
+                "Event Time": event_time,
+                "Detected On": detected_on,
+            },
+        )
+
+    hr = tableToMarkdown(
+        "IR Violations List",
+        hr_content,
+        headers=[
+            "ID",
+            "Policy Name",
+            "Display Name",
+            "Domain",
+            "Actor Name",
+            "Target Name",
+            "Status",
+            "Severity",
+            "Policy Type",
+            "Category",
+            "Title",
+            "Root Domain",
+            "Event Time",
+            "Detected On",
+        ],
+        removeNull=True,
+    )
+    return context, hr
+
+
+def prepare_context_hr_ir_violation_get(violation_data: Dict) -> tuple[Dict, str]:
+    """
+    Prepare context output and human-readable response for rubrik-identity-resilience-violation-get command.
+
+    :type violation_data: ``Dict``
+    :param violation_data: Policy violation data from the API response.
+
+    :return: Context output and human-readable for the command.
+    """
+    context = remove_empty_elements(violation_data)
+
+    metadata = demisto.get(violation_data, "resourceMetadata.metadata") or {}
+    policy = demisto.get(violation_data, "policy") or {}
+    details = demisto.get(violation_data, "details") or {}
+
+    status = violation_data.get("status", "")
+    display_status = status.replace("POLICY_VIOLATION_STATUS_", "").replace("_", " ").title() if status else ""
+
+    severity = violation_data.get("violationSeverity", "")
+    display_severity = severity.title() if severity else ""
+
+    policy_type = demisto.get(violation_data, "policy.policyType", "")
+    display_policy_type = policy_type.replace("POLICY_TYPE_", "").replace("_", " ").title() if policy_type else ""
+
+    resource_type = violation_data.get("resourceType", "")
+    display_resource_type = resource_type.replace("RESOURCE_TYPE_", "").replace("_", " ").title() if resource_type else ""
+
+    data_categories = violation_data.get("dataCategoryResults", [])
+    data_categories_data = [
+        {
+            "id": demisto.get(dc, "dataCategoryHits.dataCategoryId", ""),
+            "name": dc.get("dataCategoryName"),
+            "totalViolatedHits": demisto.get(dc, "dataCategoryHits.totalViolatedHits", ""),
+        }
+        for dc in data_categories
+    ]
+    sensitive_hits = violation_data.get("sensitiveHits") or {}
+
+    hr_data = {
+        "ID": violation_data.get("policyViolationId"),
+        "Violation Name": violation_data.get("name"),
+        SEVERITY: display_severity,
+        "Violation Status": display_status,
+        DETECTION_TIME: violation_data.get("createdAt"),
+        "Last Updated": violation_data.get("lastUpdatedAt"),
+        "Policy ID": policy.get("policyId"),
+        "Policy Name": policy.get("name"),
+        "Policy Type": display_policy_type,
+        "Policy Description": policy.get("description"),
+        "Policy Category": policy.get("policyCategory"),
+        "Policy Severity": policy.get("policySeverity", "").title() if policy.get("policySeverity") else "",
+        "Frameworks": policy.get("frameworks"),
+        "Manual Remediation Process": policy.get("manualRemediationProcess"),
+        "Identity Status": metadata.get("status"),
+        "Resource ID": violation_data.get("resourceId"),
+        "Resource Type": display_resource_type,
+        "Title": metadata.get("title"),
+        "Display Name": metadata.get("displayName"),
+        "Domain Name": metadata.get("domainName"),
+        "Source": metadata.get("source"),
+        "Identity Provider": metadata.get("idpType"),
+        "Principal Type": metadata.get("principalType"),
+        "Privilege Type": metadata.get("privilegeType"),
+        "User Principal Name": metadata.get("userPrincipalName"),
+        "Identity Tags": violation_data.get("identityTags"),
+        "Native Type": metadata.get("nativeType"),
+        "Root Domain Name": metadata.get("rootDomainName"),
+        "Entity Name": metadata.get("entityName"),
+        "Actor Identity Name": metadata.get("actorIdentityName"),
+        "Actor Identity Type": metadata.get("actorIdentityType"),
+        "Actor Privilege Type": metadata.get("actorPrivilegeType"),
+        "Actor State": metadata.get("actorState"),
+        "Target Identity Name": metadata.get("targetIdentityName"),
+        "Target Identity Type": metadata.get("targetIdentityType"),
+        "Target Identity Source": metadata.get("targetIdentitySource"),
+        "Target Identity Status": metadata.get("targetIdentityStatus"),
+        "Target Identity Provider": metadata.get("targetIdpType"),
+        "Target Privilege Type": metadata.get("targetPrivilegeType"),
+        "Event Time": metadata.get("eventTime"),
+        "Domain Unique ID": details.get("domainUniqueId"),
+        "MITRE Tactic": details.get("mitreTactic"),
+        TOTAL_RISK_HITS: demisto.get(sensitive_hits, "totalHits.violatedHits"),
+        HIGH_RISK_HITS: demisto.get(sensitive_hits, "highRiskHits.violatedHits"),
+        MEDIUM_RISK_HITS: demisto.get(sensitive_hits, "mediumRiskHits.violatedHits"),
+        LOW_RISK_HITS: demisto.get(sensitive_hits, "lowRiskHits.violatedHits"),
+        NO_RISK_HITS: demisto.get(sensitive_hits, "noRiskHits.violatedHits"),
+        "Data Categories": data_categories_data,
+    }
+
+    hr = tableToMarkdown(
+        "IR Violation Information",
+        hr_data,
+        removeNull=True,
+        sort_headers=False,
+        json_transform_mapping={"Data Categories": JsonTransformer()},
+    )
+
+    return context, hr
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -4944,9 +5686,172 @@ def fetch_dspm_violations(client: PolarisClient, last_run: dict, params: dict, m
     return dspm_next_run, incidents
 
 
+def fetch_ir_violations(client: PolarisClient, last_run: dict, params: dict, max_fetch: Optional[int]) -> tuple[dict, list]:
+    """
+    Fetch Rubrik IR violations as incidents.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type last_run: ``dict``
+    :param last_run: last run object obtained from demisto.getLastRun().
+
+    :type params: ``dict``
+    :param params: arguments obtained from demisto.params().
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :return: tuple of next run object and list of incidents.
+    :rtype: ``tuple[dict, list]``
+    """
+    # Get configuration parameters
+    violation_statuses = argToList(
+        params.get("ir_violation_status", DEFAULT_IR_VIOLATION_STATUS), transform=lambda s: s.strip().upper()
+    )
+    violation_severities = argToList(params.get("ir_violation_severity"), transform=lambda s: s.strip().upper())
+    violation_categories = argToList(params.get("ir_violation_category"), transform=lambda s: s.strip().upper())
+    violation_policy_types = argToList(
+        params.get("ir_violation_policy_type", IR_VIOLATION_POLICY_TYPE), transform=lambda s: s.strip().upper()
+    )
+    violation_identity_providers = argToList(params.get("ir_violation_identity_provider"), transform=lambda s: s.strip().upper())
+    violation_identity_tags = argToList(params.get("ir_violation_identity_tag"), transform=lambda s: s.strip().upper())
+    current_time = arg_to_datetime("now").strftime(DATE_TIME_FORMAT)  # type: ignore
+
+    # Get last run state for IR violations
+    ir_last_run = last_run.get("ir_violation", {})
+    last_run_time = ir_last_run.get("last_fetch", None)
+    next_page_token = ir_last_run.get("next_page_token", "")
+    already_fetched = ir_last_run.get("already_fetched", [])
+
+    ir_next_run = ir_last_run.copy()
+
+    # Initialize last_run_time if this is the first fetch
+    if last_run_time is None:
+        first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
+        first_fetch = arg_to_datetime(first_fetch, "First fetch time")
+        last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
+        ir_next_run["last_fetch"] = last_run_time
+
+    # Map configuration values to API enum values
+    statuses, severities, policy_types, identity_providers, identity_tags = validate_ir_violation_fetch_params(
+        violation_statuses,
+        violation_severities,
+        violation_policy_types,
+        violation_identity_providers,
+        violation_identity_tags,
+    )
+
+    resource_metadata_filter: dict = {}
+    if identity_providers:
+        resource_metadata_filter["idpTypes"] = identity_providers
+    if identity_tags:
+        resource_metadata_filter["identityTags"] = identity_tags
+
+    # Prepare GraphQL query variables
+    ir_filters = {
+        "statuses": statuses,
+        "severities": severities,
+        "categories": violation_categories,
+        "policyTypes": policy_types,
+        "detectionDate": {
+            "start": last_run_time,
+            "end": current_time,
+        },
+        "first": max_fetch,
+        "after": next_page_token,
+        "sortBy": "SORT_DETECTION_TIME",
+        "sortOrder": ASCENDING_SORT_ORDER,
+        "resourceMetadataFilter": resource_metadata_filter,
+    }
+
+    # Remove None values
+    remove_nulls_from_dictionary(ir_filters)
+
+    # Execute GraphQL query
+    ir_response = client._query_raw(
+        raw_query=IR_VIOLATIONS_LIST_QUERY,
+        operation_name="IdentityResilienceViolationsListQuery",
+        variables=ir_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    ir_violation_data = ir_response.get("data", {})
+    if ir_violation_data is not None:
+        edges = demisto.get(ir_violation_data, "policyViolations.edges", [])
+        page_info = demisto.get(ir_violation_data, "policyViolations.pageInfo", {})
+
+    # Update next page token
+    page_cursor = remove_empty_elements(page_info)
+    new_next_page_token = page_cursor.get("endCursor")
+    if new_next_page_token:
+        ir_next_run["next_page_token"] = new_next_page_token
+
+    incidents = []
+    duplicate_violation_ids = []
+
+    for violation in edges:
+        node = violation.get("node", {})
+        violation_id = node.get("policyViolationId")
+
+        # Skip if already fetched (deduplication)
+        if violation_id in already_fetched:
+            duplicate_violation_ids.append(violation_id)
+            continue
+
+        already_fetched.append(violation_id)
+
+        # Prepare incident data
+        processed_incident: dict[str, Any] = {
+            "incidentClassification": "RubrikIRViolation",
+        }
+        processed_incident.update(node)
+
+        # Create incident link
+        base_url = str(client._baseurl).removesuffix("api")
+        policy_id = demisto.get(node, "policy.policyId", "")
+        policy_type = demisto.get(node, "policy.policyType", "").removeprefix("POLICY_TYPE_")
+        if violation_id:
+            if policy_type in IR_ALERT_POLICY_TYPES:
+                processed_incident["incident_link"] = IR_ALERT_HYPERLINK.format(base_url, violation_id)
+            elif policy_id:
+                processed_incident["incident_link"] = IR_VIOLATION_HYPERLINK.format(base_url, policy_id, violation_id)
+
+        # Map severity to XSOAR severity
+        violation_severity = node.get("violationSeverity", "")
+        processed_incident["severity"] = convert_severity_to_incident_severity(violation_severity)
+
+        # Get resource name for incident title
+        resource_name = get_ir_violation_resource_display_name(node)
+
+        policy_name = demisto.get(node, "policy.name", "")
+        incident_name = node.get("name", "") or f"{policy_name} - {resource_name}"
+
+        incidents.append(
+            {
+                "name": f"Rubrik IR Violation - {incident_name}",
+                "occurred": processed_incident.get("createdAt", ""),
+                "rawJSON": json.dumps(remove_empty_elements_for_fetch(processed_incident)),
+                "severity": processed_incident.get("severity"),
+            }
+        )
+
+    ir_next_run["already_fetched"] = already_fetched
+
+    if duplicate_violation_ids:
+        demisto.debug(
+            f"IR Violation: Skipped {len(duplicate_violation_ids)} duplicate IR violation(s): {duplicate_violation_ids}"
+        )
+
+    demisto.debug(f"Checkpoint for IR Violation: Next page token = {ir_next_run.get('next_page_token')}")
+    return ir_next_run, incidents
+
+
 def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
     """
-    Fetch Rubrik incidents (Events, Threat Monitoring Objects, and DSPM Violations).
+    Fetch Rubrik incidents (Events, Threat Monitoring Objects, DSPM Violations, and IR Violations).
 
     :type client: ``PolarisClient``
     :param client: Rubrik Polaris client to use
@@ -4972,6 +5877,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
         EVENT_FETCH_TYPE: ("", fetch_events),
         THREAT_MONITORING_FETCH_TYPE: ("threat_monitoring", fetch_threat_monitoring_objects),
         DSPM_VIOLATION_FETCH_TYPE: ("dspm_violation", fetch_dspm_violations),
+        IR_VIOLATION_FETCH_TYPE: ("ir_violation", fetch_ir_violations),
     }
 
     selected_handlers = [FETCH_TYPE_HANDLERS[fetch_type] for fetch_type in fetch_types]
@@ -8350,6 +9256,255 @@ def rubrik_data_security_violation_log_download_command(client: PolarisClient, a
     return result
 
 
+def rubrik_identity_resilience_violation_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of IR violations.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    limit = arg_to_number(args.get("limit", "50"))
+    next_page_token = args.get("next_page_token")
+    sort_by = args.get("sort_by", "DETECTION_TIME")
+    sort_order = args.get("sort_order", DESCENDING_SORT_ORDER)
+
+    statuses = argToList(args.get("status"), transform=lambda s: s.strip())
+    severities = argToList(args.get("severity"), transform=lambda s: s.strip())
+    categories = argToList(args.get("category"), transform=lambda s: s.strip().upper())
+    policy_types = argToList(args.get("policy_type"), transform=lambda s: s.strip().upper())
+    identity_providers = argToList(args.get("identity_provider"), transform=lambda s: s.strip().upper())
+    identity_tags = argToList(args.get("identity_tag"), transform=lambda s: s.strip().upper())
+
+    detection_start_date = arg_to_datetime(args.get("detection_start_date"), arg_name="detection_start_date")
+    detection_end_date = arg_to_datetime(args.get("detection_end_date"), arg_name="detection_end_date")
+    resolved_start_date = arg_to_datetime(args.get("resolved_start_date"), arg_name="resolved_start_date")
+    resolved_end_date = arg_to_datetime(args.get("resolved_end_date"), arg_name="resolved_end_date")
+    policy_types = policy_types or IR_VIOLATION_POLICY_TYPE
+
+    validate_ir_violation_list_command_args(
+        limit, sort_by, sort_order, detection_start_date, detection_end_date, resolved_start_date, resolved_end_date
+    )
+
+    mapped_statuses, mapped_severities, mapped_policy_types, mapped_identity_providers, mapped_identity_tags = (
+        validate_ir_violation_fetch_params(statuses, severities, policy_types, identity_providers, identity_tags, is_fetch=False)
+    )
+
+    mapped_sort_by = f"SORT_{sort_by.upper()}" if sort_by else None
+
+    resource_metadata_filter: Dict[str, Any] = {}
+    if mapped_identity_providers:
+        resource_metadata_filter["idpTypes"] = mapped_identity_providers
+    if mapped_identity_tags:
+        resource_metadata_filter["identityTags"] = mapped_identity_tags
+
+    ir_filters: Dict[str, Any] = {
+        "statuses": mapped_statuses,
+        "severities": mapped_severities,
+        "categories": categories,
+        "policyTypes": mapped_policy_types,
+        "resourceMetadataFilter": resource_metadata_filter,
+        "first": limit,
+        "after": next_page_token,
+        "sortBy": mapped_sort_by,
+        "sortOrder": sort_order.upper(),
+    }
+
+    if detection_start_date and detection_end_date:
+        ir_filters["detectionDate"] = {
+            "start": detection_start_date.strftime(DATE_TIME_FORMAT),
+            "end": detection_end_date.strftime(DATE_TIME_FORMAT),
+        }
+
+    if resolved_start_date and resolved_end_date:
+        ir_filters["updateDate"] = {
+            "start": resolved_start_date.strftime(DATE_TIME_FORMAT),
+            "end": resolved_end_date.strftime(DATE_TIME_FORMAT),
+        }
+
+    remove_nulls_from_dictionary(ir_filters)
+
+    response = client._query_raw(
+        raw_query=IR_VIOLATIONS_LIST_QUERY,
+        operation_name="IdentityResilienceViolationsListQuery",
+        variables=ir_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    ir_violation_data = response.get("data", {})
+    if ir_violation_data is not None:
+        policy_violations = ir_violation_data.get("policyViolations", {})
+        if policy_violations:
+            edges = policy_violations.get("edges", [])
+            page_info = policy_violations.get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    end_cursor = page_cursor.pop("endCursor", None)
+    has_next_page = page_cursor.pop("hasNextPage", False)
+    page_cursor.pop("startCursor", None)
+    page_cursor.pop("hasPreviousPage", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-identity-resilience-violation-list",
+            "next_page_token": end_cursor,
+            "has_next_page": has_next_page,
+        }
+    )
+
+    outputs: Dict[str, Any] = {
+        f"{OUTPUT_PREFIX['PAGE_TOKEN_IR_VIOLATION']}(val.name == obj.name)": remove_empty_elements(page_cursor),
+    }
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs,
+            raw_response=response,
+            readable_output=f"#### {MESSAGES['NO_RECORDS_FOUND'].format('IR violations')}",
+        )
+
+    context, hr = prepare_context_hr_identity_resilience_violation_list(edges)
+
+    if has_next_page:
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {end_cursor}"
+
+    outputs[f"{OUTPUT_PREFIX['IR_VIOLATION']}(val.policyViolationId == obj.policyViolationId)"] = context
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_identity_resilience_violation_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the details of an IR violation based on the provided violation ID.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    violation_id = validate_required_arg("violation_id", args.get("violation_id"))
+    policy_type = args.get("policy_type")
+
+    if not policy_type:
+        policy_types = [f"POLICY_TYPE_{pt}" for pt in IR_VIOLATION_POLICY_TYPE]
+    else:
+        if policy_type.upper() not in IR_VIOLATION_POLICY_TYPE:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(policy_type, "policy_type", IR_VIOLATION_POLICY_TYPE))
+        policy_types = [f"POLICY_TYPE_{policy_type.upper()}"]
+
+    filters = {
+        "violationId": violation_id,
+        "policyTypes": policy_types,
+    }
+
+    response = client._query_raw(
+        raw_query=IR_VIOLATION_GET_QUERY,
+        operation_name="IdentityResilienceViolationsGetQuery",
+        variables=filters,
+        timeout=60,
+    )
+
+    violation_data = demisto.get(response, "data.policyViolation") or {}
+    if not violation_data:
+        return CommandResults(readable_output=f"#### {MESSAGES['NO_RESPONSE']}", raw_response=response)
+
+    current_time = arg_to_datetime("now").strftime(DATE_TIME_FORMAT)  # type: ignore
+    inputs = {
+        "principalId": violation_data.get("resourceId"),
+        "timelineDate": current_time,
+        "featureFilter": "IR",
+    }
+    violation_sensitive_data = client._query_raw(
+        raw_query=IR_VIOLATION_PRINCIPAL_SUMMARY_QUERY,
+        operation_name="GetPrincipalSummaryQuery",
+        variables={"input": inputs},
+        timeout=60,
+    )
+
+    response["principal_summary_data"] = violation_sensitive_data
+    sensitive_info = demisto.get(violation_sensitive_data, "data.principalSummary.summary") or {}
+    if sensitive_info:
+        violation_data.update(sensitive_info)
+
+    context, hr = prepare_context_hr_ir_violation_get(violation_data)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["IR_VIOLATION"],
+        outputs_key_field="policyViolationId",
+        outputs=context,
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_identity_resilience_violation_status_update_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update the status of an Identity Resilience (IR) violation.
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    violation_id = args.get("violation_id", "").strip()
+    status = args.get("status", "").strip()
+
+    validate_required_arg("violation_id", violation_id)
+    validate_required_arg("status", status)
+
+    if status.upper() not in IR_VIOLATION_STATUS:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(status, "status", IR_VIOLATION_STATUS))
+
+    update_status = f"POLICY_VIOLATION_STATUS_{status.upper()}"
+    params = {
+        "newPolicyViolationStatus": update_status,
+        "policyViolationIds": [violation_id],
+    }
+
+    input_params = {"input": params}
+
+    violation_status_update_response = client._query_raw(
+        raw_query=IR_VIOLATION_STATUS_UPDATE_MUTATION,
+        operation_name="IdentityResilienceViolationsStatusUpdateMutation",
+        variables=input_params,
+        timeout=60,
+    )
+
+    ec = {
+        "policyViolationId": violation_id,
+        "status": update_status,
+    }
+
+    status_display = status.replace("_", " ").title()
+    hr_output = f"#### Successfully updated the IR violation status to {status_display}"
+
+    return CommandResults(
+        readable_output=hr_output,
+        raw_response=violation_status_update_response,
+        outputs=remove_empty_elements(ec),
+        outputs_prefix=OUTPUT_PREFIX["IR_VIOLATION"],
+        outputs_key_field=["policyViolationId"],
+    )
+
+
 def run_polling_command(client, args: dict, command_name: str, search_function: Callable) -> List[CommandResults]:
     """
     For Scheduling command.
@@ -8531,6 +9686,9 @@ def main() -> None:
                 "rubrik-data-security-violation-get": rubrik_data_security_violation_get_command,
                 "rubrik-data-security-violation-status-update": rubrik_data_security_violation_status_update_command,
                 "rubrik-data-security-violation-file-list": rubrik_data_security_violation_file_list_command,
+                "rubrik-identity-resilience-violation-list": rubrik_identity_resilience_violation_list_command,
+                "rubrik-identity-resilience-violation-get": rubrik_identity_resilience_violation_get_command,
+                "rubrik-identity-resilience-violation-status-update": rubrik_identity_resilience_violation_status_update_command,
             }
 
             SCHEDULED_COMMAND_TO_FUNCTION: dict = {
