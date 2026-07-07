@@ -19547,6 +19547,12 @@ script:
       required: true
     - name: firewall_policy_arn
       description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
+    - name: firewall_policy_name
+      description: The descriptive name of the firewall policy. You can't change the name of a firewall policy after you create it. You must specify the ARN or the name, and you can specify both.
+    - name: stateless_rule_group_references
+      description: The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2.
+    - name: stateless_default_actions
+      description: A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy.
       isArray: true
     - name: stateless_fragment_default_actions
       description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
@@ -19577,6 +19583,11 @@ script:
       description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
     - name: policy_rule_variables
       description: 'A JSON string specifying the IPv4 or IPv6 addresses in CIDR notation to use for the Suricata HOME_NET variable. For example: `{"string": {"Definition": ["string",]}}`.'
+    - name: description
+      description: The description of the firewall policy.
+    - name: enable_tls_session_holding
+      description: When true, prevents TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules. Requires an associated TLS Inspection configuration.
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
@@ -19584,18 +19595,22 @@ script:
       description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
     - name: encryption_configuration_key_type
       description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      auto: PREDEFINED
+      predefined:
         - CUSTOMER_KMS
         - AWS_OWNED_KMS_KEY
 
   - name: aws-network-firewall-firewall-policy-change-protection-update
-    description: "Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
+    description: "Modifies the ChangeProtection flag, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
     arguments:
     - name: account_id
-      description: The AWS account ID.
-      required: true
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: region
-      description: The AWS region.
-      required: true
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
@@ -19643,19 +19658,6 @@ script:
       predefined:
         - "true"
         - "false"
-    outputs:
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
-      description: The descriptive name of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
-      description: The Amazon Resource Name (ARN) of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-      description: Whether the firewall is protected against a change to the firewall policy association. A setting of TRUE indicates that the firewall policy association is protected against change.
-      type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
-      type: String
 
   - name: aws-network-firewall-rule-group-create
     description: "Creates the specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags. You must provide either at least one of the rule_group arguments (rules_source is required, the ip_sets, port_sets, ip_sets_references, stateful_rule_options_rule_order are optionals) or the rules argument. Required permissions: network-firewall:CreateRuleGroup, network-firewall:TagResource."
