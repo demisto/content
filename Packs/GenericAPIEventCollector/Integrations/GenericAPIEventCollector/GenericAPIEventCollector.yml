@@ -71,14 +71,14 @@ configuration:
   - name: oauth_client_secret
     section: Connect
     display: Oauth client secret
-    type: 9
+    type: 14
     required: false
     displaypassword: Oauth client secret
     hiddenusername: true
     additionalinfo: OAuth Client Secret.
   - name: authorization_code
     section: Connect
-    type: 9
+    type: 14
     hiddenusername: true
     displaypassword: Authorization code
     required: false
@@ -293,6 +293,168 @@ script:
   subtype: python3
   dockerimage: demisto/fastapi:0.125.0.7178097
 fromversion: 6.8.0
+triggers:
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: OAuth 2.0
+    effects:
+      - name: oauth_token_url
+        action:
+          required: true
+      - name: oauth_client_id
+        action:
+          required: true
+      - name: oauth_client_secret
+        action:
+          required: true
+      - name: authorization_code
+        action:
+          hidden: false
+      - name: redirect_uri
+        action:
+          hidden: false
+      - name: oauth_scopes
+        action:
+          hidden: false
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: Basic
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: Token
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: Bearer
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: No Authorization
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: RawToken
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: authentication
+        operator: equal
+        value: Api-Key
+    effects:
+      - name: oauth_token_url
+        action:
+          hidden: true
+      - name: oauth_client_id
+        action:
+          hidden: true
+      - name: oauth_client_secret
+        action:
+          hidden: true
+      - name: authorization_code
+        action:
+          hidden: true
+      - name: redirect_uri
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
 marketplaces:
   - marketplacev2
   - platform

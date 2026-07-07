@@ -96,7 +96,11 @@ def timestamp_format_to_datetime(dt: str, timestamp_format: str) -> datetime:
     demisto.debug(f"converting {dt} using format:{timestamp_format}")
     if timestamp_format == "epoch":
         return convert_epoch_to_timestamp(dt)
-    return datetime.strptime(dt, timestamp_format)
+    parsed = arg_to_datetime(dt)
+    if parsed is None:
+        demisto.error(f"time data {dt!r} could not be parsed, falling back to current time")
+        return datetime.now()
+    return parsed.replace(tzinfo=None)
 
 
 def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple[Any, Any]]) -> dict[Any, Any] | None:
@@ -516,9 +520,9 @@ def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHa
 
     token_url = params.get("oauth_token_url")
     client_id = params.get("oauth_client_id")
-    client_secret = params.get("oauth_client_secret", {}).get("password")
+    client_secret = params.get("oauth_client_secret")
     scope = params.get("oauth_scopes") or None
-    authorization_code = params.get("authorization_code").get("password")
+    authorization_code = params.get("authorization_code")
     redirect_uri = params.get("redirect_uri")
 
     if not token_url:
@@ -710,7 +714,7 @@ def main() -> None:  # pragma: no cover
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()
         product: str = f"{raw_product}_generic"
-        demisto.debug(f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}")
+        demisto.debug(f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}, Authentication type: {params.get('authentication')}")
 
         command: str = demisto.command()
         demisto.debug(f"Command being called is {command}")
