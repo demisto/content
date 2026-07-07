@@ -50,8 +50,13 @@ import yaml
 # ``patches/e2e/`` lives under ``patches/``, which lives under ``connectus/``.
 E2E_DIR = Path(__file__).resolve().parent
 PATCHES_DIR = E2E_DIR.parent
-# The patch under test. Until the implementation lands the test module xfails
-# on (not PATCH_SCRIPT.is_file()) AND empty FIXTURES_DIR.
+# ``content/connectus`` — the base a case's relative ``script`` resolves against
+# (and the subprocess CWD). Kept as a named constant so the generic ``script``
+# key and the ``run_patch`` cwd stay in lock-step.
+SCRIPT_BASE = PATCHES_DIR.parent
+# The DEFAULT patch under test when a case does not declare its own ``script``.
+# Until the implementation lands the test module xfails on
+# (not PATCH_SCRIPT.is_file()) AND empty FIXTURES_DIR.
 PATCH_SCRIPT = PATCHES_DIR / "propagate_advanced_flag.py"
 # Scoped to a dedicated subdir to avoid collisions with add_vault_support's
 # cases under the shared ``e2e/fixtures/`` root. See module docstring.
@@ -82,6 +87,16 @@ class PatchE2ECase:
     csv: str | None  # relative name of the discovery CSV in input/ (or None)
     extra_args: list[str]  # passthrough CLI flags
     expect_modified: bool  # whether the LIVE run is expected to change the tree
+    # GENERIC harness support (both OPTIONAL; absent => legacy behavior):
+    #   script: path to the python script to run for THIS case, overriding the
+    #           module-level PATCH_SCRIPT default. Relative paths resolve against
+    #           SCRIPT_BASE (content/connectus); absolute paths are used as-is.
+    #   args:   an argv TEMPLATE that FULLY defines the script's arguments when
+    #           present (placeholder tokens are substituted by build_cmd). When
+    #           absent, build_cmd falls back to the legacy fixed-flag contract
+    #           (--connectors-dir/--path/--pipeline-csv/--dry-run + extra_args).
+    script: str | None = None
+    args: list[str] | None = None
 
     @property
     def input_dir(self) -> Path:
@@ -106,10 +121,27 @@ class PatchE2ECase:
             return None
         return self.input_dir / self.csv
 
+    @property
+    def resolved_script(self) -> Path:
+        """The script to run for this case.
+
+        A per-case ``script`` (from ``case.json``) wins and is resolved against
+        ``SCRIPT_BASE`` (``content/connectus``) when relative, or used verbatim
+        when absolute. When no ``script`` is declared, the module-level
+        ``PATCH_SCRIPT`` default is used (legacy behavior).
+        """
+        if not self.script:
+            return PATCH_SCRIPT
+        candidate = Path(self.script)
+        if candidate.is_absolute():
+            return candidate
+        return (SCRIPT_BASE / candidate).resolve()
+
 
 def _load_case(case_json: Path) -> PatchE2ECase:
     data = json.loads(case_json.read_text())
     case_dir = case_json.parent
+    raw_args = data.get("args")
     return PatchE2ECase(
         name=case_dir.name,
         path=case_dir,
@@ -118,6 +150,8 @@ def _load_case(case_json: Path) -> PatchE2ECase:
         csv=data.get("csv"),
         extra_args=list(data.get("extra_args", [])),
         expect_modified=bool(data.get("expect_modified", True)),
+        script=data.get("script"),
+        args=list(raw_args) if raw_args is not None else None,
     )
 
 
@@ -159,21 +193,86 @@ def sandbox_inputs(case: PatchE2ECase, tmp_path: Path) -> Path:
     return connectors_root
 
 
+# Placeholder tokens recognised inside a case's ``args`` template. ``{dry_run}``
+# is handled specially (expands to ``--dry-run`` on a dry run, and is DROPPED
+# entirely otherwise). Every other token is a simple string substitution; a
+# token whose resolved value is ``None`` causes that argv entry to be dropped.
+_DRY_RUN_TOKEN = "{dry_run}"
+
+
+def _token_values(
+    case: PatchE2ECase,
+    connectors_root: Path,
+) -> dict[str, str | None]:
+    """Resolve the substitution values for the ``args`` template tokens."""
+    csv = case.input_csv
+    return {
+        "{connectors_dir}": str(connectors_root),
+        "{path}": case.connector,
+        "{csv}": str(csv.resolve()) if csv is not None else None,
+        "{input_dir}": str(case.input_dir.resolve()),
+        "{case_dir}": str(case.path.resolve()),
+    }
+
+
+def _render_args_template(
+    case: PatchE2ECase,
+    connectors_root: Path,
+    dry_run: bool,
+) -> list[str]:
+    """Expand a case's ``args`` template into a concrete argv tail.
+
+    ``{dry_run}`` expands to ``--dry-run`` on a dry run and is dropped otherwise.
+    Any other recognised token is substituted; a token that resolves to ``None``
+    drops that entry. Unknown ``{...}`` tokens are left verbatim so a script can
+    receive literal braces if it needs to.
+    """
+    values = _token_values(case, connectors_root)
+    rendered: list[str] = []
+    for tok in case.args or []:
+        if tok == _DRY_RUN_TOKEN:
+            if dry_run:
+                rendered.append("--dry-run")
+            continue
+        if tok in values:
+            value = values[tok]
+            if value is not None:
+                rendered.append(value)
+            continue
+        rendered.append(tok)
+    return rendered
+
+
 def build_cmd(
     case: PatchE2ECase,
     connectors_root: Path,
     dry_run: bool = False,
 ) -> list[str]:
-    """Assemble the subprocess argv for the patch under test.
+    """Assemble the subprocess argv for the script under test.
 
-    Mirrors the assumed CLI flag contract (see module docstring / README).
+    Two modes:
+
+    * GENERIC — when the case declares an ``args`` template, that template FULLY
+      defines the script arguments (placeholder tokens substituted via
+      :func:`_render_args_template`). This lets a case drive ANY script with ANY
+      flag contract against the sandbox connector tree.
+    * LEGACY — when no ``args`` template is given, the historical fixed-flag
+      contract is emitted (``--connectors-dir/--path/--pipeline-csv/--dry-run``
+      followed by ``extra_args``), keeping existing fixtures working unchanged.
+
+    In both modes the executable is ``sys.executable`` and the script is
+    :pyattr:`PatchE2ECase.resolved_script` (the per-case ``script`` override, or
+    the module-level ``PATCH_SCRIPT`` default).
     """
-    cmd = [
-        sys.executable,
-        str(PATCH_SCRIPT),
-        "--connectors-dir",
-        str(connectors_root),
-    ]
+    cmd = [sys.executable, str(case.resolved_script)]
+
+    if case.args is not None:
+        cmd += _render_args_template(case, connectors_root, dry_run)
+        cmd += list(case.extra_args)
+        return cmd
+
+    # Legacy fixed-flag contract (backward compatible).
+    cmd += ["--connectors-dir", str(connectors_root)]
     if case.connector:
         cmd += ["--path", case.connector]
     if case.input_csv is not None:

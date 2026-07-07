@@ -93,10 +93,67 @@ patches/e2e/
 | key              | required | meaning                                                          |
 | ---------------- | -------- | ---------------------------------------------------------------- |
 | `description`    | no       | human-readable note.                                             |
-| `connector`      | no       | restrict the patch to one connector (passed as `--path`).        |
-| `csv`            | no       | filename of the discovery CSV inside `input/` (→ `--pipeline-csv`). |
-| `extra_args`     | no       | extra CLI flags appended verbatim.                               |
+| `connector`      | no       | restrict the patch to one connector (passed as `--path`, or as the `{path}` token in `args`). |
+| `csv`            | no       | filename of the discovery CSV inside `input/` (→ `--pipeline-csv`, or the `{csv}` token in `args`). |
+| `extra_args`     | no       | extra CLI flags appended verbatim (after both legacy flags and a rendered `args` template). |
 | `expect_modified`| no       | whether the LIVE run is expected to change the tree (default `true`); drives the dry-run report assertion and selects the negative/scope-guard cases. |
+| `script`         | no       | **GENERIC** — path to the python script to run for THIS case, overriding the module default (`add_vault_support.py` / `propagate_advanced_flag.py`). Relative paths resolve against `content/connectus`; absolute paths are used as-is. |
+| `args`           | no       | **GENERIC** — an argv *template* that FULLY defines the script's arguments (placeholder tokens are substituted; see below). When present it replaces the legacy fixed-flag contract; when absent the legacy flags are emitted. |
+
+## Generic mode — test ANY script with input/expected
+
+The harness is not tied to a single script. A case can point at **any** python
+script via `script` and shape its argv via the `args` template, letting you test
+arbitrary connector-folder patches with the same sandbox + subprocess + semantic
+compare machinery.
+
+### `args` placeholder tokens
+
+When `args` is present it is the COMPLETE argument list (after `sys.executable`
+and the resolved script). Each entry is passed verbatim except these tokens,
+which the harness substitutes per run:
+
+| token              | expands to                                                        |
+| ------------------ | ----------------------------------------------------------------- |
+| `{connectors_dir}` | the tmp sandbox connectors root.                                  |
+| `{path}`           | the case's `connector` value (entry dropped if `connector` unset). |
+| `{csv}`            | absolute path to the case's discovery CSV (dropped if `csv` unset). |
+| `{input_dir}`      | absolute path to the case's `input/` dir.                         |
+| `{case_dir}`       | absolute path to the case directory.                              |
+| `{dry_run}`        | `--dry-run` on a dry run; the entry is DROPPED otherwise.         |
+
+> A token whose resolved value is `None` drops that single argv entry. Unknown
+> `{...}` tokens are passed through verbatim. If `args` is omitted, the harness
+> falls back to the legacy fixed-flag contract
+> (`--connectors-dir/--path/--pipeline-csv/--dry-run` + `extra_args`).
+
+### Worked example
+
+See [`fixtures/generic_example/set_owner_demo/`](fixtures/generic_example/set_owner_demo/)
+and its driver [`generic_example_e2e_test.py`](generic_example_e2e_test.py). It
+runs the tiny example script
+[`examples/set_metadata_owner.py`](examples/set_metadata_owner.py) — which uses a
+DIFFERENT flag contract (`--owner`) — proving the harness is generic:
+
+```json
+{
+  "connector": "democonn",
+  "script": "patches/e2e/examples/set_metadata_owner.py",
+  "args": [
+    "--connectors-dir", "{connectors_dir}",
+    "--path", "{path}",
+    "--owner", "connectors-team@example.com",
+    "{dry_run}"
+  ],
+  "expect_modified": true
+}
+```
+
+To add your own generic case: create a `fixtures/<group>/<case>/` dir with a
+`case.json` (declaring `script` + `args`), an `input/connectors/...` tree and a
+matching `expected/connectors/...` golden, then point a small test module at it
+(mirroring `generic_example_e2e_test.py`). The comparison stays the existing
+connector-YAML semantic diff.
 
 ### Cases
 
