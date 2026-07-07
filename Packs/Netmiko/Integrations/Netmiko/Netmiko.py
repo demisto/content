@@ -39,7 +39,7 @@ class Client:  # pragma: no cover
     def connect(self):
         if self.keys:
             try:
-                self.net_connect = ConnectHandler(
+                self.net_connect = ConnectHandler(  # type: ignore[assignment]
                     device_type=self.platform,
                     host=self.hostname,
                     port=self.port,
@@ -51,7 +51,7 @@ class Client:  # pragma: no cover
                 return_error(err)
         else:
             try:
-                self.net_connect = ConnectHandler(
+                self.net_connect = ConnectHandler(  # type: ignore[assignment]
                     device_type=self.platform,
                     host=self.hostname,
                     port=self.port,
@@ -65,8 +65,8 @@ class Client:  # pragma: no cover
 
     def disconnect(self):
         try:
-            if self.net_connect:
-                self.net_connect.disconnect()
+            if self.net_connect:  # type: ignore[truthy-function]
+                self.net_connect.disconnect()  # type: ignore[attr-defined]
         except Exception as err:
             return_error(err)
 
@@ -75,20 +75,20 @@ class Client:  # pragma: no cover
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
             if enable:
-                self.net_connect.enable()
+                self.net_connect.enable()  # type: ignore[attr-defined]
             if isConfig:
                 output["Commands"].append(
                     {
                         "Hostname": self.hostname,
                         "DateTimeUTC": datetime.utcnow().isoformat(),
-                        "Config": self.net_connect.send_config_set(commands, read_timeout=self.timeout),
+                        "Config": self.net_connect.send_config_set(commands, read_timeout=self.timeout),  # type: ignore[attr-defined]
                     }
                 )
             if not isConfig:
                 for cmd in commands:
-                    prompt = self.net_connect.find_prompt()
+                    prompt = self.net_connect.find_prompt()  # type: ignore[attr-defined]
 
-                    pre_out = self.net_connect.send_command_timing(
+                    pre_out = self.net_connect.send_command_timing(  # type: ignore[attr-defined]
                         cmd, read_timeout=self.timeout, strip_prompt=False, last_read=LAST_READ_TIMEOUT
                     )
 
