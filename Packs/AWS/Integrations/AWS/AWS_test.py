@@ -15540,6 +15540,44 @@ def test_log_streams_describe_command_with_pagination(mocker):
     assert result.outputs["AWS.CloudWatchLogs.LogGroups(true)"]["LogStreamsNextToken"] == "stream-next-token"
 
 
+def test_log_streams_describe_command_log_group_name_placement(mocker):
+    """
+    Given:
+        - A mocked CloudWatch Logs client that returns log streams for a log group.
+    When:
+        - log_streams_describe_command is called.
+    Then:
+        - logGroupName is placed at the LogGroups object level, as a sibling of LogStreams.
+        - logGroupName is NOT nested inside the individual log stream items.
+    """
+    from AWS import CloudWatchLogs
+
+    # Given: a client returning a single log stream that has no logGroupName of its own
+    mock_client = mocker.Mock()
+    mock_client.describe_log_streams.return_value = {
+        "logStreams": [
+            {
+                "logStreamName": "my-stream",
+                "creationTime": 1609459200000,
+                "arn": "arn:aws:logs:us-east-1:123456789012:log-group:my-group:log-stream:my-stream",
+            }
+        ],
+        "nextToken": None,
+    }
+    args = {"account_id": "123456789012", "region": "us-east-1", "log_group_name": "my-group"}
+
+    # When: the command is executed
+    result = CloudWatchLogs.log_streams_describe_command(mock_client, args)
+
+    # Then: logGroupName sits on the LogGroups object alongside LogStreams, not inside each stream
+    data_log = result.outputs["AWS.CloudWatchLogs.LogGroups(val.logGroupName && val.logGroupName == obj.logGroupName)"]
+    assert data_log["logGroupName"] == "my-group"
+    assert "LogStreams" in data_log
+    assert set(data_log.keys()) == {"logGroupName", "LogStreams"}
+    for stream in data_log["LogStreams"]:
+        assert "logGroupName" not in stream
+
+
 def test_retention_policy_put_command_success(mocker):
     """
     Given: A mocked CloudWatch Logs client and valid retention policy arguments.
@@ -15717,12 +15755,12 @@ def test_metric_filter_put_command_with_optional_params(mocker):
     assert call_kwargs["filterName"] == "ErrorFilter"
     assert call_kwargs["filterPattern"] == "ERROR"
     assert call_kwargs["applyOnTransformedLogs"] is True
+    assert call_kwargs["fieldSelectionCriteria"] == '@aws.region = "us-east-1"'
+    assert call_kwargs["emitSystemFieldDimensions"] == ["@aws.account", "@aws.region"]
     transformation = call_kwargs["metricTransformations"][0]
     assert transformation["metricName"] == "ErrorCount"
     assert transformation["metricNamespace"] == "MyApp"
     assert transformation["metricValue"] == "1"
-    assert transformation["fieldSelectionCriteria"] == '@aws.region = "us-east-1"'
-    assert transformation["emitSystemFieldDimensions"] == ["@aws.account", "@aws.region"]
     assert transformation["defaultValue"] == 0.0
     assert transformation["dimensions"] == {"EventType": "$.eventType"}
     assert transformation["unit"] == "Count"
