@@ -25,8 +25,15 @@ class _MockLabel:
 
 
 class _MockComment:
-    def __init__(self, body: str):
+    def __init__(self, body: str, on_delete=None):
         self.body = body
+        self.deleted = False
+        self._on_delete = on_delete  # optional callback so the PR can drop us from its list
+
+    def delete(self):
+        self.deleted = True
+        if self._on_delete is not None:
+            self._on_delete(self)
 
 
 class _MockPullRequest:
@@ -36,20 +43,31 @@ class _MockPullRequest:
         self.number = number
         self._files = files or []
         self.labels = labels or []
-        self._comments = list(comments or [])
+        # Rebind each supplied comment's delete callback so calling
+        # ``comment.delete()`` also removes it from this PR's comment list.
+        self._comments: list[_MockComment] = []
+        for c in comments or []:
+            self._attach(c)
         self.created_comments: list[str] = []  # captured by ``create_issue_comment``
+
+    # Internal helper --------------------------------------------------------------
+    def _attach(self, comment: "_MockComment") -> "_MockComment":
+        comment._on_delete = self._comments.remove
+        self._comments.append(comment)
+        return comment
 
     # PyGithub-compatible methods --------------------------------------------------
     def get_files(self):
         return iter(self._files)
 
     def get_issue_comments(self):
-        return iter(self._comments)
+        # Return a snapshot so callers can safely mutate the underlying list
+        # (e.g. via ``comment.delete()``) while iterating.
+        return iter(list(self._comments))
 
     def create_issue_comment(self, body: str):
         self.created_comments.append(body)
-        self._comments.append(_MockComment(body))
-        return _MockComment(body)
+        return self._attach(_MockComment(body))
 
 
 # ---------------------------------------------------------------------------
@@ -236,6 +254,121 @@ def test_post_reminder_comment_once_is_idempotent_across_runs():
     assert len(pr.created_comments) == 1, (
         "Reminder comment must be posted exactly once per PR regardless of how " "many times the workflow re-runs."
     )
+
+
+# ---------------------------------------------------------------------------
+# delete_reminder_comment_if_present
+# ---------------------------------------------------------------------------
+
+
+def test_delete_reminder_comment_if_present_noop_when_no_reminder():
+    """
+    Given:
+        - A PR with several unrelated comments but no reminder comment.
+    When:
+        - ``delete_reminder_comment_if_present`` is called.
+    Then:
+        - It returns 0 and leaves every existing comment intact.
+    """
+    from github_workflow_scripts.check_commonserverpython_nightly_label import (
+        delete_reminder_comment_if_present,
+    )
+
+    unrelated = [_MockComment("LGTM"), _MockComment("please rebase")]
+    pr = _MockPullRequest(comments=unrelated)
+
+    assert delete_reminder_comment_if_present(pr) == 0
+    assert not any(c.deleted for c in unrelated), "unrelated comments must never be deleted"
+    assert len(pr._comments) == 2
+
+
+def test_delete_reminder_comment_if_present_removes_stale_reminder():
+    """
+    Given:
+        - A PR that has both unrelated comments and a stale reminder comment
+          (identified by the hidden marker).
+    When:
+        - ``delete_reminder_comment_if_present`` is called.
+    Then:
+        - Exactly the reminder comment is deleted (and dropped from the PR),
+          the unrelated comments are untouched, and the return value is 1.
+    """
+    from github_workflow_scripts.check_commonserverpython_nightly_label import (
+        COMMENT_MARKER,
+        delete_reminder_comment_if_present,
+    )
+
+    unrelated_a = _MockComment("LGTM")
+    reminder = _MockComment(f"{COMMENT_MARKER}\nrun nightly please")
+    unrelated_b = _MockComment("bumping")
+    pr = _MockPullRequest(comments=[unrelated_a, reminder, unrelated_b])
+
+    assert delete_reminder_comment_if_present(pr) == 1
+    assert reminder.deleted is True
+    assert reminder not in pr._comments
+    assert unrelated_a.deleted is False
+    assert unrelated_b.deleted is False
+    assert unrelated_a in pr._comments
+    assert unrelated_b in pr._comments
+
+
+def test_delete_reminder_comment_if_present_removes_all_duplicates():
+    """
+    Given:
+        - A PR that (due to a race / manual edit) contains multiple comments
+          carrying the reminder marker.
+    When:
+        - ``delete_reminder_comment_if_present`` is called.
+    Then:
+        - Every marker-bearing comment is deleted, the count reflects that,
+          and non-marker comments are preserved.
+    """
+    from github_workflow_scripts.check_commonserverpython_nightly_label import (
+        COMMENT_MARKER,
+        delete_reminder_comment_if_present,
+    )
+
+    r1 = _MockComment(f"{COMMENT_MARKER}\nfirst")
+    keep = _MockComment("keep me")
+    r2 = _MockComment(f"{COMMENT_MARKER}\nsecond")
+    pr = _MockPullRequest(comments=[r1, keep, r2])
+
+    assert delete_reminder_comment_if_present(pr) == 2
+    assert r1.deleted is True
+    assert r2.deleted is True
+    assert keep.deleted is False
+    assert pr._comments == [keep]
+
+
+def test_post_then_delete_full_lifecycle():
+    """
+    Given:
+        - A PR where the reminder was posted (protected file was modified),
+          and then the developer reverted the change so the PR no longer
+          touches any protected folder.
+    When:
+        - ``post_reminder_comment_once`` runs (posts), followed later by
+          ``delete_reminder_comment_if_present`` (cleanup after revert).
+    Then:
+        - The comment is first posted, then removed cleanly, and a subsequent
+          delete call is a no-op.
+    """
+    from github_workflow_scripts.check_commonserverpython_nightly_label import (
+        COMMENT_MARKER,
+        delete_reminder_comment_if_present,
+        post_reminder_comment_once,
+    )
+
+    pr = _MockPullRequest()
+
+    post_reminder_comment_once(pr)
+    assert any(COMMENT_MARKER in (c.body or "") for c in pr._comments)
+
+    assert delete_reminder_comment_if_present(pr) == 1
+    assert not any(COMMENT_MARKER in (c.body or "") for c in pr._comments)
+
+    # Idempotent: nothing to delete on the second call.
+    assert delete_reminder_comment_if_present(pr) == 0
 
 
 # ---------------------------------------------------------------------------

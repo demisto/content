@@ -116,6 +116,34 @@ def post_reminder_comment_once(pr: PullRequest) -> None:
     print(f"Posted CommonServerPython nightly reminder comment on PR #{pr.number} (first time).")
 
 
+def delete_reminder_comment_if_present(pr: PullRequest) -> int:
+    """
+    Delete every previously-posted reminder comment on ``pr`` (identified by
+    :data:`COMMENT_MARKER`) and return how many were removed.
+
+    This is called when the current PR diff **no longer touches any protected
+    folder** - e.g. the developer initially modified ``CommonServerPython.py``
+    (triggering the reminder) and then reverted that change in a follow-up
+    push. Without this cleanup the sticky comment would stay on the PR
+    forever, misleadingly claiming a nightly run is still required.
+
+    Multiple matching comments are handled defensively even though
+    :func:`post_reminder_comment_once` guarantees at most one; race conditions
+    or manual edits could still produce duplicates and we want a clean PR.
+    """
+    deleted = 0
+    for comment in pr.get_issue_comments():
+        if COMMENT_MARKER in (comment.body or ""):
+            comment.delete()
+            deleted += 1
+    if deleted:
+        print(
+            f"Deleted {deleted} stale CommonServerPython nightly reminder comment(s) "
+            f"from PR #{pr.number} (protected files are no longer modified)."
+        )
+    return deleted
+
+
 def main() -> None:
     options = arguments_handler()
     pr_number = int(options.pr_number)
@@ -127,6 +155,11 @@ def main() -> None:
     changed_protected = pr_changes_protected_files(pr)
     if not changed_protected:
         print(f"PR #{pr_number} does not modify CommonServerPython or related helpers. Nothing to enforce.")
+        # Housekeeping: if a previous push touched a protected file and the
+        # reminder was posted, but the current PR diff no longer contains any
+        # protected change (e.g. the developer reverted it), remove the stale
+        # comment so the PR isn't left with a misleading warning.
+        delete_reminder_comment_if_present(pr)
         sys.exit(0)
 
     print(
