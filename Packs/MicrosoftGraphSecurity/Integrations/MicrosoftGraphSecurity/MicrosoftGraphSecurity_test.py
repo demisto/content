@@ -594,9 +594,7 @@ def test_purge_ediscovery_data_command_with_operation_id(mocker):
         Ensure the Operation ID is extracted and returned to the context outputs.
     """
     location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_456"
-    mocker.patch.object(
-        client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location})
-    )
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
     mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
     result = purge_ediscovery_data_command(client_mocker, {})
     assert result.outputs == {"OperationID": "op_456", "Status": "succeeded"}

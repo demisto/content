@@ -1497,9 +1497,7 @@ def get_operation_id_from_location_header(location_url: str) -> str:
     Returns:
         The extracted operation ID, or "N/A" if it could not be parsed.
     """
-    operation_id_match = re.search(r"operations\('([^']+)'\)", location_url) or re.search(
-        r"operations/([^/?]+)", location_url
-    )
+    operation_id_match = re.search(r"operations\('([^']+)'\)", location_url) or re.search(r"operations/([^/?]+)", location_url)
     return operation_id_match.group(1) if operation_id_match else "N/A"
 
 
