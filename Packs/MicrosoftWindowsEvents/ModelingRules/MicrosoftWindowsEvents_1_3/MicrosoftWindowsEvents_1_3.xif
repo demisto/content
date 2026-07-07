@@ -65,11 +65,6 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         user_sid = coalesce(event_data -> SID, event_data -> SubjectUserSid, user -> identifier, user -> SubjectUserSid, event_data -> UserSid, if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arrayindex(regextract(message, "Modifying\s*User\:\s+(.*)\b\s+Modifying\s+Application:"), 0))),
         user_type = user -> type,
         check_task_string = if(task_str ~= "\d+", null, task_str),
-        // XSUP-72364: the raw `task` (TaskCategory) column from the XDR Collector / Winlogbeat
-        // profile is unreliable (a single event_id can carry multiple wrong task names, e.g. a
-        // 4624 logon tagged "Process Creation"/"Detailed File Share"). Re-derive the canonical
-        // TaskCategory from event_id for the standard Security-Auditing events so xdm.event.type
-        // is correct regardless of the corrupted raw value.
         canonical_task = if(provider_name contains "Microsoft-Windows-Security-",
             if(event_id_string in ("4624","4625","4648"), "Logon",
                event_id_string in ("4634","4647"), "Logoff",
@@ -105,7 +100,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         check_fw_process_name = if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arraystring(regextract(message, "Modifying\s*Application:\s+\S+\\([^\.]+\.exe)"), ""), null),
         get_message_instance_exe_path = if(message_instance ~= "exe", message_instance, null),
         get_message_instance_exe_process = if(message_instance ~= "exe", arrayindex(regextract(message_instance, "\\([a-zA-Z0-9]+\.exe)$"), 0), null)
-| alter event_type = coalesce(event_action, canonical_task, to_string(task), check_message_task, event_name) // set event type (XSUP-72364: canonical_task first so a corrupted raw task does not poison xdm.event.type)
+| alter event_type = coalesce(event_action, canonical_task, to_string(task), check_message_task, event_name) // set event type
 | alter // XDM mappings 
         xdm.alert.category = threat_category,
         xdm.alert.description = coalesce(if(channel="System", error_code, check_fw_description != null, check_fw_description, error_message), if(event_id_string in ("4886", "4887", "4888","4897","4898"), object_create("FW_link", event_fwlink, "Disposition", event_data -> Disposition, "cdc", arrayindex(regextract(event_attributes, "cdc:([^\n]+)") ,0), "rmd", arrayindex(regextract(event_attributes, "rmd:([^\n]+)") ,0), "ccm", arrayindex(regextract(event_attributes, "ccm:([^\n]+)") ,0), "error_code", event_data -> Status, "sub_error_code", event_data -> SubStatus))),
