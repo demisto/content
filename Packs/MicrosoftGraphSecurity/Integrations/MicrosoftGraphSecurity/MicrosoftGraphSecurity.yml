@@ -1701,13 +1701,6 @@ script:
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
     execution: false
     name: msg-purge-ediscovery-data
-    outputs:
-    - contextPath: MsGraph.eDiscoveryCase.Purge.OperationID
-      description: The ID of the purge operation. Use this ID to retrieve the operation status via 'msg-list-case-operation'.
-      type: String
-    - contextPath: MsGraph.eDiscoveryCase.Purge.Status
-      description: The status of the purge operation.
-      type: String
   - arguments:
     - description: The email address of the user who received the email.
       isArray: false
@@ -3112,16 +3105,6 @@ script:
       - nonresponsiveLocations
     description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
     name: msg-export-result-ediscovery-data
-    outputs:
-    - contextPath: MsGraph.eDiscoveryCase.Export.OperationID
-      description: The ID of the export operation. Use this ID to retrieve the operation status via 'msg-list-case-operation'.
-      type: String
-    - contextPath: MsGraph.eDiscoveryCase.Export.CaseID
-      description: The ID of the eDiscovery case the export belongs to.
-      type: String
-    - contextPath: MsGraph.eDiscoveryCase.Export.Location
-      description: The Location header URL returned for the export operation.
-      type: String
   dockerimage: demisto/crypto:1.0.0.8187750
   isfetch: true
   runonce: false

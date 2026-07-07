@@ -1601,10 +1601,7 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraph.eDiscoveryCase.Purge.OperationID | String | The ID of the purge operation. Use this ID to retrieve the operation status via 'msg-list-case-operation'. |
-| MsGraph.eDiscoveryCase.Purge.Status | String | The status of the purge operation. |
+There is no context output for this command.
 
 ### msg-delete-ediscovery-search
 
@@ -2526,11 +2523,7 @@ Export results from an estimated ediscoverySearch. For details, see Manage a col
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraph.eDiscoveryCase.Export.OperationID | String | The ID of the export operation. Use this ID to retrieve the operation status via 'msg-list-case-operation'. |
-| MsGraph.eDiscoveryCase.Export.CaseID | String | The ID of the eDiscovery case the export belongs to. |
-| MsGraph.eDiscoveryCase.Export.Location | String | The Location header URL returned for the export operation. |
+There is no context output for this command.
 
 ### msg-delete-ediscovery-case-hold-policy
 
