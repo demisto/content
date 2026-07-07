@@ -1,12 +1,15 @@
-[INGEST:vendor="TXOne Networks", product="StellarProtect", target_dataset="txone_stellarone_raw", no_hit=keep]
+[INGEST:vendor="TXOne Networks", product="StellarProtect", target_dataset="txone_stellarone_raw", no_hit=drop]
 alter
     _time = coalesce(to_timestamp(to_integer(start), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
 
-[INGEST:vendor="TXOne Networks", product="StellarOne", target_dataset="txone_stellarone_raw", no_hit=keep]
-alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+[INGEST:vendor="TXOne Networks", product="StellarOne", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter
+    _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
 
-[INGEST:vendor="TXOne Networks", product="StellarProtect (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=keep]
-alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+[INGEST:vendor="TXOne Networks", product="StellarProtect (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter
+    _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
 
-[INGEST:vendor="TXOne Networks", product="StellarOne (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=keep]
-alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+[INGEST:vendor="TXOne Networks", product="StellarOne (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter
+    _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));

@@ -15,10 +15,10 @@ Data normalization capabilities:
 
 | Category      | Category Display Name |
 |:--------------|:----------------------|
+| Agent Event   | Agent Event           |
+| Console Log   | Console Log           |
 | AUDIT_EVENT   | Audit Event           |
 | SYSTEM_EVENT  | System Event          |
-| Console Log   | Console Log           |
-| Agent Event   | Agent Event           |
 
 ### Supported timestamp formats
 
@@ -41,7 +41,7 @@ Configure StellarOne to forward events to a Syslog server (the Cortex XSIAM Brok
 6. Select the event types to forward (audit, system, console, and agent events).
 7. Save the configuration.
 
-For more information, see the [TXOne StellarOne Administrator's Guide](https://docs.trendmicro.com/all/ent/txone-sp/v3.0/en-us/txso_3.0_ag.pdf).
+For more information, contact TXOne StellarOne customer support for proper guidance on configuring Syslog forwarding.
 
 ### Cortex XSIAM side - Broker VM
 
@@ -59,7 +59,7 @@ Follow the below steps to configure the Broker VM to receive TXOne StellarOne lo
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in TXOne StellarOne).   |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from TXOne StellarOne.     |
     | `Format`     | Enter **CEF**.                                                                                                                       |
-    | `Vendor`     | Enter **txone**.                                                                                                                     |
-    | `Product`    | Enter **stellarone**.                                                                                                                |
+    | `Vendor`     | Select **Auto-Detect**.                                                                                                               |
+    | `Product`    | Select **Auto-Detect**.                                                                                                              |
 
 </~XSIAM>

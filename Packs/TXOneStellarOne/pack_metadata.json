@@ -1,6 +1,6 @@
 {
     "name": "TXOne StellarOne",
-    "description": "TXOne StellarOne is an OT (Operational Technology) endpoint security management console. This pack provides modeling and parsing rules for StellarOne CEF logs (audit, system, and console events).",
+    "description": "TXOne StellarOne is an OT (Operational Technology) security solution that centrally manages endpoint and OT asset protection. It provides logs in Syslog CEF format covering threat detections and login events to the StellarOne management console.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -8,11 +8,29 @@
     "email": "",
     "created": "2026-07-01T00:00:00Z",
     "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "Data Source",
+        "IoT",
+        "Security"
+    ],
+    "useCases": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "TXOne",
+        "StellarOne",
+        "StellarProtect",
+        "OT",
+        "Operational Technology",
+        "ICS",
+        "Industrial Control Systems",
+        "OT Security",
+        "Endpoint Security",
+        "OT Endpoint",
+        "CEF"
+    ],
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [
