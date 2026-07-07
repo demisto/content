@@ -1,0 +1,7 @@
+{
+    "kind": "drive#file",
+    "id": "1234567890abcdef",
+    "name": "quarantined_document.docx",
+    "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "parents": ["quarantine_folder_id_123"]
+}
