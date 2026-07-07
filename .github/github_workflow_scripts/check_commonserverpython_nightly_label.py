@@ -16,6 +16,7 @@ Exit codes:
 
 import argparse
 import sys
+from pathlib import PurePosixPath
 
 import urllib3
 from blessings import Terminal  # noqa: F401  (kept for parity with other scripts)
@@ -35,15 +36,21 @@ NIGHTLY_RUN_PASSED_LABEL = "nightly-run-passed"
 # because they are runtime-injected the same way and a change to any of them
 # can impact most/all content.
 #
-# We intentionally match on the *folder prefix* rather than an exact filename
-# list so that companion files (unit tests like ``*_test.py`` /
-# ``*.Tests.ps1``, the entity ``*.yml`` config, ``README.md``, ``conftest.py``,
-# ``test_data/`` fixtures, etc.) also trigger the check - any of them can
-# meaningfully affect the runtime-injected helper or its validation.
-PROTECTED_FOLDERS = (
-    "Packs/Base/Scripts/CommonServerPython/",
-    "Packs/Base/Scripts/CommonServerPowerShell/",
-    "Packs/Base/Scripts/CommonServer/",
+# We intentionally match on the *whole folder* (via ``PurePosixPath.is_relative_to``)
+# rather than an exact filename list so that companion files (unit tests like
+# ``*_test.py`` / ``*.Tests.ps1``, the entity ``*.yml`` config, ``README.md``,
+# ``conftest.py``, ``test_data/`` fixtures, arbitrarily deep subdirectories,
+# etc.) also trigger the check - any of them can meaningfully affect the
+# runtime-injected helper or its validation.
+#
+# ``PurePosixPath`` (not the OS-native ``Path``) is used deliberately: the
+# filenames we compare against come from GitHub's PR API and are always
+# forward-slash-separated, so we want POSIX semantics regardless of whether the
+# workflow runs on Linux, macOS, or Windows.
+PROTECTED_FOLDERS: tuple[PurePosixPath, ...] = (
+    PurePosixPath("Packs/Base/Scripts/CommonServerPython"),
+    PurePosixPath("Packs/Base/Scripts/CommonServerPowerShell"),
+    PurePosixPath("Packs/Base/Scripts/CommonServer"),
 )
 
 # Marker used to find / update the sticky reminder comment so we don't spam the PR
@@ -86,11 +93,19 @@ def pr_changes_protected_files(pr: PullRequest) -> list[str]:
     Return the list of files modified by the PR that live under any of the
     :data:`PROTECTED_FOLDERS` (empty if none).
 
-    Matching is done by folder-prefix, i.e. equivalent to a
-    ``<folder>/**`` glob - any file inside a protected folder (source,
-    test, YAML, README, fixtures, …) counts as a protected change.
+    Matching uses :meth:`pathlib.PurePosixPath.is_relative_to`, which is the
+    canonical "is this path inside that directory?" check - equivalent to a
+    ``<folder>/**`` glob. Any file inside a protected folder (source, test,
+    YAML, README, arbitrarily-nested fixtures, …) counts as a protected
+    change. Sibling folders that merely share a name *prefix*
+    (e.g. ``CommonServerHelper/`` vs ``CommonServer/``) correctly do NOT
+    match, because they are not path-relative to the protected folder.
     """
-    return [f.filename for f in pr.get_files() if any(f.filename.startswith(folder) for folder in PROTECTED_FOLDERS)]
+    return [
+        f.filename
+        for f in pr.get_files()
+        if any(PurePosixPath(f.filename).is_relative_to(folder) for folder in PROTECTED_FOLDERS)
+    ]
 
 
 def reminder_comment_already_posted(pr: PullRequest) -> bool:

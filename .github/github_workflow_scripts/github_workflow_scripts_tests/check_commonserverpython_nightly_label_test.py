@@ -378,25 +378,36 @@ def test_post_then_delete_full_lifecycle():
 
 def test_protected_folders_includes_commonserverpython():
     """``CommonServerPython/`` is the primary trigger folder and must be protected."""
+    from pathlib import PurePosixPath
+
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
         PROTECTED_FOLDERS,
     )
 
-    assert "Packs/Base/Scripts/CommonServerPython/" in PROTECTED_FOLDERS
+    assert PurePosixPath("Packs/Base/Scripts/CommonServerPython") in PROTECTED_FOLDERS
 
 
-def test_protected_folders_all_end_with_trailing_slash():
+def test_protected_folders_are_pureposixpath():
     """
-    Every entry in ``PROTECTED_FOLDERS`` must end with ``/`` so that the
-    prefix-match logic can't accidentally match a sibling folder that merely
-    shares a name prefix (e.g. ``CommonServer`` vs ``CommonServerHelper``).
+    Every entry in ``PROTECTED_FOLDERS`` must be a :class:`PurePosixPath`.
+
+    This is the invariant that lets :func:`pr_changes_protected_files` use
+    :meth:`PurePosixPath.is_relative_to` semantics rather than raw string
+    matching. In particular, using :class:`PurePosixPath` (and NOT the plain
+    strings we previously stored) is what makes prefix-lookalike sibling
+    folders (e.g. ``CommonServerHelper/`` vs ``CommonServer/``) correctly
+    NOT match, without us having to rely on a trailing-slash convention.
     """
+    from pathlib import PurePosixPath
+
     from github_workflow_scripts.check_commonserverpython_nightly_label import (
         PROTECTED_FOLDERS,
     )
 
     for folder in PROTECTED_FOLDERS:
-        assert folder.endswith("/"), f"protected folder {folder!r} must end with '/'"
+        assert isinstance(
+            folder, PurePosixPath
+        ), f"protected folder {folder!r} must be a PurePosixPath, got {type(folder).__name__}"
 
 
 def test_nightly_run_passed_label_constant():
