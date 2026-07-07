@@ -714,7 +714,10 @@ def main() -> None:  # pragma: no cover
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()
         product: str = f"{raw_product}_generic"
-        demisto.debug(f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}, Authentication type: {params.get('authentication')}")
+        demisto.debug(
+            f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}, "
+            f"Authentication type: {params.get('authentication')}"
+        )
 
         command: str = demisto.command()
         demisto.debug(f"Command being called is {command}")
