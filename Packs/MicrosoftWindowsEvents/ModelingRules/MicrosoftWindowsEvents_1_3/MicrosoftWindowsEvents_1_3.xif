@@ -64,7 +64,33 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         user_name = coalesce(user -> name, event_data -> User, event_data -> SubjectUserName, user_data -> SubjectUserName, arrayindex(regextract(message, "User:\s*(?:[^\\]+\\)*(\S+)"), 0), arrayindex(regextract(message, "User \"([^\"]+)\""), 0), if(channel="Application" and event_data -> param3 contains "*\\*", event_data -> param3),event_data -> ["Detection User"],event_data -> ["Requester"]), 
         user_sid = coalesce(event_data -> SID, event_data -> SubjectUserSid, user -> identifier, user -> SubjectUserSid, event_data -> UserSid, if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arrayindex(regextract(message, "Modifying\s*User\:\s+(.*)\b\s+Modifying\s+Application:"), 0))),
         user_type = user -> type,
-        check_task_string = if(task_str ~= "\d+", null, task_str)
+        check_task_string = if(task_str ~= "\d+", null, task_str),
+        // XSUP-72364: the raw `task` (TaskCategory) column from the XDR Collector / Winlogbeat
+        // profile is unreliable (a single event_id can carry multiple wrong task names, e.g. a
+        // 4624 logon tagged "Process Creation"/"Detailed File Share"). Re-derive the canonical
+        // TaskCategory from event_id for the standard Security-Auditing events so xdm.event.type
+        // is correct regardless of the corrupted raw value.
+        canonical_task = if(provider_name contains "Microsoft-Windows-Security-",
+            if(event_id_string in ("4624","4625","4648"), "Logon",
+               event_id_string in ("4634","4647"), "Logoff",
+               event_id_string in ("4778","4779","4800","4801","4802","4803","4825"), "Other Logon/Logoff Events",
+               event_id_string = "4672", "Special Logon",
+               event_id_string in ("4688"), "Process Creation",
+               event_id_string in ("4689"), "Process Termination",
+               event_id_string in ("4673","4674"), "Sensitive Privilege Use",
+               event_id_string in ("4662"), "Directory Service Access",
+               event_id_string in ("4768","4771"), "Kerberos Authentication Service",
+               event_id_string in ("4769","4770"), "Kerberos Service Ticket Operations",
+               event_id_string in ("4776"), "Credential Validation",
+               event_id_string in ("4663"), "Removable Storage",
+               event_id_string in ("4670","4703","4704","4705","4911"), "Authorization Policy Change",
+               event_id_string in ("4719"), "Audit Policy Change",
+               event_id_string in ("4720","4722","4723","4724","4725","4726","4738","4740","4767","4780","4781","4798"), "User Account Management",
+               event_id_string in ("4741","4742","4743"), "Computer Account Management",
+               event_id_string in ("4727","4728","4729","4730","4731","4732","4733","4734","4737","4754","4755","4756","4757","4758","4799"), "Security Group Management",
+               event_id_string in ("4697"), "Security System Extension",
+               null),
+            null)
 | alter // post-extraction processing & validations
         check_rule_name1 = if(rule_name1 ~= "\S", rule_name1, null),
     	check_rule_name2 = if(rule_name2 ~= "\S", rule_name2, null),
@@ -79,7 +105,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         check_fw_process_name = if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arraystring(regextract(message, "Modifying\s*Application:\s+\S+\\([^\.]+\.exe)"), ""), null),
         get_message_instance_exe_path = if(message_instance ~= "exe", message_instance, null),
         get_message_instance_exe_process = if(message_instance ~= "exe", arrayindex(regextract(message_instance, "\\([a-zA-Z0-9]+\.exe)$"), 0), null)
-| alter event_type = coalesce(event_action, to_string(task), check_message_task, event_name) // set event type
+| alter event_type = coalesce(event_action, canonical_task, to_string(task), check_message_task, event_name) // set event type (XSUP-72364: canonical_task first so a corrupted raw task does not poison xdm.event.type)
 | alter // XDM mappings 
         xdm.alert.category = threat_category,
         xdm.alert.description = coalesce(if(channel="System", error_code, check_fw_description != null, check_fw_description, error_message), if(event_id_string in ("4886", "4887", "4888","4897","4898"), object_create("FW_link", event_fwlink, "Disposition", event_data -> Disposition, "cdc", arrayindex(regextract(event_attributes, "cdc:([^\n]+)") ,0), "rmd", arrayindex(regextract(event_attributes, "rmd:([^\n]+)") ,0), "ccm", arrayindex(regextract(event_attributes, "ccm:([^\n]+)") ,0), "error_code", event_data -> Status, "sub_error_code", event_data -> SubStatus))),
