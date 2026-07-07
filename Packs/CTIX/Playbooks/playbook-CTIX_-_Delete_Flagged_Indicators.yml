@@ -1,0 +1,130 @@
+id: CTIX - Delete Flagged Indicators
+version: -1
+name: CTIX - Delete Flagged Indicators
+description: Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, or whitelisted, by running the CTIXDeleteFlaggedIndicators script. All delete flags default to false - enable the ones you want via the playbook inputs. Intended to run on a schedule via the bundled 'CTIX - Delete Flagged Indicators' job.
+fromversion: 6.10.0
+tags:
+- Threat Intelligence Management
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 536a8385-fc2a-464d-8a43-927b7bc430b3
+    type: start
+    task:
+      id: 536a8385-fc2a-464d-8a43-927b7bc430b3
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: dc2e29e4-90a1-44c2-b088-9b43ac4217e9
+    type: regular
+    task:
+      id: dc2e29e4-90a1-44c2-b088-9b43ac4217e9
+      version: -1
+      name: Delete flagged CTIX indicators
+      description: Runs CTIXDeleteFlaggedIndicators, which deletes CTIX v3-sourced indicators whose enabled flag fields (isdeprecated, isrevoked, isfalsepositive, iswhitelisted) are set. Does nothing when no delete flag is enabled.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: CTIXDeleteFlaggedIndicators
+    scriptarguments:
+      delete_deprecated:
+        simple: ${inputs.delete_deprecated}
+      delete_revoked:
+        simple: ${inputs.delete_revoked}
+      delete_false_positive:
+        simple: ${inputs.delete_false_positive}
+      delete_whitelisted:
+        simple: ${inputs.delete_whitelisted}
+      exclude:
+        simple: ${inputs.exclude}
+      reason:
+        simple: ${inputs.reason}
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 290}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: aa1db3ce-be12-41bd-899b-c47d16fc3f4a
+    type: title
+    task:
+      id: aa1db3ce-be12-41bd-899b-c47d16fc3f4a
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 545, "width": 380, "x": 50, "y": 50}}}'
+inputs:
+- key: delete_deprecated
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to delete indicators marked as deprecated in Cyware Intel Exchange (CTIX).
+  playbookInputQuery:
+- key: delete_revoked
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to delete indicators revoked by their source in Cyware Intel Exchange (CTIX).
+  playbookInputQuery:
+- key: delete_false_positive
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to delete indicators marked as false positive in Cyware Intel Exchange (CTIX).
+  playbookInputQuery:
+- key: delete_whitelisted
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to delete indicators allow-listed in Cyware Intel Exchange (CTIX).
+  playbookInputQuery:
+- key: exclude
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to also add the deleted indicators to the Exclusion List. When false (default), indicators are purely deleted and can be re-created if they reappear un-flagged.
+  playbookInputQuery:
+- key: reason
+  value:
+    simple: Deleted by CTIXDeleteFlaggedIndicators job
+  required: false
+  description: Reason recorded for the deletion (and exclusion, if enabled).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests

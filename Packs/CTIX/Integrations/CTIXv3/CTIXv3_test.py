@@ -1516,6 +1516,57 @@ class TestMapCtixIndicatorToXsoar:
         assert "malware" in result["fields"]["tags"]
         assert result["fields"]["reportedby"] == "ThreatFeed"
 
+    def test_flag_fields_mapped(self):
+        """All five CTIX status flags map to XSOAR fields when True."""
+        indicator = {
+            "name": "1.2.3.4",
+            "ioc_type": "ipv4-addr",
+            "confidence_score": 85,
+            "sources": [],
+            "tags": [],
+            "is_false_positive": True,
+            "is_deprecated": True,
+            "is_reviewed": True,
+            "is_whitelisted": True,
+            "is_revoked": True,
+        }
+        result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
+
+        assert result["fields"]["isfalsepositive"] is True
+        assert result["fields"]["isdeprecated"] is True
+        assert result["fields"]["isreviewed"] is True
+        assert result["fields"]["iswhitelisted"] is True
+        assert result["fields"]["isrevoked"] is True
+
+    def test_flag_fields_false_are_kept(self):
+        """False flags are still mapped (assign_params only drops None/empty),
+        so un-flagging in CTIX clears the TIM field on the next fetch."""
+        indicator = {
+            "name": "1.2.3.4",
+            "ioc_type": "ipv4-addr",
+            "confidence_score": 85,
+            "sources": [],
+            "tags": [],
+            "is_revoked": False,
+        }
+        result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
+
+        assert result["fields"]["isrevoked"] is False
+
+    def test_flag_fields_absent_are_omitted(self):
+        """Indicators without flag keys don't get flag fields (None is dropped)."""
+        indicator = {
+            "name": "1.2.3.4",
+            "ioc_type": "ipv4-addr",
+            "confidence_score": 85,
+            "sources": [],
+            "tags": [],
+        }
+        result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
+
+        assert "isrevoked" not in result["fields"]
+        assert "isdeprecated" not in result["fields"]
+
     def test_domain_indicator_with_dict_ioc_type(self):
         indicator = {
             "name": "evil.example.com",

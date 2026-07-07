@@ -34,18 +34,42 @@ configuration:
   section: Connect
   type: 8
   required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
 - display: Timeout
   name: timeout
   defaultvalue: "180"
   type: 0
   required: false
   section: Connect
+  advanced: true
   additionalinfo: Connection timeout in seconds (default is 15).
-- display: Use system proxy settings
-  name: proxy
-  type: 8
+- display: Fetch incidents
+  name: isFetch
+  section: Collect
   required: false
-  section: Connect
+  type: 8
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+  defaultvalue: CTIX Intel
+- display: Classifier
+  name: classifier
+  type: 13
+  section: Collect
+  required: false
+  defaultvalue: CTIX v3 Classifier
+- display: Mapper (incoming)
+  name: mapper
+  type: 13
+  section: Collect
+  required: false
+  defaultvalue: CTIX v3 Incoming Mapper
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -61,24 +85,6 @@ configuration:
   type: 15
   required: false
   section: Collect
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
-  defaultvalue: CTIX Intel
-- display: Classifier
-  name: classifier
-  type: 13
-  section: Collect
-  required: false
-  defaultvalue: CTIX v3 Classifier
-- display: Mapper (incoming)
-  name: mapper
-  type: 13
-  section: Collect
-  required: false
-  defaultvalue: CTIX v3 Incoming Mapper
 - display: First fetch time
   name: first_fetch
   type: 19
@@ -86,18 +92,6 @@ configuration:
   section: Collect
   required: false
   additionalinfo: 'The date and time from which to start fetching on the first run. If left empty, defaults to 3 days ago. For example, 10 days or P10D'
-- display: Incident Fetch CQL Query
-  name: incident_fetch_query
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: Custom CQL query used when fetching incidents. Updates the default CQL query.For example, type = "report" AND confidence_score = "90"
-- display: Saved Result Set Label
-  name: saved_result_set_label
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: The label name of the Saved Result Set to pull indicators from.
 - display: Maximum number of incidents per fetch
   additionalinfo: Allowed Range is 1-200. Default is 10
   name: max_fetch
@@ -105,6 +99,24 @@ configuration:
   section: Collect
   defaultvalue: '10'
   required: false
+- display: Incident Fetch CQL Query
+  name: incident_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Custom CQL query used when fetching incidents. Updates the default CQL query.For example, type = "report" AND confidence_score = "90"
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+  section: Collect
+- display: Saved Result Set Label
+  name: saved_result_set_label
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: The label name of the Saved Result Set to pull indicators from.
 - display: Saved Result Set Version
   name: saved_result_set_version
   type: 15
@@ -127,12 +139,6 @@ configuration:
   required: false
   defaultvalue: "12 hours"
   additionalinfo: How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence.
-- defaultvalue: "true"
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
-  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -174,18 +180,6 @@ configuration:
   display: ''
   type: 1
   section: Collect
-- name: feedBypassExclusionList
-  display: Bypass exclusion list
-  type: 8
-  required: false
-  section: Collect
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
-  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -197,11 +191,20 @@ configuration:
   required: false
   type: 15
   section: Collect
-- display: Fetch incidents
-  name: isFetch
-  section: Collect
-  required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
   type: 8
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
 script:
   script: ""
   type: python

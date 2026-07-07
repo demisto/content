@@ -10,6 +10,21 @@ ignore=IF113
 [file:incidentfield-ctixcustomscores.json]
 ignore=IF113
 
+[file:indicatorfield-isrevoked.json]
+ignore=IF113,IF115
+
+[file:indicatorfield-isfalsepositive.json]
+ignore=IF113,IF115
+
+[file:indicatorfield-isdeprecated.json]
+ignore=IF113,IF115
+
+[file:indicatorfield-isreviewed.json]
+ignore=IF113,IF115
+
+[file:indicatorfield-iswhitelisted.json]
+ignore=IF113,IF115
+
 [known_words]
 cyware
 ctix
