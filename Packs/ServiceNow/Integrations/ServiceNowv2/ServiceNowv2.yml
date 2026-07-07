@@ -361,7 +361,7 @@ configuration:
   name: comment_format
   section: Collect
   defaultvalue: source
-  additionalinfo: The format of the ServiceNow comments. By default, the format is supplied by ServiceNow during the fetch as part of the comments data (Source). This can be overwritten to a specific format for all comments. The available options are Source, Text, and HTML. Use HTML if an HTML editor is used within ServiceNow to add comments.
+  additionalinfo: The format of the ServiceNow comments. Default is Source, the format supplied by ServiceNow during the fetch as part of the comments data. This can be changed to a different format for all comments. Possible values are Source (default), Text, and HTML. Use HTML if an HTML editor is used within ServiceNow to add comments.
   type: 15
   required: false
   options:
