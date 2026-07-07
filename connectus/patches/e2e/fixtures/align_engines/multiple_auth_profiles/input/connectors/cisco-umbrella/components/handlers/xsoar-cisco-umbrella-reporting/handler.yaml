@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-cisco-umbrella-reporting
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Cisco Umbrella Reporting.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Cisco Umbrella Reporting
+    xsoar-pack-id: CiscoUmbrellaReporting
+  args: {}
+capabilities:
+- id: automation-and-remediation_cisco-umbrella-reporting
+  auth_options:
+  - id: passthrough.cisco_umbrella_reporting
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

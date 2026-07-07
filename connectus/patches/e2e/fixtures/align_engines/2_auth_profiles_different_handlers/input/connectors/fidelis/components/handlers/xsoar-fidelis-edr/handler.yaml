@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-fidelis-edr
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Fidelis EDR.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Fidelis EDR
+    xsoar-pack-id: FidelisEndpoint
+  args: {}
+capabilities:
+- id: automation-and-remediation_fidelis-edr
+  auth_options:
+  - id: plain.fidelis_edr
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+- id: fetch-issues_fidelis-edr
+  auth_options:
+  - id: plain.fidelis_edr
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+  actions:
+  - type: reset_incidents_last_run
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

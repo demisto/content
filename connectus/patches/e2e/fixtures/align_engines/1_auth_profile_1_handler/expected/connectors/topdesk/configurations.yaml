@@ -1,0 +1,201 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: topdesk
+  label: TOPdesk
+  help_text: |
+    To find the **Default Issue Caller ID** used when creating new TOPdesk issues, first configure the integration instance *without* providing it, then run the `!topdesk-persons-list` command in the *Playground - War Room*. Copy the ID of the desired person and edit the integration instance to set the **Default Issue Caller ID**.
+
+    You can enable issue mirroring between the platform and TOPdesk. Enable **Fetches issues**, then in the *Mirroring Direction* parameter select Incoming, Outgoing, Incoming And Outgoing, or None. The *Comment Entry Tag*, *Work Note Entry Tag*, and *File Entry Tag* parameters control which comments and attachments are mirrored to TOPdesk. Mappers are required for both incoming and outgoing mirroring.
+
+    A few commands accept a query parameter (for listing issues, branches, persons, and operators). Newer TOPdesk versions use the [FIQL query format](https://developers.topdesk.com/tutorial.html#query), while older versions use limited inline parameters.
+general_configurations:
+  configurations:
+  - view_group: topdesk
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-topdesk.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_topdesk
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: defaultCallerId
+      field_type: input
+      title: Default Incident Caller ID
+      options:
+        help_text: Add the default caller ID which is set when creating new TOPdesk incidents without providing a caller.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: topdesk
+- id: fetch-issues_topdesk
+  configurations:
+  - fields:
+    - id: incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: TOPdesk
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incidentFetchInterval
+      field_type: duration
+      title: Issues Fetch Interval
+      options:
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: TOPdesk
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: TOPdesk-incoming-mapper
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: TOPdesk
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: TOPdesk Incident Classifier
+  - fields:
+    - id: first_fetch
+      field_type: input
+      title: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+      options:
+        default_value: 3 days
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: max_fetch
+      field_type: input
+      title: Maximum number of incidents per fetch
+      options:
+        default_value: '10'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: fetch_query
+      field_type: input
+      title: The query to use when fetching incidents
+      options:
+        help_text: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: topdesk

@@ -1,0 +1,13 @@
+{
+  "description": "align_engines baseline: WIP placeholder script is a no-op, so the patched tree must equal the input tree. Wires the script in via `script` + `args` (passing the pipeline CSV through --csv). Once real engine-alignment logic lands, replace expected/ with the mutated golden.",
+  "connector": "enginesconn",
+  "csv": "connectus-migration-pipeline.csv",
+  "script": "patches/align_engines.py",
+  "args": [
+    "--csv", "{csv}",
+    "--connectors-dir", "{connectors_dir}",
+    "--path", "{path}",
+    "{dry_run}"
+  ],
+  "expect_modified": false
+}

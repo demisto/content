@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-cisco-umbrella-investigate_integrationLogLevel
+  field_name: integrationLogLevel
+- id: xsoar-cisco-umbrella-investigate_defaultIgnore
+  field_name: defaultIgnore
+- id: passthrough_cisco_umbrella_investigate_baseURL
+  field_name: baseURL
+- id: passthrough_cisco_umbrella_investigate_proxy
+  field_name: proxy
+- id: passthrough_cisco_umbrella_investigate_insecure
+  field_name: insecure
+- id: passthrough_cisco_umbrella_investigate_engine_mode
+  field_name: engine_mode
+- id: passthrough_cisco_umbrella_investigate_engine
+  field_name: engine
+- id: passthrough_cisco_umbrella_investigate_engine_group
+  field_name: engineGroup

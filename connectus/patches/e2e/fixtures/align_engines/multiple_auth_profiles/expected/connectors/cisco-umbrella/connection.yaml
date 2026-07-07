@@ -1,0 +1,753 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: cisco-umbrella-cloud-security-v2
+  label: Cisco Umbrella Cloud Security v2
+  help_text: |
+    Cisco Umbrella is a cloud security platform providing the first line of defense against internet threats. It uses DNS-layer security to block malicious requests before a connection is established, offering protection against malware, ransomware, phishing, and more. It offers real-time reporting, integrates with other Cisco solutions for layered security, and uses machine learning to uncover and predict threats.
+
+    Provide your **API Key**, **API Secret**, and **Base URL** to connect. This integration was tested with version 2 of Cisco Umbrella Cloud Security.
+- id: cisco-umbrella-enforcement
+  label: Cisco Umbrella Enforcement
+  help_text: |
+    Cisco Enforcement is part of the Cisco Umbrella package. When you log into the Cisco Umbrella portal you will need to obtain the API Token for the Cisco Enforcement Feature. OpenDNS enterprise security products have been rebranded to Cisco Umbrella.
+
+    To retrieve your key:
+
+    1. Navigate to **Policies > Policy Components > Integrations**.
+    2. Expand the appropriate integration or click **Add** to generate a custom integration.
+
+    For more information, see Cisco Umbrella: [Umbrella Support](https://support.umbrella.com/hc/en-us/articles/231248748).
+- id: cisco-umbrella-investigate
+  label: Cisco Umbrella Investigate
+  help_text: |
+    Cisco Umbrella Investigate enables you to research domains, IPs, and URLs observed by the Umbrella resolvers. When using credentials, insert your API key as the credential username and your API secret as the password.
+
+    ### Step 1: Obtain Cisco Umbrella Investigate API Key & Secret
+
+    1. **Connect to Cisco Umbrella:**
+       - Access your Cisco Umbrella account dashboard.
+
+    2. **Navigate to API Keys:**
+       Click **Investigate** in the menu.
+
+    3. **Create New Token:**
+       a. Locate and click **API Keys**.
+       b. Click **CREATE NEW TOKEN**.
+       c. Provide a **Title** for your token (e.g., "Cortex XSOAR Integration").
+       d. Click **Create** to generate the API key and secret.
+
+    ### Step 2: Configure Credentials
+
+    - Use the generated API key as the **credential username**.
+    - Use the generated API secret as the **password**.
+- id: cisco-umbrella-reporting
+  label: Cisco Umbrella Reporting
+  help_text: |
+    Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a better understanding of your Umbrella usage. Gain insights into request activity and blocked activity, determining which of your identities are generating blocked requests. Reports help build actionable intelligence in addressing security threats including changes in usage trends over time.
+
+    ## How to get a Cisco Umbrella Reporting Credentials
+
+    ### Generate API Key
+
+    Create an Umbrella Reporting API key and secret.
+
+    1. Navigate to **Admin** > **API Keys** and click **Create**.
+
+       or
+
+       In a management console (Multi-org, MSP, or MSSP), navigate to **Settings** > **API Keys** and click **Add**.
+
+    2. Select **Umbrella Reporting** and click **Generate Token**.
+    3. Expand **Umbrella Reporting** and copy **Your Key** and **Your Secret**.
+    4. Click the **To keep it secure, ...** checkbox and then click **Close**.
+
+    You must acknowledge that your key and secret are only displayed once to activate the **Close** button.
+
+    For more information please see: [log-into-umbrella](https://developer.cisco.com/docs/cloud-security/#!reporting-v2-authentication/log-into-umbrella).
+profiles:
+- id: passthrough.cisco_umbrella_cloud_security_v2
+  type: passthrough
+  view_group: cisco-umbrella-cloud-security-v2
+  title: API Key/Secret
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client_id:credentials.identifier,client_secret:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_id
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: API Secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: baseURL
+      field_type: input
+      title: Base URL
+      options:
+        help_text: Cisco Umbrella Investigate base URL.
+        default_value: https://api.umbrella.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Cloud Security v2
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Cloud Security v2
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: api_key.cisco_umbrella_enforcement
+  type: api_key
+  view_group: cisco-umbrella-enforcement
+  title: API Key
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:cred_api_key.password
+  configurations:
+  - fields:
+    - id: cred_api_key
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: url
+      field_type: input
+      title: Server URL (e.g., https://example.net)
+      options:
+        default_value: https://s-platform.api.opendns.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: api_key_cisco_umbrella_enforcement_proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: api_key_cisco_umbrella_enforcement_insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: api_key_cisco_umbrella_enforcement_engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: api_key_cisco_umbrella_enforcement_engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Enforcement
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: api_key_cisco_umbrella_enforcement_engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Enforcement
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: passthrough.cisco_umbrella_investigate
+  type: passthrough
+  view_group: cisco-umbrella-investigate
+  title: API Key/Secret
+  vault_mappings:
+  - id: apitoken_creds
+    map:
+      user: client_id
+      password: client_secret
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client_id:apitoken_creds.identifier,client_secret:apitoken_creds.password
+  configurations:
+  - fields:
+    - id: apitoken_creds_username
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_id
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: apitoken_creds_password
+      title: API Secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_baseURL
+      field_type: input
+      title: Base URL
+      options:
+        help_text: Cisco Umbrella Investigate base URL.
+        default_value: https://api.umbrella.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Investigate
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_investigate_engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Investigate
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: passthrough.cisco_umbrella_reporting
+  type: passthrough
+  view_group: cisco-umbrella-reporting
+  title: API Key/Secret
+  vault_mappings:
+  - id: credentials
+    map:
+      user: client_id
+      password: client_secret
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client_id:credentials.identifier,client_secret:credentials.password
+  configurations:
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_credentials_username
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_id
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_credentials_password
+      title: API Secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: api_url
+      field_type: input
+      title: API URL
+      options:
+        help_text: Cisco Umbrella Reporting API base URL.
+        default_value: https://api.umbrella.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Reporting
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: passthrough_cisco_umbrella_reporting_engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Cisco Umbrella Reporting
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
