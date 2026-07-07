@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import functools
 import json
 from pathlib import Path
 import subprocess
@@ -41,6 +42,7 @@ RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
 # -----------------------------
 # Git utilities
 # -----------------------------
+@functools.lru_cache(maxsize=1)
 def get_repo_root() -> str:
     """Get the git repository root directory.
 
@@ -49,11 +51,11 @@ def get_repo_root() -> str:
     must execute from the repository root. Without this, git rm --ignore-unmatch
     silently does nothing because the paths don't exist relative to the cwd.
     """
-    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True)
     return result.stdout.strip()
 
 
-def run_git_command(cmd, github_token, raise_on_error=True):
+def run_git_command(cmd: list[str], github_token: str, raise_on_error: bool = True) -> subprocess.CompletedProcess:
     log_cmd = [c.replace(github_token, "***") for c in cmd]
     print(f"Running: {' '.join(log_cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=get_repo_root())
