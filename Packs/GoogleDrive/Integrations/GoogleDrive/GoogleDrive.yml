@@ -3264,7 +3264,7 @@ script:
     - contextPath: FileContent.Url
       description: The original URL used to retrieve the file.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.8516410
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   isfetch: true
   runonce: false
   script: "-"
