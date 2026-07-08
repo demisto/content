@@ -427,11 +427,10 @@ NGINX_SSL_CERTS = f"""
 #        request_method        - GET/HEAD/...
 #        request_uri           - the full requested URI.
 #        request_host          - the Host header.
-#        request_scheme        - http or https.
 #        request_range         - Range header (partial-content requests).
 #        request_if_none_match - ETag the client already has (conditional GET).
 #        request_if_modified_since - date the client already has (conditional GET).
-#        request_bypass_cache  - value of the ?nocache= arg (cache bypass on/off).
+
 #
 #   4. WHAT HAPPENED (response outcome + cache decision):
 #        response_status       - HTTP status code returned.
@@ -469,9 +468,9 @@ log_format edl_detailed
     'connection_id=$connection requests_on_connection=$connection_requests '
     'client_real_ip="$http_x_real_ip" client_forwarded_chain="$http_x_forwarded_for" '
     'client_nearest_peer=$remote_addr client_user_agent="$http_user_agent" '
-    'request_method=$request_method request_uri="$request_uri" request_host="$host" request_scheme=$scheme '
+    'request_method=$request_method request_uri="$request_uri" request_host="$host" '
     'request_range="$http_range" request_if_none_match="$http_if_none_match" '
-    'request_if_modified_since="$http_if_modified_since" request_bypass_cache="$arg_nocache" '
+    'request_if_modified_since="$http_if_modified_since" '
     'response_status=$status cache_status=$upstream_cache_status upstream_address="$upstream_addr" '
     'response_etag="$sent_http_etag" '
     'response_body_bytes=$body_bytes_sent response_total_bytes=$bytes_sent '
@@ -482,6 +481,10 @@ log_format edl_detailed
 """
 NGINX_SERVER_CONF = """
 $log_format
+
+# Per-URI concurrency zone used to FAIL (not queue) concurrent cold-MISS requests
+# for the same URI. Keyed on $request_uri so the limit is per-resource, not per-client.
+limit_conn_zone $request_uri zone=concurrent_conn_zone:1m;
 server {
 
     listen $port default_server $ssl;
@@ -493,25 +496,60 @@ server {
     access_log /var/log/nginx/access.log edl_detailed;
     error_log /var/log/nginx/error.log info;
 
+
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
-# Thundering-herd protection
-proxy_cache_lock on;
-proxy_cache_lock_timeout $cache_lock_timeout;
-proxy_cache_lock_age $cache_lock_age;
+# Cache-vs-fetch policy (TWO-TIER, HIT-safe fail-fast on cold MISS)
+# ---------------------------------------------------------------------------
+# We want two behaviors that plain `proxy_cache_lock` cannot give together:
+#   * On a TRUE cold MISS (nothing cached to fall back on), concurrent requests
+#     for the SAME URI must FAIL FAST (429) instead of queueing behind a lock.
+#   * On STALE / UPDATING (a cached copy exists but is expired/being refreshed)
+#     clients must be served the STALE copy and must NEVER be rejected.
+#
+# `limit_conn` is the only mechanism that REJECTS (proxy_cache_lock only WAITS),
+# but it runs in the preaccess phase - before the cache status is known - so
+# applying it on the public cache location would ALSO count cache HITs and could
+# 429 two simultaneous HITs of the same URI. nginx's `proxy_cache` cannot route
+# "only on miss" to a different location within one server, so we use TWO server
+# blocks:
+#   Tier 1 = public server on $port : does the cache read. HIT / STALE / UPDATING
+#            are answered here from the cache (see proxy_cache_use_stale +
+#            proxy_cache_background_update) and, on a MISS, proxy_pass to Tier 2.
+#            HIT/STALE/UPDATING never leave Tier 1, so they are never counted and
+#            never rejected.
+#   Tier 2 = internal server on localhost:$fetchport : reached ONLY when Tier 1's
+#            cache must populate a new entry (true MISS / expired-with-no-stale).
+#            It carries `limit_conn ... 1`, so the first fetch for a URI proceeds
+#            and every concurrent same-URI fetch is rejected immediately with 429.
 
 # Cache validity by status
 proxy_cache_valid 200 301 302 $cache_refresh_rate;
 
 # Optional: cache other responses briefly (helps absorb spikes)
 proxy_cache_valid 404 $cache_404_ttl;
+# NEVER cache the fail-fast rejection: a 429 from the Tier-2 limiter is a
+# transient "someone else is already building this" signal. Caching it (via the
+# `any` rule below) would poison the URI and serve 429s even after the real
+# content is ready. `0s` = do not cache; being status-specific it overrides `any`.
+proxy_cache_valid 429 0s;
+# NEVER cache upstream errors / timeouts either. A 504 means the build exceeded
+# proxy_read_timeout and a 5xx is a transient upstream failure - caching them via
+# the `any` rule below would poison the URI and keep serving the error (as a
+# cache HIT) even after a later build would succeed, blocking recovery. `0s` = do
+# not cache; being status-specific these override `any`. Note: this does NOT stop
+# `proxy_cache_use_stale timeout http_50x` from serving a previously-cached GOOD
+# copy on timeout - that stale-serving is desirable and is what we keep.
+proxy_cache_valid 500 502 503 504 0s;
 proxy_cache_valid any $cache_default_ttl;
 
 # Revalidation (use conditional requests when expired)
 proxy_cache_revalidate on;
 
-# Serve stale content in failure/update scenarios
+# Serve stale content in failure/update scenarios. `updating` is what lets a
+# STALE entry be served immediately to every waiting client while a single
+# background refresh runs - so STALE/UPDATING never reach the Tier-2 limiter.
 proxy_cache_use_stale
     updating
     error
@@ -522,7 +560,8 @@ proxy_cache_use_stale
     http_503
     http_504;
 
-# Background refresh of expired cache
+# Background refresh of expired cache: the refresh runs as a detached subrequest,
+# so serving stale is always allowed and never fails.
 proxy_cache_background_update on;
 
     # Static test file
@@ -531,28 +570,22 @@ proxy_cache_background_update on;
         default_type text/html;
     }
 
-    # Proxy everything to the python (gevent) upstream on the single server port.
+    # ---- Tier 1: public cache front --------------------------------------
+    # Serves HIT / STALE / UPDATING from the cache. On a MISS, the cache module
+    # fetches from Tier 2 (the internal fetch server) where the fail-fast limiter
+    # lives. HITs/STALE/UPDATING are served straight from cache and never reach
+    # Tier 2, so they are never counted by limit_conn and never rejected.
     location / {
-        proxy_pass http://localhost:$serverport/;
+        proxy_pass http://localhost:$fetchport/;
 
-        # Forward the real client identity to the Python (gevent) upstream so the
-        # WSGI middleware can log the actual firewall/client instead of 127.0.0.1.
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Original-URI $request_uri;
-        # Propagate nginx's per-request id to the Python upstream so the same
-        # request_id appears in the nginx access log AND the wsgi request/access
-        # lines, giving a single correlation id end-to-end.
-        proxy_set_header X-Request-ID $request_id;
-        # Forward, as an epoch (seconds.ms), the moment nginx is about to hand the
-        # request to the upstream. The WSGI middleware compares this with its own
-        # receive time and logs "nginx_wait" - the time the request spent inside
-        # nginx (queueing / cache-lock / connect) BEFORE the app started working.
-        # This is exactly the gap that makes nginx's time_total_secs much larger
-        # than the app's elapsed time.
-        proxy_set_header X-Request-Start $msec;
+        # CRITICAL: the base flask-nginx image ENABLES the cache lock in the
+        # http{} block, and that setting is inherited here. While enabled,
+        # concurrent cold-MISS requests for the same URI WAIT for the first
+        # request to populate the cache (then get served HIT) - they never fall
+        # through to Tier 2, so the fail-fast limit_conn never fires. We MUST turn
+        # the inherited lock OFF here so misses proceed to Tier 2 and the 2nd+
+        # concurrent miss is rejected with 429 instead of queued.
+        proxy_cache_lock off;
 
         # Surface the cache decision both to the client and (via the access log
         # variable) to our logging: HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED.
@@ -564,6 +597,24 @@ proxy_cache_background_update on;
         proxy_connect_timeout 3600;
         proxy_send_timeout 3600;
         send_timeout 3600;
+
+        # Forward the real client identity through the chain so the Python (gevent)
+        # upstream's WSGI middleware can log the actual firewall/client instead of
+        # 127.0.0.1. Tier 2 forwards these on to the app.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+        # Propagate nginx's per-request id to the upstream so the same request_id
+        # appears in the nginx access log AND the wsgi request/access lines,
+        # giving a single correlation id end-to-end.
+        proxy_set_header X-Request-ID $request_id;
+        # Forward, as an epoch (seconds.ms), the moment nginx is about to hand the
+        # request to the upstream. The WSGI middleware compares this with its own
+        # receive time and logs "nginx_wait" - the time the request spent inside
+        # nginx (queueing / cache-lock / connect) BEFORE the app started working.
+        proxy_set_header X-Request-Start $msec;
     }
 
     # How long an idle keep-alive client connection stays open. Lowering this lets nginx
@@ -571,6 +622,46 @@ proxy_cache_background_update on;
     # leaving them pinned in CLOSE_WAIT and consuming a worker_connections slot + an FD.
     # Default "65" matches nginx's built-in default, so behavior is unchanged unless tuned.
     keepalive_timeout $keepalive_timeout;
+}
+
+# ---- Tier 2: internal fetch server (cold-MISS path only) -----------------
+# Reached ONLY via Tier 1's cache fetch on a MISS. Because Tier 1 answers
+# HIT/STALE/UPDATING from cache, only requests that actually need the upstream
+# arrive here, so `limit_conn ... 1` counts ONLY cold-miss fetches: the first
+# request for a URI builds the cache entry, and every concurrent same-URI fetch
+# is rejected immediately with 429. Listens on loopback only, so it is never
+# reachable directly by external clients.
+server {
+    listen localhost:$fetchport;
+
+    access_log /var/log/nginx/access.log edl_detailed;
+    error_log /var/log/nginx/error.log info;
+
+    location / {
+        limit_conn concurrent_conn_zone 1;
+        limit_conn_status 429;
+
+        # Tier 2 must NOT cache: caching is owned entirely by Tier 1 (the public
+        # server). If proxy_cache is inherited from the http{} block, disable it
+        # here so this tier is purely the rate-limited cold-MISS fetch path.
+        proxy_cache off;
+
+        proxy_pass http://localhost:$serverport/;
+
+        # Preserve the forwarded client identity headers set by Tier 1.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $http_x_real_ip;
+        proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Original-URI $http_x_original_uri;
+        proxy_set_header X-Request-ID $http_x_request_id;
+        proxy_set_header X-Request-Start $http_x_request_start;
+
+        proxy_read_timeout $timeout;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        send_timeout 3600;
+    }
 }
 
 """
@@ -624,6 +715,10 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
 
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
+    # Internal loopback port for the Tier-2 cold-MISS fetch server. Tier 1 (public,
+    # $port) proxies cache misses to localhost:$fetchport, which applies the
+    # fail-fast `limit_conn` and then proxies on to the gevent app on $serverport.
+    fetchport = serverport + 1
     extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException("If using HTTPS connection, both certificate and private key should be provided.")
@@ -651,6 +746,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         log_format=NGINX_LOG_FORMAT,
         port=port,
         serverport=serverport,
+        fetchport=fetchport,
         ssl=ssl,
         sslcerts=sslcerts,
         extra_cache_key=extra_cache_keys_str,
@@ -669,7 +765,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     # decisions and the upstream timing fields in the access logs.
     demisto.info(
         "edl: nginx effective settings -> "
-        f"listen_port={port} upstream_port={serverport} ssl={'on' if ssl else 'off'} "
+        f"listen_port={port} upstream_port={serverport} fetch_tier_port={fetchport} ssl={'on' if ssl else 'off'} "
         f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
         f"cache_lock_timeout={cache_lock_timeout} cache_lock_age={cache_lock_age} "
         f"cache_404_ttl={cache_404_ttl} cache_default_ttl={cache_default_ttl} "
