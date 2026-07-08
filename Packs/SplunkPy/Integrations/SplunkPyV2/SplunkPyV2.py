@@ -5520,6 +5520,161 @@ def kv_store_collection_create_transform(service: client.Service, args: dict[str
     return CommandResults(readable_output=f"KV store collection transforms {collection_name} created successfully")
 
 
+def parse_key_value_pairs(key_value_pairs: str | None) -> dict[str, Any]:
+    """Parses the key_value_pairs argument (a JSON object string) into a dict of stanza attributes."""
+    if not key_value_pairs:
+        return {}
+    try:
+        parsed = json.loads(key_value_pairs)
+    except (ValueError, TypeError) as e:
+        raise DemistoException(
+            'The "key_value_pairs" argument must be a valid JSON object string, '
+            'e.g. {"external_type": "kvstore", "collection": "my_collection"}.'
+        ) from e
+    if not isinstance(parsed, dict):
+        raise DemistoException('The "key_value_pairs" argument must be a JSON object (dict), not a list or scalar.')
+    return parsed
+
+
+def get_configuration_file(service: client.Service, conf_file_name: str):
+    """Returns the ConfigurationFile object for the given conf file name, raising a clear error if not found."""
+    try:
+        return service.confs[conf_file_name]
+    except KeyError as e:
+        raise DemistoException(f"Configuration file '{conf_file_name}' was not found.") from e
+
+
+def splunk_configuration_file_list(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Lists the configuration (.conf) files available in the given Splunk app namespace."""
+    app = args.get("app", "search")
+    limit = arg_to_number(args.get("limit")) or 50
+    conf_files = [{"FileName": conf.name, "App": app} for conf in service.confs.list(count=limit)]
+    readable_output = tableToMarkdown(
+        name=f"Configuration files in app '{app}'", t=conf_files, headers=["FileName", "App"], removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.ConfigurationFile",
+        outputs_key_field="FileName",
+        outputs=conf_files,
+        readable_output=readable_output,
+        raw_response=conf_files,
+    )
+
+
+def splunk_configuration_file_create(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Creates a new, empty configuration (.conf) file in the given Splunk app namespace."""
+    conf_file_name = args["conf_file_name"]
+    app = args.get("app", "search")
+    service.confs.create(conf_file_name)
+    return CommandResults(readable_output=f"Configuration file '{conf_file_name}' in app '{app}' was created successfully.")
+
+
+def splunk_configuration_stanza_create(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Creates a new stanza (configuration entry) in a Splunk .conf file, optionally with attributes."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    key_value_pairs = parse_key_value_pairs(args.get("key_value_pairs"))
+    conf_file = get_configuration_file(service, conf_file_name)
+    stanza = conf_file.create(stanza_name)
+    if key_value_pairs:
+        stanza.submit(key_value_pairs)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was created successfully."
+    )
+
+
+def splunk_configuration_stanza_list(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Lists the stanzas in a .conf file, or returns the key/value content of a single stanza when stanza_name is given."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args.get("stanza_name")
+    app = args.get("app", "search")
+    owner = args.get("owner", "nobody")
+    limit = arg_to_number(args.get("limit")) or 50
+    conf_file = get_configuration_file(service, conf_file_name)
+
+    if stanza_name:
+        if stanza_name not in conf_file:
+            raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+        stanza = conf_file[stanza_name]
+        content = dict(stanza.content.items())
+        access = getattr(stanza, "access", None) or {}
+        outputs = {
+            "StanzaName": stanza.name,
+            "App": access.get("app", app),
+            "Owner": access.get("owner", owner),
+            "Sharing": access.get("sharing"),
+            "Content": content,
+        }
+        readable_output = tableToMarkdown(
+            name=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}'", t=content, removeNull=True
+        )
+        return CommandResults(
+            outputs_prefix="Splunk.ConfigurationStanza",
+            outputs_key_field="StanzaName",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=content,
+        )
+
+    stanzas = []
+    for stanza in conf_file.list(count=limit):
+        access = getattr(stanza, "access", None) or {}
+        stanzas.append(
+            {
+                "StanzaName": stanza.name,
+                "App": access.get("app", app),
+                "Owner": access.get("owner", owner),
+                "Sharing": access.get("sharing"),
+            }
+        )
+    readable_output = tableToMarkdown(
+        name=f"Stanzas in configuration file '{conf_file_name}'",
+        t=stanzas,
+        headers=["StanzaName", "App", "Owner", "Sharing"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.ConfigurationStanza",
+        outputs_key_field="StanzaName",
+        outputs=stanzas,
+        readable_output=readable_output,
+        raw_response=stanzas,
+    )
+
+
+def splunk_configuration_stanza_update(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Upserts attributes on an existing stanza in a Splunk .conf file (existing keys overwritten, others untouched)."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    key_value_pairs = parse_key_value_pairs(args.get("key_value_pairs"))
+    if not key_value_pairs:
+        raise DemistoException('The "key_value_pairs" argument is required and must contain at least one attribute to update.')
+    conf_file = get_configuration_file(service, conf_file_name)
+    if stanza_name not in conf_file:
+        raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+    conf_file[stanza_name].submit(key_value_pairs)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was updated successfully."
+    )
+
+
+def splunk_configuration_stanza_delete(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Deletes a stanza (configuration entry) from a Splunk .conf file via the configs/conf-{file} REST endpoint.
+
+    This complements splunk-kv-store-collection-delete-entry, which removes records from the KV Store
+    but leaves the corresponding stanza in the .conf file (e.g. transforms.conf) intact.
+    """
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    conf_file = get_configuration_file(service, conf_file_name)
+    if stanza_name not in conf_file:
+        raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+    conf_file.delete(stanza_name)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was deleted successfully."
+    )
+
+
 def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict[str, Any]:
     if json_data.startswith("[") and json_data.endswith("]"):
         record: Record = kv_data_service_client._post(
@@ -5807,6 +5962,22 @@ def main() -> None:  # pragma: no cover
         return_results(splunk_job_status(service, args))
     elif command == "splunk-job-share":
         return_results(splunk_job_share(service, args))
+    elif command.startswith("splunk-configuration-") and service is not None:
+        # All configuration commands share the same namespace scoping (app + owner), so it is set once here.
+        service.namespace = namespace(app=args.get("app", "search"), owner=args.get("owner", "nobody"), sharing="app")
+
+        if command == "splunk-configuration-file-list":
+            return_results(splunk_configuration_file_list(service, args))
+        elif command == "splunk-configuration-file-create":
+            return_results(splunk_configuration_file_create(service, args))
+        elif command == "splunk-configuration-stanza-create":
+            return_results(splunk_configuration_stanza_create(service, args))
+        elif command == "splunk-configuration-stanza-list":
+            return_results(splunk_configuration_stanza_list(service, args))
+        elif command == "splunk-configuration-stanza-update":
+            return_results(splunk_configuration_stanza_update(service, args))
+        elif command == "splunk-configuration-stanza-delete":
+            return_results(splunk_configuration_stanza_delete(service, args))
     elif command.startswith("splunk-kv-") and service is not None:
         app = args.get("app_name", "search")
         service.namespace = namespace(app=app, owner="nobody", sharing="app")

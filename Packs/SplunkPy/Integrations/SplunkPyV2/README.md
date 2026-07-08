@@ -1446,3 +1446,143 @@ Commands that return large data (such as `splunk-search`) can cause performance 
 
 - Use the `event_limit` argument (where available).
 - Append `| head 30000` directly to your Splunk query.
+
+### splunk-configuration-stanza-delete
+
+***
+Deletes a stanza (configuration entry) from a Splunk .conf file (for example, transforms.conf) via the Splunk REST API configuration endpoints. This is useful for cleaning up KV Store transformations that remain after deleting KV Store records.
+To identify the correct stanza for deletion, use the splunk-configuration-file-list and splunk-configuration-stanza-list commands. This command is potentially harmful as it irreversibly deletes a stanza from a .conf file.
+
+#### Base Command
+
+`splunk-configuration-stanza-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conf_file | The target configuration file name (without the .conf extension). | Required | 
+| stanza_name | The name of the stanza to be removed. | Required | 
+| app | The name of the Splunk application namespace. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### splunk-configuration-file-list
+
+***
+Lists the configuration (.conf) files available in the given Splunk app namespace.
+
+#### Base Command
+
+`splunk-configuration-file-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app | The name of the Splunk application namespace. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+| limit | Maximum number of configuration files to return. Range 1-500. The default is 50. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.ConfigurationFile.FileName | String | The configuration file name \(without the .conf suffix\). | 
+| Splunk.ConfigurationFile.App | String | The Splunk app namespace the configuration file belongs to. | 
+
+### splunk-configuration-stanza-list
+
+***
+Lists the stanzas in a .conf file, or returns the key/value content of a single stanza when stanza_name is provided.
+
+#### Base Command
+
+`splunk-configuration-stanza-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conf_file | The configuration file name (without the .conf extension). | Required | 
+| stanza_name | If provided, returns the key/value content of that single stanza. If omitted, returns the list of all stanza names in the configuration file. | Optional | 
+| app | The name of the Splunk application namespace. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+| limit | Maximum number of stanzas to return when stanza_name is omitted. Range 1-500. The default is 50. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.ConfigurationStanza.StanzaName | String | The stanza name. | 
+| Splunk.ConfigurationStanza.App | String | The Splunk app namespace the stanza belongs to. | 
+| Splunk.ConfigurationStanza.Owner | String | The Access Control List \(ACL\) owner of the stanza. | 
+| Splunk.ConfigurationStanza.Sharing | String | The sharing level of the stanza. | 
+| Splunk.ConfigurationStanza.Content | Unknown | The key/value content of the stanza \(only returned when a single stanza_name is provided\). | 
+
+### splunk-configuration-file-create
+
+***
+Creates a new, empty configuration (.conf) file in the given Splunk app namespace.
+
+#### Base Command
+
+`splunk-configuration-file-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conf_file_name | The name of the new configuration file to create (without the .conf extension). | Required | 
+| app | The name of the Splunk application namespace in which to create the file. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### splunk-configuration-stanza-create
+
+***
+Creates a new stanza (configuration entry) in a Splunk .conf file, optionally with attributes.
+
+#### Base Command
+
+`splunk-configuration-stanza-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conf_file | The configuration file name (without the .conf extension), for example, "transforms", "props", or "inputs". | Required | 
+| stanza_name | The name of the new stanza to create. | Required | 
+| key_value_pairs | A JSON object string of attributes to set on creation, e.g., {"external_type": "kvstore", "collection": "my_collection"}. If omitted, an empty stanza is created. | Optional | 
+| app | The name of the Splunk application namespace. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### splunk-configuration-stanza-update
+
+***
+Updates (upserts) attributes on an existing stanza in a Splunk .conf file.
+
+#### Base Command
+
+`splunk-configuration-stanza-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conf_file | The configuration file name (without the .conf extension). | Required | 
+| stanza_name | The name of the existing stanza to update. | Required | 
+| key_value_pairs | A JSON object string of attributes to upsert, e.g., {"attribute_1": "A_updated", "new_attr": "X"}. Existing keys are overwritten; missing keys are left untouched (Splunk's properties endpoint is upsert-only). | Required | 
+| app | The name of the Splunk application namespace. The default is "search". Default is search. | Optional | 
+| owner | The Access Control List (ACL) owner for the namespace. The default is "nobody". Default is nobody. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
