@@ -176,7 +176,7 @@ expected_alert_output = [
             "cybersixgillthreattype": ["Brand Protection", "Data Leak"],
             "cybersixgillassessment": "text",
             "cybersixgillrecommendations": "",
-            "incidentlink": "https://portal.cybersixgill.com/#/?actionable_alert=6188bd21017198385e228437",
+            "incidentlink": "https://portal.cybersixgill.com/#/?actionable_alert=6188bd21017198385e228437&org=",
             "cybersixgillstatus": "In Treatment",
             "cybersixgillsite": "rw_everest",
             "cybersixgillactor": None,
@@ -185,8 +185,7 @@ expected_alert_output = [
             "cybersixgillattributes": None,
         },
         "status": 1,
-        "details": 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" '
-        "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        "details": 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" ',
         "rawJSON": '{"additional_info": {"matched_domain_names": '
         '[], "matched_organization_aliases": ["Walmart"], '
         '"organization_name": "Cybersixgill", "site": "rw_everest", "template_id": '
@@ -203,7 +202,7 @@ expected_alert_output = [
         '"summary": "", "threat_level": "imminent", "threats": ["Brand Protection", '
         '"Data Leak"], "title": "Your organization was potentially targeted by a '
         'ransomware group", "update_time": "2021-11-08 06:01:05", "user_id": '
-        '"5d233575f8db38787dbe24b6", "date": "2021-11-08 06:01:05"}',
+        '"5d233575f8db38787dbe24b6", "date": "2021-11-08 06:01:05", "org_id": ""}',
     }
 ]
 
