@@ -19706,7 +19706,7 @@ script:
       description: The descriptive name of the rule group. You can't change the name of a rule group after you create it.
       required: true
     - name: type
-      description: Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules.
       required: true
       auto: PREDEFINED
       predefined:
@@ -19725,7 +19725,7 @@ script:
     - name: rules_source
       description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. This argument is required if you choose to use the RuleGroup option. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`.'
     - name: stateful_rule_options_rule_order
-      description: Indicates how to manage the order of the rule evaluation for the rule group.
+      description: The order of the rule evaluation for the rule group.
       auto: PREDEFINED
       predefined:
         - DEFAULT_ACTION_ORDER
@@ -19756,6 +19756,7 @@ script:
         - 'false'
     - name: summary_configuration_rule_options
       description: A comma-separated list of the rule options to include in the rule group summary.
+      isArray: true
     outputs:
     - contextPath: AWS.NetworkFirewall.RuleGroups.UpdateToken
       description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the rule group. The token marks the state of the rule group resource at the time of the request.
@@ -19773,7 +19774,7 @@ script:
       description: A description of the rule group.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Type
-      description: Indicates whether the rule group is stateless or stateful.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Capacity
       description: The maximum operating resources that this rule group can use.
@@ -19845,7 +19846,7 @@ script:
     - name: rule_group_arn
       description: The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both.
     - name: type
-      description: Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
       auto: PREDEFINED
       predefined:
         - STATELESS
@@ -19900,7 +19901,7 @@ script:
     - name: rule_group_arn
       description: The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both.
     - name: type
-      description: Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
       auto: PREDEFINED
       predefined:
         - STATELESS
@@ -19929,7 +19930,7 @@ script:
       description: A description of the rule group.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Type
-      description: Indicates whether the rule group is stateless or stateful.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Capacity
       description: The maximum operating resources that this rule group can use.
@@ -20021,7 +20022,8 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: limit
-        description: The maximum number of objects that you want Network Firewall to return for this request. Default value is 50.
+        description: The maximum number of objects that you want Network Firewall to return for this request.
+        defaultValue: "50"
       - name: next_token
         description: The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken.
       - name: scope
@@ -20032,7 +20034,7 @@ script:
           - MANAGED
           - ACCOUNT
       - name: managed_type
-        description: Indicates the general category of the Amazon Web Services managed rule group.
+        description: The general category of the Amazon Web Services managed rule group.
         auto: PREDEFINED
         predefined:
           - AWS_MANAGED_THREAT_SIGNATURES
@@ -20111,7 +20113,7 @@ script:
     - name: rule_group_arn
       description: The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both.
     - name: type
-      description: Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
       auto: PREDEFINED
       predefined:
         - STATELESS
@@ -20126,7 +20128,7 @@ script:
     - name: rules_source
       description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`.'
     - name: stateful_rule_options_rule_order
-      description: Indicates how to manage the order of the rule evaluation for the rule group.
+      description: The order of the rule evaluation for the rule group.
       auto: PREDEFINED
       predefined:
         - DEFAULT_ACTION_ORDER
@@ -20173,7 +20175,7 @@ script:
       description: A description of the rule group.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Type
-      description: Indicates whether the rule group is stateless or stateful.
+      description: The type of the rule group. Indicates whether the rule group is stateless or stateful.
       type: String
     - contextPath: AWS.NetworkFirewall.RuleGroups.Capacity
       description: The maximum operating resources that this rule group can use.
