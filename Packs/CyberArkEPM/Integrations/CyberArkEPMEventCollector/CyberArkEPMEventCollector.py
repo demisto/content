@@ -1,8 +1,6 @@
 from collections.abc import Callable
 from itertools import chain
 
-from bs4 import BeautifulSoup
-from bs4.element import Tag
 from dateutil import parser
 
 import demistomock as demisto  # noqa: F401
@@ -22,98 +20,143 @@ XSIAM_EVENT_TYPE = {
     "detailed_events": "detailed raw",
 }
 
+GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+ACCESS_TOKEN = "access_token"
+TENANT_URL = "tenantUrl"
+EXPIRES_IN = "expires_in"
+VALID_UNTIL = "valid_until"
+DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
+CACHE_BUFFER_SECONDS = 60
+
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
     def __init__(
         self,
-        base_url,
-        username,
-        password,
-        application_id,
-        authentication_url=None,
-        application_url=None,
-        verify=True,
-        proxy=False,
+        base_tenant_url: str,
+        identity_url: str,
+        client_id: str,
+        client_secret: str,
+        web_app_id: str,
+        verify: bool = True,
+        proxy: bool = False,
         policy_audits_event_type=None,
         raw_events_event_type=None,
     ):
-        super().__init__(base_url, verify=verify, proxy=proxy)
-        self._headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
-        self.username = username
-        self.password = password
-        self.application_id = application_id
-        self.authentication_url = authentication_url
-        self.application_url = application_url
-        if self.authentication_url and self.application_url:
-            self.saml_auth_to_cyber_ark()
-        else:
-            self.epm_auth_to_cyber_ark()
+        super().__init__(base_url="", verify=verify, proxy=proxy)
+        self.base_tenant_url = base_tenant_url
+        self.identity_url = identity_url
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.web_app_id = web_app_id
+        self.token_url = f"{self.identity_url.rstrip('/')}/oauth2/token/{self.web_app_id}"
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
-    def epm_auth_to_cyber_ark(self):  # pragma: no cover
-        data = {
-            "Username": self.username,
-            "Password": self.password,
-            "ApplicationID": self.application_id or "CyberArkXSOAR",
+    def _get_access_token(self) -> str:
+        """Get or refresh OAuth2 access token with caching."""
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(ACCESS_TOKEN)
+        cached_valid_until = cached_context.get(VALID_UNTIL)
+
+        if cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
+                    return cached_token
+                demisto.debug("[Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Token Cache] Error parsing cache. Ignoring.")
+
+        demisto.debug(f"[Token Request] Requesting new token from {self.token_url}")
+        token_data = {
+            "grant_type": GRANT_TYPE_CLIENT_CREDENTIALS,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
         }
-        result = self._http_request("POST", url_suffix="/EPM/API/Auth/EPM/Logon", json_data=data)
-        if result.get("IsPasswordExpired"):
-            return_error("CyberArk is reporting that the user password is expired. Terminating script.")
-        self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
-        self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
-
-    def get_session_token(self) -> str:  # pragma: no cover
-        # Reference: https://developer.okta.com/docs/reference/api/authn/#primary-authentication
-        data = {
-            "username": self.username,
-            "password": self.password,
-        }
-        result = self._http_request("POST", full_url=self.authentication_url, json_data=data)
-        demisto.debug(f"[Client.get_session_token] result is: {result}")
-        if result.get("status", "") != "SUCCESS":
-            raise DemistoException(
-                f"Retrieving Okta session token returned status: {result.get('status')},"
-                f" Check your Okta credentials and make sure the user is not blocked by a role."
-            )
-        return result.get("sessionToken")
-
-    def get_saml_response(self) -> str:  # pragma: no cover
-        # Reference: https://devforum.okta.com/t/how-to-get-saml-assertion-through-an-api/24580
-        full_url = f"{self.application_url}?onetimetoken={self.get_session_token()}"
-        result = self._http_request("POST", full_url=full_url, resp_type="response")
-        soup = BeautifulSoup(result.text, features="html.parser")
-        saml_input = soup.find("input", {"name": "SAMLResponse"})
-        saml_response = saml_input.get("value") if isinstance(saml_input, Tag) else None
-        if not isinstance(saml_response, str):
-            # Covers: missing input, missing value, or unexpected non-string attribute type.
-            raise DemistoException("SAMLResponse value not found in authentication response.")
-
-        return saml_response
-
-    def saml_auth_to_cyber_ark(self):  # pragma: no cover
-        # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        data = {"SAMLResponse": self.get_saml_response()}
-        result = self._http_request("POST", url_suffix="/SAML/Logon", headers=headers, data=data)
-        if result.get("IsPasswordExpired"):
-            return_error("CyberArk is reporting that the user password is expired. Terminating script.")
-        self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
-        self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
+
+        try:
+            token_response = self._http_request(
+                method="POST",
+                full_url=self.token_url,
+                data=token_data,
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            demisto.error(f"[Token Request] Failed: {error}")
+            raise DemistoException(f"Failed to obtain access token: {error}")
+
+        access_token = token_response.get(ACCESS_TOKEN)
+        if not access_token:
+            raise DemistoException("Failed to obtain access token. Response missing access_token.")
+
+        token_expires_in = token_response.get(EXPIRES_IN, DEFAULT_TOKEN_TTL_SECONDS)
+        token_valid_until = current_timestamp + token_expires_in - CACHE_BUFFER_SECONDS
+        demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
+
+        cached_context[ACCESS_TOKEN] = access_token
+        cached_context[VALID_UNTIL] = str(token_valid_until)
+        set_integration_context(cached_context)
+
+        return access_token
+
+    def _get_tenant_url(self, access_token: str) -> str:
+        """Fetch and cache the tenant API base URL."""
+        cached_context = get_integration_context() or {}
+        cached_tenant_url = cached_context.get(TENANT_URL)
+
+        if cached_tenant_url:
+            return cached_tenant_url
+
+        headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Accept": "application/json"}
+
+        try:
+            tenant_url_response = self._http_request(
+                method="GET",
+                full_url=f"{self.base_tenant_url.rstrip('/')}/epm/api/accounts/tenanturl",
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            demisto.error(f"[Tenant URL Request] Failed: {error}")
+            raise DemistoException(f"Failed to obtain tenant URL: {error}")
+
+        tenant_url = tenant_url_response.get(TENANT_URL)
+        if not tenant_url:
+            raise DemistoException("Failed to obtain tenant URL. Response missing tenant URL.")
+
+        tenant_url = tenant_url.rstrip("/")
+        demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
+        cached_context[TENANT_URL] = tenant_url
+        set_integration_context(cached_context)
+
+        return tenant_url
+
+    def _authenticated_request(self, method: str, url_suffix: str, **kwargs) -> dict:
+        """Execute an authenticated request against the EPM API."""
+        access_token = self._get_access_token()
+        tenant_url = self._get_tenant_url(access_token)
+        full_url = f"{tenant_url}/epm/api/{url_suffix}"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        return self._http_request(method=method, full_url=full_url, headers=headers, **kwargs)
 
     def get_set_list(self) -> dict:
-        result = self._http_request("GET", url_suffix="Sets")
+        result = self._authenticated_request("GET", url_suffix="Sets")
         demisto.debug(f"[Client.get_set_list] Retrieved {len(result.get('Sets', []))} sets from API")
         return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
         url_suffix = f"Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}"
-        return self._http_request("GET", url_suffix=url_suffix)
+        return self._authenticated_request("GET", url_suffix=url_suffix)
 
     def get_policy_audits(self, set_id: str, from_date: str = "", limit: int = MAX_LIMIT, next_cursor: str = "start") -> dict:
         url_suffix = f"Sets/{set_id}/policyaudits/search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}"
@@ -123,7 +166,7 @@ class Client(BaseClient):
         data = assign_params(
             filter=filter_params,
         )
-        return self._http_request("POST", url_suffix=url_suffix, json_data=data)
+        return self._authenticated_request("POST", url_suffix=url_suffix, json_data=data)
 
     def get_events(self, set_id: str, from_date: str = "", limit: int = MAX_LIMIT, next_cursor: str = "start") -> dict:
         url_suffix = f"Sets/{set_id}/Events/Search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}"
@@ -138,7 +181,7 @@ class Client(BaseClient):
         data = assign_params(
             filter=filter_params,
         )
-        return self._http_request("POST", url_suffix=url_suffix, json_data=data)
+        return self._authenticated_request("POST", url_suffix=url_suffix, json_data=data)
 
 
 """ HELPER FUNCTIONS """
@@ -507,12 +550,11 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     # Parse parameters
-    base_url = params.get("url")
-    application_id = params.get("application_id")
-    authentication_url = params.get("authentication_url")
-    application_url = params.get("application_url")
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
+    base_tenant_url = params.get("url")
+    identity_url = params.get("identity_url")
+    web_app_id = params.get("web_app_id")
+    client_id = params.get("client_id")
+    client_secret = params.get("credentials", {}).get("password")
     set_names = argToList(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
@@ -535,14 +577,13 @@ def main():  # pragma: no cover
 
     try:
         client = Client(
-            base_url=base_url,
-            username=username,
-            password=password,
+            base_tenant_url=base_tenant_url,
+            identity_url=identity_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            web_app_id=web_app_id,
             verify=verify_certificate,
             proxy=proxy,
-            application_id=application_id,
-            authentication_url=authentication_url,
-            application_url=application_url,
             policy_audits_event_type=policy_audits_event_type,
             raw_events_event_type=raw_events_event_type,
         )

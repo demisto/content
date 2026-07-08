@@ -3,18 +3,22 @@ This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
 ## Configure CyberArk EPM Event Collector in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon. | True |
-| Username |  | True |
-| Password |  | True |
+| EPM Tenant URL | EPM Region-based tenant URL. Example: https://api-na.epm.cyberark.cloud | True |
+| Identity URL | CyberArk Identity FQDN for OAuth2 authentication. Example: https://\[TENANT_ID\].id.cyberark.cloud | True |
+| Web App ID | Application ID of OAuth2 Server web app in CyberArk Identity. | True |
+| Client ID | Service username \(OAuth confidential client\). | True |
+| Client Secret |  | True |
 | Set name | A comma-separated list of set names. | True |
-| Application ID | Required for local\(EPM\) authentication only. | False |
-| Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn. | False |
-| Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\]. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Maximum number of events per fetch |  | False |
+| Enable admin audits events |  | False |
+| Policy Audit Events | A comma-separated list of policy audits event type to fetch | False |
+| Detailed Events | A comma-separated list of detailed events event type to fetch | False |
+
 
 ## Commands
 

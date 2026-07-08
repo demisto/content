@@ -1,28 +1,19 @@
 ## CyberArk EPM Help
 
 ### Authentication
-There are two methods to authenticate EPM and SAML (currently only via Okta).
-Every method needs different parameters as show in the following:
 
-* EPM authentication
-    - url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
-    - username
-    - password
-    - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID)
-    - set name (comma separated value)
+This integration uses OAuth2 authentication via CyberArk Identity. You will need to configure the following parameters:
 
-
-* SAML authentication (advanced settings) currently supported only via Okta.
-    - url: `https://login.epm.cyberark.com/SAML/Logon`
-    - username
-    - password
-    - authentication URL [Okta example](https://developer.okta.com/docs/reference/api/authn/#authentication-operations): `https://[COMPANY_NAME].okta.com/api/v1/authn`
-    - application URL: `https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID]`
-    - set name (comma separated value)
+- **EPM Tenant URL**: The region-based EPM API URL (e.g., `https://api-na.epm.cyberark.cloud`).
+- **Identity URL**: The CyberArk Identity FQDN for OAuth2 (e.g., `https://<TENANT_ID>.id.cyberark.cloud`).
+- **Web App ID**: The Application ID of the OAuth2 Server web app configured in CyberArk Identity.
+- **Client ID**: The service username (OAuth confidential client).
+- **Client Secret**: The service user password.
+- **Set name**: A comma-separated list of EPM set names to collect events from.
 
 ### Fetch Information
 
-- There are three event types that are fetched for the Event Collector: 
+- There are three event types that are fetched for the Event Collector:
     * Policy audits.
     * Admin audits.
     * Events.
