@@ -3941,3 +3941,66 @@ def test_ip_lookup_community_search_keeps_short_message_unchanged(requests_mock,
     outputs = result.outputs  # type: ignore[union-attr]
     assert isinstance(outputs, list)
     assert outputs[0].get("message") == short_message
+
+
+def test_client_default_message_max_length():
+    """
+    Test that Client uses MESSAGE_MAX_LENGTH as the default when message_max_length is not provided.
+
+    Given:
+        - A Client instantiated without the message_max_length argument.
+    When:
+        - Accessing client.message_max_length.
+    Then:
+        - The value equals MESSAGE_MAX_LENGTH.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+    assert client.message_max_length == MESSAGE_MAX_LENGTH
+
+
+def test_ip_lookup_community_search_message_truncated_to_client_param_limit(requests_mock, mocker):
+    """
+    Test that the community-search branch of `ip_lookup_command` truncates the "message" field
+    using the configured `client.message_max_length` value, not the hardcoded constant.
+
+    Given:
+        - A client with message_max_length set to a small custom value.
+        - A community search response containing a "message" field longer than that value.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The "message" field stored in the outputs is truncated to the custom limit.
+    """
+    custom_limit = 20
+    client = Client(MOCK_URL, {}, False, None, False, message_max_length=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    long_message = "a" * 100
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "message": long_message,
+                "enrichments": {},
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_message = outputs[0].get("message", "")
+
+    assert stored_message == long_message[:custom_limit] + MESSAGE_TRUNCATION_SUFFIX

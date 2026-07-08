@@ -27,7 +27,7 @@ DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
 DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
-MESSAGE_MAX_LENGTH = 500  # Max characters to keep from a community search indicator's "message" field.
+DEFAULT_MESSAGE_MAX_LENGTH = 500  # Max characters to keep from a community search indicator's "message" field.
 MESSAGE_TRUNCATION_SUFFIX = "... [message truncated, full content available in raw_response]"
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
@@ -365,6 +365,7 @@ class Client(BaseClient):
         proxy,
         create_relationships,
         reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT,
+        message_max_length: int = DEFAULT_MESSAGE_MAX_LENGTH,
     ):
         """Initialize class object.
 
@@ -386,6 +387,10 @@ class Client(BaseClient):
         :type reputation_enrichments_limit: ``int``
         :param reputation_enrichments_limit: Maximum number of enrichment entries stored per reputation
             command result. Lower values improve performance; higher values preserve more details.
+
+        :type message_max_length: ``int``
+        :param message_max_length: Maximum number of characters kept from a community search indicator's
+            "message" field. Lower values reduce context size; higher values preserve more content.
         """
         self.url = url
 
@@ -399,6 +404,7 @@ class Client(BaseClient):
         self.proxy = proxy
         self.create_relationships = create_relationships
         self.reputation_enrichments_limit = reputation_enrichments_limit
+        self.message_max_length = message_max_length
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
@@ -2029,7 +2035,7 @@ def html_to_text(html) -> str:
     return text.strip()
 
 
-def truncate_message(message: str | None, max_length: int = MESSAGE_MAX_LENGTH) -> str | None:
+def truncate_message(message: str | None, max_length: int = DEFAULT_MESSAGE_MAX_LENGTH) -> str | None:
     """
     Cut a free-text message down to `max_length` characters.
 
@@ -3318,7 +3324,7 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
                         limited_indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
 
                 raw_message = limited_indicator.get("message")
-                truncated_message = truncate_message(raw_message)
+                truncated_message = truncate_message(raw_message, client.message_max_length)
                 if truncated_message != raw_message:
                     demisto.debug(
                         f"Community search for IP {ip}: message truncated for indicator "
@@ -4715,6 +4721,8 @@ def main():
         or DEFAULT_REPUTATION_CONTEXT_LIMIT
     )
 
+    message_max_length = arg_to_number(params.get("message_max_length", DEFAULT_MESSAGE_MAX_LENGTH)) or DEFAULT_MESSAGE_MAX_LENGTH
+
     config_exact_match = argToBoolean(params.get("ioc_enrichment_exact_match", False))
 
     # if your Client class inherits from BaseClient, system proxy is handled
@@ -4735,7 +4743,7 @@ def main():
             "X-FP-IntegrationVersion": INTEGRATION_VERSION,
         }
         validate_params(command, params)
-        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit)
+        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit, message_max_length)
 
         COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,
