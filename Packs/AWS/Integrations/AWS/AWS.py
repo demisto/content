@@ -497,6 +497,44 @@ def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
     return references
 
 
+def parse_subnet_mappings_field(mappings_string: str | None) -> list:
+    """
+    Parses a list representation of subnet mappings with the form of
+    'SubnetId=<id>,IPAddressType=<type>;SubnetId=<id>,IPAddressType=<type>'.
+
+    Each mapping is separated by ';' and its fields by ','. Only SubnetId is required; IPAddressType is
+    optional and dropped when not provided.
+
+    Args:
+        mappings_string: The subnet mappings list string.
+    Returns:
+        A list of dicts with the form {"SubnetId": <id>, "IPAddressType": <type>}.
+    """
+    mappings: list = []
+    list_mappings = argToList(mappings_string, separator=";")
+    for mapping in list_mappings:
+        fields = {}
+        for field in argToList(mapping, separator=","):
+            key, sep, value = field.partition("=")
+            if not sep or not value:
+                raise ValueError(
+                    f"Could not parse field: {mapping}. Please make sure you provided like so: "
+                    "SubnetId=id1,IPAddressType=type1;SubnetId=id2,IPAddressType=type2"
+                )
+            fields[key.strip()] = value.strip()
+
+        if "SubnetId" not in fields:
+            raise ValueError(f"Could not parse field: {mapping}. SubnetId is required for each subnet mapping.")
+
+        subnet_mapping = {
+            "SubnetId": fields.get("SubnetId"),
+            "IPAddressType": fields.get("IPAddressType"),
+        }
+        mappings.append(remove_empty_elements(subnet_mapping))
+
+    return mappings
+
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
@@ -10456,17 +10494,13 @@ class NetworkFirewall:
 
         Args:
             client (BotoClient): The boto3 client for NetworkFirewall service
-            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_ids,
-                an optional ip_address_type, and an optional update_token
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_mappings,
+                and an optional update_token
 
         Returns:
             CommandResults: Formatted results with the firewall subnet mappings
         """
-        ip_address_type = args.get("ip_address_type")
-        subnet_mapping = {"SubnetId": None, "IPAddressType": ip_address_type}
-        subnet_mappings = [
-            remove_empty_elements({**subnet_mapping, "SubnetId": subnet_id}) for subnet_id in argToList(args.get("subnet_ids"))
-        ]
+        subnet_mappings = parse_subnet_mappings_field(args.get("subnet_mappings"))
 
         kwargs = {
             "UpdateToken": args.get("update_token"),

@@ -19886,6 +19886,125 @@ def test_parse_stateful_rule_group_references_field_invalid_arn_raises():
         parse_stateful_rule_group_references_field(refs_string)
 
 
+def test_parse_subnet_mappings_field_empty_input_returns_empty_list():
+    """
+    Given:
+        - An empty/None subnet mappings string.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    assert parse_subnet_mappings_field(None) == []
+    assert parse_subnet_mappings_field("") == []
+
+
+def test_parse_subnet_mappings_field_single_full_mapping():
+    """
+    Given:
+        - A single mapping string with both SubnetId and IPAddressType.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return a list with one dict containing both fields.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType=IPV4"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+
+
+def test_parse_subnet_mappings_field_multiple_mappings_with_optional_field():
+    """
+    Given:
+        - Multiple mapping strings, one with IPAddressType and one without.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return each mapping parsed independently, dropping empty optional fields.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType=DUALSTACK;SubnetId=subnet-2222"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [
+        {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+        {"SubnetId": "subnet-2222"},
+    ]
+
+
+def test_parse_subnet_mappings_field_only_subnet_id():
+    """
+    Given:
+        - A mapping string containing only SubnetId.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return a single-key dict with SubnetId only.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1111"}]
+
+
+def test_parse_subnet_mappings_field_missing_subnet_id_raises():
+    """
+    Given:
+        - A mapping string without a SubnetId field.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should raise a ValueError indicating SubnetId is required.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "IPAddressType=IPV4"
+
+    # When / Then
+    with pytest.raises(ValueError, match="SubnetId is required"):
+        parse_subnet_mappings_field(mappings_string)
+
+
+def test_parse_subnet_mappings_field_malformed_field_raises():
+    """
+    Given:
+        - A mapping string with a field that has no '=' separator.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should raise a ValueError with the expected format guidance.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_subnet_mappings_field(mappings_string)
+
+
 def test_update_subnet_change_protection_command_success_with_name(mocker):
     """
     Given: A mocked boto3 NetworkFirewall client and a valid firewall name and subnet change protection flag.
@@ -20033,7 +20152,7 @@ def test_associate_subnets_command_success_with_name(mocker):
     }
     mock_client.associate_subnets.return_value = mock_response
 
-    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111"}
+    args = {"firewall_name": "test-firewall", "subnet_mappings": "SubnetId=subnet-1111"}
 
     result = NetworkFirewall.associate_subnets_command(mock_client, args)
 
@@ -20050,10 +20169,10 @@ def test_associate_subnets_command_success_with_name(mocker):
 
 def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker):
     """
-    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token, multiple subnet IDs,
-        and an IP address type.
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token, and multiple subnet
+        mappings with per-subnet IP address types.
     When: associate_subnets_command is called successfully.
-    Then: It should return CommandResults and apply the IP address type to every subnet mapping in the API call.
+    Then: It should return CommandResults and pass the parsed subnet mappings to the API call.
     """
     from AWS import NetworkFirewall
 
@@ -20065,7 +20184,7 @@ def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker)
         "UpdateToken": "token-456",
         "SubnetMappings": [
             {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
-            {"SubnetId": "subnet-2222", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "IPV4"},
         ],
     }
     mock_client.associate_subnets.return_value = mock_response
@@ -20073,8 +20192,7 @@ def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker)
     args = {
         "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
         "update_token": "token-123",
-        "subnet_ids": "subnet-1111,subnet-2222",
-        "ip_address_type": "DUALSTACK",
+        "subnet_mappings": "SubnetId=subnet-1111,IPAddressType=DUALSTACK;SubnetId=subnet-2222,IPAddressType=IPV4",
     }
 
     result = NetworkFirewall.associate_subnets_command(mock_client, args)
@@ -20086,7 +20204,7 @@ def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker)
         FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
         SubnetMappings=[
             {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
-            {"SubnetId": "subnet-2222", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "IPV4"},
         ],
     )
 
@@ -20100,7 +20218,7 @@ def test_associate_subnets_command_missing_arguments(mocker):
     from AWS import NetworkFirewall
 
     mock_client = mocker.Mock()
-    args = {"subnet_ids": "subnet-1111"}
+    args = {"subnet_mappings": "SubnetId=subnet-1111"}
 
     with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.associate_subnets_command(mock_client, args)
@@ -20124,7 +20242,7 @@ def test_associate_subnets_command_api_error(mocker):
     mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     mock_error_handler.side_effect = DemistoException("API Error")
 
-    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111", "account_id": "123456789012"}
+    args = {"firewall_name": "test-firewall", "subnet_mappings": "SubnetId=subnet-1111", "account_id": "123456789012"}
 
     with pytest.raises(DemistoException, match="API Error"):
         NetworkFirewall.associate_subnets_command(mock_client, args)

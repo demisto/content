@@ -19832,17 +19832,9 @@ script:
       description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
-    - name: subnet_ids
-      description: A comma-separated list of unique identifiers of the subnets that you want to associate with the firewall.
+    - name: subnet_mappings
+      description: 'A semicolon-separated list of subnet mappings to associate with the firewall. Each mapping is a comma-separated list of fields in the form ''SubnetId=<id>,IPAddressType=<type>''. SubnetId is required and IPAddressType (one of DUALSTACK, IPV4, IPV6) is optional. For example: SubnetId=subnet-1111,IPAddressType=IPV4;SubnetId=subnet-2222. You can specify one subnet for each of the Availability Zones that the VPC spans.'
       required: true
-      isArray: true
-    - name: ip_address_type
-      description: The subnet's IP address type. Applied to every subnet provided in "subnet_ids". You can't change the IP address type after you create the subnet.
-      auto: PREDEFINED
-      predefined:
-        - DUALSTACK
-        - IPV4
-        - IPV6
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
