@@ -44,7 +44,7 @@ alter
     xdm.target.host.hostname = if(is_ipv4(dst) = FALSE and is_ipv6(dst) = FALSE, dst),
     xdm.target.file.filename = get_file_name,
     xdm.target.file.path = get_file_path,
-    xdm.target.process.pid = if(get_proc_id ~= "[1-9]+", to_integer(get_proc_id)),
+    xdm.target.process.pid = if(get_proc_id ~= "\d+", to_integer(get_proc_id)),
     xdm.target.process.name = arrayindex(regextract(blockedprocess, "[^\\\/]+$"),0),
     xdm.target.process.parent_id = parentprocessid1,
     xdm.target.host.device_category = devicetype,
