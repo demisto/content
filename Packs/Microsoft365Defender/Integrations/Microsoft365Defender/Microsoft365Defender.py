@@ -168,24 +168,9 @@ class Client:
                 params["$skip"] = skip
 
         # M365-DIAG: log the exact OData params sent so we can correlate raw page order with $skip/$filter (XSUP-71862)
-        demisto.debug(f"M365-DIAG incidents_list REQUEST params={json.dumps(params, default=str)}")
-        response = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
-
-        # M365-DIAG: log the RAW response order exactly as the API returned it (before any sorting in fetch_incidents).
-        # This is the single most important signal to decide within-page vs between-page ordering instability.
-        try:
-            raw_value = response.get("value") or []
-            raw_pairs = [
-                {"id": inc.get("incidentId"), "createdTime": inc.get("createdTime")} for inc in raw_value
-            ]
-            demisto.debug(
-                f"M365-DIAG incidents_list RESPONSE skip={params.get('$skip', 0)} count={len(raw_pairs)} "
-                f"has_next_link={bool(response.get('@odata.nextLink'))} raw_order={json.dumps(raw_pairs, default=str)}"
-            )
-        except Exception as diag_err:  # never let diagnostics break the fetch
-            demisto.debug(f"M365-DIAG incidents_list RESPONSE logging failed: {diag_err}")
-
-        return response
+        # (RESPONSE-level raw order is captured in fetch_incidents' RAW PAGE log; not duplicated here.)
+        _diag(lambda: f"M365-DIAG incidents_list REQUEST params={json.dumps(params, default=str)}")
+        return self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
 
     @logger
     def update_incident(
@@ -678,6 +663,20 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
 # can pinpoint the missing/duplicate root cause from customer logs. Safe to remove
 # once the root cause is confirmed and the real fix is shipped.
 # ============================================================================
+def _diag(build_msg):
+    """Emit a single M365-DIAG debug line without ever affecting the fetch.
+
+    `build_msg` is a zero-arg callable that returns the log string. It is wrapped in
+    try/except so a diagnostic failure can NEVER raise into the fetch path (e.g. abort
+    ingestion or block setLastRun). Persistence is decided by demisto.debug() itself,
+    which honors the environment/integration log level.
+    """
+    try:
+        demisto.debug(build_msg())
+    except Exception as diag_err:  # never let diagnostics break the fetch
+        demisto.debug(f"M365-DIAG logging failed: {diag_err}")
+
+
 def _diag_incident_id(item: dict):
     """Return the M365 incidentId for either a raw API incident or a queue item ({'name','occurred','rawJSON'})."""
     if not isinstance(item, dict):
@@ -776,14 +775,17 @@ def fetch_incidents(
     last_run_dict = demisto.getLastRun()
 
     # M365-DIAG (XSUP-71862): log the FULL incoming state so carry-over queue + cursor are auditable each cycle.
-    _diag_incoming_queue = last_run_dict.get("incidents_queue", []) or []
-    _diag_incoming_queue_ids = _diag_extract_ids(_diag_incoming_queue)
-    demisto.debug(
-        f"M365-DIAG fetch START: incoming_last_run={last_run_dict.get('last_run')!r} "
-        f"incoming_queue_size={len(_diag_incoming_queue)} fetch_limit={fetch_limit} timeout={timeout} "
-        f"incoming_queue_ids={json.dumps(_diag_incoming_queue_ids, default=str)} "
-        f"incoming_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_incoming_queue_ids), default=str)}"
-    )
+    def _diag_start_msg():
+        _diag_incoming_queue = last_run_dict.get("incidents_queue", []) or []
+        _diag_incoming_queue_ids = _diag_extract_ids(_diag_incoming_queue)
+        return (
+            f"M365-DIAG fetch START: incoming_last_run={last_run_dict.get('last_run')!r} "
+            f"incoming_queue_size={len(_diag_incoming_queue)} fetch_limit={fetch_limit} timeout={timeout} "
+            f"incoming_queue_ids={json.dumps(_diag_incoming_queue_ids, default=str)} "
+            f"incoming_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_incoming_queue_ids), default=str)}"
+        )
+
+    _diag(_diag_start_msg)
 
     last_run = last_run_dict.get("last_run")
     if not last_run:  # this is the first run
@@ -793,13 +795,13 @@ def fetch_incidents(
                 f"Microsoft Defender 365 Fetch incidents - Could not parse the first_fetch_time: {first_fetch_time=}"
             )
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
-        demisto.debug(f"M365-DIAG fetch: first run, using first_fetch cursor last_run={last_run!r}")
+        _diag(lambda: f"M365-DIAG fetch: first run, using first_fetch cursor last_run={last_run!r}")
 
     # creates incidents queue
     incidents_queue = last_run_dict.get("incidents_queue", [])
 
     # M365-DIAG: this cursor value is what the strict 'createdTime gt {last_run}' filter will use for every page below.
-    demisto.debug(f"M365-DIAG fetch: effective cursor last_run={last_run!r} (used in 'createdTime gt' filter)")
+    _diag(lambda: f"M365-DIAG fetch: effective cursor last_run={last_run!r} (used in 'createdTime gt' filter)")
 
     if len(incidents_queue) < fetch_limit:
         incidents = []
@@ -830,16 +832,20 @@ def fetch_incidents(
             # Comparing raw_page_ids to a sorted copy tells us if THIS page is internally unordered (within-page),
             # and _diag_seen_across_pages tells us if ids repeat/shift across $skip boundaries (between-page).
             _diag_page_num += 1
-            _diag_raw_page_ids = _diag_extract_ids(raw_incidents or [])
-            _diag_is_page_sorted = _diag_ids_are_sorted_by_created(raw_incidents or [])
-            for _pid in _diag_raw_page_ids:
-                _diag_seen_across_pages.setdefault(_pid, []).append(offset)
-            demisto.debug(
-                f"M365-DIAG RAW PAGE #{_diag_page_num} skip={offset} count={len(_diag_raw_page_ids)} "
-                f"within_page_sorted_by_createdTime={_diag_is_page_sorted} "
-                f"has_next_link={bool(response.get('@odata.nextLink'))} "
-                f"raw_page_ids={json.dumps(_diag_raw_page_ids, default=str)}"
-            )
+
+            def _diag_raw_page_msg(raw_incidents=raw_incidents, offset=offset, response=response, page_num=_diag_page_num):
+                _diag_raw_page_ids = _diag_extract_ids(raw_incidents or [])
+                _diag_is_page_sorted = _diag_ids_are_sorted_by_created(raw_incidents or [])
+                for _pid in _diag_raw_page_ids:
+                    _diag_seen_across_pages.setdefault(_pid, []).append(offset)
+                return (
+                    f"M365-DIAG RAW PAGE #{page_num} skip={offset} count={len(_diag_raw_page_ids)} "
+                    f"within_page_sorted_by_createdTime={_diag_is_page_sorted} "
+                    f"has_next_link={bool(response.get('@odata.nextLink'))} "
+                    f"raw_page_ids={json.dumps(_diag_raw_page_ids, default=str)}"
+                )
+
+            _diag(_diag_raw_page_msg)
 
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
@@ -860,26 +866,32 @@ def fetch_incidents(
             offset += int(MAX_ENTRIES)
 
         # M365-DIAG: cross-page report — any id returned on more than one $skip page is a between-page DUPLICATE source.
-        _diag_cross_page_dups = {str(_id): offs for _id, offs in _diag_seen_across_pages.items() if len(offs) > 1}
-        _diag_pre_sort_ids = _diag_extract_ids(incidents)
-        demisto.debug(
-            f"M365-DIAG PAGING DONE: pages={_diag_page_num} total_raw_incidents={len(incidents)} "
-            f"distinct_raw_ids={len(set(_diag_pre_sort_ids))} "
-            f"cross_page_duplicate_ids={json.dumps(_diag_cross_page_dups, default=str)}"
-        )
+        def _diag_paging_done_msg():
+            _diag_cross_page_dups = {str(_id): offs for _id, offs in _diag_seen_across_pages.items() if len(offs) > 1}
+            _diag_pre_sort_ids = _diag_extract_ids(incidents)
+            return (
+                f"M365-DIAG PAGING DONE: pages={_diag_page_num} total_raw_incidents={len(incidents)} "
+                f"distinct_raw_ids={len(set(_diag_pre_sort_ids))} "
+                f"cross_page_duplicate_ids={json.dumps(_diag_cross_page_dups, default=str)}"
+            )
+
+        _diag(_diag_paging_done_msg)
 
         # sort the incidents by the creation time
         incidents.sort(key=lambda x: dateparser.parse(x["occurred"]))  # type: ignore
 
         # M365-DIAG: post-sort duplicate check (dupes here survive into the queue and get emitted twice).
-        _diag_sorted_ids = _diag_extract_ids(incidents)
-        demisto.debug(
-            f"M365-DIAG POST-SORT: count={len(_diag_sorted_ids)} "
-            f"duplicate_ids_in_batch={json.dumps(_diag_find_duplicate_ids(_diag_sorted_ids), default=str)} "
-            f"batch_created_range=[{incidents[0]['occurred'] if incidents else None} .. "
-            f"{incidents[-1]['occurred'] if incidents else None}] "
-            f"sorted_ids={json.dumps(_diag_sorted_ids, default=str)}"
-        )
+        def _diag_post_sort_msg():
+            _diag_sorted_ids = _diag_extract_ids(incidents)
+            return (
+                f"M365-DIAG POST-SORT: count={len(_diag_sorted_ids)} "
+                f"duplicate_ids_in_batch={json.dumps(_diag_find_duplicate_ids(_diag_sorted_ids), default=str)} "
+                f"batch_created_range=[{incidents[0]['occurred'] if incidents else None} .. "
+                f"{incidents[-1]['occurred'] if incidents else None}] "
+                f"sorted_ids={json.dumps(_diag_sorted_ids, default=str)}"
+            )
+
+        _diag(_diag_post_sort_msg)
 
         incidents_queue += incidents
 
@@ -888,21 +900,25 @@ def fetch_incidents(
 
     # M365-DIAG: cursor-advance audit. The strict 'gt' filter means anything with createdTime <= new_last_run that is
     # NOT already captured can NEVER be fetched again -> permanent MISS detector.
-    _diag_out_ids = _diag_extract_ids(oldest_incidents)
-    _diag_retained = incidents_queue[fetch_limit:]
-    _diag_retained_ids = _diag_extract_ids(_diag_retained)
-    _diag_full_queue_ids = _diag_extract_ids(incidents_queue)
-    _diag_at_risk = _diag_ids_at_or_before_cursor(_diag_retained, new_last_run)
-    demisto.debug(
-        f"M365-DIAG fetch END: new_last_run={new_last_run!r} "
-        f"newest_from_id={incidents_queue[-1]['name'] if oldest_incidents else None} "
-        f"returning_count={len(_diag_out_ids)} retained_count={len(_diag_retained_ids)} "
-        f"full_queue_size={len(incidents_queue)} "
-        f"full_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_full_queue_ids), default=str)} "
-        f"returning_ids={json.dumps(_diag_out_ids, default=str)} "
-        f"retained_ids={json.dumps(_diag_retained_ids, default=str)} "
-        f"retained_at_or_before_cursor_AT_RISK={json.dumps(_diag_at_risk, default=str)}"
-    )
+    # Guarded by _diag so a diagnostic failure can never abort ingestion or block setLastRun below.
+    def _diag_fetch_end_msg():
+        _diag_out_ids = _diag_extract_ids(oldest_incidents)
+        _diag_retained = incidents_queue[fetch_limit:]
+        _diag_retained_ids = _diag_extract_ids(_diag_retained)
+        _diag_full_queue_ids = _diag_extract_ids(incidents_queue)
+        _diag_at_risk = _diag_ids_at_or_before_cursor(_diag_retained, new_last_run)
+        return (
+            f"M365-DIAG fetch END: new_last_run={new_last_run!r} "
+            f"newest_from_id={incidents_queue[-1]['name'] if oldest_incidents else None} "
+            f"returning_count={len(_diag_out_ids)} retained_count={len(_diag_retained_ids)} "
+            f"full_queue_size={len(incidents_queue)} "
+            f"full_queue_dup_ids={json.dumps(_diag_find_duplicate_ids(_diag_full_queue_ids), default=str)} "
+            f"returning_ids={json.dumps(_diag_out_ids, default=str)} "
+            f"retained_ids={json.dumps(_diag_retained_ids, default=str)} "
+            f"retained_at_or_before_cursor_AT_RISK={json.dumps(_diag_at_risk, default=str)}"
+        )
+
+    _diag(_diag_fetch_end_msg)
 
     demisto.setLastRun({"last_run": new_last_run, "incidents_queue": incidents_queue[fetch_limit:]})
     return oldest_incidents
