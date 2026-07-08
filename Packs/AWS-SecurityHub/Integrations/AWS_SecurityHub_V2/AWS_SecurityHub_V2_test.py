@@ -8,14 +8,16 @@ from AWS_SecurityHub_V2 import (
     findings_batch_update_command,
     findings_get_command,
     generate_filters_for_get_findings,
+    get_mapping_fields_command,
     get_modified_remote_data_command,
     get_remote_data_command,
     parse_date_filters,
     parse_filters,
     parse_finding_identifiers,
     parse_tags,
+    update_remote_system_command,
 )
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, IncidentStatus
 
 
 def test_parse_tags():
@@ -849,3 +851,97 @@ def test_get_remote_data_command_no_finding(mocker):
     result = get_remote_data_command(mock_client, {"id": "missing", "lastUpdate": "2024-01-01T00:00:00Z"})
 
     assert result.mirrored_object == {}
+
+
+def _update_remote_args(delta, remote_id="uid-1", incident_changed=True, status=IncidentStatus.ACTIVE):
+    """Build an args dict compatible with UpdateRemoteSystemArgs for outgoing mirroring tests."""
+    return {
+        "remoteId": remote_id,
+        "data": {},
+        "entries": [],
+        "incidentChanged": incident_changed,
+        "delta": delta,
+        "status": status,
+    }
+
+
+def test_update_remote_system_mirrors_severity_and_status(mocker):
+    """
+    Given: An incident whose severityid and statusid changed (delta), with mirroring enabled.
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 is called targeting the finding uid with SeverityId and StatusId.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"severityid": "4", "statusid": "2"})
+    result = update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    assert result == "uid-1"
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["MetadataUids"] == ["uid-1"]
+    assert call_kwargs["SeverityId"] == 4
+    assert call_kwargs["StatusId"] == 2
+
+
+def test_update_remote_system_mirrors_comment(mocker):
+    """
+    Given: An incident whose comment changed.
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 is called with the Comment.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"comment": "investigated"})
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["Comment"] == "investigated"
+
+
+def test_update_remote_system_no_changes_skips_call(mocker):
+    """
+    Given: An incident with no mirrorable delta.
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 is NOT called, and the uid is returned.
+    """
+    mock_client = mocker.Mock()
+
+    args = _update_remote_args({}, incident_changed=False)
+    result = update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    assert result == "uid-1"
+    mock_client.batch_update_findings_v2.assert_not_called()
+
+
+def test_update_remote_system_resolves_on_close(mocker):
+    """
+    Given: A closed incident (status DONE) and resolve_finding enabled.
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 forces StatusId=4 (Resolved).
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"comment": "closing"}, status=IncidentStatus.DONE)
+    update_remote_system_command(mock_client, args, resolve_finding=True)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["StatusId"] == 4
+
+
+def test_get_mapping_fields_command():
+    """
+    Given: The outgoing mapping schema request.
+    When: get_mapping_fields_command is called.
+    Then: It returns a scheme for the finding type with the mirrorable fields.
+    """
+    result = get_mapping_fields_command()
+
+    entry = result.extract_mapping()
+    assert "AWS Security Hub Finding" in entry
+    finding_fields = entry["AWS Security Hub Finding"]
+    assert "severityid" in finding_fields
+    assert "statusid" in finding_fields
+    assert "comment" in finding_fields

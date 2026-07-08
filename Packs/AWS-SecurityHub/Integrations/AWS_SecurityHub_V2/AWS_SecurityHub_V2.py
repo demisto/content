@@ -16,17 +16,28 @@ DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 50
 FETCH_SORT_CRITERIA = [{"Field": "finding_info.created_time_dt", "SortOrder": "asc"}]
 
-# ----- Mirroring (incoming: AWS Security Hub -> XSOAR) -----
+# ----- Mirroring (AWS Security Hub <-> XSOAR) -----
 # Maps the human-readable mirror direction (integration param) to the value XSOAR stores on incidents.
-# Only incoming mirroring is currently supported, so "Incoming" is the meaningful non-None option.
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
     "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
 }
 # The maximum number of changed findings to return in a single get-modified-remote-data call.
-MIRROR_LIMIT = 200
+MIRROR_LIMIT = 100
 # OCSF field holding the time a finding was last modified; used by incoming mirroring to detect changes.
 MODIFIED_TIME_FIELD = "finding_info.modified_time_dt"
+# OCSF status_id representing a resolved finding, applied on outgoing mirroring when 'resolve_finding' is enabled
+# and the XSOAR incident is closed. OCSF status_id: 1=New, 2=In Progress, 3=Suppressed, 4=Resolved.
+OCSF_STATUS_ID_RESOLVED = 4
+# Delta keys (incident fields, as produced by the outgoing mapper) that are mirrored out to AWS Security Hub,
+# mapped to the corresponding ``batch_update_findings_v2`` kwarg. Only these fields are pushed remotely.
+OUTGOING_DELTA_TO_KWARG = {
+    "severityid": "SeverityId",
+    "statusid": "StatusId",
+    "comment": "Comment",
+}
 
 # OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
 # OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
@@ -835,6 +846,102 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
     return GetRemoteDataResponse(mirrored_object=finding, entries=[])
 
 
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """Return the schema of fields available for outgoing mirroring.
+
+    XSOAR uses this (in the mapper UI and for outgoing mirroring) to know which incident fields can be
+    pushed to AWS Security Hub V2. Only the fields that ``update-remote-system`` actually mirrors are
+    declared here: the finding severity (OCSF ``severity_id``), status (OCSF ``status_id``) and a comment.
+
+    Returns:
+        GetMappingFieldsResponse: The outgoing mapping schema for the Security Hub finding incident type.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Mirror-out: get-mapping-fields")
+    finding_scheme = SchemeTypeMapping(type_name="AWS Security Hub Finding")
+    finding_scheme.add_field(
+        name="severityid", description="The OCSF severity_id to set on the finding (1=Informational .. 6=Fatal)."
+    )
+    finding_scheme.add_field(
+        name="statusid", description="The OCSF status_id to set on the finding (1=New, 2=In Progress, 3=Suppressed, 4=Resolved)."
+    )
+    finding_scheme.add_field(name="comment", description="A comment describing the reason for the update.")
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(finding_scheme)
+    return mapping_response
+
+
+def update_remote_system_command(client: BotoClient, args: dict, resolve_finding: bool) -> str:
+    """Push local (XSOAR) incident changes to the corresponding AWS Security Hub V2 finding.
+
+    XSOAR invokes this whenever a mirror-enrolled incident changes. Only the fields present in the
+    ``delta`` and whitelisted in ``OUTGOING_DELTA_TO_KWARG`` are mirrored out via
+    ``batch_update_findings_v2``, targeting the finding by its OCSF ``metadata.uid``. When
+    ``resolve_finding`` is enabled and the incident was closed in XSOAR, the finding's status is set
+    to Resolved.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        args (dict): The ``update-remote-system`` arguments (data, entries, delta, incident status, remote id).
+        resolve_finding (bool): Whether closing the incident in XSOAR should resolve the finding in AWS.
+
+    Returns:
+        str: The remote finding uid that was updated (so XSOAR can track it).
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Mirror-out: ===== update-remote-system START =====")
+    parsed_args = UpdateRemoteSystemArgs(args)
+    remote_finding_uid = parsed_args.remote_incident_id
+    delta = parsed_args.delta or {}
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Mirror-out: uid={remote_finding_uid}, incident_changed={parsed_args.incident_changed}, "
+        f"inc_status={parsed_args.inc_status}, delta_keys={list(delta.keys())}, resolve_finding={resolve_finding}"
+    )
+
+    kwargs: dict = {}
+    if parsed_args.incident_changed and delta:
+        for delta_key, api_key in OUTGOING_DELTA_TO_KWARG.items():
+            if delta_key in delta and delta[delta_key] not in (None, ""):
+                value = delta[delta_key]
+                # severity_id and status_id are numeric in the API.
+                kwargs[api_key] = arg_to_number(value) if api_key in ("SeverityId", "StatusId") else value
+
+    # If configured, closing the incident in XSOAR resolves the finding in AWS (overrides any delta status).
+    if resolve_finding and parsed_args.inc_status == IncidentStatus.DONE:
+        kwargs["StatusId"] = OCSF_STATUS_ID_RESOLVED
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-out: incident closed and resolve_finding enabled; "
+            f"forcing StatusId={OCSF_STATUS_ID_RESOLVED} (Resolved)."
+        )
+
+    if not kwargs:
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-out: no mirrorable changes for uid={remote_finding_uid}; skipping. "
+            "===== update-remote-system END ====="
+        )
+        return remote_finding_uid
+
+    kwargs["MetadataUids"] = [remote_finding_uid]
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-out: calling batch_update_findings_v2 with kwargs={kwargs}")
+    try:
+        response = client.batch_update_findings_v2(**kwargs)
+        demisto.debug("[AWS_Security_Hub_V2] Mirror-out: batch_update_findings_v2 succeeded.")
+    except client.exceptions.ClientError as e:
+        error = e.response.get("Error", {})
+        error_code = error.get("Code", "")
+        error_message = error.get("Message", "")
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Mirror-out: batch_update_findings_v2 raised {type(e).__name__} "
+            f"(Code={error_code}, Message={error_message})."
+        )
+        raise DemistoException(error_message)
+
+    unprocessed = response.get("UnprocessedFindings", [])
+    if unprocessed:
+        demisto.error(f"[AWS_Security_Hub_V2] Mirror-out: {len(unprocessed)} finding(s) were not updated: {unprocessed}")
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-out: updated uid={remote_finding_uid}. ===== update-remote-system END =====")
+    return remote_finding_uid
+
+
 def test_module(client: BotoClient) -> str:
     """Test connectivity and authentication against the AWS Security Hub V2 API.
     Args:
@@ -886,6 +993,11 @@ def main():  # pragma: no cover
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, args))
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
+        elif command == "update-remote-system":
+            resolve_finding = argToBoolean(params.get("resolve_finding", False))
+            return_results(update_remote_system_command(client, args, resolve_finding))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

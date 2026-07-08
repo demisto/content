@@ -118,7 +118,7 @@ configuration:
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: 50
-  additionalinfo: The maximum number of findings to fetch per cycle. The maximum is 200.
+  additionalinfo: The maximum number of findings to fetch per cycle. The maximum is 100.
   type: 0
   section: Collect
   required: false
@@ -144,13 +144,22 @@ configuration:
   required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
-  additionalinfo: 'Choose the direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex XSOAR). Only incoming mirroring is currently supported.'
+  additionalinfo: 'Choose the direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
   type: 15
   section: Collect
   options:
   - None
   - Incoming
+  - Outgoing
+  - Incoming And Outgoing
   defaultvalue: None
+  required: false
+- display: Resolve finding of closed incident from XSOAR in AWS Security Hub
+  name: resolve_finding
+  additionalinfo: 'When enabled, closing an incident in Cortex XSOAR sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
+  type: 8
+  section: Collect
+  defaultvalue: 'false'
   required: false
 script:
   commands:
@@ -269,15 +278,26 @@ script:
     - name: lastUpdate
       description: A date string in local time representing the last time the incident was updated.
       required: false
+  - name: get-mapping-fields
+    description: 'Returns the list of fields available for outgoing mirroring. This command is used for mirroring and is not intended to be run manually.'
+    arguments: []
+  - name: update-remote-system
+    description: 'Pushes local (Cortex XSOAR) incident changes to the corresponding AWS Security Hub V2 finding. This command is used for mirroring and is not intended to be run manually.'
+    arguments:
+    - name: remoteId
+      description: The remote finding metadata UID to update.
+      required: false
   dockerimage: demisto/boto3py3:1.0.0.7704170
   isfetch: true
   ismappable: true
   isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 defaultmapperin: AWS Security Hub v2 - Incoming Mapper
+defaultmapperout: AWS Security Hub v2 - Outgoing Mapper
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
