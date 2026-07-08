@@ -33,7 +33,6 @@ FRONT_DOOR_UPSERT_PARAMS = {
 }
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-API_VERSION = "2020-05-01"
 API_VERSION_POLICIES = "2025-05-01"
 API_VERSION_SUBSCRIPTIONS = "2022-12-01"
 API_VERSION_RESOURCE_GROUPS = "2021-04-01"
@@ -128,8 +127,6 @@ class AzureWAFClient:
     ):
         if not params:
             params = {}
-        if not full_url:
-            params["api-version"] = API_VERSION
 
         return self.ms_client.http_request(
             method=method,
@@ -217,6 +214,7 @@ class AzureWAFClient:
             return_empty_response=True,
             resp_type="response",
             url_suffix=f"/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}",
+            params={"api-version": API_VERSION_POLICIES},
         )
 
     def subscriptions_list(self) -> dict:
