@@ -34,8 +34,3 @@ filter _collector_type != "XDR Collector" and _raw_log ~= "^(?:<\d+>\s*)?\w{3}\s
     timestamp_diff(tmp_current_year_timestamp, current_time(), "MILLISECOND") <= 0, tmp_current_year_timestamp,
     parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp), "UTC"))
 | fields - tmp*;
-
-// Keep syslog delivered under _raw_log that matches none of the timestamp formats above.
-// With no_hit=drop in the INGEST header, this drops only records with a null _raw_log
-// (pre-parsed/structured JSON) that would otherwise widen the linux_linux_raw schema.
-filter _raw_log != null;
