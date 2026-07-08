@@ -2029,14 +2029,14 @@ def html_to_text(html) -> str:
     return text.strip()
 
 
-def truncate_message(message: str, max_length: int = MESSAGE_MAX_LENGTH) -> str:
+def truncate_message(message: str | None, max_length: int = MESSAGE_MAX_LENGTH) -> str | None:
     """
     Cut a free-text message down to `max_length` characters.
 
     :param message: The raw message text to truncate.
     :param max_length: Maximum number of characters to keep.
 
-    :return: The truncated message, unchanged if it was already short enough.
+    :return: The truncated message, unchanged if it was already short enough or not a non-empty string.
     """
     if not message or not isinstance(message, str) or len(message) <= max_length:
         return message
@@ -3306,26 +3306,27 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
 
             limited_indicators = []
             for indicator in indicators:
-                for enr_key, enr_val in indicator.get("enrichments", {}).items():
+                limited_indicator = deepcopy(indicator)
+
+                for enr_key, enr_val in limited_indicator.get("enrichments", {}).items():
                     if isinstance(enr_val, list) and len(enr_val) > client.reputation_enrichments_limit:
                         demisto.debug(
                             f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
                             f"{client.reputation_enrichments_limit} entries for indicator "
-                            f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
+                            f"{limited_indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
-                        indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
+                        limited_indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
 
-                raw_message = indicator.get("message")
-                if isinstance(raw_message, str) and raw_message:
-                    truncated_message = truncate_message(raw_message)
-                    if truncated_message != raw_message:
-                        demisto.debug(
-                            f"Community search for IP {ip}: message truncated for indicator "
-                            f"{indicator.get('id', 'unknown')}. Full content available in raw_response."
-                        )
-                    indicator["message"] = truncated_message
+                raw_message = limited_indicator.get("message")
+                truncated_message = truncate_message(raw_message)
+                if truncated_message != raw_message:
+                    demisto.debug(
+                        f"Community search for IP {ip}: message truncated for indicator "
+                        f"{limited_indicator.get('id', 'unknown')}. Full content available in raw_response."
+                    )
+                    limited_indicator["message"] = truncated_message
 
-                limited_indicators.append(indicator)
+                limited_indicators.append(limited_indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
                 outputs_key_field="id",

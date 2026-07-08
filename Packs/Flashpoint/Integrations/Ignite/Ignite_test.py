@@ -3905,7 +3905,7 @@ def test_ip_lookup_community_search_keeps_short_message_unchanged(requests_mock,
 
     Given:
         - A community search response where the indicator's "message" field is short
-          (fewer sentences than MESSAGE_MAX_SENTENCES).
+          (fewer characters than MESSAGE_MAX_LENGTH).
     When:
         - Calling `ip_lookup_command`.
     Then:
