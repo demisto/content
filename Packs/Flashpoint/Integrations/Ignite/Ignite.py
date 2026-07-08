@@ -27,6 +27,8 @@ DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
 DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
+MESSAGE_MAX_LENGTH = 500  # Max characters to keep from a community search indicator's "message" field.
+MESSAGE_TRUNCATION_SUFFIX = "... [message truncated, full content available in raw_response]"
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -2027,6 +2029,21 @@ def html_to_text(html) -> str:
     return text.strip()
 
 
+def truncate_message(message: str, max_length: int = MESSAGE_MAX_LENGTH) -> str:
+    """
+    Cut a free-text message down to `max_length` characters.
+
+    :param message: The raw message text to truncate.
+    :param max_length: Maximum number of characters to keep.
+
+    :return: The truncated message, unchanged if it was already short enough.
+    """
+    if not message or not isinstance(message, str) or len(message) <= max_length:
+        return message
+
+    return message[:max_length].rstrip() + MESSAGE_TRUNCATION_SUFFIX
+
+
 def prepare_hr_for_vulnerability(vulnerability: dict, platform_url: str, is_reputation: bool = False) -> str:
     """
     Prepare human-readable output for vulnerability details.
@@ -3297,6 +3314,17 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
                             f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
                         indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
+
+                raw_message = indicator.get("message")
+                if isinstance(raw_message, str) and raw_message:
+                    truncated_message = truncate_message(raw_message)
+                    if truncated_message != raw_message:
+                        demisto.debug(
+                            f"Community search for IP {ip}: message truncated for indicator "
+                            f"{indicator.get('id', 'unknown')}. Full content available in raw_response."
+                        )
+                    indicator["message"] = truncated_message
+
                 limited_indicators.append(indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
