@@ -8,9 +8,9 @@ This integration was integrated and tested with version 1.0.0 of AWS.
 | Access Key | The AWS Access Key ID \(username\) and Secret Access Key \(password\) paired together. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials. | False |
 | Secret Key |  | False |
 | Role ARN | The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. | False |
-| Role Session Name | Role session name to be used for authentication |  |
+| Role Session Name | Role session name to be used for authentication | False |
 | Role Session Duration | Max role session duration | False |
-| Default AWS region. | The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands. Default value is us-east-1 |  |
+| Default AWS region. | The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands. Default value is us-east-1 | False |
 | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or the read and connect timeouts separated by a comma \(for example 60,10\). Default is 60,10. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | PrivateLink service URL. |  | False |
