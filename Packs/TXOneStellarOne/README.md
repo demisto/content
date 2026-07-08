@@ -47,7 +47,7 @@ For more information, contact TXOne StellarOne customer support for proper guida
 
 For instructions on how to create or configure the Broker VM, see [Set up and configure Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
-Follow the below steps to configure the Broker VM to receive TXOne StellarOne logs.
+Follow the instructions below to configure the Broker VM to receive TXOne StellarOne logs:
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
