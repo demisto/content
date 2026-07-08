@@ -1,0 +1,608 @@
+id: Rubrik Sensitive Data Object Files Discovery - Rubrik Security Cloud
+version: -1
+name: Rubrik Sensitive Data Object Files Discovery - Rubrik Security Cloud
+description: This playbook retrieves the list of files for the sensitive data object.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5e4ee4e4-3cc0-4758-8c6d-c5bb0c0fb8ab
+    type: start
+    task:
+      id: 5e4ee4e4-3cc0-4758-8c6d-c5bb0c0fb8ab
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b2793700-8021-4027-83f3-c2f7a113afa8
+    type: regular
+    task:
+      id: b2793700-8021-4027-83f3-c2f7a113afa8
+      version: -1
+      name: Retrieve files information
+      description: Retrieve the context of the file, folder, or file share for the provided object and the file details.
+      script: '|||rubrik-sonar-file-context-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: file_paths=data.policyObj.fileResultConnection.edges.node.stdPath::has_next_page=data.policyObj.fileResultConnection.pageInfo.hasNextPage::next_page_token=data.policyObj.fileResultConnection.pageInfo.endCursor
+      limit:
+        complex:
+          root: inputs.limit
+      next_page_token:
+        complex:
+          root: next_page_token
+          transformers:
+          - operator: LastArrayElement
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object Information.Answers.0
+                iscontext: true
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object Information.Answers.1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ca7b1779-fa40-49c0-8e02-f6fb5e78f688
+    type: regular
+    task:
+      id: ca7b1779-fa40-49c0-8e02-f6fb5e78f688
+      version: -1
+      name: Clear previous output.
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: file_paths, has_next_page,Collect Object Information
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2b5ad8ba-f2e1-4dce-8d61-b4139efe5a11
+    type: condition
+    task:
+      id: 2b5ad8ba-f2e1-4dce-8d61-b4139efe5a11
+      version: -1
+      name: Is Rubrik Security Cloud integration enabled?
+      description: Checks whether Rubrik Security Cloud integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 864e4be9-7774-4fdd-835f-22ff9f8b23fb
+    type: title
+    task:
+      id: 864e4be9-7774-4fdd-835f-22ff9f8b23fb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cfde8697-65b4-45f6-8b2a-02e7b281a5d8
+    type: playbook
+    task:
+      id: cfde8697-65b4-45f6-8b2a-02e7b281a5d8
+      version: -1
+      name: Rubrik Sensitive Data Object File Analysis - Rubrik Security Cloud
+      description: This playbook retrieves detailed information for a file.
+      playbookName: Rubrik Sensitive Data Object File Analysis - Rubrik Security Cloud
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      file_path:
+        complex:
+          root: file_paths
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object Information.Answers.0
+                iscontext: true
+      resolve_sids:
+        simple: "True"
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object Information.Answers.1
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4b359412-65c9-423e-8c2a-1e80aa3f96d0
+    type: condition
+    task:
+      id: 4b359412-65c9-423e-8c2a-1e80aa3f96d0
+      version: -1
+      name: Are the file paths available?
+      description: Checks whether the file paths of the affected files are available in the incident context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: file_paths
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2beccbb5-f56c-4927-8654-c06807325839
+    type: condition
+    task:
+      id: 2beccbb5-f56c-4927-8654-c06807325839
+      version: -1
+      name: Check whether the object information is available in playbook input
+      description: Check whether the object ID and snapshot ID are available or not in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "YES":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.snapshot_id
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 979729ea-e74d-4448-8ddb-ab254df8a12a
+    type: collection
+    task:
+      id: 979729ea-e74d-4448-8ddb-ab254df8a12a
+      version: -1
+      name: Collect Object Information
+      description: Collecting object ID and snapshot ID to retrieve the files data.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the object ID and snapshot ID.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Object ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Object ID. Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the Snapshot ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Snapshot ID. Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.'
+        readonly: false
+      title: Collect Object Information
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 29ea739a-7157-4b60-8549-38f87aba007f
+    type: condition
+    task:
+      id: 29ea739a-7157-4b60-8549-38f87aba007f
+      version: -1
+      name: Check whether the next page available
+      description: Check whether the next page available for files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: has_next_page
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f07a630b-4727-419f-8f9e-ad3d355b9d46
+    type: regular
+    task:
+      id: f07a630b-4727-419f-8f9e-ad3d355b9d46
+      version: -1
+      name: Clear previous page token
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: next_page_token
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.5,
+      "10_5_yes": 0.44,
+      "4_3_yes": 0.51,
+      "4_5_#default#": 0.37,
+      "7_6_yes": 0.45,
+      "8_1_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 720,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: object_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectid
+  required: false
+  description: |-
+    The object ID.
+
+    Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.
+  playbookInputQuery:
+- key: snapshot_id
+  value:
+    complex:
+      root: incident
+      accessor: rubriksnapshotid
+  required: false
+  description: |-
+    The snapshot ID.
+
+    Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "100"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- RubrikPolaris-Test
+fromversion: 6.10.0

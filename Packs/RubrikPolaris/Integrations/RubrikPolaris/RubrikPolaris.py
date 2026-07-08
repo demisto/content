@@ -29,6 +29,7 @@ THREAT_MONITORING_HYPERLINK = "{}radar/threat_monitoring/{}"
 DSPM_VIOLATION_HYPERLINK = "{}sonar/data_risks/violations/{}/{}/{}/{}/details"
 IR_VIOLATION_HYPERLINK = "{}identity_resilience/violations/{}?violation_id={}"
 IR_ALERT_HYPERLINK = "{}identity_resilience/alerts/{}"
+SENSITIVE_DATA_OBJECT_HYPERLINK = "{}sonar/objects/detail/{}/{}/browse"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -129,12 +130,18 @@ DEFAULT_TIME_PERIOD = "7 days"
 MAX_MATCHES_PER_OBJECT = 100
 MAXIMUM_FILE_SIZE = 5000000
 MAXIMUM_PAGINATION_LIMIT = 1000
-DEFAULT_FETCH_TYPE = ["event", "threat monitoring object", "dspm violation", "ir violation"]
+DEFAULT_FETCH_TYPE = ["event", "threat monitoring object", "dspm violation", "ir violation", "sensitive data object"]
 EVENT_FETCH_TYPE = "event"
 THREAT_MONITORING_FETCH_TYPE = "threat monitoring object"
 DSPM_VIOLATION_FETCH_TYPE = "dspm violation"
 IR_VIOLATION_FETCH_TYPE = "ir violation"
-MAX_FETCH_APPLICABLE_FETCH_TYPES = [THREAT_MONITORING_FETCH_TYPE, DSPM_VIOLATION_FETCH_TYPE, IR_VIOLATION_FETCH_TYPE]
+SENSITIVE_DATA_OBJECT_FETCH_TYPE = "sensitive data object"
+MAX_FETCH_APPLICABLE_FETCH_TYPES = [
+    THREAT_MONITORING_FETCH_TYPE,
+    DSPM_VIOLATION_FETCH_TYPE,
+    IR_VIOLATION_FETCH_TYPE,
+    SENSITIVE_DATA_OBJECT_FETCH_TYPE,
+]
 IOC_MATCHES = ["MATCHES_FOUND", "NO_MATCHES", "UNSCANNED"]
 QUERANTINE_STATUS = ["QUARANTINED_MATCHES", "NO_QUARANTINED_MATCHES"]
 HUNT_STATUSES = ["ABORTED", "CANCELED", "CANCELING", "FAILED", "IN_PROGRESS", "PARTIALLY_SUCCEEDED", "PENDING", "SUCCEEDED"]
@@ -262,6 +269,8 @@ IR_VIOLATION_SORT_BY = [
     "NAME",
     "TYPE",
 ]
+SENSITIVE_DATA_OBJECT_CLASSIFICATION_MESSAGE = "Results available in the Objects page for the workload"
+SENSITIVE_DATA_OBJECT_SENSITIVITY = ["HIGH", "MEDIUM", "LOW", "NO"]
 
 MESSAGES = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -337,6 +346,8 @@ OUTPUT_PREFIX = {
     "DSPM_VIOLATION_LOG_DOWNLOAD": "RubrikPolaris.DSPMViolationRemediationLogDownload",
     "IR_VIOLATION": "RubrikPolaris.IRViolation",
     "PAGE_TOKEN_IR_VIOLATION": "RubrikPolaris.PageToken.IRViolation",
+    "SENSITIVE_DATA_OBJECT": "RubrikPolaris.SensitiveDataObject",
+    "SENSITIVE_DATA_OBJECT_FILE": "RubrikPolaris.SensitiveDataObjectFile",
 }
 
 ERROR_MESSAGES = {
@@ -655,10 +666,13 @@ FILE_CONTEXT_QUERY = """query CrawlsFileListQuery(
         __typename
       }
       pageInfo {
+        startCursor
         endCursor
         hasNextPage
+        hasPreviousPage
         __typename
       }
+      hasLatestData
       __typename
     }
     __typename
@@ -673,7 +687,11 @@ fragment DiscoveryFileFragment on FileResult {
   size
   lastAccessTime
   lastModifiedTime
+  creationTime
+  lastScanTime
   directory
+  createdBy
+  modifiedBy
   numDescendantFiles
   numDescendantErrorFiles
   numDescendantSkippedExtFiles
@@ -721,12 +739,106 @@ fragment DiscoveryFileFragment on FileResult {
       violatedCount
       __typename
     }
+    noRiskFileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    totalFileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
+  sensitiveHits {
+    highRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    mediumRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    lowRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    noRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    __typename
+  }
+  analyzerRiskHits {
+    highRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    mediumRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    lowRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    noRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    __typename
+  }
+  analyzerResults {
+    hits {
+      totalHits
+      violations
+      __typename
+    }
+    analyzer {
+      id
+      name
+      analyzerType
+      __typename
+    }
     __typename
   }
   openAccessType
   stalenessType
   numActivities
   numActivitiesDelta
+  exposureSummary {
+    exposureType
+    fileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
+  dbEntityType
+  mipLabelsSummary {
+    ...ObjectInventoryMipColumnFragment
+    __typename
+  }
+  documentTypesSummary {
+    id
+    name
+    filesCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
   __typename
 }
 
@@ -756,6 +868,22 @@ fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
     violations
     violationsDelta
     totalHitsDelta
+    __typename
+  }
+  __typename
+}
+
+fragment ObjectInventoryMipColumnFragment on MipLabelSummary {
+  mipLabel {
+    siteId
+    labelName
+    labelId
+    hasProtection
+    __typename
+  }
+  filesCount {
+    violatedCount
+    totalCount
     __typename
   }
   __typename
@@ -2203,6 +2331,1273 @@ IR_VIOLATION_STATUS_UPDATE_MUTATION = """mutation IdentityResilienceViolationsSt
   $input: BulkUpdatePolicyViolationsInput!
 ) {
   bulkUpdatePolicyViolations(input: $input)
+}
+"""
+
+SENSITIVE_OBJECT_DETAIL_QUERY = """query SensitiveObjectDetailQuery(
+  $snappableFid: String!
+  $snapshotFid: String!
+  $includeWhitelistedResults: Boolean
+) {
+  policyObj(
+    snappableFid: $snappableFid
+    snapshotFid: $snapshotFid
+    includeWhitelistedResults: $includeWhitelistedResults
+  ) {
+    ...SonarObjectDetailFragment
+    policySummaries {
+      ...PolicySummaryFragment
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment SonarObjectDetailFragment on PolicyObj {
+  ...PolicyObjFragment
+  osType
+  isUserAccessEnabledObject
+  snappable {
+    ... on VsphereVm {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on LinuxFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on ShareFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on WindowsFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on NutanixVm {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on HyperVVirtualMachine {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on VolumeGroup {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on MssqlDatabase {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on NasFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment PolicyObjFragment on PolicyObj {
+  id
+  snapshotFid
+  snapshotTimestamp
+  shareType
+  riskLevel
+  objectStatus {
+    policyStatuses {
+      status
+      __typename
+    }
+    latestSnapshotResult {
+      snapshotTime
+      snapshotFid
+      __typename
+    }
+    __typename
+  }
+  rootFileResult {
+    hits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    analyzerGroupResults {
+      ...AnalyzerGroupResultFragment
+      __typename
+    }
+    analyzerResults {
+      analyzer {
+        id
+        name
+      }
+      hits {
+        totalHits
+        violations
+        violationsDelta
+        totalHitsDelta
+        __typename
+      }
+    }
+    filesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFolders {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFilesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    staleFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    staleFilesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessStaleFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    sensitiveHits {
+      highRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      mediumRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      lowRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      noRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      totalHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      __typename
+    }
+    numActivities
+    numActivitiesDelta
+    __typename
+  }
+  snappable {
+    ...SnappableFragment
+    __typename
+  }
+  __typename
+}
+
+fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
+  analyzerGroup {
+    groupType
+    id
+    name
+    __typename
+  }
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  __typename
+}
+
+fragment SnappableFragment on HierarchyObject {
+  id
+  name
+  objectType
+  slaAssignment
+  logicalPath {
+    fid
+    name
+    objectType
+    __typename
+  }
+  physicalPath {
+    fid
+    name
+    objectType
+    __typename
+  }
+  ...EffectiveSlaColumnFragment
+  ... on VsphereVm {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on LinuxFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on ShareFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on WindowsFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on NutanixVm {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on HyperVVirtualMachine {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on VolumeGroup {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on O365Onedrive {
+    userPrincipalName
+    __typename
+  }
+  ... on O365SharepointDrive {
+    url
+    __typename
+  }
+  ... on AzureNativeVirtualMachine {
+    region
+    azureResourceGroupDetails {
+      azureSubscriptionDetails {
+        id
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ... on AzureNativeManagedDisk {
+    region
+    azureResourceGroupDetails {
+      azureSubscriptionDetails {
+        id
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ... on CloudDirectNasExport {
+    exportPath
+    __typename
+  }
+  ... on CloudDirectNasShare {
+    exportPath
+    __typename
+  }
+  ... on CloudDirectHierarchyObject {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment EffectiveSlaColumnFragment on HierarchyObject {
+  id
+  effectiveSlaDomain {
+    ...EffectiveSlaDomainFragment
+    ... on GlobalSlaReply {
+      description
+      __typename
+    }
+    __typename
+  }
+  ... on CdmHierarchyObject {
+    pendingSla {
+      ...SLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  ... on CloudDirectHierarchyObject {
+    pendingSla {
+      ...SLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  ... on PolarisHierarchyObject {
+    rscNativeObjectPendingSla {
+      ...CompactSLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment EffectiveSlaDomainFragment on SlaDomain {
+  id
+  name
+  ... on GlobalSlaReply {
+    isRetentionLockedSla
+    retentionLockMode
+    haPolicy {
+      id
+      __typename
+    }
+    __typename
+  }
+  ... on ClusterSlaDomain {
+    fid
+    cluster {
+      id
+      name
+      __typename
+    }
+    isRetentionLockedSla
+    retentionLockMode
+    __typename
+  }
+  __typename
+}
+
+fragment SLADomainFragment on SlaDomain {
+  id
+  name
+  ... on ClusterSlaDomain {
+    fid
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment CompactSLADomainFragment on CompactSlaDomain {
+  id
+  name
+  __typename
+}
+
+fragment PolicySummaryFragment on ClassificationPolicySummary {
+  id
+  name
+  colorEnum
+  __typename
+}
+"""
+
+RESOLVE_SNAPSHOT_QUERY = """query ResolveSnapshot($snappableIds: [String!]!, $beforeTime: DateTime!) {
+  allSnapshotsClosestToPointInTime(
+    snappableIds: $snappableIds
+    beforeTime: $beforeTime
+  ) {
+    snappableId
+    error
+    snapshot {
+      id
+      date
+    }
+  }
+}
+"""
+
+SENSITIVE_OBJECT_DETAIL_QUERY = """query SensitiveObjectDetailQuery(
+  $snappableFid: String!
+  $snapshotFid: String!
+  $includeWhitelistedResults: Boolean
+) {
+  policyObj(
+    snappableFid: $snappableFid
+    snapshotFid: $snapshotFid
+    includeWhitelistedResults: $includeWhitelistedResults
+  ) {
+    ...SonarObjectDetailFragment
+    policySummaries {
+      ...PolicySummaryFragment
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment SonarObjectDetailFragment on PolicyObj {
+  ...PolicyObjFragment
+  osType
+  isUserAccessEnabledObject
+  snappable {
+    ... on VsphereVm {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on LinuxFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on ShareFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on WindowsFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on NutanixVm {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on HyperVVirtualMachine {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on VolumeGroup {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on MssqlDatabase {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    ... on NasFileset {
+      cdmId
+      cluster {
+        id
+        name
+        version
+        defaultAddress
+        clusterNodeConnection(first: 1) {
+          nodes {
+            ipAddress
+            __typename
+          }
+          __typename
+        }
+        datagovPreviewerConfig {
+          enabled
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment PolicyObjFragment on PolicyObj {
+  id
+  snapshotFid
+  snapshotTimestamp
+  shareType
+  riskLevel
+  objectStatus {
+    policyStatuses {
+      status
+      __typename
+    }
+    latestSnapshotResult {
+      snapshotTime
+      snapshotFid
+      __typename
+    }
+    __typename
+  }
+  rootFileResult {
+    hits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    analyzerGroupResults {
+      ...AnalyzerGroupResultFragment
+      __typename
+    }
+    analyzerResults {
+      analyzer {
+        id
+        name
+      }
+      hits {
+        totalHits
+        violations
+        violationsDelta
+        totalHitsDelta
+        __typename
+      }
+    }
+    filesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFolders {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessFilesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    staleFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    staleFilesWithHits {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    openAccessStaleFiles {
+      totalHits
+      violations
+      violationsDelta
+      totalHitsDelta
+      __typename
+    }
+    sensitiveHits {
+      highRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      mediumRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      lowRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      noRiskHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      totalHits {
+        totalHits
+        violatedHits
+        __typename
+      }
+      __typename
+    }
+    numActivities
+    numActivitiesDelta
+    __typename
+  }
+  snappable {
+    ...SnappableFragment
+    __typename
+  }
+  __typename
+}
+
+fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
+  analyzerGroup {
+    groupType
+    id
+    name
+    __typename
+  }
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  __typename
+}
+
+fragment SnappableFragment on HierarchyObject {
+  id
+  name
+  objectType
+  slaAssignment
+  logicalPath {
+    fid
+    name
+    objectType
+    __typename
+  }
+  physicalPath {
+    fid
+    name
+    objectType
+    __typename
+  }
+  ...EffectiveSlaColumnFragment
+  ... on VsphereVm {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on LinuxFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on ShareFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on WindowsFileset {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on NutanixVm {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on HyperVVirtualMachine {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on VolumeGroup {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  ... on O365Onedrive {
+    userPrincipalName
+    __typename
+  }
+  ... on O365SharepointDrive {
+    url
+    __typename
+  }
+  ... on AzureNativeVirtualMachine {
+    region
+    azureResourceGroupDetails {
+      azureSubscriptionDetails {
+        id
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ... on AzureNativeManagedDisk {
+    region
+    azureResourceGroupDetails {
+      azureSubscriptionDetails {
+        id
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ... on CloudDirectNasExport {
+    exportPath
+    __typename
+  }
+  ... on CloudDirectNasShare {
+    exportPath
+    __typename
+  }
+  ... on CloudDirectHierarchyObject {
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment EffectiveSlaColumnFragment on HierarchyObject {
+  id
+  effectiveSlaDomain {
+    ...EffectiveSlaDomainFragment
+    ... on GlobalSlaReply {
+      description
+      __typename
+    }
+    __typename
+  }
+  ... on CdmHierarchyObject {
+    pendingSla {
+      ...SLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  ... on CloudDirectHierarchyObject {
+    pendingSla {
+      ...SLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  ... on PolarisHierarchyObject {
+    rscNativeObjectPendingSla {
+      ...CompactSLADomainFragment
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment EffectiveSlaDomainFragment on SlaDomain {
+  id
+  name
+  ... on GlobalSlaReply {
+    isRetentionLockedSla
+    retentionLockMode
+    haPolicy {
+      id
+      __typename
+    }
+    __typename
+  }
+  ... on ClusterSlaDomain {
+    fid
+    cluster {
+      id
+      name
+      __typename
+    }
+    isRetentionLockedSla
+    retentionLockMode
+    __typename
+  }
+  __typename
+}
+
+fragment SLADomainFragment on SlaDomain {
+  id
+  name
+  ... on ClusterSlaDomain {
+    fid
+    cluster {
+      id
+      name
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment CompactSLADomainFragment on CompactSlaDomain {
+  id
+  name
+  __typename
+}
+
+fragment PolicySummaryFragment on ClassificationPolicySummary {
+  id
+  name
+  colorEnum
+  __typename
+}
+"""
+
+FILE_ACCESS_QUERY = """query FileAccessQuery(
+  $snappableFid: String!
+  $snapshotFid: String!
+  $stdPath: String!
+  $filters: SddlRequestFiltersInput
+  $skipResolveSids: Boolean
+) {
+  datagovSecDesc(
+    snappableFid: $snappableFid
+    snapshotFid: $snapshotFid
+    stdPath: $stdPath
+    filters: $filters
+    skipResolveSids: $skipResolveSids
+  ) {
+    secInfo {
+      owner
+      path
+      permissions {
+        cn
+        principalId
+        principalOrigin
+        idpType
+        principalType
+        resolutionType
+        access
+        flags
+        accessMethodDetails {
+          accessMethod
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+FILE_DETAILS_QUERY = """query FileDetailsQuery(
+  $sensitiveFileInput: SensitiveFileMetadataInput!
+) {
+  sensitiveFileDetails(input: $sensitiveFileInput) {
+    fileMetadata {
+      createdBy {
+        value
+        __typename
+      }
+      creationTime
+      lastAccessTime
+      lastModifiedBy {
+        value
+        __typename
+      }
+      lastModifiedTime
+      lastScanTime
+      path
+      size
+      __typename
+    }
+    exposureSummary {
+      exposureType
+      fileCount {
+        totalCount
+        violatedCount
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
 }
 """
 
@@ -3714,26 +5109,58 @@ def prepare_context_hr_file_context_list(edges: list, include_whitelisted_result
         node = remove_empty_elements(node)
         context.append(node)
         last_access_time = node.get("lastAccessTime")
+        last_access_time_str = (
+            datetime.fromtimestamp(last_access_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+            if last_access_time is not None
+            else ""
+        )
         last_modified_time = node.get("lastModifiedTime")
+        last_modified_time_str = (
+            datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+            if last_modified_time is not None
+            else ""
+        )
 
         # Go for totalHits if include_whitelisted_results is True else go for violatedHits.
         if include_whitelisted_results:
             total_sensitive_hits = node.get("hits", {}).get("totalHits") or 0
             daily_hits_change = node.get("hits", {}).get("totalHitsDelta") or 0
+            high_risk_hits = demisto.get(node, "sensitiveHits.highRiskHits.totalHits") or 0
+            medium_risk_hits = demisto.get(node, "sensitiveHits.mediumRiskHits.totalHits") or 0
+            low_risk_hits = demisto.get(node, "sensitiveHits.lowRiskHits.totalHits") or 0
+            no_risk_hits = demisto.get(node, "sensitiveHits.noRiskHits.totalHits") or 0
         else:
             total_sensitive_hits = node.get("hits", {}).get("violations") or 0
             daily_hits_change = node.get("hits", {}).get("violationsDelta") or 0
+            high_risk_hits = demisto.get(node, "sensitiveHits.highRiskHits.violatedHits") or 0
+            medium_risk_hits = demisto.get(node, "sensitiveHits.mediumRiskHits.violatedHits") or 0
+            low_risk_hits = demisto.get(node, "sensitiveHits.lowRiskHits.violatedHits") or 0
+            no_risk_hits = demisto.get(node, "sensitiveHits.noRiskHits.violatedHits") or 0
+
+        data_categories = [
+            {
+                "id": demisto.get(result, "analyzerGroup.id", ""),
+                "name": demisto.get(result, "analyzerGroup.name", ""),
+                "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+            }
+            for result in node.get("analyzerGroupResults", [])
+        ]
 
         hr_content.append(
             {
                 FILE_NAME: node.get("filename"),
                 FILE_SIZE: node.get("size"),
-                TOTAL_SENSITIVE_HITS: total_sensitive_hits,
+                TOTAL_RISK_HITS: total_sensitive_hits,
                 DAILY_HITS_CHANGE: daily_hits_change,
+                HIGH_RISK_HITS: high_risk_hits,
+                MEDIUM_RISK_HITS: medium_risk_hits,
+                LOW_RISK_HITS: low_risk_hits,
+                NO_RISK_HITS: no_risk_hits,
+                "Data Categories": data_categories,
                 FILE_PATH: node.get("stdPath"),
                 ACCESS_TYPE: node.get("openAccessType"),
-                LAST_ACCESS_TIME: datetime.fromtimestamp(last_access_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT),
-                LAST_MODIFIED_TIME: datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT),
+                LAST_ACCESS_TIME: last_access_time_str,
+                LAST_MODIFIED_TIME: last_modified_time_str,
             }
         )
 
@@ -3743,14 +5170,20 @@ def prepare_context_hr_file_context_list(edges: list, include_whitelisted_result
         headers=[
             FILE_NAME,
             FILE_SIZE,
-            TOTAL_SENSITIVE_HITS,
+            TOTAL_RISK_HITS,
             DAILY_HITS_CHANGE,
+            HIGH_RISK_HITS,
+            MEDIUM_RISK_HITS,
+            LOW_RISK_HITS,
+            NO_RISK_HITS,
             FILE_PATH,
             ACCESS_TYPE,
             LAST_ACCESS_TIME,
             LAST_MODIFIED_TIME,
+            "Data Categories",
         ],
         removeNull=True,
+        json_transform_mapping={"Data Categories": JsonTransformer()},
     )
 
     return context, hr
@@ -4420,6 +5853,29 @@ def validate_ir_violation_fetch_params(
     return statuses, severities, policy_types, identity_providers, identity_tags
 
 
+def validate_sensitive_data_object_fetch_params(sensitivities: list) -> list:
+    """
+    Validate and transform sensitivity levels for sensitive data object fetch.
+
+    :param sensitivities: List of sensitivity levels.
+    :type sensitivities: list
+
+    :return: List of validated risk level strings.
+    :rtype: list
+    :raises ValueError: If any sensitivity value is not in the allowed values.
+    """
+    valid_sensitivities = []
+    for sensitivity in sensitivities:
+        if sensitivity.upper() not in SENSITIVE_DATA_OBJECT_SENSITIVITY:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(
+                    sensitivity, "sensitive_data_object_sensitivity", SENSITIVE_DATA_OBJECT_SENSITIVITY
+                )
+            )
+        valid_sensitivities.append(f"{sensitivity.upper()}_RISK")
+    return valid_sensitivities
+
+
 def get_ir_violation_resource_display_name(node: dict) -> str:
     """
     Extract the available resource/entity display name from an IR violation.
@@ -4846,6 +6302,25 @@ def remove_empty_elements_for_fetch(d: Any) -> Any:
     return {k: v for k, v in ((k, remove_empty_elements_for_fetch(v)) for k, v in d.items()) if not check_empty(v)}
 
 
+def remove_empty_elements_for_hr(d: Any) -> Any:
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
+    Non-collection scalar values (int, float, bool) are converted to strings so that
+    falsy values like 0 and False are preserved in human-readable output.
+
+    :type d: Any
+    :param d: Input dictionary or list.
+
+    :return: Dictionary or list with empty elements removed and scalars stringified.
+    :rtype: Any
+    """
+    if not isinstance(d, dict | list):
+        return str(d) if isinstance(d, int | float | bool) else d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements_for_hr(v) for v in d) if not check_empty(v)]
+    return {k: v for k, v in ((k, remove_empty_elements_for_hr(v)) for k, v in d.items()) if not check_empty(v)}
+
+
 def validate_data_security_violation_file_list_command_args(
     limit: Optional[int],
     sort_by: str,
@@ -5261,6 +6736,177 @@ def prepare_context_hr_ir_violation_get(violation_data: Dict) -> tuple[Dict, str
         removeNull=True,
         sort_headers=False,
         json_transform_mapping={"Data Categories": JsonTransformer()},
+    )
+
+    return context, hr
+
+
+def prepare_context_hr_sensitive_data_object_get(object_data: dict) -> tuple[dict, str]:
+    """
+    Prepare context output and human-readable response for rubrik-sensitive-data-object-get command.
+
+    :type object_data: ``dict``
+    :param object_data: Object detail data from the API response.
+
+    :return: Context output and human-readable for the command.
+    """
+    analyzer_group_results = demisto.get(object_data, "rootFileResult.analyzerGroupResults") or []
+    data_categories = [
+        {
+            "name": demisto.get(result, "analyzerGroup.name", ""),
+            "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+        }
+        for result in analyzer_group_results
+    ]
+
+    data_type_results = demisto.get(object_data, "rootFileResult.analyzerResults") or []
+    data_types = [
+        {
+            "name": demisto.get(result, "analyzer.name") or "",
+            "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+        }
+        for result in data_type_results
+    ]
+
+    context = remove_empty_elements(object_data)
+
+    logical_paths = demisto.get(object_data, "snappable.logicalPath") or []
+    region = ""
+    account = ""
+    for path in logical_paths:
+        object_type = path.get("objectType", "")
+        if "Region" in object_type:
+            region = path.get("name")
+        elif "Account" in object_type:
+            account = path.get("name")
+
+    risk_level = object_data.get("riskLevel", "")
+    display_risk_level = risk_level.replace("_RISK", "").title() if risk_level else ""
+
+    snapshot_time = object_data.get("snapshotTimestamp")
+    snapshot_time_str = ""
+    if snapshot_time:
+        snapshot_time_str = arg_to_datetime(snapshot_time).strftime(HR_DATE_TIME_FORMAT)  # type: ignore
+
+    hr_data = {
+        OBJECT_ID: object_data.get("id"),
+        OBJECT_NAME: demisto.get(object_data, "snappable.name"),
+        OBJECT_TYPE: demisto.get(object_data, "snappable.objectType"),
+        "Risk Level": display_risk_level,
+        "OS Type": object_data.get("osType"),
+        "Account Name": account,
+        "Region": region,
+        SNAPSHOT_ID: object_data.get("snapshotFid"),
+        "Snapshot Timestamp": snapshot_time_str,
+        "SLA Name": demisto.get(object_data, "snappable.effectiveSlaDomain.name"),
+        CLUSTER_ID: demisto.get(object_data, "snappable.cluster.id"),
+        CLUSTER_NAME: demisto.get(object_data, "snappable.cluster.name"),
+        DAILY_HITS_CHANGE: demisto.get(object_data, "rootFileResult.hits.totalHitsDelta"),
+        TOTAL_RISK_HITS: demisto.get(object_data, "rootFileResult.sensitiveHits.totalHits.totalHits"),
+        HIGH_RISK_HITS: demisto.get(object_data, "rootFileResult.sensitiveHits.highRiskHits.totalHits"),
+        MEDIUM_RISK_HITS: demisto.get(object_data, "rootFileResult.sensitiveHits.mediumRiskHits.totalHits"),
+        LOW_RISK_HITS: demisto.get(object_data, "rootFileResult.sensitiveHits.lowRiskHits.totalHits"),
+        NO_RISK_HITS: demisto.get(object_data, "rootFileResult.sensitiveHits.noRiskHits.totalHits"),
+        "Total Files with Hits": demisto.get(object_data, "rootFileResult.filesWithHits.totalHits"),
+        "Stale Files with Hits": demisto.get(object_data, "rootFileResult.staleFilesWithHits.totalHits"),
+        "Open Access Files with Hits": demisto.get(object_data, "rootFileResult.openAccessFilesWithHits.totalHits"),
+        "Data Categories": data_categories,
+        "Data Types": data_types,
+    }
+
+    hr = tableToMarkdown(
+        "Sensitive Data Object",
+        remove_empty_elements_for_hr(hr_data),
+        removeNull=True,
+        sort_headers=False,
+        is_auto_json_transform=True,
+    )
+
+    return context, hr
+
+
+def prepare_context_hr_sensitive_data_object_file_get(
+    file_access_data: dict, file_details: dict, object_id: str = "", std_path: str = ""
+) -> tuple[dict, str]:
+    """
+    Prepare context output and human-readable response for rubrik-sensitive-data-object-file-get command.
+
+    :type file_access_data: ``dict``
+    :param file_access_data: File security descriptor data from the API response.
+
+    :type file_details: ``dict``
+    :param file_details: Sensitive file metadata and exposure summary from the API response.
+
+    :type object_id: ``str``
+    :param object_id: Unique identifier of the snappable object. Used as a deduplication key in context output.
+
+    :type std_path: ``str``
+    :param std_path: Standard file path of the sensitive file. Used as a deduplication key in context output.
+
+    :return: Context output and human-readable for the command.
+    """
+    sec_info_list = file_access_data.get("secInfo") or []
+    file_metadata = demisto.get(file_details, "fileMetadata") or {}
+    sec_info = sec_info_list[0] if sec_info_list else {}
+
+    combined_data: dict = {**file_access_data, **file_details, "stdPath": std_path, "objectId": object_id}
+    context = remove_empty_elements(combined_data)
+
+    permissions = []
+    owner = sec_info.get("owner", "")
+    for perm in sec_info.get("permissions") or []:
+        access_method = demisto.get(perm, "accessMethodDetails.accessMethod") or ""
+        permissions.append(
+            {
+                "id": perm.get("principalId", ""),
+                "name": perm.get("cn", ""),
+                "accessMethod": access_method,
+                "access": perm.get("access", ""),
+            }
+        )
+
+    exposure_summary = file_details.get("exposureSummary") or []
+    first_exposure = exposure_summary[0] if exposure_summary else {}
+    exposure_type = first_exposure.get("exposureType", "")
+    file_count = (first_exposure.get("fileCount") or {}).get("totalCount", 0)
+
+    creation_time = file_metadata.get("creationTime")
+    creation_time_str = (
+        datetime.fromtimestamp(creation_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT) if creation_time is not None else ""
+    )
+    last_modified_time = file_metadata.get("lastModifiedTime")
+    last_modified_time_str = (
+        datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+        if last_modified_time is not None
+        else ""
+    )
+    last_access_time = file_metadata.get("lastAccessTime")
+    last_access_time_str = (
+        datetime.fromtimestamp(last_access_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+        if last_access_time is not None
+        else ""
+    )
+
+    hr_data = {
+        FILE_PATH: file_metadata.get("path"),
+        FILE_SIZE: file_metadata.get("size"),
+        "Owner": owner,
+        "Created By": demisto.get(file_metadata, "createdBy.value"),
+        "Last Modified By": demisto.get(file_metadata, "lastModifiedBy.value"),
+        "Create Time": creation_time_str,
+        LAST_MODIFIED_TIME: last_modified_time_str,
+        LAST_ACCESS_TIME: last_access_time_str,
+        "Exposure Type": exposure_type,
+        "File Count": file_count,
+        "Permissions": permissions,
+    }
+
+    hr = tableToMarkdown(
+        "File Information",
+        remove_empty_elements_for_hr(hr_data),
+        removeNull=True,
+        sort_headers=False,
+        is_auto_json_transform=True,
     )
 
     return context, hr
@@ -5849,6 +7495,208 @@ def fetch_ir_violations(client: PolarisClient, last_run: dict, params: dict, max
     return ir_next_run, incidents
 
 
+def fetch_sensitive_data_objects(
+    client: PolarisClient, last_run: dict, params: dict, max_fetch: Optional[int]
+) -> tuple[dict, list]:
+    """
+    Fetch Sensitive Data Object incidents by polling CLASSIFICATION events, filtering by the
+    "Results available in the Objects page" message, then fetching full object detail.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type last_run: ``dict``
+    :param last_run: last run object obtained from demisto.getLastRun().
+
+    :type params: ``dict``
+    :param params: arguments obtained from demisto.params().
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :return: tuple of next run object and list of incidents.
+    :rtype: ``tuple[dict, list]``
+    """
+    object_types = argToList(params.get("sensitive_data_object_type"), transform=lambda s: s.strip())
+    sensitivities = argToList(params.get("sensitive_data_object_sensitivity"), transform=lambda s: s.strip().upper())
+    valid_sensitivities = validate_sensitive_data_object_fetch_params(sensitivities)
+
+    sensitive_data_object_last_run = last_run.get("sensitive_data_object", {})
+    last_run_time = sensitive_data_object_last_run.get("last_fetch", None)
+    next_page_token = sensitive_data_object_last_run.get("next_page_token", "")
+    already_fetched = sensitive_data_object_last_run.get("already_fetched", [])
+
+    sensitive_data_object_next_run = sensitive_data_object_last_run.copy()
+
+    if last_run_time is None:
+        first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
+        first_fetch = arg_to_datetime(first_fetch, "First fetch time")
+        last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
+        sensitive_data_object_next_run["last_fetch"] = last_run_time
+
+    event_types = ["CLASSIFICATION"]
+    filters = {"lastActivityStatus": ["SUCCESS"]}
+
+    events = client.list_event_series(
+        activity_type=",".join(event_types),
+        start_date=last_run_time,
+        sort_order="ASC",
+        first=max_fetch,
+        after=next_page_token,
+        filters=filters,
+    )
+
+    activity_series_connection = demisto.get(events, "data.activitySeriesConnection") or {}
+    new_next_page_token = demisto.get(activity_series_connection, "pageInfo.endCursor")
+    if new_next_page_token:
+        sensitive_data_object_next_run["next_page_token"] = new_next_page_token
+
+    edges = activity_series_connection.get("edges", [])
+    incidents = []
+    duplicate_object_ids = []
+    base_url = str(client._baseurl).removesuffix("api")
+
+    unmatched_activity_series_ids = []
+    demisto.debug(f"Sensitive Data Object: Received {len(edges)} event(s) from activity series.")
+    for event in edges:
+        node = event.get("node", {})
+        activity_series_id = node.get("activitySeriesId", "")
+        object_id = node.get("objectId", "")
+
+        activity_nodes = demisto.get(node, "activityConnection.nodes") or []
+        matched = any(
+            (activity_node.get("message") or "").startswith(SENSITIVE_DATA_OBJECT_CLASSIFICATION_MESSAGE)
+            for activity_node in activity_nodes
+        )
+        if not matched:
+            unmatched_activity_series_ids.append(activity_series_id)
+            continue
+
+        if object_id in already_fetched:
+            duplicate_object_ids.append(object_id)
+            continue
+
+        event_start_time = node.get("startTime", "")
+
+        # Step 1: resolve the latest snapshot ID for this object using event's lastUpdated time
+        resolve_response = client._query_raw(
+            raw_query=RESOLVE_SNAPSHOT_QUERY,
+            operation_name="ResolveSnapshot",
+            variables={"snappableIds": [object_id], "beforeTime": event_start_time},
+            timeout=60,
+        )
+        snapshots = demisto.get(resolve_response, "data.allSnapshotsClosestToPointInTime") or []
+        snapshot_fid = demisto.get(snapshots[0], "snapshot.id") if snapshots else None
+        if not snapshot_fid:
+            demisto.debug(
+                f"Sensitive Data Object: No snapshot resolved for object {object_id} "
+                f"with start time {event_start_time}, skipping."
+            )
+            continue
+
+        # Step 2: fetch full object detail using snappableFid + snapshotFid
+        try:
+            detail_response = client._query_raw(
+                raw_query=SENSITIVE_OBJECT_DETAIL_QUERY,
+                operation_name="SensitiveObjectDetailQuery",
+                variables={"snappableFid": object_id, "snapshotFid": snapshot_fid},
+                timeout=60,
+            )
+        except Exception as e:
+            demisto.debug(
+                f"Sensitive Data Object: Failed to fetch detail for object {object_id} "
+                f"with snapshot {snapshot_fid}: {str(e)}, skipping."
+            )
+            continue
+        policy_obj = demisto.get(detail_response, "data.policyObj") or {}
+        if not policy_obj:
+            demisto.debug(f"Sensitive Data Object: No detail returned for object {object_id}, skipping.")
+            continue
+
+        total_violations = demisto.get(policy_obj, "rootFileResult.hits.violations") or 0
+        if total_violations <= 0:
+            demisto.debug(
+                f"Sensitive Data Object: No violations found for object {object_id} (violations={total_violations}), skipping."
+            )
+            continue
+
+        snappable = demisto.get(policy_obj, "snappable") or {}
+        risk_level = policy_obj.get("riskLevel", "")
+        sensitivity = risk_level.replace("_RISK", "") if risk_level else ""
+
+        if valid_sensitivities and risk_level not in valid_sensitivities:
+            demisto.debug(
+                f"Sensitive Data Object: Risk level {risk_level} not in filter {valid_sensitivities} "
+                f"for object {object_id}, skipping."
+            )
+            continue
+
+        object_type = snappable.get("objectType", "")
+        if object_types and object_type not in object_types:
+            demisto.debug(
+                f"Sensitive Data Object: Object type {object_type} not in filter {object_types} for object {object_id}, skipping."
+            )
+            continue
+
+        already_fetched.append(object_id)
+
+        processed_incident: dict[str, Any] = {
+            "incidentClassification": "RubrikSensitiveDataObject",
+        }
+        analyzer_group_results = demisto.get(policy_obj, "rootFileResult.analyzerGroupResults") or []
+        data_categories = [
+            {
+                "name": demisto.get(result, "analyzerGroup.name", ""),
+                "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+            }
+            for result in analyzer_group_results
+        ]
+
+        data_type_results = demisto.get(policy_obj, "rootFileResult.analyzerResults") or []
+        data_types = [
+            {
+                "name": demisto.get(result, "analyzer.name") or "",
+                "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+            }
+            for result in data_type_results
+        ]
+
+        processed_incident.update(policy_obj)
+        processed_incident["dataCategories"] = data_categories
+        processed_incident["dataTypes"] = data_types
+        processed_incident["severity"] = convert_severity_to_incident_severity(sensitivity)
+        processed_incident["incident_link"] = SENSITIVE_DATA_OBJECT_HYPERLINK.format(base_url, object_id, snapshot_fid)
+
+        object_name = snappable.get("name", "")
+
+        incidents.append(
+            {
+                "name": f"Rubrik Sensitive Data Object - {object_name}",
+                "occurred": node.get("lastUpdated", ""),
+                "rawJSON": json.dumps(remove_empty_elements_for_fetch(processed_incident)),
+                "severity": processed_incident.get("severity"),
+            }
+        )
+
+    sensitive_data_object_next_run["already_fetched"] = already_fetched
+
+    if unmatched_activity_series_ids:
+        demisto.debug(
+            f"Sensitive Data Object: {len(unmatched_activity_series_ids)} unmatched event(s): {unmatched_activity_series_ids}"
+        )
+
+    if duplicate_object_ids:
+        demisto.debug(
+            f"Sensitive Data Object: Skipped {len(duplicate_object_ids)}"
+            f" duplicate sensitive data object(s) ({len(set(duplicate_object_ids))} unique): {list(set(duplicate_object_ids))}"
+        )
+
+    demisto.debug(
+        f"Checkpoint for Sensitive Data Object: Next page token = {sensitive_data_object_next_run.get('next_page_token')}"
+    )
+    return sensitive_data_object_next_run, incidents
+
+
 def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
     """
     Fetch Rubrik incidents (Events, Threat Monitoring Objects, DSPM Violations, and IR Violations).
@@ -5878,6 +7726,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
         THREAT_MONITORING_FETCH_TYPE: ("threat_monitoring", fetch_threat_monitoring_objects),
         DSPM_VIOLATION_FETCH_TYPE: ("dspm_violation", fetch_dspm_violations),
         IR_VIOLATION_FETCH_TYPE: ("ir_violation", fetch_ir_violations),
+        SENSITIVE_DATA_OBJECT_FETCH_TYPE: ("sensitive_data_object", fetch_sensitive_data_objects),
     }
 
     selected_handlers = [FETCH_TYPE_HANDLERS[fetch_type] for fetch_type in fetch_types]
@@ -9505,6 +11354,118 @@ def rubrik_identity_resilience_violation_status_update_command(client: PolarisCl
     )
 
 
+def rubrik_sensitive_data_object_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the details of a sensitive data object.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments obtained from demisto.args().
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+    include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", "False"))
+
+    variables = {
+        "snappableFid": object_id,
+        "snapshotFid": snapshot_id,
+        "includeWhitelistedResults": include_whitelisted_results,
+    }
+
+    response = client._query_raw(
+        raw_query=SENSITIVE_OBJECT_DETAIL_QUERY,
+        operation_name="SensitiveObjectDetailQuery",
+        variables=variables,
+        timeout=60,
+    )
+
+    object_data = demisto.get(response, "data.policyObj") or {}
+    if not object_data:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("sensitive data object"))
+
+    context, hr = prepare_context_hr_sensitive_data_object_get(object_data)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["SENSITIVE_DATA_OBJECT"],
+        outputs_key_field="id",
+        outputs=context,
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_sensitive_data_object_file_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the file information of a sensitive data object.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments obtained from demisto.args().
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+    file_path = validate_required_arg("file_path", args.get("file_path"))
+    resolve_sids = argToBoolean(args.get("resolve_sids", "True"))
+
+    access_variables = {
+        "snappableFid": object_id,
+        "snapshotFid": snapshot_id,
+        "stdPath": file_path,
+        "skipResolveSids": not resolve_sids,
+    }
+    details_variables = {
+        "sensitiveFileInput": {
+            "filePath": file_path,
+            "objectFid": object_id,
+            "snapshotFid": snapshot_id,
+        },
+    }
+
+    file_access_data: dict = {}
+    access_response: dict = {}
+    try:
+        access_response = client._query_raw(
+            raw_query=FILE_ACCESS_QUERY,
+            operation_name="FileAccessQuery",
+            variables=access_variables,
+            timeout=60,
+        )
+        file_access_data = demisto.get(access_response, "data.datagovSecDesc") or {}
+    except Exception as e:
+        demisto.debug(f"[RubrikPolaris] datagovSecDesc not available for this object type: {e}")
+
+    details_response = client._query_raw(
+        raw_query=FILE_DETAILS_QUERY,
+        operation_name="FileDetailsQuery",
+        variables=details_variables,
+        timeout=60,
+    )
+
+    file_details = demisto.get(details_response, "data.sensitiveFileDetails") or {}
+    if not file_access_data and not file_details:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("sensitive data object file information"))
+
+    context, hr = prepare_context_hr_sensitive_data_object_file_get(file_access_data, file_details, object_id, file_path)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["SENSITIVE_DATA_OBJECT_FILE"],
+        outputs_key_field=["objectId", "stdPath"],
+        outputs=context,
+        raw_response={"fileAccessData": access_response, "fileDetails": details_response},
+        readable_output=hr,
+    )
+
+
 def run_polling_command(client, args: dict, command_name: str, search_function: Callable) -> List[CommandResults]:
     """
     For Scheduling command.
@@ -9689,6 +11650,8 @@ def main() -> None:
                 "rubrik-identity-resilience-violation-list": rubrik_identity_resilience_violation_list_command,
                 "rubrik-identity-resilience-violation-get": rubrik_identity_resilience_violation_get_command,
                 "rubrik-identity-resilience-violation-status-update": rubrik_identity_resilience_violation_status_update_command,
+                "rubrik-sensitive-data-object-get": rubrik_sensitive_data_object_get_command,
+                "rubrik-sensitive-data-object-file-get": rubrik_sensitive_data_object_file_get_command,
             }
 
             SCHEDULED_COMMAND_TO_FUNCTION: dict = {

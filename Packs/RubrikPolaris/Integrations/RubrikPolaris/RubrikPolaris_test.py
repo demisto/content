@@ -30,6 +30,7 @@ from RubrikPolaris import (
     IR_VIOLATION_SEVERITY,
     IR_VIOLATION_SORT_BY,
     IR_VIOLATION_STATUS,
+    SENSITIVE_DATA_OBJECT_SENSITIVITY,
     MAX_INT_VALUE,
     MAX_LONG_VALUE,
     MAXIMUM_PAGINATION_LIMIT,
@@ -5592,4 +5593,549 @@ def test_rubrik_identity_resilience_violation_status_update_command_with_invalid
 
     with pytest.raises(ValueError) as e:
         rubrik_identity_resilience_violation_status_update_command(client, args=args)
+    assert str(e.value) == error
+
+
+def test_fetch_sensitive_data_objects_success_without_last_run(client, requests_mock):
+    """
+    Test Case : Success scenario with all filter parameters without last run.
+    Tests fetch_sensitive_data_objects function to return incidents and new last run with provided empty last run.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
+    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
+    object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
+    expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
+
+    detail_responses_interleaved = []
+    for resolve, detail in zip(resolve_snapshot_responses, object_detail_responses):
+        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+        *detail_responses_interleaved,
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "sensitive_data_object_sensitivity": ["HIGH", "MEDIUM"],
+        "sensitive_data_object_type": ["O365Onedrive", "AWS_NATIVE_S3_BUCKET", "NutanixVirtualMachine"],
+    }
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, {}, params, 10)
+
+    already_fetched = sdo_next_run.get("already_fetched", [])
+    assert "last_fetch" in sdo_next_run
+    assert sdo_next_run.get("next_page_token") == "cursor_5"
+    assert len(already_fetched) == 3
+    assert "00000000-0000-0000-0000-000000000001" in already_fetched
+    assert "00000000-0000-0000-0000-000000000002" in already_fetched
+    assert "00000000-0000-0000-0000-000000000003" in already_fetched
+
+    assert incidents == expected_incidents
+
+
+def test_fetch_sensitive_data_objects_success_with_last_run(client, requests_mock):
+    """
+    Test Case : Success scenario with last run.
+    Tests fetch_sensitive_data_objects function with existing last_run state.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
+    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
+    object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
+    expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
+
+    detail_responses_interleaved = []
+    for resolve, detail in zip(resolve_snapshot_responses, object_detail_responses):
+        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+        *detail_responses_interleaved,
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    last_run = {
+        "sensitive_data_object": {
+            "last_fetch": last_fetch,
+            "next_page_token": "page_cursor",
+            "already_fetched": [],
+        }
+    }
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "sensitive_data_object_sensitivity": ["HIGH", "MEDIUM"],
+        "sensitive_data_object_type": ["O365Onedrive", "AWS_NATIVE_S3_BUCKET", "NutanixVirtualMachine"],
+    }
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, last_run, params, 10)
+
+    already_fetched = sdo_next_run.get("already_fetched", [])
+    assert sdo_next_run.get("last_fetch") == last_fetch
+    assert sdo_next_run.get("next_page_token") == "cursor_5"
+    assert len(already_fetched) == 3
+    assert "00000000-0000-0000-0000-000000000001" in already_fetched
+    assert "00000000-0000-0000-0000-000000000002" in already_fetched
+    assert "00000000-0000-0000-0000-000000000003" in already_fetched
+
+    assert incidents == expected_incidents
+
+
+def test_fetch_sensitive_data_objects_with_duplicates(client, requests_mock):
+    """
+    Test Case : Success with duplicate scenario.
+    Tests that duplicate sensitive data objects are skipped.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
+    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
+    object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
+    expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
+
+    # Object 1 is already fetched; mock resolve+detail for objects 2-6 only
+    detail_responses_interleaved = []
+    for resolve, detail in zip(resolve_snapshot_responses[1:], object_detail_responses[1:]):
+        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+        *detail_responses_interleaved,
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    last_run = {"sensitive_data_object": {"last_fetch": last_fetch, "already_fetched": ["00000000-0000-0000-0000-000000000001"]}}
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "sensitive_data_object_sensitivity": ["HIGH", "MEDIUM"],
+        "sensitive_data_object_type": ["O365Onedrive", "AWS_NATIVE_S3_BUCKET", "NutanixVirtualMachine"],
+    }
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, last_run, params, 10)
+
+    assert incidents == expected_incidents[1:]  # Skip first incident (already fetched)
+
+    already_fetched = sdo_next_run.get("already_fetched", [])
+    assert len(already_fetched) == 3
+    assert "00000000-0000-0000-0000-000000000001" in already_fetched
+    assert "00000000-0000-0000-0000-000000000002" in already_fetched
+    assert "00000000-0000-0000-0000-000000000003" in already_fetched
+
+
+def test_fetch_sensitive_data_objects_empty_response(client, requests_mock):
+    """
+    Test Case : Success with empty response.
+    Tests fetch_sensitive_data_objects function returns empty incidents when no events found.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    empty_response = util_load_json("test_data/fetch_sensitive_data_objects_empty_response.json")
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": empty_response},
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    last_run = {
+        "sensitive_data_object": {
+            "last_fetch": last_fetch,
+            "next_page_token": "page_cursor",
+            "already_fetched": ["00000000-0000-0000-0000-000000000001"],
+        }
+    }
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "sensitive_data_object_sensitivity": ["HIGH"],
+    }
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, last_run, params, 10)
+
+    assert len(incidents) == 0
+    assert sdo_next_run == last_run["sensitive_data_object"]
+
+
+def test_fetch_sensitive_data_objects_no_snapshot_resolved(client, requests_mock):
+    """
+    Test Case : Snapshot resolution returns empty for a matched event.
+    Tests that objects with no resolved snapshot are skipped.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
+    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
+
+    empty_snapshot_response = {"data": {"allSnapshotsClosestToPointInTime": []}}
+
+    # All resolve calls return empty; no detail calls made
+    resolve_mocks = [{"json": empty_snapshot_response}] * len(resolve_snapshot_responses)
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+        *resolve_mocks,
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    params = {"first_fetch": first_fetch, "max_fetch": 10}
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, {}, params, 10)
+
+    assert len(incidents) == 0
+    assert sdo_next_run.get("already_fetched", []) == []
+
+
+def test_fetch_sensitive_data_objects_no_policy_obj(client, requests_mock):
+    """
+    Test Case : Snapshot resolves but policyObj detail returns empty or raises an exception.
+    Tests that objects with no detail response or a failed detail query are skipped.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
+    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
+
+    empty_policy_obj_response = {"data": {"policyObj": None}}
+
+    # Alternate between empty policyObj and exception to cover both skip paths
+    detail_responses_interleaved = []
+    for i, resolve in enumerate(resolve_snapshot_responses):
+        detail = {"exc": Exception("Connection timeout")} if i % 2 == 0 else {"json": empty_policy_obj_response}
+        detail_responses_interleaved.extend([{"json": resolve}, detail])
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+        *detail_responses_interleaved,
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    params = {"first_fetch": first_fetch, "max_fetch": 10}
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, {}, params, 10)
+
+    assert len(incidents) == 0
+    assert sdo_next_run.get("already_fetched", []) == []
+
+
+def test_fetch_sensitive_data_objects_no_matching_events(client, requests_mock):
+    """
+    Test Case : Activity series returns events but none match the classification message filter.
+    Tests that no inventory query is made and no incidents are returned.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
+    events_response = util_load_json("test_data/fetch_sensitive_data_objects_no_match_events_response.json")
+
+    responses = [
+        {"json": enum_values.get("activity_type_enum")},
+        {"json": enum_values.get("event_sort_by_enum")},
+        {"json": enum_values.get("event_sort_order_enum")},
+        {"json": events_response},
+    ]
+    requests_mock.post(BASE_URL_GRAPHQL, responses)
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+    }
+
+    sdo_next_run, incidents = fetch_sensitive_data_objects(client, {}, params, 10)
+
+    assert len(incidents) == 0
+    assert "last_fetch" in sdo_next_run
+    assert sdo_next_run.get("next_page_token") == "cursor_5"
+    assert sdo_next_run.get("already_fetched", []) == []
+
+
+@pytest.mark.parametrize(
+    "invalid_param, invalid_value, expected_error",
+    [
+        (
+            "sensitive_data_object_sensitivity",
+            ["INVALID_SENSITIVITY"],
+            ERROR_MESSAGES["INVALID_SELECT"].format(
+                "INVALID_SENSITIVITY", "sensitive_data_object_sensitivity", SENSITIVE_DATA_OBJECT_SENSITIVITY
+            ),
+        ),
+        (
+            "sensitive_data_object_sensitivity",
+            ["HIGH", "SUPER_HIGH"],
+            ERROR_MESSAGES["INVALID_SELECT"].format(
+                "SUPER_HIGH", "sensitive_data_object_sensitivity", SENSITIVE_DATA_OBJECT_SENSITIVITY
+            ),
+        ),
+    ],
+)
+def test_fetch_sensitive_data_objects_invalid_filter_parameters(client, invalid_param, invalid_value, expected_error):
+    """
+    Test Case : Invalid filter parameter with parameterize.
+    Tests that invalid filter values raise appropriate ValueError.
+    """
+    from RubrikPolaris import fetch_sensitive_data_objects
+
+    params = {
+        "first_fetch": first_fetch,
+        "max_fetch": 10,
+        "sensitive_data_object_sensitivity": ["HIGH"],
+    }
+
+    params[invalid_param] = invalid_value
+
+    with pytest.raises(ValueError) as exc_info:
+        fetch_sensitive_data_objects(client, {}, params, 10)
+
+    assert expected_error in str(exc_info.value)
+
+
+def test_rubrik_sensitive_data_object_get_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_sensitive_data_object_get_command with valid case.
+
+    Given:
+        - args: Contains valid object_id, snapshot_id, and include_whitelisted_results.
+    When:
+        - Calling rubrik_sensitive_data_object_get_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_get_command
+
+    response_data = util_load_json("test_data/sensitive_data_object_get_response.json")
+    hr_data = util_load_text_data("test_data/sensitive_data_object_get_response_hr.md")
+
+    args = {
+        "object_id": "00000000-0000-0000-0000-000000000001",
+        "snapshot_id": "00000000-0000-0000-0000-000000000002",
+        "include_whitelisted_results": "False",
+    }
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=response_data.get("api_response"))
+    response = rubrik_sensitive_data_object_get_command(client, args=args)
+
+    assert response.outputs == remove_empty_elements(response_data.get("context"))
+    assert response.outputs_prefix == OUTPUT_PREFIX["SENSITIVE_DATA_OBJECT"]
+    assert response.outputs_key_field == "id"
+    assert response.readable_output == hr_data
+
+
+def test_rubrik_sensitive_data_object_get_command_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_sensitive_data_object_get_command with empty response.
+
+    Given:
+        - args: Contains valid object_id and snapshot_id.
+    When:
+        - API returns empty policyObj.
+    Then:
+        - Verifies that NO_RECORDS_FOUND message is returned.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_get_command
+
+    empty_response = {"data": {"policyObj": {}}}
+
+    args = {
+        "object_id": "00000000-0000-0000-0000-000000000001",
+        "snapshot_id": "00000000-0000-0000-0000-000000000002",
+    }
+
+    requests_mock.post(BASE_URL_GRAPHQL, json=empty_response)
+    response = rubrik_sensitive_data_object_get_command(client, args=args)
+
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("sensitive data object")
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")),
+        ({"object_id": ""}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")),
+        ({"object_id": "some-id"}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id")),
+        ({"object_id": "some-id", "snapshot_id": ""}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id")),
+    ],
+)
+def test_rubrik_sensitive_data_object_get_command_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_sensitive_data_object_get_command.
+
+    Given:
+        - args: Contains invalid or missing arguments.
+    When:
+        - Invalid value is passed in arguments.
+    Then:
+        - Raises ValueError and asserts error message.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_get_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_sensitive_data_object_get_command(client, args=args)
+    assert str(e.value) == error
+
+
+def test_rubrik_sensitive_data_object_file_get_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_sensitive_data_object_file_get_command with valid case.
+
+    Given:
+        - args: Contains valid object_id, snapshot_id, file_path, and resolve_sids.
+    When:
+        - Calling rubrik_sensitive_data_object_file_get_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_file_get_command
+
+    response_data = util_load_json("test_data/sensitive_data_object_file_get_response.json")
+
+    args = {
+        "object_id": "00000000-0000-0000-0000-000000000001",
+        "snapshot_id": "00000000-0000-0000-0000-000000000002",
+        "file_path": "/C:/DummyPath/DummyFile.xlsx",
+        "resolve_sids": "true",
+    }
+
+    requests_mock.post(
+        BASE_URL_GRAPHQL,
+        [{"json": response_data.get("access_api_response")}, {"json": response_data.get("details_api_response")}],
+    )
+    response = rubrik_sensitive_data_object_file_get_command(client, args=args)
+
+    hr_data = util_load_text_data("test_data/sensitive_data_object_file_get_response_hr.md")
+
+    assert response.outputs == remove_empty_elements(response_data.get("context"))
+    assert response.outputs_prefix == OUTPUT_PREFIX["SENSITIVE_DATA_OBJECT_FILE"]
+    assert response.outputs_key_field == ["objectId", "stdPath"]
+    assert response.readable_output == hr_data
+
+
+def test_rubrik_sensitive_data_object_file_get_command_no_access_data(client, requests_mock):
+    """
+    Test case scenario for rubrik_sensitive_data_object_file_get_command when datagovSecDesc is not available.
+
+    Given:
+        - args: Contains valid object_id, snapshot_id, and file_path.
+    When:
+        - FILE_ACCESS_QUERY raises an exception (object type does not support datagovSecDesc).
+    Then:
+        - Verifies that command succeeds using only sensitiveFileDetails data.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_file_get_command
+
+    response_data = util_load_json("test_data/sensitive_data_object_file_get_response.json")
+
+    args = {
+        "object_id": "00000000-0000-0000-0000-000000000001",
+        "snapshot_id": "00000000-0000-0000-0000-000000000002",
+        "file_path": "/C:/DummyPath/DummyFile.xlsx",
+    }
+
+    requests_mock.post(
+        BASE_URL_GRAPHQL,
+        [
+            {"exc": Exception("datagovSecDesc not supported for this object type")},
+            {"json": response_data.get("details_api_response")},
+        ],
+    )
+    response = rubrik_sensitive_data_object_file_get_command(client, args=args)
+
+    hr_data = util_load_text_data("test_data/sensitive_data_object_file_get_no_access_hr.md")
+
+    assert response.outputs == remove_empty_elements(response_data.get("context_no_access"))
+    assert response.outputs_prefix == OUTPUT_PREFIX["SENSITIVE_DATA_OBJECT_FILE"]
+    assert response.outputs_key_field == ["objectId", "stdPath"]
+    assert response.readable_output == hr_data
+
+
+def test_rubrik_sensitive_data_object_file_get_command_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_sensitive_data_object_file_get_command with empty response.
+
+    Given:
+        - args: Contains valid object_id, snapshot_id, and file_path.
+    When:
+        - Both API calls return empty data.
+    Then:
+        - Verifies that NO_RECORDS_FOUND message is returned.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_file_get_command
+
+    args = {
+        "object_id": "00000000-0000-0000-0000-000000000001",
+        "snapshot_id": "00000000-0000-0000-0000-000000000002",
+        "file_path": "/C:/DummyPath/DummyFile.xlsx",
+    }
+
+    requests_mock.post(
+        BASE_URL_GRAPHQL, [{"json": {"data": {"datagovSecDesc": {}}}}, {"json": {"data": {"sensitiveFileDetails": {}}}}]
+    )
+    response = rubrik_sensitive_data_object_file_get_command(client, args=args)
+
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("sensitive data object file information")
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")),
+        ({"object_id": ""}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("object_id")),
+        ({"object_id": "some-id"}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id")),
+        ({"object_id": "some-id", "snapshot_id": ""}, ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("snapshot_id")),
+        (
+            {"object_id": "some-id", "snapshot_id": "some-snap"},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("file_path"),
+        ),
+        (
+            {"object_id": "some-id", "snapshot_id": "some-snap", "file_path": ""},
+            ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("file_path"),
+        ),
+    ],
+)
+def test_rubrik_sensitive_data_object_file_get_command_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_sensitive_data_object_file_get_command.
+
+    Given:
+        - args: Contains invalid or missing arguments.
+    When:
+        - Invalid value is passed in arguments.
+    Then:
+        - Raises ValueError and asserts error message.
+    """
+    from RubrikPolaris import rubrik_sensitive_data_object_file_get_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_sensitive_data_object_file_get_command(client, args=args)
     assert str(e.value) == error

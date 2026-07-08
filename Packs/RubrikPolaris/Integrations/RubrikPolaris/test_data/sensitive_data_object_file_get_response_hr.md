@@ -1,0 +1,4 @@
+### File Information
+|File Path|File Size in Bytes|Owner|Created By|Last Modified By|Create Time|Last Modified Time|Last Access Time|Exposure Type|File Count|Permissions|
+|---|---|---|---|---|---|---|---|---|---|---|
+| /C:/DummyPath/DummyFile.xlsx | 1665816 | S-1-5-21-0000000000-000000000-0000000000-0001 | admin@rubrik.com | admin@rubrik.com | 2026-01-15T10:30:00Z | 2026-03-10T14:00:00Z | 2026-06-20T08:45:00Z | NOT_OPEN | 1 | **-**	***id***: S-1-5-21-0000000000-000000000-0000000000-0002<br>	***name***: Mike Preston<br>	***accessMethod***: WINDOWS_ACL<br>	***access***: Full control<br>**-**	***id***: S-1-5-18<br>	***name***: Local System<br>	***accessMethod***: WINDOWS_ACL<br>	***access***: Full control<br>**-**	***id***: S-1-5-32-000<br>	***name***: Administrators<br>	***accessMethod***: WINDOWS_ACL<br>	***access***: Full control<br>**-**	***id***: S-1-5-32-001<br>	***name***: Users<br>	***accessMethod***: WINDOWS_ACL<br>	***access***: Read & execute |

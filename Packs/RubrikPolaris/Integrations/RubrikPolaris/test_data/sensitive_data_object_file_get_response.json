@@ -1,0 +1,264 @@
+{
+    "access_api_response": {
+        "data": {
+            "datagovSecDesc": {
+                "secInfo": [
+                    {
+                        "path": "/C:/DummyPath/DummyFile.xlsx",
+                        "owner": "S-1-5-21-0000000000-000000000-0000000000-0001",
+                        "permissions": [
+                            {
+                                "cn": "Mike Preston",
+                                "principalId": "S-1-5-21-0000000000-000000000-0000000000-0002",
+                                "principalOrigin": "ORIGIN_INTERNAL",
+                                "idpType": "ON_PREM_AD",
+                                "principalType": "UNKNOWN",
+                                "resolutionType": "RESOLVED_AD",
+                                "access": "Full control",
+                                "flags": [
+                                    "INHERITED"
+                                ],
+                                "accessMethodDetails": {
+                                    "accessMethod": "WINDOWS_ACL",
+                                    "__typename": "DatagovAccessMethodDetailsType"
+                                },
+                                "__typename": "SDDLPermission"
+                            },
+                            {
+                                "cn": "Local System",
+                                "principalId": "S-1-5-18",
+                                "principalOrigin": "ORIGIN_INTERNAL",
+                                "idpType": "ON_PREM_AD",
+                                "principalType": "UNKNOWN",
+                                "resolutionType": "WELL_KNOWN",
+                                "access": "Full control",
+                                "flags": [
+                                    "INHERITED"
+                                ],
+                                "accessMethodDetails": {
+                                    "accessMethod": "WINDOWS_ACL",
+                                    "__typename": "DatagovAccessMethodDetailsType"
+                                },
+                                "__typename": "SDDLPermission"
+                            },
+                            {
+                                "cn": "Administrators",
+                                "principalId": "S-1-5-32-000",
+                                "principalOrigin": "ORIGIN_INTERNAL",
+                                "idpType": "ON_PREM_AD",
+                                "principalType": "UNKNOWN",
+                                "resolutionType": "WELL_KNOWN",
+                                "access": "Full control",
+                                "flags": [
+                                    "INHERITED"
+                                ],
+                                "accessMethodDetails": {
+                                    "accessMethod": "WINDOWS_ACL",
+                                    "__typename": "DatagovAccessMethodDetailsType"
+                                },
+                                "__typename": "SDDLPermission"
+                            },
+                            {
+                                "cn": "Users",
+                                "principalId": "S-1-5-32-001",
+                                "principalOrigin": "ORIGIN_INTERNAL",
+                                "idpType": "ON_PREM_AD",
+                                "principalType": "UNKNOWN",
+                                "resolutionType": "WELL_KNOWN",
+                                "access": "Read & execute",
+                                "flags": [
+                                    "INHERITED"
+                                ],
+                                "accessMethodDetails": {
+                                    "accessMethod": "WINDOWS_ACL",
+                                    "__typename": "DatagovAccessMethodDetailsType"
+                                },
+                                "__typename": "SDDLPermission"
+                            }
+                        ],
+                        "__typename": "PathSecInfo"
+                    }
+                ],
+                "__typename": "QuerySDDLReply"
+            }
+        }
+    },
+    "details_api_response": {
+        "data": {
+            "sensitiveFileDetails": {
+                "fileMetadata": {
+                    "createdBy": {
+                        "value": "admin@rubrik.com",
+                        "__typename": "FilePrincipalIdentity"
+                    },
+                    "creationTime": 1768473000,
+                    "lastAccessTime": 1781945100,
+                    "lastModifiedBy": {
+                        "value": "admin@rubrik.com",
+                        "__typename": "FilePrincipalIdentity"
+                    },
+                    "lastModifiedTime": 1773151200,
+                    "lastScanTime": 1782388800,
+                    "path": "/C:/DummyPath/DummyFile.xlsx",
+                    "size": 1665816,
+                    "__typename": "SensitiveFileMetadata"
+                },
+                "exposureSummary": [
+                    {
+                        "exposureType": "NOT_OPEN",
+                        "fileCount": {
+                            "totalCount": 1,
+                            "violatedCount": 0,
+                            "__typename": "SummaryCount"
+                        },
+                        "__typename": "ExposureSummary"
+                    }
+                ],
+                "__typename": "SensitiveFileDetailsReply"
+            }
+        }
+    },
+    "context": {
+        "secInfo": [
+            {
+                "path": "/C:/DummyPath/DummyFile.xlsx",
+                "owner": "S-1-5-21-0000000000-000000000-0000000000-0001",
+                "permissions": [
+                    {
+                        "cn": "Mike Preston",
+                        "principalId": "S-1-5-21-0000000000-000000000-0000000000-0002",
+                        "principalOrigin": "ORIGIN_INTERNAL",
+                        "idpType": "ON_PREM_AD",
+                        "principalType": "UNKNOWN",
+                        "resolutionType": "RESOLVED_AD",
+                        "access": "Full control",
+                        "flags": [
+                            "INHERITED"
+                        ],
+                        "accessMethodDetails": {
+                            "accessMethod": "WINDOWS_ACL",
+                            "__typename": "DatagovAccessMethodDetailsType"
+                        },
+                        "__typename": "SDDLPermission"
+                    },
+                    {
+                        "cn": "Local System",
+                        "principalId": "S-1-5-18",
+                        "principalOrigin": "ORIGIN_INTERNAL",
+                        "idpType": "ON_PREM_AD",
+                        "principalType": "UNKNOWN",
+                        "resolutionType": "WELL_KNOWN",
+                        "access": "Full control",
+                        "flags": [
+                            "INHERITED"
+                        ],
+                        "accessMethodDetails": {
+                            "accessMethod": "WINDOWS_ACL",
+                            "__typename": "DatagovAccessMethodDetailsType"
+                        },
+                        "__typename": "SDDLPermission"
+                    },
+                    {
+                        "cn": "Administrators",
+                        "principalId": "S-1-5-32-000",
+                        "principalOrigin": "ORIGIN_INTERNAL",
+                        "idpType": "ON_PREM_AD",
+                        "principalType": "UNKNOWN",
+                        "resolutionType": "WELL_KNOWN",
+                        "access": "Full control",
+                        "flags": [
+                            "INHERITED"
+                        ],
+                        "accessMethodDetails": {
+                            "accessMethod": "WINDOWS_ACL",
+                            "__typename": "DatagovAccessMethodDetailsType"
+                        },
+                        "__typename": "SDDLPermission"
+                    },
+                    {
+                        "cn": "Users",
+                        "principalId": "S-1-5-32-001",
+                        "principalOrigin": "ORIGIN_INTERNAL",
+                        "idpType": "ON_PREM_AD",
+                        "principalType": "UNKNOWN",
+                        "resolutionType": "WELL_KNOWN",
+                        "access": "Read & execute",
+                        "flags": [
+                            "INHERITED"
+                        ],
+                        "accessMethodDetails": {
+                            "accessMethod": "WINDOWS_ACL",
+                            "__typename": "DatagovAccessMethodDetailsType"
+                        },
+                        "__typename": "SDDLPermission"
+                    }
+                ],
+                "__typename": "PathSecInfo"
+            }
+        ],
+        "__typename": "SensitiveFileDetailsReply",
+        "fileMetadata": {
+            "createdBy": {
+                "value": "admin@rubrik.com",
+                "__typename": "FilePrincipalIdentity"
+            },
+            "creationTime": 1768473000,
+            "lastAccessTime": 1781945100,
+            "lastModifiedBy": {
+                "value": "admin@rubrik.com",
+                "__typename": "FilePrincipalIdentity"
+            },
+            "lastModifiedTime": 1773151200,
+            "lastScanTime": 1782388800,
+            "path": "/C:/DummyPath/DummyFile.xlsx",
+            "size": 1665816,
+            "__typename": "SensitiveFileMetadata"
+        },
+        "exposureSummary": [
+            {
+                "exposureType": "NOT_OPEN",
+                "fileCount": {
+                    "totalCount": 1,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                },
+                "__typename": "ExposureSummary"
+            }
+        ],
+        "stdPath": "/C:/DummyPath/DummyFile.xlsx",
+        "objectId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context_no_access": {
+        "__typename": "SensitiveFileDetailsReply",
+        "fileMetadata": {
+            "createdBy": {
+                "value": "admin@rubrik.com",
+                "__typename": "FilePrincipalIdentity"
+            },
+            "creationTime": 1768473000,
+            "lastAccessTime": 1781945100,
+            "lastModifiedBy": {
+                "value": "admin@rubrik.com",
+                "__typename": "FilePrincipalIdentity"
+            },
+            "lastModifiedTime": 1773151200,
+            "lastScanTime": 1782388800,
+            "path": "/C:/DummyPath/DummyFile.xlsx",
+            "size": 1665816,
+            "__typename": "SensitiveFileMetadata"
+        },
+        "exposureSummary": [
+            {
+                "exposureType": "NOT_OPEN",
+                "fileCount": {
+                    "totalCount": 1,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                },
+                "__typename": "ExposureSummary"
+            }
+        ],
+        "stdPath": "/C:/DummyPath/DummyFile.xlsx",
+        "objectId": "00000000-0000-0000-0000-000000000001"
+    }
+}

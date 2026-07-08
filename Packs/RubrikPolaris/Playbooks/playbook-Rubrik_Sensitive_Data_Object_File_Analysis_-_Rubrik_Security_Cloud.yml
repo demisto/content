@@ -1,0 +1,613 @@
+id: Rubrik Sensitive Data Object File Analysis - Rubrik Security Cloud
+version: -1
+name: Rubrik Sensitive Data Object File Analysis - Rubrik Security Cloud
+description: This playbook retrieves detailed information for a file.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89cc9926-96af-42e4-8546-20904db41908
+    type: start
+    task:
+      id: 89cc9926-96af-42e4-8546-20904db41908
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: eba1aef6-e72f-43fa-83f7-a7da779d9dbf
+    type: regular
+    task:
+      id: eba1aef6-e72f-43fa-83f7-a7da779d9dbf
+      version: -1
+      name: Clear previous output.
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: Collect Object information and File Path,file_owner
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 271632cd-a006-430f-8f8d-305a7f342924
+    type: condition
+    task:
+      id: 271632cd-a006-430f-8f8d-305a7f342924
+      version: -1
+      name: Is Rubrik Security Cloud integration enabled?
+      description: Checks whether Rubrik Security Cloud integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 50073cc9-9642-4300-8af8-d79391f07d3f
+    type: regular
+    task:
+      id: 50073cc9-9642-4300-8af8-d79391f07d3f
+      version: -1
+      name: Retrieve the file information
+      description: Retrieve the file information for the provided file path in the object.
+      script: '|||rubrik-sensitive-data-object-file-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "8"
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: file_owner=fileAccessData.data.datagovSecDesc.secInfo.[0].owner
+      file_path:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object information and File Path.Answers.2
+                iscontext: true
+      object_id:
+        complex:
+          root: inputs.object_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object information and File Path.Answers.0
+                iscontext: true
+      resolve_sids:
+        complex:
+          root: inputs.resolve_sids
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object information and File Path.Answers.1
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b83583ce-eb77-4dbb-88a2-9a7d1f008766
+    type: title
+    task:
+      id: b83583ce-eb77-4dbb-88a2-9a7d1f008766
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 46f68937-f4e6-411e-83b2-0d56a8d3e882
+    type: condition
+    task:
+      id: 46f68937-f4e6-411e-83b2-0d56a8d3e882
+      version: -1
+      name: Check whether the object and file information is available in playbook input
+      description: Check whether the object ID, snapshot ID and file path are available or not in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.snapshot_id
+                transformers:
+                - operator: trim
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_path
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c510ccf4-fb02-4d5b-8b37-8a1c73a306e8
+    type: collection
+    task:
+      id: c510ccf4-fb02-4d5b-8b37-8a1c73a306e8
+      version: -1
+      name: Collect Object information and File Path
+      description: Collecting object ID, snapshot ID and file path to retrieve the file information.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the object ID, snapshot ID and file path.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Object ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Object ID. Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the Snapshot ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Snapshot ID. Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.'
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the File Path.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The file path to retrieve details.
+        readonly: false
+      title: Collect Object information and File Path
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b77e6d89-0dc1-4b1a-88bf-7b0ffc50573b
+    type: condition
+    task:
+      id: b77e6d89-0dc1-4b1a-88bf-7b0ffc50573b
+      version: -1
+      name: Check whether the file owner information is available
+      description: Check whether the file owner information is available.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: file_owner
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3fe10485-c238-43de-8a73-afc713b76c13
+    type: regular
+    task:
+      id: 3fe10485-c238-43de-8a73-afc713b76c13
+      version: -1
+      name: Print failed to retrieve the file information.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object information and File Path.Answers.2
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Failed to retrieve the file information at the specified path '
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5172c96d-e853-400c-8c25-fd81d0a8578d
+    type: regular
+    task:
+      id: 5172c96d-e853-400c-8c25-fd81d0a8578d
+      version: -1
+      name: Print file owner information
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Object information and File Path.Answers.2
+                iscontext: true
+          - operator: ConcatFormat
+            args:
+              ctx_data:
+                value:
+                  simple: .
+                iscontext: true
+              ctx_inc:
+                value:
+                  simple: incident
+                iscontext: true
+              ctx_inputs: {}
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: 'The owner of the file '
+              suffix:
+                value:
+                  simple: ' is ${file_owner}.'
+              variable_markers: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_1_yes": 0.49,
+      "2_4_#default#": 0.46,
+      "3_8_#error#": 0.49,
+      "5_6_#default#": 0.57,
+      "7_4_#default#": 0.57,
+      "7_9_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1455,
+        "width": 1050,
+        "x": -150,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: object_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectid
+  required: false
+  description: |-
+    The object ID.
+
+    Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command.
+  playbookInputQuery:
+- key: snapshot_id
+  value:
+    complex:
+      root: incident
+      accessor: rubriksnapshotid
+  required: false
+  description: |-
+    The snapshot ID.
+
+    Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command.
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: false
+  description: The full path of the file for which to retrieve information.
+  playbookInputQuery:
+- key: resolve_sids
+  value:
+    simple: "True"
+  required: false
+  description: Whether to resolve SIDs to display names in the file response.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
