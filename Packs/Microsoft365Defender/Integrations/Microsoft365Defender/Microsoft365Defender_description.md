@@ -17,7 +17,7 @@ To connect to the Microsoft Defender XDR:
 4. Run the ***!microsoft-365-defender-auth-complete*** command.
 
 At the end of the process you'll see a message that you've logged in successfully.
-u
+
 #### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
