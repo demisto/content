@@ -2080,71 +2080,11 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     )
 
 
-@logger
-def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
-    """
-    google-drive-connectus-info
-    Print ConnectUs (UCP) connection information and integration parameters available
-    in the demisto object. Sensitive values are masked.
-
-    :param client: Client object (unused, kept for command signature consistency).
-    :param args: Command arguments.
-
-    :return: Command Result.
-    """
-    using_ucp = should_use_ucp_auth()
-
-    connectus_info: dict[str, Any] = {"ucp_enabled": using_ucp}
-
-    # if using_ucp:
-    #     with GSuiteClient.http_exception_handler():
-    #         capability = resolve_ucp_capability()
-    #         connectus_info["capability"] = capability
-    #         connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
-    # else:
-    #     connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
-
-    masked_params = demisto.params()
-
-    outputs = {
-        "ConnectUs": connectus_info,
-        "metadata": demisto.unifiedConnectorMetadata(),
-        "Params": masked_params,
-    }
-
-    readable_output = tableToMarkdown(
-        "ConnectUs Information",
-        connectus_info,
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-    readable_output += tableToMarkdown(
-        "Integration Parameters (sensitive values masked)",
-        masked_params,
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-
-    return CommandResults(
-        outputs_prefix="GoogleDrive.ConnectUsInfo",
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=outputs,
-    )
-
-
 def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    masked_params = demisto.params()
 
-    outputs = {
-        "metadata": demisto.unifiedConnectorMetadata(),
-        "Params": masked_params,
-    }
-
-    demisto.info(f"{outputs=}")
     # Commands dictionary
     commands: dict[str, Callable] = {
         "google-drive-create": drive_create_command,
@@ -2171,40 +2111,27 @@ def main() -> None:  # pragma: no cover
         "google-drive-file-get-parents": file_get_parents,
         "google-drive-file-move": file_move_command,
         "google-drive-file-create": file_create_command,
-        "google-drive-connectus-info": connectus_info_command,
     }
     command = demisto.command()
 
     try:
-        demisto.info("guy afik where are my logs")
         params = demisto.params()
 
         account_json = params.get("user_creds", {}).get("password") or params.get("user_service_account_json")
-
-        # Resolve the subject (user to impersonate) once, up front. A per-command
-        # ``user_id`` argument overrides the instance-level parameter so the UCP
-        # token is fetched for the correct user. Falls back to the credentials
-        # identifier and finally the plain ``user_id`` param.
-        command_user_id = GSuiteClient.strip_dict(demisto.args()).get("user_id")
-        user_id = command_user_id or params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
+        user_id = params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
         params["user_id"] = user_id
         params["user_service_account_json"] = account_json
 
-        # In UCP (ConnectUs) mode the service-account JSON is provided by the
-        # connection profile, so the integration parameter is optional.
-        using_ucp = should_use_ucp_auth()
-
-        if not account_json and not using_ucp:
+        if not account_json:
             raise DemistoException("Please fill out the User's Service Account JSON field.")
 
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json) if not using_ucp else None
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
         headers = {"Content-Type": "application/json"}
 
-        # prepare client class object. When service_account_dict is None and UCP
-        # is active, GSuiteClient fetches the credentials from the UCP profile.
+        # prepare client class object
         gsuite_client = GSuiteClient(
             service_account_dict,
             base_url="https://www.googleapis.com/",
