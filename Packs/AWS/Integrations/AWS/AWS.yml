@@ -19770,7 +19770,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: update_token
-      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
     - name: firewall_name
       description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
     - name: firewall_arn
@@ -19827,13 +19827,13 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: update_token
-      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
     - name: firewall_name
       description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
     - name: subnet_mappings
-      description: 'A semicolon-separated list of subnet mappings to associate with the firewall. Each mapping is a comma-separated list of fields in the form ''SubnetId=<id>,IPAddressType=<type>''. SubnetId is required and IPAddressType (one of DUALSTACK, IPV4, IPV6) is optional. For example: SubnetId=subnet-1111,IPAddressType=IPV4;SubnetId=subnet-2222. You can specify one subnet for each of the Availability Zones that the VPC spans.'
+      description: 'The semicolon-separated list of subnet mappings to associate with the firewall. Each mapping is a comma-separated list of fields in the form ''SubnetId=<id>,IPAddressType=<type>''. SubnetId is required and IPAddressType (one of DUALSTACK, IPV4, IPV6) is optional. For example: SubnetId=subnet-1111,IPAddressType=IPV4;SubnetId=subnet-2222. You can specify one subnet for each of the Availability Zones that the VPC spans.'
       required: true
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
@@ -19843,7 +19843,7 @@ script:
       description: The descriptive name of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
@@ -19896,7 +19896,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: update_token
-      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
     - name: firewall_name
       description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
     - name: firewall_arn
@@ -19904,7 +19904,6 @@ script:
     - name: subnet_ids
       description: A comma-separated list of unique identifiers of the subnets that you want to disassociate from the firewall.
       required: true
-      isArray: true
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
@@ -19913,7 +19912,7 @@ script:
       description: The descriptive name of the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall.
+      description: The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
