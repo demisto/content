@@ -24,10 +24,6 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-# The maximum number of changed findings to return in a single get-modified-remote-data call.
-MIRROR_LIMIT = 100
-# OCSF field holding the time a finding was last modified; used by incoming mirroring to detect changes.
-MODIFIED_TIME_FIELD = "finding_info.modified_time_dt"
 # OCSF status_id representing a resolved finding, applied on outgoing mirroring when 'resolve_finding' is enabled
 # and the XSOAR incident is closed. OCSF status_id: 1=New, 2=In Progress, 3=Suppressed, 4=Resolved.
 OCSF_STATUS_ID_RESOLVED = 4
@@ -711,90 +707,21 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
 
 
-def get_modified_remote_data_command(client: BotoClient, args: dict) -> GetModifiedRemoteDataResponse:
-    """Return the UIDs of all findings changed since the last mirror check, in a single API call.
-
-    Unlike the per-incident polling used by V1, this issues one ``get_findings_v2`` request filtered on
-    the OCSF ``finding_info.modified_time_dt`` field to retrieve the whole batch of findings that changed
-    since ``lastUpdate``. XSOAR then runs ``get-remote-data`` for each returned UID to pull the updated data.
-
-    Args:
-        client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. ``lastUpdate`` - the ISO8601 timestamp of the previous mirror run.
-
-    Returns:
-        GetModifiedRemoteDataResponse: The list of finding UIDs (``metadata.uid``) that changed since ``lastUpdate``.
-    """
-    demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-modified-remote-data START =====")
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: raw lastUpdate arg={last_update}, MIRROR_LIMIT={MIRROR_LIMIT}")
-
-    last_update_dt = parse(last_update, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
-    if not last_update_dt:
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Mirror-in: could not parse lastUpdate={last_update}; returning no ids. "
-            "===== get-modified-remote-data END ====="
-        )
-        return GetModifiedRemoteDataResponse([])
-
-    start_time = last_update_dt.isoformat()
-    end_time = datetime.now(UTC).isoformat()
-    filters = {
-        "CompositeFilters": [
-            {
-                "DateFilters": [
-                    {
-                        "FieldName": MODIFIED_TIME_FIELD,
-                        "Filter": {"Start": start_time, "End": end_time},
-                    }
-                ],
-                "Operator": "AND",
-            }
-        ],
-        "CompositeOperator": "AND",
-    }
-    demisto.debug(
-        f"[AWS_Security_Hub_V2] Mirror-in: querying changed findings on {MODIFIED_TIME_FIELD} in window "
-        f"[{start_time} .. {end_time}]. Filters object: {json.dumps(filters)}"
-    )
-
-    try:
-        response = client.get_findings_v2(
-            Filters=filters,
-            MaxResults=MIRROR_LIMIT,
-            SortCriteria=[{"Field": MODIFIED_TIME_FIELD, "SortOrder": "asc"}],
-        )
-        demisto.debug("[AWS_Security_Hub_V2] Mirror-in: get_findings_v2 query succeeded.")
-    except client.exceptions.ClientError as e:
-        error = e.response.get("Error", {})
-        error_code = error.get("Code", "")
-        error_message = error.get("Message", "")
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Mirror-in: query raised {type(e).__name__} " f"(Code={error_code}, Message={error_message})."
-        )
-        raise DemistoException(error_message)
-
-    findings = response.get("Findings", [])
-    modified_ids = [uid for finding in findings if (uid := finding.get("metadata", {}).get("uid"))]
-    demisto.debug(
-        f"[AWS_Security_Hub_V2] Mirror-in: API returned {len(findings)} finding(s); "
-        f"extracted {len(modified_ids)} uid(s) to mirror: {modified_ids}"
-    )
-    demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-modified-remote-data END =====")
-    return GetModifiedRemoteDataResponse(modified_ids)
-
-
 def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResponse:
     """Fetch the current state of a single mirrored finding and return it for incoming mirroring.
 
-    XSOAR invokes this command (once per UID returned by ``get-modified-remote-data``) to pull the latest
-    version of a finding. The finding is fetched by its OCSF ``metadata.uid`` via ``get_findings_v2``.
+    Security Hub V2 does not advance ``finding_info.modified_time_dt`` on manual finding edits, so a
+    time-window "what changed" query is unreliable. Instead this integration deliberately does NOT
+    implement ``get-modified-remote-data``: without it, the XSOAR server falls back to invoking
+    ``get-remote-data`` for EVERY mirror-enrolled incident on each mirror cycle. This command simply
+    re-fetches the finding by its OCSF ``metadata.uid`` and returns its current state; the XSOAR server
+    then diffs the returned object against the incident and applies any differences. This catches manual
+    edits (e.g. severity/status changes in the AWS console) that carry no updated timestamp.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve; ``lastUpdate`` -
-            the timestamp of the last mirror sync (unused for filtering here, the UID lookup is authoritative).
+        args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve (the UID lookup
+            is authoritative; no timestamp filtering is applied).
 
     Returns:
         GetRemoteDataResponse: The updated finding object to apply to the XSOAR incident.
@@ -802,7 +729,7 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
     demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
     remote_args = GetRemoteDataArgs(args)
     finding_uid = remote_args.remote_incident_id
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: fetching finding uid={finding_uid}, lastUpdate={remote_args.last_update}")
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: fetching current state of finding uid={finding_uid}")
 
     filters = {
         "CompositeFilters": [
@@ -837,11 +764,10 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         return GetRemoteDataResponse(mirrored_object={}, entries=[])
 
     finding = findings[0]
-    modified_time = (finding.get("finding_info") or {}).get("modified_time_dt")
     demisto.debug(
-        f"[AWS_Security_Hub_V2] Mirror-in: returning updated finding uid={finding_uid} "
-        f"(modified_time_dt={modified_time}, status_id={finding.get('status_id')}, "
-        f"severity_id={finding.get('severity_id')}). ===== get-remote-data END ====="
+        f"[AWS_Security_Hub_V2] Mirror-in: returning current finding uid={finding_uid} "
+        f"(status_id={finding.get('status_id')}, severity_id={finding.get('severity_id')}); "
+        "the XSOAR server will diff it against the incident. ===== get-remote-data END ====="
     )
     return GetRemoteDataResponse(mirrored_object=finding, entries=[])
 
@@ -989,8 +915,6 @@ def main():  # pragma: no cover
             return_results(findings_batch_update_command(client, args))
         elif command == "fetch-incidents":
             fetch_incidents(client, params)
-        elif command == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, args))
         elif command == "get-mapping-fields":

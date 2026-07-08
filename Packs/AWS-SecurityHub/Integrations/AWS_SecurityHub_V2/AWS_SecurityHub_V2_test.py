@@ -9,7 +9,6 @@ from AWS_SecurityHub_V2 import (
     findings_get_command,
     generate_filters_for_get_findings,
     get_mapping_fields_command,
-    get_modified_remote_data_command,
     get_remote_data_command,
     parse_date_filters,
     parse_filters,
@@ -438,34 +437,34 @@ def test_parse_date_filters_skips_entry_without_fieldname():
 
 def test_build_fetch_filters_time_only():
     """
-    Given: A fetch start time with no severity or additional filters.
+    Given: A bounded fetch window (start and end) with no severity or additional filters.
     When: build_fetch_filters is called.
-    Then: It builds a composite with only an open-ended created_time_dt DateFilter (Start, no End) and
+    Then: It builds a composite with only a bounded created_time_dt DateFilter (Start and End) and
           AND operators.
     """
-    result = build_fetch_filters("2024-01-01T00:00:00.000Z", None, None)
+    result = build_fetch_filters("2024-01-01T00:00:00.000Z", "2024-01-02T00:00:00.000Z", None, None)
     composite = result["CompositeFilters"][0]
     assert result["CompositeOperator"] == "AND"
     assert composite["Operator"] == "AND"
     assert composite["DateFilters"] == [
         {
             "FieldName": "finding_info.created_time_dt",
-            "Filter": {"Start": "2024-01-01T00:00:00.000Z"},
+            "Filter": {"Start": "2024-01-01T00:00:00.000Z", "End": "2024-01-02T00:00:00.000Z"},
         }
     ]
-    assert "End" not in composite["DateFilters"][0]["Filter"]
     assert "NumberFilters" not in composite
     assert "StringFilters" not in composite
 
 
 def test_build_fetch_filters_with_severity_and_additional():
     """
-    Given: A fetch start time with a minimum severity and additional string filters.
+    Given: A fetch window with a minimum severity and additional string filters.
     When: build_fetch_filters is called.
     Then: It adds a severity_id Gte NumberFilter and the parsed StringFilters.
     """
     result = build_fetch_filters(
         "2024-01-01T00:00:00.000Z",
+        "2024-01-02T00:00:00.000Z",
         "High",
         "fieldname=cloud.region,value=us-east-1",
     )
@@ -527,11 +526,11 @@ def test_fetch_incidents_first_run(mocker):
     assert call_kwargs["MaxResults"] == 50
 
 
-def test_fetch_incidents_first_run_uses_open_ended_window(mocker):
+def test_fetch_incidents_first_run_uses_bounded_window(mocker):
     """
     Given: A previous last_fetch and a client returning a finding.
     When: fetch_incidents builds the fresh query.
-    Then: The DateFilter has a Start (from last_fetch) and no End, so the query is stable across cycles.
+    Then: The DateFilter has a Start (from last_fetch) and an End (now), bounding the query window.
     """
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
@@ -554,20 +553,24 @@ def test_fetch_incidents_first_run_uses_open_ended_window(mocker):
 
     date_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["DateFilters"][0]["Filter"]
     assert date_filter["Start"] == "2024-01-01T00:00:00.000Z"
-    assert "End" not in date_filter
+    assert "End" in date_filter
 
 
 def test_fetch_incidents_continues_with_next_token(mocker):
     """
-    Given: A previous run that left a next_token.
+    Given: A previous run that left a next_token and the persisted filters used for that page.
     When: fetch_incidents is called.
-    Then: It sends the NextToken (not Filters) and advances last_fetch from the token page findings. The
-          window is open-ended, so no end_time state is needed to keep the token valid.
+    Then: It sends the NextToken together with the persisted Filters and advances last_fetch from the
+          token page findings.
     """
     mocker.patch.object(
         demisto,
         "getLastRun",
-        return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "tok-prev"},
+        return_value={
+            "last_fetch": "2024-01-01T00:00:00.000Z",
+            "next_token": "tok-prev",
+            "filters": {"CompositeOperator": "AND", "CompositeFilters": []},
+        },
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
@@ -589,15 +592,14 @@ def test_fetch_incidents_continues_with_next_token(mocker):
 
     call_kwargs = mock_client.get_findings_v2.call_args[1]
     assert call_kwargs["NextToken"] == "tok-prev"
-    assert "Filters" not in call_kwargs
+    # The persisted filters are re-sent alongside the token to keep the page valid.
+    assert call_kwargs["Filters"] == {"CompositeOperator": "AND", "CompositeFilters": []}
 
     # The token page returns newer findings, so the boundary advances to that finding's created time.
     last_run = set_last_run.call_args[0][0]
     assert last_run["last_fetch"] == "2024-01-05T10:00:00.000Z"
     assert last_run["fetched_ids"] == ["uid-3"]
     assert last_run["next_token"] is None
-    # The open-ended design no longer stores an end_time.
-    assert "end_time" not in last_run
 
 
 def test_fetch_incidents_skips_already_fetched_ids(mocker):
@@ -644,11 +646,11 @@ def test_fetch_incidents_skips_already_fetched_ids(mocker):
     assert last_run["fetched_ids"] == ["uid-2"]
 
 
-def test_fetch_incidents_invalid_next_token_falls_back(mocker):
+def test_fetch_incidents_invalid_next_token_raises(mocker):
     """
     Given: A stored next_token that the API rejects with a token-related ClientError.
     When: fetch_incidents is called.
-    Then: It falls back to a fresh filtered query and still produces incidents.
+    Then: It surfaces the error as a DemistoException (a single API call is made, no silent fallback).
     """
 
     class ClientError(Exception):
@@ -658,38 +660,18 @@ def test_fetch_incidents_invalid_next_token_falls_back(mocker):
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z", "next_token": "stale"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
-    set_last_run = mocker.patch.object(demisto, "setLastRun")
-    incidents_mock = mocker.patch.object(demisto, "incidents")
 
     mock_client = mocker.Mock()
     mock_client.exceptions.ClientError = ClientError
     token_error = ClientError({"Error": {"Code": "ValidationException", "Message": "The provided next token is invalid."}})
-    fresh_response = {
-        "Findings": [
-            {
-                "metadata": {"uid": "uid-9"},
-                "severity_id": 3,
-                "finding_info": {"title": "Recovered Finding", "created_time_dt": "2024-01-03T08:00:00.000Z"},
-            }
-        ],
-        "NextToken": None,
-    }
-    # First call (with the stale token) raises; the fallback fresh query (with Filters) succeeds.
-    mock_client.get_findings_v2.side_effect = [token_error, fresh_response]
+    mock_client.get_findings_v2.side_effect = token_error
 
-    fetch_incidents(mock_client, {"max_fetch": 50})
+    with pytest.raises(DemistoException, match="The provided next token is invalid."):
+        fetch_incidents(mock_client, {"max_fetch": 50})
 
-    # Two calls: the failed token call, then the fresh filtered call.
-    assert mock_client.get_findings_v2.call_count == 2
+    # Only the token call is made; there is no silent fallback query.
+    assert mock_client.get_findings_v2.call_count == 1
     assert "NextToken" in mock_client.get_findings_v2.call_args_list[0][1]
-    assert "Filters" in mock_client.get_findings_v2.call_args_list[1][1]
-
-    # The fresh query advances the boundary to the recovered finding's created time.
-    incidents = incidents_mock.call_args[0][0]
-    assert len(incidents) == 1
-    last_run = set_last_run.call_args[0][0]
-    assert last_run["last_fetch"] == "2024-01-03T08:00:00.000Z"
-    assert last_run["fetched_ids"] == ["uid-9"]
 
 
 def test_fetch_incidents_no_results(mocker):
@@ -781,44 +763,6 @@ def test_fetch_incidents_no_mirror_when_direction_none(mocker):
     raw = json.loads(incident["rawJSON"])
     assert "mirror_direction" not in raw
     assert "mirror_instance" not in raw
-
-
-def test_get_modified_remote_data_command_returns_changed_uids(mocker):
-    """
-    Given: A client returning several findings modified since lastUpdate.
-    When: get_modified_remote_data_command is called.
-    Then: It issues a single get_findings_v2 call filtered on the modified-time field and returns all uids.
-    """
-    mock_client = mocker.Mock()
-    mock_client.get_findings_v2.return_value = {
-        "Findings": [
-            {"metadata": {"uid": "uid-1"}},
-            {"metadata": {"uid": "uid-2"}},
-        ]
-    }
-
-    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2024-01-01T00:00:00Z"})
-
-    assert result.modified_incident_ids == ["uid-1", "uid-2"]
-    assert mock_client.get_findings_v2.call_count == 1
-    call_kwargs = mock_client.get_findings_v2.call_args[1]
-    date_filter = call_kwargs["Filters"]["CompositeFilters"][0]["DateFilters"][0]
-    assert date_filter["FieldName"] == "finding_info.modified_time_dt"
-    assert "Start" in date_filter["Filter"] and "End" in date_filter["Filter"]
-
-
-def test_get_modified_remote_data_command_no_changes(mocker):
-    """
-    Given: A client returning no modified findings.
-    When: get_modified_remote_data_command is called.
-    Then: It returns an empty id list.
-    """
-    mock_client = mocker.Mock()
-    mock_client.get_findings_v2.return_value = {"Findings": []}
-
-    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2024-01-01T00:00:00Z"})
-
-    assert result.modified_incident_ids == []
 
 
 def test_get_remote_data_command_returns_finding(mocker):

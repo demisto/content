@@ -263,12 +263,6 @@ script:
     - contextPath: AWS.SecurityHub.BatchUpdateFindings.UnprocessedFindings
       description: The list of findings that could not be updated, including the error for each.
       type: Unknown
-  - name: get-modified-remote-data
-    description: 'Returns, in a single API call, the IDs of all AWS Security Hub V2 findings that changed since the last check. Used for incoming mirroring. This command is used for mirroring and is not intended to be run manually.'
-    arguments:
-    - name: lastUpdate
-      description: A date string in local time representing the last time the incident was updated. Findings modified after this timestamp are returned.
-      required: false
   - name: get-remote-data
     description: 'Returns the updated data of a single mirrored AWS Security Hub V2 finding. This command is used for mirroring and is not intended to be run manually.'
     arguments:
