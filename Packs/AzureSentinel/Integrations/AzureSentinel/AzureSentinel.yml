@@ -234,6 +234,12 @@ configuration:
   advanced: true
   required: false
   section: Collect
+- display: Odata Filter
+  additionalinfo: "Odata query string to filter fetched incidents"
+  name: odata_filter
+  type: 0
+  required: false
+  section: Collect
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel

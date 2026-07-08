@@ -1576,6 +1576,7 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
+    odata_filter: str,
     statuses_to_fetch: list = [],
     look_back: int = 0,
 ) -> tuple:
@@ -1585,6 +1586,7 @@ def fetch_incidents(
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
+        odata_filter: Odata filter to use when fetching incidents
         statuses_to_fetch: A list of statuses to fetch.
         look_back: Lookback time in minutes. When > 0, also fetches incidents
             modified within this window to catch severity escalations.
@@ -1614,11 +1616,14 @@ def fetch_incidents(
                 raise DemistoException(f"Got empty latest_created_time. {last_fetch_time=}")
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+        filter_value = (
+            f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
+            f" {status_filter(statuses_to_fetch)}".strip()
+        )
+        if odata_filter:
+            filter_value = f"{filter_value} {odata_filter}"
         command_args = {
-            "filter": (
-                f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
-                f" {status_filter(statuses_to_fetch)}".strip()
-            ),
+            "filter": filter_value,
             "orderby": "properties/createdTimeUtc asc",
             "limit": limit,
         }
@@ -1629,11 +1634,14 @@ def fetch_incidents(
         latest_created_time = dateparser.parse(last_fetch_time)
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
+        filter_value = (
+            f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
+            f" {status_filter(statuses_to_fetch)}".strip()
+        )
+        if odata_filter:
+            filter_value = f"{filter_value} {odata_filter}"
         command_args = {
-            "filter": (
-                f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
-                f" {status_filter(statuses_to_fetch)}".strip()
-            ),
+            "filter": filter_value,
             "orderby": "properties/incidentNumber asc",
             "limit": limit,
         }
@@ -1706,6 +1714,7 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
+    odata_filter = params.get("odata_filter")
     look_back = arg_to_number(params.get("look_back")) or 0
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
@@ -1715,6 +1724,7 @@ def fetch_incidents_command(client, params):
         last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
+        odata_filter=odata_filter,
         statuses_to_fetch=statuses_to_fetch,
         look_back=look_back,
     )
