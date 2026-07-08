@@ -2,12 +2,13 @@
 alter
     get_user = coalesce(suser, username, activeuser, accessuser, threatuser),
     get_host_os = coalesce(cs2, agentos),
-    get_target_file = arrayindex(regextract(tmp_file_name, "[^\\\/]+$"),0),
-    get_file_path = coalesce(filePath, accessimagepath, threatimagepath, path),
+    get_target_file = arrayindex(regextract(coalesce(filepath, path), "[^\\\/]+$"),0),
+    get_file_path = coalesce(filepath, accessimagepath, threatimagepath, path),
     get_proc_id = coalesce(to_string(pid), processid),
-    get_cs1_event_msg = if(cs1 = "Detailed Event Message", cs1),
-    get_cs1_client_ip = if(cs1 = "clientIpAddress", cs1),
-    get_outcome = coalesce(to_string(status), to_string(actionresult), result)
+    get_cs1_event_msg = if(cs1label = "Detailed Event Message", cs1),
+    get_cs1_client_ip = if(cs1label = "clientIpAddress", cs1),
+    get_outcome = coalesce(to_string(status), to_string(actionresult), result),
+    get_host = coalesce(agentendpoint, dvchost)
 | alter
     get_file_name = coalesce(filename, get_target_file),
     get_description = coalesce(get_cs1_event_msg, msg, detailmsg, `desc`),
@@ -34,7 +35,6 @@ alter
         get_host_os ~= "(?i)windows", XDM_CONST.OS_FAMILY_WINDOWS,
         get_host_os ~= "(?i)linux", XDM_CONST.OS_FAMILY_LINUX,
         get_host_os ~= "(?i)mac|darwin", XDM_CONST.OS_FAMILY_MACOS,
-        get_host_os ~= "(?i)ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
         get_host_os),
     xdm.source.user.username = get_user,
     xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip),
@@ -46,7 +46,6 @@ alter
     xdm.target.file.path = get_file_path,
     xdm.target.process.pid = if(get_proc_id ~= "\d+", to_integer(get_proc_id)),
     xdm.target.process.name = arrayindex(regextract(blockedprocess, "[^\\\/]+$"),0),
-    xdm.target.process.parent_id = parentprocessid1,
     xdm.target.host.device_category = devicetype,
     xdm.event.outcome = if(
         get_outcome = "0", XDM_CONST.OUTCOME_UNKNOWN,

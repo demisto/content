@@ -68,6 +68,10 @@
             "type": "string",
             "is_array": false
         },
+        "cs1label": {
+            "type": "string",
+            "is_array": false
+        },
         "cs2": {
             "type": "string",
             "is_array": false

@@ -36,7 +36,7 @@ Configure StellarOne to forward events to a Syslog server (the Cortex XSIAM Brok
 1. Log in to the StellarOne management console.
 2. Navigate to **Administration** → **Configuration** → **Syslog**.
 3. Enable **Send logs to a syslog server**.
-4. Set the **Server address** to the Broker VM IP, the **Port**, and the **Protocol** (UDP/TCP/TLS).
+4. Set the **Server address** to the Broker VM IP address, the **Port**, and the **Protocol** (UDP/TCP/TLS).
 5. Set the format to **CEF**.
 6. Select the event types to forward (audit, system, console, and agent events).
 7. Save the configuration.
