@@ -38,6 +38,7 @@ DEFAULT_SCOPE = "https://management.azure.com/.default"
 DEFAULT_RESOURCE = "https://management.azure.com/"
 STORAGE_SCOPE = "https://storage.azure.com/.default"
 STORAGE_RESOURCE = "https://storage.azure.com/"
+DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
@@ -5586,7 +5587,7 @@ def validate_auth_params(params: dict, connection_type: str) -> None:
         )
 
 
-def get_azure_client(params: dict, args: dict, command: str):
+def get_azure_client(params: dict, args: dict, command: str, azure_ad_endpoint: str = DEFAULT_AZURE_AD_ENDPOINT):
     headers = {}
     client_scope, token_scopes = get_command_and_token_scopes(command)
     resource = get_command_resource(command)
@@ -5622,9 +5623,7 @@ def get_azure_client(params: dict, args: dict, command: str):
         scope=client_scope,
         headers=headers,
         connection_type=connection_type,
-        azure_ad_endpoint=(
-            params.get("azure_ad_endpoint", "https://login.microsoftonline.com") or "https://login.microsoftonline.com"
-        ),
+        azure_ad_endpoint=azure_ad_endpoint,
         auth_code=(params.get("auth_code", {}) or {}).get("password"),
         redirect_uri=params.get("redirect_uri"),
         managed_identities_client_id=get_azure_managed_identities_client_id(params),
@@ -5807,6 +5806,8 @@ def main():  # pragma: no cover
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
 
+        azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
+
         if connector_id:
             if command == "test-module":
                 if is_gov_account(connector_id):  # type: ignore
@@ -5818,15 +5819,14 @@ def main():  # pragma: no cover
             if is_gov_account(connector_id, account_id):  # type: ignore
                 switch_to_gov_account()
         else:
-            azure_ad_endpoint = params.get("azure_ad_endpoint") or "https://login.microsoftonline.com"
-            if azure_ad_endpoint.rstrip("/") != "https://login.microsoftonline.com":
+            if azure_ad_endpoint.rstrip("/") != DEFAULT_AZURE_AD_ENDPOINT:
                 demisto.debug(f"Non-commercial Azure AD endpoint configured ({azure_ad_endpoint}); switching to Gov account.")
                 switch_to_gov_account()
 
         if command == "azure-auth-reset":
             return return_results(reset_auth())
 
-        client = get_azure_client(params, args, command)
+        client = get_azure_client(params, args, command, azure_ad_endpoint)
 
         if command == "test-module":
             return_results(test_module(client))
@@ -5837,9 +5837,7 @@ def main():  # pragma: no cover
         elif command == "azure-auth-test":
             return_results(test_connection(client))
         elif command == "azure-generate-login-url":
-            return_results(
-                generate_login_url(_get_ms_client(client), params.get("azure_ad_endpoint", "https://login.microsoftonline.com"))
-            )
+            return_results(generate_login_url(_get_ms_client(client), azure_ad_endpoint))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:

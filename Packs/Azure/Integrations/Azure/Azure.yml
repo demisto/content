@@ -109,24 +109,24 @@ display: Azure
 name: Azure
 script:
   commands:
-  - description: Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
-    name: azure-auth-start
+  - name: azure-auth-start
+    description: Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
     hidden:
       - platform
-  - description: Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
-    name: azure-auth-complete
+  - name: azure-auth-complete
+    description: Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
     hidden:
       - platform
-  - description: Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
-    name: azure-auth-test
+  - name: azure-auth-test
+    description: Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
     hidden:
       - platform
-  - description: Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
-    name: azure-auth-reset
+  - name: azure-auth-reset
+    description: Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
     hidden:
       - platform
-  - description: Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
-    name: azure-generate-login-url
+  - name: azure-generate-login-url
+    description: Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
     hidden:
       - platform
   - arguments:
