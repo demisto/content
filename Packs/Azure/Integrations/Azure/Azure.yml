@@ -88,7 +88,7 @@ configuration:
   display: Authorization code
   defaultvalue:
   type: 9
-  additionalinfo: The authorization code for the Authorization Code flow, received from the authorization step. See the Detailed Instructions (?) section.
+  additionalinfo: The authorization code for the Authorization Code flow, received from the authorization step. See the Detailed Instructions (?) Help section.
   displaypassword: Authorization code
   hiddenusername: true
   section: Connect

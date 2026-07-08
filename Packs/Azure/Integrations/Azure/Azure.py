@@ -5397,7 +5397,7 @@ def test_module(client: AzureClient) -> str:
             "When using the Device Code authentication type, the Test button cannot validate the "
             "connection. Save the instance, run the `!azure-auth-start` and `!azure-auth-complete` "
             "commands to log in, and then run the `!azure-auth-test` command to validate the connection. "
-            "For more details, see the Detailed Instructions (?) section."
+            "For more details, see the Detailed Instructions (?) Help section in the integration configuration."
         )
     try:
         if "Azure Managed Identities" in client.connection_type:
