@@ -16,5 +16,5 @@ field_mappings:
   field_name: engine_mode
 - id: passthrough_cisco_umbrella_reporting_engine
   field_name: engine
-- id: passthrough_cisco_umbrella_reporting_engine_group
+- id: passthrough_cisco_umbrella_reporting_engineGroup
   field_name: engineGroup

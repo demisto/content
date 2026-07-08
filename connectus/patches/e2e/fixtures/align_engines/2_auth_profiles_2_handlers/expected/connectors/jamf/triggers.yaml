@@ -13,9 +13,9 @@ triggers:
     id: engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: engine_group
+  - id: engineGroup
     action:
       hidden: true
 - conditions:
@@ -24,7 +24,7 @@ triggers:
     - id: engine
       behavior: value
       operator: is_not_empty
-    - id: engine_group
+    - id: engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -64,9 +64,9 @@ triggers:
     id: passthrough_jamf_v2_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: passthrough_jamf_v2_engine_group
+  - id: passthrough_jamf_v2_engineGroup
     action:
       hidden: true
 - conditions:
@@ -75,7 +75,7 @@ triggers:
     - id: passthrough_jamf_v2_engine
       behavior: value
       operator: is_not_empty
-    - id: passthrough_jamf_v2_engine_group
+    - id: passthrough_jamf_v2_engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -95,9 +95,9 @@ triggers:
     id: plain_jamf_v2_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: plain_jamf_v2_engine_group
+  - id: plain_jamf_v2_engineGroup
     action:
       hidden: true
 - conditions:
@@ -106,7 +106,7 @@ triggers:
     - id: plain_jamf_v2_engine
       behavior: value
       operator: is_not_empty
-    - id: plain_jamf_v2_engine_group
+    - id: plain_jamf_v2_engineGroup
       behavior: value
       operator: is_not_empty
   effects:

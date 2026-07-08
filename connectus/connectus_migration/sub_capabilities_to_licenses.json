@@ -3515,5 +3515,9 @@
   "fetch-issues_logrhythmrest": [
     "xsiam",
     "agentix"
+  ],
+  "fetch-issues_crowdstrikefalcon": [
+    "xsiam",
+    "agentix"
   ]
 }

@@ -13,9 +13,9 @@ triggers:
     id: engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: engine_group
+  - id: engineGroup
     action:
       hidden: true
 - conditions:
@@ -24,7 +24,7 @@ triggers:
     - id: engine
       behavior: value
       operator: is_not_empty
-    - id: engine_group
+    - id: engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -44,9 +44,9 @@ triggers:
     id: api_key_cisco_umbrella_enforcement_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: api_key_cisco_umbrella_enforcement_engine_group
+  - id: api_key_cisco_umbrella_enforcement_engineGroup
     action:
       hidden: true
 - conditions:
@@ -55,7 +55,7 @@ triggers:
     - id: api_key_cisco_umbrella_enforcement_engine
       behavior: value
       operator: is_not_empty
-    - id: api_key_cisco_umbrella_enforcement_engine_group
+    - id: api_key_cisco_umbrella_enforcement_engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -75,9 +75,9 @@ triggers:
     id: passthrough_cisco_umbrella_investigate_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: passthrough_cisco_umbrella_investigate_engine_group
+  - id: passthrough_cisco_umbrella_investigate_engineGroup
     action:
       hidden: true
 - conditions:
@@ -86,7 +86,7 @@ triggers:
     - id: passthrough_cisco_umbrella_investigate_engine
       behavior: value
       operator: is_not_empty
-    - id: passthrough_cisco_umbrella_investigate_engine_group
+    - id: passthrough_cisco_umbrella_investigate_engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -106,9 +106,9 @@ triggers:
     id: passthrough_cisco_umbrella_reporting_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: passthrough_cisco_umbrella_reporting_engine_group
+  - id: passthrough_cisco_umbrella_reporting_engineGroup
     action:
       hidden: true
 - conditions:
@@ -117,7 +117,7 @@ triggers:
     - id: passthrough_cisco_umbrella_reporting_engine
       behavior: value
       operator: is_not_empty
-    - id: passthrough_cisco_umbrella_reporting_engine_group
+    - id: passthrough_cisco_umbrella_reporting_engineGroup
       behavior: value
       operator: is_not_empty
   effects:

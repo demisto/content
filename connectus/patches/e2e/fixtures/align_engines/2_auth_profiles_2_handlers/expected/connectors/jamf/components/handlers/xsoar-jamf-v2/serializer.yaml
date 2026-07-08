@@ -10,7 +10,7 @@ field_mappings:
   field_name: engine_mode
 - id: passthrough_jamf_v2_engine
   field_name: engine
-- id: passthrough_jamf_v2_engine_group
+- id: passthrough_jamf_v2_engineGroup
   field_name: engineGroup
 - id: plain_jamf_v2_url
   field_name: url
@@ -22,5 +22,5 @@ field_mappings:
   field_name: engine_mode
 - id: plain_jamf_v2_engine
   field_name: engine
-- id: plain_jamf_v2_engine_group
+- id: plain_jamf_v2_engineGroup
   field_name: engineGroup

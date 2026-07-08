@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+ProtectWise,Packs/ProtectWise/Integrations/ProtectWise/ProtectWise.yml,protectwise,connectors/protectwise,xsoar,"{""auth_types"":[{""type"":""API"",""name"":""API Key""},{""type"":""Basic"",""name"":""Basic Auth""}]}"

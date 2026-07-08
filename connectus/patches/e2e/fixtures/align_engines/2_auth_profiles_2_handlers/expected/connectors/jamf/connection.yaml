@@ -157,7 +157,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -165,7 +165,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: engine
       title: Engine
       field_type: select
@@ -189,13 +188,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: engine_group
+    - id: engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -218,10 +216,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: passthrough.jamf_v2
   type: passthrough
@@ -332,7 +330,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -340,7 +338,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: passthrough_jamf_v2_engine
       title: Engine
       field_type: select
@@ -364,13 +361,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: passthrough_jamf_v2_engine_group
+    - id: passthrough_jamf_v2_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -393,10 +389,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: plain.jamf_v2
   type: plain
@@ -502,7 +498,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -510,7 +506,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: plain_jamf_v2_engine
       title: Engine
       field_type: select
@@ -534,13 +529,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: plain_jamf_v2_engine_group
+    - id: plain_jamf_v2_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -563,8 +557,8 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false

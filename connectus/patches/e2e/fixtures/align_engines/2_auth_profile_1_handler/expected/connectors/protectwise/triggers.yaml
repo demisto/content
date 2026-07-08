@@ -13,9 +13,9 @@ triggers:
     id: engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: engine_group
+  - id: engineGroup
     action:
       hidden: true
 - conditions:
@@ -24,7 +24,7 @@ triggers:
     - id: engine
       behavior: value
       operator: is_not_empty
-    - id: engine_group
+    - id: engineGroup
       behavior: value
       operator: is_not_empty
   effects:
@@ -44,9 +44,9 @@ triggers:
     id: plain_protectwise_engine_mode
     behavior: value
     operator: neq
-    value: engine_group
+    value: engineGroup
   effects:
-  - id: plain_protectwise_engine_group
+  - id: plain_protectwise_engineGroup
     action:
       hidden: true
 - conditions:
@@ -55,7 +55,7 @@ triggers:
     - id: plain_protectwise_engine
       behavior: value
       operator: is_not_empty
-    - id: plain_protectwise_engine_group
+    - id: plain_protectwise_engineGroup
       behavior: value
       operator: is_not_empty
   effects:

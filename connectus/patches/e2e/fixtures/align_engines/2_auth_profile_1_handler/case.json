@@ -1,6 +1,6 @@
 {
-  "description": "align_engines baseline: WIP placeholder script is a no-op, so the patched tree must equal the input tree. Wires the script in via `script` + `args` (passing the pipeline CSV through --csv). Once real engine-alignment logic lands, replace expected/ with the mutated golden.",
-  "connector": "enginesconn",
+  "description": "align_engines: 2 auth profiles (api_key + plain), single handler. Each profile's engine trio (engine_mode/engine/engine_group, incl. the plain_protectwise_* prefixed variant) is merged into one fields block, engine_group is renamed to engineGroup (connection field id, triggers effect/condition ids, and serializer field_mappings id), and engine + engineGroup get create/edit required: true.",
+  "connector": "protectwise",
   "csv": "connectus-migration-pipeline.csv",
   "script": "patches/align_engines.py",
   "args": [
@@ -9,5 +9,5 @@
     "--path", "{path}",
     "{dry_run}"
   ],
-  "expect_modified": false
+  "expect_modified": true
 }

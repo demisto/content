@@ -127,8 +127,15 @@ def test_idempotent_second_run(case: harness.PatchE2ECase, tmp_path: Path) -> No
 # --------------------------------------------------------------------------- #
 def test_cases_are_discovered() -> None:
     names = {c.name for c in _CASES}
-    assert "noop_baseline" in names, (
-        "expected the align_engines baseline case under fixtures/align_engines/"
+    expected = {
+        "1_auth_profile_1_handler",
+        "2_auth_profile_1_handler",
+        "2_auth_profiles_2_handlers",
+        "2_auth_profiles_different_handlers",
+        "multiple_auth_profiles",
+    }
+    assert expected <= names, (
+        f"missing align_engines cases: {sorted(expected - names)}"
     )
 
 

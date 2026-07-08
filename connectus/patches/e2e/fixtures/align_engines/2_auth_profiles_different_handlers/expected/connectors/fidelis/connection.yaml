@@ -115,7 +115,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -123,7 +123,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: engine
       title: Engine
       field_type: select
@@ -147,13 +146,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: engine_group
+    - id: engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -176,10 +174,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: plain.fidelis_elevate_network
   type: plain
@@ -284,7 +282,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -292,7 +290,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: plain_fidelis_elevate_network_engine
       title: Engine
       field_type: select
@@ -316,13 +313,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: plain_fidelis_elevate_network_engine_group
+    - id: plain_fidelis_elevate_network_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -345,8 +341,8 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false

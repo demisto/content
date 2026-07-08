@@ -98,7 +98,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -106,7 +106,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: engine
       title: Engine
       field_type: select
@@ -130,13 +129,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: engine_group
+    - id: engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -159,10 +157,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: plain.protectwise
   type: plain
@@ -268,7 +266,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -276,7 +274,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: plain_protectwise_engine
       title: Engine
       field_type: select
@@ -300,13 +297,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: plain_protectwise_engine_group
+    - id: plain_protectwise_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -329,8 +325,8 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false

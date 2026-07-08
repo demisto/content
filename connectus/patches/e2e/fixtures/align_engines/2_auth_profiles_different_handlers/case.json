@@ -1,6 +1,6 @@
 {
-  "description": "align_engines baseline: WIP placeholder script is a no-op, so the patched tree must equal the input tree. Wires the script in via `script` + `args` (passing the pipeline CSV through --csv). Once real engine-alignment logic lands, replace expected/ with the mutated golden.",
-  "connector": "enginesconn",
+  "description": "align_engines: 2 auth profiles across 2 DIFFERENT handlers (fidelis-edr + fidelis-elevate-network). Each profile's engine trio is merged into one fields block; every engine_group token is renamed to engineGroup (connection field id + engine_mode dropdown key; triggers value + effect id + child id; serializer field_mappings id; including the prefixed plain_fidelis_elevate_network_engine_group variant); engine + engineGroup get create/edit required: true.",
+  "connector": "fidelis",
   "csv": "connectus-migration-pipeline.csv",
   "script": "patches/align_engines.py",
   "args": [
@@ -9,5 +9,5 @@
     "--path", "{path}",
     "{dry_run}"
   ],
-  "expect_modified": false
+  "expect_modified": true
 }

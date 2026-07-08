@@ -12,5 +12,5 @@ field_mappings:
   field_name: engine_mode
 - id: api_key_cisco_umbrella_enforcement_engine
   field_name: engine
-- id: api_key_cisco_umbrella_enforcement_engine_group
+- id: api_key_cisco_umbrella_enforcement_engineGroup
   field_name: engineGroup

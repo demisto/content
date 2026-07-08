@@ -46,5 +46,5 @@ field_mappings:
   field_name: engine_mode
 - id: plain_protectwise_engine
   field_name: engine
-- id: plain_protectwise_engine_group
+- id: plain_protectwise_engineGroup
   field_name: engineGroup

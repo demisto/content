@@ -1731,7 +1731,7 @@ CrowdStrike Falcon Intel v2,Packs/CrowdStrikeIntel/Integrations/CrowdStrikeFalco
     ""cs-actors"": [""timeout""],
     ""cs-reports"": [""timeout""]
   }
-}",{},✅,"{""Automation"": [""timeout"", ""integrationReliability"", ""threshold""], ""general_configurations"": [""feedExpirationPolicy"", ""feedExpirationInterval""]}",✅,✅,✅,✅,✅,✅,✅,✅,✅
+}",{},✅,"{""Automation"": [""timeout"", ""integrationReliability"", ""threshold""], ""general_configurations"": [""feedExpirationPolicy"", ""feedExpirationInterval""]}",✅,,,,,,,,✅
 CrowdstrikeFalcon,Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml,CrowdStrike,connectors/crowdstrike,noydavidi,"{
   ""auth_types"": [{
     ""type"": ""Passthrough"",
@@ -1740,161 +1740,40 @@ CrowdstrikeFalcon,Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdSt
     ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}
   }],
   ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
-  ""Log Collection"",
-  ""Fetch Assets and Vulnerabilities"",
-  ""Automation""
-]","{
-  ""integration"": ""CrowdstrikeFalcon"",
-  ""commands"": {
-    ""cs-falcon-search-device"": [],
-    ""cs-falcon-get-behavior"": [],
-    ""cs-falcon-search-detection"": [],
-    ""cs-falcon-resolve-detection"": [],
-    ""cs-falcon-contain-host"": [],
-    ""cs-falcon-lift-host-containment"": [],
-    ""cs-falcon-run-command"": [],
-    ""cs-falcon-upload-script"": [],
-    ""cs-falcon-upload-file"": [],
-    ""cs-falcon-delete-file"": [],
-    ""cs-falcon-get-file"": [],
-    ""cs-falcon-list-files"": [],
-    ""cs-falcon-get-script"": [],
-    ""cs-falcon-delete-script"": [],
-    ""cs-falcon-list-scripts"": [],
-    ""cs-falcon-run-script"": [],
-    ""cs-falcon-run-get-command"": [],
-    ""cs-falcon-status-get-command"": [],
-    ""cs-falcon-status-command"": [],
-    ""cs-falcon-get-extracted-file"": [],
-    ""cs-falcon-list-host-files"": [],
-    ""cs-falcon-refresh-session"": [],
-    ""cs-falcon-search-iocs"": [],
-    ""cs-falcon-get-ioc"": [],
-    ""cs-falcon-upload-ioc"": [],
-    ""cs-falcon-update-ioc"": [],
-    ""cs-falcon-delete-ioc"": [],
-    ""cs-falcon-search-custom-iocs"": [],
-    ""cs-falcon-get-custom-ioc"": [],
-    ""cs-falcon-upload-custom-ioc"": [],
-    ""cs-falcon-update-custom-ioc"": [],
-    ""cs-falcon-delete-custom-ioc"": [],
-    ""cs-falcon-device-count-ioc"": [],
-    ""cs-falcon-processes-ran-on"": [],
-    ""cs-falcon-process-details"": [],
-    ""cs-device-ran-on"": [],
-    ""cs-falcon-device-ran-on"": [],
-    ""cs-falcon-list-detection-summaries"": [],
-    ""cs-falcon-list-case-summaries"": [],
-    ""cs-falcon-get-evidence-for-case"": [],
-    ""cs-falcon-add-case-tag"": [],
-    ""cs-falcon-delete-case-tag"": [],
-    ""cs-falcon-resolve-case"": [],
-    ""endpoint"": [],
-    ""cs-falcon-create-host-group"": [],
-    ""cs-falcon-list-host-groups"": [],
-    ""cs-falcon-delete-host-groups"": [],
-    ""cs-falcon-update-host-group"": [],
-    ""cs-falcon-list-host-group-members"": [],
-    ""cs-falcon-add-host-group-members"": [],
-    ""cs-falcon-remove-host-group-members"": [],
-    ""cs-falcon-batch-upload-custom-ioc"": [],
-    ""cs-falcon-rtr-kill-process"": [],
-    ""cs-falcon-rtr-remove-file"": [],
-    ""cs-falcon-rtr-list-processes"": [],
-    ""cs-falcon-rtr-list-network-stats"": [],
-    ""cs-falcon-rtr-read-registry"": [],
-    ""cs-falcon-rtr-list-scheduled-tasks"": [],
-    ""cs-falcon-rtr-retrieve-file"": [],
-    ""get-mapping-fields"": [],
-    ""get-remote-data"": [
-      ""close_in_cs_falcon"",
-      ""mirror_direction""
-    ],
-    ""get-modified-remote-data"": [
-      ""close_in_cs_falcon"",
-      ""mirror_direction""
-    ],
-    ""update-remote-system"": [
-      ""close_in_cs_falcon"",
-      ""mirror_direction""
-    ],
-    ""cs-falcon-spotlight-search-vulnerability"": [],
-    ""cve"": [
-      ""Reliability""
-    ],
-    ""cs-falcon-spotlight-list-host-by-vulnerability"": [],
-    ""cs-falcon-create-ml-exclusion"": [],
-    ""cs-falcon-update-ml-exclusion"": [],
-    ""cs-falcon-delete-ml-exclusion"": [],
-    ""cs-falcon-search-ml-exclusion"": [],
-    ""cs-falcon-create-ioa-exclusion"": [],
-    ""cs-falcon-update-ioa-exclusion"": [],
-    ""cs-falcon-delete-ioa-exclusion"": [],
-    ""cs-falcon-search-ioa-exclusion"": [],
-    ""cs-falcon-list-quarantined-file"": [],
-    ""cs-falcon-apply-quarantine-file-action"": [],
-    ""cs-falcon-ods-query-scan"": [],
-    ""cs-falcon-ods-query-scheduled-scan"": [],
-    ""cs-falcon-ods-query-scan-host"": [],
-    ""cs-falcon-ods-query-malicious-files"": [],
-    ""cs-falcon-ods-create-scan"": [],
-    ""cs-falcon-ods-create-scheduled-scan"": [],
-    ""cs-falcon-ods-delete-scheduled-scan"": [],
-    ""cs-falcon-list-identity-entities"": [],
-    ""cs-falcon-cspm-list-policy-details"": [],
-    ""cs-falcon-cspm-list-service-policy-settings"": [],
-    ""cs-falcon-cspm-update-policy_settings"": [],
-    ""cs-falcon-resolve-identity-detection"": [],
-    ""cs-falcon-resolve-mobile-detection"": [],
-    ""cs-falcon-list-users"": [],
-    ""cs-falcon-get-ioarules"": [],
-    ""cs-falcon-list-cnapp-alerts"": [],
-    ""cs-falcon-search-ngsiem-events"": [],
-    ""cs-falcon-list-workflow-definitions"": [],
-    ""cs-falcon-workflow-execute"": [],
-    ""cs-falcon-list-workflow-executions"": [],
-    ""cs-falcon-list-workflow-execution-results"": [],
-    ""cs-falcon-workflow-execution-action"": [],
-    ""test-module"": [],
-    ""fetch-incidents"": [
-      ""automated_leads_fetch_query"",
-      ""close_incident"",
-      ""fetch_incidents_or_detections"",
-      ""fetch_query"",
-      ""fetch_time"",
-      ""idp_detections_fetch_query"",
-      ""incidents_per_fetch"",
-      ""ioa_fetch_query"",
-      ""iom_fetch_query"",
-      ""look_back"",
-      ""mobile_detections_fetch_query"",
-      ""ngsiem_cases_fetch_query"",
-      ""ngsiem_detection_fetch_query"",
-      ""ngsiem_incidents_fetch_query"",
-      ""ofp_detection_fetch_query"",
-      ""on_demand_fetch_query"",
-      ""recon_fetch_query"",
-      ""reopen_statuses"",
-      ""third_party_detection_fetch_query""
-    ],
-    ""fetch-events"": [
-      ""automated_leads_fetch_query"",
-      ""fetch_assets_type"",
-      ""fetch_events_or_detections"",
-      ""fetch_query"",
-      ""idp_detections_fetch_query"",
-      ""look_back_xsiam"",
-      ""mobile_detections_fetch_query"",
-      ""ngsiem_cases_fetch_query"",
-      ""ngsiem_detection_fetch_query"",
-      ""ngsiem_incidents_fetch_query"",
-      ""ofp_detection_fetch_query"",
-      ""on_demand_fetch_query"",
-      ""third_party_detection_fetch_query""
-    ]
-  }
-}",{},✅,"{""Automation"": [""Reliability""], ""Fetch Assets and Vulnerabilities"": [], ""Log Collection"": [""automated_leads_fetch_query"", ""fetch_assets_type"", ""fetch_events_or_detections"", ""fetch_query"", ""idp_detections_fetch_query"", ""look_back_xsiam"", ""mobile_detections_fetch_query"", ""ngsiem_cases_fetch_query"", ""ngsiem_detection_fetch_query"", ""ngsiem_incidents_fetch_query"", ""ofp_detection_fetch_query"", ""on_demand_fetch_query"", ""third_party_detection_fetch_query"", ""recon_fetch_query""], ""general_configurations"": []}",✅,✅,✅,✅,✅,✅,✅,✅,✅
+}","[""Log Collection"", ""Fetch Issues"", ""Fetch Assets and Vulnerabilities"", ""Automation""]","{""integration"": ""CrowdStrike Falcon"", ""commands"": {""cs-device-ran-on"": [], ""cs-falcon-add-case-tag"": [], ""cs-falcon-add-host-group-members"": [], ""cs-falcon-apply-quarantine-file-action"": [], ""cs-falcon-batch-upload-custom-ioc"": [], ""cs-falcon-contain-host"": [], ""cs-falcon-create-host-group"": [], ""cs-falcon-create-ioa-exclusion"": [], ""cs-falcon-create-ml-exclusion"": [], ""cs-falcon-cspm-list-policy-details"": [], ""cs-falcon-cspm-list-service-policy-settings"": [], ""cs-falcon-cspm-update-policy_settings"": [], ""cs-falcon-delete-case-tag"": [], ""cs-falcon-delete-custom-ioc"": [], ""cs-falcon-delete-file"": [], ""cs-falcon-delete-host-groups"": [], ""cs-falcon-delete-ioa-exclusion"": [], ""cs-falcon-delete-ioc"": [], ""cs-falcon-delete-ml-exclusion"": [], ""cs-falcon-delete-script"": [], ""cs-falcon-device-count-ioc"": [], ""cs-falcon-device-ran-on"": [], ""cs-falcon-get-behavior"": [], ""cs-falcon-get-custom-ioc"": [], ""cs-falcon-get-evidence-for-case"": [], ""cs-falcon-get-extracted-file"": [], ""cs-falcon-get-file"": [], ""cs-falcon-get-ioarules"": [], ""cs-falcon-get-ioc"": [], ""cs-falcon-get-script"": [], ""cs-falcon-lift-host-containment"": [], ""cs-falcon-list-case-summaries"": [], ""cs-falcon-list-cnapp-alerts"": [], ""cs-falcon-list-detection-summaries"": [], ""cs-falcon-list-files"": [], ""cs-falcon-list-host-files"": [], ""cs-falcon-list-host-group-members"": [], ""cs-falcon-list-host-groups"": [], ""cs-falcon-list-identity-entities"": [], ""cs-falcon-list-quarantined-file"": [], ""cs-falcon-list-scripts"": [], ""cs-falcon-list-users"": [], ""cs-falcon-list-workflow-definitions"": [], ""cs-falcon-list-workflow-execution-results"": [], ""cs-falcon-list-workflow-executions"": [], ""cs-falcon-ods-create-scan"": [], ""cs-falcon-ods-create-scheduled-scan"": [], ""cs-falcon-ods-delete-scheduled-scan"": [], ""cs-falcon-ods-query-malicious-files"": [], ""cs-falcon-ods-query-scan"": [], ""cs-falcon-ods-query-scan-host"": [], ""cs-falcon-ods-query-scheduled-scan"": [], ""cs-falcon-process-details"": [], ""cs-falcon-processes-ran-on"": [], ""cs-falcon-refresh-session"": [], ""cs-falcon-remove-host-group-members"": [], ""cs-falcon-resolve-case"": [], ""cs-falcon-resolve-detection"": [], ""cs-falcon-resolve-identity-detection"": [], ""cs-falcon-resolve-mobile-detection"": [], ""cs-falcon-rtr-kill-process"": [], ""cs-falcon-rtr-list-network-stats"": [], ""cs-falcon-rtr-list-processes"": [], ""cs-falcon-rtr-list-scheduled-tasks"": [], ""cs-falcon-rtr-read-registry"": [], ""cs-falcon-rtr-remove-file"": [], ""cs-falcon-rtr-retrieve-file"": [], ""cs-falcon-run-command"": [], ""cs-falcon-run-get-command"": [], ""cs-falcon-run-script"": [], ""cs-falcon-search-custom-iocs"": [], ""cs-falcon-search-detection"": [], ""cs-falcon-search-device"": [], ""cs-falcon-search-ioa-exclusion"": [], ""cs-falcon-search-iocs"": [], ""cs-falcon-search-ml-exclusion"": [], ""cs-falcon-search-ngsiem-events"": [], ""cs-falcon-spotlight-list-host-by-vulnerability"": [], ""cs-falcon-spotlight-search-vulnerability"": [], ""cs-falcon-status-command"": [], ""cs-falcon-status-get-command"": [], ""cs-falcon-update-custom-ioc"": [], ""cs-falcon-update-host-group"": [], ""cs-falcon-update-ioa-exclusion"": [], ""cs-falcon-update-ioc"": [], ""cs-falcon-update-ml-exclusion"": [], ""cs-falcon-upload-custom-ioc"": [], ""cs-falcon-upload-file"": [], ""cs-falcon-upload-ioc"": [], ""cs-falcon-upload-script"": [], ""cs-falcon-workflow-execute"": [], ""cs-falcon-workflow-execution-action"": [], ""cve"": [], ""endpoint"": [], ""fetch-events"": [""automated_leads_fetch_query"", ""eventFetchInterval"", ""fetch_events_or_detections"", ""fetch_query"", ""idp_detections_fetch_query"", ""look_back_xsiam"", ""mobile_detections_fetch_query"", ""ngsiem_cases_fetch_query"", ""ngsiem_detection_fetch_query"", ""ngsiem_incidents_fetch_query"", ""ofp_detection_fetch_query"", ""on_demand_fetch_query"", ""third_party_detection_fetch_query""], ""fetch-incidents"": [""automated_leads_fetch_query"", ""fetch_incidents_or_detections"", ""fetch_query"", ""fetch_time"", ""idp_detections_fetch_query"", ""incidentFetchInterval"", ""incidents_per_fetch"", ""ioa_fetch_query"", ""iom_fetch_query"", ""look_back"", ""mobile_detections_fetch_query"", ""ngsiem_cases_fetch_query"", ""ngsiem_detection_fetch_query"", ""ngsiem_incidents_fetch_query"", ""ofp_detection_fetch_query"", ""on_demand_fetch_query"", ""recon_fetch_query"", ""third_party_detection_fetch_query""], ""get-mapping-fields"": [], ""get-modified-remote-data"": [], ""get-remote-data"": [], ""test-module"": [""automated_leads_fetch_query"", ""fetch_query"", ""idp_detections_fetch_query"", ""mobile_detections_fetch_query"", ""ngsiem_cases_fetch_query"", ""ngsiem_detection_fetch_query"", ""ngsiem_incidents_fetch_query"", ""ofp_detection_fetch_query"", ""on_demand_fetch_query"", ""third_party_detection_fetch_query""], ""update-remote-system"": [], ""fetch-assets"": [""assetsFetchInterval"", ""fetch_assets_type""]}}",{},✅,"{
+  ""Automation"": [],
+  ""Fetch Assets and Vulnerabilities"": [
+    ""assetsFetchInterval"",
+    ""fetch_assets_type""
+  ],
+  ""Fetch Issues"": [
+    ""fetch_incidents_or_detections"",
+    ""fetch_time"",
+    ""incidentFetchInterval"",
+    ""incidents_per_fetch"",
+    ""ioa_fetch_query"",
+    ""iom_fetch_query"",
+    ""look_back"",
+    ""recon_fetch_query""
+  ],
+  ""Log Collection"": [
+    ""eventFetchInterval"",
+    ""fetch_events_or_detections"",
+    ""look_back_xsiam""
+  ],
+  ""general_configurations"": [
+    ""ngsiem_cases_fetch_query"",
+    ""mobile_detections_fetch_query"",
+    ""fetch_query"",
+    ""third_party_detection_fetch_query"",
+    ""ngsiem_incidents_fetch_query"",
+    ""ngsiem_detection_fetch_query"",
+    ""on_demand_fetch_query"",
+    ""automated_leads_fetch_query"",
+    ""ofp_detection_fetch_query"",
+    ""idp_detections_fetch_query""
+  ]
+}",✅,,,,,,,,✅
 Cryptocurrency,Packs/Cryptocurrency/Integrations/Cryptocurrency/Cryptocurrency.yml,CryptoCurrency,connectors/cryptocurrency,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""Cryptocurrency"",""commands"":{""test-module"":[],""crypto"":[""reliability"",""reputation""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""reliability"",""reputation""]}",✅,✅,✅,✅,✅,✅,✅,✅,✅
 Cuckoo Sandbox,Packs/CuckooSandbox/Integrations/CuckooSandbox/CuckooSandbox.yml,Cuckoo Sandbox,connectors/cuckoo-sandbox,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""interpolated"": true, ""xsoar_param_map"": {""authentication.identifier"": ""username"", ""authentication.password"": ""password""}}], ""other_connection"": [""insecure"", ""proxy"", ""server""]}","[""Automation""]","{""integration"": ""Cuckoo Sandbox"", ""commands"": {""ck-del"": [], ""ck-file"": [], ""ck-list"": [], ""ck-machine-view"": [], ""ck-machines-list"": [], ""ck-report"": [], ""ck-scrshot"": [], ""ck-url"": [], ""ck-view"": [], ""cuckoo-create-task-from-file"": [], ""cuckoo-create-task-from-url"": [], ""cuckoo-delete-task"": [], ""cuckoo-get-task-report"": [], ""cuckoo-list-tasks"": [], ""cuckoo-machine-view"": [], ""cuckoo-machines-list"": [], ""cuckoo-task-screenshot"": [], ""cuckoo-view-task"": [], ""test-module"": []}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",✅,✅,✅,✅,✅,✅,✅,✅,✅
 CybelAngel Event Collector,Packs/CybelAngel/Integrations/CybelAngelEventCollector/CybelAngelEventCollector.yml,CybelAngel,connectors/cybelangel,jlevypaloalto,"{""auth_types"":[{""type"":""Passthrough"",""name"":""credentials"",""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret""},""interpolated"":true}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Log Collection"",""Automation""]","{""integration"":""CybelAngel Event Collector"",""commands"":{""cybelangel-archive-report-by-id-get"":[],""cybelangel-get-events"":[],""cybelangel-mirror-report-get"":[],""cybelangel-report-attachment-get"":[],""cybelangel-report-comment-create"":[],""cybelangel-report-comments-get"":[],""cybelangel-report-get"":[],""cybelangel-report-list"":[],""cybelangel-report-remediation-request-create"":[],""cybelangel-report-status-update"":[],""fetch-events"":[""event_types_to_fetch"",""max_fetch"",""max_fetch_creds"",""max_fetch_domain""],""test-module"":[""event_types_to_fetch"",""max_fetch"",""max_fetch_creds"",""max_fetch_domain""]}}","{""max_fetch"": 5000}",✅,"{""Automation"":[],""Log Collection"":[""event_types_to_fetch"",""max_fetch"",""max_fetch_creds"",""max_fetch_domain""],""general_configurations"":[]}",✅,✅,✅,✅,✅,✅,✅,✅,✅
@@ -6463,4 +6342,4 @@ GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Wo
 ""drive_item_search_value"",
 ""drive_item_search_field""],
 ""general_configurations"": []}",✅,✅,✅,,,,,,
-Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,M365 Automation and Collection,connectors/m365-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"", ""name"":""Microsoft Entra ID App"", ""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""credentials_auth_id.password"":""client_id"", ""credentials_tenant_id.password"":""tenant_id"", ""credentials_enc_key.password"":""client_secret"", ""auth_code_creds.password"":""auth_code"", ""credentials_certificate_thumbprint.password"":""certificate_thumbprint"", private_key"":""private_key"", ""managed_identities_client_id.password"":""managed_identity_client_id""}}],""other_connection"":[""host"", ""isnecure"", ""proxy"", ""redirect_uri"", ""self_deployed"", ""use_managed_identities""]}","[""Automation""]","{""integration"":""O365 File Management (Onedrive/Sharepoint/Teams)"", commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",✅,✅,✅
+Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,M365 Automation and Collection,connectors/m365-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"", ""name"":""Microsoft Entra ID App"", ""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""credentials_auth_id.password"":""client_id"", ""credentials_tenant_id.password"":""tenant_id"", ""credentials_enc_key.password"":""client_secret"", ""auth_code_creds.password"":""auth_code"", ""credentials_certificate_thumbprint.password"":""certificate_thumbprint"", ""private_key"":""private_key"", ""managed_identities_client_id.password"":""managed_identity_client_id""}}],""other_connection"":[""host"", ""isnecure"", ""proxy"", ""redirect_uri"", ""self_deployed"", ""use_managed_identities""]}","[""Automation""]","{""integration"":""O365 File Management (Onedrive/Sharepoint/Teams)"", ""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",✅,✅,✅,,,,,,

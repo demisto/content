@@ -178,7 +178,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -186,7 +186,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: engine
       title: Engine
       field_type: select
@@ -210,13 +209,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: engine_group
+    - id: engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -239,10 +237,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: api_key.cisco_umbrella_enforcement
   type: api_key
@@ -333,7 +331,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -341,7 +339,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: api_key_cisco_umbrella_enforcement_engine
       title: Engine
       field_type: select
@@ -365,13 +362,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: api_key_cisco_umbrella_enforcement_engine_group
+    - id: api_key_cisco_umbrella_enforcement_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -394,10 +390,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: passthrough.cisco_umbrella_investigate
   type: passthrough
@@ -509,7 +505,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -517,7 +513,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: passthrough_cisco_umbrella_investigate_engine
       title: Engine
       field_type: select
@@ -541,13 +536,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: passthrough_cisco_umbrella_investigate_engine_group
+    - id: passthrough_cisco_umbrella_investigate_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -570,10 +564,10 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
 - id: passthrough.cisco_umbrella_reporting
   type: passthrough
@@ -685,7 +679,7 @@ profiles:
           label: No engine
         - key: engine
           label: Engine
-        - key: engine_group
+        - key: engineGroup
           label: Engine Group
         create_modifiers:
           required: true
@@ -693,7 +687,6 @@ profiles:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
     - id: passthrough_cisco_umbrella_reporting_engine
       title: Engine
       field_type: select
@@ -717,13 +710,12 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
-  - fields:
-    - id: passthrough_cisco_umbrella_reporting_engine_group
+    - id: passthrough_cisco_umbrella_reporting_engineGroup
       title: Engine Group
       field_type: select
       metadata:
@@ -746,8 +738,8 @@ profiles:
         searchable: true
         clearable: true
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false

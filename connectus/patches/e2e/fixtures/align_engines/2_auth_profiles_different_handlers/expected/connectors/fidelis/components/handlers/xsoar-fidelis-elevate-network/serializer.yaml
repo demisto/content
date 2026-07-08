@@ -24,7 +24,7 @@ field_mappings:
   field_name: engine_mode
 - id: plain_fidelis_elevate_network_engine
   field_name: engine
-- id: plain_fidelis_elevate_network_engine_group
+- id: plain_fidelis_elevate_network_engineGroup
   field_name: engineGroup
 computed_fields:
 - output:
