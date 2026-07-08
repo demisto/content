@@ -241,7 +241,7 @@ def main() -> None:  # pragma: no cover
     credentials = params.get("credentials", {})
     client_id = credentials.get("identifier")
     client_secret = credentials.get("password")
-    limit_fetch = arg_to_number(params.get("max_fetch") or MAX_EVENTS_API_CALL)
+    limit_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_API_CALL
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

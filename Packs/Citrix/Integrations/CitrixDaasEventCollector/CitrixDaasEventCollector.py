@@ -332,7 +332,7 @@ def main():
             client_secret=params.get("credentials", {}).get("password"),
             site_name=params.get("site_name", ""),
             verify=not params.get("insecure"),
-            proxy=params.get("proxy"),  # noqa: ucp-param-default  # truthy-only use in BaseClient(proxy=...); None == False
+            proxy=params.get("proxy"),
         )
 
         if command == "test-module":
