@@ -45,7 +45,7 @@ For more information, contact TXOne StellarOne customer support for proper guida
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+For instructions on how to create or configure the Broker VM, see [Set up and configure Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
 Follow the below steps to configure the Broker VM to receive TXOne StellarOne logs.
 
