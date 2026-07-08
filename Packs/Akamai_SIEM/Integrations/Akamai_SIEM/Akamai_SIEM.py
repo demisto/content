@@ -16,7 +16,6 @@ from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
 from CommonServerUserPython import *
-import concurrent.futures
 import asyncio
 import aiohttp
 
@@ -308,6 +307,7 @@ class Client(BaseClient):
         params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
         raw_response = self.execute_get_events_request(params, config_ids)
         events: list[str] = raw_response.split("\n")
+        del raw_response  # free the full-page response string immediately; we only need the split lines
         offset = None
         try:
             if events and events[-1] == "":
@@ -412,6 +412,8 @@ def decode_message(msg: str) -> Sequence[str | None]:
         >>> decode_message(msg='Q3VzdG9tX1JlZ0VYX1J1bGU%3d%3bTm8gQWNjZXB0IEhlYWRlciBBTkQgTm8gVXNlciBBZ2VudCBIZWFkZXI%3d')
         ['Custom_RegEX_Rule', 'No Accept Header AND No User Agent Header']
     """
+    if not msg:
+        return []
     readable_msg = []
     translated_msg = urllib.parse.unquote(msg).split(";")
     for word in translated_msg:
@@ -728,14 +730,13 @@ def fetch_events_command(
         if not events:
             demisto.info("Didn't receive any events, breaking.")
             break
+        last_page_size = len(events)
         demisto.info(f"got {len(events)} events, moving to processing events data.")
-        processed_events = []
         if should_skip_decode_events:
             demisto.info("skipping events decode.")
-            processed_events = events
         else:
             demisto.info("Preparing to load and decode events.")
-            for event in events:
+            for index, event in enumerate(events):
                 try:
                     event = json.loads(event)
                     if "attackData" in event:
@@ -764,10 +765,10 @@ def fetch_events_command(
                 except Exception as e:
                     demisto.debug(f"Couldn't decode {event=}, reason: {e}")
                 finally:
-                    processed_events.append(event)
-        total_events_count += len(processed_events)
+                    events[index] = event
+        total_events_count += last_page_size
         execution_counter += 1
-        yield processed_events, offset, total_events_count, auto_trigger_next_run
+        yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
 
 
@@ -780,6 +781,8 @@ def decode_url(headers: str) -> dict:
     Returns:
         dict: The decoded and parsed headers as a dictionary.
     """
+    if not headers:
+        return {}
     decoded_lines = urllib.parse.unquote(headers).replace("\r", "").split("\n")
     decoded_dict = {}
     for line in decoded_lines:
@@ -1433,7 +1436,7 @@ def main():  # pragma: no cover
                     " the integration configuration."
                 )
             page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
-            limit = int(params.get("fetchLimit", 300000))
+            limit = int(params.get("fetchLimit", MAX_ALLOWED_FETCH_LIMIT))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.info(f"Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, setting limit to {MAX_ALLOWED_FETCH_LIMIT}.")
                 limit = MAX_ALLOWED_FETCH_LIMIT
@@ -1502,31 +1505,29 @@ def main():  # pragma: no cover
                             ),
                         )
                         post_latest_event_time(
-                            latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using multithreads."
+                            latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using streaming send."
                         )
-                        futures = send_events_to_xsiam(
-                            events,
-                            VENDOR,
-                            PRODUCT,
-                            should_update_health_module=False,
-                            chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
-                            multiple_threads=True,
-                            data_format="json",
-                        )
-                        demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
-                        data_size = 0
+                        data_size = len(events)
                         should_fail = False
-                        for future in concurrent.futures.as_completed(futures):
-                            try:
-                                data_size += future.result()
-                            except Exception as e:
-                                demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
-                                should_fail = True
+                        try:
+                            send_events_to_xsiam(
+                                events,
+                                VENDOR,
+                                PRODUCT,
+                                should_update_health_module=False,
+                                chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                                use_streaming_send=True,
+                                data_format="json",
+                            )
+                        except Exception as e:
+                            demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
+                            should_fail = True
                         if should_fail:
                             raise DemistoException(
                                 "Encountered an error while sending events to xsiam, will attempt to send all events again."
                             )
-                        _mem_log(  # RAM right after the (copy-heavy threaded) send of this page completed
+                        demisto.info("Finished executing streaming send_events_to_xsiam.")
+                        _mem_log(  # RAM right after the (streaming, free-as-you-go) send of this page completed
                             f"page_sent page={page_counter}",
                             _MEM_T0,
                             _mem_peak(),
@@ -1536,6 +1537,7 @@ def main():  # pragma: no cover
                             f"Done sending {data_size} events to xsiam."
                             f"sent {total_events_count} events to xsiam in total during this interval."
                         )
+                        events.clear()
                         # ===== MEM DIAG (REMOVE — CIAC-17118): end-of-iteration freed floor (#3) =====
                         # Measured AFTER the send completes. This becomes the baseline the NEXT iteration compares
                         # against, so drift_vs_prev_iter reflects "did this page get released before the next fetch".
