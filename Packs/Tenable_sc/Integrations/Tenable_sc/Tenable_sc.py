@@ -3020,6 +3020,8 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
         start_offset=current_offset,
         end_offset=end_offset,
     )
+    # TODO: REMOVE BEFORE MERGE
+    demisto.debug(f"The Raw Response is {response}")
 
     if not response or "response" not in response:
         demisto.debug("No response received from hosts/search endpoint.")
@@ -3141,6 +3143,8 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
         start_offset=current_offset,
         end_offset=end_offset,
     )
+    # TODO: REMOVE BEFORE MERGE
+    demisto.debug(f"The Raw Response is {response}")
 
     if not response or "response" not in response:
         demisto.debug("No response received from analysis endpoint for vulnerabilities.")
