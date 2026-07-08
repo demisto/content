@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../schema/triggers.schema.json
+triggers:
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: engine
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engineGroup
+  effects:
+  - id: engineGroup
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: engine
+      behavior: value
+      operator: is_not_empty
+    - id: engineGroup
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: proxy
+    action:
+      read_only: false
+- conditions:
+    id: fetch-issues_topdesk
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: automation-and-remediation_topdesk
+    action:
+      read_only: true
+      enabled: true
+    message: A selected capability enables this setting. Clear the active dependency
+      to disable it

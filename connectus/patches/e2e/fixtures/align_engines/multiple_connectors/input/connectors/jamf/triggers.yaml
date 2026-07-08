@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=../../schema/triggers.schema.json
+triggers:
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: engine
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: engine
+      behavior: value
+      operator: is_not_empty
+    - id: engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: proxy
+    action:
+      read_only: false
+- conditions:
+    id: fetch-assets-and-vulnerabilities_jamf-protect-event-collector
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: log-collection_jamf-protect-event-collector
+    action:
+      read_only: true
+    message: Select only one fetch option.
+- conditions:
+    id: log-collection_jamf-protect-event-collector
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: fetch-assets-and-vulnerabilities_jamf-protect-event-collector
+    action:
+      read_only: true
+    message: Select only one fetch option.
+- conditions:
+    id: passthrough_jamf_v2_engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: passthrough_jamf_v2_engine
+    action:
+      hidden: true
+- conditions:
+    id: passthrough_jamf_v2_engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: passthrough_jamf_v2_engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: passthrough_jamf_v2_engine
+      behavior: value
+      operator: is_not_empty
+    - id: passthrough_jamf_v2_engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: passthrough_jamf_v2_proxy
+    action:
+      read_only: false
+- conditions:
+    id: plain_jamf_v2_engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: plain_jamf_v2_engine
+    action:
+      hidden: true
+- conditions:
+    id: plain_jamf_v2_engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: plain_jamf_v2_engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: plain_jamf_v2_engine
+      behavior: value
+      operator: is_not_empty
+    - id: plain_jamf_v2_engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: plain_jamf_v2_proxy
+    action:
+      read_only: false

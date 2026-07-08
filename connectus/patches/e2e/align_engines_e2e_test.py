@@ -133,6 +133,7 @@ def test_cases_are_discovered() -> None:
         "2_auth_profiles_2_handlers",
         "2_auth_profiles_different_handlers",
         "multiple_auth_profiles",
+        "multiple_connectors",
     }
     assert expected <= names, (
         f"missing align_engines cases: {sorted(expected - names)}"

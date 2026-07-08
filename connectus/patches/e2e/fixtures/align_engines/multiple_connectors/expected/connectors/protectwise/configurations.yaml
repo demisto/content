@@ -1,0 +1,207 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: protectwise
+  label: ProtectWise
+  help_text: |
+    Select whether to automatically create issues from the integration's events. If enabled, the first fetch searches for events 10 minutes back from the moment fetching is turned on; subsequently, new events are fetched as they are generated. Use the filter options to narrow which threats are pulled: by name text (comma-separated, case insensitive), threat category, killchain stage, and threat level (LOW, MEDIUM, or HIGH).
+general_configurations:
+  configurations:
+  - view_group: protectwise
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-protectwise.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_protectwise
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: protectwise
+- id: fetch-issues_protectwise
+  configurations:
+  - fields:
+    - id: incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incidentFetchInterval
+      title: Issues Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: killChainStage
+      field_type: input
+      title: Filter by killchain stage
+      options:
+        default_value: ''
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: maxFetch
+      field_type: input
+      title: Maximum events to fetch per fetch
+      options:
+        default_value: '50'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: messageFilter
+      field_type: input
+      title: Only fetch events with this text in the name
+      options:
+        default_value: ''
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: threatCategory
+      field_type: input
+      title: Filter by threat category
+      options:
+        default_value: ''
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: threatLevel
+      field_type: input
+      title: Filter by  threat level (LOW, MEDIUM, or HIGH)
+      options:
+        default_value: ''
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: protectwise

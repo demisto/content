@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: cisco-umbrella
+enabled: true
+metadata:
+  title: Cisco Umbrella
+  description: Cisco Umbrella is a cloud security platform providing the first line of defense against internet threats. It uses DNS-layer security to block malicious requests before a connection is established, offering protection against malware, ransomware, phishing, and more. This connector supports enforcement, threat investigation of domains, IPs, and URLs, and reporting on request and blocked activity.
+  version: 1.0.0
+  categories:
+  - Network Security
+  - Data Enrichment & Threat Intelligence
+  tags: []
+  vendor: Cisco Systems
+  publisher: Palo Alto Networks
+  author_image: cisco-umbrella.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true
