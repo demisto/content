@@ -56,8 +56,8 @@ Follow the instructions below to configure the Broker VM to receive TXOne Stella
 
     | Parameter    | Value                                                                                                                                |
     |:-------------|:-------------------------------------------------------------------------------------------------------------------------------------|
-    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in TXOne StellarOne).   |
-    | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from TXOne StellarOne.     |
+    | `Protocol`   | Select **UDP** for the default forwarding, or, if you configured TXOne StellarOne to use **TCP** or **Secure TCP**, select one of those instead.   |
+    | `Port`       | Enter the syslog port where the Cortex XSIAM Broker VM will receive forwarded events from TXOne StellarOne.     |
     | `Format`     | Enter **CEF**.                                                                                                                       |
     | `Vendor`     | Select **Auto-Detect**.                                                                                                               |
     | `Product`    | Select **Auto-Detect**.                                                                                                              |
