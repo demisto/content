@@ -1,35 +1,29 @@
 name: CiscoETDConnector
 display: CiscoETDConnector
 description: Ingests Cisco ETD logs to Cortex XSIAM.
-
 category: Analytics & SIEM
 commonfields:
   id: CiscoETDConnector
   version: -1
 provider: Cisco
-fromversion: 6.10.0
-
+fromversion: 6.8.0
 configuration:
 - display: ETD API Base URL
   name: etd_base_url
   type: 0
   required: true
-
 - displaypassword: ETD API Key
   name: api_key
   type: 9
   required: true
-
 - display: Client ID
   name: client_id
   type: 0
   required: true
-
 - displaypassword: Client Secret
   name: client_secret
   type: 9
   required: true
-
 - display: Event Types
   name: event_type
   type: 16
@@ -39,43 +33,32 @@ configuration:
   - connection
   defaultvalue: message
   required: true
-
-- display: First fetch timestamp (<number> <time unit>, for example, 1 minute or 7 days). The value must not exceed 30 days.
-  name: first_fetch
-  type: 0
-  required: false
-  defaultvalue: 1 minute
-
 - display: Max fetch
   name: max_fetch
   type: 0
   required: false
   defaultvalue: '1000'
-
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   advanced: true
-
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   advanced: true
-
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
   required: false
   advanced: true
   defaultvalue: "1"
-
 script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.7178097
   isfetchevents: true
   commands:
   - name: cisco-etd-get-events
@@ -84,11 +67,9 @@ script:
     - name: start_time
       description: Start time in YYYY-MM-DDTHH format.
       required: true
-
     - name: end_time
       description: End time in YYYY-MM-DDTHH format.
       required: true
-
     - name: log_type
       description: Log type(s) to fetch.
       auto: PREDEFINED
@@ -97,11 +78,9 @@ script:
       - audit
       - connection
       isArray: true
-
     - name: limit
       description: Maximum number of events to return.
       defaultValue: "100"
-
     - name: should_push_events
       description: Push fetched events to Cortex XSIAM.
       auto: PREDEFINED
@@ -109,11 +88,8 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-
-
 marketplaces:
 - marketplacev2
 - platform
-
 tests:
 - No tests
