@@ -688,7 +688,7 @@ script:
     - contextPath: Axonius.assets.updates
       description: Number of assets updated.
       type: Number
-  dockerimage: demisto/axonius:1.1.0.1993107
+  dockerimage: demisto/axonius:1.1.0.8767810
   runonce: false
   script: '-'
   subtype: python3
