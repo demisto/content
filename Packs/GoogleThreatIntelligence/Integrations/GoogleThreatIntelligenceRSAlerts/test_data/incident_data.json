@@ -1,0 +1,51 @@
+{
+  "name": "projects/test-project/alerts/alert-1",
+  "findings": [
+    "finding-1"
+  ],
+  "state": "STATE_UNSPECIFIED",
+  "audit": {
+    "updateTime": "2026-04-22T06:43:07.513Z",
+    "createTime": "2026-04-22T06:43:07.513Z",
+    "creator": "creator-1",
+    "updater": "updater-1"
+  },
+  "displayName": "Test Alert 1",
+  "aiSummary": "Test AI summary for alert 1",
+  "etag": "test-etag-1",
+  "detail": {
+    "detailType": "data_leak",
+    "dataLeak": {
+      "severity": "MEDIUM",
+      "discoveryDocumentIds": [
+        "projects/test-project/alerts/alert-1/documents/doc-1"
+      ]
+    }
+  },
+  "relevanceAnalysis": {
+    "relevant": true,
+    "confidence": "CONFIDENCE_LEVEL_HIGH",
+    "reasoning": "Test relevance reasoning",
+    "relevanceLevel": "RELEVANCE_LEVEL_HIGH",
+    "evidence": {
+      "commonThemes": [
+        "Test common theme"
+      ],
+      "distinctThemes": [
+        "Test distinct theme"
+      ]
+    }
+  },
+  "severityAnalysis": {
+    "severityLevel": "SEVERITY_LEVEL_HIGH",
+    "confidence": "CONFIDENCE_LEVEL_HIGH",
+    "reasoning": "Test severity reasoning"
+  },
+  "priorityAnalysis": {
+    "priorityLevel": "PRIORITY_LEVEL_HIGH",
+    "confidence": "CONFIDENCE_LEVEL_HIGH",
+    "reasoning": "Test priority reasoning"
+  },
+  "findingCount": "1",
+  "incident_link": "https://proactive.virustotal.com/alerts/alert-1?project=projects/test-project"
+}

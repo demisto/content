@@ -20,7 +20,7 @@ async def main() -> None:  # pragma: no cover
 
     token = params.get("token", {}).get("password")
     toolsets = argToList(params.get("enabled_toolsets"))
-    readonly = argToBoolean(params.get("readonly"))
+    readonly = argToBoolean(params.get("readonly") or False)
     custom_headers = {
         "X-MCP-Toolsets": ",".join(toolsets),
         "X-MCP-Readonly": str(readonly).lower(),
