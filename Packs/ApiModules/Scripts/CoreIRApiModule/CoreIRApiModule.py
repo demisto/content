@@ -1445,6 +1445,14 @@ class CoreClient(BaseClient):
             json_data=request_data,
         )
 
+    def get_health_check(self) -> dict[str, Any]:
+        """Perform a health check against the public_api/v1/healthcheck endpoint.
+
+        Returns:
+            dict[str, Any]: The raw API reply from the health check endpoint.
+        """
+        return self._http_request(method="GET", url_suffix="/healthcheck")
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):

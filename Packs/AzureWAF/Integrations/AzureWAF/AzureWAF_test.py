@@ -2,7 +2,9 @@ import AzureWAF as waf
 import demistomock as demisto
 import pytest
 
-API_VERSION = "2020-05-01"
+API_VERSION_POLICIES = "2025-05-01"
+API_VERSION_SUBSCRIPTIONS = "2022-12-01"
+API_VERSION_RESOURCE_GROUPS = "2021-04-01"
 FRONT_DOOR_API_VERSION = "2022-05-01"
 
 GET_COMMAND_DATA = [
@@ -12,7 +14,7 @@ GET_COMMAND_DATA = [
             "method": "GET",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
         },  # expected
     ),
     (
@@ -21,7 +23,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
             "method": "GET",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
         },  # expected
     ),
     (
@@ -30,7 +32,7 @@ ApplicationGatewayWebApplicationFirewallPolicies",
             "method": "GET",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
         },  # expected
     ),
     (
@@ -40,7 +42,7 @@ ApplicationGatewayWebApplicationFirewallPolicies",
             "method": "GET",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
         },  # expected
     ),
 ]
@@ -93,7 +95,7 @@ def test_get_array_policy_with_exception(mocker):
         "method": "GET",
         "full_url": "https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-        "params": {"api-version": API_VERSION},
+        "params": {"api-version": API_VERSION_POLICIES},
     }
     client = waf.AzureWAFClient(
         app_id="", subscription_id="test", resource_group_name="test", verify=True, proxy=False, auth_type="Device"
@@ -122,7 +124,7 @@ UPSERT_COMMAND_DATA = [
             "method": "PUT",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
             "body": {"location": "east", "properties": {"managedRules": {"test": "test"}}},
         },  # expected
     ),
@@ -140,7 +142,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
             "method": "PUT",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-            "params": {"api-version": API_VERSION},
+            "params": {"api-version": API_VERSION_POLICIES},
             "body": {"location": "east", "properties": {"customRules": {"test": "test"}, "managedRules": {"test": "test"}}},
         },  # expected
     ),
@@ -198,7 +200,7 @@ def test_policy_array_group_names_upsert_request(mocker):
         "method": "PUT",
         "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
-        "params": {"api-version": API_VERSION},
+        "params": {"api-version": API_VERSION_POLICIES},
         "body": {
             "location": "east",
             "properties": {
@@ -378,7 +380,7 @@ def test_subscriptions_list_command(mocker):
     expected_results = {
         "method": "GET",
         "full_url": "https://management.azure.com/subscriptions",
-        "params": {"api-version": API_VERSION},
+        "params": {"api-version": API_VERSION_SUBSCRIPTIONS},
     }
     m = mocker.patch.object(
         client,
