@@ -933,22 +933,22 @@ def test_last_run_hold_created_time_and_events_sorted_by_created_time_in_fetch_e
         assert event.get("_time") == event.get("eventDateTimeUtc")
 
 
-def test_list_wibe_requests_command(mocker, absolute_client_v3):
+def test_wipe_request_list_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
 
     When:
-        - list_wibe_requests_command is executed
+        - wipe_request_list_command is executed
 
     Then:
         - The http request is called with the right arguments
     """
-    from Absolute import list_wibe_requests_command
+    from Absolute import wipe_request_list_command
 
     response = util_load_json("test_data/wipe_requests.json")
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
-    command_results = list_wibe_requests_command(
+    command_results = wipe_request_list_command(
         args={"created_from_date_time_utc": "2018-1-03T10:15:30.000Z", "created_to_date_time_utc": "2020-1-03T10:15:30.000Z"},
         client=absolute_client_v3,
     )
@@ -956,24 +956,24 @@ def test_list_wibe_requests_command(mocker, absolute_client_v3):
     assert command_results.outputs[0].get("requestUid") == "23dbd460-0547-466d-a655-99d9340ff598"
 
 
-def test_list_wibe_actions_command(mocker, absolute_client_v3):
+def test_wipe_actions_list_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
 
     When:
-        - list_wibe_actions_command is executed
+        - wipe_actions_list_command is executed
 
     Then:
         - The http request is called with the right arguments
     """
-    from Absolute import list_wibe_actions_command
+    from Absolute import wipe_actions_list_command
 
     response = util_load_json("test_data/wipe_actions.json")
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
-    command_results = list_wibe_actions_command(
+    command_results = wipe_actions_list_command(
         args={
-            "required_uid": "1",
+            "request_uid": "1",
             "device_uids": "2",
             "created_from_date_time_utc": "2018-1-03T10:15:30.000Z",
             "created_to_date_time_utc": "2020-1-03T10:15:30.000Z",
@@ -985,41 +985,41 @@ def test_list_wibe_actions_command(mocker, absolute_client_v3):
     assert command_results.outputs[0].get("actionUid") == "7f0741c5-fbe9-4144-8c54-498db6559304"
 
 
-def test_create_wibe_request_command(mocker, absolute_client_v3):
+def test_wipe_request_create_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
 
     When:
-        - create_wibe_request_command is executed
+        - wipe_request_create_command is executed
 
     Then:
         - The http request is called with the right arguments
     """
-    from Absolute import create_wibe_request_command
+    from Absolute import wipe_request_create_command
 
-    response = util_load_json("test_data/create_wipe_request.json")
+    response = {"requestUid": "23dbd460-0547-466d-a655-99d9340ff598"}
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
-    command_results = create_wibe_request_command(
+    command_results = wipe_request_create_command(
         args={"device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08"}, client=absolute_client_v3
     )
     assert command_results.readable_output == "Wipe request 23dbd460-0547-466d-a655-99d9340ff598 has been successfully created."
 
 
-def test_cancel_wibe_request_command(mocker, absolute_client_v3):
+def test_wipe_request_cancel_command(mocker, absolute_client_v3):
     """
     Given:
         - All relevant arguments for the command that is executed
 
     When:
-        - cancel_wibe_request_command is executed
+        - wipe_request_cancel_command is executed
 
     Then:
         - The http request is called with the right arguments
     """
-    from Absolute import cancel_wibe_request_command
+    from Absolute import wipe_request_cancel_command
 
     response = util_load_json("test_data/cancel_wipe_request.json")
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
-    command_results = cancel_wibe_request_command(args={"request_uid": "1"}, client=absolute_client_v3)
+    command_results = wipe_request_cancel_command(args={"request_uid": "1"}, client=absolute_client_v3)
     assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
