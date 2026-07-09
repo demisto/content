@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Vega Last Updated",
     "ownerOnly": false,
-    "description": "The timestamp of the last update to this incident in Vega.",
+    "description": "The timestamp of the last update to this incident in Vega (e.g. 2023-10-25T14:30:00Z).",
     "cliName": "vegalastupdated",
     "type": "date",
     "closeForm": false,

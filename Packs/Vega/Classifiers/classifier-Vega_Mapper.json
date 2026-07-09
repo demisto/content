@@ -54,6 +54,15 @@
                 "Vega Is Test Mode": {
                     "simple": "isTestMode"
                 },
+                "Vega MITRE Tactics": {
+                "simple": "mitre.mitreTactics"
+				},
+				"Vega MITRE Techniques": {
+					"simple": "mitre.mitreTechniques"
+				},
+                 "Vega MITRE ATT\u0026CK": {
+                "simple": "vegaMitreAttack"
+				},
                 "Vega Related Incidents": {
                     "simple": "relatedIncidents"
                 },

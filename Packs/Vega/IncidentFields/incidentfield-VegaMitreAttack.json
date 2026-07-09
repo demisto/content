@@ -21,8 +21,8 @@
         "Vega Alert"
     ],
     "associatedToAll": false,
-    "unmapped": true,
-    "unsearchable": false,
+    "unmapped": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
