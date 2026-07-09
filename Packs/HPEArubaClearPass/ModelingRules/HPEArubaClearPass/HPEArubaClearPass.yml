@@ -4,3 +4,5 @@ name: HPE Aruba ClearPass Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

@@ -55,16 +55,67 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Incident Fetch types'
+  defaultvalue: 'Endpoint Detection'
+  name: fetch_incidents_or_detections
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: |-
+    Choose what incident types to fetch - You can choose any combination. Note:
+    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+  options:
+  - IDP Detection
+  - Endpoint Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
+  - NGSIEM Automated Lead
+  - NGSIEM Case
+  - NGSIEM Incident (XDR Alert)
+  - Recon notifications
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
   section: Collect
   required: false
-  additionalinfo: Supported in Cortex XSOAR only.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -72,10 +123,38 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Incidents Fetch Interval'
+  defaultvalue: '1'
+  name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
+  name: look_back
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Endpoint Detections filter query
   name: fetch_query
   type: 0
@@ -89,108 +168,94 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: Mobile Detections filter query
   name: mobile_detections_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: IOM filter query
   name: iom_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: IOA filter query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
+  additionalinfo: "The Indicator of Attack (IOA) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language (FQL) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html."
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: OFP Detections filter query
   name: ofp_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: Third Party Detection fetch query
   name: third_party_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM Detection fetch query
   name: ngsiem_detection_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM automated leads fetch query
   name: automated_leads_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM cases fetch query
   name: ngsiem_cases_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: NGSIEM incidents fetch query
   name: ngsiem_incidents_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: Fetch incidents
-  name: isFetch
-  type: 8
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
+- display: Recon filter query
+  name: recon_fetch_query
+  type: 0
   section: Collect
   required: false
-  defaultvalue: 'true'
-  hidden:
-  - marketplacev2
-  - platform
-- display: Fetch events
-  name: isFetchEvents
-  type: 8
-  section: Collect
-  required: false
-  defaultvalue: 'true'
-  hidden:
-  - xsoar
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
-  hidden:
-  - marketplacev2
-  - platform
+  advanced: true
+  additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -206,18 +271,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: 'Trust any certificate (not secure)'
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: 'Use system proxy settings'
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
 - display: 'Close Mirrored XSOAR Incident'
   defaultvalue: 'false'
   name: close_incident
@@ -240,63 +293,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: 'Fetch types'
-  defaultvalue: 'Endpoint Detection'
-  name: fetch_incidents_or_detections
-  type: 16
-  section: Collect
-  advanced: true
-  required: false
-  additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note:
-    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
-  options:
-  - IDP Detection
-  - Endpoint Detection
-  - Indicator of Misconfiguration
-  - Indicator of Attack
-  - Mobile Detection
-  - On-Demand Scans Detection
-  - OFP Detection
-  - Third Party Detection
-  - NGSIEM Detection
-  - NGSIEM Automated Lead
-  - NGSIEM Case
-  - NGSIEM Incident (XDR Alert)
-  hidden:
-  - marketplacev2
-  - platform
-- display: 'Fetch types'
-  defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
-  name: fetch_events_or_detections
-  type: 16
-  section: Collect
-  required: false
-  additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
-  options:
-  - IDP Detection
-  - Endpoint Detection
-  - Mobile Detection
-  - On-Demand Scans Detection
-  - OFP Detection
-  hidden:
-  - xsoar
-  - xpanse
-- display: 'Fetch Asset types'
-  name: fetch_assets_type
-  defaultvalue: 'Spotlight,CNAPP Alerts'
-  type: 16
-  section: Collect
-  advanced: false
-  required: false
-  additionalinfo: |-
-      The asset sources to ingest into the Cortex Unified Asset Inventory.
-  options:
-  - Spotlight
-  - CNAPP Alerts
-  hidden:
-  - xsoar
 - display: 'Reopen Statuses'
   additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
@@ -315,17 +311,38 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: 'Incidents Fetch Interval'
-  defaultvalue: '1'
-  name: incidentFetchInterval
-  additionalinfo: Supported in Cortex XSOAR only.
-  type: 19
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
   section: Collect
-  advanced: true
   required: false
+  defaultvalue: 'false'
   hidden:
-  - marketplacev2
-  - platform
+  - xsoar
+  supportedModules:
+  - "xsiam"
+- display: 'Event Fetch types'
+  defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
+  name: fetch_events_or_detections
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: |-
+    Choose what event types to fetch - You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+  options:
+  - IDP Detection
+  - Endpoint Detection
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: 'Events Fetch Interval'
   defaultvalue: '1'
   name: eventFetchInterval
@@ -336,17 +353,11 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
-  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 2
-  name: look_back
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-  hidden:
-  - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: 'Advanced: Time in minutes to look back when fetching events and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -358,6 +369,25 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
+- display: 'Fetch Asset types'
+  name: fetch_assets_type
+  defaultvalue: 'Spotlight,CNAPP Alerts'
+  type: 16
+  section: Collect
+  advanced: false
+  required: false
+  additionalinfo: |-
+    The asset sources to ingest into the Cortex Unified Asset Inventory.
+  options:
+  - Spotlight
+  - CNAPP Alerts
+  hidden:
+  - xsoar
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
   defaultvalue: 60
   display: Assets Fetch Interval
@@ -369,6 +399,18 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: 'Trust any certificate (not secure)'
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: 'Use system proxy settings'
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -628,7 +670,14 @@ script:
       isArray: true
       name: ids
       required: true
-    description: Lifts containment on the host, which returns its network communications to normal.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to lift filesystem containment instead of network containment. When set to true, uses the lift_filesystem_containment_all action to remove filesystem containment from the specified hosts.
+      name: lift_filesystem_containment_all
+      predefined:
+      - 'true'
+      - 'false'
+    description: Lifts containment on the host, which returns its network communications to normal. When lift_filesystem_containment_all is set to true, lifts filesystem containment instead.
     name: cs-falcon-lift-host-containment
     compliantpolicies:
     - EndPoint Isolation
@@ -1520,6 +1569,9 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
     - contextPath: CrowdStrike.NextPageToken
       description: A pagination token used with the limit parameter to manage pagination of results.
   - arguments:
@@ -1576,6 +1628,9 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
   - arguments:
     - auto: PREDEFINED
       description: The type of the indicator.
@@ -1611,6 +1666,8 @@ script:
       - mac
       - windows
       - linux
+      - android
+      - ios
       required: true
     - auto: PREDEFINED
       description: The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action.
@@ -1641,6 +1698,20 @@ script:
       name: tags
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - auto: PREDEFINED
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
+      name: mobile_action
+      predefined:
+      - no_action
+      - allow
+      - detect
+      - prevent
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1689,6 +1760,9 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
     compliantpolicies:
     - Domain Blockage
     - IP Blockage
@@ -1729,6 +1803,20 @@ script:
       name: description
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - auto: PREDEFINED
+      description: |-
+        The action to take on mobile devices when a host observes the custom IOC.
+        Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.
+        - no_action: The indicator is saved for future use, but no action is taken (no severity required).
+        - allow: The indicator is allowed and not detected (severity does not apply and should not be provided).
+        - detect: The connection is allowed and a detection is generated.
+        - prevent: The indicator is blocked and shown as a detection.
+      name: mobile_action
+      predefined:
+      - no_action
+      - allow
+      - detect
+      - prevent
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1770,6 +1858,9 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
       type: string
 
   - arguments:
@@ -2588,6 +2679,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.MobileAction
+      description: The action to take on mobile devices when a host observes the custom IOC.
+      type: string
   - arguments:
     - description: The host ID to kill the given process for.
       name: host_id
@@ -2845,10 +2939,12 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: Maximum number of items to return (1-5000).
+    - description: The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages.
       defaultValue: '50'
       type: String
       name: limit
+    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds."
+      name: next_token
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -2992,6 +3088,9 @@ script:
       type: String
     - contextPath: CrowdStrike.Vulnerability.cve.name
       description: The vulnerability name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityNextToken
+      description: "Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the `next_token` argument on the next invocation. Absent when no more pages exist. Expires in 120 seconds."
       type: String
   - arguments:
     - description: Deprecated. Use cve instead.
@@ -5152,10 +5251,93 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.7436613
+  - arguments:
+    - description: 'Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3'
+      name: filter
+    - description: The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored.
+      name: definition_id
+    - description: The activity ID to filter by. If 'filter' is provided, this argument is ignored.
+      name: activity_id
+    - description: The workflow name to filter by. If 'filter' is provided, this argument is ignored.
+      name: name
+    - description: The workflow description to filter by. If 'filter' is provided, this argument is ignored.
+      name: description
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: '0'
+    - description: The maximum number of records to return. Max is 500.
+      name: limit
+      defaultValue: '50'
+    - description: 'A comma-separated list of properties to sort by in the format property.direction (for example  name.desc, time.asc, created_at.desc).'
+      name: sort
+    description: Lists workflow definitions from CrowdStrike Falcon.
+    name: cs-falcon-list-workflow-definitions
+    outputs: []
+  - arguments:
+    - description: A comma-separated list of workflow definition IDs to execute. Either definition_id or name must be provided.
+      name: definition_id
+      isArray: true
+    - description: The workflow name to execute. Either definition_id or name must be provided.
+      name: name
+    - description: A comma-separated list of CID(s) to execute the workflow on.
+      name: execution_cid
+      isArray: true
+    - description: The key used for deduplication of workflow executions. If not set, a new UUID is used.
+      name: key
+    - description: The URL of the source that triggered the workflow execution.
+      name: source_event_url
+    - description: The JSON body to pass to the workflow execution. Can be an empty object {}.
+      name: body
+    description: 'Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.'
+    name: cs-falcon-workflow-execute
+    outputs: []
+  - arguments:
+    - description: 'Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3'
+      name: filter
+    - description: The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored.
+      name: definition_id
+    - description: The workflow definition name to filter by. If 'filter' is provided, this argument is ignored.
+      name: definition_name
+    - description: The execution ID to filter by. If 'filter' is provided, this argument is ignored.
+      name: execution_id
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: '0'
+    - description: The maximum number of records to return. Max is 500.
+      name: limit
+      defaultValue: '50'
+    - description: 'A comma-separated list of properties to sort by in the format property.direction (for example  name.desc, time.asc, created_at.desc).'
+      name: sort
+    description: 'Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execute to find executions IDs.'
+    name: cs-falcon-list-workflow-executions
+    outputs: []
+  - arguments:
+    - description: A comma-separated list of workflow execution IDs to retrieve results for.
+      name: ids
+      required: true
+      isArray: true
+    description: Gets detailed results for specific workflow executions. Use cs-falcon-list-workflow-executions to find execution IDs.
+    name: cs-falcon-list-workflow-execution-results
+    outputs: []
+  - arguments:
+    - description: A comma-separated list of workflow execution IDs to perform the action on. Get the workflow execution ID using cs-falcon-list-workflow-executions.
+      name: ids
+      required: true
+      isArray: true
+    - auto: PREDEFINED
+      description: The action to perform on the workflow executions.
+      name: action_name
+      required: true
+      predefined:
+      - cancel
+      - resume
+    description: Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
+    name: cs-falcon-workflow-execution-action
+    outputs: []
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   isfetch: true
   isfetch:marketplacev2: false
-  isfetch:platform: false
+  isfetch:platform: true
   isfetchevents: true
   isfetchassets: true
   ismappable: true
@@ -5171,3 +5353,10 @@ tests:
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
+- exposure_management

@@ -1,0 +1,12 @@
+{
+    "result": {
+        "reportedIncidentId": "ycB2E7gPQ",
+        "statusCode": 1,
+        "statusDescription": "Under Review",
+        "caseType": 9,
+        "caseTypeDescription": "Reported Incident"
+    },
+    "success": true,
+    "message": "",
+    "errorCode": ""
+}

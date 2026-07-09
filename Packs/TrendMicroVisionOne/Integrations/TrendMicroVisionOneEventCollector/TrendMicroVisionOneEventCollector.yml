@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-provider: Trend Micro
+provider: TrendAI™
 commonfields:
   id: TrendMicroVisionOneEventCollector
   version: -1
@@ -7,7 +7,7 @@ sectionorder:
 - Connect
 - Collect
 configuration:
-- additionalinfo: 'The API endpoint to the Trend Micro Vision One instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
+- additionalinfo: 'The API endpoint to the TrendAI Vision One™ instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
   defaultvalue: https://api.xdr.trendmicro.com
   display: Server URL
   name: url
@@ -18,7 +18,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-  additionalinfo: The API key of Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.
+  additionalinfo: The API key of TrendAI Vision One™ API Key. Refer to the help section or to the information below on how to retrieve the API key.
   hiddenusername: true
   section: Connect
 - display: The maximum number of events per fetch.
@@ -62,8 +62,8 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
-display: Trend Micro Vision One Event Collector
+description: Palo Alto Networks TrendAI Vision One™ Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
+display: TrendAI Vision One™ Event Collector
 name: TrendMicroVisionOneEventCollector
 supportlevelheader: xsoar
 script:
@@ -92,17 +92,19 @@ script:
       isArray: true
     outputs:
     - contextPath: TrendMicroVisionOne.Events
-      description: Trend Micro Vision One events.
+      description: TrendAI Vision One™ events.
       type: Unknown
   isfetchevents: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6204436
+  dockerimage: demisto/python3:3.12.13.10116658
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 - platform
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

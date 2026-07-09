@@ -184,3 +184,5 @@ marketplaces:
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam

@@ -145,12 +145,17 @@ configuration:
   options:
   - MM-dd-yyyy
   - MM/dd/yyyy
+  - MM/dd/yy
   - dd/MM/yyyy
+  - dd/MM/yy
   - dd-MM-yyyy
   - dd.MM.yyyy
   - yyyy-MM-dd
+  - yyyy/MM/dd
+  - yyyy.MM.dd
   - mmm-dd-yyyy
   - yyyy-MMM-dd
+  - dd-MMM-yyyy
   type: 15
   required: false
   section: Collect

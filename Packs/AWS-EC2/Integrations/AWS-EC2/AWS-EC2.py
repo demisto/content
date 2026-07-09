@@ -89,6 +89,7 @@ def build_client(args: dict):
     retries = PARAMS.get("retries") or 5
     sts_endpoint_url = PARAMS.get("sts_endpoint_url") or None
     endpoint_url = PARAMS.get("endpoint_url") or None
+    sts_region = PARAMS.get("sts_region") or None
 
     validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
@@ -105,6 +106,7 @@ def build_client(args: dict):
         retries,
         sts_endpoint_url=sts_endpoint_url,
         endpoint_url=endpoint_url,
+        sts_region=sts_region,
     ).aws_session(
         service="ec2",
         region=args.get("region"),

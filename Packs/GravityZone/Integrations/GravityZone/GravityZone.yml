@@ -176,6 +176,106 @@ script:
       description: The endpoint vendor.
       type: String
 
+  - name: gz-endpoint-users-loggedin
+    description: Retrieves details of all active user sessions on a specific managed endpoint.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The target endpoint ID. The endpoint must be accessible to you.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: GravityZone.Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.Username
+      description: The username of the currently logged-in user.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.ConnectionType
+      description: The connection type for the session.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.StartTime
+      description: The session start time, if available (e.g., "2021-05-19T10:37:56Z").
+      type: Date
+    - contextPath: GravityZone.Endpoint.ActiveSessions.UserSID
+      description: The Security Identifier (SID) of the logged-in user, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.DomainSID
+      description: The Security Identifier (SID) of the logged-in user's domain, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN
+      description: The full distinguished name (DN) of the organizational unit, if available.
+      type: String
+    - contextPath: GravityZone.Endpoint.ActiveSessions.MemberOfSIDs
+      description: The SIDs for the groups to which the logged-in user belongs, if available.
+      type: Array
+
+  - name: gz-endpoint-create-memory-dump
+    description: Initiates the creation of a memory dump for the specified endpoint. Once the dump is successfully generated, the resulting archive is uploaded to the Bitdefender cloud.
+    polling: true
+    arguments:
+    - name: id
+      isArray: false
+      description: The target endpoint ID. The endpoint must be accessible and run a Windows operating system.
+      required: true
+      secret: false
+      default: false
+    - name: path
+      isArray: false
+      description: The full path to the destination folder on the specified endpoint where the memory dump archive will be created.
+      required: true
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: The password used to secure the memory dump archive after it is created. It must contain at least 12 characters, including one uppercase letter, one lowercase letter, one digit, and one special character.
+      required: true
+      secret: true
+      default: false
+    - name: polling
+      isArray: false
+      description: "Whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated."
+      required: false
+      secret: false
+      default: false
+      defaultValue: true
+    outputs:
+    - contextPath: GravityZone.MemoryDump.TaskID
+      description: The memory dump task ID.
+      type: String
+    - contextPath: GravityZone.MemoryDump.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Status
+      description: The memory dump task status.
+      type: String
+    - contextPath: GravityZone.MemoryDump.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.MemoryDump.StartDate
+      description: The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z").
+      type: Date
+    - contextPath: GravityZone.MemoryDump.EndDate
+      description: The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z").
+      type: Date
+    - contextPath: GravityZone.MemoryDump.ErrorCode
+      description: An error code if the memory dump task fails, or Success if the task completes successfully.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Error
+      description: An error message if the memory dump task fails, or Success if the task completes successfully.
+      type: String
+    - contextPath: GravityZone.MemoryDump.DownloadURL
+      description: The memory dump download URL, available after the task completes successfully.
+      type: String
+
   - name: gz-endpoint-download-investigation-package
     description: Collects and downloads an investigation package from an endpoint.
     compliantpolicies:
@@ -425,7 +525,7 @@ script:
       default: false
     - name: pid
       isArray: false
-      description: The ID of the processs to kill.
+      description: The ID of the process to kill.
       required: true
       secret: false
       default: false
@@ -932,6 +1032,77 @@ script:
       secret: false
       default: false
     outputs: []
+  - name: gz-poll-endpoint-users-loggedin-status
+    description: Verifies the status of a task initiated via gz-endpoint-users-loggedin. This command is invoked automatically and is not intended for direct use.
+    polling: true
+    arguments:
+    - name: task_id
+      isArray: false
+      description: The ID of the task started through gz-endpoint-users-loggedin.
+      required: true
+      secret: false
+      default: false
+    - name: endpoint_id
+      isArray: false
+      description: The ID of the managed endpoint associated with the specified task.
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - name: gz-endpoint-memory-dump-status
+    description: Verifies the status of a task initiated via gz-endpoint-create-memory-dump.
+    polling: true
+    arguments:
+    - name: task_id
+      isArray: false
+      description: The ID of the task started through gz-endpoint-create-memory-dump. This ID is returned upon task initiation.
+      required: true
+      secret: false
+      default: false
+    - name: endpoint_id
+      isArray: false
+      description: The ID of the endpoint for which the specified task was initiated.
+      required: true
+      secret: false
+      default: false
+    - name: polling
+      isArray: false
+      description: "Whether the command waits for the gz-endpoint-create-memory-dump task completion. If set to true, the command returns the final result after the task completes successfully or fails. If set to false, the command returns immediately, providing only the task status."
+      required: false
+      secret: false
+      default: false
+      defaultValue: true
+    outputs:
+    - contextPath: GravityZone.MemoryDump.TaskID
+      description: The ID of the task started through gz-endpoint-create-memory-dump.
+      type: String
+    - contextPath: GravityZone.MemoryDump.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Status
+      description: The status of the task started through gz-endpoint-create-memory-dump.
+      type: String
+    - contextPath: GravityZone.MemoryDump.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.MemoryDump.StartDate
+      description: The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z").
+      type: Date
+    - contextPath: GravityZone.MemoryDump.EndDate
+      description: The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z").
+      type: Date
+    - contextPath: GravityZone.MemoryDump.ErrorCode
+      description: An error code if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Error
+      description: An error message if the task started through gz-endpoint-create-memory-dump fails, or Success if the task completes successfully.
+      type: String
+    - contextPath: GravityZone.MemoryDump.DownloadURL
+      description: The memory dump download URL, available after the memory dump creation task completes successfully.
+      type: String
   - name: get-modified-remote-data
     description: Retrieves incidents that were modified since the last data sync. This command is intended for debugging purposes.
     arguments:
@@ -974,7 +1145,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10381435
   feed: false
   isfetch: true
   runonce: false

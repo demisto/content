@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: O365 - Security And Compliance - Search And Delete
+deprecated: true
 description: |-
+  Deprecated. Use the Microsoft Graph Security - Search And Delete Emails playbook instead.
   This playbook performs the following steps:
   1. Creates a compliance search.
   2. Starts a compliance search.
@@ -901,7 +903,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- O365-SecurityAndCompliance-Test
+- No tests (deprecated)
 fromversion: 5.5.0
 supportedModules:
 - agentix

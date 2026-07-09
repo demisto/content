@@ -1,5 +1,8 @@
 !gz-endpoint-list
 !gz-endpoint-get id=6942a43afe8d4e463ca5c197
+!gz-endpoint-users-loggedin id=6942a43afe8d4e463ca5c197
+!gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 path=C:\\dumps\\ password=ComplexPass123!
+!gz-endpoint-memory-dump-status task_id=6836f4a01a2b3c4d5e6f7a8b endpoint_id=6942a43afe8d4e463ca5c197
 !gz-endpoint-isolate id=6942a43afe8d4e463ca5c197
 !gz-endpoint-deisolate id=6942a43afe8d4e463ca5c197
 !gz-endpoint-kill-process id=6942a43afe8d4e463ca5c197 pid=692064
