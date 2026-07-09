@@ -2150,6 +2150,7 @@ script:
       required: true
     description: Retrieves content from a Confluence page by its URL and returns it in a generic unified format under the FileContent context key. The command automatically extracts the content ID from the URL.
     name: get-file-content
+    hidden: true
     outputs:
     - contextPath: FileContent.Id
       description: The unique identifier of the content.
