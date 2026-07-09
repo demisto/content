@@ -1333,12 +1333,13 @@ class TestHappyPath:
         last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
         first_fetch_time = "3 days"
         minimum_severity = "Informational"
+        odata_filter = "(contains(properties/title, 'test_title') ne true)"
 
         mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
         mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
 
         # run
-        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity, odata_filter)
         call_args = client.http_request.call_args[1]
 
         # validate
@@ -1365,12 +1366,13 @@ class TestHappyPath:
         last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": ["inc_name"]}
         first_fetch_time = "3 days"
         minimum_severity = "Informational"
+        odata_filter = "(contains(properties/title, 'test_title') ne true)"
 
         process_mock = mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
         mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
 
         # run
-        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity, odata_filter)
 
         # validate
         assert not process_mock.call_args[0][0]
@@ -2289,13 +2291,13 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
 
     # execute
     list_incidents_command(client, args=args)
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents(client, last_run, "3 days", "Informational", "(contains(properties/title, 'test_title') ne true)")
 
     assert client.http_request.call_args_list[0][1] == {"params": {"$top": 200, "$orderby": "properties/createdTimeUtc asc"}}
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and (contains(properties/title, 'test_title') ne true)",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2321,13 +2323,13 @@ def test_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
 
     # execute
     list_incidents_command(client, args=args)
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents(client, last_run, "3 days", "Informational", "(contains(properties/title, 'test_title') ne true)")
 
     assert client.http_request.call_args_list[0][1] == {"params": {"$top": 50, "$orderby": "properties/createdTimeUtc asc"}}
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and (contains(properties/title, 'test_title') ne true)",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2353,13 +2355,13 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
 
     # execute
     list_incidents_command(client, args=args)
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents(client, last_run, "3 days", "Informational", "(contains(properties/title, 'test_title') ne true)")
 
     assert client.http_request.call_args_list[0][1] == {"params": {"$top": 20, "$orderby": "properties/createdTimeUtc asc"}}
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and (contains(properties/title, 'test_title') ne true)",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2817,6 +2819,7 @@ def test_fetch_incidents_e2e_with_lookback(mocker):
         last_run=last_run,
         first_fetch_time="3 days",
         min_severity="Informational",
+        odata_filter="(contains(properties/title, 'test_title') ne true)",
         statuses_to_fetch=[],
         look_back=60,
     )

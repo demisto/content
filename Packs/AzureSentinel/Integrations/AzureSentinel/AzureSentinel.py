@@ -1621,7 +1621,7 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if odata_filter:
-            filter_value = f"{filter_value} {odata_filter}"
+            filter_value = f"{filter_value} and {odata_filter}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/createdTimeUtc asc",
@@ -1639,7 +1639,7 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if odata_filter:
-            filter_value = f"{filter_value} {odata_filter}"
+            filter_value = f"{filter_value} and {odata_filter}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/incidentNumber asc",
