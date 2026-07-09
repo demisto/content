@@ -726,7 +726,7 @@ def get_urls_to_run(
         urls_email_html = extract_embedded_urls_from_html(email_html)
     else:
         urls_email_html = []
-    urls_only = argToList(urls_argument, separator=' ')
+    urls_only = argToList(urls_argument)
     urls = list(set(urls_email_body + urls_only + urls_email_html))
 
     mailto_urls = [url for url in urls if url.startswith("mailto:")]
