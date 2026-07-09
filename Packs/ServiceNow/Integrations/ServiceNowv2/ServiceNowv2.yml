@@ -1988,6 +1988,7 @@ script:
 
 supportsquickactions: true
 fromversion: 5.0.0
+toversion: 8.14.0
 tests:
 - servicenow_test_v2
 - ServiceNow_OAuth_Test
