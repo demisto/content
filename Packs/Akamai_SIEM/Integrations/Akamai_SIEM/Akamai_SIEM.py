@@ -1280,8 +1280,6 @@ def main():  # pragma: no cover
                 page_size = limit
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             should_fail = False
-            offset = total_events_count = 0  # ensure defined even if the generator yields nothing
-            auto_trigger_next_run = False
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
                 fetch_events_command(
                     client,
@@ -1314,7 +1312,7 @@ def main():  # pragma: no cover
                         should_fail = True
                     if should_fail:
                         raise DemistoException(
-                            "Encountered an error while sending events to xsiam, will attempt to send all events again."
+                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again."
                         )
                     demisto.info("Finished executing streaming send_events_to_xsiam.")
                     demisto.info(
