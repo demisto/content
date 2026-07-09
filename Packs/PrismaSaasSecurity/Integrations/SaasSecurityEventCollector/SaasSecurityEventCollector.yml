@@ -39,11 +39,27 @@ configuration:
   required: false
   section: Collect
 - display: The maximum number of iterations to retrieve events
-  additionalinfo: 'Each iteration retrieves up to 100 events from the SaaS Security queue (the API''s per-request limit). This parameter caps the number of iterations per fetch execution to prevent timeouts; the collector keeps draining across consecutive executions until the queue is empty. Increase this value if ingestion lag builds up under a high event rate. Default is 150.'
-  defaultvalue: 150
+  additionalinfo: 'Each iteration retrieves up to 100 events from the SaaS Security queue (the API''s per-request limit). This is an upper bound on iterations per fetch execution; in practice each execution stops within a safe time budget before the engine timeout, so this mainly provides headroom to keep draining a large backlog for the full budget. The collector keeps draining across consecutive executions until the queue is empty. Default is 900 (a lower configured value is automatically raised to 900).'
+  defaultvalue: 900
   name: max_iterations
   type: 0
   required: false
+  section: Collect
+- display: Number of concurrent fetch requests
+  additionalinfo: 'Advanced. Number of GET requests issued concurrently against the SaaS Security queue per fetch round. Higher values increase drain throughput for high event rates. Default is 10, maximum is 30.'
+  defaultvalue: 10
+  name: event_fetch_concurrency
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+- display: Treat an empty XSIAM response as delivered
+  additionalinfo: 'Advanced. When enabled, a send that fails only because XSIAM returned a success (200) with an empty/blank body (no JSON acknowledgement to parse) is treated as delivered instead of being re-stashed and retried indefinitely. The events were already sent over the wire; only the acknowledgement was missing. Truncated or non-empty unparseable responses are still treated as real failures and retried. Enable this as a temporary workaround for a known server-side empty-body response; disable it to strictly require a valid acknowledgement. Default is enabled.'
+  defaultvalue: 'true'
+  name: event_pass_over_empty_response
+  type: 8
+  required: false
+  advanced: true
   section: Collect
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
 display: SaaS Security Event Collector
