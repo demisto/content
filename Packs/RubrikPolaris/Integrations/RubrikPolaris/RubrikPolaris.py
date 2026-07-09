@@ -2923,21 +2923,6 @@ fragment PolicySummaryFragment on ClassificationPolicySummary {
 }
 """
 
-RESOLVE_SNAPSHOT_QUERY = """query ResolveSnapshot($snappableIds: [String!]!, $beforeTime: DateTime!) {
-  allSnapshotsClosestToPointInTime(
-    snappableIds: $snappableIds
-    beforeTime: $beforeTime
-  ) {
-    snappableId
-    error
-    snapshot {
-      id
-      date
-    }
-  }
-}
-"""
-
 SENSITIVE_OBJECT_DETAIL_QUERY = """query SensitiveObjectDetailQuery(
   $snappableFid: String!
   $snapshotFid: String!
@@ -7564,10 +7549,23 @@ def fetch_sensitive_data_objects(
         object_id = node.get("objectId", "")
 
         activity_nodes = demisto.get(node, "activityConnection.nodes") or []
-        matched = any(
-            (activity_node.get("message") or "").startswith(SENSITIVE_DATA_OBJECT_CLASSIFICATION_MESSAGE)
-            for activity_node in activity_nodes
-        )
+        snapshot_fid = ""
+        matched = False
+        for activity_node in activity_nodes:
+            message = activity_node.get("message") or ""
+            if message.startswith(SENSITIVE_DATA_OBJECT_CLASSIFICATION_MESSAGE):
+                try:
+                    activity_info = json.loads(activity_node.get("activityInfo") or "{}")
+                except (TypeError, ValueError):
+                    demisto.debug(
+                        f"Sensitive Data Object: Failed to parse activityInfo for object {object_id}, "
+                        f"activity {activity_node.get('id', '')}."
+                    )
+                    activity_info = {}
+                matched = True
+                snapshot_fid = activity_info.get("snapshotFid", "")
+                break
+
         if not matched:
             unmatched_activity_series_ids.append(activity_series_id)
             continue
@@ -7576,22 +7574,8 @@ def fetch_sensitive_data_objects(
             duplicate_object_ids.append(object_id)
             continue
 
-        event_start_time = node.get("startTime", "")
-
-        # Step 1: resolve the latest snapshot ID for this object using event's lastUpdated time
-        resolve_response = client._query_raw(
-            raw_query=RESOLVE_SNAPSHOT_QUERY,
-            operation_name="ResolveSnapshot",
-            variables={"snappableIds": [object_id], "beforeTime": event_start_time},
-            timeout=60,
-        )
-        snapshots = demisto.get(resolve_response, "data.allSnapshotsClosestToPointInTime") or []
-        snapshot_fid = demisto.get(snapshots[0], "snapshot.id") if snapshots else None
         if not snapshot_fid:
-            demisto.debug(
-                f"Sensitive Data Object: No snapshot resolved for object {object_id} "
-                f"with start time {event_start_time}, skipping."
-            )
+            demisto.debug(f"Sensitive Data Object: No snapshot found in activityInfo for object {object_id}, skipping.")
             continue
 
         # Step 2: fetch full object detail using snappableFid + snapshotFid

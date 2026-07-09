@@ -30,13 +30,13 @@ from RubrikPolaris import (
     IR_VIOLATION_SEVERITY,
     IR_VIOLATION_SORT_BY,
     IR_VIOLATION_STATUS,
-    SENSITIVE_DATA_OBJECT_SENSITIVITY,
     MAX_INT_VALUE,
     MAX_LONG_VALUE,
     MAXIMUM_PAGINATION_LIMIT,
     MESSAGES,
     OUTPUT_PREFIX,
     QUERANTINE_STATUS,
+    SENSITIVE_DATA_OBJECT_SENSITIVITY,
     TOKEN_EXPIRY_BUFFER_TIME,
     TOKEN_EXPIRY_TIME_SPAN,
 )
@@ -5605,20 +5605,17 @@ def test_fetch_sensitive_data_objects_success_without_last_run(client, requests_
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
-    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
 
-    detail_responses_interleaved = []
-    for resolve, detail in zip(resolve_snapshot_responses, object_detail_responses):
-        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+    detail_responses = [{"json": detail} for detail in object_detail_responses]
 
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
         {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
-        *detail_responses_interleaved,
+        *detail_responses,
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
@@ -5651,20 +5648,17 @@ def test_fetch_sensitive_data_objects_success_with_last_run(client, requests_moc
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
-    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
 
-    detail_responses_interleaved = []
-    for resolve, detail in zip(resolve_snapshot_responses, object_detail_responses):
-        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+    detail_responses = [{"json": detail} for detail in object_detail_responses]
 
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
         {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
-        *detail_responses_interleaved,
+        *detail_responses,
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
@@ -5705,21 +5699,18 @@ def test_fetch_sensitive_data_objects_with_duplicates(client, requests_mock):
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
-    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
 
-    # Object 1 is already fetched; mock resolve+detail for objects 2-6 only
-    detail_responses_interleaved = []
-    for resolve, detail in zip(resolve_snapshot_responses[1:], object_detail_responses[1:]):
-        detail_responses_interleaved.extend([{"json": resolve}, {"json": detail}])
+    # Object 1 is already fetched; mock detail for objects 2-6 only
+    detail_responses = [{"json": detail} for detail in object_detail_responses[1:]]
 
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
         {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
-        *detail_responses_interleaved,
+        *detail_responses,
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
@@ -5781,39 +5772,6 @@ def test_fetch_sensitive_data_objects_empty_response(client, requests_mock):
     assert sdo_next_run == last_run["sensitive_data_object"]
 
 
-def test_fetch_sensitive_data_objects_no_snapshot_resolved(client, requests_mock):
-    """
-    Test Case : Snapshot resolution returns empty for a matched event.
-    Tests that objects with no resolved snapshot are skipped.
-    """
-    from RubrikPolaris import fetch_sensitive_data_objects
-
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
-    events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
-    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
-
-    empty_snapshot_response = {"data": {"allSnapshotsClosestToPointInTime": []}}
-
-    # All resolve calls return empty; no detail calls made
-    resolve_mocks = [{"json": empty_snapshot_response}] * len(resolve_snapshot_responses)
-
-    responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
-        {"json": events_response},
-        *resolve_mocks,
-    ]
-    requests_mock.post(BASE_URL_GRAPHQL, responses)
-
-    params = {"first_fetch": first_fetch, "max_fetch": 10}
-
-    sdo_next_run, incidents = fetch_sensitive_data_objects(client, {}, params, 10)
-
-    assert len(incidents) == 0
-    assert sdo_next_run.get("already_fetched", []) == []
-
-
 def test_fetch_sensitive_data_objects_no_policy_obj(client, requests_mock):
     """
     Test Case : Snapshot resolves but policyObj detail returns empty or raises an exception.
@@ -5823,22 +5781,22 @@ def test_fetch_sensitive_data_objects_no_policy_obj(client, requests_mock):
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
-    resolve_snapshot_responses = util_load_json("test_data/fetch_sensitive_data_objects_resolve_snapshot_response.json")
 
     empty_policy_obj_response = {"data": {"policyObj": None}}
+    matched_object_count = 6
 
     # Alternate between empty policyObj and exception to cover both skip paths
-    detail_responses_interleaved = []
-    for i, resolve in enumerate(resolve_snapshot_responses):
-        detail = {"exc": Exception("Connection timeout")} if i % 2 == 0 else {"json": empty_policy_obj_response}
-        detail_responses_interleaved.extend([{"json": resolve}, detail])
+    detail_responses = [
+        {"exc": Exception("Connection timeout")} if i % 2 == 0 else {"json": empty_policy_obj_response}
+        for i in range(matched_object_count)
+    ]
 
     responses = [
         {"json": enum_values.get("activity_type_enum")},
         {"json": enum_values.get("event_sort_by_enum")},
         {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
-        *detail_responses_interleaved,
+        *detail_responses,
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 

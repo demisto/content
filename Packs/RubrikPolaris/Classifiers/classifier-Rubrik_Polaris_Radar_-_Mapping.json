@@ -971,7 +971,7 @@
                   "left": {
                     "isContext": true,
                     "value": {
-                      "simple": "snappable.logicalPath.objectPath"
+                      "simple": "snappable.logicalPath.objectType"
                     }
                   },
                   "operator": "containsGeneral",
