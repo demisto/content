@@ -867,9 +867,6 @@ script:
     - contextPath: Absolute.WipeRequest.failed
       description: The number of devices that have failed the wipe.
       type: Number
-    - contextPath: Absolute.WipeRequest.requestId
-      description: The ID of the wipe request.
-      type: String
     - contextPath: Absolute.WipeRequest.macUsername
       description: The username of the user with administrative rights (applies to Mac devices only).
       type: String
@@ -879,6 +876,15 @@ script:
     - contextPath: Absolute.WipeRequest.unenrollDevicesAndFreeLicenses
       description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
       type: Boolean
+    - contextPath: Absolute.WipeRequest.createdDateTimeUtc
+      description: The date and time when the wipe request was created.
+      type: Date
+    - contextPath: Absolute.WipeRequest.updatedDateTimeUtc
+      description: The date and time when the wipe request was last updated.
+      type: Date
+    - contextPath: Absolute.WipeRequest.requester
+      description: The requester of the wipe request.
+      type: String
   - arguments:
     - name: request_uid
       description: The system-defined unique identifier of the Device Action request.
@@ -953,6 +959,10 @@ script:
       defaultValue: 'false'
     name: absolute-wipe-request-create
     description: Create a Wipe request for the devices.
+    outputs:
+    - contextPath: Absolute.WipeRequest.requestUid
+      description: The unique identifier of the created wipe request.
+      type: String
   - arguments:
     - name: request_uid
       description: The system-defined unique identifier of the Device Action request.
@@ -970,6 +980,22 @@ script:
       defaultValue: 'false'
     name: absolute-wipe-request-cancel
     description: Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
+    outputs:
+    - contextPath: Absolute.WipeRequest.code
+      description: The error code of the cancel wipe request response.
+      type: String
+    - contextPath: Absolute.WipeRequest.message
+      description: The error message of the cancel wipe request response.
+      type: String
+    - contextPath: Absolute.WipeRequest.details.code
+      description: The detailed error code of the cancel wipe request response.
+      type: String
+    - contextPath: Absolute.WipeRequest.details.message
+      description: The detailed error message of the cancel wipe request response.
+      type: String
+    - contextPath: Absolute.WipeRequest.details.field
+      description: The field associated with the error detail.
+      type: String
   runonce: false
   script: '-'
   type: python
