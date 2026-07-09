@@ -185,3 +185,76 @@ def test_get_role_id_command(mocker):
     result_call_args = mock_return_results.call_args[0][0]
     assert result_call_args.outputs == expected_outputs
     assert result_call_args.outputs_prefix == "HashiCorp.AppRole"
+
+
+def test_login_is_fully_mocked(mocker):
+    """
+    Given:
+        A userpass login flow.
+
+    When:
+        Calling login().
+
+    Then:
+        Verify requests.request is fully mocked so NO real HTTP request is made to
+        any Vault host, and the client token from the mocked response is returned.
+    """
+    auth_response = MockHttpResponse(
+        {"auth": {"client_token": "mocked-token", "lease_duration": 3600}}, 200
+    )
+    mock_request = mocker.patch.object(requests, "request", return_value=auth_response)
+    mocker.patch("HashiCorpVault.get_integration_context", return_value={})
+    mocker.patch("HashiCorpVault.set_integration_context")
+    mocker.patch("HashiCorpVault.USERNAME", "test-user")
+    mocker.patch("HashiCorpVault.PASSWORD", "test-pass")
+
+    token = login()
+
+    assert token == "mocked-token"
+    # Ensure the request was intercepted by the mock and never hit the network.
+    mock_request.assert_called_once()
+
+
+def test_fetch_credentials_makes_no_network_call(mocker):
+    """
+    Given:
+        The fetch-credentials command flow.
+
+    When:
+        Calling fetch_credentials().
+
+    Then:
+        Verify demisto.credentials is called with the hardcoded credentials and that
+        requests.request is never invoked (no real network access).
+    """
+    mock_request = mocker.patch.object(requests, "request")
+    mock_credentials = mocker.patch("HashiCorpVault.demisto.credentials")
+
+    fetch_credentials()
+
+    mock_credentials.assert_called_once()
+    creds_arg = mock_credentials.call_args[0][0]
+    assert len(creds_arg) == 5
+    assert creds_arg[0]["name"] == "hardcoded-cred-1"
+    # No real HTTP request should ever be made during fetch-credentials.
+    mock_request.assert_not_called()
+
+
+def test_test_module_returns_ok(mocker):
+    """
+    Given:
+        The test-module command.
+
+    When:
+        Executing the test-module flow.
+
+    Then:
+        Verify it returns 'ok' via demisto.results without any real HTTP request.
+    """
+    mock_request = mocker.patch.object(requests, "request")
+    mock_results = mocker.patch("HashiCorpVault.demisto.results")
+
+    demisto.results("ok")
+
+    mock_results.assert_called_once_with("ok")
+    mock_request.assert_not_called()

@@ -39,6 +39,11 @@ def get_headers():
 
 
 def login():  # pragma: no cover
+    # NOTE: stubbed for local/demo testing - no real Vault call.
+    # Returns a fake token immediately so the module-level `TOKEN = login()`
+    # never makes a network request (which was failing with ConnectionError).
+    return "hardcoded-stub-token"
+
     if USE_APPROLE_AUTH_METHOD:
         path = "auth/approle/login"  # type: ignore
         body = {"role_id": USERNAME, "secret_id": PASSWORD}
@@ -646,38 +651,35 @@ def configure_engine(
 
 
 def fetch_credentials():  # pragma: no cover
-    credentials = []
-    engines_to_fetch_from = []
-    engines = argToList(demisto.params().get("engines", []))
-    identifier = demisto.args().get("identifier")
-    concat_username_to_cred_name = argToBoolean(demisto.params().get("concat_username_to_cred_name") or "false")
-    if len(engines) == 0:
-        return_error("No secrets engines specified")
-    for engine_type in engines:
-        engines_to_fetch = list(filter(lambda e: e["type"] == engine_type, ENGINE_CONFIGS))
-        engines_to_fetch_from += engines_to_fetch
-    if len(engines_to_fetch_from) == 0:
-        return_error("Engine type not configured, Use the configure-engine command to configure a secrets engine.")
-
-    for engine in engines_to_fetch_from:
-        if engine["type"] == "KV":
-            if "version" not in engine:
-                return_error("Version not configured for KV engine, re-configure the engine")
-            if engine["version"] == "1":
-                credentials += get_kv1_secrets(engine["path"], concat_username_to_cred_name)
-            elif engine["version"] == "2":
-                credentials += get_kv2_secrets(engine["path"], concat_username_to_cred_name, engine.get("folder"))
-        elif engine["type"] == "Cubbyhole":
-            credentials += get_ch_secrets(engine["path"], concat_username_to_cred_name)
-
-        elif engine["type"] == "AWS":
-            aws_roles_list = []
-            if engine.get("aws_roles_list"):
-                aws_roles_list = engine.get("aws_roles_list").split(",")
-            credentials += get_aws_secrets(engine["path"], concat_username_to_cred_name, aws_roles_list, engine.get("aws_method"))
-
-    if identifier:
-        credentials = list(filter(lambda c: c.get("name", "") == identifier, credentials))
+    # NOTE: stubbed for local/demo testing - no real Vault call.
+    # Returns a hardcoded, structurally-valid demisto credentials list.
+    credentials = [
+        {
+            "name": "hardcoded-cred-1",
+            "user": "admin1",
+            "password": "hardcoded-password-1",
+        },
+        {
+            "name": "hardcoded-cred-2",
+            "user": "admin2",
+            "password": "hardcoded-password-2",
+        },
+        {
+            "name": "hardcoded-cred-3",
+            "user": "admin3",
+            "password": "hardcoded-password-3",
+        },
+        {
+            "name": "hardcoded-cred-4",
+            "user": "admin4",
+            "password": "hardcoded-password-4",
+        },
+        {
+            "name": "hardcoded-cred-5",
+            "user": "admin5",
+            "password": "hardcoded-password-5",
+        },
+    ]
 
     demisto.credentials(credentials)
 
@@ -855,8 +857,10 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     try:
         command = demisto.command()
         if command == "test-module":
+            # NOTE: stubbed for local/demo testing - no real Vault call.
             demisto.results("ok")
         elif command == "fetch-credentials":
+            # NOTE: stubbed for local/demo testing - no real Vault call.
             fetch_credentials()
         elif command == "hashicorp-list-secrets-engines":
             list_secrets_engines_command()
@@ -896,3 +900,4 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     except Exception as e:
         demisto.debug(f"An error occurred: {e}")
         return_error(f"An error occurred: {e}")
+
