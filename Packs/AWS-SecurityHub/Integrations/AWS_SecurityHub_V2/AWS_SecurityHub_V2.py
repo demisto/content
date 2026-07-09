@@ -727,9 +727,13 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         GetRemoteDataResponse: The updated finding object to apply to the XSOAR incident.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: raw args from server: {json.dumps(args, default=str)}")
     remote_args = GetRemoteDataArgs(args)
     finding_uid = remote_args.remote_incident_id
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: fetching current state of finding uid={finding_uid}")
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Mirror-in: fetching current state of finding uid={finding_uid} "
+        f"(server-provided lastUpdate={remote_args.last_update})"
+    )
 
     filters = {
         "CompositeFilters": [
@@ -764,6 +768,15 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         return GetRemoteDataResponse(mirrored_object={}, entries=[])
 
     finding = findings[0]
+    finding_info = finding.get("finding_info") or {}
+    # Full dump of the object handed to the server (this is what the incoming mapper reads and the
+    # server diffs against the incident). Compare these values with the incident's current fields to
+    # find any mapper root/field mismatch.
+    demisto.debug(
+        "[AWS_Security_Hub_V2] Mirror-in: MAPPER-INPUT (full mirrored_object handed to server): "
+        f"{json.dumps(finding, default=str)}"
+    )
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: {finding=}")
     demisto.debug(
         f"[AWS_Security_Hub_V2] Mirror-in: returning current finding uid={finding_uid} "
         f"(status_id={finding.get('status_id')}, severity_id={finding.get('severity_id')}); "
