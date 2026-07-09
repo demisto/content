@@ -4,7 +4,10 @@
     "group": 0,
     "id": "incident_panoraysfindingseverity",
     "name": "Panorays Finding Severity",
-    "associatedTypes": ["Panorays Finding"],
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
+    "associatedToAll": false,
     "type": "shortText",
     "fromVersion": "6.0.0"
 }

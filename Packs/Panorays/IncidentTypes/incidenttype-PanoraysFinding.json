@@ -1,16 +1,26 @@
 {
-    "color": "#0D5C8A",
-    "defaultPlaybook": "",
-    "description": "A security finding detected by Panorays.",
-    "hours": 0,
     "id": "Panorays Finding",
+    "version": -1,
     "name": "Panorays Finding",
-    "playbook": "",
     "prevName": "Panorays Finding",
-    "days": 3,
-    "weeks": 1,
+    "description": "A security finding detected by Panorays.",
+    "color": "#295AFF",
+    "playbookId": "Panorays Finding - Triage and Response",
+    "layout": "Indicator Feed",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "autorun": true,
     "closureScript": "",
+    "preProcessingScript": "",
     "system": false,
     "readonly": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
     "fromVersion": "6.0.0"
 }
