@@ -15,7 +15,9 @@ from requests.auth import HTTPBasicAuth
 # pylint: disable=no-self-argument
 from CommonServerUserPython import *  # noqa
 
-MAX_FETCH = 100
+
+DEFAULT_LIMIT = 1000
+MAX_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 
 
@@ -110,7 +112,10 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool | None = False
-    limit: int | None = Field(None, ge=1, le=MAX_FETCH)
+    # limit is the maximum number of events to fetch per event type per fetch cycle.
+    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded, and is
+    # capped at MAX_LIMIT. Pagination loops in pages (~100, the API default page size).
+    limit: int = Field(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT)
 
 
 class IntegrationEventsClient(ABC):
@@ -179,14 +184,10 @@ class IntegrationGetEvents(ABC):
             stored_per_type = []
             for logs in self._iter_events(event_type_name, endpoint_details):
                 stored_per_type.extend(logs)
-                if self.options.limit:
-                    demisto.debug(
-                        f"MD: {self.options.limit=} reached. slicing from {len(logs)=}."
-                        " limit must be presented ONLY in commands and not in fetch-events."
-                    )
-                    if len(stored_per_type) >= self.options.limit:
-                        final_stored_all_types.extend(stored_per_type[: self.options.limit])
-                        break
+                if self.options.limit and len(stored_per_type) >= self.options.limit:
+                    demisto.debug(f"MD: reached {self.options.limit=} for {event_type_name=}, slicing per type.")
+                    final_stored_all_types.extend(stored_per_type[: self.options.limit])
+                    break
         demisto.debug(f"MD: Sliced events, keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
 
