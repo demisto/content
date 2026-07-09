@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, UTC
 import hashlib
 import json
 import traceback
-
+import requests
 import demistomock as demisto
 from CommonServerPython import *
 from ContentClientApiModule import *
@@ -13,9 +13,9 @@ from ContentClientApiModule import *
 ETD_LOG_TYPES = ["message", "audit", "connection"]
 VENDOR = "Cisco"
 PRODUCT = "ETD"
-BATCH_SIZE = 1000
 
 """ UTIT """
+
 
 def get_credential(param: Union[dict, str]) -> str:
     if isinstance(param, dict):
@@ -23,6 +23,7 @@ def get_credential(param: Union[dict, str]) -> str:
             "credentials", {}
         ).get("password")
     return param
+
 
 def generate_intervals(start_dt: datetime, end_dt: datetime) -> List[Tuple[datetime, datetime]]:
     intervals = []
@@ -33,7 +34,6 @@ def generate_intervals(start_dt: datetime, end_dt: datetime) -> List[Tuple[datet
             next_dt = end_dt
         intervals.append((current, next_dt))
         current = next_dt
-
     return intervals
 
 
@@ -53,12 +53,9 @@ def get_event_time(event: Dict[str, Any], log_type: str) -> str:
 
 def get_event_id(event: Dict[str, Any], log_type: str) -> str:
     if log_type == "message":
-        return event.get("message", {}).get("id", "")
+        return hashlib.sha256(json.dumps(event, sort_keys=True).encode()).hexdigest()
     elif log_type == "connection":
-        return event.get(
-            "connection_id",
-            ""
-        )
+        return event.get("connection_id", "")
     elif log_type == "audit":
         audit_identity = {
             "timestamp": event.get("timestamp"),
@@ -95,8 +92,8 @@ def deduplicate_events(events: List[Dict[str, Any]], last_fetch: str | None, las
         seen.add(event_id)
         if checkpoint:
             event_time = arg_to_datetime(
-                event["_event_time"]
-                ).astimezone(UTC)
+                event["_time"]
+            ).astimezone(UTC)
             # Skip events older than the checkpoint
             if event_time < checkpoint:
                 continue
@@ -111,6 +108,7 @@ def deduplicate_events(events: List[Dict[str, Any]], last_fetch: str | None, las
 
 
 """ CLIENT """
+
 
 class ETDClient(ContentClient):
     def __init__(self, base_url: str, params: dict):
@@ -129,19 +127,30 @@ class ETDClient(ContentClient):
         })
 
     def get_access_token(self) -> str:
+        context = demisto.getIntegrationContext() or {}
+        token = context.get("access_token")
+        expiry = context.get("token_expiry")
+        if token and expiry:
+            if datetime.now(UTC).timestamp() < expiry:
+                return token
         api_key = get_credential(self.params.get("api_key"))
         client_secret = get_credential(self.params.get("client_secret"))
-        headers = {"x-api-key": api_key}
         res = self._http_request(
             method="POST",
             url_suffix="/v1/oauth/token",
-            headers=headers,
+            headers={"x-api-key": api_key},
             auth=(self.params.get("client_id"), client_secret),
             timeout=30,
         )
         token = res.get("accessToken")
         if not token:
             raise DemistoException(f"Token not found: {res}")
+        demisto.setIntegrationContext({
+            "access_token": token,
+            "token_expiry": (
+                datetime.now(UTC) + timedelta(minutes=55)
+            ).timestamp()
+        })
         return token
 
     def request_log_export(self, start: str, end: str, event_types: list[str]) -> dict[str, Any]:
@@ -168,19 +177,17 @@ class ETDClient(ContentClient):
     def download_logs(self, links: List[Tuple[str, str]]) -> List[Dict[str, Any]]:
         events = []
         for log_type, link in links:
-            res = self._http_request(
-                method="GET",
-                full_url=link,
-                resp_type="text",
-                timeout=120
-            )
+            response = requests.get(link, timeout=120)
+            if response.status_code != 200:
+                raise DemistoException(f"Failed downloading ETD log file: {response.text}")
+            res = response.text
             for line in res.splitlines():
                 if not line.strip():
                     continue
                 try:
                     event = json.loads(line)
                     event["_source_log_type"] = log_type
-                    event["_event_time"] = get_event_time(event, log_type)
+                    event["_time"] = get_event_time(event, log_type)
                     event["_event_id"] = get_event_id(event, log_type)
                     events.append(event)
                 except json.JSONDecodeError as e:
@@ -191,14 +198,15 @@ class ETDClient(ContentClient):
 
 """ FETCH INCIDENTS / INGEST LOGS """
 
+
 def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
-    demisto.debug("ETD fetch-events started") 
+    demisto.debug("ETD fetch-events started")
     now = datetime.now(UTC).replace(
         minute=0,
         second=0,
         microsecond=0
     )
-    max_fetch = int(params.get("max_fetch", 1000))
+    max_fetch = int(params.get("max_fetch", 500))
     event_types = argToList(
         params.get("event_type")
     )
@@ -207,7 +215,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
     last_run = demisto.getLastRun() or {}
     last_fetch = last_run.get("last_fetch")
     last_ids = set(last_run.get("last_ids", []))
-   
+
     # Calculate fetch window
     if not last_fetch:
         start_dt = now - timedelta(hours=1)
@@ -222,7 +230,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
         end_dt
     )
     all_events = []
-    
+
     # fetch every interval
     for start, end in intervals:
         start_time = start.strftime("%Y-%m-%dT%H")
@@ -247,14 +255,14 @@ def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
                 demisto.debug(f"Reached max_fetch={max_fetch}, stopping fetch.")
                 break
         except Exception as e:
-                demisto.error(f"{e}\n{traceback.format_exc()}")
-                break
+            demisto.error(f"{e}\n{traceback.format_exc()}")
+            break
     # nothing new
     if not all_events:
         demisto.debug("No new events")
         return
     # oldest first
-    all_events.sort(key=lambda e: e["_event_time"])
+    all_events.sort(key=lambda e: e["_time"])
 
     # remove duplicates
     all_events = deduplicate_events(
@@ -270,11 +278,11 @@ def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
         demisto.debug(f"Limited events to max_fetch={max_fetch}")
     # send once
     send_events_to_xsiam(events=all_events, vendor=VENDOR, product=PRODUCT)
-    newest_time = all_events[-1]["_event_time"]
+    newest_time = all_events[-1]["_time"]
     newest_ids = [
         event["_event_id"]
         for event in all_events
-        if event["_event_time"] == newest_time
+        if event["_time"] == newest_time
     ]
     demisto.setLastRun({
         "last_fetch": newest_time,
@@ -285,30 +293,36 @@ def fetch_and_ingest_logs(client: ETDClient, params: Dict[str, Any]) -> None:
 
 def cisco_etd_get_events_command(client: ETDClient, args: Dict[str, Any]) -> CommandResults:
     limit = int(args.get("limit", 100))
-    event_types = argToList(
-        args.get("log_type")
-    )
+    event_types = argToList(args.get("log_type"))
     if not event_types:
         event_types = ETD_LOG_TYPES
     start_time = args.get("start_time")
     end_time = args.get("end_time")
     if not start_time or not end_time:
         raise DemistoException("start_time and end_time are required.")
-    response = client.request_log_export(
-        start_time,
-        end_time,
-        event_types
-    )
-    links = client.get_links(
-        response,
-        event_types
-    )
-    events = client.download_logs(
-        links
-    )
-    events.sort(
-        key=lambda e: e["_event_time"]
-    )
+    start_dt = datetime.strptime(start_time, "%Y-%m-%dT%H").replace(tzinfo=UTC)
+    end_dt = datetime.strptime(end_time, "%Y-%m-%dT%H").replace(tzinfo=UTC)
+    intervals = generate_intervals(start_dt, end_dt)
+    events = []
+    for start, end in intervals:
+        interval_start = start.strftime("%Y-%m-%dT%H")
+        interval_end = end.strftime("%Y-%m-%dT%H")
+        response = client.request_log_export(
+            interval_start,
+            interval_end,
+            event_types
+        )
+        links = client.get_links(
+            response,
+            event_types
+        )
+        if not links:
+            continue
+        interval_events = client.download_logs(links)
+        events.extend(interval_events)
+        if len(events) >= limit:
+            break
+    events.sort(key=lambda e: e["_time"])
     events = deduplicate_events(
         events,
         None,
@@ -330,7 +344,9 @@ def cisco_etd_get_events_command(client: ETDClient, args: Dict[str, Any]) -> Com
         outputs=events,
     )
 
+
 """ TEST MODULE """
+
 
 def test_module(client: ETDClient) -> str:
     try:
@@ -346,7 +362,7 @@ def test_module(client: ETDClient) -> str:
             "limit": "1",
             "should_push_events": "false"
         }
-        cisco_etd_get_events_command(client,args)
+        cisco_etd_get_events_command(client, args)
         return "ok"
     except Exception as e:
         demisto.error(
@@ -357,6 +373,7 @@ def test_module(client: ETDClient) -> str:
 
 
 """ MAIN """
+
 
 def main() -> None:
     params = demisto.params()

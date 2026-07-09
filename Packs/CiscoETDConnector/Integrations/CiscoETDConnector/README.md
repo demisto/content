@@ -44,7 +44,3 @@ Fetches Cisco ETD logs for the specified time range.
 #### Context Output
 
 There is no context output for this command.
-
-### fetch-events
-
-Fetches new Cisco ETD events and ingests them into Cortex XSIAM. This command is used internally by the Event Collector during scheduled fetches and is not intended for manual execution.

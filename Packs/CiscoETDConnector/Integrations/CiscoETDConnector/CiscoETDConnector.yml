@@ -6,7 +6,7 @@ commonfields:
   id: CiscoETDConnector
   version: -1
 provider: Cisco
-fromversion: 6.8.0
+fromversion: 6.10.0
 configuration:
 - display: ETD API Base URL
   name: etd_base_url
@@ -37,7 +37,7 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-  defaultvalue: '1000'
+  defaultvalue: '500'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -62,7 +62,7 @@ script:
   isfetchevents: true
   commands:
   - name: cisco-etd-get-events
-    description: Fetches Cisco ETD logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    description: Retrieves ETD logs from Cisco, . Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: start_time
       description: Start time in YYYY-MM-DDTHH format.
