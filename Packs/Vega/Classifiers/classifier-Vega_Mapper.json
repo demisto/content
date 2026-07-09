@@ -140,6 +140,9 @@
                 "Vega Comments": {
                     "simple": "vegaComments"
                 },
+                "Vega Recommended Actions": {
+                    "simple": "recommendedActions"
+                },
                 "External Link": {
                     "simple": "link"
                 },

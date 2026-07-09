@@ -320,7 +320,7 @@ GET_INCIDENTS_QUERY = (
     "   comments { text addedBy addedAt } "
     "   incidentSummary incidentFindings assets observables alertsCount "
     "   alerts { alertId name createdAt } "
-    "   recommendedActions { name description } "
+    "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
     "   link } "
     "  total limit offset "
