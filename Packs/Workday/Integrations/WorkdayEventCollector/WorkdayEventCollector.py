@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DEFAULT_MAX_FETCH = 3000
+MAX_PAGE_SIZE = 1000
 VENDOR = "Workday"
 PRODUCT = "Activity"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -122,7 +123,7 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     activity_loggings: list = []
     offset = 0
     while logging_to_fetch > 0:
-        limit = min(1000, logging_to_fetch)
+        limit = min(MAX_PAGE_SIZE, logging_to_fetch)
         res = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=offset, limit=limit)
         demisto.debug(f"Fetched {len(res)} activity loggings.")
         activity_loggings.extend(res)

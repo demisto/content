@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Workday"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
