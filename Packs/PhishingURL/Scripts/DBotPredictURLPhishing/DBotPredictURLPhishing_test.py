@@ -367,9 +367,7 @@ def test_get_urls_to_run_json_array_string(mocker: MockerFixture):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model_example = Model()
     model_example.top_domains = {}
-    _, requested_urls, _ = get_urls_to_run(
-        "", "", '["www.google.com", "www.example.com"]', 5, model_example, [""], False
-    )
+    _, requested_urls, _ = get_urls_to_run("", "", '["www.google.com", "www.example.com"]', 5, model_example, [""], False)
     assert sorted(requested_urls) == sorted(["www.google.com", "www.example.com"])
 
 
