@@ -105,7 +105,7 @@
       "is_array": false
     },
     "file_size": {
-      "type": "int",
+      "type": "string",
       "is_array": false
     },
     "document_type": {
