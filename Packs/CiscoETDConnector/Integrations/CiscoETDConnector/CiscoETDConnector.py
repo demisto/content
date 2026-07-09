@@ -358,7 +358,7 @@ def test_module(client: ETDClient) -> str:
         args = {
             "start_time": (now - timedelta(hours=1)).strftime("%Y-%m-%dT%H"),
             "end_time": now.strftime("%Y-%m-%dT%H"),
-            "log_type": ETD_LOG_TYPES,
+            "log_type": "message,audit,connection",
             "limit": "1",
             "should_push_events": "false"
         }

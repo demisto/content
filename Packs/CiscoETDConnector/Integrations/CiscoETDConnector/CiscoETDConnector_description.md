@@ -44,7 +44,6 @@ These credentials are required when configuring the integration instance.
 - Client ID
 - Client Secret
 - API Key
-- First Fetch Time
 - Event Type
 - Max Fetch
 
