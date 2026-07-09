@@ -693,10 +693,11 @@ def fetch_events_command(
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
+    base_page_size = page_size
     while total_events_count < fetch_limit:
         if execution_counter > 0:
             demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
-            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]  # pylint: disable=E0601
+            if is_last_request_smaller_than_page_size(last_page_size, base_page_size):  # type: ignore[has-type]  # pylint: disable=E0601
                 demisto.info("last request wasn't big enough, breaking.")
                 break
             should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(TIME_TO_RUN_BUFFER, worst_case_time)
@@ -1436,6 +1437,12 @@ def main():  # pragma: no cover
                     " the integration configuration."
                 )
             page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
+            if page_size > FETCH_EVENTS_MAX_PAGE_SIZE:
+                demisto.info(
+                    f"Got {page_size=} larger than max {FETCH_EVENTS_MAX_PAGE_SIZE}, "
+                    f"lowering page_size to {FETCH_EVENTS_MAX_PAGE_SIZE}."
+                )
+                page_size = FETCH_EVENTS_MAX_PAGE_SIZE
             limit = int(params.get("fetchLimit", MAX_ALLOWED_FETCH_LIMIT))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.info(f"Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, setting limit to {MAX_ALLOWED_FETCH_LIMIT}.")
