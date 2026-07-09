@@ -11,7 +11,6 @@ The ETD XSOAR Connector integrates Cisco Email Threat Defense (ETD) with Cortex 
 ## Use Cases
 
 
-
 * Fetch malicious and suspicious email events from Cisco ETD.
 
 * Create incidents in Cortex XSOAR for ETD email threats.

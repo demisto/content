@@ -12,7 +12,6 @@ This integration was integrated and tested with ETDXsoarConnector.
 | Client ID | True |
 | Client Secret | True |
 | Password | True |
-| First Fetch Time | False |
 | Max fetch | False |
 | Use system proxy settings | False |
 | Incident type | False |
@@ -23,37 +22,6 @@ This integration was integrated and tested with ETDXsoarConnector.
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### test-connectivity
-
-***
-Test connectivity.
-
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-### test-fetch
-
-***
-Debug fetch incidents.
-
-#### Base Command
-
-`test-fetch`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
 
 ### etd-move-message
 
