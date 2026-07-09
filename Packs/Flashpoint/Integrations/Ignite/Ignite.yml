@@ -214,7 +214,6 @@ configuration:
   advanced: true
 - additionalinfo: >-
     Maximum number of characters kept from the "message" field of a community search result returned by the
-    ip command. Lowering this value reduces context size. Raising it preserves more of the original content
   defaultvalue: '500'
   display: Community search message max length
   name: message_max_length
