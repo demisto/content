@@ -154,6 +154,8 @@ configuration:
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
   - display: Incident Severities to fetch
     additionalinfo: >-
+      The severities by which to filter incidents. If empty, all severities are fetched.
+      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by severity. If empty, all severities are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_severities
@@ -168,6 +170,8 @@ configuration:
     defaultvalue: LOW,MEDIUM,HIGH,CRITICAL
   - display: Incident Statuses to fetch
     additionalinfo: >-
+      The statuses by which to filter incidents. If empty, all statuses are fetched.
+      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by status. If empty, all statuses are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_statuses
@@ -187,6 +191,8 @@ configuration:
     defaultvalue: NEW,INVESTIGATING,ON HOLD,EXTERNAL ESCALATION,RESOLVED,REOPENED,REVIEW RECOMMENDED,RESPONSE REQUIRED,UNDER REVIEW
   - display: Incident Verdicts to fetch
     additionalinfo: >-
+      The verdicts by which to filter incidents. If empty, all verdicts are fetched.
+      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by verdict. If empty, all verdicts are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_verdicts
@@ -202,6 +208,9 @@ configuration:
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
   - display: Has related incidents
     additionalinfo: >-
+      The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents,
+      No to fetch alerts without related incidents, or both to fetch all alerts.
+      At least one option must be selected.
       Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
       No to fetch alerts without related incidents, or both to fetch all alerts.
       At least one option must be selected.
@@ -241,13 +250,13 @@ script:
     - name: vega-get-alert-events
       arguments:
         - name: alert_id
-          description: Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
+          description: The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
           required: false
         - name: limit
-          description: Number of alert events to display per page. Also used as the Vega API batch size when fetching all events.
+          description: The number of alert events to display per page. Also used as the Vega API batch size when fetching all events.
           defaultValue: "200"
         - name: offset
-          description: Pagination offset for alert events.
+          description: The pagination offset for alert events.
           defaultValue: "0"
       description: >-
         Fetch all aggregated alert events for a Vega alert using internal API pagination,
@@ -280,11 +289,11 @@ script:
     - name: vega-set-detections-state
       arguments:
         - name: ids
-          description: One or more Vega detection IDs to update.
+          description: A comma-separated list of Vega detection IDs to update.
           required: true
           isArray: true
         - name: state
-          description: Target detection state.
+          description: The target detection state.
           required: true
           auto: PREDEFINED
           predefined:
@@ -306,11 +315,11 @@ script:
     - name: vega-update-detections
       arguments:
         - name: detection_id
-          description: One or more Vega detection IDs to update.
+          description: A comma-separated list of Vega detection IDs to update.
           required: true
           isArray: true
         - name: severity
-          description: Target Vega detection severity.
+          description: The target Vega detection severity.
           auto: PREDEFINED
           predefined:
             - LOW
@@ -318,14 +327,14 @@ script:
             - HIGH
             - CRITICAL
         - name: state
-          description: Target Vega detection state.
+          description: The target Vega detection state.
           auto: PREDEFINED
           predefined:
             - ENABLED
             - DISABLED
             - TEST_MODE
         - name: tags
-          description: Tags to apply to the Vega detection.
+          description: A comma-separated list of tags to apply to the Vega detection.
           isArray: true
       description: >-
         Update severity, status, state, and/or tags for one or more Vega detections using the updateDetections GraphQL mutation.
@@ -355,17 +364,21 @@ script:
       arguments:
         - name: alert_ids
           description: >-
+            A comma-separated list of Vega alert IDs to update. Accepts a comma-separated list or repeated values
+            (for example, alert_ids=alert-1,alert-2). Use this to update alerts directly from the war room
+            without opening an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation.
             One or more Vega alert IDs to update. Accepts a comma-separated list or repeated values
             (for example, alert_ids=alert-1,alert-2). Use this to update alerts directly from the war room
             without opening an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation.
           isArray: true
         - name: alert_id
           description: >-
-            Deprecated alias for alert_ids. One or more Vega alert IDs to update.
+          description: >-
+            A comma-separated list of Vega alert IDs to update. Deprecated alias for alert_ids.
           isArray: true
           hidden: true
         - name: status
-          description: Target Vega alert status.
+          description: The target Vega alert status.
           auto: PREDEFINED
           predefined:
             - OPEN
@@ -373,7 +386,7 @@ script:
             - PEER REVIEW
             - RESOLVED
         - name: verdict
-          description: Target Vega alert verdict.
+          description: The target Vega alert verdict.
           auto: PREDEFINED
           predefined:
             - MALICIOUS
@@ -382,7 +395,7 @@ script:
             - INCONCLUSIVE
             - NA
         - name: severity
-          description: Target Vega alert severity.
+          description: The target Vega alert severity.
           auto: PREDEFINED
           predefined:
             - LOW
@@ -390,15 +403,15 @@ script:
             - HIGH
             - CRITICAL
         - name: verdict_reasoning
-          description: Target Vega alert verdict reasoning.
+          description: The target Vega alert verdict reasoning.
         - name: comment
-          description: Comment to add on the Vega alert.
+          description: The comment to add on the Vega alert.
         - name: assignees
-          description: One or more Vega user IDs to assign to the alert.
+          description: A comma-separated list of Vega user IDs to assign to the alert.
           isArray: true
       description: >-
         Immediately update Vega alert status, severity, verdict, verdict reasoning, assignees,
-        and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Alert investigation.
+        and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Alert investigation.
       outputs:
         - contextPath: Vega.Alert.id
           description: Updated Vega alert ID.
@@ -419,17 +432,21 @@ script:
       arguments:
         - name: incident_ids
           description: >-
+            A comma-separated list of Vega incident IDs to update. Accepts a comma-separated list or repeated values
+            (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room
+            without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation.
             One or more Vega incident IDs to update. Accepts a comma-separated list or repeated values
             (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room
             without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation.
           isArray: true
         - name: incident_id
           description: >-
-            Deprecated alias for incident_ids. One or more Vega incident IDs to update.
+          description: >-
+            A comma-separated list of Vega incident IDs to update. Deprecated alias for incident_ids.
           isArray: true
           hidden: true
         - name: status
-          description: Target Vega incident status.
+          description: The target Vega incident status.
           auto: PREDEFINED
           predefined:
             - NEW
@@ -442,7 +459,7 @@ script:
             - RESPONSE REQUIRED
             - UNDER REVIEW
         - name: verdict
-          description: Target Vega incident verdict.
+          description: The target Vega incident verdict.
           auto: PREDEFINED
           predefined:
             - MALICIOUS
@@ -451,7 +468,7 @@ script:
             - INCONCLUSIVE
             - NA
         - name: severity
-          description: Target Vega incident severity.
+          description: The target Vega incident severity.
           auto: PREDEFINED
           predefined:
             - LOW
@@ -459,15 +476,15 @@ script:
             - HIGH
             - CRITICAL
         - name: verdict_reasoning
-          description: Target Vega incident verdict reasoning.
+          description: The target Vega incident verdict reasoning.
         - name: comment
-          description: Comment to add on the Vega incident.
+          description: The comment to add on the Vega incident.
         - name: assignee_emails
-          description: One or more email addresses to assign to the Vega incident.
+          description: A comma-separated list of email addresses to assign to the Vega incident.
           isArray: true
       description: >-
         Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails,
-        and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Incident investigation.
+        and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
       outputs:
         - contextPath: Vega.Incident.id
           description: Updated Vega incident ID.
@@ -490,12 +507,12 @@ script:
           description: The remote Vega alert or incident ID.
           required: true
         - name: lastUpdate
-          description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
+          description: The UTC timestamp in seconds (e.g., 1672531200). The incident is only updated if it was modified after the last update time.
       description: Gets remote data from a remote Vega alert or incident. Used for debugging incoming mirroring.
     - name: get-modified-remote-data
       arguments:
         - name: lastUpdate
-          description: UTC timestamp in seconds. Returns Vega alert and incident IDs updated since this time.
+          description: The UTC timestamp in seconds (e.g., 1672531200). Returns Vega alert and incident IDs updated since this time.
           required: true
       description: Gets Vega alert and incident IDs modified since the last update time. Used for debugging incoming mirroring.
     - name: update-remote-system
