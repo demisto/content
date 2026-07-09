@@ -5817,6 +5817,37 @@ def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
     assert kwargs["connection_type"] == "Client Credentials"
 
 
+def test_azure_client_client_credentials_does_not_send_resource_to_v2_endpoint(mocker):
+    """
+    Given: A Client Credentials client (uses the v2.0 token endpoint with a `.default` scope).
+    When: AzureClient builds the MicrosoftClient.
+    Then: No `resource` is forwarded to MicrosoftClient, so the token request sends only `scope`.
+          Sending both `scope` and `resource` to the v2.0 endpoint causes Microsoft to return
+          "invalid_target: The resource parameter provided in the request doesn't match with the
+          requested scopes". Only Device Code (v1.0-style) uses `resource`.
+    """
+    from Azure import DEFAULT_SCOPE, DEFAULT_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["scope"] == DEFAULT_SCOPE
+    # resource must not be forwarded for the v2.0 client-credentials flow.
+    assert captured.get("resource") is None
+
+
 def test_azure_client_device_code_default_resource_derives_management_scope(mocker):
     """
     Given: A Device Code client for a management (default) command, i.e. resource=DEFAULT_RESOURCE.
@@ -5865,6 +5896,57 @@ def test_azure_client_device_code_storage_resource_derives_storage_scope(mocker)
     assert captured["resource"] == expected_resource
     assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
     assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_client_credentials_gov_endpoint_builds_gov_token_url(mocker):
+    """
+    Given: A Client Credentials client configured with a US Gov Azure AD endpoint
+           (https://login.microsoftonline.us).
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the same (gov) authority so the confidential-client token
+          request is not sent cross-cloud. Regression test for the Microsoft error
+          "Confidential Client is not supported in Cross Cloud request".
+    """
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint="https://login.microsoftonline.us",
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.us/my-tenant/oauth2/v2.0/token"
+
+
+def test_azure_client_client_credentials_default_endpoint_builds_commercial_token_url(mocker):
+    """
+    Given: A Client Credentials client using the default (commercial) Azure AD endpoint.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the commercial login.microsoftonline.com authority.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/my-tenant/oauth2/v2.0/token"
 
 
 def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):

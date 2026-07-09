@@ -614,11 +614,19 @@ class AzureClient:
         self.connection_type = connection_type
         if not headers:
             is_device_code = "Device Code" in connection_type
+            # Managed Identities authenticate against the IMDS endpoint, not an AAD token endpoint,
+            # so they must not receive a token_retrieval_url.
+            is_managed_identities = "Managed Identities" in connection_type
             token_retrieval_url: str | None
             ms_scope: str | None
             ms_resource: str | None
             if is_device_code:
-                token_retrieval_url = urllib.parse.urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token")
+                # Use the configured tenant when available so single-tenant apps get a tenant-scoped
+                # authority. Fall back to the "organizations" endpoint only for multi-tenant apps with
+                # no configured tenant; otherwise Microsoft returns "No tenant-identifying information
+                # found in either the request or implied by any provided credentials".
+                tenant_segment = tenant_id or "organizations"
+                token_retrieval_url = urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_segment}/oauth2/v2.0/token")
                 # Use the per-command resource (management or storage) as the single source of truth,
                 # then derive the matching Device Code delegated scope from it (space-delimited form,
                 # unlike the `.default` form used by the other flows). This keeps storage-container
@@ -626,9 +634,20 @@ class AzureClient:
                 ms_resource = (resource or DEFAULT_RESOURCE).rstrip("/")
                 ms_scope = f"{ms_resource}/user_impersonation offline_access user.read"
             else:
-                token_retrieval_url = None
+                # Build the token authority from the configured Azure AD endpoint so that Client Credentials
+                # and Authorization Code flows target the correct cloud (e.g. US Gov login.microsoftonline.us).
+                # Without this, MicrosoftClient falls back to the commercial login.microsoftonline.com authority
+                # while the scope/resource point to a national cloud, which Microsoft rejects with
+                # "Confidential Client is not supported in Cross Cloud request".
+                token_retrieval_url = (
+                    None if is_managed_identities else urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_id}/oauth2/v2.0/token")
+                )
                 ms_scope = scope
-                ms_resource = resource
+                # The Client Credentials and Authorization Code flows use the v2.0 token endpoint, which
+                # authorizes via the `.default` scope and rejects the v1.0 `resource` parameter. Sending both
+                # results in "invalid_target: The resource parameter provided in the request doesn't match with
+                # the requested scopes". Only Device Code (v1.0-style) uses `resource`.
+                ms_resource = None
             ms_client_args = assign_params(
                 self_deployed=True,
                 auth_id=app_id,
