@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_EVENTS_PER_REQUEST = 100
+DEFAULT_MAX_FETCH = 3000
 VENDOR = "Workday"
 PRODUCT = "Activity"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -271,7 +271,7 @@ def main() -> None:  # pragma: no cover
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(params.get("max_fetch")) or 1000
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     first_fetch = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True)
 
     demisto.debug(f"Command being called is {command}")

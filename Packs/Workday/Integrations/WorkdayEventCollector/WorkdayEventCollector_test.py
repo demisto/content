@@ -83,6 +83,68 @@ class TestFetchActivity:
         )
         assert len(res) == loggings_to_fetch
 
+    def test_get_max_fetch_activity_logging_paginates_above_1000(self, mocker):
+        """
+        Given: a max_fetch (logging_to_fetch) larger than the 1000 per-call page cap (3000).
+        When: running get_max_fetch_activity_logging.
+        Then: the client is called multiple times (pagination), each call is capped at 1000,
+              the offset advances by the number of events returned, and all events are collected.
+        """
+        from WorkdayEventCollector import get_max_fetch_activity_logging
+
+        def response_by_requested_limit(from_date, to_date, offset, limit):
+            # Workday returns up to `limit` events (page cap enforced by caller at 1000).
+            single_response = util_load_json("test_data/single_loggings_response.json")
+            return [single_response.copy() for _ in range(limit)]
+
+        request_mock = mocker.patch.object(Client, "get_activity_logging_request", side_effect=response_by_requested_limit)
+
+        res = get_max_fetch_activity_logging(
+            client=self.client,
+            logging_to_fetch=3000,
+            from_date="2023-04-15T07:00:00.000Z",
+            to_date="2023-04-16T07:00:00.000Z",
+        )
+
+        # 3000 requested / 1000 per call => exactly 3 paginated API calls.
+        assert request_mock.call_count == 3
+        # Every call must be capped at the 1000 per-call page limit.
+        assert [call.kwargs["limit"] for call in request_mock.call_args_list] == [1000, 1000, 1000]
+        # Offset must advance by the number of events collected so far.
+        assert [call.kwargs["offset"] for call in request_mock.call_args_list] == [0, 1000, 2000]
+        # All 3000 events are accumulated across the pages.
+        assert len(res) == 3000
+
+    def test_get_max_fetch_activity_logging_stops_on_empty_page(self, mocker):
+        """
+        Given: a large max_fetch but the source runs out of events mid-pagination.
+        When: running get_max_fetch_activity_logging.
+        Then: pagination stops as soon as an empty page is returned (no infinite loop),
+              and only the available events are collected.
+        """
+        from WorkdayEventCollector import get_max_fetch_activity_logging
+
+        single_response = util_load_json("test_data/single_loggings_response.json")
+        first_page = [single_response.copy() for _ in range(1000)]
+        second_page = [single_response.copy() for _ in range(500)]
+        request_mock = mocker.patch.object(
+            Client,
+            "get_activity_logging_request",
+            side_effect=[first_page, second_page, []],
+        )
+
+        res = get_max_fetch_activity_logging(
+            client=self.client,
+            logging_to_fetch=3000,
+            from_date="2023-04-15T07:00:00.000Z",
+            to_date="2023-04-16T07:00:00.000Z",
+        )
+
+        # Third call returns empty -> loop breaks. Only 1500 events are available.
+        assert request_mock.call_count == 3
+        assert [call.kwargs["offset"] for call in request_mock.call_args_list] == [0, 1000, 1500]
+        assert len(res) == 1500
+
     DUPLICATED_ACTIVITY_LOGGINGS = [
         (("2023-04-15T07:00:00Z", 5, 2, 0), 5, {}),
         (("2023-04-15T07:00:00Z", 5, 1, 0), 4, {"last_log": 0}),

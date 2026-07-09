@@ -59,7 +59,7 @@ configuration:
   section: Collect
   required: false
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. Large amount of events can cause preformance issues.
-  defaultvalue: '1000'
+  defaultvalue: '3000'
   display: Max events per fetch
   name: max_fetch
   type: 0
