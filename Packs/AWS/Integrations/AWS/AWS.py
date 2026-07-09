@@ -8276,12 +8276,12 @@ class SSM:
             "Filters": parse_name_value_type_format_filter(filters),
         }
         kwargs.update(build_pagination_kwargs(args, 1, 50))
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = remove_empty_elements(kwargs)
         demisto.debug(f"{kwargs=}")
         response = client.list_inventory_entries(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         if entries := response.get("Entries"):
             readable_output = tableToMarkdown(
@@ -8370,7 +8370,7 @@ class SSM:
                     f"Command timeout must be between {min_command_timeout} and {max_command_timeout} seconds."
                 )
             kwargs["TimeoutSeconds"] = command_timeout
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = remove_empty_elements(kwargs)
         demisto.debug(f"{kwargs=}")
 
         response_command_run = client.send_command(**kwargs)
@@ -8392,7 +8392,7 @@ class SSM:
         )
 
     @staticmethod
-    def add_tags_to_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def add_tags_to_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds or overwrites one or more tags for the specified SSM resource.
         Args:
@@ -8413,14 +8413,14 @@ class SSM:
         response = client.add_tags_to_resource(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Tags were successfully added to the SSM resource '{resource_id}'.",
         )
 
     @staticmethod
-    def remove_tags_from_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def remove_tags_from_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Removes one or more tags from the specified SSM resource.
         Args:
@@ -8440,14 +8440,14 @@ class SSM:
         response = client.remove_tags_from_resource(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Tags were successfully removed from the SSM resource '{args.get('resource_id')}'.",
         )
 
     @staticmethod
-    def list_tags_for_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_tags_for_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns a list of the tags assigned to the specified SSM resource.
         Args:
@@ -8467,7 +8467,7 @@ class SSM:
         response = client.list_tags_for_resource(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         tag_list = response.get("TagList", [])
         if not tag_list:
@@ -8490,7 +8490,7 @@ class SSM:
         )
 
     @staticmethod
-    def inventory_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def inventory_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Queries SSM inventory information for managed nodes.
 
@@ -8556,7 +8556,7 @@ class SSM:
         response = client.get_inventory(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         entities = response.get("Entities", [])
@@ -8592,7 +8592,7 @@ class SSM:
         )
 
     @staticmethod
-    def associations_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def associations_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns all State Manager associations in the current AWS account and Region.
 
@@ -8621,7 +8621,7 @@ class SSM:
         response = client.list_associations(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         associations = response.get("Associations", [])
@@ -8654,7 +8654,7 @@ class SSM:
         )
 
     @staticmethod
-    def association_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def association_get_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the association for the specified target or managed node.
 
@@ -8686,7 +8686,7 @@ class SSM:
         response = client.describe_association(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         association = response.get("AssociationDescription", {})
@@ -8718,7 +8718,7 @@ class SSM:
         )
 
     @staticmethod
-    def association_versions_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def association_versions_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves all versions of an association for a specific association ID.
 
@@ -8740,7 +8740,7 @@ class SSM:
         response = client.list_association_versions(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         association_versions = response.get("AssociationVersions", [])
@@ -8778,7 +8778,7 @@ class SSM:
         )
 
     @staticmethod
-    def documents_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def documents_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns all SSM documents in the current AWS account and Region.
 
@@ -8802,7 +8802,7 @@ class SSM:
         response = client.list_documents(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         documents = response.get("DocumentIdentifiers", [])
@@ -8835,7 +8835,7 @@ class SSM:
         )
 
     @staticmethod
-    def document_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def document_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the specified SSM document.
         Args:
@@ -8857,7 +8857,7 @@ class SSM:
         response = client.describe_document(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         document = response.get("Document", {})
@@ -8889,7 +8889,7 @@ class SSM:
         )
 
     @staticmethod
-    def automation_execution_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def automation_execution_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the executions of SSM automation workflows.
         Args:
@@ -8911,7 +8911,7 @@ class SSM:
         response = client.describe_automation_executions(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         executions = response.get("AutomationExecutionMetadataList", [])
@@ -9117,7 +9117,7 @@ class SSM:
         )
 
     @staticmethod
-    def command_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def command_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the commands requested by users of the AWS account.
         Args:
@@ -9144,7 +9144,7 @@ class SSM:
         response = client.list_commands(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         commands = response.get("Commands", [])
@@ -9283,7 +9283,7 @@ class CloudWatchLogs:
             "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(tags)},
             "deletionProtectionEnabled": arg_to_bool_or_none(args.get("deletion_protection_enabled")),
         }
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = remove_empty_elements(kwargs)
         demisto.debug(f"{kwargs=}")
 
         response = client.create_log_group(**kwargs)
@@ -9717,7 +9717,7 @@ class CloudWatchLogs:
             ],
             "entity": entity if any(entity.values()) else None,
         }
-        remove_nulls_from_dictionary(kwargs)
+        kwargs = remove_empty_elements(kwargs)
 
         demisto.debug(f"{kwargs=}")
 
@@ -9778,8 +9778,6 @@ class CloudWatchLogs:
             "defaultValue": float(default_value) if default_value else None,
             "dimensions": {tag["Key"]: tag["Value"] for tag in parse_tag_field(dimensions)},
             "unit": args.get("unit"),
-            "fieldSelectionCriteria": args.get("field_selection_criteria"),
-            "emitSystemFieldDimensions": argToList(emit_system_field_dimensions),
         }
 
         kwargs: dict[str, Any] = {
@@ -9788,6 +9786,8 @@ class CloudWatchLogs:
             "filterPattern": args.get("filter_pattern"),
             "metricTransformations": [metric_transformation],
             "applyOnTransformedLogs": arg_to_bool_or_none(args.get("apply_on_transformed_logs")),
+            "fieldSelectionCriteria": args.get("field_selection_criteria"),
+            "emitSystemFieldDimensions": argToList(emit_system_field_dimensions),
         }
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f"{kwargs=}")

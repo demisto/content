@@ -16138,19 +16138,19 @@ script:
       - "false"
       description: Whether to display the log event fields with all sensitive data unmasked and visible. This parameter is valid only if the log group has a data protection policy. Default is "false".
     outputs:
-    - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
+    - contextPath: AWS.CloudWatchLogs.Events.logStreamName
       description: The name of the log stream this event belongs to.
       type: string
-    - contextPath: AWS.CloudWatchLogs.Events.Timestamp
+    - contextPath: AWS.CloudWatchLogs.Events.timestamp
       description: The time the event occurred, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
-    - contextPath: AWS.CloudWatchLogs.Events.Message
+    - contextPath: AWS.CloudWatchLogs.Events.message
       description: The data contained in the log event.
       type: string
-    - contextPath: AWS.CloudWatchLogs.Events.IngestionTime
+    - contextPath: AWS.CloudWatchLogs.Events.ingestionTime
       description: The time the event was ingested, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
-    - contextPath: AWS.CloudWatchLogs.Events.EventId
+    - contextPath: AWS.CloudWatchLogs.Events.eventId
       description: The ID of the event.
       type: string
     - contextPath: AWS.CloudWatchLogs.EventsNextToken
@@ -16215,6 +16215,7 @@ script:
       description: A comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying.
       isArray: true
     - name: include_linked_accounts
+      auto: PREDEFINED
       predefined:
       - "true"
       - "false"
@@ -16224,33 +16225,52 @@ script:
       predefined:
       - STANDARD
       - INFREQUENT_ACCESS
+      - DELIVERY
       description: The log group class for this log group.
     - name: limit
       description: The maximum number of items to return. Maximum value is 50.
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogGroupName
+    - contextPath: AWS.CloudWatchLogs.LogGroups.logGroupName
       description: The name of the log group.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.CreationTime
+    - contextPath: AWS.CloudWatchLogs.LogGroups.creationTime
       description: The creation time of the log group, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.RetentionInDays
+    - contextPath: AWS.CloudWatchLogs.LogGroups.retentionInDays
       description: The number of days to retain the log events in the specified log group.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.MetricFilterCount
+    - contextPath: AWS.CloudWatchLogs.LogGroups.metricFilterCount
       description: The number of metric filters.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.Arn
+    - contextPath: AWS.CloudWatchLogs.LogGroups.arn
       description: The Amazon Resource Name (ARN) of the log group.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.StoredBytes
+    - contextPath: AWS.CloudWatchLogs.LogGroups.storedBytes
       description: The number of bytes stored.
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.KmsKeyId
+    - contextPath: AWS.CloudWatchLogs.LogGroups.kmsKeyId
       description: The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
       type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.dataProtectionStatus
+      description: Displays whether this log group has a protection policy, or whether it had one in the past.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.inheritedProperties
+      description: Displays all the properties that this log group has inherited from account-level settings.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.logGroupClass
+      description: This specifies the log group class for this log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.logGroupArn
+      description: The Amazon Resource Name (ARN) of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.deletionProtectionEnabled
+      description: Indicates whether deletion protection is enabled for this log group.
+      type: Boolean
+    - contextPath: AWS.CloudWatchLogs.LogGroups.bearerTokenAuthenticationEnabled
+      description: Indicates whether bearer token authentication is enabled for this log group.
+      type: Boolean
     - contextPath: AWS.CloudWatchLogs.LogGroupsNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
       type: string
@@ -16325,31 +16345,31 @@ script:
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
+    - contextPath: AWS.CloudWatchLogs.LogGroups.logGroupName
       description: The name of the log group.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.logStreamName
       description: The name of the log stream.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.creationTime
       description: The creation time of the stream, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: number
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.Arn
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.arn
       description: The Amazon Resource Name (ARN) of the log stream.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.firstEventTimestamp
       description: The time of the first event, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.lastEventTimestamp
       description: The time of the most recent log event in the log stream in CloudWatch Logs.
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.lastIngestionTime
       description: The ingestion time, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
       type: date
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.uploadSequenceToken
       description: The sequence token.
       type: string
-    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.storedBytes
       description: The number of bytes stored.
       type: number
     - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreamsNextToken
@@ -16782,29 +16802,44 @@ script:
     - name: next_token
       description: The token for the next set of items to return. Use the value returned in the previous response to get the next page of results.
     outputs:
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.FilterName
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterName
       description: The name of the metric filter.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.FilterPattern
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterPattern
       description: A symbolic description of how CloudWatch Logs should interpret the data in each log event.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricName
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName
       description: The name of the CloudWatch metric.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricNamespace
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace
       description: The namespace of the CloudWatch metric.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricValue
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue
       description: The value to publish to the CloudWatch metric when a filter pattern matches a log event.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.MetricTransformations.DefaultValue
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue
       description: The value to emit when a filter pattern does not match a log event. This value can be null.
       type: string
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.CreationTime
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.dimensions
+      description: The fields to use as dimensions for the metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.unit
+      description: The unit to assign to the metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.creationTime
       description: The creation time of the metric filter, expressed in Unix time (the number of milliseconds after Jan 1, 1970 00:00:00 UTC).
-      type: date
-    - contextPath: AWS.CloudWatchLogs.MetricFilters.LogGroupName
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
       description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.applyOnTransformedLogs
+      description: This parameter is valid only for log groups that have an active log transformer.
+      type: Boolean
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.fieldSelectionCriteria
+      description: The filter expression that specifies which log events are processed by this metric filter based on system fields.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.emitSystemFieldDimensions
+      description: The list of system fields that are emitted as additional dimensions in the generated metrics.
       type: string
     - contextPath: AWS.CloudWatchLogs.MetricFiltersNextToken
       description: The nextToken value to include in a future request for pagination. The value is null when there are no more results.
@@ -18988,6 +19023,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19000,6 +19036,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19038,6 +19075,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19050,6 +19088,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19097,6 +19136,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19109,6 +19149,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19129,11 +19170,11 @@ script:
     description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19153,6 +19194,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19165,6 +19207,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19189,11 +19232,11 @@ script:
     description: "Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19213,6 +19256,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19225,6 +19269,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19309,11 +19354,11 @@ script:
     description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the firewall policy characteristic arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19333,6 +19378,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19345,6 +19391,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19450,11 +19497,11 @@ script:
     description: "Associates a firewall policy to a firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19474,6 +19521,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19486,6 +19534,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19518,11 +19567,11 @@ script:
     description: "Deletes the specified FirewallPolicy. Required permissions: network-firewall:DeleteFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19542,6 +19591,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19554,6 +19604,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19568,11 +19619,11 @@ script:
     description: "Updates the properties of the specified firewall policy. Required permissions: network-firewall:UpdateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19592,6 +19643,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19604,6 +19656,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19671,11 +19724,11 @@ script:
     description: "Modifies the ChangeProtection flag, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19695,6 +19748,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19707,6 +19761,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19926,7 +19981,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.9059085
+  dockerimage: demisto/boto3py3:1.0.0.10221838
 supportsquickactions: true
 fromversion: 5.5.0
 source: 'cooc'

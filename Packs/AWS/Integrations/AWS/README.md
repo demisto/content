@@ -8,9 +8,9 @@ This integration was integrated and tested with version 1.0.0 of AWS.
 | Access Key | The AWS Access Key ID \(username\) and Secret Access Key \(password\) paired together. If a 'Role ARN' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials. | False |
 | Secret Key |  | False |
 | Role ARN | The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. | False |
-| Role Session Name | Role session name to be used for authentication |  |
+| Role Session Name | Role session name to be used for authentication | False |
 | Role Session Duration | Max role session duration | False |
-| Default AWS region. | The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands. Default value is us-east-1 |  |
+| Default AWS region. | The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands. Default value is us-east-1 | False |
 | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or the read and connect timeouts separated by a comma \(for example 60,10\). Default is 60,10. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | PrivateLink service URL. |  | False |
@@ -5638,7 +5638,7 @@ Lists the specified log groups. You can list all your log groups or filter the r
 | log_group_identifiers | A comma-separated list of log group ARNs or names to describe. If you specify log group names, they must be from the same account and region. | Optional |
 | account_identifiers | A comma-separated list of account IDs. When used with include_linked_accounts, returns log groups in the accounts listed. Used for cross-account querying. | Optional |
 | include_linked_accounts | Whether to include log groups in the accounts specified by account_identifiers. If set to true and account_identifiers is empty, returns all log groups in the monitoring account and all linked source accounts. Possible values are: true, false. | Optional |
-| log_group_class | The log group class for this log group. Possible values are: STANDARD, INFREQUENT_ACCESS. | Optional |
+| log_group_class | The log group class for this log group. Possible values are: STANDARD, INFREQUENT_ACCESS, DELIVERY. | Optional |
 | limit | The maximum number of items to return. Maximum value is 50. | Optional |
 | next_token | The token for the next set of items to return. Use the value returned in the previous response to get the next page of results. | Optional |
 
@@ -5646,13 +5646,19 @@ Lists the specified log groups. You can list all your log groups or filter the r
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.LogGroups.LogGroupName | string | The name of the log group. |
-| AWS.CloudWatchLogs.LogGroups.CreationTime | number | The creation time of the log group, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.LogGroups.RetentionInDays | number | The number of days to retain the log events in the specified log group. |
-| AWS.CloudWatchLogs.LogGroups.MetricFilterCount | number | The number of metric filters. |
-| AWS.CloudWatchLogs.LogGroups.Arn | string | The Amazon Resource Name \(ARN\) of the log group. |
-| AWS.CloudWatchLogs.LogGroups.StoredBytes | number | The number of bytes stored. |
-| AWS.CloudWatchLogs.LogGroups.KmsKeyId | string | The Amazon Resource Name \(ARN\) of the CMK to use when encrypting log data. |
+| AWS.CloudWatchLogs.LogGroups.logGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.LogGroups.creationTime | number | The creation time of the log group, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.LogGroups.retentionInDays | number | The number of days to retain the log events in the specified log group. |
+| AWS.CloudWatchLogs.LogGroups.metricFilterCount | number | The number of metric filters. |
+| AWS.CloudWatchLogs.LogGroups.arn | string | The Amazon Resource Name \(ARN\) of the log group. |
+| AWS.CloudWatchLogs.LogGroups.storedBytes | number | The number of bytes stored. |
+| AWS.CloudWatchLogs.LogGroups.kmsKeyId | string | The Amazon Resource Name \(ARN\) of the CMK to use when encrypting log data. |
+| AWS.CloudWatchLogs.LogGroups.dataProtectionStatus | string | Displays whether this log group has a protection policy, or whether it had one in the past. |
+| AWS.CloudWatchLogs.LogGroups.inheritedProperties | string | Displays all the properties that this log group has inherited from account-level settings. |
+| AWS.CloudWatchLogs.LogGroups.logGroupClass | string | This specifies the log group class for this log group. |
+| AWS.CloudWatchLogs.LogGroups.logGroupArn | string | The Amazon Resource Name \(ARN\) of the log group. |
+| AWS.CloudWatchLogs.LogGroups.deletionProtectionEnabled | Boolean | Indicates whether deletion protection is enabled for this log group. |
+| AWS.CloudWatchLogs.LogGroups.bearerTokenAuthenticationEnabled | Boolean | Indicates whether bearer token authentication is enabled for this log group. |
 | AWS.CloudWatchLogs.LogGroupsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
 ### aws-network-firewall-firewalls-list
@@ -6333,14 +6339,19 @@ Lists the specified metric filters. You can list all the metric filters or filte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.MetricFilters.FilterName | string | The name of the metric filter. |
-| AWS.CloudWatchLogs.MetricFilters.FilterPattern | string | A symbolic description of how CloudWatch Logs should interpret the data in each log event. |
-| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricName | string | The name of the CloudWatch metric. |
-| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricNamespace | string | The namespace of the CloudWatch metric. |
-| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.MetricValue | string | The value to publish to the CloudWatch metric when a filter pattern matches a log event. |
-| AWS.CloudWatchLogs.MetricFilters.MetricTransformations.DefaultValue | string | The value to emit when a filter pattern does not match a log event. This value can be null. |
-| AWS.CloudWatchLogs.MetricFilters.CreationTime | date | The creation time of the metric filter, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.MetricFilters.LogGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.MetricFilters.filterName | string | The name of the metric filter. |
+| AWS.CloudWatchLogs.MetricFilters.filterPattern | string | A symbolic description of how CloudWatch Logs should interpret the data in each log event. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName | string | The name of the CloudWatch metric. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace | string | The namespace of the CloudWatch metric. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue | string | The value to publish to the CloudWatch metric when a filter pattern matches a log event. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue | string | The value to emit when a filter pattern does not match a log event. This value can be null. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.dimensions | string | The fields to use as dimensions for the metric. |
+| AWS.CloudWatchLogs.MetricFilters.metricTransformations.unit | string | The unit to assign to the metric. |
+| AWS.CloudWatchLogs.MetricFilters.creationTime | string | The creation time of the metric filter, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.MetricFilters.logGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.MetricFilters.applyOnTransformedLogs | Boolean | This parameter is valid only for log groups that have an active log transformer. |
+| AWS.CloudWatchLogs.MetricFilters.fieldSelectionCriteria | string | The filter expression that specifies which log events are processed by this metric filter based on system fields. |
+| AWS.CloudWatchLogs.MetricFilters.emitSystemFieldDimensions | string | The list of system fields that are emitted as additional dimensions in the generated metrics. |
 | AWS.CloudWatchLogs.MetricFiltersNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
 ### aws-logs-log-streams-describe
@@ -6370,15 +6381,15 @@ Lists the log streams for the specified log group. You can list all the log stre
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName | string | The name of the log group. |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName | string | The name of the log stream. |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime | number | The creation time of the stream, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.Arn | string | The Amazon Resource Name \(ARN\) of the log stream. |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp | date | The time of the first event, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp | date | The time of the most recent log event in the log stream in CloudWatch Logs. |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime | date | The ingestion time, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken | string | The sequence token. |
-| AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes | number | The number of bytes stored. |
+| AWS.CloudWatchLogs.LogGroups.logGroupName | string | The name of the log group. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.logStreamName | string | The name of the log stream. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.creationTime | number | The creation time of the stream, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.arn | string | The Amazon Resource Name \(ARN\) of the log stream. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.firstEventTimestamp | date | The time of the first event, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.lastEventTimestamp | date | The time of the most recent log event in the log stream in CloudWatch Logs. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.lastIngestionTime | date | The ingestion time, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.uploadSequenceToken | string | The sequence token. |
+| AWS.CloudWatchLogs.LogGroups.LogStreams.storedBytes | number | The number of bytes stored. |
 | AWS.CloudWatchLogs.LogGroups.LogStreamsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
 ### aws-network-firewall-firewall-create
@@ -6494,11 +6505,11 @@ Lists log events from the specified log group. You can list all the log events o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudWatchLogs.Events.LogStreamName | string | The name of the log stream this event belongs to. |
-| AWS.CloudWatchLogs.Events.Timestamp | date | The time the event occurred, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.Events.Message | string | The data contained in the log event. |
-| AWS.CloudWatchLogs.Events.IngestionTime | date | The time the event was ingested, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
-| AWS.CloudWatchLogs.Events.EventId | string | The ID of the event. |
+| AWS.CloudWatchLogs.Events.logStreamName | string | The name of the log stream this event belongs to. |
+| AWS.CloudWatchLogs.Events.timestamp | date | The time the event occurred, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.Events.message | string | The data contained in the log event. |
+| AWS.CloudWatchLogs.Events.ingestionTime | date | The time the event was ingested, expressed in Unix time \(the number of milliseconds after Jan 1, 1970 00:00:00 UTC\). |
+| AWS.CloudWatchLogs.Events.eventId | string | The ID of the event. |
 | AWS.CloudWatchLogs.EventsNextToken | string | The nextToken value to include in a future request for pagination. The value is null when there are no more results. |
 
 ### aws-ssm-documents-list
