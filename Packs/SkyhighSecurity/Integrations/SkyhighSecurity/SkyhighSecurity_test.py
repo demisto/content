@@ -1,6 +1,7 @@
 import json
 
 import demistomock as demisto
+import pytest
 import requests_mock
 from freezegun import freeze_time
 from SkyhighSecurity import main
@@ -227,3 +228,33 @@ def test_fetch_incidents(mocker):
     last_run, incidents = fetch_incidents(client, params)
 
     assert len(incidents) == 0
+
+
+@pytest.mark.parametrize(
+    "severity, expected",
+    [
+        ("info", 0.5),
+        ("low", 1),
+        ("medium", 2),
+        ("high", 3),
+        ("HIGH", 3),
+        ("warn", 0),
+        ("unknown", 0),
+        ("TEST", 0),
+        ("", 0),
+        (None, 0),
+    ],
+)
+def test_convert_to_xsoar_severity(severity, expected):
+    """
+    Given:
+        - A severity value returned from the Skyhigh Security API (known, case variant, or unmapped)
+    When:
+        - convert_to_xsoar_severity is called
+    Then:
+        - Ensure known values map to their XSOAR equivalent (case-insensitive) and unmapped
+          values fall back to UNKNOWN without raising
+    """
+    from SkyhighSecurity import convert_to_xsoar_severity
+
+    assert convert_to_xsoar_severity(severity) == expected
