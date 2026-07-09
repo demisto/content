@@ -49,6 +49,7 @@ configuration:
   hidden:
   - xsoar
 - defaultvalue: 'false'
+  display: Fetch Events
   name: isFetchEvents
   type: 8
   required: false
@@ -808,179 +809,161 @@ script:
     name: absolute-device-get-events
     description: Retrieves a list of events from the Absolute instance.
   - arguments:
-    - description: The system-defined unique identifier of the Device Action request.
-      name: request_uid
-    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive).Example created_from_date_time_utc=2011-12-03T10:15:30.000Z
-      name: created_from_date_time_utc
-    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example created_to_date_time_utc=2011-12-03T10:15:30.000Z
-      name: created_to_date_time_utc
-    - auto: PREDEFINED
+    - name: request_uid
+      description: The system-defined unique identifier of the Device Action request.
+    - name: request_status
       description: Filters results to include responses where requestStatus equals the given value.
-      name: request_status
+      auto: PREDEFINED
       predefined:
-      - "Init"
-      - "Canceled"
-      - "Completed"
-      - "InProgress"
-      - "Failed"
-      - "Scheduled"
-      - "PendingApproval"
-    - description: Pagination limit - maximum number of events to return.
-      name: limit
-      defaultvalue: 50
-    description: Get all information about wibe requests.
+      - Init
+      - Canceled
+      - Completed
+      - InProgress
+      - Failed
+      - Scheduled
+      - PendingApproval
+    - name: created_from_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: created_to_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: page
+      description: The page number for pagination.
+    - name: limit
+      description: Pagination limit - maximum number of events to return.
+      defaultValue: '50'
     name: absolute-wipe-request-list
+    description: Get information about the Wipe requests.
     outputs:
-    - contextPath: Absolute.WipeRequest.totalDevices
-      description: 'Total devices.'
-      type: Number
-    - contextPath: Absolute.WipeRequest.pending
-      description: 'number of pending requests.'
-      type: Number
-    - contextPath: Absolute.WipeRequest.processing
-      description: 'number of processing requests.'
-      type: Number
-    - contextPath: Absolute.WipeRequest.completed
-      description: 'number of processing requests.'
-      type: Number
-    - contextPath: Absolute.WipeRequest.canceled
-      description: 'number of canceled requests.'
-      type: Number
-    - contextPath: Absolute.WipeRequest.failed
-      description: 'number of failed requests.'
-      type: Number
     - contextPath: Absolute.WipeRequest.requestId
-      description: 'The system-defined Request ID.'
+      description: The ID of the wipe request.
       type: String
     - contextPath: Absolute.WipeRequest.requestUid
-      description: 'The unique identifier of the request.'
+      description: The unique identifier of the wipe request.
       type: String
     - contextPath: Absolute.WipeRequest.requestStatus
-      description: 'The request status.'
+      description: The status of the wipe request.
       type: String
-    - contextPath: Absolute.WipeRequest.createdDateTimeUtc
-      description: 'Created date.'
-      type: Date
-    - contextPath: Absolute.WipeRequest.updatedDateTimeUtc
-      description: 'Updated date.'
-      type: Date
-    - contextPath: Absolute.WipeRequest.requester
-      description: 'Requester name.'
+    - contextPath: Absolute.WipeRequest.totalDevices
+      description: The total number of devices in the wipe request.
+      type: Number
+    - contextPath: Absolute.WipeRequest.pending
+      description: The number of devices pending wipe.
+      type: Number
+    - contextPath: Absolute.WipeRequest.processing
+      description: The number of devices currently processing the wipe.
+      type: Number
+    - contextPath: Absolute.WipeRequest.completed
+      description: The number of devices that have completed the wipe.
+      type: Number
+    - contextPath: Absolute.WipeRequest.canceled
+      description: The number of devices that have canceled the wipe.
+      type: Number
+    - contextPath: Absolute.WipeRequest.failed
+      description: The number of devices that have failed the wipe.
+      type: Number
+    - contextPath: Absolute.WipeRequest.requestId
+      description: The ID of the wipe request.
       type: String
     - contextPath: Absolute.WipeRequest.macUsername
-      description: 'mac username.'
+      description: The username of the user with administrative rights (applies to Mac devices only).
       type: String
     - contextPath: Absolute.WipeRequest.macPwd
-      description: 'Mac PWD.'
+      description: The password of the user with administrative rights (applies to Mac devices only).
       type: String
     - contextPath: Absolute.WipeRequest.unenrollDevicesAndFreeLicenses
-      description: 'unenroll devices.'
+      description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
       type: Boolean
   - arguments:
-    - description: The system-defined unique identifier of the Device Action request.
-      name: request_uid
-    - description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
-      name: device_uids
+    - name: request_uid
+      description: The system-defined unique identifier of the Device Action request.
+    - name: device_uids
+      description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
+      isArray: true
       required: true
-    - description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Example created_from_date_time_utc=2011-12-03T10:15:30.000Z
-      name: created_from_date_time_utc
-    - description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Example created_to_date_time_utc=2011-12-03T10:15:30.000Z
-      name: created_to_date_time_utc
-    - auto: PREDEFINED
+    - name: action_status
       description: Filters results to include responses where action_status equals the given value.
-      name: action_status
+      auto: PREDEFINED
       predefined:
-      - "Canceled"
-      - "Succeeded"
-      - "Processing"
-      - "Failed"
-      - "Pending"
-    - description: Pagination limit - maximum number of events to return.
-      name: limit
-      defaultvalue: 50
-    description: Get the status of actions by devices or by request.
+      - Failed
+      - Pending
+      - Canceled
+      - Processing
+      - Succeeded
+    - name: created_from_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: created_to_date_time_utc
+      description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
+    - name: page
+      description: The page number for pagination.
+    - name: limit
+      description: Pagination limit - maximum number of events to return.
+      defaultValue: '50'
     name: absolute-wipe-actions-list
+    description: Get the status of actions by devices or by request.
     outputs:
     - contextPath: Absolute.WipeAction.actionUid
-      description: 'The system-defined Action ID.'
+      description: The unique identifier of the wipe action.
       type: String
     - contextPath: Absolute.WipeAction.requestUid
-      description: ' The system-defined Request UID.'
+      description: The unique identifier of the wipe request.
       type: String
     - contextPath: Absolute.WipeAction.deviceUid
-      description: 'The system-defined Defined Uid.'
+      description: The unique identifier of the device.
       type: String
     - contextPath: Absolute.WipeAction.deviceName
-      description: 'The system-defined Defined Name.'
+      description: The name of the device.
       type: String
     - contextPath: Absolute.WipeAction.esn
-      description: 'The system-defined ESN.'
+      description: The Electronic Serial Number of the device.
+      type: String
+    - contextPath: Absolute.WipeAction.actionStatus
+      description: The status of the wipe action.
       type: String
     - contextPath: Absolute.WipeAction.updatedDateTimeUtc
-      description: 'The action updated date.'
+      description: The date and time when the wipe action was last updated.
       type: Date
     - contextPath: Absolute.WipeAction.createdDateTimeUtc
-      description: 'The action created date.'
+      description: The date and time when the wipe action was created.
       type: Date
-    - contextPath: Absolute.WipeAction.actionStatus
-      description: 'The action status.'
-      type: String
     - contextPath: Absolute.WipeAction.certificateUid
-      description: 'The action certificate Uid.'
+      description: The unique identifier of the certificate.
       type: String
   - arguments:
-    - description: The system-defined unique identifier of the Device Action request.
-      name: request_uid
+    - name: device_uids
+      description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
+      isArray: true
       required: true
-    - description: The system-defined unique identifiers of the actions included in the request.
-      name: action_uids
-      required: true
-    - description: Indicates whether all actions in the request should be canceled.
-      name: cancel_all_actions
+    - name: mac_user_name
+      description: The username of the user with administrative rights (applies to Mac devices only).
+    - name: mac_pwd
+      description: The password of the user with administrative rights (applies to Mac devices only).
+      secret: true
+    - name: unenroll_devices_and_free_licenses
+      description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      defaultValue: "false"
-    description: Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
-    name: absolute-wipe-request-cancel
-    outputs:
-    - contextPath: Absolute.WipeRequest.code
-      description: 'request code.'
-      type: String
-    - contextPath: Absolute.WipeRequest.message
-      description: 'request message.'
-      type: String
-    - contextPath: Absolute.WipeRequest.details.message
-      description: 'request details.'
-      type: String
-    - contextPath: Absolute.WipeRequest.details.code
-      description: 'request details message.'
-      type: String
-    - contextPath: Absolute.WipeRequest.details.field
-      description: 'request details field.'
-      type: String
-  - arguments:
-    - description: The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices.
-      name: device_uids
-      required: true
-    - description: The username of the user with administrative rights (applies to Mac devices only.
-      name: mac_user_name
-    - description: The password of the user with administrative rights (applies to Mac devices only).
-      name: mac_pwd
-    - description: Indicates whether a Windows device should be unenrolled after the Wipe is complete.
-      name: unenroll_devices_and_free_licenses
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      defaultValue: "false"
-    description:  Create a Wipe request for the devices.
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     name: absolute-wipe-request-create
-    outputs:
-    - contextPath: Absolute.WipeRequest.requestUid
-      description: 'The system-defined Request UID.'
-      type: String
+    description: Create a Wipe request for the devices.
+  - arguments:
+    - name: request_uid
+      description: The system-defined unique identifier of the Device Action request.
+      required: true
+    - name: action_uids
+      description: The system-defined unique identifiers of the actions included in the request.
+      isArray: true
+      required: true
+    - name: cancel_all_actions
+      description: Indicates whether all actions in the request should be canceled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    name: absolute-wipe-request-cancel
+    description: Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
   runonce: false
   script: '-'
   type: python
