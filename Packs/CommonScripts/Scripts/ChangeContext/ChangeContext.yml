@@ -29,7 +29,7 @@ name: ChangeContext
 script: '-'
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.13.10116658
+dockerimage: demisto/python3:3.12.13.10404775
 runas: DBotWeakRole
 subtype: python3
 fromversion: 5.0.0
