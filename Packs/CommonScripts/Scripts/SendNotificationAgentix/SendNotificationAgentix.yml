@@ -55,7 +55,7 @@ isInternal: true
 tags:
 - Utility
 type: python
-dockerimage: demisto/python3:3.12.13.10404775
+dockerimage: demisto/python3:3.12.12.6663663
 dependson:
   must:
   - send-notification
@@ -64,4 +64,3 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
-toversion: 8.14.0

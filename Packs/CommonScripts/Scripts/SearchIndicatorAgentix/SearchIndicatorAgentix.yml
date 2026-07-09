@@ -68,4 +68,3 @@ tests:
 - No tests (auto formatted)
 marketplaces:
   - platform
-toversion: 8.14.0
