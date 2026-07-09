@@ -863,3 +863,140 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
 
     asyncio.run(test_fetch_events_long_running_command_flow(mocker, client))
     caplog.clear()
+
+
+# --- Tests for CIAC-17118 (PR #45016) OOM improvements -----------------------------------
+
+
+def test_decode_message_empty_string():
+    """
+    Given: An empty string as the message to decode.
+    When: Calling Akamai_SIEM.decode_message with an empty/falsy value.
+    Then: Ensure the new guard returns an empty list instead of attempting to decode.
+    """
+    assert Akamai_SIEM.decode_message("") == []
+
+
+def test_decode_url_empty_string():
+    """
+    Given: An empty string as the headers to decode.
+    When: Calling Akamai_SIEM.decode_url with an empty/falsy value.
+    Then: Ensure the new guard returns an empty dict instead of attempting to decode.
+    """
+    assert Akamai_SIEM.decode_url("") == {}
+
+
+def test_fetch_events_command_decodes_in_place_and_counts_last_page_size(client, mocker):
+    """
+    Given: A single page of two serialized events followed by an empty final page.
+    When: Calling fetch_events_command with should_skip_decode_events=False.
+    Then:
+    - Ensure events are decoded in place (yielded list holds dicts, not raw strings).
+    - Ensure total_events_count equals last_page_size (the number of events on the page).
+    """
+    request_headers = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com"
+    event_1 = f'{{"id": 1, "httpMessage": {{"start": 1, "requestHeaders": "{request_headers}"}}}}'
+    event_2 = f'{{"id": 2, "httpMessage": {{"start": 2, "requestHeaders": "{request_headers}"}}}}'
+
+    # Provide a timeout context so the between-iterations break check has valid numbers to work with.
+    mocker.patch.object(demisto, "callingContext", {"context": {"TimeoutDuration": 300000000000}})
+    Akamai_SIEM.EXECUTION_START_TIME = datetime.utcnow()
+    mocker.patch.object(
+        client,
+        "get_events_with_offset",
+        side_effect=[([event_1, event_2], "offset_1"), ([], "offset_1")],
+    )
+
+    results = list(
+        Akamai_SIEM.fetch_events_command(
+            client=client,
+            fetch_time="1 hour",
+            fetch_limit=10,
+            config_ids="50170",
+            ctx={},
+            page_size=2,
+            should_skip_decode_events=False,
+        )
+    )
+
+    # First yield holds the processed page; the final yield is the empty terminator.
+    processed_events, offset, total_events_count, _ = results[0]
+    assert offset == "offset_1"
+    assert total_events_count == 2  # equals last_page_size
+    assert all(isinstance(event, dict) for event in processed_events)
+    assert [event["id"] for event in processed_events] == [1, 2]
+    assert results[-1][0] == []  # final terminating yield
+
+
+def test_fetch_events_command_skip_decode_keeps_raw_strings(client, mocker):
+    """
+    Given: A single page of two serialized events followed by an empty final page.
+    When: Calling fetch_events_command with should_skip_decode_events=True.
+    Then: Ensure events are yielded untouched as raw strings and the count reflects last_page_size.
+    """
+    event_1 = '{"id": 1, "httpMessage": {"start": 1}}'
+    event_2 = '{"id": 2, "httpMessage": {"start": 2}}'
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"TimeoutDuration": 300000000000}})
+    Akamai_SIEM.EXECUTION_START_TIME = datetime.utcnow()
+    mocker.patch.object(
+        client,
+        "get_events_with_offset",
+        side_effect=[([event_1, event_2], "offset_1"), ([], "offset_1")],
+    )
+
+    results = list(
+        Akamai_SIEM.fetch_events_command(
+            client=client,
+            fetch_time="1 hour",
+            fetch_limit=10,
+            config_ids="50170",
+            ctx={},
+            page_size=2,
+            should_skip_decode_events=True,
+        )
+    )
+
+    processed_events, _, total_events_count, _ = results[0]
+    assert total_events_count == 2
+    assert processed_events == [event_1, event_2]
+    assert all(isinstance(event, str) for event in processed_events)
+
+
+def test_fetch_events_command_malformed_json_left_in_place(client, mocker):
+    """
+    Given: A page containing one valid serialized event and one un-parseable line.
+    When: Calling fetch_events_command with should_skip_decode_events=False.
+    Then:
+    - Ensure the malformed line is left in place as its original raw string (finally: events[index] = event).
+    - Ensure the valid event is decoded to a dict and no exception is raised.
+    - Ensure total_events_count still equals last_page_size (2), independent of decode success.
+    """
+    valid_event = '{"id": 1, "httpMessage": {"start": 1}}'
+    malformed_event = "this-is-not-json"
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"TimeoutDuration": 300000000000}})
+    Akamai_SIEM.EXECUTION_START_TIME = datetime.utcnow()
+    mocker.patch.object(
+        client,
+        "get_events_with_offset",
+        side_effect=[([valid_event, malformed_event], "offset_1"), ([], "offset_1")],
+    )
+
+    results = list(
+        Akamai_SIEM.fetch_events_command(
+            client=client,
+            fetch_time="1 hour",
+            fetch_limit=10,
+            config_ids="50170",
+            ctx={},
+            page_size=2,
+            should_skip_decode_events=False,
+        )
+    )
+
+    processed_events, _, total_events_count, _ = results[0]
+    assert total_events_count == 2  # counts the whole page, not just successfully decoded events
+    assert isinstance(processed_events[0], dict)
+    assert processed_events[0]["id"] == 1
+    assert processed_events[1] == malformed_event  # left untouched in place

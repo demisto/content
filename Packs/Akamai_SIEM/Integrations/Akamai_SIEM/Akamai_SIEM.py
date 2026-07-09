@@ -602,6 +602,7 @@ def fetch_events_command(
                 finally:
                     events[index] = event
         total_events_count += last_page_size
+        demisto.debug(f"Finished processing page of {last_page_size} events, {total_events_count=} so far.")
         execution_counter += 1
         yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
@@ -1320,6 +1321,7 @@ def main():  # pragma: no cover
                         f"sent {total_events_count} events to xsiam in total during this interval."
                     )
                     events.clear()
+                    demisto.debug("Cleared the sent events list to release memory before fetching the next page.")
             if not should_fail:
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
