@@ -19023,6 +19023,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19035,6 +19036,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19073,6 +19075,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19085,6 +19088,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19132,6 +19136,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19144,6 +19149,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19164,11 +19170,11 @@ script:
     description: "Retrieves the metadata for the firewall policies that you have defined. Required permissions: network-firewall:ListFirewallPolicies."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19188,6 +19194,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19200,6 +19207,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19224,11 +19232,11 @@ script:
     description: "Returns the data objects for the specified firewall policy. Required permissions: network-firewall:DescribeFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19248,6 +19256,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19260,6 +19269,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19344,11 +19354,11 @@ script:
     description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the firewall policy characteristic arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19368,6 +19378,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19380,6 +19391,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19485,11 +19497,11 @@ script:
     description: "Associates a firewall policy to a firewall. A firewall policy defines how to monitor and manage your VPC network traffic, using a collection of inspection rule groups and other settings. Each firewall requires one firewall policy association, and you can use the same firewall policy for multiple firewalls. Required permissions: network-firewall:AssociateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19509,6 +19521,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19521,6 +19534,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19553,11 +19567,11 @@ script:
     description: "Deletes the specified FirewallPolicy. Required permissions: network-firewall:DeleteFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19577,6 +19591,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19589,6 +19604,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19603,11 +19619,11 @@ script:
     description: "Updates the properties of the specified firewall policy. Required permissions: network-firewall:UpdateFirewallPolicy."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19627,6 +19643,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19639,6 +19656,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19706,11 +19724,11 @@ script:
     description: "Modifies the ChangeProtection flag, which indicates whether it is possible to change the firewall policy. Required permissions: network-firewall:UpdateFirewallPolicyChangeProtection."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -19730,6 +19748,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19742,6 +19761,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
