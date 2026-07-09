@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+Abnormal Security Event Collector,Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/AbnormalSecurityEventCollector.yml,Abnormal Security,connectors/abnormal-security,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

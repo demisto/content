@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: fraudwatch
+enabled: true
+metadata:
+  title: FraudWatch
+  description: Manage issues via the FraudWatch API. FraudWatch International provides a fully managed Enterprise Digital Brand Protection Suite, including online brand management and monitoring as well as other brand protection solutions that protect organizations and their customers around the world against online brand-related abuse.
+  version: 1.0.0
+  categories:
+  - Data Enrichment & Threat Intelligence
+  tags: []
+  vendor: Netcraft
+  publisher: Palo Alto Networks
+  author_image: fraudwatch.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: false

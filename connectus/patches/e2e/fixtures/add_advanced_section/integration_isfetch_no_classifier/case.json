@@ -1,0 +1,6 @@
+{
+  "description": "Integration with isfetch: true but no classifier (defaultclassifier) added explicitly in the yml. The patch should add the advanced classifier section.",
+  "connector": "arista-networks",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,connectors/abuseipdb,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

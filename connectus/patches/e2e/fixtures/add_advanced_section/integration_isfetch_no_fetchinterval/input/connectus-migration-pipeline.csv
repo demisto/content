@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+Gamma,Packs/Gamma/Integrations/Gamma/Gamma.yml,Gamma.AI,connectors/gamma.ai,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

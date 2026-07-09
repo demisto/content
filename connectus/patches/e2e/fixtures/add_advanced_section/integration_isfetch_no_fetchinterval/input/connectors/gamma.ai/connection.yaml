@@ -1,0 +1,172 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: gamma
+  label: Gamma
+  help_text: |
+    #### API Key
+    An API Key from your Gamma instance is required.
+    If you do not have a key, you can obtain one by going to your Gamma instance > Settings > API Key and generating a key.
+
+    #### Fetching
+
+    1. If you are fetching violations, ensure that 'Fetches issues' is selected.
+    2. Enter the Gamma violation ID number at which to begin your fetch. The fetch is inclusive of the ID you enter. If empty, the fetch will default to the first violation that exists. You can retrieve a list of violation IDs by running the gamma-get-violation-list command.
+    3. You may enter an optional limit of violations to fetch at once for 'Results per fetch'.
+profiles:
+- id: api_key.gamma
+  type: api_key
+  view_group: gamma
+  title: API Key
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:credentials_api_key.password
+  configurations:
+  - fields:
+    - id: credentials_api_key
+      title: Gamma API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: url
+      field_type: input
+      title: Server URL (e.g. https://example.net)
+      options:
+        help_text: URL of the Gamma API to query
+        default_value: https://app.gamma.ai
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engineGroup
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Gamma
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engineGroup
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Gamma
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false

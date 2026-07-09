@@ -1,0 +1,218 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: fraudwatch
+  label: FraudWatch
+  help_text: |
+    Due to limitations in the FraudWatch API, the first fetch timestamp can be at most 1 day.
+general_configurations:
+  configurations:
+  - view_group: fraudwatch
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-fraudwatch.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_fraudwatch
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: fraudwatch
+- id: fetch-issues_fraudwatch
+  configurations:
+  - fields:
+    - id: incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: FraudWatch
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incidentFetchInterval
+      field_type: duration
+      title: Issues Fetch Interval
+      options:
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: FraudWatch
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: FraudWatch-mapper
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: FraudWatch
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: brand
+      field_type: input
+      title: Brand
+      options:
+        help_text: Fetch incidents that match the specified brand. An error is encountered if the brand does not exist. A list of the existing brands can be retrieved by the 'fraudwatch-brands-list' command.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: first_fetch
+      field_type: input
+      title: First fetch timestamp
+      options:
+        help_text: 'format: <number> <time unit>, e.g., 12 hours, 1 day. Due to limitations in FraudWatch API, first fetch timestamp can be at most 1 day.'
+        default_value: 1 day
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: max_fetch
+      field_type: input
+      title: Maximum Incidents To Fetch
+      options:
+        default_value: '50'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: status
+      field_type: select
+      options:
+        values:
+        - key: active
+          label: active
+        - key: new
+          label: new
+        - key: monitor
+          label: monitor
+        - key: reactive
+          label: reactive
+        - key: onhold
+          label: onhold
+        - key: closed
+          label: closed
+        - key: closedmonitor
+          label: closedmonitor
+        - key: rejected
+          label: rejected
+        - key: duplicate
+          label: duplicate
+        searchable: true
+        clearable: true
+        description: Fetch incidents that have the specified status.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Status
+  view_group: fraudwatch

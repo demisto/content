@@ -1,0 +1,6 @@
+{
+  "description": "Integration with isfetch: true but no fetchinterval (incidentFetchInterval) added explicitly in the yml. The patch should add the advanced fetch interval section.",
+  "connector": "gamma.ai",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

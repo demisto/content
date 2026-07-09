@@ -1,0 +1,6 @@
+{
+  "description": "Integration with isfetchevents: true but no eventsfetchinterval added explicitly in the yml. The patch should add the advanced eventsfetchinterval section.",
+  "connector": "abnormal-security",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

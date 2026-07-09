@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+Awake Security,Packs/AwakeSecurity/Integrations/AwakeSecurity/AwakeSecurity.yml,Arista Networks,connectors/arista-networks,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

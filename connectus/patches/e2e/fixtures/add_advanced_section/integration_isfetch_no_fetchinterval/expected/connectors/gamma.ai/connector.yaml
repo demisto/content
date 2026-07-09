@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: gamma.ai
+enabled: true
+metadata:
+  title: Gamma.AI
+  description: Gamma.AI is an AI-powered enterprise cloud data discovery, data classification, and data loss prevention (DLP) platform. It provides 1-click automatic discovery and remediation of data loss instances across enterprise SaaS applications such as Slack, GitHub, GSuite, the Atlassian Suite, Microsoft Office 365, ServiceNow, and ZenDesk.
+  version: 1.0.0
+  categories:
+  - Network Security
+  tags: []
+  vendor: Gamma
+  publisher: Palo Alto Networks
+  author_image: gamma.ai.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: false

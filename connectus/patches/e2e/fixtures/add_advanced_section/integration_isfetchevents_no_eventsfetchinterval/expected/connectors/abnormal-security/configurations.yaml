@@ -1,0 +1,69 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: abnormal-security-event-collector
+  label: Abnormal Security Event Collector
+  help_text: |
+    This integration fetches threats from the Abnormal Security REST API. Use the first fetch time interval to set how far back to retrieve threats on the initial fetch, and the events fetch interval to control how often new threats are collected.
+general_configurations:
+  configurations:
+  - view_group: abnormal-security-event-collector
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-abnormal-security-event-collector.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: log-collection_abnormal-security-event-collector
+  configurations:
+  - fields:
+    - id: after
+      field_type: input
+      title: First fetch time interval
+      options:
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        default_value: 1 day
+  - fields:
+    - id: eventFetchInterval
+      title: Events Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  view_group: abnormal-security-event-collector

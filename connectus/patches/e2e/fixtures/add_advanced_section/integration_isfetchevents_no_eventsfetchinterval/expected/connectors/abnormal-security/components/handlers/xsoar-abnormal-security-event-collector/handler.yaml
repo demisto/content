@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-abnormal-security-event-collector
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Abnormal Security Event Collector.
+  module: xsoar
+  tags:
+  - Email
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Abnormal Security Event Collector
+    xsoar-pack-id: AbnormalSecurity
+  args: {}
+capabilities:
+- id: log-collection_abnormal-security-event-collector
+  auth_options:
+  - id: api_key.abnormal_security_event_collector
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+  actions:
+  - type: reset_events_last_run
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

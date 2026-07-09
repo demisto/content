@@ -1,0 +1,6 @@
+{
+  "description": "Integration with isfetchassets: true but no assetsfetchinterval added explicitly in the yml. The patch should add the advanced assetsfetchinterval section.",
+  "connector": "jamf",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

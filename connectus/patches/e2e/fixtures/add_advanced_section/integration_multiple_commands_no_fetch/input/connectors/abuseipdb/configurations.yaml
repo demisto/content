@@ -1,0 +1,142 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: abuseipdb
+  label: AbuseIPDB
+  help_text: |
+    Configure how IP reputation is evaluated:
+
+    - **IP Threshold**: Minimum score from AbuseIPDB analysis to consider an IP malicious. Must be above 20.
+    - **Source Reliability**: Reliability of the source providing the intelligence data.
+    - **Max reports age**: Time range (in days) of reports to consider.
+    - **Disable reputation lookups for private IP addresses**: Reduce the number of lookups made to the AbuseIPDB API.
+    - **Disregard quota errors**.
+
+    Note: Searching an entire subnet far back in time (e.g. Days=365) will likely cause a server timeout, and you will receive a 500 Internal Server Error response from the AbuseIPDB server.
+general_configurations:
+  configurations:
+  - view_group: abuseipdb
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-abuseipdb.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_abuseipdb
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: days
+      field_type: input
+      title: Maximum reports age (in days)
+      options:
+        default_value: '30'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: disable_private_ip_lookup
+      field_type: checkbox
+      options:
+        default_value: false
+        description: To reduce the number of lookups made to the AbuseIPDB API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Disable reputation lookups for private IP addresses
+  - fields:
+    - id: disregard_quota
+      field_type: checkbox
+      options:
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Disregard quota errors
+  - fields:
+    - id: integrationReliability
+      field_type: select
+      options:
+        values:
+        - key: A+ - 3rd party enrichment
+          label: A+ - 3rd party enrichment
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
+        description: Reliability of the source providing the intelligence data.
+        default_value: C - Fairly reliable
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Source Reliability
+  - fields:
+    - id: threshold
+      field_type: input
+      title: Minimum score threshold
+      options:
+        default_value: '80'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: abuseipdb

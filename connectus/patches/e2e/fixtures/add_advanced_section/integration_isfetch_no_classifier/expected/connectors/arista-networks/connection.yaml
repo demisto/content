@@ -1,0 +1,180 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: awake-security
+  label: Awake Security
+  help_text: |
+    Use the Awake Security integration to manage and respond to network threats. To connect, provide your **Credentials** (user name and password) and the **Awake Security server address**. Optionally enable **Trust any certificate (not secure)** and **Use system proxy settings**. After configuring, run a **Test** to validate the URLs, token, and connection.
+
+    Reference screenshots: https://user-images.githubusercontent.com/37335599/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png https://user-images.githubusercontent.com/37335599/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png https://user-images.githubusercontent.com/37335599/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png https://user-images.githubusercontent.com/37335599/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png https://user-images.githubusercontent.com/37335599/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png https://user-images.githubusercontent.com/37335599/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png https://user-images.githubusercontent.com/37335599/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png https://user-images.githubusercontent.com/37335599/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png
+profiles:
+- id: plain.awake_security
+  type: plain
+  view_group: awake-security
+  title: API Credentials
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: username:credentials.identifier,password:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Credentials
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: server
+      field_type: input
+      title: Awake Security server address
+      options:
+        default_value: https://example.awake.cloud
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: unsecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engineGroup
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Awake Security
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engineGroup
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Awake Security
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false

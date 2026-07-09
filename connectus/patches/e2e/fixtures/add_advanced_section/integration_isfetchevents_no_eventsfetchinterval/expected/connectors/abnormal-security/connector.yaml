@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: abnormal-security
+enabled: true
+metadata:
+  title: Abnormal Security
+  description: Abnormal Security provides comprehensive defense against the entire landscape of messaging threats, ranging from high-sophistication Vendor Email Compromise (VEC) and targeted spear-phishing to lower-priority graymail and unsolicited spam. Threat data is ingested via the Abnormal Security REST API, enabling continuous visibility into detected threats, remediation status, and attack metadata.
+  version: 1.0.0
+  categories:
+  - Email
+  tags:
+  - Email
+  vendor: Abnormal Security
+  publisher: Palo Alto Networks
+  author_image: abnormal-security.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: false

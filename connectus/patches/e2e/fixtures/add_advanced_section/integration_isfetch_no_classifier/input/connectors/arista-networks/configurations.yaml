@@ -1,0 +1,263 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: awake-security
+  label: Awake Security
+  help_text: |
+    Configure how Awake Security fetches issues. Set a comma-separated list of threat behaviors to generate issues for (for example, "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel") and the period between issue fetch intervals (in minutes). Set the minimum thresholds used to determine whether an indicator is suspicious or malicious.
+general_configurations:
+  configurations:
+  - view_group: awake-security
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-awake-security.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - view_group: awake-security
+    fields:
+    - id: feedExpirationPolicy
+      field_type: select
+      options:
+        values:
+        - key: indicatorType
+          label: indicatorType
+        - key: Time Interval
+          label: Time Interval
+        - key: Never Expire
+          label: Never Expire
+        - key: When removed from the feed
+          label: When removed from the feed
+        searchable: true
+        clearable: true
+        default_value: indicatorType
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Feed expiration policy
+  - view_group: awake-security
+    fields:
+    - id: feedExpirationInterval
+      field_type: input
+      options:
+        mask: false
+        default_value: '20160'
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+      title: Feed expiration interval
+configurations:
+- id: automation-and-remediation_awake-security
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: integrationReliability
+      field_type: select
+      options:
+        values:
+        - key: A+ - 3rd party enrichment
+          label: A+ - 3rd party enrichment
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
+        description: Reliability of the source providing the intelligence data.
+        default_value: B - Usually reliable
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Source Reliability
+  - fields:
+    - id: malicious_threshold
+      field_type: input
+      title: Minimum threshold to determine an indicator malicious in Demisto
+      options:
+        default_value: '66'
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: suspicious_threshold
+      field_type: input
+      title: Minimum threshold to determine an indicator suspicious in Demisto
+      options:
+        default_value: '33'
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  view_group: awake-security
+- id: fetch-issues_awake-security
+  configurations:
+  - fields:
+    - id: incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Awake Security
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incidentFetchInterval
+      title: Issues Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Awake Security
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Awake Security
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: fetch_interval
+      field_type: input
+      title: Period between incident fetch interval (in minutes)
+      options:
+        default_value: '1'
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: threat_behaviors
+      field_type: input
+      title: 'Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"'
+      options:
+        default_value: ''
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: awake-security

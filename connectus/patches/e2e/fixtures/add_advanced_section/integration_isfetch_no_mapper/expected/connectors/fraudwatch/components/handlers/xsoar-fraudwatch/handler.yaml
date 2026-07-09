@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-fraudwatch
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for FraudWatch.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: FraudWatch
+    xsoar-pack-id: FraudWatch
+  args: {}
+capabilities:
+- id: automation-and-remediation_fraudwatch
+  auth_options:
+  - id: api_key.fraudwatch
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+- id: fetch-issues_fraudwatch
+  auth_options:
+  - id: api_key.fraudwatch
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+  actions:
+  - type: reset_incidents_last_run
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

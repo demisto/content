@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+FraudWatch,Packs/FraudWatch/Integrations/FraudWatch/FraudWatch.yml,FraudWatch,connectors/fraudwatch,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"
