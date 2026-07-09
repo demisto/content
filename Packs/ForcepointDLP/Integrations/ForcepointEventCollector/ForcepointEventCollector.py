@@ -291,7 +291,7 @@ def main():  # pragma: no cover
         first_fetch = (
             arg_to_datetime(params.get("first_fetch"), settings=DATEPARSER_SETTINGS) if params.get("first_fetch") else None
         )
-        max_fetch = arg_to_number(params.get("max_fetch") or DEFAULT_MAX_FETCH)
+        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
         base_url = urljoin(params["url"], "/dlp/rest/v1")
 
         demisto.debug(f"Configuration: {base_url=}, {max_fetch=}, {first_fetch=}")
