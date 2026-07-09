@@ -51,171 +51,6 @@ SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
 urllib3.disable_warnings()
 
 
-# ============================================================================
-# MEMORY DIAGNOSTICS — CIAC-17118 (REMOVE AFTER OOM INVESTIGATION IS COMPLETE)
-# Temporary, behavior-neutral instrumentation to measure where memory is spent
-# inside the fetch-events cycle under the worker-runner cgroup (the box the
-# OOM-killer watches). It does NOT change any fetch/send behavior — it only
-# observes RSS, the cgroup current/peak, event counts and durations.
-# All output goes through demisto.info() with the [MEM] prefix so it can be
-# filtered in the engine logs by the integration instance name.
-# ============================================================================
-import threading  # noqa: E402  # MEM DIAG (REMOVE — CIAC-17118)
-import sys  # noqa: E402  # MEM DIAG (REMOVE — CIAC-17118): used by _page_nbytes for true object size
-
-
-def _mem_rss() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Process RSS in MB (our own code: events, copies, gzip buffers). -1 if unreadable."""
-    try:
-        with open("/proc/self/statm") as f:
-            return int(f.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 1024 / 1024
-    except Exception:
-        return -1.0
-
-
-def _mem_cgroup() -> tuple[float, float]:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Whole-cgroup memory (current_mb, peak_mb) — what the OOM-killer watches.
-
-    Tries cgroup v2 first, then v1. Returns -1 for any value that can't be read.
-    """
-
-    def _read(path: str) -> float:
-        try:
-            with open(path) as f:
-                v = f.read().strip()
-            return int(v) / 1024 / 1024 if v.isdigit() else -1.0
-        except Exception:
-            return -1.0
-
-    cur = _read("/sys/fs/cgroup/memory.current")
-    if cur >= 0:
-        return cur, _read("/sys/fs/cgroup/memory.peak")
-    return _read("/sys/fs/cgroup/memory/memory.usage_in_bytes"), _read("/sys/fs/cgroup/memory/memory.max_usage_in_bytes")
-
-
-def _mem_limit() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
-    """The cgroup memory limit in MB (the hard cap / box size the OOM-killer enforces).
-
-    cgroup v2 (`memory.max`) then v1 (`memory.limit_in_bytes`). Returns -1 if unreadable, and
-    -1 when the value is 'max'/unlimited or an absurdly large sentinel (no real cap configured).
-    """
-
-    def _read(path: str) -> float:
-        try:
-            with open(path) as f:
-                v = f.read().strip()
-            if not v.isdigit():  # cgroup v2 returns the literal "max" when unlimited
-                return -1.0
-            mb = int(v) / 1024 / 1024
-            # cgroup v1 reports a huge sentinel (~PAGE_SIZE * INT_MAX) when no limit is set.
-            return -1.0 if mb > 1024 * 1024 else mb  # ignore caps above 1 TB (effectively unlimited)
-        except Exception:
-            return -1.0
-
-    limit = _read("/sys/fs/cgroup/memory.max")
-    if limit >= 0:
-        return limit
-    return _read("/sys/fs/cgroup/memory/memory.limit_in_bytes")
-
-
-def _mem_log(label: str, t0: float, peak: float = -1.0, extra: str = "") -> None:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Log a single memory checkpoint.
-
-    Reports: process RSS, the run's RSS peak, the whole-cgroup current/peak, the cgroup limit,
-    and max_pct (cgroup_peak / limit) — the headline 'how close to OOM' number.
-    """
-    cg_cur, cg_peak = _mem_cgroup()
-    limit = _mem_limit()
-    max_pct = f"{(cg_peak / limit * 100):.1f}%" if (limit > 0 and cg_peak >= 0) else "n/a"
-    demisto.info(
-        f"[MEM] {label} rss={_mem_rss():.1f}MB rss_peak={peak:.1f}MB "
-        f"cgroup_cur={cg_cur:.1f}MB cgroup_peak={cg_peak:.1f}MB limit={limit:.1f}MB max_pct={max_pct} "
-        f"t=+{time.time() - t0:.2f}s {extra}"
-    )
-
-
-def _timeout_budget_seconds() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
-    """The docker execution timeout budget in seconds (so we can tell if a cycle ends on time vs memory). -1 if unknown."""
-    try:
-        nano = demisto.callingContext.get("context", {}).get("TimeoutDuration")
-        return nano / 1_000_000_000 if nano else -1.0
-    except Exception:
-        return -1.0
-
-
-class _MemPeakSampler:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Background RSS peak sampler — runs for the ENTIRE cycle so transient spikes
-    inside the (copy-heavy) threaded CSP send are not missed by discrete checkpoints.
-
-    Usage:
-        sampler = _MemPeakSampler(start_peak=_mem_rss())
-        with sampler:
-            ... whole fetch cycle ...
-        peak = sampler.peak
-    """
-
-    def __init__(self, start_peak: float = 0.0, interval: float = 0.1) -> None:
-        self.peak = start_peak
-        self._interval = interval
-        self._stop = False
-        self._thread: threading.Thread | None = None
-
-    def _run(self) -> None:
-        while not self._stop:
-            self.peak = max(self.peak, _mem_rss())
-            time.sleep(self._interval)
-
-    def __enter__(self) -> "_MemPeakSampler":
-        self._thread = threading.Thread(target=self._run, name="mem-peak-sampler", daemon=True)
-        self._thread.start()
-        return self
-
-    def __exit__(self, *_exc) -> None:
-        self._stop = True
-        if self._thread:
-            self._thread.join(timeout=2)
-        self.peak = max(self.peak, _mem_rss())
-
-
-# Module-level handle so probes deep in the fetch loop can update the run's RSS peak.
-_MEM_SAMPLER: "_MemPeakSampler | None" = None  # MEM DIAG (REMOVE — CIAC-17118)
-_MEM_T0: float = 0.0  # MEM DIAG (REMOVE — CIAC-17118): cycle start time, set in main() for relative timestamps
-
-# Unique stamp printed at the start of every cycle so we can confirm in the engine logs that THIS
-# instrumented build is the one actually running on the tenant (not a cached/older upload).
-_MEM_BUILD_STAMP = "CIAC-17118-mem-probe-v1"  # MEM DIAG (REMOVE — CIAC-17118)
-
-
-def _mem_peak() -> float:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Current run's RSS peak (from the background sampler), or live RSS if no sampler is active."""
-    return _MEM_SAMPLER.peak if _MEM_SAMPLER is not None else _mem_rss()
-
-
-def _page_size_mb(page: list, sample: int = 200) -> float:  # MEM DIAG (REMOVE — CIAC-17118)
-    """Approx. true in-memory size of ONE page (list + its items) in MB, allocator-independent.
-
-    Uses sys.getsizeof (shallow) on the list container plus a sampled average of item sizes,
-    scaled to the full length, so it stays O(sample) not O(len(page)) on 10k-item pages.
-    This is the real Python-object footprint of the page, independent of OS/allocator RSS noise.
-    """
-    try:
-        n = len(page)
-        if n == 0:
-            return 0.0
-        container = sys.getsizeof(page)
-        step = max(1, n // sample)
-        sampled = [sys.getsizeof(page[i]) for i in range(0, n, step)]
-        avg_item = sum(sampled) / len(sampled)
-        return (container + avg_item * n) / 1024 / 1024
-    except Exception:
-        return -1.0
-
-
-# ============================================================================
-# END MEMORY DIAGNOSTICS — CIAC-17118
-# ============================================================================
-
-
 class Client(BaseClient):
     def get_events(
         self,
@@ -696,7 +531,7 @@ def fetch_events_command(
     while total_events_count < fetch_limit:
         if execution_counter > 0:
             demisto.info(f"The execution number is {execution_counter}, checking for breaking conditions.")
-            if is_last_request_smaller_than_page_size(len(events), page_size):  # type: ignore[has-type]  # pylint: disable=E0601
+            if is_last_request_smaller_than_page_size(last_page_size, page_size):  # type: ignore[has-type]  # pylint: disable=E0601
                 demisto.info("last request wasn't big enough, breaking.")
                 break
             should_break, worst_case_time = is_interval_doesnt_have_enough_time_to_run(TIME_TO_RUN_BUFFER, worst_case_time)
@@ -1445,123 +1280,48 @@ def main():  # pragma: no cover
                 page_size = limit
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             should_fail = False
-            # ===== MEM DIAG (REMOVE — CIAC-17118): measure the whole fetch cycle =====
-            global _MEM_SAMPLER, _MEM_T0  # noqa: PLW0603
-            _MEM_T0 = time.time()
-            _mem_sampler = _MemPeakSampler(start_peak=_mem_rss())
-            _MEM_SAMPLER = _mem_sampler  # publish to the module global so _mem_peak() works deep in the stack
-            page_counter = 0
             offset = total_events_count = 0  # ensure defined even if the generator yields nothing
             auto_trigger_next_run = False
-            _mem_log(  # build stamp + start-of-cycle baseline (the floor before any data)
-                f"CYCLE_START build={_MEM_BUILD_STAMP}",
-                _MEM_T0,
-                _mem_peak(),
-                extra=(
-                    f"fetch_limit={limit} page_size={page_size} config_ids={config_ids} "
-                    f"skip_decode={should_skip_decode_events} timeout_budget={_timeout_budget_seconds():.1f}s"
-                ),
-            )
-            _prev_iter_baseline = _mem_rss()  # MEM DIAG (REMOVE — CIAC-17118): RSS entering the loop (== CYCLE_START floor)
-            with _mem_sampler:  # use the local (never None) -> avoids pylint NoneType context-manager false positive
-                for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
-                    fetch_events_command(
-                        client,
-                        params.get("fetchTime", "5 minutes"),
-                        fetch_limit=limit,
-                        config_ids=config_ids,
-                        ctx=get_integration_context() or {},
-                        page_size=page_size,
-                        should_skip_decode_events=should_skip_decode_events,
+            for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
+                fetch_events_command(
+                    client,
+                    params.get("fetchTime", "5 minutes"),
+                    fetch_limit=limit,
+                    config_ids=config_ids,
+                    ctx=get_integration_context() or {},
+                    page_size=page_size,
+                    should_skip_decode_events=should_skip_decode_events,
+                )
+            ):
+                if events:
+                    post_latest_event_time(
+                        latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using streaming send."
                     )
-                ):
-                    if events:
-                        page_counter += 1
-                        # ===== MEM DIAG (REMOVE — CIAC-17118): per-iteration baseline + drift check (#3) =====
-                        # _iter_baseline is this iteration's RSS floor. drift = how much the floor moved vs the
-                        # PREVIOUS iteration's post-send floor -> if ~0 the prior page was freed; if it climbs each
-                        # page, memory is NOT being released between iterations.
-                        _iter_baseline = _mem_rss()
-                        _iter_drift = _iter_baseline - _prev_iter_baseline
-                        _mem_log(
-                            f"iter_start page={page_counter}",
-                            _MEM_T0,
-                            _mem_peak(),
-                            extra=f"iter_baseline={_iter_baseline:.1f}MB drift_vs_prev_iter={_iter_drift:+.1f}MB",
+                    data_size = len(events)
+                    should_fail = False
+                    try:
+                        send_events_to_xsiam(
+                            events,
+                            VENDOR,
+                            PRODUCT,
+                            should_update_health_module=False,
+                            chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                            use_streaming_send=True,
+                            data_format="json",
                         )
-                        # ===== per-page size (#2): footprint of THIS page only, not the running total =====
-                        _page_events = len(events)
-                        _page_mb = _page_size_mb(events)  # true Python-object size (allocator-independent), MB
-                        _page_rss_delta = _mem_rss() - _iter_baseline  # OS-level RSS attributable to this page, MB
-                        _per_event_kb = (_page_mb * 1024 / _page_events) if _page_events else 0.0  # KB / event
-                        _mem_log(  # RAM right after a page was fetched+decoded (held in memory), before the send
-                            f"page_fetched page={page_counter}",
-                            _MEM_T0,
-                            _mem_peak(),
-                            extra=(
-                                f"page_events={_page_events} total_so_far={total_events_count} "
-                                f"page_mb={_page_mb:.1f}MB page_rss_delta={_page_rss_delta:.1f}MB "
-                                f"per_event={_per_event_kb:.2f}KB"
-                            ),
+                    except Exception as e:
+                        demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
+                        should_fail = True
+                    if should_fail:
+                        raise DemistoException(
+                            "Encountered an error while sending events to xsiam, will attempt to send all events again."
                         )
-                        post_latest_event_time(
-                            latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using streaming send."
-                        )
-                        data_size = len(events)
-                        should_fail = False
-                        try:
-                            send_events_to_xsiam(
-                                events,
-                                VENDOR,
-                                PRODUCT,
-                                should_update_health_module=False,
-                                chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
-                                use_streaming_send=True,
-                                data_format="json",
-                            )
-                        except Exception as e:
-                            demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
-                            should_fail = True
-                        if should_fail:
-                            raise DemistoException(
-                                "Encountered an error while sending events to xsiam, will attempt to send all events again."
-                            )
-                        demisto.info("Finished executing streaming send_events_to_xsiam.")
-                        _mem_log(  # RAM right after the (streaming, free-as-you-go) send of this page completed
-                            f"page_sent page={page_counter}",
-                            _MEM_T0,
-                            _mem_peak(),
-                            extra=f"sent_events={data_size} total_so_far={total_events_count}",
-                        )
-                        demisto.info(
-                            f"Done sending {data_size} events to xsiam."
-                            f"sent {total_events_count} events to xsiam in total during this interval."
-                        )
-                        events.clear()
-                        # ===== MEM DIAG (REMOVE — CIAC-17118): end-of-iteration freed floor (#3) =====
-                        # Measured AFTER the send completes. This becomes the baseline the NEXT iteration compares
-                        # against, so drift_vs_prev_iter reflects "did this page get released before the next fetch".
-                        # NOTE: observation only — we do NOT explicitly free here (that belongs on the fix branch).
-                        _iter_end_rss = _mem_rss()
-                        _freed = _iter_baseline - _iter_end_rss
-                        _mem_log(
-                            f"iter_end page={page_counter}",
-                            _MEM_T0,
-                            _mem_peak(),
-                            extra=f"iter_end_rss={_iter_end_rss:.1f}MB freed_since_iter_start={_freed:+.1f}MB",
-                        )
-                        _prev_iter_baseline = _iter_end_rss  # update so the next iteration's drift/delta are correct
-            _mem_log(  # end-of-cycle summary: rss_peak + cgroup_peak are the headline before/after numbers
-                f"CYCLE_END build={_MEM_BUILD_STAMP}",
-                _MEM_T0,
-                _mem_peak(),
-                extra=(
-                    f"total_events={total_events_count} pages={page_counter} "
-                    f"cycle_time={time.time() - _MEM_T0:.2f}s auto_trigger_next_run={auto_trigger_next_run}"
-                ),
-            )
-            _MEM_SAMPLER = None
-            # ===== END MEM DIAG (CIAC-17118) =====
+                    demisto.info("Finished executing streaming send_events_to_xsiam.")
+                    demisto.info(
+                        f"Done sending {data_size} events to xsiam."
+                        f"sent {total_events_count} events to xsiam in total during this interval."
+                    )
+                    events.clear()
             if not should_fail:
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
