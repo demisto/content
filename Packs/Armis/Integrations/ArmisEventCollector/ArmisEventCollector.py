@@ -1,7 +1,10 @@
 import copy
+import gc
 import itertools
 import threading
+import time
 import traceback
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
@@ -17,7 +20,13 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 120
+MAX_PAGINATION_DURATION_SECONDS = 90  # Per-type pagination time cap; breaks early and resumes next cycle to bound cycle length
+MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
+TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
+TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
+BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
+JSONDECODE_MAX_RETRIES = 3  # Retries on transient nginx malformed JSON (Armis-recommended)
+ALERT_ENRICHMENT_CHUNK_SIZE = 500  # Alerts per enrich+ship chunk; caps peak memory ~150MB
 
 
 class EVENT_TYPE:
@@ -73,11 +82,15 @@ API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 
 
 class IntegrationContextManager:
-    """Thread-safe manager for integration context operations.
+    """Thread-safe manager for integration context + last_run operations.
 
-    This class provides thread-safe access to the integration context (last_run)
-    with proper locking mechanisms to prevent race conditions when multiple threads
-    are accessing or updating the context simultaneously.
+    Provides serialized access to two distinct backing stores:
+      * ``demisto.getIntegrationContext()`` — holds the shared access token and its
+        ``token_generated_at`` timestamp (read/written by token-management methods).
+      * ``demisto.getLastRun()`` — holds per-event-type fetch state (read/written by
+        ``update_event_type_state`` and ``get_last_run``).
+
+    All methods are safe to call from worker threads.
     """
 
     def __init__(self):
@@ -85,10 +98,11 @@ class IntegrationContextManager:
 
         Two distinct locks are used to separate concerns and optimize performance:
 
-        Lock #1 (_lock): General-purpose RLock for protecting integration context operations
+        Lock #1 (_lock): General-purpose RLock for protecting both backing stores
         - Type: threading.RLock() - Reentrant lock (same thread can acquire multiple times)
-        - Purpose: Protects all read/write operations to integration context (last_run)
-        - Used by: get_access_token(), save_access_token_to_context(), update_event_type_state(), get_last_run()
+        - Purpose: Protects read/write of integration context (access token + timestamp) AND last_run
+        - Used by: get_access_token(), save_access_token_to_context() (integration context);
+                   update_event_type_state(), get_last_run() (last_run)
         - Why RLock: Methods can call each other while holding the lock without deadlocking
 
         Lock #2 (_token_refresh_lock): Specialized lock for coordinating token refresh
@@ -122,22 +136,24 @@ class IntegrationContextManager:
             Optional[str]: The current access token, or None if not set.
         """
         with self._lock:
-            last_run = demisto.getLastRun()
-            return last_run.get("access_token")
+            integration_context = demisto.getIntegrationContext()
+            return integration_context.get("access_token")
 
     def save_access_token_to_context(self, new_token: str) -> None:
         """Thread-safe persistence of access token to integration context.
 
-        This method saves the access token to the integration context (last_run),
+        This method saves the access token to the integration context,
         making it available to all threads and persisting it between executions.
+        Also saves the generation timestamp to enable proactive time-based refresh.
 
         Args:
             new_token (str): The new access token to store.
         """
         with self._lock:
-            last_run = demisto.getLastRun()
-            last_run["access_token"] = new_token
-            demisto.setLastRun(last_run)
+            integration_context = demisto.getIntegrationContext()
+            integration_context["access_token"] = new_token
+            integration_context["token_generated_at"] = datetime.now(timezone.utc).isoformat()
+            demisto.setIntegrationContext(integration_context)
             demisto.debug(f"Access token saved to integration context by thread {threading.current_thread().name}")
 
     def update_event_type_state(self, state: dict) -> None:
@@ -180,33 +196,81 @@ class Client(BaseClient):
         base_url,
         api_key,
         access_token,
+        context_manager: IntegrationContextManager,
         verify=False,
         proxy=False,
-        context_manager: IntegrationContextManager | None = None,
     ):
-        self._api_key = api_key
-        self._context_manager = context_manager
-        self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        if not access_token or not self.is_valid_access_token(access_token):
-            demisto.debug("Invalid access token was used, attempting to get new access token.")
-            access_token = self.refresh_access_token()
-            demisto.debug("New access token was successfully generated.")
-        self.apply_access_token(access_token)
-
-    def apply_access_token(self, access_token=None):
-        """Apply access token to client instance (updates headers and internal state).
-
-        This method updates the client's in-memory state with the provided token.
-        It does NOT persist the token to integration context.
+        """Initialize the client.
 
         Args:
-            access_token (str, optional): The access token to use. If None, generates a new one.
+            base_url: Armis API base URL.
+            api_key: Armis API secret key (used to mint access tokens).
+            access_token: Existing access token from integration context (may be None or stale;
+                the constructor will refresh it as needed).
+            context_manager: Required. Coordinates the shared access token + locks across worker
+                threads. Required because refresh_access_token, the auth-error retry path, and
+                multi-threaded token coordination all depend on it.
+            verify: Whether to verify TLS certificates.
+            proxy: Whether to honour system proxy settings.
         """
-        if not access_token:
-            access_token = self.get_access_token()
-        headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-        self._headers = headers
+        self._api_key = api_key
+        self._context_manager = context_manager
+        self._access_token: str | None = None  # Initialize to prevent AttributeError in refresh_access_token
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        if not access_token or not self._is_token_still_fresh():
+            demisto.debug("Access token missing or expired, attempting to get new access token.")
+            access_token = self.refresh_access_token()
+            demisto.debug("New access token was successfully generated.")
+        else:
+            integration_context = demisto.getIntegrationContext()
+            token_generated_at = integration_context.get("token_generated_at", "unknown")
+            token_prefix = access_token[:8] if access_token else "None"
+            demisto.debug(f"Reusing existing token (prefix: {token_prefix}..., generated_at: {token_generated_at})")
+        self.apply_access_token(access_token)
+
+    def _is_token_still_fresh(self) -> bool:
+        """Check if the token is still within its valid TTL window using a saved timestamp.
+
+        Armis tokens have a fixed 30-minute TTL (confirmed by Armis).
+        We proactively refresh at 25 minutes to avoid mid-cycle 401 errors.
+
+        Returns:
+            bool: True if the token is still fresh (< 25 min old), False if it needs refresh.
+        """
+        integration_context = demisto.getIntegrationContext()
+        token_generated_at_str = integration_context.get("token_generated_at")
+        if not token_generated_at_str:
+            # No timestamp - force refresh
+            safe_debug("No token_generated_at in integration context - forcing refresh")
+            return False
+        try:
+            token_generated_at = datetime.fromisoformat(token_generated_at_str)
+            # Handle timestamps persisted by older code versions that used datetime.utcnow()
+            # (timezone-naive). Make them aware so subtraction with datetime.now(timezone.utc) works.
+            # Kept for upgrade compatibility: instances upgrading from a prior version may still
+            # have a naive token_generated_at in their integration context.
+            if token_generated_at.tzinfo is None:
+                token_generated_at = token_generated_at.replace(tzinfo=timezone.utc)
+        except Exception as ex:
+            safe_debug(f"Could not parse token_generated_at '{token_generated_at_str}': {_safe_error_str(ex)} - forcing refresh")
+            return False
+        age_seconds = (datetime.now(timezone.utc) - token_generated_at).total_seconds()
+        is_fresh = age_seconds < (TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS)
+        safe_debug(
+            f"Token age: {age_seconds:.0f}s, fresh: {is_fresh} (threshold: {TOKEN_TTL_SECONDS - TOKEN_REFRESH_BUFFER_SECONDS}s)"
+        )
+        return is_fresh
+
+    def apply_access_token(self, access_token: str) -> None:
+        """Apply an already-acquired access token to client instance (updates headers + internal state).
+
+        This method only updates the client's in-memory state with the provided token; it
+        does NOT acquire a new token and does NOT persist anything to integration context.
+
+        Args:
+            access_token (str): The access token to apply. Must be non-empty.
+        """
+        self._headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
         self._access_token = access_token
 
     def refresh_access_token(self) -> str:
@@ -218,16 +282,13 @@ class Client(BaseClient):
         Returns:
             str: The refreshed access token.
         """
-        if not self._context_manager:
-            # No context manager - single-threaded mode, just refresh
-            return self.get_access_token()
-
         # Use token refresh lock to ensure only one thread refreshes at a time
         with self._context_manager.acquire_token_refresh_lock():
-            # Double-check: another thread might have refreshed while we were waiting
+            # Double-check: another thread might have refreshed while we were waiting.
+            # Use timestamp-based freshness (_is_token_still_fresh) instead of a live API ping
             current_token = self._context_manager.get_access_token()
-            if current_token and current_token != self._access_token and self.is_valid_access_token(current_token):
-                # Token was updated by another thread and is valid
+            if current_token and current_token != self._access_token and self._is_token_still_fresh():
+                # Token was updated by another thread and is still fresh per our timestamp
                 demisto.debug(
                     f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
                 )
@@ -239,14 +300,29 @@ class Client(BaseClient):
                 new_token = self.get_access_token()
             except Exception as e:
                 # Handle gracefully if token refresh fails (e.g., API errors)
-                demisto.debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(e)}")
+                safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(e)}")
                 raise
 
-            # Save to context so other threads can see it
-            if self._context_manager:
-                self._context_manager.save_access_token_to_context(new_token)
-
+            # Save to context so other threads can see it (also writes token_generated_at)
+            self._context_manager.save_access_token_to_context(new_token)
             return new_token
+
+    def _do_search_request(self, params: dict) -> dict:
+        """Single chokepoint for the GET /search/ call.
+
+        Every call site (initial fetch, auth-retry, JSON-decode-retry) goes through here
+        so the retry policy (``retries=1``, ``status_list_to_retry={500, 502}``) is applied
+        uniformly. Adding upstream/proxy 5xx codes here will propagate everywhere.
+        """
+        return self._http_request(
+            url_suffix="/search/",
+            method="GET",
+            params=params,
+            headers=self._headers,
+            timeout=API_TIMEOUT,
+            retries=1,
+            status_list_to_retry={500, 502},
+        )
 
     def perform_fetch(self, params):
         """Perform API fetch with coordinated token refresh on expiration.
@@ -261,74 +337,104 @@ class Client(BaseClient):
             Exception: If the request fails for reasons other than token expiration.
         """
         try:
-            raw_response = self._http_request(
-                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-            )
+            return self._do_search_request(params)
         except Exception as e:
-            # Use repr() for JSON errors to avoid parsing issues, str() for others
-            error_str = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
+            error_str = _safe_error_str(e)
 
             # Detect authentication errors more broadly - including JSON parse errors from HTML responses
             is_auth_error = "Invalid access token" in error_str or "401" in error_str or "Unauthorized" in error_str
 
             if is_auth_error:
-                safe_debug(
-                    f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}"
-                )
+                return self._handle_auth_error_and_retry(params, error_str)
+            if isinstance(e, json.JSONDecodeError):
+                return self._handle_json_decode_error_and_retry(params, e)
 
-                # If using context manager, try to get fresh token from context first
-                if self._context_manager:
-                    fresh_token = self._context_manager.get_access_token()
-                    if fresh_token and fresh_token != self._access_token:
-                        safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
-                        self.apply_access_token(fresh_token)
-                        # Retry with the fresh token
-                        try:
-                            return self._http_request(
-                                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                            )
-                        except Exception as retry_e:
-                            # Use repr() for JSON errors to avoid parsing issues, str() for others
-                            retry_error_str = repr(retry_e) if isinstance(retry_e, json.JSONDecodeError) else str(retry_e)
-                            # Check if retry with context token failed for a non-auth reason
-                            # If it's not an auth error (e.g., network issue, timeout), raise immediately
-                            is_retry_auth_error = "Invalid access token" in retry_error_str or "401" in retry_error_str
-                            if not is_retry_auth_error:
-                                raise retry_e
-                            # If we reach here, the token from context was also invalid - proceed to full refresh
-                            safe_debug(
-                                f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh"
-                            )
+            safe_debug(f"Error occurred while fetching events: {error_str}")
+            raise
 
-                # Perform coordinated token refresh (handles 401 gracefully during refresh)
+    def _handle_auth_error_and_retry(self, params: dict, error_str: str) -> dict:
+        """Handle a detected auth error: try the in-context token, else perform a full refresh, then retry.
+
+        Extracted from ``perform_fetch`` to keep the dispatcher small. Behaviour is
+        identical to the previous inline implementation.
+        """
+        integration_context = demisto.getIntegrationContext()
+        token_generated_at = integration_context.get("token_generated_at", "unknown")
+        # Cast to str for mypy
+        token_prefix = str(self._access_token)[:8] if self._access_token else "None"
+        safe_debug(
+            f"Thread {threading.current_thread().name}: Authentication error detected (401/Unauthorized): {error_str}. "
+            f"Token prefix: {token_prefix}..., generated_at: {token_generated_at}"
+        )
+
+        # If using context manager, try to get fresh token from context first
+        if self._context_manager:
+            fresh_token = self._context_manager.get_access_token()
+            if fresh_token and fresh_token != self._access_token:
+                safe_debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
+                self.apply_access_token(fresh_token)
+                # Retry with the fresh token (uses the same retry policy as the initial call)
                 try:
-                    new_token = self.refresh_access_token()
-                    self.apply_access_token(new_token)
-                    safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
-                except Exception as refresh_e:
-                    safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {str(refresh_e)}")
-                    raise
+                    return self._do_search_request(params)
+                except Exception as retry_e:
+                    retry_error_str = _safe_error_str(retry_e)
+                    # Check if retry with context token failed for a non-auth reason
+                    # If it's not an auth error (e.g., network issue, timeout), raise immediately
+                    is_retry_auth_error = "Invalid access token" in retry_error_str or "401" in retry_error_str
+                    if not is_retry_auth_error:
+                        raise
+                    # If we reach here, the token from context was also invalid - proceed to full refresh
+                    safe_debug(f"Thread {threading.current_thread().name}: Context token also invalid, performing full refresh")
 
-                # Retry the request with new token
-                raw_response = self._http_request(
-                    url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
-                )
-            else:
-                demisto.debug(f"Error occurred while fetching events: {e}")
-                raise e
-        return raw_response
+        # Perform coordinated token refresh (handles 401 gracefully during refresh)
+        try:
+            new_token = self.refresh_access_token()
+            self.apply_access_token(new_token)
+            safe_debug(f"Thread {threading.current_thread().name}: Access token successfully refreshed and applied")
+        except Exception as refresh_e:
+            safe_debug(f"Thread {threading.current_thread().name}: Token refresh failed: {_safe_error_str(refresh_e)}")
+            raise
 
-    def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time"):
-        """Fetches events using AQL query.
+        # Retry the request with new token (uses the same retry policy as the initial call)
+        return self._do_search_request(params)
+
+    def _handle_json_decode_error_and_retry(self, params: dict, original_exc: Exception) -> dict:
+        """Handle a JSONDecodeError: retry up to JSONDECODE_MAX_RETRIES times with exponential backoff.
+
+        Armis occasionally returns malformed/truncated JSON (nginx internal timeout on large
+        responses). Per Armis recommendation we retry with backoff before giving up.
+        """
+        safe_debug(f"JSONDecodeError on fetch, will retry up to {JSONDECODE_MAX_RETRIES} times: {_safe_error_str(original_exc)}")
+        last_retry_exc: Exception = original_exc
+        for attempt in range(1, JSONDECODE_MAX_RETRIES + 1):
+            backoff = 2 ** (attempt - 1)  # 1s, 2s, 4s
+            safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES}, backing off {backoff}s")
+            # Armis recommends a small backoff between retries.
+            time.sleep(backoff)  # pylint: disable=E9003
+            try:
+                raw_response = self._do_search_request(params)
+                safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES} succeeded")
+                return raw_response
+            except Exception as retry_e:
+                last_retry_exc = retry_e
+                safe_debug(f"JSONDecodeError retry {attempt}/{JSONDECODE_MAX_RETRIES} failed: {_safe_error_str(retry_e)}")
+
+        # All retries exhausted
+        safe_debug(f"JSONDecodeError: all {JSONDECODE_MAX_RETRIES} retries exhausted, raising last exception")
+        raise last_retry_exc
+
+    def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = "time", length: int = 1000):
+        """Fetches events using AQL query (single page, no pagination).
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
-            max_fetch (int): Max number of events to fetch.
             order_by (str): Order by parameter for the API call. Defaults to 'time'.
+            length (int): Page size for the API call. Defaults to 1000 (matches BATCH_SIZE
+                used by bulk_enrich_alerts so a single response covers all batched IDs).
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "orderBy": order_by}
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "orderBy": order_by, "length": length}
         raw_response = self.perform_fetch(params)
         return raw_response.get("data", {}).get("results", [])
 
@@ -341,8 +447,18 @@ class Client(BaseClient):
         from_param: None | int = None,
         before: datetime | None = None,
         event_type: str = "",
+        on_page: Callable[[list[dict]], None] | None = None,
     ):
         """Fetches events using AQL query.
+
+        Memory mode:
+        - When ``on_page`` is None (default), all pages are accumulated into a single list
+          and returned (legacy behaviour — used for Alerts and bulk-enrichment fetches).
+        - When ``on_page`` is provided, each fetched page is handed to the callback and
+          then dropped from the local reference so the GC can reclaim it. The returned
+          list is empty in this mode. This is the "stream-and-flush" path used by
+          Activities/Devices to keep peak memory bounded by a single page (not the full
+          ``max_fetch`` worth of events).
 
         Args:
             aql_query (str): AQL query request parameter for the API call.
@@ -351,35 +467,61 @@ class Client(BaseClient):
             order_by (str): Order by parameter for the API call. Defaults to 'time'.
             from_param (None | int): The next incident to start the fetch from. Defaults to None.
             before (datetime): The time to fetch until.
+            event_type (str): Event type name (for logging only).
+            on_page (Callable[[list[dict]], None] | None): Optional per-page callback. When
+                provided, pages are streamed via the callback instead of accumulated.
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
+            In streaming mode the list is always empty (events were dispatched via ``on_page``).
         """
         aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"  # noqa: E231
         if before:
             aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"  # noqa: E231
             demisto.info(f"Fetching events until {before}.")
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": max_fetch, "orderBy": order_by}
+        # Cap page size to MAX_PAGE_SIZE per Armis recommendation (100K causes nginx timeouts)
+        page_size = min(max_fetch, MAX_PAGE_SIZE)
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": page_size, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
         raw_response = self.perform_fetch(params)
-        results = raw_response.get("data", {}).get("results", [])
+        first_page = raw_response.get("data", {}).get("results", [])
         next = raw_response.get("data", {}).get("next") or 0
-        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
+
+        streaming = on_page is not None
+        results: list[dict] = []
+        total_fetched = 0
+        if streaming:
+            on_page(first_page)  # type: ignore[misc]
+            total_fetched = len(first_page)
+            # Drop the local reference so the page can be GC'd before the next request.
+            first_page = []
+        else:
+            results = first_page
+            total_fetched = len(results)
+
+        # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list
+        # (or stream them out, when on_page is provided).
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
-        start_time = datetime.now()
+        start_time = time.monotonic()
         try:
-            while next and (len(results) < max_fetch):
-                if len(results) < max_fetch:
-                    params["length"] = max_fetch - len(results)
+            while next and (total_fetched < max_fetch):
+                params["length"] = min(max_fetch - total_fetched, MAX_PAGE_SIZE)
                 params["from"] = next
                 raw_response = self.perform_fetch(params)
                 next = raw_response.get("data", {}).get("next") or 0
                 current_results = raw_response.get("data", {}).get("results", [])
-                results.extend(current_results)
-                demisto.info(f"fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+                page_size_fetched = len(current_results)
+                if streaming:
+                    on_page(current_results)  # type: ignore[misc]
+                    # Drop reference so this page can be reclaimed before we request the next one.
+                    current_results = []
+                else:
+                    results.extend(current_results)
+                total_fetched += page_size_fetched
+                demisto.info(f"fetched {page_size_fetched} results, total is {total_fetched}, and {next=}.")
 
-                total_seconds = (datetime.now() - start_time).total_seconds()
+                total_seconds = time.monotonic() - start_time
                 demisto.debug(f"total {total_seconds} seconds so far")
                 if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
                     demisto.debug(
@@ -392,23 +534,6 @@ class Client(BaseClient):
             demisto.info(f"caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
-
-    def is_valid_access_token(self, access_token):
-        """Checks if current available access token is valid.
-
-        Args:
-            access_token (str): Access token to validate.
-
-        Returns:
-            Boolean: True if access token is valid, False otherwise.
-        """
-        try:
-            headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "false", "length": 1, "orderBy": "time"}
-            self._http_request(url_suffix="/search/", method="GET", params=params, headers=headers)
-        except Exception:
-            return False
-        return True
 
     def get_access_token(self):
         """Generates access token for Armis API.
@@ -471,6 +596,11 @@ def safe_debug(message: str) -> None:
             except Exception:
                 # Final fallback - silently continue to prevent cascade failures
                 demisto.debug("[safe_debug] Final fallback - silently continue to prevent cascade failures")
+
+
+def _safe_error_str(e: Exception) -> str:
+    """Format an exception safely — repr for JSONDecodeError (avoids re-parsing), str for others."""
+    return repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
 
 
 def calculate_fetch_start_time(
@@ -611,6 +741,75 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
+def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callable[[list[dict]], None]:
+    """Build a per-page callback that dedups, ships to XSIAM, and frees the page.
+
+    The callback mutates ``running_state`` in place across pages so the caller can
+    observe the latest cursor IDs and the last-seen event timestamp after fetch
+    completes. This is the "stream-and-flush" path used by Activities/Devices: each
+    page is dispatched to XSIAM immediately, so peak memory stays bounded by a single
+    page rather than ``max_fetch`` worth of events.
+
+    Args:
+        event_type (EVENT_TYPE): Event type configuration (drives dedup, _time, product).
+        running_state (dict): Mutable container with at minimum:
+            - ``last_fetch_ids`` (list[str]): seed IDs from last cycle's dedup set,
+              updated in place after each page.
+            - ``last_event_time`` (str | None): time of the most recent event seen so far.
+            - ``total_shipped`` (int): cumulative count for logging.
+            - ``page_count`` (int): number of pages handed to the callback.
+
+    Returns:
+        Callable[[list[dict]], None]: The on-page callback to pass to ``fetch_by_aql_query``.
+    """
+    tname = threading.current_thread().name
+    dataset = event_type.dataset_name
+
+    def on_page(page: list[dict]) -> None:
+        running_state["page_count"] += 1
+        page_idx = running_state["page_count"]
+        page_len = len(page)
+        if not page:
+            safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} empty — skipping")
+            return
+
+        dedup_start = time.monotonic()
+        new_events, updated_ids = dedup_events(
+            page, running_state["last_fetch_ids"], event_type.unique_id_key, event_type.order_by
+        )
+        dedup_secs = time.monotonic() - dedup_start
+        # Mutate the shared ID list in place so the next page sees the cumulative set.
+        running_state["last_fetch_ids"] = updated_ids
+        deduped_count = page_len - len(new_events)
+        if not new_events:
+            safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} all {page_len} events deduped (no ship)")
+            return
+
+        # Track the latest event timestamp so the caller can advance last_fetch_time
+        # after pagination completes (mirrors the non-streaming path).
+        latest_time = new_events[-1].get(event_type.order_by)
+        if latest_time:
+            running_state["last_event_time"] = latest_time
+
+        add_time_to_events(new_events, dataset)
+        product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
+
+        send_start = time.monotonic()
+        send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
+        send_secs = time.monotonic() - send_start
+
+        running_state["total_shipped"] += len(new_events)
+        running_state["total_send_secs"] += send_secs
+        safe_debug(
+            f"[{tname}] [stream:{dataset}] page #{page_idx}: "
+            f"page_size={page_len}, deduped={deduped_count}, shipped={len(new_events)}, "
+            f"dedup={dedup_secs:.3f}s, send={send_secs:.3f}s, "
+            f"cycle_total_shipped={running_state['total_shipped']}, latest_time={latest_time}"
+        )
+
+    return on_page
+
+
 def fetch_by_event_type(
     client: Client,
     event_type: EVENT_TYPE,
@@ -620,6 +819,7 @@ def fetch_by_event_type(
     next_run: dict,
     fetch_start_time: datetime | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
+    stream: bool = False,
 ):
     """Fetch events by specific event type.
 
@@ -632,39 +832,91 @@ def fetch_by_event_type(
         next_run (dict): Last run dictionary for next fetch cycle.
         fetch_start_time (datetime | None): Fetch start time.
         fetch_delay (int): The number of minutes to delay in the search.
+        stream (bool): When True, pages are streamed directly to XSIAM via
+            ``send_events_to_xsiam`` and NOT added to the ``events`` dict — peak memory
+            stays bounded by one page. Used for Activities/Devices (high-volume,
+            no enrichment dependency). Alerts always use the non-streaming path because
+            they must be collected first to feed bulk enrichment.
     """
     last_fetch_ids = f"{event_type.type}_last_fetch_ids"
     last_fetch_time_field = f"{event_type.type}_last_fetch_time"
     last_fetch_next_field = f"{event_type.type}_last_fetch_next_field"
 
-    demisto.debug(f"handling event-type: {event_type.type}")
+    demisto.debug(f"handling event-type: {event_type.type} (stream={stream})")
     if last_fetch_time := last_run.get(last_fetch_time_field):
         demisto.debug(f"last run of type: {event_type.type} time is: {last_fetch_time}")
     last_fetch_next = last_run.get(last_fetch_next_field, 0)
     demisto.debug(f"last run of type: {event_type.type} next is: {last_fetch_next}")
     event_type_fetch_start_time, before_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time, fetch_delay)
-    response, next = client.fetch_by_aql_query(
-        aql_query=event_type.aql_query,
-        max_fetch=max_fetch,
-        after=event_type_fetch_start_time,
-        order_by=event_type.order_by,
-        from_param=last_fetch_next,
-        before=before_time,
-        event_type=event_type.type,
-    )
-    new_events: list[dict] = []
-    demisto.debug(f"fetched {len(response)} {event_type.type} from API")
-    if response:
-        new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
-        )
-        events.setdefault(event_type.dataset_name, []).extend(new_events)
-        demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
-        demisto.debug(f"last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}")
 
-    if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-        event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
-        #  can empty the list.
+    if stream:
+        # Streaming path: dispatch each page to XSIAM via callback, never accumulate.
+        stream_start = time.monotonic()
+        running_state: dict = {
+            "last_fetch_ids": list(last_run.get(last_fetch_ids, [])),  # copy so we mutate locally
+            "last_event_time": None,
+            "total_shipped": 0,
+            "total_send_secs": 0.0,
+            "page_count": 0,
+        }
+        on_page = _stream_page_to_xsiam(event_type, running_state)
+        _, next = client.fetch_by_aql_query(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by,
+            from_param=last_fetch_next,
+            before=before_time,
+            event_type=event_type.type,
+            on_page=on_page,
+        )
+        next_run[last_fetch_ids] = running_state["last_fetch_ids"]
+        total_secs = time.monotonic() - stream_start
+        send_share = (running_state["total_send_secs"] / total_secs * 100) if total_secs > 0 else 0
+        demisto.info(
+            f"[stream:{event_type.dataset_name}] cycle summary: "
+            f"shipped={running_state['total_shipped']} events in {running_state['page_count']} page(s), "
+            f"total={total_secs:.2f}s, send={running_state['total_send_secs']:.2f}s ({send_share:.0f}%), "
+            f"cursor_next={next}, fully_drained={not next}"
+        )
+        # Advance last_fetch_time only when pagination is fully drained (next == 0),
+        # mirroring the non-streaming path. While next > 0 we keep the same window so
+        # the cursor (`from_param`) is meaningful on the next cycle.
+        if not next:
+            event_type_fetch_start_time = running_state["last_event_time"] or last_fetch_time
+            demisto.debug(
+                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time to {event_type_fetch_start_time}"
+            )
+        else:
+            demisto.debug(
+                f"[stream:{event_type.dataset_name}] cursor NOT drained (next={next}) — "
+                f"keeping last_fetch_time at {last_fetch_time} for next cycle resume"
+            )
+    else:
+        response, next = client.fetch_by_aql_query(
+            aql_query=event_type.aql_query,
+            max_fetch=max_fetch,
+            after=event_type_fetch_start_time,
+            order_by=event_type.order_by,
+            from_param=last_fetch_next,
+            before=before_time,
+            event_type=event_type.type,
+        )
+        new_events: list[dict] = []
+        demisto.debug(f"fetched {len(response)} {event_type.type} from API")
+        if response:
+            new_events, next_run[last_fetch_ids] = dedup_events(
+                response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
+            )
+            events.setdefault(event_type.dataset_name, []).extend(new_events)
+            demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
+            last_event_str = str(new_events[-1])[:500] if new_events else "{}"
+            demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
+
+        if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
+            event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
+            #  can empty the list.
+
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
@@ -672,29 +924,218 @@ def fetch_by_event_type(
     demisto.debug(f"updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
 
 
-def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
-    """Fetches Activities and Devices for specific Armis alert IDs.
+def _collect_unique_enrichment_ids(alerts: list[dict]) -> tuple[set[str], set[str]]:
+    """Collect deduplicated activityUUIDs and deviceIds across alerts (str-coerced).
+
+    Also initializes each alert's `activitiesData` and `devicesData` to empty lists so
+    callers always see consistent keys.
+    """
+    uuids: set[str] = set()
+    device_ids: set[str] = set()
+    for alert in alerts:
+        uuids.update(str(u) for u in (alert.get("activityUUIDs") or []) if u is not None)
+        device_ids.update(str(d) for d in (alert.get("deviceIds") or []) if d is not None)
+        alert["activitiesData"] = []
+        alert["devicesData"] = []
+    return uuids, device_ids
+
+
+def _bulk_fetch_entities_by_id(
+    client: Client,
+    entity_type: str,
+    aql_field: str,
+    ids: list[str],
+    response_key: str,
+    order_by: str,
+) -> dict[str, dict]:
+    """Bulk-fetch entities (activities or devices) by ID in batches.
 
     Args:
         client (Client): The Armis API client.
-        alert (dict): The alert dict.
-        aql_alert_id (str): The AQL alert ID to fetch events for.
+        entity_type (str): AQL entity ('activity' / 'devices').
+        aql_field (str): AQL field name to filter on ('UUID' / 'deviceId').
+        ids (list[str]): IDs to query (already str-coerced).
+        response_key (str): Field name on the returned entity used as the dict key.
+        order_by (str): order_by AQL parameter.
 
     Returns:
-        None: Alert dict is updated in-place with activitiesData and devicesData.
-
+        dict[str, dict]: Map of `str(response_key)` -> entity dict.
     """
-    demisto.debug(f"Fetching Activities and Devices for specific alert IDs: {aql_alert_id}")
-    activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
-    devices_aql_query = f'{EVENT_TYPES["Devices"].aql_query}  {aql_alert_id}'
-    activities_response = client.fetch_by_ids_in_aql_query(
-        aql_query=activities_aql_query, order_by=EVENT_TYPES["Activities"].order_by
+    tname = threading.current_thread().name
+    by_id: dict[str, dict] = {}
+    if not ids:
+        demisto.debug(f"[{tname}] bulk_enrich: no {entity_type} IDs to fetch")
+        return by_id
+
+    total_batches = (len(ids) + BULK_ENRICHMENT_BATCH_SIZE - 1) // BULK_ENRICHMENT_BATCH_SIZE
+    demisto.debug(f"[{tname}] bulk_enrich: starting {entity_type} fetch — {len(ids)} IDs in {total_batches} batch(es)")
+    section_start = time.monotonic()
+
+    for batch_idx, offset in enumerate(range(0, len(ids), BULK_ENRICHMENT_BATCH_SIZE), start=1):
+        chunk = ids[offset : offset + BULK_ENRICHMENT_BATCH_SIZE]
+        aql = f"in:{entity_type} {aql_field}:{','.join(chunk)}"  # noqa: E231
+        batch_start = time.monotonic()
+        try:
+            # Use MAX_PAGE_SIZE (10K) for the response page size: we only send 1000 IDs per batch,
+            # so we should never get back more than that.
+            results = client.fetch_by_ids_in_aql_query(aql_query=aql, order_by=order_by, length=MAX_PAGE_SIZE)
+            if len(results) > BULK_ENRICHMENT_BATCH_SIZE:
+                demisto.error(
+                    f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} returned "
+                    f"{len(results)} results for {len(chunk)} IDs (more than expected) — investigate"
+                )
+            for entity in results:
+                key = entity.get(response_key)
+                if key is not None:
+                    by_id[str(key)] = entity
+            demisto.debug(
+                f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} OK — "
+                f"{len(results)} returned in {time.monotonic() - batch_start:.2f}s"
+            )
+        except Exception as ex:
+            # Intentional: per-batch isolation — one failed batch (e.g., transient network/parse error
+            # on a chunk of 1000 IDs) must not abort the entire enrichment cycle. We log and move on
+            # so other batches can still complete; alerts whose IDs fell in the failed batch will simply
+            # ship without their enrichment data, which is preferable to dropping the whole cycle.
+            demisto.error(f"[{tname}] bulk_enrich: {entity_type} batch {batch_idx}/{total_batches} FAILED: {_safe_error_str(ex)}")
+
+    demisto.debug(
+        f"[{tname}] bulk_enrich: {entity_type} fetch done in "
+        f"{time.monotonic() - section_start:.2f}s — "
+        f"{len(by_id)}/{len(ids)} matched"
     )
-    devices_response = client.fetch_by_ids_in_aql_query(aql_query=devices_aql_query, order_by=EVENT_TYPES["Devices"].order_by)
-    demisto.debug(f"fetch by alert ids\
-fetched {len(activities_response)} Activities and {len(devices_response)} Devices")
-    alert["activitiesData"] = activities_response if activities_response else {}
-    alert["devicesData"] = devices_response if devices_response else {}
+    return by_id
+
+
+def _attach_enrichment(
+    alerts: list[dict],
+    activities_by_uuid: dict[str, dict],
+    devices_by_id: dict[str, dict],
+) -> None:
+    """Map fetched entities back onto each alert by reference (no deepcopy).
+
+    Memory note: we intentionally share the same activity/device dict across all alerts
+    that reference it. Alerts are write-once after this attach (they are serialized to
+    XSIAM and then released), so shared references are safe and save substantial memory
+    when an activity/device is referenced by multiple alerts.
+    """
+    for alert in alerts:
+        alert["activitiesData"] = [
+            activities_by_uuid[str(u)]
+            for u in (alert.get("activityUUIDs") or [])
+            if u is not None and str(u) in activities_by_uuid
+        ]
+        alert["devicesData"] = [
+            devices_by_id[str(d)] for d in (alert.get("deviceIds") or []) if d is not None and str(d) in devices_by_id
+        ]
+
+
+def bulk_enrich_alerts(client: Client, alerts: list[dict]) -> None:
+    """Bulk-enrich alerts with their related Activities and Devices.
+
+    Pattern recommended by Armis:
+    use the activityUUIDs/deviceIds arrays already on each alert, dedupe across the page,
+    and bulk-fetch in chunks of BULK_ENRICHMENT_BATCH_SIZE.
+
+    Each alert is updated in-place with `activitiesData` and `devicesData` lists.
+
+    Args:
+        client (Client): The Armis API client.
+        alerts (list[dict]): The list of alerts in the current fetch page.
+    """
+    tname = threading.current_thread().name
+    if not alerts:
+        demisto.debug(f"[{tname}] bulk_enrich: no alerts to enrich, returning")
+        return
+
+    start = time.monotonic()
+    demisto.debug(f"[{tname}] bulk_enrich: START enriching {len(alerts)} alerts")
+
+    uuids, device_ids = _collect_unique_enrichment_ids(alerts)
+    demisto.debug(f"[{tname}] bulk_enrich: collected {len(uuids)} unique activityUUIDs, {len(device_ids)} unique deviceIds")
+
+    activities_by_uuid = _bulk_fetch_entities_by_id(
+        client=client,
+        entity_type=EVENT_TYPE_ACTIVITIES,
+        aql_field="UUID",
+        ids=list(uuids),
+        response_key=EVENT_TYPES["Activities"].unique_id_key,
+        order_by=EVENT_TYPES["Activities"].order_by,
+    )
+    devices_by_id = _bulk_fetch_entities_by_id(
+        client=client,
+        entity_type=EVENT_TYPE_DEVICES,
+        aql_field="deviceId",
+        ids=list(device_ids),
+        response_key=EVENT_TYPES["Devices"].unique_id_key,
+        order_by=EVENT_TYPES["Devices"].order_by,
+    )
+
+    attach_start = time.monotonic()
+    _attach_enrichment(alerts, activities_by_uuid, devices_by_id)
+    attach_secs = time.monotonic() - attach_start
+
+    matched_activities = len(activities_by_uuid)
+    matched_devices = len(devices_by_id)
+    # "Surplus" = entities the API returned whose keys aren't in any alert's requested IDs.
+    # These payloads become unreachable after the `del` + gc.collect() below (alerts
+    # never hold references to them).
+    surplus_activities = sum(1 for k in activities_by_uuid if k not in uuids)
+    surplus_devices = sum(1 for k in devices_by_id if k not in device_ids)
+    # Free the lookup dicts now that mapping is done. Alerts retain references to the
+    # *matched* entity dicts via `activitiesData`/`devicesData`, so those payloads stay
+    # alive — but the outer dict structure plus any *unmatched* entries (entities the API
+    # returned but no alert pointed at) become unreachable and can be reclaimed.
+    gc_start = time.monotonic()
+    del activities_by_uuid
+    del devices_by_id
+    gc.collect()
+    gc_secs = time.monotonic() - gc_start
+
+    demisto.info(
+        f"[{tname}] bulk_enrich: DONE in {time.monotonic() - start:.2f}s — "
+        f"matched {matched_activities}/{len(uuids)} activities ({surplus_activities} surplus freed), "
+        f"{matched_devices}/{len(device_ids)} devices ({surplus_devices} surplus freed), "
+        f"attach={attach_secs:.3f}s, gc.collect={gc_secs:.3f}s"
+    )
+
+
+def _enrich_and_ship_in_chunks(client: Client, alerts: list[dict], chunk_size: int = ALERT_ENRICHMENT_CHUNK_SIZE) -> None:
+    """Enrich and ship alerts in fixed-size chunks; frees each chunk before the next."""
+    tname = threading.current_thread().name
+    total_chunks = (len(alerts) + chunk_size - 1) // chunk_size
+    demisto.info(f"[{tname}] enrich+ship: {len(alerts)} alerts in {total_chunks} chunk(s) of {chunk_size}")
+
+    for chunk_idx, offset in enumerate(range(0, len(alerts), chunk_size), start=1):
+        chunk = alerts[offset : offset + chunk_size]
+        bulk_enrich_alerts(client, chunk)
+        add_time_to_events(chunk, EVENT_TYPE_ALERTS)
+        send_events_to_xsiam(chunk, vendor=VENDOR, product=PRODUCT)
+        safe_debug(f"[{tname}] enrich+ship: chunk {chunk_idx}/{total_chunks} shipped {len(chunk)}")
+        del chunk
+        gc.collect()
+
+
+def _wait_for_enrichment(future, executor) -> None:
+    """Block until the background alert enrichment+ship task completes, then tear down.
+
+    Waits with no timeout so the alert cursor (advanced after this returns) is never moved ahead of
+    what was shipped. If a cycle exceeds the platform's 5-min limit it is hard-killed before the
+    cursor is persisted, so the alerts are re-fetched and deduped next cycle (no data loss).
+    """
+    tname = threading.current_thread().name
+    if future is None:
+        return
+    wait_start = time.monotonic()
+    try:
+        future.result()
+        demisto.debug(f"[{tname}] bulk_enrich: enrichment finished after {time.monotonic() - wait_start:.2f}s")
+    except Exception as ex:
+        demisto.error(f"[{tname}] bulk_enrich: background enrichment FAILED: {ex!r}")
+    finally:
+        if executor is not None:
+            # wait=True: don't return until the enrichment thread is done, so the cursor isn't advanced early.
+            executor.shutdown(wait=True)
 
 
 def fetch_event_type_worker(
@@ -706,6 +1147,7 @@ def fetch_event_type_worker(
     fetch_start_time: datetime | None,
     fetch_delay: int,
     context_manager: IntegrationContextManager,
+    stream: bool = False,
 ) -> tuple[str, dict, dict]:
     """Worker function to fetch events for a specific event type in a thread.
 
@@ -718,32 +1160,47 @@ def fetch_event_type_worker(
         fetch_start_time (datetime | None): Start time for fetching.
         fetch_delay (int): Delay in minutes for fetching.
         context_manager (IntegrationContextManager): Thread-safe context manager.
+        stream (bool): When True, pages are shipped to XSIAM inside the fetch and the
+            returned ``events`` dict stays empty for this event type. See
+            ``fetch_by_event_type``.
 
     Returns:
-        tuple[str, dict, dict]: Event type name, fetched events dict, and next_run state.
+        tuple[str, dict, dict]: Event type name, fetched events dict (empty in stream
+        mode), and next_run state.
     """
     thread_id = threading.current_thread().name
-    safe_debug(f"[{thread_id}] Starting fetch for {event_type_name}")
+    safe_debug(f"[{thread_id}] Starting fetch for {event_type_name} (stream={stream})")
 
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str | None] = {}
 
     try:
-        fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
+        fetch_by_event_type(
+            client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay, stream=stream
+        )
 
         # Update context for this event type atomically
         context_manager.update_event_type_state(next_run)
 
         event_count = len(events.get(event_type.dataset_name, []))
-        safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
+        if stream:
+            safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: streamed directly to XSIAM")
+        else:
+            safe_debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
 
         return event_type_name, events, next_run
 
     except Exception as e:
-        # Use repr() for JSON errors to avoid serialization issues in logging
-        error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-        safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {error_msg}")
+        safe_debug(f"[{thread_id}] Error fetching {event_type_name}: {_safe_error_str(e)}")
         raise
+
+
+# Event types that stream-and-flush directly to XSIAM (one page at a time) instead of
+# being collected into the in-memory `events` dict. Streaming keeps peak memory bounded
+# by a single page (MAX_PAGE_SIZE) rather than the full `max_fetch` worth of events.
+# Alerts are intentionally excluded because they must be collected first to feed bulk
+# enrichment.
+STREAMING_EVENT_TYPES = {"Activities", "Devices"}
 
 
 def fetch_events(
@@ -755,8 +1212,9 @@ def fetch_events(
     event_types_to_fetch: list[str],
     device_fetch_interval: timedelta | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
-    use_multithreading: bool = False,
+    use_multithreading: bool = True,
     context_manager: IntegrationContextManager | None = None,
+    enable_streaming: bool = True,
 ):
     """Fetch events from Armis API with optional multithreading support.
 
@@ -769,13 +1227,21 @@ def fetch_events(
         event_types_to_fetch (list[str]): List of event types to fetch.
         device_fetch_interval (timedelta | None): Time interval to fetch devices.
         fetch_delay (int): The number of minutes to delay in the search.
-        use_multithreading (bool): Whether to use multithreading for parallel fetching.
+        use_multithreading (bool): Whether to use multithreading for parallel fetching. Multithreading
+            is always on for the periodic ``fetch-events`` command and disabled for the manual
+            ``armis-get-events`` command (which only fetches a single event type at a time).
         context_manager (Optional[IntegrationContextManager]): Thread-safe context manager.
+        enable_streaming (bool): When True (default for ``fetch-events``), Activities and
+            Devices are streamed page-by-page directly to XSIAM. When False (used by the
+            manual ``armis-get-events`` command, which needs to display the events in
+            CommandResults), all event types are collected into the returned ``events`` dict.
     Returns:
-        (list[dict], dict) : List of fetched events and next run dictionary.
+        (list[dict], dict) : List of fetched events and next run dictionary. When streaming
+        is enabled, Activities/Devices have already been shipped to XSIAM and the
+        corresponding entries in ``events`` will be empty.
     """
-    fetch_start = datetime.now()
-    safe_debug(f"=== Starting fetch_events cycle at {fetch_start.strftime('%Y-%m-%d %H:%M:%S')} ===")
+    fetch_start = time.monotonic()
+    safe_debug(f"=== Starting fetch_events cycle at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
     safe_debug(f"Event types requested: {event_types_to_fetch}")
     safe_debug(f"Multithreading enabled: {use_multithreading}")
     safe_debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
@@ -790,43 +1256,52 @@ def fetch_events(
 
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
-    # Handle Alerts specially (needs sequential processing for activities/devices)
+    # Fetch Alerts first, then enrich+ship them in a background thread (in parallel
+    # with the Activities/Devices fetches). For fetch-events we chunk to cap memory;
+    # for armis-get-events we keep them collected so they render in CommandResults.
+    enrichment_future = None
+    enrichment_executor = None
     if "Alerts" in event_types_to_fetch:
-        safe_debug("Processing Alerts sequentially (requires fetching related activities/devices)")
-        alerts_start = datetime.now()
+        main_tname = threading.current_thread().name
+        safe_debug(f"[{main_tname}] Fetching Alerts (enrichment will run in parallel with other workers)")
+        alerts_start = time.monotonic()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
-        alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
-        safe_debug(f"Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
+        alerts_to_enrich = events.get(EVENT_TYPE_ALERTS, [])
+        alerts_count = len(alerts_to_enrich)
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {time.monotonic() - alerts_start:.2f}s")
 
-        if events and events.get(EVENT_TYPE_ALERTS):
-            safe_debug(f"Fetching related activities and devices for {alerts_count} alerts")
-            for idx, alert in enumerate(events[EVENT_TYPE_ALERTS], 1):
-                alert_id = alert.get("alertId")
-                aql_with_alerts_id = f"alert:(alertId:({alert_id}))"  # noqa: E231
-                fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
-                if idx % 10 == 0:  # Log every 10 alerts
-                    safe_debug(f"Processed {idx}/{alerts_count} alerts for related data")
+        if alerts_to_enrich:
+            enrichment_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ArmisEnrich")
+            if enable_streaming:
+                enrichment_future = enrichment_executor.submit(_enrich_and_ship_in_chunks, client, alerts_to_enrich)
+                # The chunked task ships directly — remove alerts so handle_fetched_events
+                # doesn't re-ship them.
+                events.pop(EVENT_TYPE_ALERTS, None)
+            else:
+                enrichment_future = enrichment_executor.submit(bulk_enrich_alerts, client, alerts_to_enrich)
         event_types_to_fetch.remove("Alerts")
 
     # Process remaining event types
     if not event_types_to_fetch:
         safe_debug("No remaining event types to fetch")
-        next_run["access_token"] = client._access_token
-        fetch_duration = (datetime.now() - fetch_start).total_seconds()
+        _wait_for_enrichment(enrichment_future, enrichment_executor)
+        fetch_duration = time.monotonic() - fetch_start
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
 
-    # Use multithreading only if enabled and there are multiple event types
+    # Use multithreading only if it's beneficial: more than one event type AND the caller is the
+    # periodic ``fetch-events`` command (manual ``armis-get-events`` always passes False).
     if not use_multithreading or len(event_types_to_fetch) == 1 or not context_manager:
         # Fallback to sequential processing
         safe_debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
         for event_type in event_types_to_fetch:
             event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
-            type_start = datetime.now()
-            safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
+            stream_this = enable_streaming and event_type in STREAMING_EVENT_TYPES
+            type_start = time.monotonic()
+            safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch}, stream={stream_this})")
 
             fetch_by_event_type(
                 client,
@@ -837,15 +1312,19 @@ def fetch_events(
                 next_run,
                 fetch_start_time,
                 fetch_delay=fetch_delay,
+                stream=stream_this,
             )
 
-            type_duration = (datetime.now() - type_start).total_seconds()
+            type_duration = time.monotonic() - type_start
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
-            safe_debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
+            safe_debug(
+                f"Completed {event_type} fetch in {type_duration:.2f}s "
+                f"({'streamed to XSIAM' if stream_this else f'{type_count} events collected'})"
+            )
     else:
         # Parallel processing with ThreadPoolExecutor
         max_workers = min(len(event_types_to_fetch), len(EVENT_TYPES))
-        parallel_start = datetime.now()
+        parallel_start = time.monotonic()
         safe_debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
         safe_debug(f"Event types for parallel fetch: {event_types_to_fetch}")
 
@@ -856,7 +1335,10 @@ def fetch_events(
             for event_type_name in event_types_to_fetch:
                 worker_num += 1
                 event_max_fetch = max_fetch if event_type_name != "Devices" else devices_max_fetch
-                safe_debug(f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch})")
+                stream_this = enable_streaming and event_type_name in STREAMING_EVENT_TYPES
+                safe_debug(
+                    f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch}, stream={stream_this})"
+                )
 
                 task = executor.submit(
                     fetch_event_type_worker,
@@ -868,6 +1350,7 @@ def fetch_events(
                     fetch_start_time,
                     fetch_delay,
                     context_manager,
+                    stream_this,
                 )
                 submitted_tasks[task] = event_type_name
 
@@ -896,18 +1379,18 @@ def fetch_events(
                     )
 
                 except Exception as e:
-                    # Safely log the error without causing JSON parsing issues
-                    error_msg = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
-                    safe_debug(f"[Worker:{event_type_name}] Failed: {error_msg}")
+                    safe_debug(f"[Worker:{event_type_name}] Failed: {_safe_error_str(e)}")
                     safe_debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
 
-            parallel_duration = (datetime.now() - parallel_start).total_seconds()
+            parallel_duration = time.monotonic() - parallel_start
             safe_debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
 
-    next_run["access_token"] = client._access_token
+    # Block until the background enrichment task finishes; this is the join point that lets
+    # us run enrichment in parallel with Activities/Devices fetches above.
+    _wait_for_enrichment(enrichment_future, enrichment_executor)
 
     # Final summary
-    fetch_duration = (datetime.now() - fetch_start).total_seconds()
+    fetch_duration = time.monotonic() - fetch_start
     total_events = sum(len(event_list) for event_list in events.values())
     events_by_type = {dataset: len(event_list) for dataset, event_list in events.items()}
     safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s ===")
@@ -950,26 +1433,30 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
 
 def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dict[str, str | list | None]):
     """Handle fetched events.
-    - Send the fetched events to XSIAM.
+    - Send the fetched events to XSIAM (skipping any datasets that were already streamed
+      page-by-page from inside the fetch loop — those arrive here with an empty list).
     - Set last run values for next fetch cycle.
 
     Args:
         events (list[dict[str, Any]]): Fetched events.
         next_run (dict[str, str | list]): Next run dictionary.
     """
-    if events:
-        for event_type, events_list in events.items():
-            if not events_list:
-                demisto.debug(f"No events of type: {event_type} fetched from API.")
-            else:
-                add_time_to_events(events_list, event_type)
-                demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
+    types_with_events = [t for t, lst in (events or {}).items() if lst]
+    if types_with_events:
+        for event_type in types_with_events:
+            events_list = events[event_type]
+            add_time_to_events(events_list, event_type)
+            demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
+            # Collected (non-streaming) path — used by armis-get-events; fetch-events streams earlier.
             send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
-            demisto.debug(f"{len(events)} events were sent to XSIAM.")
+            demisto.debug(f"{len(events_list)} events of type: {event_type} were sent to XSIAM.")
     else:
-        demisto.debug("No new events fetched. Sending 0 to XSIAM.")
-        send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
+        # Either no events were fetched, or all event types were streamed inside the
+        # fetch loop (Activities/Devices). Send an empty heartbeat so XSIAM knows the
+        # collector is alive.
+        demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
+        send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)  # heartbeat
 
     demisto.debug(f"setting {next_run=}")
     next_run["nextTrigger"] = "1"
@@ -1036,7 +1523,8 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
-    access_token = last_run.get("access_token")
+
+    access_token = demisto.getIntegrationContext().get("access_token")
     api_key = params.get("credentials", {}).get("password")
     base_url = urljoin(params.get("server_url"), API_V1_ENDPOINT)
     verify_certificate = not params.get("insecure", True)
@@ -1051,13 +1539,11 @@ def main():  # pragma: no cover
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
-    use_multithreading = argToBoolean(params.get("enable_multithreading", False))
 
     demisto.debug(f"Command being called is {command}")
 
     try:
-        # Initialize context manager for thread-safe operations when multithreading is enabled
-        context_manager = IntegrationContextManager() if use_multithreading else None
+        context_manager = IntegrationContextManager()
 
         client = Client(
             base_url=base_url,
@@ -1099,8 +1585,12 @@ def main():  # pragma: no cover
                 event_types_to_fetch=event_types_to_fetch,
                 device_fetch_interval=device_fetch_interval,
                 fetch_delay=fetch_delay,
-                use_multithreading=use_multithreading and command == "fetch-events",
+                use_multithreading=command == "fetch-events",
                 context_manager=context_manager,
+                # Stream Activities/Devices only for the periodic ``fetch-events`` command.
+                # ``armis-get-events`` needs the events in the returned dict to render
+                # CommandResults to the analyst.
+                enable_streaming=command == "fetch-events",
             )
             for key, value in events.items():
                 demisto.debug(f"{len(value)} events of type: {key} fetched from armis api")

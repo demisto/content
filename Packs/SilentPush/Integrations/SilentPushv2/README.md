@@ -1,5 +1,5 @@
 The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
-This integration was integrated and tested with version xx of SilentPush_v2.
+This integration was integrated and tested with v1 of SilentPush API.
 
 ## Configure SilentPush in Cortex
 
@@ -21,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### silentpush-add-feed
 
 ***
-add the new feed
+Add the new feed.
 
 #### Base Command
 
@@ -58,7 +58,7 @@ add the new feed
 ### silentpush-add-feed-tags
 
 ***
-add indicators to the feed
+Add indicators to the feed.
 
 #### Base Command
 
@@ -87,7 +87,7 @@ add indicators to the feed
 ### silentpush-add-indicators
 
 ***
-add indicators to the feed
+Add indicators to the feed.
 
 #### Base Command
 
@@ -116,7 +116,7 @@ add indicators to the feed
 ### silentpush-add-indicator-tags
 
 ***
-updates tags to the indicators
+Updates tags to the indicators.
 
 #### Base Command
 
@@ -147,7 +147,7 @@ updates tags to the indicators
 ### silentpush-bulk-enrich
 
 ***
-enriches IPs or Domains in a bulk
+Enriches IPs or Domains in a bulk.
 
 #### Base Command
 
@@ -331,7 +331,7 @@ enriches IPs or Domains in a bulk
 ### silentpush-density-lookup
 
 ***
-queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
+Queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
 
 #### Base Command
 
@@ -363,7 +363,7 @@ queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, A
 ### silentpush-forward-padns-lookup
 
 ***
-performs a forward PADNS lookup using various filtering parameters.
+Performs a forward PADNS lookup using various filtering parameters.
 
 #### Base Command
 
@@ -418,7 +418,7 @@ performs a forward PADNS lookup using various filtering parameters.
 ### silentpush-get-asns-for-domain
 
 ***
-retrieves Autonomous System Numbers (ASNs) associated with a domain.
+Retrieves Autonomous System Numbers (ASNs) associated with a domain.
 
 #### Base Command
 
@@ -447,7 +447,7 @@ retrieves Autonomous System Numbers (ASNs) associated with a domain.
 ### silentpush-get-data-exports
 
 ***
-runs the threat check on the specified
+Runs the threat check on the specified export type.
 
 #### Base Command
 
@@ -481,7 +481,7 @@ runs the threat check on the specified
 ### silentpush-get-domain-certificates
 
 ***
-get certificate data collected from domain scanning.
+Get certificate data collected from domain scanning.
 
 #### Base Command
 
@@ -545,7 +545,7 @@ get certificate data collected from domain scanning.
 ### silentpush-get-enrichment-data
 
 ***
-retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
+Retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
 
 #### Base Command
 
@@ -726,7 +726,7 @@ retrieves comprehensive enrichment information for a given resource (domain, IPv
 
 #### Human Readable Output
 
-retrieves the reputation information for an IPv4.
+Retrieves the reputation information for an IPv4.
 
 #### Base Command
 
@@ -759,7 +759,7 @@ retrieves the reputation information for an IPv4.
 ### silentpush-get-nameserver-reputation
 
 ***
-retrieves historical reputation data for a specified nameserver,including reputation scores and optional detailed calculation information.
+Retrieves historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
 
 #### Base Command
 
@@ -793,7 +793,7 @@ retrieves historical reputation data for a specified nameserver,including reputa
 ### silentpush-get-subnet-reputation
 
 ***
-retrieves the reputation history for a specific subnet.
+Retrieves the reputation history for a specific subnet.
 
 #### Base Command
 
@@ -933,7 +933,7 @@ Search for IP Diversity patterns, with optional name server and domain name patt
 ### silentpush-list-domain-information
 
 ***
-get domain information along with Silent Push risk score and live whois information for multiple domains.
+Get domain information along with Silent Push risk score and live whois information for multiple domains.
 
 #### Base Command
 
@@ -973,7 +973,7 @@ get domain information along with Silent Push risk score and live whois informat
 ### silentpush-list-ip4-information
 
 ***
-get IP4 information along with Silent Push risk score
+Get IP4 information along with Silent Push risk score.
 
 #### Base Command
 
@@ -1039,7 +1039,7 @@ get IP4 information along with Silent Push risk score
 ### silentpush-list-ip6-information
 
 ***
-get IP6 information along with Silent Push risk score
+Get IP6 information along with Silent Push risk score.
 
 #### Base Command
 
@@ -1105,7 +1105,7 @@ get IP6 information along with Silent Push risk score
 ### silentpush-live-url-scan
 
 ***
-scan a URL to retrieve hosting metadata.
+Scan a URL to retrieve hosting metadata.
 
 #### Base Command
 
@@ -1228,7 +1228,7 @@ scan a URL to retrieve hosting metadata.
 ### silentpush-multi-conditional-padns-lookup
 
 ***
-searches passive DNS data for records matching both query and answer.
+Searches passive DNS data for records matching both query and answer.
 
 #### Base Command
 
@@ -1290,7 +1290,7 @@ searches passive DNS data for records matching both query and answer.
 ### silentpush-retry-job
 
 ***
-retry another command which returned a Job ID
+Retry another command which returned a Job ID.
 
 #### Base Command
 
@@ -1315,7 +1315,7 @@ There is no context output for this command.
 ### silentpush-reverse-padns-lookup
 
 ***
-retrieve reverse Passive DNS data for specific DNS record types.
+Retrieve reverse Passive DNS data for specific DNS record types.
 
 #### Base Command
 
@@ -1370,7 +1370,7 @@ retrieve reverse Passive DNS data for specific DNS record types.
 ### silentpush-run-threat-check
 
 ***
-runs the threat check on the specified
+Runs the threat check on the specified resource.
 
 #### Base Command
 
@@ -1401,7 +1401,7 @@ runs the threat check on the specified
 ### silentpush-search-domains
 
 ***
-search for domains with optional filters.
+Search for domains with optional filters.
 
 #### Base Command
 
@@ -1469,7 +1469,7 @@ search for domains with optional filters.
 ### silentpush-search-scan-data
 
 ***
-search Silent Push scan data repositories using SPQL queries.
+Search Silent Push scan data repositories using SPQL queries.
 
 #### Base Command
 
@@ -1564,7 +1564,7 @@ search Silent Push scan data repositories using SPQL queries.
 ### silentpush-whois
 
 ***
-get Whois information
+Get Whois information.
 
 #### Base Command
 
@@ -1581,21 +1581,21 @@ get Whois information
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SilentPush.whois.SilentPush.Whois.registrar | String | Name or partial name of the registrar used to register domains. |
-| SilentPush.whois.SilentPush.Whois.name | String | The registrant name |
-| SilentPush.whois.SilentPush.Whois.whois_server | String | The server queried |
-| SilentPush.whois.SilentPush.Whois.org | String | Organization |
-| SilentPush.whois.SilentPush.Whois.address | String | Address |
-| SilentPush.whois.SilentPush.Whois.city | Number | City |
-| SilentPush.whois.SilentPush.Whois.country | String | Country |
-| SilentPush.whois.SilentPush.Whois.created | String | Date created |
-| SilentPush.whois.SilentPush.Whois.date | String | Date |
-| SilentPush.whois.SilentPush.Whois.domain | String | Domain |
-| SilentPush.whois.SilentPush.Whois.emails | Number | Emails |
-| SilentPush.whois.SilentPush.Whois.expires | String | Expires |
-| SilentPush.whois.SilentPush.Whois.nameservers | String | Nameservers |
-| SilentPush.whois.SilentPush.Whois.state | String | State |
-| SilentPush.whois.SilentPush.Whois.updated | String | Date updated |
-| SilentPush.whois.SilentPush.Whois.zipcode | String | Zip code |
+| SilentPush.whois.SilentPush.Whois.name | String | The registrant name. |
+| SilentPush.whois.SilentPush.Whois.whois_server | String | The server queried. |
+| SilentPush.whois.SilentPush.Whois.org | String | Organization. |
+| SilentPush.whois.SilentPush.Whois.address | String | Address. |
+| SilentPush.whois.SilentPush.Whois.city | Number | City. |
+| SilentPush.whois.SilentPush.Whois.country | String | Country. |
+| SilentPush.whois.SilentPush.Whois.created | String | Date created. |
+| SilentPush.whois.SilentPush.Whois.date | String | Date. |
+| SilentPush.whois.SilentPush.Whois.domain | String | Domain. |
+| SilentPush.whois.SilentPush.Whois.emails | Number | Emails. |
+| SilentPush.whois.SilentPush.Whois.expires | String | Expires. |
+| SilentPush.whois.SilentPush.Whois.nameservers | String | Nameservers. |
+| SilentPush.whois.SilentPush.Whois.state | String | State. |
+| SilentPush.whois.SilentPush.Whois.updated | String | Date updated. |
+| SilentPush.whois.SilentPush.Whois.zipcode | String | Zip code. |
 
 #### Command example
 
@@ -1606,7 +1606,7 @@ get Whois information
 ### silentpush-ipv6-risk-score
 
 ***
-Scores a list of IPv6 addresses
+Scores a list of IPv6 addresses.
 
 #### Base Command
 
@@ -1672,7 +1672,7 @@ This command retrieve the takedown reputation information for an Autonomous Syst
 ### silentpush-tlp-reports
 
 ***
-List all the TLP Reports
+List all the TLP Reports.
 
 #### Base Command
 
@@ -1699,7 +1699,7 @@ There is no context output for this command.
 ### silentpush-domain-risk-score
 
 ***
-Scores a list of Domain addresses
+Scores a list of Domain addresses.
 
 #### Base Command
 
@@ -1763,7 +1763,7 @@ This command retrieve the reputation information for an IPv4.
 ### silentpush-ipv4-risk-score
 
 ***
-Scores a list of IPv4 addresses
+Scores a list of IPv4 addresses.
 
 #### Base Command
 

@@ -2,7 +2,7 @@
     "name": "KOI",
     "description": "KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [
         "KOI",
