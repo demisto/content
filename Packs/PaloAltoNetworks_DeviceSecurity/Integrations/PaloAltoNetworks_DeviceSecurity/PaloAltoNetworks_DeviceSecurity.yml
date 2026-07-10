@@ -5,6 +5,8 @@ name: Palo Alto Networks Device Security
 display: Palo Alto Networks Device Security
 category: Network Security
 description: Use the Palo Alto Networks Device Security integration to fetch alerts and vulnerabilities, retrieve device details, and resolve security incidents (previously Zingbox).
+defaultclassifier: Palo Alto Networks Device Security Classifier
+defaultmapperin: Palo Alto Networks Device Security Incoming Mapper
 configuration:
 - display: TSG ID
   name: tsg_id
@@ -43,7 +45,7 @@ configuration:
   defaultvalue: '10'
   type: 0
   required: false
-  additionalinfo: The maximum number of events is 100.
+  additionalinfo: The maximum number of incidents is 100.
 - section: Collect
   advanced: true
   display: Fetch Device Security Alerts
@@ -51,7 +53,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches Device Security alerts from the Device Security Portal.
+  additionalinfo: Whether to fetch Device Security alerts from the Device Security Portal.
 - section: Collect
   advanced: true
   display: Fetch Device Security Vulnerabilities
@@ -59,7 +61,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches Device Security vulnerabilities from the Device Security Security Portal.
+  additionalinfo: Whether to fetch Device Security vulnerabilities from the Device Security Portal.
 - section: Collect
   display: Fetch incidents
   name: isFetch
@@ -340,7 +342,7 @@ script:
     - contextPath: PaloAltoNetworksDeviceSecurity.Alerts
       description: The list of alerts.
       type: List
-    description: Device security list alerts command.
+    description: Retrieves a list of device security alerts.
   - name: device-security-list-vulns
     arguments:
     - name: start_time
@@ -382,7 +384,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.7178097
 fromversion: 6.10.0
 tests:
 - PaloAltoNetworks_DeviceSecurity-Test

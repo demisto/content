@@ -15,7 +15,7 @@ def get_device_security_config(device_security_config_list_name="DEVICE_SECURITY
     try:
         return json.loads(device_security_config_content)
     except Exception as e:
-        return_error(f"Failed to parse the DEVICE_SECURITY_CONFIG. Error: {e!s}")
+        raise ValueError(f"Failed to parse the DEVICE_SECURITY_CONFIG. Error: {e!s}")
 
 
 def get_raci(args):
@@ -56,7 +56,7 @@ def get_raci(args):
                 raci = a["raci"]
 
     if raci:
-        r = raci["r"]
+        r = raci.get("r")
         if r == "DEVICE_SECURITY_OWNER":
             result["r"] = owner
 
@@ -103,7 +103,7 @@ def get_raci(args):
                 r_snow["custom_fields"] = ";".join([f"{k}={v}" for k, v in cfields.items()])
 
         i = []
-        for inform in raci["i"]:
+        for inform in raci.get("i", []):
             if inform == "DEVICE_SECURITY_OWNER":
                 if owner is not None:
                     i.append(owner)
@@ -132,7 +132,7 @@ def get_raci(args):
         result["i"] = None
         result["i_email"] = None
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.RACI", outputs_key_field="", outputs=result)
+    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.RACI.Model", outputs_key_field="", outputs=result)
 
 
 def main():

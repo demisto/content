@@ -210,6 +210,11 @@ tasks:
       - - operator: isExists
           left:
             value:
+              simple: lists
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
               complex:
                 root: lists
                 transformers:
@@ -251,7 +256,7 @@ tasks:
       - "8"
     scriptarguments:
       value:
-        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -283,11 +288,11 @@ tasks:
       - "9"
     scriptarguments:
       custom_fields:
-        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.custom_fields}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.custom_fields}
       fields:
-        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.fields}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.fields}
       table_name:
-        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -302,7 +307,7 @@ tasks:
     fieldMapping:
     - incidentfield: Device Security ServiceNow Table Name
       output:
-        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.table}
     - incidentfield: Device Security ServiceNow Record ID
       output:
         simple: ${ServiceNow.Record.ID}

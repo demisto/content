@@ -16,7 +16,7 @@ Resolves the alert in the Device Security portal via the API. Designed to run as
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| close_reason | The reason the alert was closed \(either 'Resolved' or 'No Action Needed'\). |
+| close_reason | The reason the alert was closed (either 'Resolved' or 'No Action Needed'). |
 
 ## Outputs
 

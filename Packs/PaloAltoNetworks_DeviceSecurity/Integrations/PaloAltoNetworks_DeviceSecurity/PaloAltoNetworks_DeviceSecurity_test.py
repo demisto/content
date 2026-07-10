@@ -5,7 +5,9 @@ from PaloAltoNetworks_DeviceSecurity import (
     fetch_incidents,
     device_security_get_device,
     device_security_get_device_by_ip,
+    device_security_list_alerts,
     device_security_list_devices,
+    device_security_list_vulns,
     device_security_resolve_alert,
     device_security_resolve_vuln,
 )
@@ -50,28 +52,74 @@ def test_fetch_incidents(requests_mock):
     - Ensure the api URL is correct with the parameters
     - Ensure the lastRun timestamps are updated correctly
     """
-    mock_alert_response = json.loads("""{"ver":"v4.0","api":"/alert/list","items":[{"date":"2020-01-15T05:06:50.540Z",
-"name":"foo","description":"The baseline","zb_ticketid":"alert-Ob81iwWe"},{"date":"2020-01-15T05:06:50.540Z",
-"name":"bar","description":"x","zb_ticketid":"alert-Lqy4ikEz"}]}""")
+    mock_alert_response = json.loads(
+        """
+    {
+        "ver": "v4.0",
+        "api": "/alert/list",
+        "items": [
+            {
+                "date": "2020-01-15T05:06:50.540Z",
+                "name": "foo",
+                "description": "The baseline",
+                "zb_ticketid": "alert-Ob81iwWe"
+            },
+            {
+                "date": "2020-01-15T05:06:50.540Z",
+                "name": "bar",
+                "description": "x",
+                "zb_ticketid": "alert-Lqy4ikEz"
+            }
+        ]
+    }
+    """
+    )
     requests_mock.get(
         "https://test.api.strata.paloaltonetworks.com/iot/pub/v1/alert/list?offset=0&pagelength=10&stime=-1"
         "&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc",
         json=mock_alert_response,
     )
-
-    mock_vuln_response = json.loads("""{"ver":"v4.0","api":"/vulnerability/list","items":[{"name":"HPD41936",
-"ip":"10.55.132.114","deviceid":"a0:d3:c1:d4:19:36","detected_date":"2020-05-31T23:59:59.000Z",
-"vulnerability_name":"SMB v1 Usage"},{"name":"HPD41936","ip":"10.55.132.114","deviceid":"a0:d3:c1:d4:19:36",
-"detected_date":["2020-05-31T23:59:59.000Z"],"vulnerability_name":"SMB v1 Usage"}]}""")
+    mock_vuln_response = json.loads(
+        """
+    {
+        "ver": "v4.0",
+        "api": "/vulnerability/list",
+        "items": [
+            {
+                "name": "HPD41936",
+                "ip": "10.55.132.114",
+                "deviceid": "a0:d3:c1:d4:19:36",
+                "detected_date": "2020-05-31T23:59:59.000Z",
+                "vulnerability_name": "SMB v1 Usage",
+                "zb_ticketid": "vuln-1"
+            },
+            {
+                "name": "HPD41936",
+                "ip": "10.55.132.114",
+                "deviceid": "a0:d3:c1:d4:19:36",
+                "detected_date": [
+                    "2020-05-31T23:59:59.000Z"
+                ],
+                "vulnerability_name": "SMB v1 Usage",
+                "zb_ticketid": "vuln-2"
+            }
+        ]
+    }
+    """
+    )
     requests_mock.get(
         "https://test.api.strata.paloaltonetworks.com/iot/pub/v1/vulnerability/list?offset=0&pagelength=10"
-        "&stime=1970-01-01T00:00:00.001000Z&type=vulnerability&status=Confirmed&groupby=device",
+        "&stime=-1&type=vulnerability&status=Confirmed&groupby=device",
         json=mock_vuln_response,
     )
     client = Client(base_url="https://test.api.strata.paloaltonetworks.com/iot/pub/v1", verify=False)
-    last_run = {"last_vulns_fetch": 0}
-    next_run, incidents = fetch_incidents(client, last_run)
-    assert next_run == {"last_alerts_fetch": 1579064810.54, "last_vulns_fetch": 1590969599.0}
+    next_run, incidents = fetch_incidents(client, {}, fetch_alerts=True, fetch_vulns=True)
+    assert next_run == {
+        "last_alerts_fetch": "2020-01-15T05:06:50.540Z",
+        "last_alerts_seen_ids": ["Ob81iwWe", "Lqy4ikEz"],
+        "last_vulns_fetch": "2020-05-31T23:59:59.000Z",
+        "last_vulns_seen_ids": ["vuln-1", "vuln-2"],
+    }
     assert len(incidents) == 4
     for incident in incidents:
         assert isinstance(incident.get("occurred"), str)
@@ -143,21 +191,22 @@ def test_fetch_incidents_special(requests_mock):
         "&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc",
         json=mock_alert_response,
     )
-
     mock_vuln_response = json.loads("""{"items": [
         {
             "name": "vuln1",
             "detected_date": "2019-11-07T23:11:30.509Z",
             "ip": "ip1",
             "vulnerability_name": "vname1",
-            "deviceid": "deviceid1"
+            "deviceid": "deviceid1",
+            "zb_ticketid": "vuln1"
         },
         {
             "name": "vuln2",
             "detected_date": "2019-11-07T23:11:31.509Z",
             "ip": "ip2",
             "vulnerability_name": "vname2",
-            "deviceid": "deviceid2"
+            "deviceid": "deviceid2",
+            "zb_ticketid": "vuln2"
         }
     ]}""")
     requests_mock.get(
@@ -172,9 +221,14 @@ def test_fetch_incidents_special(requests_mock):
         json=mock_vuln_response,
     )
     client = Client(base_url="https://test.api.strata.paloaltonetworks.com/iot/pub/v1", max_fetch=2, verify=False)
-    next_run, incidents = fetch_incidents(client, {})
-    assert next_run == {"last_alerts_fetch": 1573168291.509, "last_vulns_fetch": 1573168291.509}
-    assert len(incidents) == 7  # 5 alerts + 2 vulns
+    next_run, incidents = fetch_incidents(client, {}, fetch_alerts=True, fetch_vulns=True)
+    assert next_run == {
+        "last_alerts_fetch": "2019-11-07T23:11:31.509Z",
+        "last_alerts_seen_ids": ["zb_ticketid2"],
+        "last_vulns_fetch": "2019-11-07T23:11:31.509Z",
+        "last_vulns_seen_ids": ["vuln2"],
+    }
+    assert len(incidents) == 4  # 2 alerts + 2 vulns due to max_fetch
 
 
 def test_device_security_list_devices(requests_mock):
@@ -200,6 +254,64 @@ def test_device_security_list_devices(requests_mock):
     outputs = device_security_list_devices(client, args).outputs
 
     assert len(outputs) == 2
+
+
+def test_device_security_list_alerts(requests_mock):
+    """
+    Scenario: Listing alerts
+
+    Given
+    - offset and limit parameters
+
+    When
+    - Fetching alerts from Device Security Portal
+
+    Then
+    - Ensure the API URL is correct with the right parameters
+    - Ensure the response is returned in context
+    """
+    mock_response = {"items": [{"id": "alert-id", "zb_ticketid": "alert-ticket", "name": "Alert name"}]}
+    requests_mock.get(
+        "https://test.api.strata.paloaltonetworks.com/iot/pub/v1/alert/list?offset=1&pagelength=2&stime=-1"
+        "&type=policy_alert&resolved=no&sortfield=date&sortdirection=desc",
+        json=mock_response,
+    )
+    client = Client(base_url="https://test.api.strata.paloaltonetworks.com/iot/pub/v1", verify=False)
+    args = {"offset": "1", "limit": "2"}
+    results = device_security_list_alerts(client, args)
+
+    assert results.outputs == mock_response["items"]
+    assert results.outputs_prefix == "PaloAltoNetworksDeviceSecurity.Alerts"
+    assert "Device Security Alerts" in results.readable_output
+
+
+def test_device_security_list_vulns(requests_mock):
+    """
+    Scenario: Listing vulnerabilities
+
+    Given
+    - offset and limit parameters
+
+    When
+    - Fetching vulnerabilities from Device Security Portal
+
+    Then
+    - Ensure the API URL is correct with the right parameters
+    - Ensure the response is returned in context
+    """
+    mock_response = {"items": [{"zb_ticketid": "vuln-ticket", "name": "Device name", "vulnerability_name": "Vuln name"}]}
+    requests_mock.get(
+        "https://test.api.strata.paloaltonetworks.com/iot/pub/v1/vulnerability/list?offset=1&pagelength=2"
+        "&stime=-1&type=vulnerability&status=Confirmed&groupby=device",
+        json=mock_response,
+    )
+    client = Client(base_url="https://test.api.strata.paloaltonetworks.com/iot/pub/v1", verify=False)
+    args = {"offset": "1", "limit": "2"}
+    results = device_security_list_vulns(client, args)
+
+    assert results.outputs == mock_response["items"]
+    assert results.outputs_prefix == "PaloAltoNetworksDeviceSecurity.Vulns"
+    assert "Device Security Vulnerabilities" in results.readable_output
 
 
 def test_device_security_resolve_alert(requests_mock):

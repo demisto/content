@@ -1,5 +1,3 @@
-import time
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -29,10 +27,15 @@ def get_servicenow_record(table, record_id):
 
 def close_incident(incident, servicenow_close_code):
     demisto.info(f"closing incident {incident['id']} {incident['status']} {incident['type']}")
-    demisto.executeCommand(
+    close_incident_result = demisto.executeCommand(
         "closeInvestigation",
-        {"id": incident["id"], "close_reason": "Resolved" if "Resolved" in servicenow_close_code else "Other"},
+        {
+            "id": incident["id"],
+            "close_reason": "Resolved" if "Resolved" in (servicenow_close_code or "") else "Other",
+        },
     )
+    if is_error(close_incident_result):
+        raise Exception("error in closeInvestigation command")
 
 
 def check_servicenow_and_close():
@@ -54,16 +57,13 @@ def check_servicenow_and_close():
                     closed_count += 1
                 else:
                     demisto.debug(f"keep incident {incident['id']} {incident['status']}: {incident_state}")
-
-                # not going to spam the ServiceNow server
-                time.sleep(1)
         return f"found {len(incidents)} incidents, closed {closed_count} incidents"
     return "no incidents found"
 
 
 def main():
     try:
-        demisto.results(check_servicenow_and_close())
+        return_results(check_servicenow_and_close())
     except Exception as ex:
         return_error(f"Failed to execute device-security-check-servicenow. Error: {ex!s}")
 

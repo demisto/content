@@ -8,6 +8,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+from ContentClientApiModule import *
 
 # IMPORTS
 
@@ -18,9 +19,11 @@ urllib3.disable_warnings()
 # CONSTANTS
 # api list size limit
 PAGELENGTH = 100
+SEEN_IDS_LIMIT = 1000
+SEEN_IDS_TRIM_COUNT = 750
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client class to interact with the service API
 
     This Client implements API calls, and does not contain any XSOAR logic.
@@ -29,21 +32,21 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url,
-        first_fetch="-1",
-        max_fetch=10,
-        api_timeout=60,
-        verify=True,
-        proxy=False,
-        ok_codes=(),
-        headers=None,
-    ):
+        base_url: str,
+        first_fetch: str = "-1",
+        max_fetch: int = 10,
+        api_timeout: int = 60,
+        verify: bool = True,
+        proxy: bool = False,
+        ok_codes: tuple = (),
+        headers: dict | None = None,
+    ) -> None:
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
 
-    def _http_request(self, **kwargs):  # type: ignore[override]
+    def _http_request(self, **kwargs) -> Any:  # type: ignore[override]
         try:
             params = kwargs.get("params", {})
             headers = kwargs.get("headers")
@@ -60,50 +63,40 @@ class Client(BaseClient):
 
             return super()._http_request(**kwargs)
         except DemistoException as error:
-            error_message = error.args[0]
+            error_message = str(error)
             if "[404]" in error_message:
-                ind = error_message.find("Not Found")
-                new_message = error_message[:ind] + "\nResource or endpoint not found."
-                raise DemistoException(new_message)
+                raise DemistoException(f"{error_message}\nResource or endpoint not found.")
             elif "[403]" in error_message:
-                ind = error_message.find("Forbidden")
-                new_message = (
-                    error_message[:ind] + "\nValidate your TSG ID or Whether Client ID or Client Secret has required permissions"
+                raise DemistoException(
+                    f"{error_message}\nValidate your TSG ID and ensure the Client ID/Client Secret have the required permissions."
                 )
-                raise DemistoException(new_message)
             elif "[401]" in error_message:
-                ind = error_message.find("Unauthorized")
-                new_message = (
-                    error_message[:ind]
-                    + "\nUnauthorized request. Validate Client ID and Client Secret, and ensure the generated token is valid."
+                raise DemistoException(
+                    f"{error_message}\nUnauthorized request. Validate Client ID and Client Secret, "
+                    "and ensure the generated token is valid."
                 )
-                raise DemistoException(new_message)
             elif "[429]" in error_message:
-                ind = error_message.find("Too Many Requests")
-                new_message = (
-                    error_message[:ind] + "\nRate limit exceeded. Retry the request later or lower the request frequency."
+                raise DemistoException(
+                    f"{error_message}\nRate limit exceeded. Retry the request later or lower the request frequency."
                 )
-                raise DemistoException(new_message)
             elif "[500]" in error_message:
-                ind = error_message.find("Internal Server Error")
-                new_message = error_message[:ind] + "\nService temporary error. Retry the request in a few minutes."
-                raise DemistoException(new_message)
+                raise DemistoException(f"{error_message}\nService temporary error. Retry the request in a few minutes.")
             else:
                 raise error
 
-    def get_device(self, device_id):
+    def get_device(self, device_id: str) -> dict:
         """
         Get a device from Device Security portal by device ID
         """
         return self._http_request(method="GET", url_suffix="/device", params={"deviceid": device_id}, timeout=self.api_timeout)
 
-    def get_device_by_ip(self, ip):
+    def get_device_by_ip(self, ip: str) -> dict:
         """
         Get a device from Device Security portal by ip
         """
         return self._http_request(method="GET", url_suffix="/device/ip", params={"ip": ip}, timeout=self.api_timeout)
 
-    def list_alerts(self, stime="-1", offset=0, pagelength=100, sortdirection="asc"):
+    def list_alerts(self, stime: str = "-1", offset: int = 0, pagelength: int = 100, sortdirection: str = "asc") -> list[dict]:
         """
         returns alerts inventory list
         """
@@ -123,7 +116,7 @@ class Client(BaseClient):
         )
         return data["items"]
 
-    def list_vulns(self, stime="-1", offset=0, pagelength=100):
+    def list_vulns(self, stime: str = "-1", offset: int = 0, pagelength: int = 100) -> list[dict]:
         """
         returns vulnerability instances
         """
@@ -142,7 +135,7 @@ class Client(BaseClient):
         )
         return data["items"]
 
-    def list_devices(self, offset, pagelength):
+    def list_devices(self, offset: int, pagelength: int) -> list[dict]:
         """
         returns a list of devices
         """
@@ -152,14 +145,14 @@ class Client(BaseClient):
             params={
                 "offset": offset,
                 "pagelength": pagelength,
-                "stime": f"{datetime.utcfromtimestamp(int(time.time()) - 2592000).isoformat()}Z",
+                "stime": datetime.fromtimestamp(int(time.time()) - 2592000, tz=UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "sortdirection": "asc",
             },
             timeout=self.api_timeout,
         )
         return data["devices"]
 
-    def resolve_alert(self, alert_id, reason, reason_type="No Action Needed"):
+    def resolve_alert(self, alert_id: str, reason: str, reason_type: str = "No Action Needed") -> dict:
         """
         Resolve a Device Security alert
         """
@@ -171,7 +164,7 @@ class Client(BaseClient):
             timeout=self.api_timeout,
         )
 
-    def resolve_vuln(self, vuln_id, full_name, reason):
+    def resolve_vuln(self, vuln_id: str, full_name: str, reason: str) -> dict:
         """
         Resolve a Device Security vulnerability
         """
@@ -183,14 +176,24 @@ class Client(BaseClient):
         )
 
 
-def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verify_certificate=True, proxy=False):
+def get_scm_access_token(
+    token_base_url: str, tsg_id: str, client_id: str, client_secret: str, verify_certificate: bool = True, proxy: bool = False
+) -> str:
     try:
         integration_context = get_integration_context()
         access_token = integration_context.get("scm_access_token")
         expires_on = integration_context.get("scm_expires_on")
 
-        if access_token and expires_on and datetime.fromisoformat(expires_on) > datetime.now():
-            return access_token
+        if access_token and expires_on:
+            try:
+                expires_on_dt = datetime.fromisoformat(expires_on.replace("Z", "+00:00"))
+                if expires_on_dt.tzinfo is None:
+                    expires_on_dt = expires_on_dt.replace(tzinfo=UTC)
+
+                if expires_on_dt > datetime.now(tz=UTC):
+                    return access_token
+            except ValueError:
+                demisto.debug(f"Failed to parse cached scm_expires_on timestamp: {expires_on}. Requesting a new token.")
 
         auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
         client = BaseClient(
@@ -216,7 +219,7 @@ def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verif
         set_integration_context(
             {
                 "scm_access_token": access_token,
-                "scm_expires_on": str(datetime.now() + timedelta(seconds=int(expires_in))),
+                "scm_expires_on": (datetime.now(tz=UTC) + timedelta(seconds=int(expires_in))).isoformat(),
             }
         )
 
@@ -225,29 +228,27 @@ def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verif
         raise Exception(f"Failed to generate or validate SCM access token: {str(e)}")
 
 
-def get_scm_ui_base_url():
+def get_scm_ui_base_url() -> str:
     """Return SCM UI base URL."""
     return "https://stratacloudmanager.paloaltonetworks.com"
 
 
-def get_scm_alert_url(alert_id):
+def get_scm_alert_url(alert_id: str) -> str:
     """Build the SCM alert details URL.
 
     Args:
         alert_id (str): Alert identifier.
-
     Returns:
         str: Full alert details URL.
     """
     return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail?id={alert_id}"
 
 
-def get_scm_vuln_url(vuln):
+def get_scm_vuln_url(vuln: dict) -> str:
     """Build the SCM vulnerability details URL.
 
     Args:
         vuln (dict): Vulnerability object.
-
     Returns:
         str: Full vulnerability details URL.
     """
@@ -260,24 +261,39 @@ def get_scm_vuln_url(vuln):
     )
 
 
-def test_module(client):
+def trim_seen_ids(seen_ids: list[str]) -> list[str]:
+    if len(seen_ids) > SEEN_IDS_LIMIT:
+        return seen_ids[SEEN_IDS_TRIM_COUNT:]
+    return seen_ids
+
+
+def test_module(client: Client, is_fetch: bool, fetch_alerts: bool, fetch_vulns: bool) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        Client: client to use
+        client (Client): client to use
+        is_fetch (bool): Whether to fetch incidents
+        fetch_alerts (bool): Whether to fetch alerts
+        fetch_vulns (bool): Whether to fetch vulnerabilities
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    if demisto.params().get("isFetch"):
-        fetch_incidents(client, last_run=demisto.getLastRun(), is_test=True)
+    if is_fetch:
+        fetch_incidents(
+            client,
+            last_run=demisto.getLastRun(),
+            fetch_alerts=fetch_alerts,
+            fetch_vulns=fetch_vulns,
+            is_test=True,
+        )
     else:
         client.list_devices(0, 1)
     return "ok"
 
 
-def device_security_get_device(client, args):
+def device_security_get_device(client: Client, args: dict) -> CommandResults:
     """
     Returns a Device Security device
 
@@ -290,7 +306,10 @@ def device_security_get_device(client, args):
 
         CommandResults
     """
-    device_id = args.get("id")
+    device_id = args.get("id", "")
+    if not device_id:
+        return_error("id argument is required.")
+    device_id = str(device_id)
 
     result = client.get_device(device_id)
     if not result:
@@ -306,7 +325,7 @@ def device_security_get_device(client, args):
     )
 
 
-def device_security_get_device_by_ip(client, args):
+def device_security_get_device_by_ip(client: Client, args: dict) -> CommandResults:
     """
     Returns a Device Security device
 
@@ -319,7 +338,10 @@ def device_security_get_device_by_ip(client, args):
 
         CommandResults
     """
-    device_ip = args.get("ip")
+    device_ip = args.get("ip", "")
+    if not device_ip:
+        return_error("ip argument is required.")
+    device_ip = str(device_ip)
 
     result = client.get_device_by_ip(device_ip)
     devices = result.get("devices", [])
@@ -336,7 +358,7 @@ def device_security_get_device_by_ip(client, args):
     )
 
 
-def device_security_list_devices(client, args):
+def device_security_list_devices(client: Client, args: dict) -> CommandResults:
     """
     Returns a list of Device Security devices
 
@@ -349,8 +371,17 @@ def device_security_list_devices(client, args):
 
         CommandResults
     """
-    offset = args.get("offset", "0")
-    pagelength = args.get("limit", client.max_fetch)
+    try:
+        offset = int(args.get("offset", "0"))
+        if offset < 0:
+            return_error("Offset must be a non-negative integer.")
+
+        pagelength = int(args.get("limit", client.max_fetch))
+        if pagelength <= 0:
+            return_error("Limit must be a positive integer.")
+    except ValueError:
+        return_error("Offset and limit must be integers.")
+
     result = client.list_devices(offset, pagelength)
 
     if not result:
@@ -366,9 +397,9 @@ def device_security_list_devices(client, args):
     )
 
 
-def device_security_list_alerts(client, args):
+def device_security_list_alerts(client: Client, args: dict) -> CommandResults:
     """
-    Returns a list of Device Security alerts (max: 1000)
+    Returns a list of Device Security alerts (max: 100)
 
     Args:
         client (Client): Device Security client.
@@ -379,9 +410,24 @@ def device_security_list_alerts(client, args):
 
         CommandResults
     """
-    stime = args.get("start_time", "-1")
-    offset = args.get("offset", 0)
-    pagelength = min(int(args.get("limit", client.max_fetch)), PAGELENGTH)
+    try:
+        start_time = arg_to_datetime(
+            arg=args.get("start_time"),
+            arg_name="start_time",
+            required=False,
+            is_utc=True,
+        )
+        stime = start_time.strftime("%Y-%m-%dT%H:%M:%SZ") if start_time else "-1"
+
+        offset = int(args.get("offset", "0"))
+        if offset < 0:
+            return_error("Offset must be a non-negative integer.")
+        pagelength = min(int(args.get("limit", client.max_fetch)), PAGELENGTH)
+        if pagelength <= 0:
+            return_error("Limit must be a positive integer.")
+    except ValueError:
+        return_error("Offset and limit must be integers.")
+
     result = client.list_alerts(stime, offset, pagelength, "desc")
 
     if not result:
@@ -397,9 +443,9 @@ def device_security_list_alerts(client, args):
     )
 
 
-def device_security_list_vulns(client, args):
+def device_security_list_vulns(client: Client, args: dict) -> CommandResults:
     """
-    Returns a list of Device Security vulnerabilities (max: 1000)
+    Returns a list of Device Security vulnerabilities (max: 100)
 
     Args:
         client (Client): Device Security client.
@@ -410,9 +456,26 @@ def device_security_list_vulns(client, args):
 
         CommandResults
     """
-    stime = args.get("start_time", "-1")
-    offset = args.get("offset", 0)
-    pagelength = min(int(args.get("limit", client.max_fetch)), PAGELENGTH)
+    try:
+        start_time = arg_to_datetime(
+            arg=args.get("start_time"),
+            arg_name="start_time",
+            required=False,
+            is_utc=True,
+        )
+        stime = start_time.strftime("%Y-%m-%dT%H:%M:%SZ") if start_time else "-1"
+        offset = int(args.get("offset", "0"))
+
+        if offset < 0:
+            return_error("Offset must be a non-negative integer.")
+
+        pagelength = min(int(args.get("limit", client.max_fetch)), PAGELENGTH)
+
+        if pagelength <= 0:
+            return_error("Limit must be a positive integer.")
+    except ValueError:
+        return_error("Offset and limit must be integers.")
+
     result = client.list_vulns(stime, offset, pagelength)
 
     if not result:
@@ -428,7 +491,7 @@ def device_security_list_vulns(client, args):
     )
 
 
-def device_security_resolve_alert(client, args):
+def device_security_resolve_alert(client: Client, args: dict) -> CommandResults:
     """
     Resolve a Device Security alert
 
@@ -439,16 +502,20 @@ def device_security_resolve_alert(client, args):
     Returns:
         None in CommandResults
     """
-    alert_id = args.get("id")
-    reason = args.get("reason", "Resolved by XSOAR")
-    reason_type = args.get("reason_type", "No Action Needed")
+    alert_id = args.get("id", "")
+    if not alert_id:
+        return_error("id argument is required.")
+    alert_id = str(alert_id)
+
+    reason = str(args.get("reason", "Resolved by XSOAR"))
+    reason_type = str(args.get("reason_type", "No Action Needed"))
 
     client.resolve_alert(alert_id, reason, reason_type)
 
     return CommandResults(readable_output=f"Alert {alert_id} was resolved successfully")
 
 
-def device_security_resolve_vuln(client, args):
+def device_security_resolve_vuln(client: Client, args: dict) -> CommandResults:
     """
     Resolve a Device Security vulnerability
 
@@ -459,125 +526,176 @@ def device_security_resolve_vuln(client, args):
     Returns:
         None in CommandResults
     """
-    vuln_id = args.get("id")
-    full_name = args.get("full_name")
-    reason = args.get("reason", "Resolved by XSOAR")
+    vuln_id = args.get("id", "")
+    if not vuln_id:
+        return_error("id argument is required.")
+    vuln_id = str(vuln_id)
+
+    full_name = args.get("full_name", "")
+    if not full_name:
+        return_error("full_name argument is required.")
+    full_name = str(full_name)
+
+    reason = str(args.get("reason", "Resolved by XSOAR"))
 
     client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(readable_output=f"Vulnerability {vuln_id} was resolved successfully")
 
 
-def normalize_detected_date(detected_date):
-    if detected_date and isinstance(detected_date, list):
-        return detected_date[0]
-    return detected_date
+def normalize_detected_date(detected_date: str | list | None) -> str | None:
+    if isinstance(detected_date, str) or detected_date is None:
+        return detected_date
+
+    if detected_date:
+        first_detected_date = detected_date[0]
+        return first_detected_date if isinstance(first_detected_date, str) else None
+
+    return None
 
 
-def fetch_alert_incidents(client, last_alerts_fetch, max_fetch):
-    stime = client.first_fetch
-    if last_alerts_fetch is not None:
-        # need to add 1ms for the stime
-        stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
+def format_fetch_start_time(fetch_time: str) -> str:
+    if fetch_time == "-1":
+        return fetch_time
 
-    alerts = client.list_alerts(stime, pagelength=max_fetch)
-    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- alerts before filtering: {len(alerts)}")
+    fetch_time_dt = arg_to_datetime(fetch_time, arg_name="Fetch start time", is_utc=True, required=True)
 
-    # special handling for the case of having more than the pagelength
-    if len(alerts) == max_fetch:
-        # get the last date
-        last_date = alerts[-1]["date"]
-        offset = 0
-        done = False
-        while not done:
-            offset += max_fetch
-            others = client.list_alerts(stime, offset, pagelength=max_fetch)
-            for alert in others:
-                if alert["date"] == last_date:
-                    alerts.append(alert)
-                else:
-                    done = True
-                    break
-            if len(others) != max_fetch:
+    if fetch_time_dt is None:
+        raise ValueError(f"Could not parse fetch time: {fetch_time}")
+
+    return fetch_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def fetch_alert_incidents(
+    client: Client, last_alerts_fetch: str | None, last_alerts_seen_ids: list[str] | None, max_fetch: int
+) -> tuple[list[dict], str | None, list[str]]:
+    stime = last_alerts_fetch or format_fetch_start_time(client.first_fetch)
+    seen_ids = set(last_alerts_seen_ids or [])
+
+    incidents: list[dict] = []
+    new_last_fetch = last_alerts_fetch
+    new_seen_ids: list[str] = list(seen_ids)  # preserve previously seen IDs
+    offset = 0
+
+    while len(incidents) < max_fetch:
+        alerts = client.list_alerts(stime, offset=offset, pagelength=max_fetch)
+        demisto.debug(f"[Fetch]- Number of incidents - alerts before filtering: {len(alerts)}")
+
+        if not alerts:
+            break
+
+        for alert in alerts:
+            alert_date = alert.get("date")
+            alert_id = alert.get("zb_ticketid", "").replace("alert-", "")
+
+            if not alert_date or not alert_id:
+                continue
+
+            if alert_date == last_alerts_fetch and alert_id in seen_ids:
+                continue
+
+            if len(incidents) >= max_fetch:
                 break
 
-    incidents = []
-    for alert in alerts:
-        alert_date_epoch = datetime.strptime(alert["date"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
-        alert_id = alert["zb_ticketid"].replace("alert-", "")
-        device_security_incident_url = get_scm_alert_url(alert_id)
+            device_security_incident_url = get_scm_alert_url(alert_id)
+            alert_raw_json = {
+                **alert,
+                "rawType": "Device Security Alert",
+                "devicesecurityincidenturl": device_security_incident_url,
+            }
 
-        incident = {
-            "name": alert["name"],
-            "rawType": "Device Security Alert",
-            "occurred": alert["date"],
-            "rawJSON": json.dumps(alert),
-            "details": alert.get("description", ""),
-            "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
-        }
-        incidents.append(incident)
+            incidents.append(
+                {
+                    "name": alert.get("name", ""),
+                    "rawType": "Device Security Alert",
+                    "occurred": alert_date,
+                    "rawJSON": json.dumps(alert_raw_json),
+                    "details": alert.get("description", ""),
+                    "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
+                }
+            )
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if last_alerts_fetch is None or alert_date_epoch > last_alerts_fetch:
-            last_alerts_fetch = alert_date_epoch
+            if new_last_fetch is None or alert_date > new_last_fetch:
+                new_last_fetch = alert_date
+                new_seen_ids = [alert_id]
+            elif alert_date == new_last_fetch and alert_id not in new_seen_ids:
+                new_seen_ids.append(alert_id)
 
-    return incidents, last_alerts_fetch
+        if len(alerts) < max_fetch or len(incidents) >= max_fetch:
+            break
+
+        offset += max_fetch
+
+    return incidents, new_last_fetch, trim_seen_ids(new_seen_ids)
 
 
-def fetch_vulnerability_incidents(client, last_vulns_fetch, max_fetch):
-    stime = client.first_fetch
-    if last_vulns_fetch is not None:
-        # need to add 1ms for the stime
-        stime = datetime.utcfromtimestamp(last_vulns_fetch + 0.001).isoformat() + "Z"
+def fetch_vulnerability_incidents(
+    client: Client, last_vulns_fetch: str | None, last_vulns_seen_ids: list[str] | None, max_fetch: int
+) -> tuple[list[dict], str | None, list[str]]:
+    stime = last_vulns_fetch or format_fetch_start_time(client.first_fetch)
+    seen_ids = set(last_vulns_seen_ids or [])
 
-    vulns = client.list_vulns(stime, pagelength=max_fetch)
+    incidents: list[dict] = []
+    new_last_fetch = last_vulns_fetch
+    new_seen_ids: list[str] = list(seen_ids)  # preserve previously seen IDs
+    offset = 0
 
-    # special handling for the case of having more than the pagelength
-    if len(vulns) == max_fetch:
-        # get the last date
-        last_date = normalize_detected_date(vulns[-1]["detected_date"])
+    while len(incidents) < max_fetch:
+        vulns = client.list_vulns(stime, offset=offset, pagelength=max_fetch)
 
-        offset = 0
-        done = False
-        while not done:
-            offset += max_fetch
-            others = client.list_vulns(stime, offset, pagelength=max_fetch)
-            for vuln in others:
-                detected_date = normalize_detected_date(vuln["detected_date"])
+        if not vulns:
+            break
 
-                if detected_date == last_date:
-                    vulns.append(vuln)
-                else:
-                    done = True
-                    break
-            if len(others) != max_fetch:
+        for vuln in vulns:
+            detected_date = normalize_detected_date(vuln.get("detected_date"))
+            vuln_id = vuln.get("zb_ticketid", "")
+
+            if not detected_date or not vuln_id:
+                continue
+
+            if detected_date == last_vulns_fetch and vuln_id in seen_ids:
+                continue
+
+            if len(incidents) >= max_fetch:
                 break
-    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- vulnerability before filtering: {len(vulns)}")
 
-    incidents = []
-    for vuln in vulns:
-        detected_date = normalize_detected_date(vuln["detected_date"])
+            device_security_incident_url = get_scm_vuln_url(vuln)
+            vuln_raw_json = {
+                **vuln,
+                "rawType": "Device Security Vulnerability",
+                "devicesecurityincidenturl": device_security_incident_url,
+            }
 
-        vuln_date_epoch = datetime.strptime(detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
-        device_security_incident_url = get_scm_vuln_url(vuln)
+            incidents.append(
+                {
+                    "name": vuln.get("name", ""),
+                    "rawType": "Device Security Vulnerability",
+                    "occurred": detected_date,
+                    "rawJSON": json.dumps(vuln_raw_json),
+                    "details": (
+                        f'Device {vuln.get("name", "")} at IP {vuln.get("ip", "")}: ' f'{vuln.get("vulnerability_name", "")}'
+                    ),
+                    "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
+                }
+            )
 
-        incident = {
-            "name": vuln["name"],
-            "rawType": "Device Security Vulnerability",
-            "occurred": detected_date,
-            "rawJSON": json.dumps(vuln),
-            "details": f'Device {vuln["name"]} at IP {vuln["ip"]}: {vuln["vulnerability_name"]}',
-            "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
-        }
-        incidents.append(incident)
+            if new_last_fetch is None or detected_date > new_last_fetch:
+                new_last_fetch = detected_date
+                new_seen_ids = [vuln_id]
+            elif detected_date == new_last_fetch and vuln_id not in new_seen_ids:
+                new_seen_ids.append(vuln_id)
 
-        if last_vulns_fetch is None or vuln_date_epoch > last_vulns_fetch:
-            last_vulns_fetch = vuln_date_epoch
+        if len(vulns) < max_fetch or len(incidents) >= max_fetch:
+            break
 
-    return incidents, last_vulns_fetch
+        offset += max_fetch
+
+    return incidents, new_last_fetch, trim_seen_ids(new_seen_ids)
 
 
-def fetch_incidents(client, last_run, is_test=False):
+def fetch_incidents(
+    client: Client, last_run: dict, fetch_alerts: bool, fetch_vulns: bool, is_test: bool = False
+) -> tuple[dict | None, list[dict] | None]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -589,28 +707,40 @@ def fetch_incidents(client, last_run, is_test=False):
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    demisto.debug("PaloAltoNetworks_DeviceSecurity - Start fetching")
-    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Last run: {json.dumps(last_run)}")
+    demisto.debug("[Fetch] PaloAltoNetworks_DeviceSecurity - Start fetching")
+    demisto.debug(f"[Fetch] PaloAltoNetworks_DeviceSecurity - Last run: {json.dumps(last_run)}")
     # Get the last fetch time, if exists
     last_alerts_fetch = last_run.get("last_alerts_fetch")
+    last_alerts_seen_ids = last_run.get("last_alerts_seen_ids", [])
     last_vulns_fetch = last_run.get("last_vulns_fetch")
+    last_vulns_seen_ids = last_run.get("last_vulns_seen_ids", [])
     max_fetch = client.max_fetch
 
     incidents = []
 
-    if demisto.params().get("fetch_alerts", True):
-        alert_incidents, last_alerts_fetch = fetch_alert_incidents(client, last_alerts_fetch, max_fetch)
+    if fetch_alerts:
+        alert_incidents, last_alerts_fetch, last_alerts_seen_ids = fetch_alert_incidents(
+            client, last_alerts_fetch, last_alerts_seen_ids, max_fetch
+        )
         incidents.extend(alert_incidents)
 
-    if demisto.params().get("fetch_vulns", True):
-        vuln_incidents, last_vulns_fetch = fetch_vulnerability_incidents(client, last_vulns_fetch, max_fetch)
+    if fetch_vulns:
+        vuln_incidents, last_vulns_fetch, last_vulns_seen_ids = fetch_vulnerability_incidents(
+            client, last_vulns_fetch, last_vulns_seen_ids, max_fetch
+        )
         incidents.extend(vuln_incidents)
 
-    next_run = {"last_alerts_fetch": last_alerts_fetch, "last_vulns_fetch": last_vulns_fetch}
+    next_run = {
+        "last_alerts_fetch": last_alerts_fetch,
+        "last_alerts_seen_ids": last_alerts_seen_ids,
+        "last_vulns_fetch": last_vulns_fetch,
+        "last_vulns_seen_ids": last_vulns_seen_ids,
+    }
     demisto.debug(
-        f"PaloAltoNetworks_DeviceSecurity - Number of incidents (alerts and vulnerability) after filtering : {len(incidents)}"
+        f"[Fetch] PaloAltoNetworks_DeviceSecurity - Number of incidents (alerts and vulnerability) "
+        f"after filtering : {len(incidents)}"
     )
-    demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Next run after incidents fetching: {json.dumps(next_run)}")
+    demisto.debug(f"[Fetch] PaloAltoNetworks_DeviceSecurity - Next run after incidents fetching: {json.dumps(next_run)}")
 
     if is_test:
         return None, None
@@ -618,50 +748,66 @@ def fetch_incidents(client, last_run, is_test=False):
     return next_run, incidents
 
 
+def parse_positive_int(value: Any, field_name: str) -> int:
+    try:
+        parsed_value = int(value)
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"{field_name} needs to be an integer") from e
+
+    if parsed_value <= 0:
+        raise ValueError(f"{field_name} needs to be a positive integer")
+
+    return parsed_value
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    tsg_id = demisto.params().get("tsg_id")
-    client_id = demisto.params().get("client_id")
-    client_secret = demisto.params().get("client_secret")
+    command = demisto.command()
 
-    api_timeout = 60
     try:
-        api_timeout = int(demisto.params().get("api_timeout", "60"))
-    except ValueError:
-        return_error("API timeout needs to be an integer")
+        params = demisto.params()
+        args = demisto.args()
 
-    first_fetch = "-1"
-    try:
-        first_fetch_dt = arg_to_datetime(
-            arg=demisto.params().get("first_fetch"),
-            arg_name="First fetch time",
-            is_utc=True,
-            required=False,
-        )
+        is_fetch = argToBoolean(params.get("isFetch", False))
+        tsg_id = params.get("tsg_id")
+        client_id = params.get("client_id")
+        client_secret = params.get("client_secret")
+        verify_certificate = not argToBoolean(params.get("insecure", False))
+        proxy = argToBoolean(params.get("proxy", False))
+        fetch_alerts = argToBoolean(params.get("fetch_alerts", True))
+        fetch_vulns = argToBoolean(params.get("fetch_vulns", True))
+        api_timeout = parse_positive_int(params.get("api_timeout", "60"), "API timeout")
+        max_fetch = parse_positive_int(params.get("max_fetch", "10"), "Maximum number of incidents per fetch")
+
+        first_fetch = "-1"
+        try:
+            first_fetch_dt = arg_to_datetime(
+                arg=params.get("first_fetch"),
+                arg_name="First fetch time",
+                is_utc=True,
+                required=False,
+            )
+        except ValueError as e:
+            raise ValueError(f"First fetch time is in a wrong format. Error: {e!s}") from e
+
         if first_fetch_dt:
             first_fetch = first_fetch_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    except ValueError as e:
-        return_error(f"First fetch time is in a wrong format. Error: {e!s}")
 
-    max_fetch = 10
-    try:
-        max_fetch = int(demisto.params().get("max_fetch", "10"))
-    except ValueError:
-        return_error("Maximum number of incidents per fetch needs to be an integer")
+        token_base_url = "https://auth.apps.paloaltonetworks.com"
+        base_url = "https://api.strata.paloaltonetworks.com/iot/pub/v1"
 
-    verify_certificate = not demisto.params().get("insecure", False)
+        access_token = get_scm_access_token(
+            token_base_url,
+            tsg_id,
+            client_id,
+            client_secret,
+            verify_certificate,
+            proxy,
+        )
+        headers = {"Authorization": f"Bearer {access_token}"}
 
-    proxy = demisto.params().get("proxy", False)
-
-    token_base_url = "https://auth.apps.paloaltonetworks.com"
-    base_url = "https://api.strata.paloaltonetworks.com/iot/pub/v1"
-    access_token = get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verify_certificate, proxy)
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    demisto.info(f"Command being called is {demisto.command()}")
-    try:
         client = Client(
             base_url=base_url,
             api_timeout=api_timeout,
@@ -673,14 +819,20 @@ def main():
             headers=headers,
         )
 
-        if demisto.command() == "test-module":
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+        demisto.info(f"Command being called is {command}")
 
-        elif demisto.command() == "fetch-incidents":
+        if command == "test-module":
+            # This is the call made when pressing the integration Test button.
+            return_results(test_module(client, is_fetch, fetch_alerts, fetch_vulns))
+
+        elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents = fetch_incidents(client=client, last_run=demisto.getLastRun())
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                fetch_alerts=fetch_alerts,
+                fetch_vulns=fetch_vulns,
+            )
 
             if next_run is not None:
                 demisto.setLastRun(next_run)
@@ -688,30 +840,32 @@ def main():
             if incidents is not None:
                 demisto.incidents(incidents)
 
-        elif demisto.command() == "device-security-get-device":
-            return_results(device_security_get_device(client, demisto.args()))
+        elif command == "device-security-get-device":
+            return_results(device_security_get_device(client, args))
 
-        elif demisto.command() == "device-security-get-device-by-ip":
-            return_results(device_security_get_device_by_ip(client, demisto.args()))
+        elif command == "device-security-get-device-by-ip":
+            return_results(device_security_get_device_by_ip(client, args))
 
-        elif demisto.command() == "device-security-list-devices":
-            return_results(device_security_list_devices(client, demisto.args()))
+        elif command == "device-security-list-devices":
+            return_results(device_security_list_devices(client, args))
 
-        elif demisto.command() == "device-security-list-alerts":
-            return_results(device_security_list_alerts(client, demisto.args()))
+        elif command == "device-security-list-alerts":
+            return_results(device_security_list_alerts(client, args))
 
-        elif demisto.command() == "device-security-list-vulns":
-            return_results(device_security_list_vulns(client, demisto.args()))
+        elif command == "device-security-list-vulns":
+            return_results(device_security_list_vulns(client, args))
 
-        elif demisto.command() == "device-security-resolve-alert":
-            return_results(device_security_resolve_alert(client, demisto.args()))
+        elif command == "device-security-resolve-alert":
+            return_results(device_security_resolve_alert(client, args))
 
-        elif demisto.command() == "device-security-resolve-vuln":
-            return_results(device_security_resolve_vuln(client, demisto.args()))
+        elif command == "device-security-resolve-vuln":
+            return_results(device_security_resolve_vuln(client, args))
 
-    # Log exceptions
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
+
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

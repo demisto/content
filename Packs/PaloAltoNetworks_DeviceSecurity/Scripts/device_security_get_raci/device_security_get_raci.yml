@@ -4,38 +4,60 @@ args:
 - description: The raw type of the incident.
   name: raw_type
   required: true
-- default: true
-  description: The device category.
+- description: The device category.
   name: category
-- default: true
-  description: The device profile.
+- description: The device profile.
   name: profile
-- default: true
-  description: The device vendor.
+- description: The device vendor.
   name: vendor
-- default: true
-  description: The device model.
+- description: The device model.
   name: model
-- default: true
-  description: The variable name for DEVICE_SECURITY_CONFIG.
+- description: The name of the list containing the Device Security configuration.
   name: device_security_config_list_name
   defaultValue: DEVICE_SECURITY_CONFIG
-comment: Device Security RACI model script.
+comment: Calculates the responsible and informed parties for a Device Security incident by matching incident and device details against the Device Security configuration list.
 commonfields:
   id: device-security-get-raci
   version: -1
 name: device-security-get-raci
 outputs:
-- contextPath: PaloAltoNetworksDeviceSecurity.RACI
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model
   description: The RACI model of the Device Security incident.
-  type: unknown
+  type: object
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r
+  description: The responsible party in the RACI model.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r_email
+  description: The email address of the responsible party in the RACI model.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.i
+  description: The informed parties in the RACI model.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.i_email
+  description: The comma-separated email addresses of the informed parties in the RACI model.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.owner
+  description: The Device Security owner of the device.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow
+  description: The ServiceNow information for the responsible party.
+  type: object
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.fields
+  description: The fields of the ServiceNow ticket.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.custom_fields
+  description: The custom fields of the ServiceNow ticket.
+  type: string
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI.Model.r_snow.table
+  description: The table of the ServiceNow ticket.
+  type: string
 script: '-'
 tags:
 - device security
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

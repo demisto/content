@@ -1,7 +1,7 @@
 id: PANW Device Security ServiceNow Tickets Check
 version: -1
 name: PANW Device Security ServiceNow Tickets Check
-description: This playbook checks the ServiceNow ticket status for Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilities. Designed to run as a recurring job.
+description: This playbook checks the ServiceNow ticket status for Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilities and automatically closes the Cortex XSOAR incident when the related ServiceNow ticket is closed. Designed to run as a recurring job.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: Starts the ServiceNow ticket status check workflow.
     nexttasks:
       '#none#':
       - "4"
@@ -77,16 +77,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Job finished
       closeReason:
         simple: ""
-      code42alerttype: {}
-      emailclassification: {}
       id:
         simple: ${incident.id}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -108,7 +104,7 @@ tasks:
       id: 5ac1ec1d-b648-4f45-8828-6e918a9c5d03
       version: -1
       name: Done
-      description: ''
+      description: Indicates that the ServiceNow ticket status check workflow finished.
       type: title
       iscommand: false
       brand: ""
@@ -133,7 +129,7 @@ tasks:
       id: 4187f350-078c-4395-a993-12db1d3b983a
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: ''
+      description: Checks whether the ServiceNow v2 integration instance is enabled before querying ServiceNow ticket status.
       type: condition
       iscommand: false
       brand: ""
