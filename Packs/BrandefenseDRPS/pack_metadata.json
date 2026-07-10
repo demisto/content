@@ -37,20 +37,7 @@
         "IOC",
         "CTI"
     ],
-    "dependencies": {
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        }
-    },
+    "dependencies": {},
     "marketplaces": [
         "xsoar",
         "marketplacev2"

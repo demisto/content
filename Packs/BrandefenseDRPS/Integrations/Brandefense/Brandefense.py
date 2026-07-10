@@ -159,6 +159,8 @@ def convert_rules_to_ids(rules: list[str]) -> str:
     """
     if not rules:
         return ""
+    if not isinstance(rules, list):
+        rules = [rules]
     ids = [str(RULES_DICT[key]) for key in rules if key in RULES_DICT]
     return ",".join(ids)
 
@@ -1070,7 +1072,7 @@ def get_incidents_command(client: Client, args: dict[str, Any]) -> CommandResult
     # Resolve time range: dropdown > custom date > period (hours) fallback
     date_range = resolve_time_range(args, fmt="%Y-%m-%d %H:%M:%S")
     if not date_range:
-        current_datetime = datetime.now()
+        current_datetime = datetime.now(UTC)
         start_datetime = current_datetime - timedelta(hours=period)
         date_range = f'{start_datetime.strftime("%Y-%m-%d %H:%M:%S")},{current_datetime.strftime("%Y-%m-%d %H:%M:%S")}'
 
@@ -1107,24 +1109,20 @@ def get_incidents_command(client: Client, args: dict[str, Any]) -> CommandResult
 
     incidents = paginate(client, url="/incidents", method="GET", params=params, max_results=max_results)
 
-    incident_details = []
     for _incident in incidents:
         code = _incident.get("code")
         if code:
-            details = client.get_incident_detail(code)
-            details["indicators"] = paginate(client, url=f"/incidents/{code}/indicators", method="GET")
-            details["reference_url"] = f"https://app.brandefense.io/issues/incidents/all/{code}"
-            incident_details.append(details)
+            _incident["reference_url"] = f"https://app.brandefense.io/issues/incidents/all/{code}"
 
     readable_output = tableToMarkdown(
         "Brandefense Incidents",
-        incident_details,
+        incidents,
         headers=["code", "title", "severity", "status", "created_at", "reference_url"],
         removeNull=True,
     )
 
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Brandefense.Incident", outputs_key_field="code", outputs=incident_details
+        readable_output=readable_output, outputs_prefix="Brandefense.Incident", outputs_key_field="code", outputs=incidents
     )
 
 
@@ -1231,7 +1229,7 @@ def get_intelligence_command(client: Client, args: dict[str, Any]) -> CommandRes
     # Resolve time range: dropdown > custom date > period (hours) fallback
     date_range = resolve_time_range(args, fmt="%Y-%m-%d %H:%M:%S")
     if not date_range:
-        current_datetime = datetime.now()
+        current_datetime = datetime.now(UTC)
         start_datetime = current_datetime - timedelta(hours=period)
         date_range = f'{start_datetime.strftime("%Y-%m-%d %H:%M:%S")},{current_datetime.strftime("%Y-%m-%d %H:%M:%S")}'
 
@@ -1248,27 +1246,17 @@ def get_intelligence_command(client: Client, args: dict[str, Any]) -> CommandRes
     # Filter by search term in tags if provided
     if search_term:
         intelligence_list = [
-            item for item in intelligence_list if any(search_term.lower() in tag.lower() for tag in item.get("tags", []))
+            item for item in intelligence_list if any(search_term.lower() in tag.lower() for tag in (item.get("tags") or []))
         ]
 
-    intelligence_details = []
     for intel in intelligence_list:
         code = intel.get("code")
         if code:
-            details = client.get_intelligence_detail(code)
-            ind_resp = client.get_intelligence_indicators(code)
-            if isinstance(ind_resp, list):
-                details["indicators"] = ind_resp
-            elif isinstance(ind_resp, dict):
-                details["indicators"] = ind_resp.get("results", [])
-            else:
-                details["indicators"] = []
-            details["reference_url"] = f"https://app.brandefense.io/issues/intelligence/all/{code}"
-            intelligence_details.append(details)
+            intel["reference_url"] = f"https://app.brandefense.io/issues/intelligence/all/{code}"
 
     readable_output = tableToMarkdown(
         "Brandefense Intelligence",
-        intelligence_details,
+        intelligence_list,
         headers=["code", "title", "severity", "created_at", "reference_url"],
         removeNull=True,
     )
@@ -1277,7 +1265,7 @@ def get_intelligence_command(client: Client, args: dict[str, Any]) -> CommandRes
         readable_output=readable_output,
         outputs_prefix="Brandefense.Intelligence",
         outputs_key_field="code",
-        outputs=intelligence_details,
+        outputs=intelligence_list,
     )
 
 
@@ -1354,39 +1342,50 @@ def get_intelligence_rules_command(client: Client, args: dict[str, Any]) -> Comm
 
 
 def threat_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Perform a threat search and wait for results.
+    """Perform a threat search using XSOAR ScheduledCommand polling.
 
     Args:
         client: Brandefense API client.
-        args: Command arguments containing 'value' and optional 'waitingtime'.
+        args: Command arguments containing 'value', 'interval_in_seconds', 'timeout_in_seconds'.
+              On subsequent polls, 'uuid' is provided by the ScheduledCommand.
 
     Returns:
-        CommandResults with threat search results.
+        CommandResults with threat search results, or a ScheduledCommand for the next poll.
     """
     value = args.get("value", "")
-    waiting_time = int(args.get("waitingtime", 20))
-
-    # Create the threat search
-    response = client.create_threat_search(value)
-    uuid = response.get("uuid")
+    uuid = args.get("uuid")
+    interval_in_seconds = int(args.get("interval_in_seconds", 20))
+    timeout_in_seconds = int(args.get("timeout_in_seconds", 600))
 
     if not uuid:
-        raise DemistoException("Failed to create threat search: no UUID returned")
+        # First run: create the threat search
+        create_response = client.create_threat_search(value)
+        uuid = create_response.get("uuid")
+        if not uuid:
+            raise DemistoException("Failed to create threat search: no UUID returned")
 
-    # Poll for results
-    result = None
-    max_attempts = 30  # Safety limit
-    attempts = 0
-
-    while not result and attempts < max_attempts:
-        response = client.get_threat_search_result(uuid)
-        result = response.get("result")
-        if not result:
-            time.sleep(waiting_time)  # pylint: disable=E9003
-            attempts += 1
+    # Check for results
+    response = client.get_threat_search_result(uuid)
+    result = response.get("result")
 
     if not result:
-        raise DemistoException(f"Threat search timed out after {max_attempts * waiting_time} seconds")
+        # No result yet - schedule the next poll
+        polling_args = {
+            "value": value,
+            "uuid": uuid,
+            "interval_in_seconds": interval_in_seconds,
+            "timeout_in_seconds": timeout_in_seconds,
+        }
+        scheduled_command = ScheduledCommand(
+            command="threat_search",
+            next_run_in_seconds=interval_in_seconds,
+            args=polling_args,
+            timeout_in_seconds=timeout_in_seconds,
+        )
+        return CommandResults(
+            readable_output=f"Threat search is running. Waiting for results (UUID: {uuid}).",
+            scheduled_command=scheduled_command,
+        )
 
     # Flatten results
     extras = result.pop("results", {})
@@ -1848,7 +1847,7 @@ def get_brandefense_incidents_for_fetch(client: Client, args: dict[str, Any]) ->
 
     template_ids = convert_rules_to_ids(incident_rules) if incident_rules else ""
 
-    current_datetime = datetime.now()
+    current_datetime = datetime.now(UTC)
     start_datetime = current_datetime - timedelta(hours=period)
 
     params = {
@@ -1893,7 +1892,7 @@ def get_brandefense_intelligence_for_fetch(client: Client, args: dict[str, Any])
     period = int(args.get("period", 24))
     max_results = int(args.get("MaxResults", DEFAULT_PAGE_SIZE))
 
-    current_datetime = datetime.now()
+    current_datetime = datetime.now(UTC)
     start_datetime = current_datetime - timedelta(hours=period)
 
     params = {
@@ -1995,8 +1994,21 @@ def fetch_incidents(
         last_fetch = first_fetch_time
     else:
         last_fetch = int(last_fetch)
+        # Compute period in hours from last_fetch so the API call filters properly
+        args["period"] = max(1, hours_ago_from_epoch(int(last_fetch)))
 
     latest_created_time = int(last_fetch)
+
+    def _parse_created_at(value: str) -> int | None:
+        """Parse an ISO-8601 created_at string to epoch seconds, returning None on failure."""
+        if not value:
+            return None
+        try:
+            # Handle both trailing 'Z' and offset formats
+            normalized = value.replace("Z", "+00:00") if value.endswith("Z") else value
+            return int(datetime.fromisoformat(normalized).timestamp())
+        except (ValueError, TypeError):
+            return None
 
     # Fetch items from configured sources
     items: list[dict[str, Any]] = []
@@ -2006,20 +2018,19 @@ def fetch_incidents(
             items.extend(fetch_fn(client, args))
 
     incidents: list[dict] = []
-    new_seen_codes: set = set()
+    new_seen_codes: list[str] = []
 
     if items:
-        # Sort by created_at
-        items = sorted(items, key=lambda x: datetime.strptime(x.get("created_at", ""), DATETIME_FORMAT))
+        # Sort by created_at (safely - items with invalid timestamps go to the end)
+        items = sorted(items, key=lambda x: _parse_created_at(x.get("created_at", "")) or 0)
 
         for item in items:
             code = item.get("code", "")
             severity = item.get("severity", "HIGH")
             created_at = item.get("created_at", "")
 
-            try:
-                incident_created_time = int(datetime.fromisoformat(created_at[:-1] + "+00:00").timestamp())
-            except (ValueError, IndexError):
+            incident_created_time = _parse_created_at(created_at)
+            if incident_created_time is None:
                 demisto.debug(f"Skipping item with invalid created_at: {created_at}")
                 continue
 
@@ -2046,19 +2057,20 @@ def fetch_incidents(
                     "severity": convert_to_demisto_severity(severity),
                 }
                 incidents.append(incident_xsoar)
-                new_seen_codes.add(code)
+                if code and code not in new_seen_codes:
+                    new_seen_codes.append(code)
 
-        # Update latest timestamp to the most recent item
-        if incidents:
-            try:
-                latest_created_time = int(datetime.fromisoformat(items[-1]["created_at"][:-1] + "+00:00").timestamp())
-            except (ValueError, IndexError, KeyError):
-                pass
+        # Update latest timestamp based on ALL items (not just processed incidents)
+        # so that we don't re-fetch already-seen items on the next run.
+        for item in items:
+            item_ts = _parse_created_at(item.get("created_at", ""))
+            if item_ts and item_ts > latest_created_time:
+                latest_created_time = item_ts
 
-    # Merge seen codes: keep existing + new, bounded to MAX_SEEN_CODES
-    all_seen_codes = seen_codes | new_seen_codes
-    # Keep only the most recent codes if we exceed the limit
-    all_seen_codes_list = list(all_seen_codes)[-MAX_SEEN_CODES:]
+    # Merge seen codes: preserve order (most-recent last), bounded to MAX_SEEN_CODES.
+    # We keep existing seen_codes order first, then append newly seen codes.
+    all_seen_codes_list = [c for c in last_run.get("seen_codes", []) if c not in set(new_seen_codes)] + new_seen_codes
+    all_seen_codes_list = all_seen_codes_list[-MAX_SEEN_CODES:]
 
     next_run = {
         "last_fetch": latest_created_time,
@@ -2080,7 +2092,7 @@ def fetch_incidents(
 def main() -> None:
     """Main function, parses params and runs command functions."""
     params = demisto.params()
-    api_key = params.get("apikey")
+    api_key = params.get("apikey", {}).get("password") or params.get("apikey")
     base_url = urljoin(params["url"], "/api/v1")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

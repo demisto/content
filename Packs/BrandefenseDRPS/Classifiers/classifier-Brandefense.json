@@ -1,5 +1,6 @@
 {
     "id": "Brandefense - Classifier",
+    "name": "Brandefense - Classifier",
     "version": -1,
     "modified": "2026-02-21T00:00:00Z",
     "brandName": "BrandefenseDRPS",
@@ -13,6 +14,5 @@
         "complex": null
     },
     "feed": false,
-    "fromVersion": "5.5.0",
-    "toVersion": "5.9.9"
+    "fromVersion": "6.10.0"
 }
