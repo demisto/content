@@ -130,7 +130,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
             },
         }
         if indicator_type == "domain-name":
-            indicator_payload["fields"]["communitynotes"] = [
+            fields["communitynotes"] = [
                 {
                     "notes": ref["url"],
                     "timestamp": indicator.get("created"),
@@ -138,6 +138,12 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
                 for ref in indicator.get("external_references", [])
                 if ref.get("url")
             ]
+
+        indicator_payload = {
+            "value": indicator_value,
+            "type": {"ipv4-addr": "IP", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
+            "fields": fields,
+        }
 
         converted_indicators.append(indicator_payload)
 
