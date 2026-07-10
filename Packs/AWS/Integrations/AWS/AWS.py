@@ -9848,7 +9848,7 @@ class CloudWatchLogs:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully created/updated metric filter: {args.get('filter_name')} "
-                                f"for log group: {args.get('log_group_name')}",
+                f"for log group: {args.get('log_group_name')}",
                 raw_response=response,
             )
         return AWSErrorHandler.handle_response_error(response)
