@@ -1,0 +1,422 @@
+id: Synchronize Incident Closure - Cyberhaven
+version: -1
+name: Synchronize Incident Closure - Cyberhaven
+description: Closes XSOAR incidents by synchronizing their status with the corresponding Cyberhaven incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bed1cea8-2ba5-4c2f-8b06-d5d8ec151606
+    type: start
+    task:
+      id: bed1cea8-2ba5-4c2f-8b06-d5d8ec151606
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1e82be6d-eb89-4223-868b-6a4b0280098d
+    type: condition
+    task:
+      id: 1e82be6d-eb89-4223-868b-6a4b0280098d
+      version: -1
+      name: Is Cyberhaven Incident closed?
+      description: Confirm whether the Cyberhaven incident is currently in the Closed state.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.cyberhavenstatus
+            iscontext: true
+          right:
+            value:
+              simple: closed
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 86a11418-c507-49e6-85e8-891ceca638e6
+    type: condition
+    task:
+      id: 86a11418-c507-49e6-85e8-891ceca638e6
+      version: -1
+      name: Wants to close the Incident in XSOAR?
+      description: Confirm whether you want to close the incident in XSOAR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "5"
+      "Yes":
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Confirm whether you want to close the incident in XSOAR?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d3fc5451-63dd-45cc-8cfa-2b376cced3f2
+    type: condition
+    task:
+      id: d3fc5451-63dd-45cc-8cfa-2b376cced3f2
+      version: -1
+      name: Wants to close with the same Close Reason and Close Note?
+      description: Confirm whether you want to close the XSOAR incident using the same Close Reason and Close Note as the Cyberhaven incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "6"
+      "Yes":
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Confirm whether you want to close the XSOAR incident using the same Close Reason and Close Note as the Cyberhaven incident?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 56c79099-32d2-47cd-871c-ee0a79dfa51d
+    type: regular
+    task:
+      id: 56c79099-32d2-47cd-871c-ee0a79dfa51d
+      version: -1
+      name: Closing the XSOAR Incident
+      description: Close the XSOAR incident using the Cyberhaven close reason and close note.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: Provide the Close Reason and Close Note.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.cyberhavenclosenote
+                iscontext: true
+      closeReason:
+        complex:
+          root: Provide the Close Reason and Close Note.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.cyberhavenclosereason
+                iscontext: true
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2b4dd673-88da-4818-8932-8e6e8a9abc43
+    type: title
+    task:
+      id: 2b4dd673-88da-4818-8932-8e6e8a9abc43
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5c9dc65c-943e-4ffb-8818-79b52ffd3c3d
+    type: collection
+    task:
+      id: 5c9dc65c-943e-4ffb-8818-79b52ffd3c3d
+      version: -1
+      name: Provide the Close Reason and Close Note
+      description: Enter a custom close reason and close note to use when closing the XSOAR incident.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Provide the Close Reason and Close Note
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide the Close Reason
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Resolved
+        - simple: False Positive
+        - simple: False Positive — Destination Not at Risk
+        - simple: False Positive — User Exempt
+        - simple: Other
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the close Reason from the provided options.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide the Close Note
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Provide the Close Note.
+        readonly: false
+      title: Provide the Close Reason and Close Note
+      description: Provide the Close Reason and Close Note
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a77f75c3-5a7b-41b0-8ebb-fde2ba1aa334
+    type: regular
+    task:
+      id: a77f75c3-5a7b-41b0-8ebb-fde2ba1aa334
+      version: -1
+      name: Clear Previous Inputs
+      description: Clear the context of playbook form submitted from user side.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Provide the Close Reason and Close Note
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_5_#default#": 0.29,
+      "1_7_yes": 0.37,
+      "2_3_Yes": 0.52,
+      "2_5_No": 0.11,
+      "3_4_Yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1350,
+        "width": 640,
+        "x": 450,
+        "y": -80
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

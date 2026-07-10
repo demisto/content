@@ -1,0 +1,485 @@
+{
+    "description": "Map incoming Cyberhaven DLP incident JSON data to XSOAR incident fields.",
+    "feed": false,
+    "id": "Cyberhaven - Incoming Mapper",
+    "mapping": {
+        "Cyberhaven Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyberhaven AI Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ai_severity",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven AI Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ai_summary",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Assigned To": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigned_to",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Blocked": {
+                    "complex": {
+                        "filters": [],
+                        "root": "blocked",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Close Note": {
+                    "complex": {
+                        "filters": [],
+                        "root": "close_note",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Close Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "close_reason",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "valid,invalid_data_mislabled,invalid_destination_not_risk,invalid_user_exempt,invalid_other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Resolved,False Positive,False Positive - Destination Not at Risk,False Positive - User Exempt,Other"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Cyberhaven Created By": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_by",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "linea_ai,linea_ai_and_policy,policy"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Linea AI,Linea AI + Policy,Policy"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Cyberhaven Dataset Custom Data": {
+                    "complex": {
+                        "accessor": "custom_data",
+                        "filters": [],
+                        "root": "dataset",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Dataset ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "dataset",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Dataset Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "dataset",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Dataset Sensitivity": {
+                    "complex": {
+                        "accessor": "sensitivity",
+                        "filters": [],
+                        "root": "dataset",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven End Action Hostname": {
+                    "complex": {
+                        "accessor": "hostname",
+                        "filters": [],
+                        "root": "event_details.end_event.action",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven End Action Kind": {
+                    "complex": {
+                        "accessor": "kind",
+                        "filters": [],
+                        "root": "event_details.end_event.action",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "dar_scan,dlp_scan"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "DAR Scan,DLP Scan"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Cyberhaven End Content Filename": {
+                    "complex": {
+                        "accessor": "upload_filename",
+                        "filters": [],
+                        "root": "event_details.end_event.action.content",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven End Event JSON": {
+                    "complex": {
+                        "filters": [],
+                        "root": "end_event_json_beautify",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven End Sensor Kind": {
+                    "complex": {
+                        "accessor": "sensor_kind",
+                        "filters": [],
+                        "root": "event_details.end_event.action",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Event Lineage Graph Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_lineage_link",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Event Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_time",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Incident Custom Data": {
+                    "complex": {
+                        "filters": [],
+                        "root": "custom_data",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Incident ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Last Modified": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_modified",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Lineage End ID": {
+                    "complex": {
+                        "accessor": "end_event_id",
+                        "filters": [],
+                        "root": "event_lineage_id",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Lineage Start ID": {
+                    "complex": {
+                        "accessor": "start_event_id",
+                        "filters": [],
+                        "root": "event_lineage_id",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Policy Custom Data": {
+                    "complex": {
+                        "accessor": "custom_data",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Policy ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Policy Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Policy Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Reaction Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reaction_time",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Resolution Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resolution_time",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Risk Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_score",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Screenshot GUID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "screenshot_guid",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Start Action Hostname": {
+                    "complex": {
+                        "accessor": "hostname",
+                        "filters": [],
+                        "root": "event_details.start_event.action",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Start Action Kind": {
+                    "complex": {
+                        "accessor": "kind",
+                        "filters": [],
+                        "root": "event_details.start_event.action",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "dar_scan,dlp_scan"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "DAR Scan,DLP Scan"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Cyberhaven Start Content Filename": {
+                    "complex": {
+                        "accessor": "upload_filename",
+                        "filters": [],
+                        "root": "event_details.start_event.action.content",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Start Event JSON": {
+                    "complex": {
+                        "filters": [],
+                        "root": "start_event_json_beautify",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Start Sensor Kind": {
+                    "complex": {
+                        "accessor": "sensor_kind",
+                        "filters": [],
+                        "root": "event_details.start_event.action",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Trigger Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "trigger_time",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User Custom Data": {
+                    "complex": {
+                        "accessor": "custom_data",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User Local ID": {
+                    "complex": {
+                        "accessor": "local_id",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User Reaction Message": {
+                    "complex": {
+                        "filters": [],
+                        "root": "user_reaction_message",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User Reactions": {
+                    "complex": {
+                        "filters": [],
+                        "root": "user_reactions",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven User Risk Groups": {
+                    "complex": {
+                        "filters": [],
+                        "root": "user_risk_groups",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Username": {
+                    "complex": {
+                        "accessor": "local_username",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": []
+                    }
+                },
+                "Cyberhaven Warning Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "warning_status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "not_applicable,pending,shown,skipped_timeout,skipped_throttled,skipped_other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Not Applicable,Pending,Shown,Skipped (timeout),Skipped (throttled),Skipped (other)"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_link",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ai_summary",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Cyberhaven - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
