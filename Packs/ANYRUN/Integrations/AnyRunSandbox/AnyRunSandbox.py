@@ -1,16 +1,16 @@
 import json
-import demistomock as demisto
-from CommonServerPython import *
 
 from anyrun import RunTimeException
 from anyrun.connectors import SandboxConnector
 from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import (
-    WindowsConnector,
-    LinuxConnector,
     AndroidConnector,
+    LinuxConnector,
+    WindowsConnector,
 )
 
+import demistomock as demisto
+from CommonServerPython import *
 
 VERSION = "PA-XSOAR:2.4.0"
 

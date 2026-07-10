@@ -1,9 +1,10 @@
 import json
+
+from anyrun import RunTimeException
+from anyrun.connectors import LookupConnector
+
 import demistomock as demisto
 from CommonServerPython import *
-
-from anyrun.connectors import LookupConnector
-from anyrun import RunTimeException
 
 VERSION = "PA-XSOAR:2.4.0"
 
