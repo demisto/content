@@ -95,6 +95,14 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: Supports CSV values.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental Feed
+  hidden: true
+  name: feedIncremental
+  type: 8
+  section: Collect
+  required: false
 - display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -110,7 +118,7 @@ description: Threat Intelligence Feeds provide data on the known indicators of c
 display: ANY.RUN TI Feed
 name: ANY.RUN TI Feed
 script:
-  dockerimage: demisto/anyrun-sdk:1.0.0.6667586
+  dockerimage: demisto/anyrun-sdk:1.0.0.10440656
   subtype: python3
   runonce: false
   script: '-'

@@ -21,6 +21,12 @@ configuration:
   type: 8
   section: Connect
   required: false
+- display: Root URL
+  name: root_url
+  type: 0
+  required: false
+  section: Connect
+  defaultvalue: any.run
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox
@@ -586,15 +592,6 @@ script:
       defaultValue: '120'
       required: false
       type: String
-    - auto: PREDEFINED
-      description: 'Browser name.'
-      name: obj_ext_browser
-      defaultValue: 'Google Chrome'
-      required: false
-      type: String
-      predefined:
-      - 'Google Chrome'
-      - 'Mozilla Firefox'
     name: anyrun-detonate-url-android
     description: 'Perform URL analysis using Android VM.'
     outputs:
@@ -1450,7 +1447,7 @@ script:
     - contextPath: ANYRUN.SandboxAnalysisReportVerdict
       description: "The analysis verdict."
       type: String
-  dockerimage: demisto/anyrun-sdk:1.0.0.8924769
+  dockerimage: demisto/anyrun-sdk:1.0.0.10440656
   subtype: python3
   runonce: false
   script: '-'

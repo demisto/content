@@ -8,7 +8,7 @@ from anyrun.iterators import FeedsIterator
 from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.3.0"
+VERSION = "PA-XSOAR:2.3.4"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
@@ -87,8 +87,28 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
                 "last_seen": indicator.get("modified"),
                 "vendor": "ANY.RUN",
                 "source": "ANY.RUN TI Feed",
+                "tags": indicator.get("labels", []),
+                "publications": [
+                    {
+                        "title": ref.get("source_name", ""),
+                        "link": ref["url"],
+                        "source": "ANY.RUN TI Feed",
+                        "timestamp": indicator.get("created"),
+                    }
+                    for ref in indicator.get("external_references", [])
+                    if ref.get("url")
+                ],
             },
         }
+        if indicator_type == "domain-name":
+            indicator_payload["fields"]["communitynotes"] = [
+                {
+                    "notes": ref["url"],
+                    "timestamp": indicator.get("created"),
+                }
+                for ref in indicator.get("external_references", [])
+                if ref.get("url")
+            ]
 
         converted_indicators.append(indicator_payload)
 

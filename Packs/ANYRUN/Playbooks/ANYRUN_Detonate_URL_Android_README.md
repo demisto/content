@@ -39,7 +39,7 @@ This playbook does not use any sub-playbooks.
 | opt_network_residential_proxy | Residential proxy using. | False | Optional |
 | opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. | fastest | Optional |
 | opt_privacy_type | Privacy settings. Supports: public, bylink, owner, byteam. | bylink | Optional |
-| opt_timeout | Timeout option. Size range: 10-660. | 60 | Optional |
+| opt_timeout | Timeout option. Size range: 10-660. | 120 | Optional |
 | obj_ext_browser | Browser name. Supports: Google Chrome, Mozilla Firefox | Google Chrome | Optional |
 
 ## Playbook Outputs
