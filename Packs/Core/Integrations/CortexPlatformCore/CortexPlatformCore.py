@@ -15,6 +15,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
+SEARCH_ASSETS_MAX_LIMIT = 5000
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
@@ -685,10 +686,10 @@ class Client(CoreClient):
 
     def test_module(self):
         """
-        Performs basic get request to get item samples
+        Performs basic get request to get health_check samples
         """
         try:
-            self.get_endpoints(limit=1)
+            self.get_health_check()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -2302,7 +2303,15 @@ def search_assets_command(client: Client, args):
     asset_types = argToList(args.get("asset_types", ""))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
-    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    if page_size is None:
+        page_size = SEARCH_ASSETS_DEFAULT_LIMIT
+    if page_size > SEARCH_ASSETS_MAX_LIMIT:
+        raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
+
+    if page_size == 0:  # 0 Maps to max in the API, we will maintain this behavior with our max value instead
+        page_size = SEARCH_ASSETS_MAX_LIMIT
+
     page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
     on_demand_fields = ["xdm__asset__tags"]
     version_fields = [

@@ -37,8 +37,11 @@ from Ignite import (
     vulnerability_list_command,
     cve_command,
     DEFAULT_REPUTATION_CONTEXT_LIMIT,
+    DEFAULT_MESSAGE_MAX_LENGTH,
+    MESSAGE_TRUNCATION_SUFFIX,
     create_relationships_list_for_community_search,
     ip_lookup_command,
+    truncate_message,
 )
 
 """ CONSTANTS """
@@ -1225,6 +1228,97 @@ def test_filename_empty_response(mock_return, requests_mock, mocker):
 
 @patch("demistomock.results")
 @pytest.mark.parametrize("exact_match", [True, False])
+def test_email_ignores_exact_match(mock_return, requests_mock, mocker, exact_match):
+    """
+    Test that exact_match argument has no effect on the email command.
+
+    Given:
+       - exact_match is True or False in command args
+    When:
+       - Calling `email_lookup_command` via main function
+    Then:
+       - The outbound query value is not double-wrapped in quotes and the
+         response/context is unchanged regardless of exact_match.
+    """
+    email_reputation = util_load_json("test_data/email_reputation.json")
+    email_reputation_context = util_load_json("test_data/email_reputation_context.json")
+    with open("test_data/hr_output_for_email_reputation.md") as file:
+        hr_output_for_email_reputation = file.read()
+
+    email_value = "dummy@dummy.com"
+    requests_mock.get(
+        f"{MOCK_URL}/technical-intelligence/v1/simple?query=%2Btype%3A%28%22email-dst%22%2C%20"
+        f"%22email-src%22%2C%20%22email-src-display-name%22%2C%20%22email-subject%22%2C%20"
+        f"%22email%22%29%20%2Bvalue.%5C%2A.keyword%3A%22dummy%40dummy.com%22",
+        json=email_reputation,
+        status_code=200,
+    )
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"email": email_value, "exact_match": exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="email")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    last_request = requests_mock.last_request
+    query = last_request.qs["query"][0]
+    # The guard must drop exact_match for email; value must appear with exactly one layer of quotes
+    assert f'keyword:"{email_value}"' in query
+    assert f'keyword:""{email_value}' not in query
+
+    assert hr_output_for_email_reputation == mock_return.call_args.args[0].get("HumanReadable")
+    assert email_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert email_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_filename_ignores_exact_match(mock_return, requests_mock, mocker, exact_match):
+    """
+    Test that exact_match argument has no effect on the filename command.
+
+    Given:
+       - exact_match is True or False in command args
+    When:
+       - Calling `filename_lookup_command` via main function
+    Then:
+       - The outbound query value is not double-wrapped in quotes and the
+         response/context is unchanged regardless of exact_match.
+    """
+    filename_reputation = util_load_json("test_data/filename_reputation.json")
+    filename_reputation_context = util_load_json("test_data/filename_reputation_context.json")
+    with open("test_data/filename_reputation_hr.md") as file:
+        filename_reputation_hr = file.read()
+
+    filename_value = "dummy.log"
+    requests_mock.get(
+        f"{MOCK_URL}/technical-intelligence/v1/simple?query="
+        f"%2Btype%3A%28%22filename%22%29%20%2Bvalue.%5C%2A.keyword%3A%22dummy.log%22",
+        json=filename_reputation,
+        status_code=200,
+    )
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"filename": filename_value, "exact_match": exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="filename")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    last_request = requests_mock.last_request
+    query = last_request.qs["query"][0]
+    # The guard must drop exact_match for filename; value must appear with exactly one layer of quotes
+    assert f'keyword:"{filename_value}"' in query
+    assert f'keyword:""{filename_value}' not in query
+
+    assert filename_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
+    assert filename_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert filename_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize("exact_match", [True, False])
 def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of domain look up command through main function
@@ -1262,6 +1356,50 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert domain_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert domain_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_domain_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `domain_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    domain_lookup_reputation = util_load_json("test_data/domain_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
+
+    domain_value = "dummy_domain.com"
+    args: dict = {"domain": domain_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="domain")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{domain_value}"' if expected_quoted else domain_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -1361,6 +1499,51 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker, exact_mat
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert ip_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_ip_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `ip_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    ip_lookup_reputation = util_load_json("test_data/ip_lookup_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
+
+    ip_value = "0.0.0.1"
+    args: dict = {"ip": ip_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="ip")
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+
+    main()
+
+    expected_value = f'"{ip_value}"' if expected_quoted else ip_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -1824,6 +2007,50 @@ def test_url_lookup_command_success(mock_return, requests_mock, mocker, exact_ma
 
 
 @patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_url_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `url_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    url_reputation = util_load_json("test_data/url_reputation.json")
+    mock_url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(mock_url, json=url_reputation, status_code=200)
+
+    url_value = "https://dummy_url.com"
+    args: dict = {"url": url_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="url")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{url_value}"' if expected_quoted else url_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
+
+
+@patch("demistomock.results")
 def test_url_lookup_command_success_when_empty_response(mock_return, requests_mock, mocker):
     """
     Test case for successful execution of url lookup command through main function
@@ -1918,6 +2145,50 @@ def test_file_lookup_command_success(mock_return, requests_mock, mocker, exact_m
     assert file_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+@pytest.mark.parametrize(
+    "config_exact_match, arg_exact_match, expected_quoted",
+    [
+        (True, None, True),
+        (True, False, False),
+        (False, True, True),
+    ],
+)
+def test_file_lookup_command_config_exact_match(
+    mock_return, requests_mock, mocker, config_exact_match, arg_exact_match, expected_quoted
+):
+    """
+    Test case scenario for exact_match precedence:
+    - config-level exact_match is used when argument is not provided.
+    - command argument takes precedence over config when provided.
+
+    Given:
+       - Various combinations of config-level and argument-level exact_match
+    When:
+       - Calling `file_lookup_command` via main function
+    Then:
+       - exact_match resolves correctly based on precedence rules.
+    """
+    file_reputation = util_load_json("test_data/file_reputation.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=file_reputation, status_code=200)
+
+    file_value = "00000000000000000000000000000001"
+    args: dict = {"file": file_value}
+    if arg_exact_match is not None:
+        args["exact_match"] = arg_exact_match
+
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable", "ioc_enrichment_exact_match": config_exact_match}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="file")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    expected_value = f'"{file_value}"' if expected_quoted else file_value
+    assert requests_mock.last_request.qs["ioc_value"] == [expected_value]
 
 
 @patch("demistomock.results")
@@ -3527,3 +3798,209 @@ def test_client_default_reputation_enrichments_limit():
     """
     client = Client(MOCK_URL, {}, False, None, False)
     assert client.reputation_enrichments_limit == DEFAULT_REPUTATION_CONTEXT_LIMIT
+
+
+def test_truncate_message_keeps_short_message_unchanged():
+    """
+    Test that a message shorter than DEFAULT_MESSAGE_MAX_LENGTH is returned unchanged.
+
+    Given:
+        - A short message.
+    When:
+        - Calling `truncate_message`.
+    Then:
+        - The message is returned unmodified, with no truncation suffix appended.
+    """
+    message = "This IP was seen scanning. It was reported once."
+    assert truncate_message(message) == message
+
+
+def test_truncate_message_cuts_at_max_length():
+    """
+    Test that a message longer than DEFAULT_MESSAGE_MAX_LENGTH is cut to that many characters.
+
+    Given:
+        - A message longer than DEFAULT_MESSAGE_MAX_LENGTH characters.
+    When:
+        - Calling `truncate_message`.
+    Then:
+        - The result contains at most DEFAULT_MESSAGE_MAX_LENGTH characters of original content,
+          followed by the truncation suffix.
+    """
+    message = "a" * (DEFAULT_MESSAGE_MAX_LENGTH + 1000)
+
+    result = truncate_message(message)
+
+    assert result == message[:DEFAULT_MESSAGE_MAX_LENGTH] + MESSAGE_TRUNCATION_SUFFIX
+
+
+def test_truncate_message_handles_empty_and_non_string_input():
+    """
+    Test that `truncate_message` safely handles falsy or non-string inputs.
+
+    Given:
+        - Empty string, None.
+    When:
+        - Calling `truncate_message`.
+    Then:
+        - The input is returned unchanged.
+    """
+    assert truncate_message("") == ""
+    assert truncate_message(None) is None
+
+
+def test_ip_lookup_community_search_truncates_large_message(requests_mock, mocker):
+    """
+    Test that the community-search branch of `ip_lookup_command` truncates an oversized
+    "message" field down to DEFAULT_MESSAGE_MAX_LENGTH characters in the context output.
+
+    Given:
+        - A community search response where one indicator's "message" field contains
+          thousands of characters of raw paste content.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The "message" field stored in the outputs is reduced to at most
+          DEFAULT_MESSAGE_MAX_LENGTH characters, not the full original content.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+
+    empty_ioc_response = {"items": []}
+    long_message = " ".join(f"This is sentence number {i} describing observed IOC data." for i in range(200))
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "message": long_message,
+                "enrichments": {},
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_message = outputs[0].get("message", "")
+
+    assert len(stored_message) < len(long_message)
+    assert stored_message.endswith(MESSAGE_TRUNCATION_SUFFIX)
+
+
+def test_ip_lookup_community_search_keeps_short_message_unchanged(requests_mock, mocker):
+    """
+    Test that a short "message" field is preserved as-is in the community-search branch
+    of `ip_lookup_command`.
+
+    Given:
+        - A community search response where the indicator's "message" field is short
+          (fewer characters than DEFAULT_MESSAGE_MAX_LENGTH).
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The "message" field stored in the outputs is unchanged.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+
+    empty_ioc_response = {"items": []}
+    short_message = "This is a short message."
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "message": short_message,
+                "enrichments": {},
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    assert outputs[0].get("message") == short_message
+
+
+def test_client_default_message_max_length():
+    """
+    Test that Client uses DEFAULT_MESSAGE_MAX_LENGTH as the default when message_max_length is not provided.
+
+    Given:
+        - A Client instantiated without the message_max_length argument.
+    When:
+        - Accessing client.message_max_length.
+    Then:
+        - The value equals DEFAULT_MESSAGE_MAX_LENGTH.
+    """
+    client = Client(MOCK_URL, {}, False, None, False)
+    assert client.message_max_length == DEFAULT_MESSAGE_MAX_LENGTH
+
+
+def test_ip_lookup_community_search_message_truncated_to_client_param_limit(requests_mock, mocker):
+    """
+    Test that the community-search branch of `ip_lookup_command` truncates the "message" field
+    using the configured `client.message_max_length` value, not the hardcoded constant.
+
+    Given:
+        - A client with message_max_length set to a small custom value.
+        - A community search response containing a "message" field longer than that value.
+    When:
+        - Calling `ip_lookup_command`.
+    Then:
+        - The "message" field stored in the outputs is truncated to the custom limit.
+    """
+    custom_limit = 20
+    client = Client(MOCK_URL, {}, False, None, False, message_max_length=custom_limit)
+
+    empty_ioc_response = {"items": []}
+    long_message = "a" * 100
+    community_response = {
+        "items": [
+            {
+                "id": "test-id",
+                "date": "2024-01-01T00:00:00Z",
+                "first_observed_at": "2024-01-01T00:00:00Z",
+                "last_observed_at": "2024-01-01T00:00:00Z",
+                "author": "test-author",
+                "title": "test-title",
+                "site": "test-site",
+                "message": long_message,
+                "enrichments": {},
+            }
+        ]
+    }
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=empty_ioc_response, status_code=200)
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}', json=community_response, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"})
+
+    result = ip_lookup_command(client, "1.2.3.4")
+
+    outputs = result.outputs  # type: ignore[union-attr]
+    assert isinstance(outputs, list)
+    stored_message = outputs[0].get("message", "")
+
+    assert stored_message == long_message[:custom_limit] + MESSAGE_TRUNCATION_SUFFIX
