@@ -1,0 +1,14 @@
+!binalyze-air-list-assets organization_id=0 limit=5
+!binalyze-air-get-asset-by-hostname hostname=HOST123 organization_id=0
+!binalyze-air-create-case name="INC-0001 - Suspicious PowerShell" organization_id=0 owner_user_id=USER_ID visibility=public-to-organization
+!binalyze-air-acquire hostname=HOST123 profile=quick case_id=CASE_ID organization_id=0
+!binalyze-air-get-task task_id=TASK_ID
+!binalyze-air-get-task-assignments task_id=TASK_ID
+!binalyze-air-create-triage-rule engine=yara search_in=system organization_ids=0 description="Test rule" rule="rule Test { condition: true }"
+!binalyze-air-validate-triage-rule engine=yara rule="rule Test { condition: true }"
+!binalyze-air-list-triage-rules organization_id=0 limit=10
+!binalyze-air-get-triage-rule rule_id=RULE_ID
+!binalyze-air-assign-triage-task case_id=CASE_ID triage_rule_ids=RULE_ID hostname=HOST123 organization_id=0 mitre_attack=False
+!binalyze-air-list-acquisition-profiles organization_id=0 limit=10
+!binalyze-air-list-repositories limit=10
+!binalyze-air-download-file file_name=report.zip

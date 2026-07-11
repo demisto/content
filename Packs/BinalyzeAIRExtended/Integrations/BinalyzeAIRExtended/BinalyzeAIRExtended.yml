@@ -1,0 +1,566 @@
+name: Binalyze AIR Extended
+display: Binalyze AIR Extended
+category: Forensics & Malware Analysis
+commonfields:
+  id: Binalyze AIR Extended
+  version: -1
+description: Manage Binalyze AIR forensic acquisition, endpoint isolation, triage, cases, tasks, assets, repositories, and evidence artifacts from Cortex XSOAR.
+configuration:
+- display: Binalyze AIR Server URL
+  name: server
+  required: true
+  type: 0
+  additionalinfo: The Binalyze AIR Server URL, for example https://air.example.com.
+- displaypassword: API Key
+  name: api_key
+  required: true
+  type: 9
+  hiddenusername: true
+  additionalinfo: The Binalyze AIR API token, for example api_1234567890abcdef1234567890abcdef.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  script: ''
+  type: python
+  commands:
+  - name: binalyze-air-isolate
+    description: Isolate an endpoint or release endpoint isolation.
+    arguments:
+    - name: hostname
+      description: The endpoint hostname.
+      required: true
+    - name: organization_id
+      description: The organization ID of the endpoint.
+      required: true
+    - name: isolation
+      description: The isolation action to perform.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    outputs:
+    - contextPath: BinalyzeAIR.Isolate.Result.ID
+      description: The isolation task ID.
+      type: string
+    - contextPath: BinalyzeAIR.Isolate.Result.Name
+      description: The isolation task name.
+      type: string
+    - contextPath: BinalyzeAIR.Isolate.Result.OrganizationID
+      description: The endpoint organization ID.
+      type: number
+  - name: binalyze-air-acquire
+    description: Start forensic evidence acquisition from an endpoint.
+    arguments:
+    - name: hostname
+      description: The endpoint hostname.
+      required: true
+    - name: profile
+      description: The acquisition profile name.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - compromise-assessment
+      - browsing-history
+      - event-logs
+      - memory-ram-pagefile
+      - quick
+      - full
+    - name: case_id
+      description: The Binalyze AIR case ID.
+      required: true
+    - name: organization_id
+      description: The organization ID of the endpoint.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Acquire.Result.ID
+      description: The acquisition task ID.
+      type: string
+    - contextPath: BinalyzeAIR.Acquire.Result.Name
+      description: The acquisition task name.
+      type: string
+    - contextPath: BinalyzeAIR.Acquire.Result.OrganizationID
+      description: The endpoint organization ID.
+      type: number
+  - name: binalyze-air-create-case
+    description: Create a Binalyze AIR case.
+    arguments:
+    - name: name
+      description: The case name.
+      required: true
+    - name: organization_id
+      description: The organization ID.
+      required: true
+    - name: owner_user_id
+      description: The owner user ID.
+      required: true
+    - name: visibility
+      description: The case visibility.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - public-to-organization
+      - private-to-users
+      - Public to Organization
+      - Private to Users
+    - name: assigned_user_ids
+      description: A comma-separated list of assigned user IDs.
+    outputs:
+    - contextPath: BinalyzeAIR.Case.Result.ID
+      description: The case ID.
+      type: string
+    - contextPath: BinalyzeAIR.Case.Result.Name
+      description: The case name.
+      type: string
+  - name: binalyze-air-get-case
+    description: Get a Binalyze AIR case by ID.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Case
+      description: The case details.
+      type: unknown
+  - name: binalyze-air-list-cases
+    description: List Binalyze AIR cases.
+    arguments:
+    - name: name
+      description: The optional case name filter.
+    - name: organization_id
+      description: The optional organization ID filter.
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.Cases
+      description: The case list response.
+      type: unknown
+  - name: binalyze-air-close-case
+    description: Close a Binalyze AIR case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: reason
+      description: The closure reason.
+    outputs:
+    - contextPath: BinalyzeAIR.CloseCase
+      description: The close case response.
+      type: unknown
+  - name: binalyze-air-get-case-tasks
+    description: Get tasks associated with a Binalyze AIR case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: task_id
+      description: The optional task ID filter.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.CaseTask
+      description: The case task response.
+      type: unknown
+  - name: binalyze-air-get-case-endpoints
+    description: Get endpoints associated with a Binalyze AIR case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.CaseEndpoint
+      description: The case endpoint response.
+      type: unknown
+  - name: binalyze-air-get-case-activities
+    description: Get activity history associated with a Binalyze AIR case.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.CaseActivity
+      description: The case activity response.
+      type: unknown
+  - name: binalyze-air-list-assets
+    description: List Binalyze AIR endpoints/assets with optional filters.
+    arguments:
+    - name: hostname
+      description: The optional endpoint hostname filter.
+    - name: organization_id
+      description: The optional organization ID filter.
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    - name: online_status
+      description: The optional online status filter.
+    - name: isolation_status
+      description: The optional isolation status filter.
+    - name: platform
+      description: The optional platform filter.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.Asset
+      description: The asset list response.
+      type: unknown
+  - name: binalyze-air-get-asset
+    description: Get a Binalyze AIR endpoint/asset by asset ID.
+    arguments:
+    - name: asset_id
+      description: The asset ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Asset
+      description: The asset details.
+      type: unknown
+  - name: binalyze-air-get-asset-by-hostname
+    description: Find a Binalyze AIR endpoint/asset by hostname and organization ID.
+    arguments:
+    - name: hostname
+      description: The endpoint hostname.
+      required: true
+    - name: organization_id
+      description: The organization ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Asset.Result
+      description: The first matching asset.
+      type: unknown
+  - name: binalyze-air-get-asset-tasks
+    description: Get tasks associated with an endpoint/asset.
+    arguments:
+    - name: asset_id
+      description: The asset ID.
+      required: true
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.AssetTask
+      description: The asset task response.
+      type: unknown
+  - name: binalyze-air-get-task
+    description: Get task details and normalized terminal status flags for polling.
+    arguments:
+    - name: task_id
+      description: The task ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Task.Result
+      description: The task details.
+      type: unknown
+    - contextPath: BinalyzeAIR.Task.Status
+      description: The normalized task status.
+      type: string
+    - contextPath: BinalyzeAIR.Task.IsDone
+      description: Whether the task is in a terminal state.
+      type: boolean
+    - contextPath: BinalyzeAIR.Task.IsSuccess
+      description: Whether the task completed successfully.
+      type: boolean
+  - name: binalyze-air-list-tasks
+    description: List Binalyze AIR tasks.
+    arguments:
+    - name: case_id
+      description: The optional case ID filter.
+    - name: organization_id
+      description: The optional organization ID filter.
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    - name: status
+      description: The optional status filter.
+    - name: task_type
+      description: The optional task type filter.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.Task
+      description: The task list response.
+      type: unknown
+  - name: binalyze-air-get-task-assignments
+    description: Get task assignment details for a Binalyze AIR task.
+    arguments:
+    - name: task_id
+      description: The task ID.
+      required: true
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.TaskAssignment
+      description: The task assignment response.
+      type: unknown
+  - name: binalyze-air-create-triage-rule
+    description: Create a YARA, Sigma, or osquery triage rule.
+    arguments:
+    - name: description
+      description: The rule description.
+    - name: rule
+      description: The rule content.
+      required: true
+    - name: engine
+      description: The rule engine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    - name: search_in
+      description: The search scope.
+      auto: PREDEFINED
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    outputs:
+    - contextPath: BinalyzeAIR.TriageRule
+      description: The created triage rule response.
+      type: unknown
+  - name: binalyze-air-update-triage-rule
+    description: Update an existing triage rule.
+    arguments:
+    - name: rule_id
+      description: The triage rule ID.
+      required: true
+    - name: description
+      description: The rule description.
+    - name: rule
+      description: The rule content.
+    - name: search_in
+      description: The search scope.
+      auto: PREDEFINED
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    outputs:
+    - contextPath: BinalyzeAIR.TriageRule
+      description: The updated triage rule response.
+      type: unknown
+  - name: binalyze-air-validate-triage-rule
+    description: Validate a YARA, Sigma, or osquery triage rule before assignment.
+    arguments:
+    - name: rule
+      description: The rule content.
+      required: true
+    - name: engine
+      description: The rule engine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    outputs:
+    - contextPath: BinalyzeAIR.TriageRuleValidation.Result
+      description: The validation result payload.
+      type: unknown
+    - contextPath: BinalyzeAIR.TriageRuleValidation.Success
+      description: Whether validation succeeded.
+      type: boolean
+  - name: binalyze-air-list-triage-rules
+    description: List triage rules.
+    arguments:
+    - name: organization_id
+      description: The optional organization ID filter.
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    - name: engine
+      description: The optional rule engine filter.
+      auto: PREDEFINED
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    - name: search_in
+      description: The optional search scope filter.
+      auto: PREDEFINED
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - name: description
+      description: The optional description filter.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.TriageRule
+      description: The triage rule list response.
+      type: unknown
+  - name: binalyze-air-get-triage-rule
+    description: Get a triage rule by ID.
+    arguments:
+    - name: rule_id
+      description: The triage rule ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.TriageRule
+      description: The triage rule details.
+      type: unknown
+  - name: binalyze-air-delete-triage-rule
+    description: Delete a triage rule by ID.
+    arguments:
+    - name: rule_id
+      description: The triage rule ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.DeleteTriageRule
+      description: The delete triage rule response.
+      type: unknown
+  - name: binalyze-air-assign-triage-task
+    description: Assign one or more triage rules to endpoints by filter.
+    arguments:
+    - name: case_id
+      description: The case ID.
+      required: true
+    - name: triage_rule_ids
+      description: A comma-separated list of triage rule IDs.
+      required: true
+    - name: organization_id
+      description: The organization ID.
+      required: true
+    - name: task_config_choice
+      description: The task configuration mode.
+      auto: PREDEFINED
+      predefined:
+      - use-policy
+      - use-custom-options
+      defaultValue: use-policy
+    - name: task_config_cpu_limit
+      description: The CPU limit. Minimum 1, maximum 100.
+      defaultValue: '8'
+    - name: hostname
+      description: The endpoint hostname filter.
+    - name: mitre_attack
+      description: Whether to enable MITRE ATT&CK mapping.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    - name: included_endpoint_ids
+      description: A comma-separated list of included endpoint IDs.
+    - name: excluded_endpoint_ids
+      description: A comma-separated list of excluded endpoint IDs.
+    - name: group_id
+      description: The optional endpoint group ID.
+    - name: group_full_path
+      description: The optional endpoint group full path.
+    - name: isolation_status
+      description: A comma-separated list of isolation status values.
+    - name: platform
+      description: A comma-separated list of platform values.
+    - name: issue
+      description: The optional issue filter.
+    - name: online_status
+      description: A comma-separated list of online status values.
+    - name: tags
+      description: A comma-separated list of tags.
+    - name: version
+      description: The optional agent version filter.
+    - name: policy
+      description: The optional policy filter.
+    - name: when
+      description: The scheduler value.
+      defaultValue: now
+    outputs:
+    - contextPath: BinalyzeAIR.TriageTask
+      description: The assign triage task response.
+      type: unknown
+  - name: binalyze-air-list-acquisition-profiles
+    description: List acquisition profiles.
+    arguments:
+    - name: name
+      description: The optional profile name filter.
+    - name: organization_id
+      description: The optional organization ID filter.
+    - name: organization_ids
+      description: A comma-separated list of organization IDs.
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.AcquisitionProfile
+      description: The acquisition profile list response.
+      type: unknown
+  - name: binalyze-air-get-acquisition-profile
+    description: Get acquisition profile details by ID.
+    arguments:
+    - name: profile_id
+      description: The acquisition profile ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.AcquisitionProfile
+      description: The acquisition profile details.
+      type: unknown
+  - name: binalyze-air-list-repositories
+    description: List Binalyze AIR repositories.
+    arguments:
+    - name: page
+      description: The page number.
+    - name: limit
+      description: The page size.
+    outputs:
+    - contextPath: BinalyzeAIR.Repository
+      description: The repository list response.
+      type: unknown
+  - name: binalyze-air-get-repository
+    description: Get repository details by ID.
+    arguments:
+    - name: repository_id
+      description: The repository ID.
+      required: true
+    outputs:
+    - contextPath: BinalyzeAIR.Repository
+      description: The repository details.
+      type: unknown
+  - name: binalyze-air-download-file
+    description: Download a file from the Binalyze AIR InterACT library into the Cortex XSOAR War Room.
+    arguments:
+    - name: file_name
+      description: The file name to download from the InterACT library.
+      required: true
+  dockerimage: xsoar-registry.pan.dev/demisto/python3:3.12.13.9059085
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
