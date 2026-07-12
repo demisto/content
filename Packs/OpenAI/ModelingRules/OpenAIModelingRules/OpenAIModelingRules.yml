@@ -1,8 +1,0 @@
-fromversion: 8.5.0
-id: OpenAI_ModelingRule
-name: OpenAI Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
