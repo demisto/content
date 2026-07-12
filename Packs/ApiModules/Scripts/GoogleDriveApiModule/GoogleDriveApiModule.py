@@ -2283,9 +2283,10 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
         # A token refresh/authorization failure here usually means the file is not
         # shared with the logged-in user's email, so impersonation could not be authorized.
         if "access_denied" in str(error) or "invalid" in str(error).lower():
+            demisto.error(f"get-file-content: access_denied for user_id={user_id}, full error: {error}")
             raise DemistoException(
                 f"Cannot access the file as '{user_id}'. Ensure the file is shared with '{user_id}' "
-                f"and that the integration is authorized to access this user's files. Original error: {error}"
+                f"and that the integration is authorized to access this user's files."
             ) from error
         raise
 
