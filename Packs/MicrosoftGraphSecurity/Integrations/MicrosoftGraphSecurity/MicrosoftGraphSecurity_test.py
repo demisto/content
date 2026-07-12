@@ -601,6 +601,24 @@ def test_purge_ediscovery_data_command_with_operation_id(mocker):
     assert "op_456" in result.readable_output
 
 
+def test_purge_ediscovery_data_command_with_malformed_location(mocker):
+    """
+    Given:
+        A purge response that includes a Location header without a parseable operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the null Operation ID is removed from the context outputs and the
+        readable output shows None.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"Status": "succeeded"}
+    assert result.readable_output == "eDiscovery purge status is succeeded.\n- Operation ID: None"
+
+
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
     mocker.patch.object(client_mocker, "list_ediscovery_noncustodial_datasources", return_value={"value": []})
     assert (

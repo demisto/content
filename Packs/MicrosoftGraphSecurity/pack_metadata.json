@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
