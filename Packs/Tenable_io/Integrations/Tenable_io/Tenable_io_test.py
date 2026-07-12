@@ -1110,6 +1110,5 @@ def test_should_not_empty_seal_when_assets_were_fetched_this_run():
 
     last_run = {"snapshot_id": "snap-1", "total_assets": 100}
     assert (
-        should_seal_empty_assets_snapshot(assets=[{"id": 1}], assets_fetch_in_progress=False, assets_last_run=last_run)
-        is False
+        should_seal_empty_assets_snapshot(assets=[{"id": 1}], assets_fetch_in_progress=False, assets_last_run=last_run) is False
     )
