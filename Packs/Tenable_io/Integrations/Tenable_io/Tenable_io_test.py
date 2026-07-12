@@ -1023,3 +1023,93 @@ def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_ta
     # Verify PollResult structure
     assert result.continue_to_poll is True
     assert result.args_for_next_run["exportUuid"] == mock_export_uuid
+
+
+def test_should_seal_empty_assets_snapshot_first_time_after_assets_complete():
+    """
+    Given:
+        - The assets export has finished (assets_fetch_in_progress=False).
+        - Assets were already sent this cycle (total_assets > 0) but the current
+          fetch returned no new assets (empty list).
+        - The snapshot has NOT yet been sealed with an empty payload.
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns True: the snapshot should be sealed exactly once.
+    """
+    from Tenable_io import should_seal_empty_assets_snapshot
+
+    last_run = {"snapshot_id": "snap-1", "total_assets": 4323, "vuln_export_uuid": "v-1"}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is True
+
+
+def test_should_not_reseal_assets_snapshot_when_already_sealed():
+    """
+    Given:
+        - The assets export has finished and the snapshot was ALREADY sealed this
+          cycle (assets_snapshot_sealed=True), while the vulnerabilities export is
+          still in progress (vuln_export_uuid present).
+        - The current fetch returned no new assets.
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns False: XSUP-71765 regression guard. Re-sealing an already-sealed
+          snapshot with an empty payload wipes the committed assets in XSIAM.
+    """
+    from Tenable_io import should_seal_empty_assets_snapshot
+
+    last_run = {
+        "snapshot_id": "snap-1",
+        "total_assets": 4323,
+        "vuln_export_uuid": "v-1",
+        "assets_snapshot_sealed": True,
+    }
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is False
+
+
+def test_should_not_seal_assets_snapshot_while_assets_still_in_progress():
+    """
+    Given:
+        - The assets export is still in progress (more chunks/export pending).
+    When:
+        - Running should_seal_empty_assets_snapshot with an empty assets list.
+    Then:
+        - Returns False: the snapshot is not complete yet, so it must not be sealed.
+    """
+    from Tenable_io import should_seal_empty_assets_snapshot
+
+    last_run = {"snapshot_id": "snap-1", "total_assets": 0}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=True, assets_last_run=last_run) is False
+
+
+def test_should_not_seal_assets_snapshot_when_nothing_was_fetched():
+    """
+    Given:
+        - The assets fetch completed but cumulative total is 0 (nothing to seal).
+    When:
+        - Running should_seal_empty_assets_snapshot with an empty assets list.
+    Then:
+        - Returns False: there is no committed snapshot to seal.
+    """
+    from Tenable_io import should_seal_empty_assets_snapshot
+
+    last_run = {"snapshot_id": "snap-1", "total_assets": 0}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is False
+
+
+def test_should_not_empty_seal_when_assets_were_fetched_this_run():
+    """
+    Given:
+        - The current fetch returned assets (non-empty list).
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns False: the data-send path handles sealing, not the empty-seal path.
+    """
+    from Tenable_io import should_seal_empty_assets_snapshot
+
+    last_run = {"snapshot_id": "snap-1", "total_assets": 100}
+    assert (
+        should_seal_empty_assets_snapshot(assets=[{"id": 1}], assets_fetch_in_progress=False, assets_last_run=last_run)
+        is False
+    )

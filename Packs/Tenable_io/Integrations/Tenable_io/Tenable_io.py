@@ -1992,6 +1992,37 @@ def is_vulns_fetch_in_progress(last_run: dict) -> bool:
     return bool(last_run.get("vulns_available_chunks") or last_run.get("vuln_export_uuid"))
 
 
+def should_seal_empty_assets_snapshot(assets: list, assets_fetch_in_progress: bool, assets_last_run: dict) -> bool:
+    """
+    Decide whether the assets snapshot should be sealed with an empty payload on this run.
+
+    This guards against the XSUP-71765 regression: after the assets export finished and the
+    assets were committed to XSIAM, subsequent fetch-assets runs (which happen every fetch
+    interval while the vulnerabilities export is still processing) returned an empty assets
+    list and re-sealed the already-sealed snapshot with an empty payload. Re-sealing an
+    already-committed snapshot with empty data wipes the committed assets from the dataset.
+
+    The empty seal must happen exactly once per snapshot, only when:
+      - no new assets were fetched this run, and
+      - the assets export is complete (not in progress), and
+      - there is a committed snapshot to seal (cumulative total > 0), and
+      - the snapshot has not already been sealed this cycle.
+
+    Args:
+        assets: The assets fetched on the current run.
+        assets_fetch_in_progress: Whether the assets export still has pending work.
+        assets_last_run: The assets last run state object.
+
+    Returns:
+        bool: True if the snapshot should be sealed with an empty payload now.
+    """
+    if assets or assets_fetch_in_progress:
+        return False
+    if assets_last_run.get("assets_snapshot_sealed"):
+        return False
+    return assets_last_run.get("total_assets", 0) > 0
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -2158,33 +2189,47 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
                 assets_last_run["total_assets"] = cumulative_total
+                # If this send completed the assets snapshot (no more asset work pending), mark it
+                # as sealed so subsequent runs that only drain vulnerabilities do not re-seal it
+                # with an empty payload (XSUP-71765).
+                if not assets_fetch_in_progress:
+                    assets_last_run["assets_snapshot_sealed"] = True
                 demisto.setAssetsLastRun(assets_last_run)
 
-            elif not assets_fetch_in_progress:
-                # Edge case: asset fetch completed but returned an empty list of assets.
-                # We still need to seal the snapshot by sending an empty payload with the final items_count
-                # so XSIAM knows the snapshot is complete.
+            elif should_seal_empty_assets_snapshot(assets, assets_fetch_in_progress, assets_last_run):
+                # Asset fetch completed but this run returned an empty list of assets, and the
+                # snapshot has not been sealed yet. Seal it once by sending an empty payload with
+                # the final items_count so XSIAM knows the snapshot is complete.
                 cumulative_total = assets_last_run.get("total_assets", 0)
-                if cumulative_total > 0:
-                    demisto.debug(
-                        f"Asset fetch completed with empty assets list. Sealing snapshot with "
-                        f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
-                    )
-                    send_data_to_xsiam(
-                        data=[],
-                        vendor=VENDOR,
-                        product=f"{PRODUCT}_assets",
-                        data_type="assets",
-                        snapshot_id=snapshot_id,
-                        items_count=str(cumulative_total),
-                        should_update_health_module=False,
-                    )
-                else:
-                    # First fetch returned empty - log this scenario
-                    demisto.debug(
-                        f"Asset fetch completed with empty assets list and cumulative_total=0. "
-                        f"No snapshot sealing needed for snapshot_id={snapshot_id}"
-                    )
+                demisto.debug(
+                    f"Asset fetch completed with empty assets list. Sealing snapshot with "
+                    f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
+                )
+                send_data_to_xsiam(
+                    data=[],
+                    vendor=VENDOR,
+                    product=f"{PRODUCT}_assets",
+                    data_type="assets",
+                    snapshot_id=snapshot_id,
+                    items_count=str(cumulative_total),
+                    should_update_health_module=False,
+                )
+                # Mark the snapshot as sealed so it is not re-sealed on the following runs
+                # while the vulnerabilities export is still in progress (XSUP-71765).
+                assets_last_run["assets_snapshot_sealed"] = True
+                demisto.setAssetsLastRun(assets_last_run)
+            elif not assets_fetch_in_progress:
+                # Asset fetch is complete but there is nothing to seal: either nothing was ever
+                # committed this cycle (cumulative_total == 0) or the snapshot was already sealed
+                # on a previous run. Do NOT re-send an empty payload for an already-sealed
+                # snapshot - doing so overwrites the committed assets in XSIAM (XSUP-71765).
+                demisto.debug(
+                    f"No assets to send and snapshot already sealed or nothing committed "
+                    f"(snapshot_id={snapshot_id}, "
+                    f"total_assets={assets_last_run.get('total_assets', 0)}, "
+                    f"assets_snapshot_sealed={assets_last_run.get('assets_snapshot_sealed', False)}). "
+                    f"Skipping snapshot seal."
+                )
 
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
@@ -2206,6 +2251,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 )
                 assets_last_run.pop("snapshot_id", None)
                 assets_last_run.pop("total_assets", None)
+                assets_last_run.pop("assets_snapshot_sealed", None)
                 demisto.setAssetsLastRun(assets_last_run)
 
             demisto.info("Done Sending data to XSIAM.")
