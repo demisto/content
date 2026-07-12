@@ -196,3 +196,36 @@ def test_fetch_events(mocker):
     assert "ids" in new_last_run
     assert len(new_last_run.get("ids")) == 1
     assert new_last_run.get("start_date") == "2025-01-06T19:44:35Z"
+
+
+def test_fetch_events_ids_reset_when_no_more_events(mocker):
+    """
+    Given: A mock Proofpoint client where the first API call returns events and the second returns none,
+           and a last_run containing stale IDs from a previous fetch cycle.
+    When: Fetching events with a limit higher than the available event count (so the loop exhausts all events).
+    Then: Ensure the returned last_run has an empty 'ids' list, confirming stale dedup IDs are cleared
+          when the pagination loop ends with no more events.
+    """
+    from ProofpointIsolationEventCollector import fetch_events
+
+    client = create_client()
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
+
+    # First call returns events, second call returns empty — simulating end of pagination.
+    mocker.patch(
+        "ProofpointIsolationEventCollector.Client.get_events",
+        side_effect=[mocked_events, {"data": []}],
+    )
+
+    stale_ids = ["https://stale.url/&staleUser@example.com"]
+    last_run_mock = {"start_date": "2025-01-01T19:44:35Z", "ids": stale_ids}
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=last_run_mock)
+
+    # Set limit higher than available events so the loop exhausts and hits the empty-response branch.
+    limit = 100
+
+    events, new_last_run = fetch_events(client, limit)
+
+    assert len(events) == len(mocked_events["data"])
+    # The critical assertion: when no more events are found, ids must be reset to an empty list.
+    assert new_last_run["ids"] == []

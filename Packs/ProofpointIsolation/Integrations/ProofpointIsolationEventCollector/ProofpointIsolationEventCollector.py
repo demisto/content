@@ -50,7 +50,7 @@ class Client(BaseClient):
         )
         demisto.debug(
             "[HTTP Call] Request completed. Response keys: ",
-            f"{list(results.keys()) if isinstance(results, dict) else type(results)}"
+            f"{list(results.keys()) if isinstance(results, dict) else type(results)}",
         )
         return results
 
