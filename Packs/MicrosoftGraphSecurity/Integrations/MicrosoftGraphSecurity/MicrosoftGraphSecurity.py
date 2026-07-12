@@ -1483,7 +1483,7 @@ def delete_ediscovery_search_command(client: MsGraphClient, args):
     return CommandResults(readable_output=f'eDiscovery search {args.get("search_id")} was deleted successfully.')
 
 
-def get_operation_id_from_location_header(location_url: str) -> str:
+def get_operation_id_from_location_header(location_url: str | None) -> str | None:
     """
     Extract the operation ID from a Microsoft Graph Location header URL.
 
@@ -1495,10 +1495,12 @@ def get_operation_id_from_location_header(location_url: str) -> str:
         location_url: The value of the Location header returned by the API.
 
     Returns:
-        The extracted operation ID, or "N/A" if it could not be parsed.
+        The extracted operation ID, or None if it could not be parsed.
     """
+    if not location_url:
+        return None
     operation_id_match = re.search(r"operations\('([^']+)'\)", location_url) or re.search(r"operations/([^/?]+)", location_url)
-    return operation_id_match.group(1) if operation_id_match else "N/A"
+    return operation_id_match.group(1) if operation_id_match else None
 
 
 def purge_ediscovery_data_command(client: MsGraphClient, args):
@@ -1507,11 +1509,11 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     )
     status = get_status_of_operation(client, resp)
 
-    location_url = resp.headers.get("Location")
-    operation_id = get_operation_id_from_location_header(location_url) if location_url else "N/A"
+    operation_id = get_operation_id_from_location_header(resp.headers.get("Location"))
 
     readable_output = f"eDiscovery purge status is {status}.\n- Operation ID: {operation_id}"
     outputs = {"OperationID": operation_id, "Status": status}
+    remove_nulls_from_dictionary(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
@@ -1845,12 +1847,9 @@ def export_result_ediscovery_data_command(
     case_id_from_url = re.search(r"ediscoveryCases\('([^']+)'\)", operation_url) or re.search(
         r"ediscoveryCases/([^/]+)/", operation_url
     )
-    operation_id_from_url = re.search(r"operations\('([^']+)'\)", operation_url) or re.search(
-        r"operations/([^/?]+)", operation_url
-    )
 
     case_id = (case_id_from_url.group(1) if case_id_from_url else args.get("case_id")) or "N/A"
-    operation_id = operation_id_from_url.group(1) if operation_id_from_url else "N/A"
+    operation_id = get_operation_id_from_location_header(operation_url) or "N/A"
 
     readable_output = (
         "eDiscovery export request was submitted successfully.\n" f"- Case ID: {case_id}\n" f"- Operation ID: {operation_id}\n"

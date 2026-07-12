@@ -574,13 +574,13 @@ def test_purge_ediscovery_data_command(mocker):
     When:
         Calling purge_ediscovery_data_command.
     Then:
-        Ensure the status is success and the Operation ID falls back to N/A in both
-        the readable output and the context outputs.
+        Ensure the status is success and the null Operation ID is removed from the
+        context outputs.
     """
     mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
     result = purge_ediscovery_data_command(client_mocker, {})
-    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: N/A"
-    assert result.outputs == {"OperationID": "N/A", "Status": "success"}
+    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: None"
+    assert result.outputs == {"Status": "success"}
     assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Purge"
 
 
