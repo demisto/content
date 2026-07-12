@@ -1436,9 +1436,14 @@ class MicrosoftClient(BaseClient):
 
     def device_auth_request(self) -> dict:
         response_json = {}
+        # Use the configured tenant when available so single-tenant apps (including national clouds such
+        # as US Gov) get a tenant-scoped authority. Fall back to the "organizations" endpoint only for
+        # multi-tenant apps with no configured tenant; otherwise Microsoft rejects the request with
+        # "No tenant-identifying information found in either the request or implied by any provided credentials".
+        tenant_segment = self.tenant_id or "organizations"
         try:
             response = requests.post(
-                url=f"{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode",
+                url=f"{self.azure_ad_endpoint}/{tenant_segment}/oauth2/v2.0/devicecode",
                 data={"client_id": self.client_id, "scope": self.scope},
                 verify=self.verify,
             )
