@@ -24,7 +24,8 @@ class Handler:
     def write(msg: str):
         # gevent's pywsgi writes one Common-Log-Format access line per request here.
         # Tag it so it is easy to grep for and correlate with the nginx access log.
-        demisto.info(f"wsgi access: {msg.rstrip()}")
+        # Kept at debug: the structured "wsgi request:" END line subsumes this CLF line.
+        demisto.debug(f"wsgi access: {msg.rstrip()}")
 
 
 class ErrorHandler:
@@ -303,10 +304,11 @@ class RequestLoggingMiddleware:
         # Monotonic sequence per request for correlation across log lines.
         seq = _next_request_seq()
 
-        # Emit a START line immediately. A request that then hangs for 125s (or
-        # never finishes because the client vanished) is visible right away here,
+        # Emit a START line. A request that then hangs for 125s (or never finishes
+        # because the client vanished) is visible here when debug logging is on,
         # even though its END line would only appear much later (or not at all).
-        demisto.info(
+        # Kept at debug to reduce steady-state volume; the END line is authoritative.
+        demisto.debug(
             f"wsgi request-start: rid={rid} seq={seq} received={received_iso} "
             f"nginx_wait={nginx_wait_str} "
             f'client={remote_addr} method={method} uri="{full_path}" {headers_str}'
@@ -491,8 +493,8 @@ server {
 
     # Per-request detailed access log + verbose error log so cache decisions,
     # real client IPs, timings and upstream warnings are all captured.
-    access_log /var/log/nginx/access.log edl_detailed;
-    error_log /var/log/nginx/error.log info;
+    access_log $access_log_path edl_detailed;
+    error_log $error_log_path info;
 
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
@@ -627,8 +629,8 @@ proxy_cache_background_update on;
 server {
     listen localhost:$fetchport;
 
-    access_log /var/log/nginx/access.log edl_detailed;
-    error_log /var/log/nginx/error.log info;
+    access_log $access_log_path edl_detailed;
+    error_log $error_log_path info;
 
     location / {
         limit_conn concurrent_conn_zone 1;
@@ -733,11 +735,13 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
         extra_headers=extra_headers,
+        access_log_path=NGINX_SERVER_ACCESS_LOG,
+        error_log_path=NGINX_SERVER_ERROR_LOG,
     )
     # Log the effective cache / timeout settings so each (re)start records exactly
     # which values are active - essential for interpreting cache=HIT/STALE/UPDATING
-    # decisions and the upstream timing fields in the access logs.
-    demisto.info(
+    # decisions and the upstream timing fields in the access logs. Kept at debug.
+    demisto.debug(
         "edl: nginx effective settings -> "
         f"listen_port={port} upstream_port={serverport} fetch_tier_port={fetchport} ssl={'on' if ssl else 'off'} "
         f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
@@ -810,7 +814,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
             start = 1
             for lines in batch(f.readlines(), 100):
                 end = start + len(lines)
-                demisto.info(f"nginx access log ({start}-{end-1}): " + "".join(lines))
+                demisto.debug(f"nginx access log ({start}-{end-1}): " + "".join(lines))
                 start = end
         Path(old_access).unlink()
     if log_error:
