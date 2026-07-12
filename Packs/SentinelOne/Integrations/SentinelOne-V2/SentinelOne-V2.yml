@@ -48,9 +48,6 @@ configuration:
   - Threats
   - Both
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - name: fetch_uam_alert_type
   display: Fetch incidents from UAM Alert type
   type: 15
@@ -70,9 +67,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - name: fetch_threat_rank
   display: "Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0."
   defaultvalue: '5'
@@ -115,9 +109,6 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '10'
-  supportedModules:
-  - agentix
-  - xsiam
 - name: fetch_site_ids
   display: Site IDs
   type: 0

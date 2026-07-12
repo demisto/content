@@ -89,9 +89,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -129,9 +126,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 description: Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 display: Okta IAM
 name: Okta IAM
