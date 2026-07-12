@@ -41,7 +41,7 @@ class Client(BaseClient):
         Returns:
             dict: The API response containing the usage data events.
         """
-        demisto.debug(f"[API Fetch] Making request: {start_date=}, {end_date=}, pageSize={ITEMS_PER_PAGE}")
+        demisto.debug(f"[HTTP Call] Making request: {start_date=}, {end_date=}, pageSize={ITEMS_PER_PAGE}")
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
@@ -49,7 +49,7 @@ class Client(BaseClient):
             retries=3,
         )
         demisto.debug(
-            f"[API Fetch] Request completed. Response keys: "
+            "[HTTP Call] Request completed. Response keys: ",
             f"{list(results.keys()) if isinstance(results, dict) else type(results)}"
         )
         return results
@@ -197,11 +197,12 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
     iteration = 0
     while True:
         iteration += 1
-        demisto.debug(f"[Fetch] Loop iteration {iteration}: {event_date=}")
+        demisto.debug(f"[Fetch Pagination Loop] Loop iteration {iteration}: {event_date=}")
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
             demisto.debug(f"[Fetch] No more events found. Total: {len(output)}")
             event_date = end
+            ids = set()
             break
 
         demisto.debug(f"[Fetch] Processing {len(events)} events.")
@@ -240,10 +241,10 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     start_date = args.get("start_date")
     end_date = args.get("end_date")
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
-    demisto.debug(f"[Command] get-events: {start_date=}, {end_date=}, {limit=}")
+    demisto.debug(f"[Get Events Command]: {start_date=}, {end_date=}, {limit=}")
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
-    demisto.debug(f"[Command] get-events fetched {len(output)} events.")
+    demisto.debug(f"[Get Events Command] fetched {len(output)} events.")
 
     filtered_events = []
     for event in output:
