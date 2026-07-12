@@ -312,16 +312,17 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     # Poll until nginx has flushed the access-log line to the (test-redirected)
     # log before invoking nginx_log_process. A fixed short sleep is racy: if the
     # line isn't on disk yet, nginx_log_process sees an empty log, logs nothing,
-    # and demisto.info.call_args is None.
+    # and demisto.debug.call_args is None.
     for _ in range(50):
         if Path(module.NGINX_SERVER_ACCESS_LOG).exists() and Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size:
             break
         sleep(0.1)
-    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     module.nginx_log_process(NGINX_PROCESS)
+    # The nginx access log line is emitted via demisto.debug.
     # call_args is tuple (args list, kwargs). we only need the args
-    arg = demisto.info.call_args[0][0]
+    arg = demisto.debug.call_args[0][0]
     assert "nginx access log" in arg
     assert "unit_testing" in arg
     # make sure old file was removed
