@@ -47,6 +47,20 @@ OCSF_SEVERITY_ID_TO_XSOAR = {
     5: IncidentSeverity.CRITICAL,
     6: IncidentSeverity.CRITICAL,  # Fatal -> Critical (XSOAR has no higher severity)
 }
+
+
+def effective_severity_id(finding: dict) -> int:
+    """Return the severity_id shown for the finding in the AWS Security Hub console.
+
+    The top-level ``severity_id`` is the value the console displays and that reflects an
+    analyst's severity change. ``vendor_attributes.severity_id`` holds the original
+    vendor-reported severity and is used only as a fallback. Returns ``0`` (OCSF
+    "Unknown") when neither is present.
+    """
+    vendor_attributes = finding.get("vendor_attributes") or {}
+    return finding.get("severity_id") or vendor_attributes.get("severity_id") or 0
+
+
 # Minimum severity label -> OCSF severity_id, used to build the fetch severity filter.
 SEVERITY_LABEL_TO_OCSF_ID = {
     "Informational": 1,
@@ -596,7 +610,8 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
                 f"(mirror_direction={mirror_direction}, mirror_instance={finding['mirror_instance']})."
             )
 
-        xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(finding.get("severity_id"), IncidentSeverity.UNKNOWN)
+        severity_id = effective_severity_id(finding)
+        xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
         incidents.append(
             {
                 "name": finding_info.get("title") or uid,
@@ -607,7 +622,9 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
         )
         demisto.debug(
             f"[AWS_Security_Hub_V2] Dedup: created incident uid={uid}, created={created_time}, "
-            f"severity_id={finding.get('severity_id')} -> xsoar_severity={xsoar_severity}."
+            f"effective severity_id={severity_id} (top-level={finding.get('severity_id')}, "
+            f"vendor_attributes={(finding.get('vendor_attributes') or {}).get('severity_id')}) "
+            f"-> xsoar_severity={xsoar_severity}."
         )
 
         new_findings.append(finding)
@@ -768,7 +785,16 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         return GetRemoteDataResponse(mirrored_object={}, entries=[])
 
     finding = findings[0]
-    finding_info = finding.get("finding_info") or {}
+    # Normalize the top-level severity_id to the effective (analyst-overridden) value. AWS stores
+    # overrides under vendor_attributes.severity_id while leaving the top-level severity_id at the
+    # original value, so an analyst's console change only appears in vendor_attributes.
+    original_severity_id = finding.get("severity_id")
+    severity_id = effective_severity_id(finding)
+    finding["severity_id"] = severity_id
+    # Attach the ready-to-use XSOAR severity number directly on the object so the incoming mapper can
+    # map it 1:1 (simple mapping, no transformer). This removes the transformer / field-shape as a
+    # point of failure for severity mirror-in.
+    finding["xsoar_severity"] = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
     # Full dump of the object handed to the server (this is what the incoming mapper reads and the
     # server diffs against the incident). Compare these values with the incident's current fields to
     # find any mapper root/field mismatch.
@@ -776,10 +802,12 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         "[AWS_Security_Hub_V2] Mirror-in: MAPPER-INPUT (full mirrored_object handed to server): "
         f"{json.dumps(finding, default=str)}"
     )
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: {finding=}")
     demisto.debug(
         f"[AWS_Security_Hub_V2] Mirror-in: returning current finding uid={finding_uid} "
-        f"(status_id={finding.get('status_id')}, severity_id={finding.get('severity_id')}); "
+        f"(effective severity_id={severity_id}, xsoar_severity={finding['xsoar_severity']}, "
+        f"original top-level={original_severity_id}, "
+        f"vendor_attributes={(finding.get('vendor_attributes') or {}).get('severity_id')}, "
+        f"status_id={finding.get('status_id')}); "
         "the XSOAR server will diff it against the incident. ===== get-remote-data END ====="
     )
     return GetRemoteDataResponse(mirrored_object=finding, entries=[])
