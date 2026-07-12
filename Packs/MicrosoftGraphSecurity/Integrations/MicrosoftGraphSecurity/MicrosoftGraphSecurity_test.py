@@ -568,8 +568,37 @@ def test_test_auth_code_command(mocker, command_to_check):
 
 
 def test_purge_ediscovery_data_command(mocker):
+    """
+    Given:
+        A purge response with no Location header.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the status is success and the Operation ID falls back to N/A in both
+        the readable output and the context outputs.
+    """
     mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
-    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == "eDiscovery purge status is success."
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: N/A"
+    assert result.outputs == {"OperationID": "N/A", "Status": "success"}
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Purge"
+
+
+def test_purge_ediscovery_data_command_with_operation_id(mocker):
+    """
+    Given:
+        A purge response that includes a Location header with an operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the Operation ID is extracted and returned to the context outputs.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_456"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"OperationID": "op_456", "Status": "succeeded"}
+    assert "op_456" in result.readable_output
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
@@ -1158,6 +1187,10 @@ def test_export_result_ediscovery_data_command(mocker):
 
     assert "eDiscovery export request was submitted successfully" in result.readable_output
     assert "op_123" in result.readable_output
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Export"
+    assert result.outputs["OperationID"] == "op_123"
+    assert result.outputs["CaseID"] == "case_123"
+    assert result.outputs["Location"] == mock_response.headers["Location"]
 
 
 # ==========================================
