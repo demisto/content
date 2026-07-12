@@ -40,12 +40,22 @@ OCSF_STATUS_ID_TO_CLOSE_REASON = {
 # OCSF statuses that represent an OPEN finding; if a closed XSOAR incident's finding returns to one of
 # these, the incident is reopened on mirror-in.
 OCSF_OPEN_STATUS_IDS = {OCSF_STATUS_ID_NEW, OCSF_STATUS_ID_IN_PROGRESS}
-# Delta keys (incident fields, as produced by the outgoing mapper) that are mirrored out to AWS Security Hub,
-# mapped to the corresponding ``batch_update_findings_v2`` kwarg. Only these fields are pushed remotely.
+# Delta keys (incident fields, as produced by the outgoing mapper) that are written verbatim to the
+# corresponding ``batch_update_findings_v2`` kwarg (value coerced to int for the numeric ids).
 OUTGOING_DELTA_TO_KWARG = {
     "severityid": "SeverityId",
     "statusid": "StatusId",
     "comment": "Comment",
+}
+# Every incident field the outgoing mirror consumes, with the description surfaced by
+# ``get-mapping-fields``. Includes the built-in "severity" field, which is translated (not written
+# verbatim) to OCSF SeverityId in update_remote_system_command. Kept as the single source of truth
+# for the outgoing mapping schema so it never drifts from what the code actually mirrors.
+OUTGOING_FIELD_DESCRIPTIONS = {
+    "severityid": "The OCSF severity_id to set on the finding (1=Informational .. 6=Fatal).",
+    "statusid": "The OCSF status_id to set on the finding (1=New, 2=In Progress, 3=Suppressed, 4=Resolved).",
+    "comment": "A comment describing the reason for the update.",
+    "severity": "The built-in incident severity; mirrored to the finding's OCSF severity in AWS.",
 }
 
 # OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
@@ -881,13 +891,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-out: get-mapping-fields")
     finding_scheme = SchemeTypeMapping(type_name="AWS Security Hub Finding")
-    finding_scheme.add_field(
-        name="severityid", description="The OCSF severity_id to set on the finding (1=Informational .. 6=Fatal)."
-    )
-    finding_scheme.add_field(
-        name="statusid", description="The OCSF status_id to set on the finding (1=New, 2=In Progress, 3=Suppressed, 4=Resolved)."
-    )
-    finding_scheme.add_field(name="comment", description="A comment describing the reason for the update.")
+    for name, description in OUTGOING_FIELD_DESCRIPTIONS.items():
+        finding_scheme.add_field(name=name, description=description)
 
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(finding_scheme)
@@ -933,7 +938,7 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
         # mirrors out. An explicit "severityid" delta (handled above) takes precedence if both exist.
         if "SeverityId" not in kwargs and delta.get("severity") not in (None, ""):
             xsoar_severity = arg_to_number(delta["severity"])
-            ocsf_severity_id = XSOAR_SEVERITY_TO_OCSF_ID.get(xsoar_severity)
+            ocsf_severity_id = XSOAR_SEVERITY_TO_OCSF_ID.get(float(xsoar_severity)) if xsoar_severity is not None else None
             if ocsf_severity_id:
                 kwargs["SeverityId"] = ocsf_severity_id
             else:

@@ -358,74 +358,51 @@ def test_findings_batch_update_command_error(mocker):
         findings_batch_update_command(mock_client, {"metadata_uids": "u-1"})
 
 
-def test_parse_date_filters_absolute():
+@pytest.mark.parametrize(
+    "filters_str,expected_filter",
+    [
+        # Absolute form: both start and end.
+        (
+            "fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
+            {"Start": "2024-01-01T00:00:00Z", "End": "2024-02-01T00:00:00Z"},
+        ),
+        # Relative "days" shorthand -> DateRange with Unit defaulting to DAYS.
+        ("fieldname=finding_info.created_time_dt,days=7", {"DateRange": {"Value": 7, "Unit": "DAYS"}}),
+        # Relative explicit value/unit.
+        ("fieldname=finding_info.created_time_dt,value=14,unit=DAYS", {"DateRange": {"Value": 14, "Unit": "DAYS"}}),
+        # Relative with an explicit comparison.
+        (
+            "fieldname=finding_info.created_time_dt,value=7,unit=DAYS,comparison=GREATER_THAN",
+            {"DateRange": {"Value": 7, "Unit": "DAYS", "Comparison": "GREATER_THAN"}},
+        ),
+    ],
+)
+def test_parse_date_filters_builds_absolute_and_relative(filters_str, expected_filter):
     """
-    Given: A date_filters entry with both start and end.
+    Given: A date_filters entry in the absolute ({Start,End}) or relative (DateRange) form.
     When: parse_date_filters is called.
-    Then: It builds the absolute {Start, End} Filter.
+    Then: It builds the matching {FieldName, Filter} structure.
     """
-    result = parse_date_filters("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z")
-    assert result == [
-        {
-            "FieldName": "finding_info.created_time_dt",
-            "Filter": {"Start": "2024-01-01T00:00:00Z", "End": "2024-02-01T00:00:00Z"},
-        }
-    ]
+    assert parse_date_filters(filters_str) == [{"FieldName": "finding_info.created_time_dt", "Filter": expected_filter}]
 
 
-def test_parse_date_filters_relative_days_alias():
+@pytest.mark.parametrize(
+    "filters_str,match",
+    [
+        # start without end is invalid (oneOf requires both, or a DateRange).
+        ("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z", "requires either the relative 'DateRange' form"),
+        # mixing the relative and absolute forms is invalid.
+        ("fieldname=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z", "not both"),
+    ],
+)
+def test_parse_date_filters_invalid_combinations_raise(filters_str, match):
     """
-    Given: A date_filters entry using the "days" shorthand.
+    Given: A date_filters entry that is incomplete or mixes the two mutually exclusive forms.
     When: parse_date_filters is called.
-    Then: It builds the relative {DateRange: {Value, Unit}} Filter with Unit defaulting to DAYS.
+    Then: It raises a DemistoException explaining the valid forms.
     """
-    result = parse_date_filters("fieldname=finding_info.modified_time_dt,days=7")
-    assert result == [{"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS"}}}]
-
-
-def test_parse_date_filters_relative_value_unit():
-    """
-    Given: A date_filters entry using the explicit DateRange value/unit keys.
-    When: parse_date_filters is called.
-    Then: It builds the relative {DateRange: {Value, Unit}} Filter.
-    """
-    result = parse_date_filters("fieldname=finding_info.modified_time_dt,value=14,unit=DAYS")
-    assert result == [{"FieldName": "finding_info.modified_time_dt", "Filter": {"DateRange": {"Value": 14, "Unit": "DAYS"}}}]
-
-
-def test_parse_date_filters_relative_with_comparison():
-    """
-    Given: A date_filters entry providing a DateRange comparison.
-    When: parse_date_filters is called.
-    Then: The Comparison is included in the DateRange object.
-    """
-    result = parse_date_filters("fieldname=finding_info.modified_time_dt,value=7,unit=DAYS,comparison=GREATER_THAN")
-    assert result == [
-        {
-            "FieldName": "finding_info.modified_time_dt",
-            "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS", "Comparison": "GREATER_THAN"}},
-        }
-    ]
-
-
-def test_parse_date_filters_only_start_raises():
-    """
-    Given: A date_filters entry with start but no end.
-    When: parse_date_filters is called.
-    Then: It raises a DemistoException (oneOf requires both start and end, or a DateRange).
-    """
-    with pytest.raises(DemistoException, match="requires either the relative 'DateRange' form"):
-        parse_date_filters("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z")
-
-
-def test_parse_date_filters_range_with_start_raises():
-    """
-    Given: A date_filters entry mixing the relative and absolute forms.
-    When: parse_date_filters is called.
-    Then: It raises a DemistoException (cannot mix the two forms).
-    """
-    with pytest.raises(DemistoException, match="not both"):
-        parse_date_filters("fieldname=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z")
+    with pytest.raises(DemistoException, match=match):
+        parse_date_filters(filters_str)
 
 
 def test_parse_date_filters_skips_entry_without_fieldname():
@@ -522,38 +499,10 @@ def test_fetch_incidents_first_run(mocker):
     assert last_run["fetched_ids"] == ["uid-2"]
     assert last_run["next_token"] == "tok-next"
 
-    # A fresh query uses Filters (not a NextToken).
+    # A fresh query uses Filters (not a NextToken), with a bounded [Start, End] window from last_fetch.
     call_kwargs = mock_client.get_findings_v2.call_args[1]
-    assert "Filters" in call_kwargs
     assert call_kwargs["MaxResults"] == 50
-
-
-def test_fetch_incidents_first_run_uses_bounded_window(mocker):
-    """
-    Given: A previous last_fetch and a client returning a finding.
-    When: fetch_incidents builds the fresh query.
-    Then: The DateFilter has a Start (from last_fetch) and an End (now), bounding the query window.
-    """
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
-    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
-    mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "incidents")
-
-    mock_client = mocker.Mock()
-    mock_client.get_findings_v2.return_value = {
-        "Findings": [
-            {
-                "metadata": {"uid": "uid-1"},
-                "severity_id": 3,
-                "finding_info": {"title": "Finding One", "created_time_dt": "2024-01-01T10:00:00.000Z"},
-            }
-        ],
-        "NextToken": None,
-    }
-
-    fetch_incidents(mock_client, {"max_fetch": 50})
-
-    date_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["DateFilters"][0]["Filter"]
+    date_filter = call_kwargs["Filters"]["CompositeFilters"][0]["DateFilters"][0]["Filter"]
     assert date_filter["Start"] == "2024-01-01T00:00:00.000Z"
     assert "End" in date_filter
 
@@ -703,11 +652,18 @@ def test_fetch_incidents_no_results(mocker):
     assert last_run["next_token"] is None
 
 
-def test_fetch_incidents_tags_mirror_metadata(mocker):
+@pytest.mark.parametrize(
+    "mirror_direction,expected_dbot_direction",
+    [
+        ("Incoming", "In"),  # enrolled: rawJSON carries mirror metadata
+        ("None", None),  # disabled: rawJSON carries no mirror metadata
+    ],
+)
+def test_fetch_incidents_mirror_tagging(mocker, mirror_direction, expected_dbot_direction):
     """
-    Given: mirror_direction set to Incoming and a client returning one finding.
+    Given: A client returning one finding and a mirror_direction param (Incoming or None).
     When: fetch_incidents is called.
-    Then: The incident rawJSON carries mirror_direction=In and mirror_instance.
+    Then: The incident rawJSON carries the mirror metadata only when mirroring is enabled.
     """
     import json
 
@@ -727,44 +683,15 @@ def test_fetch_incidents_tags_mirror_metadata(mocker):
         ]
     }
 
-    fetch_incidents(mock_client, {"max_fetch": 50, "mirror_direction": "Incoming"})
+    fetch_incidents(mock_client, {"max_fetch": 50, "mirror_direction": mirror_direction})
 
-    incident = incidents_mock.call_args[0][0][0]
-    raw = json.loads(incident["rawJSON"])
-    assert raw["mirror_direction"] == "In"
-    assert raw["mirror_instance"] == "instance-1"
-
-
-def test_fetch_incidents_no_mirror_when_direction_none(mocker):
-    """
-    Given: mirror_direction set to None and a client returning one finding.
-    When: fetch_incidents is called.
-    Then: The incident rawJSON does NOT carry mirror metadata.
-    """
-    import json
-
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
-    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
-    mocker.patch.object(demisto, "setLastRun")
-    incidents_mock = mocker.patch.object(demisto, "incidents")
-
-    mock_client = mocker.Mock()
-    mock_client.get_findings_v2.return_value = {
-        "Findings": [
-            {
-                "metadata": {"uid": "uid-1"},
-                "severity_id": 4,
-                "finding_info": {"title": "t", "created_time_dt": "2024-01-02T00:00:00.000Z"},
-            }
-        ]
-    }
-
-    fetch_incidents(mock_client, {"max_fetch": 50, "mirror_direction": "None"})
-
-    incident = incidents_mock.call_args[0][0][0]
-    raw = json.loads(incident["rawJSON"])
-    assert "mirror_direction" not in raw
-    assert "mirror_instance" not in raw
+    raw = json.loads(incidents_mock.call_args[0][0][0]["rawJSON"])
+    if expected_dbot_direction:
+        assert raw["mirror_direction"] == expected_dbot_direction
+        assert raw["mirror_instance"] == "instance-1"
+    else:
+        assert "mirror_direction" not in raw
+        assert "mirror_instance" not in raw
 
 
 def test_get_remote_data_command_returns_finding(mocker):
@@ -772,7 +699,7 @@ def test_get_remote_data_command_returns_finding(mocker):
     Given: A client returning a single finding for the requested uid.
     When: get_remote_data_command is called.
     Then: It fetches by metadata.uid and returns the finding as the mirrored object, enriched with a
-          ready-to-use xsoar_severity computed from the effective severity_id.
+          ready-to-use xsoar_severity, and (since status_id=4 Resolved) a close entry.
     """
     from AWS_SecurityHub_V2 import IncidentSeverity
 
@@ -785,6 +712,8 @@ def test_get_remote_data_command_returns_finding(mocker):
     # severity_id 3 (OCSF Medium) -> XSOAR Medium, injected as xsoar_severity for the mapper.
     assert result.mirrored_object["xsoar_severity"] == IncidentSeverity.MEDIUM
     assert result.mirrored_object["metadata"]["uid"] == "uid-1"
+    # status_id 4 (Resolved) is wired to a close entry for full lifecycle sync.
+    assert result.entries[0]["Contents"]["dbotIncidentClose"] is True
     string_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["StringFilters"][0]
     assert string_filter["FieldName"] == "metadata.uid"
     assert string_filter["Filter"]["Value"] == "uid-1"
@@ -934,67 +863,45 @@ def test_update_remote_system_resolves_on_close(mocker):
     assert call_kwargs["StatusId"] == 4
 
 
-def test_update_remote_system_mirrors_builtin_severity(mocker):
+@pytest.mark.parametrize(
+    "delta,expected_severity_id,expect_call",
+    [
+        ({"severity": 2}, 3, True),  # built-in XSOAR Medium -> OCSF Medium (3)
+        ({"severityid": "5", "severity": 2}, 5, True),  # explicit severityid wins over built-in severity
+        ({"severity": 0}, None, False),  # Unknown has no OCSF equivalent -> nothing mirrored
+    ],
+)
+def test_update_remote_system_builtin_severity(mocker, delta, expected_severity_id, expect_call):
     """
-    Given: An incident whose built-in XSOAR "severity" field changed (delta key "severity" = 2 = Medium).
+    Given: An incident delta carrying the built-in "severity" field (alone, with severityid, or Unknown).
     When: update_remote_system_command is called.
-    Then: batch_update_findings_v2 is called with the translated OCSF SeverityId (3 = Medium).
+    Then: The built-in severity is translated to OCSF SeverityId, an explicit severityid takes precedence,
+          and an unmappable (Unknown) severity mirrors nothing.
     """
     mock_client = mocker.Mock()
     mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
 
-    args = _update_remote_args({"severity": 2})
-    update_remote_system_command(mock_client, args, resolve_finding=False)
+    update_remote_system_command(mock_client, _update_remote_args(delta), resolve_finding=False)
 
-    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert call_kwargs["SeverityId"] == 3
-
-
-def test_update_remote_system_severityid_takes_precedence_over_builtin_severity(mocker):
-    """
-    Given: An incident whose delta has both the custom "severityid" and the built-in "severity" fields.
-    When: update_remote_system_command is called.
-    Then: The explicit "severityid" wins and the built-in "severity" is ignored.
-    """
-    mock_client = mocker.Mock()
-    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
-
-    args = _update_remote_args({"severityid": "5", "severity": 2})
-    update_remote_system_command(mock_client, args, resolve_finding=False)
-
-    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert call_kwargs["SeverityId"] == 5
-
-
-def test_update_remote_system_skips_unmappable_builtin_severity(mocker):
-    """
-    Given: An incident whose built-in "severity" changed to 0 (Unknown), which has no OCSF equivalent.
-    When: update_remote_system_command is called.
-    Then: No SeverityId is sent and batch_update_findings_v2 is not called (no other mirrorable changes).
-    """
-    mock_client = mocker.Mock()
-
-    args = _update_remote_args({"severity": 0})
-    result = update_remote_system_command(mock_client, args, resolve_finding=False)
-
-    assert result == "uid-1"
-    mock_client.batch_update_findings_v2.assert_not_called()
+    if expect_call:
+        assert mock_client.batch_update_findings_v2.call_args[1]["SeverityId"] == expected_severity_id
+    else:
+        mock_client.batch_update_findings_v2.assert_not_called()
 
 
 def test_get_mapping_fields_command():
     """
     Given: The outgoing mapping schema request.
     When: get_mapping_fields_command is called.
-    Then: It returns a scheme for the finding type with the mirrorable fields.
+    Then: It returns a scheme for the finding type with every field the outgoing mirror consumes
+          (including the built-in "severity" field).
     """
     result = get_mapping_fields_command()
 
     entry = result.extract_mapping()
     assert "AWS Security Hub Finding" in entry
     finding_fields = entry["AWS Security Hub Finding"]
-    assert "severityid" in finding_fields
-    assert "statusid" in finding_fields
-    assert "comment" in finding_fields
+    assert {"severityid", "statusid", "comment", "severity"} <= set(finding_fields)
 
 
 @pytest.mark.parametrize(
