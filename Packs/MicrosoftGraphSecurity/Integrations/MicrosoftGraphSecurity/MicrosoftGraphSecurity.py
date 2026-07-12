@@ -1849,7 +1849,7 @@ def export_result_ediscovery_data_command(
     )
 
     case_id = (case_id_from_url.group(1) if case_id_from_url else args.get("case_id")) or "N/A"
-    operation_id = get_operation_id_from_location_header(operation_url) or "N/A"
+    operation_id = get_operation_id_from_location_header(operation_url) or None
 
     readable_output = (
         "eDiscovery export request was submitted successfully.\n" f"- Case ID: {case_id}\n" f"- Operation ID: {operation_id}\n"
