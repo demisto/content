@@ -194,8 +194,9 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
     current_start_date = event_date
     demisto.debug(f"[Fetch] Starting fetch loop: {current_start_date=}, {end=}, {fetch_limit=}")
+    has_more_events = True
     iteration = 0
-    while True:
+    while has_more_events and len(output) < fetch_limit:
         iteration += 1
         demisto.debug(f"[Fetch Pagination Loop] Loop iteration {iteration}: {event_date=}")
         events = get_and_reorganize_events(client, event_date, end, ids)
@@ -203,7 +204,8 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             demisto.debug(f"[Fetch] No more events found. Total: {len(output)}")
             event_date = end
             ids = set()
-            break
+            has_more_events = False
+            continue
 
         demisto.debug(f"[Fetch] Processing {len(events)} events.")
         for event in events:
@@ -219,8 +221,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
 
             if len(output) >= fetch_limit:
                 demisto.debug(f"[Fetch] Reached fetch limit. Total: {len(output)}")
-                new_last_run = {"start_date": event_date, "ids": list(ids)}
-                return output, new_last_run
+                break
 
     new_last_run = {"start_date": event_date, "ids": list(ids)}
     demisto.debug(f"[Fetch] Fetch complete. Total: {len(output)}")
