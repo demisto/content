@@ -121,9 +121,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: The minimum severity of incidents to fetch
   name: min_severity
   type: 15
@@ -237,9 +234,6 @@ configuration:
   advanced: true
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
