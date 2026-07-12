@@ -693,31 +693,6 @@ def test_create_nginx_server_conf_two_server_blocks_and_ports(tmp_path: Path, mo
     assert f"proxy_pass http://localhost:{serverport}/;" in conf
 
 
-def test_create_nginx_server_conf_keepalive_timeout_default_and_override(tmp_path: Path, mocker):
-    """
-    Given:  (a) no keepalive_timeout param, then (b) an explicit keepalive_timeout.
-    When:   create_nginx_server_conf renders the nginx server config.
-    Then:   (a) the CLOSE_WAIT-mitigation keepalive_timeout defaults to nginx's own
-            "65s" (behavior unchanged); (b) an explicit value is honored — letting
-            operators shorten it to reap sockets from clients that polled and left.
-    """
-    from NGINXApiModule import create_nginx_server_conf
-
-    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
-
-    # (a) default
-    default_conf = str(tmp_path / "default.conf")
-    create_nginx_server_conf(default_conf, 12345, params={})
-    with open(default_conf) as f:
-        assert "keepalive_timeout 65s;" in f.read()
-
-    # (b) explicit override (accepts human-readable, normalized to "<int>s")
-    override_conf = str(tmp_path / "override.conf")
-    create_nginx_server_conf(override_conf, 12345, params={"keepalive_timeout": "10"})
-    with open(override_conf) as f:
-        assert "keepalive_timeout 10s;" in f.read()
-
-
 def test_create_nginx_server_conf_rejects_invalid_param(tmp_path: Path, mocker, monkeypatch):
     """
     Given:  a params dict with an unparseable value for cache_404_ttl.

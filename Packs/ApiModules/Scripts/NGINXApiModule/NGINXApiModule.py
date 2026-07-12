@@ -615,11 +615,6 @@ proxy_cache_background_update on;
         proxy_set_header X-Request-Start $msec;
     }
 
-    # How long an idle keep-alive client connection stays open. Lowering this lets nginx
-    # reap connections from clients (e.g. firewalls) that polled and went away, instead of
-    # leaving them pinned in CLOSE_WAIT and consuming a worker_connections slot + an FD.
-    # Default "65" matches nginx's built-in default, so behavior is unchanged unless tuned.
-    keepalive_timeout $keepalive_timeout;
 }
 
 # ---- Tier 2: internal fetch server (cold-MISS path only) -----------------
@@ -689,13 +684,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     cache_404_ttl = _normalize_nginx_time(params.get("cache_404_ttl"), default="1m", param_name="cache_404_ttl")
     cache_default_ttl = _normalize_nginx_time(params.get("cache_default_ttl"), default="1m", param_name="cache_default_ttl")
 
-    # Idle keep-alive timeout for client connections. Normalized independently of `timeout` and
-    # deliberately NOT floored to it: a small value (default "65", nginx's own default) lets nginx
-    # promptly reap connections from clients that polled and disconnected, preventing the CLOSE_WAIT
-    # buildup that otherwise exhausts the worker's connection/FD budget. Behavior is unchanged unless
-    # the `keepalive_timeout` param is explicitly set.
-    keepalive_timeout = _normalize_nginx_time(params.get("keepalive_timeout"), default="65", param_name="keepalive_timeout")
-
     # Ensure cache_refresh_rate is at least as large as timeout. All values are now guaranteed to
     # end in "s" (the helper always returns `<int>s`), so an O(1) integer compare on the prefix is safe.
     timeout_seconds = int(timeout[:-1])
@@ -744,7 +732,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_refresh_rate=cache_refresh_rate,
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
-        keepalive_timeout=keepalive_timeout,
         extra_headers=extra_headers,
     )
     # Log the effective cache / timeout settings so each (re)start records exactly
@@ -755,7 +742,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         f"listen_port={port} upstream_port={serverport} fetch_tier_port={fetchport} ssl={'on' if ssl else 'off'} "
         f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
         f"cache_404_ttl={cache_404_ttl} cache_default_ttl={cache_default_ttl} "
-        f"keepalive_timeout={keepalive_timeout} "
         f"extra_cache_keys=[{extra_cache_keys_str}]"
     )
     with open(file_path, mode="w+") as f:
