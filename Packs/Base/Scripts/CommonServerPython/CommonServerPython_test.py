@@ -3360,38 +3360,33 @@ class TestBaseClient:
         When:
             - _implement_retry is called with retries > 0
         Then:
-            - Retry is instantiated without the backoff_jitter kwarg (no TypeError is raised)
+            - Retry is called without the backoff_jitter kwarg (no TypeError is raised)
             - The https:// adapter is mounted on the session with the configured retry object
         """
         import CommonServerPython
         from urllib3.util import Retry as RealRetry
 
-        received_kwargs = {}
-
         class RetryDefaultNoJitter:
             allowed_methods = frozenset(['GET'])
             # No backoff_jitter attribute, simulating an older urllib3 version
 
-        class FakeRetryNoJitter(RealRetry):
-            DEFAULT = RetryDefaultNoJitter
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultNoJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
 
-            def __init__(self, *args, **kwargs):
-                if 'backoff_jitter' in kwargs:
-                    raise TypeError("__init__() got an unexpected keyword argument 'backoff_jitter'")
-                received_kwargs.update(kwargs)
-                super().__init__(*args, **kwargs)
-
-        mocker.patch.object(CommonServerPython, 'Retry', FakeRetryNoJitter)
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
 
         client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
 
         # Should not raise TypeError even though backoff_jitter is requested
         client._implement_retry(retries=3, backoff_jitter=0.5)
 
+        mock_retry_class.assert_called_once()
+        assert 'backoff_jitter' not in mock_retry_class.call_args.kwargs
+
         adapter = client._session.adapters.get('https://')
         assert adapter is not None
-        assert isinstance(adapter.max_retries, FakeRetryNoJitter)
-        assert 'backoff_jitter' not in received_kwargs
+        assert adapter.max_retries is mock_retry_class.return_value
 
     def test_implement_retry_with_backoff_jitter_support(self, mocker):
         """
@@ -3401,31 +3396,27 @@ class TestBaseClient:
         When:
             - _implement_retry is called with retries > 0 and a backoff_jitter value
         Then:
-            - Retry is instantiated with the backoff_jitter kwarg set to the given value
+            - Retry is called with the backoff_jitter kwarg set to the given value
         """
         import CommonServerPython
         from urllib3.util import Retry as RealRetry
-
-        received_kwargs = {}
 
         class RetryDefaultWithJitter:
             allowed_methods = frozenset(['GET'])
             backoff_jitter = 0.0
 
-        class FakeRetryWithJitter(RealRetry):
-            DEFAULT = RetryDefaultWithJitter
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultWithJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
 
-            def __init__(self, *args, **kwargs):
-                received_kwargs.update(kwargs)
-                super().__init__(*args, **kwargs)
-
-        mocker.patch.object(CommonServerPython, 'Retry', FakeRetryWithJitter)
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
 
         client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
 
         client._implement_retry(retries=3, backoff_jitter=0.5)
 
-        assert received_kwargs.get('backoff_jitter') == 0.5
+        mock_retry_class.assert_called_once()
+        assert mock_retry_class.call_args.kwargs.get('backoff_jitter') == 0.5
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
