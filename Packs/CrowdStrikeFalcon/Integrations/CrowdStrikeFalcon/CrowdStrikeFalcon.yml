@@ -55,16 +55,67 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Incident Fetch types'
+  defaultvalue: 'Endpoint Detection'
+  name: fetch_incidents_or_detections
+  type: 16
+  section: Collect
+  required: false
+  additionalinfo: |-
+    Choose what incident types to fetch - You can choose any combination. Note:
+    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+  options:
+  - IDP Detection
+  - Endpoint Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
+  - Mobile Detection
+  - On-Demand Scans Detection
+  - OFP Detection
+  - Third Party Detection
+  - NGSIEM Detection
+  - NGSIEM Automated Lead
+  - NGSIEM Case
+  - NGSIEM Incident (XDR Alert)
+  - Recon notifications
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
   section: Collect
   required: false
-  additionalinfo: Supported in Cortex XSOAR only.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -72,10 +123,38 @@ configuration:
   advanced: true
   required: false
   defaultvalue: '15'
-  additionalinfo: Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15.
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform. Input a value between 1-500. Default is 15.
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Incidents Fetch Interval'
+  defaultvalue: '1'
+  name: incidentFetchInterval
+  additionalinfo: Supported in Cortex XSOAR and Cortex Platform.
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
+- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
+  name: look_back
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - marketplacev2
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Endpoint Detections filter query
   name: fetch_query
   type: 0
@@ -106,7 +185,9 @@ configuration:
   additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: IOA filter query
   name: ioa_fetch_query
   type: 0
@@ -116,7 +197,9 @@ configuration:
   additionalinfo: "The Indicator of Attack (IOA) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language (FQL) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html."
   hidden:
   - marketplacev2
-  - platform
+  supportedModules:
+  - "xsiam"
+  - "agentix"
 - display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
@@ -173,33 +256,6 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use Falcon Query Language (FQL) to filter results. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).'
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  section: Collect
-  required: false
-  defaultvalue: 'true'
-  hidden:
-  - marketplacev2
-  - platform
-- display: Fetch events
-  name: isFetchEvents
-  type: 8
-  section: Collect
-  required: false
-  defaultvalue: 'true'
-  hidden:
-  - xsoar
-  supportedModules:
-  - "xsiam"
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
-  hidden:
-  - marketplacev2
-  - platform
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -215,18 +271,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: 'Trust any certificate (not secure)'
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: 'Use system proxy settings'
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
 - display: 'Close Mirrored XSOAR Incident'
   defaultvalue: 'false'
   name: close_incident
@@ -249,47 +293,79 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: 'Fetch types'
-  defaultvalue: 'Endpoint Detection'
-  name: fetch_incidents_or_detections
+- display: 'Reopen Statuses'
+  additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
+  defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  name: reopen_statuses
   type: 16
   section: Collect
   advanced: true
   required: false
-  additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note:
-    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
-  - IDP Detection
-  - Endpoint Detection
-  - Indicator of Misconfiguration
-  - Indicator of Attack
-  - Mobile Detection
-  - On-Demand Scans Detection
-  - OFP Detection
-  - Third Party Detection
-  - NGSIEM Detection
-  - NGSIEM Automated Lead
-  - NGSIEM Case
-  - NGSIEM Incident (XDR Alert)
-  - Recon notifications
+  - New
+  - In progress
+  - True positive
+  - False positive
+  - Reopened
+  - Ignored
   hidden:
   - marketplacev2
   - platform
-- display: 'Fetch types'
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar
+  supportedModules:
+  - "xsiam"
+- display: 'Event Fetch types'
   defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
   type: 16
   section: Collect
   required: false
   additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what event types to fetch - You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Detection
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
+- display: 'Events Fetch Interval'
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
+- display: 'Advanced: Time in minutes to look back when fetching events and detections'
+  additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 2
+  name: look_back_xsiam
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
   hidden:
   - xsoar
   - xpanse
@@ -312,77 +388,6 @@ configuration:
   - CNAPP Alerts
   hidden:
   - xsoar
-- display: 'Reopen Statuses'
-  additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
-  defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
-  name: reopen_statuses
-  type: 16
-  section: Collect
-  advanced: true
-  required: false
-  options:
-  - New
-  - In progress
-  - True positive
-  - False positive
-  - Reopened
-  - Ignored
-  hidden:
-  - marketplacev2
-  - platform
-- display: 'Incidents Fetch Interval'
-  defaultvalue: '1'
-  name: incidentFetchInterval
-  additionalinfo: Supported in Cortex XSOAR only.
-  type: 19
-  section: Collect
-  advanced: true
-  required: false
-  hidden:
-  - marketplacev2
-  - platform
-- display: 'Events Fetch Interval'
-  defaultvalue: '1'
-  name: eventFetchInterval
-  type: 19
-  section: Collect
-  advanced: true
-  required: false
-  hidden:
-  - xsoar
-  - xpanse
-  supportedModules:
-  - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
-- display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
-  additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 2
-  name: look_back
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-  hidden:
-  - marketplacev2
-  - platform
-- display: 'Advanced: Time in minutes to look back when fetching events and detections'
-  additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 2
-  name: look_back_xsiam
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-  hidden:
-  - xsoar
-  - xpanse
-  supportedModules:
-  - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
   defaultvalue: 60
   display: Assets Fetch Interval
@@ -394,6 +399,18 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: 'Trust any certificate (not secure)'
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: 'Use system proxy settings'
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -5317,10 +5334,10 @@ script:
     description: Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
     name: cs-falcon-workflow-execution-action
     outputs: []
-  dockerimage: demisto/py3-tools:1.0.0.7436613
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   isfetch: true
   isfetch:marketplacev2: false
-  isfetch:platform: false
+  isfetch:platform: true
   isfetchevents: true
   isfetchassets: true
   ismappable: true
