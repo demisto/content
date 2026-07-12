@@ -124,11 +124,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
         "azure-storage-blob-enable-soft-delete-quick-action",
+        "azure-storage-blob-service-property-get",
+        "azure-storage-blob-service-property-set",
+        "azure-storage-blob-soft-deletion-enable-quick-action",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
         "azure-storage-blob-enable-soft-delete-quick-action",
+        "azure-storage-blob-service-property-set",
+        "azure-storage-blob-soft-deletion-enable-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
@@ -545,6 +550,11 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-acr-disable-public-private-access-quick-action": "Azure.ACR",
     "azure-acr-disable-authentication-as-arm-quick-action": "Azure.ACR",
     "azure-acr-disable-anonymous-pull-quick-action": "Azure.ACR",
+    "azure-storage-blob-service-properties-get": "Azure.StorageBlobServiceProperties",
+    "azure-storage-blob-service-property-get": "Azure.Storage.BlobServices",
+    "azure-storage-blob-service-properties-set": "Azure.StorageAccountBlobServiceProperties",
+    "azure-storage-blob-service-property-set": "Azure.Storage.BlobServices",
+    "azure-storage-blob-enable-soft-delete-quick-action": "Azure.StorageAccountBlobServiceProperties",
 }
 
 
@@ -3036,7 +3046,7 @@ def storage_account_update_command(client: AzureClient, params: dict, args: dict
     }
 
     return CommandResults(
-        outputs_prefix="Azure.StorageAccount",
+        outputs_prefix="Azure.Storage.StorageAccounts",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -3070,26 +3080,27 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    # subscription_id = args.get("subscription_id")
-    # resource_group_name = args.get("resource_group_name")
-    delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled")
-    delete_rentention_policy_days = args.get("delete_rentention_policy_days")
+    delete_retention_policy_enabled = args.get("delete_retention_policy_enabled", args.get("delete_rentention_policy_enabled"))
+    delete_retention_policy_days = args.get("delete_retention_policy_days", args.get("delete_rentention_policy_days"))
     account_name = args.get("account_name", "")
 
     response = client.storage_blob_service_properties_set_request(
-        subscription_id, resource_group_name, account_name, delete_rentention_policy_enabled, delete_rentention_policy_days
+        subscription_id, resource_group_name, account_name, delete_retention_policy_enabled, delete_retention_policy_days
     )
 
     readable_output = {
         "Name": response.get("name"),
         "ID": response.get("id"),
         "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy")
-        if args.get("delete_rentention_policy_enabled") or args.get("delete_rentention_policy_days")
+        if delete_retention_policy_enabled is not None or delete_retention_policy_days is not None
         else None,
     }
 
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.BlobServices")
+
     return CommandResults(
-        outputs_prefix="Azure.StorageAccountBlobServiceProperties",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -3175,8 +3186,11 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
     }
 
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Storage.BlobServices")
+
     return CommandResults(
-        outputs_prefix="Azure.StorageBlobServiceProperties",
+        outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -3215,7 +3229,7 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
     outputs = {}
 
-    outputs["name"] = container_name
+    outputs["ContainerName"] = container_name
     outputs["Property"] = raw_response
 
     readable_output = tableToMarkdown(
@@ -3227,8 +3241,8 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.StorageContainer",
-        outputs_key_field="name",
+        outputs_prefix="Azure.Storage.Container",
+        outputs_key_field="ContainerName",
         outputs=outputs,
         raw_response=raw_response,
     )
@@ -3622,11 +3636,11 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.PolicyAssignment",
+        outputs_prefix="Azure.Policy.PolicyAssignments",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -3809,11 +3823,11 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.LogProfile",
+        outputs_prefix="Azure.Monitor.LogProfiles",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
-        raw_response=outputs,
+        raw_response=response,
     )
 
 
@@ -5490,7 +5504,9 @@ def main():  # pragma: no cover
             "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+            "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
+            "azure-storage-blob-service-property-get": storage_blob_service_properties_get_command,
             "azure-storage-blob-containers-update": storage_blob_containers_update_command,
             "azure-storage-blob-container-update": storage_blob_containers_update_command,
             "azure-storage-container-property-get": storage_container_property_get_command,
@@ -5588,6 +5604,7 @@ def main():  # pragma: no cover
             "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
             "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+            "azure-storage-blob-soft-deletion-enable-quick-action": storage_blob_service_properties_set_command,
             "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
             "azure-disable-public-n-private-access-vm-disk-quick-action": disk_update_command,
             "azure-disk-set-data-access-ad-quick-action": disk_update_command,
