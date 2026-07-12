@@ -24,9 +24,22 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
+# OCSF status_id values (https://schema.ocsf.io). 1=New, 2=In Progress, 3=Suppressed, 4=Resolved.
+OCSF_STATUS_ID_NEW = 1
+OCSF_STATUS_ID_IN_PROGRESS = 2
+OCSF_STATUS_ID_SUPPRESSED = 3
 # OCSF status_id representing a resolved finding, applied on outgoing mirroring when 'resolve_finding' is enabled
-# and the XSOAR incident is closed. OCSF status_id: 1=New, 2=In Progress, 3=Suppressed, 4=Resolved.
+# and the XSOAR incident is closed.
 OCSF_STATUS_ID_RESOLVED = 4
+# When a finding reaches one of these OCSF statuses in AWS, the mirrored-in XSOAR incident is closed
+# (full lifecycle sync). Each maps to the XSOAR close reason recorded on the incident.
+OCSF_STATUS_ID_TO_CLOSE_REASON = {
+    OCSF_STATUS_ID_RESOLVED: "Resolved",
+    OCSF_STATUS_ID_SUPPRESSED: "Other",  # Suppressed has no dedicated XSOAR close reason; use "Other".
+}
+# OCSF statuses that represent an OPEN finding; if a closed XSOAR incident's finding returns to one of
+# these, the incident is reopened on mirror-in.
+OCSF_OPEN_STATUS_IDS = {OCSF_STATUS_ID_NEW, OCSF_STATUS_ID_IN_PROGRESS}
 # Delta keys (incident fields, as produced by the outgoing mapper) that are mirrored out to AWS Security Hub,
 # mapped to the corresponding ``batch_update_findings_v2`` kwarg. Only these fields are pushed remotely.
 OUTGOING_DELTA_TO_KWARG = {
@@ -46,6 +59,15 @@ OCSF_SEVERITY_ID_TO_XSOAR = {
     4: IncidentSeverity.HIGH,
     5: IncidentSeverity.CRITICAL,
     6: IncidentSeverity.CRITICAL,  # Fatal -> Critical (XSOAR has no higher severity)
+}
+# XSOAR incident severity -> OCSF severity_id, used to mirror OUT changes to the built-in "severity"
+# field. XSOAR Unknown (0) has no OCSF equivalent and is skipped by the caller.
+XSOAR_SEVERITY_TO_OCSF_ID = {
+    IncidentSeverity.INFO: 1,
+    IncidentSeverity.LOW: 2,
+    IncidentSeverity.MEDIUM: 3,
+    IncidentSeverity.HIGH: 4,
+    IncidentSeverity.CRITICAL: 5,
 }
 
 
@@ -724,6 +746,47 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
 
 
+def build_close_reopen_entries(finding: dict) -> list:
+    """Build the incoming-mirror entries that close or reopen the XSOAR incident based on AWS status.
+
+    Full lifecycle sync: an OCSF ``status_id`` of Resolved (4) or Suppressed (3) closes the XSOAR
+    incident (``dbotIncidentClose``); an open status (New/In Progress) reopens it
+    (``dbotIncidentReopen``). Any other/unknown status yields no entry so the incident is left as-is.
+
+    Args:
+        finding (dict): The OCSF finding returned by AWS Security Hub V2.
+
+    Returns:
+        list: A single-element entry list instructing the server to close/reopen, or an empty list.
+    """
+    status_id = finding.get("status_id")
+    if status_id is None:
+        return []
+    close_reason = OCSF_STATUS_ID_TO_CLOSE_REASON.get(status_id)
+    if close_reason:
+        finding_status = finding.get("status") or close_reason
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": close_reason,
+                    "closeNotes": f"Closed by mirroring: AWS Security Hub finding status is '{finding_status}'.",
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+    if status_id in OCSF_OPEN_STATUS_IDS:
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+    return []
+
+
 def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResponse:
     """Fetch the current state of a single mirrored finding and return it for incoming mirroring.
 
@@ -785,32 +848,25 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         return GetRemoteDataResponse(mirrored_object={}, entries=[])
 
     finding = findings[0]
-    # Normalize the top-level severity_id to the effective (analyst-overridden) value. AWS stores
-    # overrides under vendor_attributes.severity_id while leaving the top-level severity_id at the
-    # original value, so an analyst's console change only appears in vendor_attributes.
-    original_severity_id = finding.get("severity_id")
-    severity_id = effective_severity_id(finding)
-    finding["severity_id"] = severity_id
     # Attach the ready-to-use XSOAR severity number directly on the object so the incoming mapper can
-    # map it 1:1 (simple mapping, no transformer). This removes the transformer / field-shape as a
-    # point of failure for severity mirror-in.
+    # map it 1:1 (simple mapping, no transformer). effective_severity_id prefers the top-level
+    # severity_id (the value shown in the AWS console / that reflects an analyst change) and falls
+    # back to vendor_attributes.severity_id. The server diffs this against the incident and applies it.
+    severity_id = effective_severity_id(finding)
     finding["xsoar_severity"] = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
-    # Full dump of the object handed to the server (this is what the incoming mapper reads and the
-    # server diffs against the incident). Compare these values with the incident's current fields to
-    # find any mapper root/field mismatch.
-    demisto.debug(
-        "[AWS_Security_Hub_V2] Mirror-in: MAPPER-INPUT (full mirrored_object handed to server): "
-        f"{json.dumps(finding, default=str)}"
-    )
+
+    # Full lifecycle sync: when the finding is Resolved/Suppressed in AWS, close the XSOAR incident;
+    # when it returns to an open status, reopen it. The close/reopen instruction is delivered as an
+    # entry (dbotIncidentClose / dbotIncidentReopen), which is the standard XSOAR mirroring mechanism.
+    entries = build_close_reopen_entries(finding)
+
     demisto.debug(
         f"[AWS_Security_Hub_V2] Mirror-in: returning current finding uid={finding_uid} "
-        f"(effective severity_id={severity_id}, xsoar_severity={finding['xsoar_severity']}, "
-        f"original top-level={original_severity_id}, "
-        f"vendor_attributes={(finding.get('vendor_attributes') or {}).get('severity_id')}, "
-        f"status_id={finding.get('status_id')}); "
-        "the XSOAR server will diff it against the incident. ===== get-remote-data END ====="
+        f"(severity_id={severity_id} -> xsoar_severity={finding['xsoar_severity']}, "
+        f"status_id={finding.get('status_id')}, close/reopen entries={len(entries)}). "
+        "===== get-remote-data END ====="
     )
-    return GetRemoteDataResponse(mirrored_object=finding, entries=[])
+    return GetRemoteDataResponse(mirrored_object=finding, entries=entries)
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
@@ -871,6 +927,20 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
                 value = delta[delta_key]
                 # severity_id and status_id are numeric in the API.
                 kwargs[api_key] = arg_to_number(value) if api_key in ("SeverityId", "StatusId") else value
+
+        # Changing the built-in XSOAR "severity" field surfaces a "severity" delta key (an XSOAR
+        # severity number). Translate it to the OCSF SeverityId so editing the incident severity
+        # mirrors out. An explicit "severityid" delta (handled above) takes precedence if both exist.
+        if "SeverityId" not in kwargs and delta.get("severity") not in (None, ""):
+            xsoar_severity = arg_to_number(delta["severity"])
+            ocsf_severity_id = XSOAR_SEVERITY_TO_OCSF_ID.get(xsoar_severity)
+            if ocsf_severity_id:
+                kwargs["SeverityId"] = ocsf_severity_id
+            else:
+                demisto.debug(
+                    f"[AWS_Security_Hub_V2] Mirror-out: XSOAR severity={delta['severity']} has no OCSF "
+                    "equivalent (e.g. Unknown); not mirroring severity."
+                )
 
     # If configured, closing the incident in XSOAR resolves the finding in AWS (overrides any delta status).
     if resolve_finding and parsed_args.inc_status == IncidentStatus.DONE:

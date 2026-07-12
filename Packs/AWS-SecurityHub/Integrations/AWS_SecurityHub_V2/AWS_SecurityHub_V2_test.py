@@ -1,8 +1,10 @@
 import demistomock as demisto
 import pytest
 from AWS_SecurityHub_V2 import (
+    build_close_reopen_entries,
     build_fetch_filters,
     disable_security_hub_command,
+    effective_severity_id,
     enable_security_hub_command,
     fetch_incidents,
     findings_batch_update_command,
@@ -769,18 +771,46 @@ def test_get_remote_data_command_returns_finding(mocker):
     """
     Given: A client returning a single finding for the requested uid.
     When: get_remote_data_command is called.
-    Then: It fetches by metadata.uid and returns the finding as the mirrored object.
+    Then: It fetches by metadata.uid and returns the finding as the mirrored object, enriched with a
+          ready-to-use xsoar_severity computed from the effective severity_id.
     """
+    from AWS_SecurityHub_V2 import IncidentSeverity
+
     mock_client = mocker.Mock()
-    finding = {"metadata": {"uid": "uid-1"}, "status_id": 4}
+    finding = {"metadata": {"uid": "uid-1"}, "status_id": 4, "severity_id": 3}
     mock_client.get_findings_v2.return_value = {"Findings": [finding]}
 
     result = get_remote_data_command(mock_client, {"id": "uid-1", "lastUpdate": "2024-01-01T00:00:00Z"})
 
-    assert result.mirrored_object == finding
+    # severity_id 3 (OCSF Medium) -> XSOAR Medium, injected as xsoar_severity for the mapper.
+    assert result.mirrored_object["xsoar_severity"] == IncidentSeverity.MEDIUM
+    assert result.mirrored_object["metadata"]["uid"] == "uid-1"
     string_filter = mock_client.get_findings_v2.call_args[1]["Filters"]["CompositeFilters"][0]["StringFilters"][0]
     assert string_filter["FieldName"] == "metadata.uid"
     assert string_filter["Filter"]["Value"] == "uid-1"
+
+
+def test_get_remote_data_command_uses_top_level_severity_over_vendor(mocker):
+    """
+    Given: A finding whose top-level severity_id (Medium) differs from vendor_attributes.severity_id (Low).
+    When: get_remote_data_command is called.
+    Then: xsoar_severity reflects the top-level value (the AWS console / effective severity), not the
+          vendor_attributes fallback.
+    """
+    from AWS_SecurityHub_V2 import IncidentSeverity
+
+    mock_client = mocker.Mock()
+    finding = {
+        "metadata": {"uid": "uid-1"},
+        "status_id": 1,
+        "severity_id": 3,  # top-level Medium (what the console shows)
+        "vendor_attributes": {"severity_id": 2},  # original Low
+    }
+    mock_client.get_findings_v2.return_value = {"Findings": [finding]}
+
+    result = get_remote_data_command(mock_client, {"id": "uid-1", "lastUpdate": "2024-01-01T00:00:00Z"})
+
+    assert result.mirrored_object["xsoar_severity"] == IncidentSeverity.MEDIUM
 
 
 def test_get_remote_data_command_no_finding(mocker):
@@ -795,6 +825,35 @@ def test_get_remote_data_command_no_finding(mocker):
     result = get_remote_data_command(mock_client, {"id": "missing", "lastUpdate": "2024-01-01T00:00:00Z"})
 
     assert result.mirrored_object == {}
+
+
+def test_effective_severity_id_prefers_top_level():
+    """
+    Given: A finding with a top-level severity_id and a different vendor_attributes.severity_id.
+    When: effective_severity_id is called.
+    Then: The top-level severity_id (the console value) is returned.
+    """
+    finding = {"severity_id": 3, "vendor_attributes": {"severity_id": 2}}
+    assert effective_severity_id(finding) == 3
+
+
+def test_effective_severity_id_falls_back_to_vendor_attributes():
+    """
+    Given: A finding with no top-level severity_id but a vendor_attributes.severity_id.
+    When: effective_severity_id is called.
+    Then: The vendor_attributes value is returned as a fallback.
+    """
+    finding = {"vendor_attributes": {"severity_id": 4}}
+    assert effective_severity_id(finding) == 4
+
+
+def test_effective_severity_id_defaults_to_zero_when_absent():
+    """
+    Given: A finding with no severity information at all.
+    When: effective_severity_id is called.
+    Then: It returns 0 (OCSF Unknown).
+    """
+    assert effective_severity_id({}) == 0
 
 
 def _update_remote_args(delta, remote_id="uid-1", incident_changed=True, status=IncidentStatus.ACTIVE):
@@ -875,6 +934,53 @@ def test_update_remote_system_resolves_on_close(mocker):
     assert call_kwargs["StatusId"] == 4
 
 
+def test_update_remote_system_mirrors_builtin_severity(mocker):
+    """
+    Given: An incident whose built-in XSOAR "severity" field changed (delta key "severity" = 2 = Medium).
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 is called with the translated OCSF SeverityId (3 = Medium).
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"severity": 2})
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["SeverityId"] == 3
+
+
+def test_update_remote_system_severityid_takes_precedence_over_builtin_severity(mocker):
+    """
+    Given: An incident whose delta has both the custom "severityid" and the built-in "severity" fields.
+    When: update_remote_system_command is called.
+    Then: The explicit "severityid" wins and the built-in "severity" is ignored.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"severityid": "5", "severity": 2})
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["SeverityId"] == 5
+
+
+def test_update_remote_system_skips_unmappable_builtin_severity(mocker):
+    """
+    Given: An incident whose built-in "severity" changed to 0 (Unknown), which has no OCSF equivalent.
+    When: update_remote_system_command is called.
+    Then: No SeverityId is sent and batch_update_findings_v2 is not called (no other mirrorable changes).
+    """
+    mock_client = mocker.Mock()
+
+    args = _update_remote_args({"severity": 0})
+    result = update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    assert result == "uid-1"
+    mock_client.batch_update_findings_v2.assert_not_called()
+
+
 def test_get_mapping_fields_command():
     """
     Given: The outgoing mapping schema request.
@@ -889,3 +995,44 @@ def test_get_mapping_fields_command():
     assert "severityid" in finding_fields
     assert "statusid" in finding_fields
     assert "comment" in finding_fields
+
+
+@pytest.mark.parametrize(
+    "status_id,expected_reason",
+    [(4, "Resolved"), (3, "Other")],
+)
+def test_build_close_reopen_entries_closes_on_resolved_or_suppressed(status_id, expected_reason):
+    """
+    Given: A finding whose OCSF status_id is Resolved (4) or Suppressed (3).
+    When: build_close_reopen_entries is called.
+    Then: A single dbotIncidentClose entry with the mapped close reason is returned.
+    """
+    entries = build_close_reopen_entries({"status_id": status_id, "status": "Resolved"})
+
+    assert len(entries) == 1
+    contents = entries[0]["Contents"]
+    assert contents["dbotIncidentClose"] is True
+    assert contents["closeReason"] == expected_reason
+
+
+@pytest.mark.parametrize("status_id", [1, 2])
+def test_build_close_reopen_entries_reopens_on_open_status(status_id):
+    """
+    Given: A finding whose OCSF status_id is New (1) or In Progress (2).
+    When: build_close_reopen_entries is called.
+    Then: A single dbotIncidentReopen entry is returned.
+    """
+    entries = build_close_reopen_entries({"status_id": status_id})
+
+    assert len(entries) == 1
+    assert entries[0]["Contents"] == {"dbotIncidentReopen": True}
+
+
+@pytest.mark.parametrize("finding", [{}, {"status_id": 0}, {"status_id": 99}])
+def test_build_close_reopen_entries_no_action_for_other_status(finding):
+    """
+    Given: A finding with a missing or non-actionable OCSF status_id.
+    When: build_close_reopen_entries is called.
+    Then: No entries are returned (the incident is left untouched).
+    """
+    assert build_close_reopen_entries(finding) == []

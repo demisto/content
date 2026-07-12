@@ -1,0 +1,91 @@
+{
+    "description": "Maps OCSF-formatted AWS Security Hub V2 findings to Cortex XSOAR incident fields for incoming mirroring.",
+    "feed": false,
+    "id": "AWS Security Hub v2 - Incoming Mapper",
+    "mapping": {
+        "AWS Security Hub Finding": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Account ID": {
+                    "simple": "cloud.account.uid"
+                },
+                "Alert ID": {
+                    "simple": "metadata.uid"
+                },
+                "AWS Security Hub Compliance": {
+                    "simple": "compliance"
+                },
+                "AWS Security Hub Company Name": {
+                    "simple": "metadata.product.vendor_name"
+                },
+                "AWS Security Hub Product Arn": {
+                    "simple": "metadata.product.uid"
+                },
+                "AWS Security Hub Product Name": {
+                    "simple": "metadata.product.name"
+                },
+                "AWS Security Hub Provider Updated At": {
+                    "simple": "finding_info.modified_time_dt"
+                },
+                "AWS Security Hub Record State": {
+                    "simple": "status"
+                },
+                "AWS Security Hub Remediation": {
+                    "simple": "remediation"
+                },
+                "AWS Security Hub Resources": {
+                    "simple": "resources"
+                },
+                "AWS Security Hub Severity": {
+                    "simple": "severity"
+                },
+                "AWS Security Hub Types": {
+                    "simple": "finding_info.types"
+                },
+                "AWS Security Hub Workflow Status": {
+                    "simple": "status"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Description": {
+                    "simple": "finding_info.desc"
+                },
+                "Detection Update Time": {
+                    "simple": "finding_info.last_seen_time_dt"
+                },
+                "External Start Time": {
+                    "simple": "finding_info.first_seen_time_dt"
+                },
+                "Last Update Time": {
+                    "simple": "finding_info.modified_time_dt"
+                },
+                "Region": {
+                    "simple": "cloud.region"
+                },
+                "Title": {
+                    "simple": "finding_info.title"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "metadata.uid"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "occurred": {
+                    "simple": "finding_info.created_time_dt"
+                },
+                "severity": {
+                    "simple": "xsoar_severity"
+                }
+            }
+        }
+    },
+    "name": "AWS Security Hub v2 - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
