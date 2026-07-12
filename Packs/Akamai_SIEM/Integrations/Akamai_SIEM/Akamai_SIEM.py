@@ -1462,9 +1462,10 @@ def main():  # pragma: no cover
                     f"lowering page_size to {FETCH_EVENTS_MAX_PAGE_SIZE}."
                 )
                 page_size = FETCH_EVENTS_MAX_PAGE_SIZE
+            page_size = 10000  # TEMP TEST OVERRIDE (REMOVE — CIAC-17118): hardcode page_size to 10000 for speed comparison
             limit = int(params.get("fetchLimit", MAX_ALLOWED_FETCH_LIMIT))
             limit = 60000  # TEMP TEST OVERRIDE (REMOVE — CIAC-17118): hardcode fetch_limit to 60000 for client testing
-            demisto.debug(f"[Fetch Events] TEMP TEST BUILD: fetch_limit hardcoded to {limit}.")
+            demisto.debug(f"[Fetch Events] TEMP TEST BUILD: fetch_limit={limit}, page_size={page_size} (hardcoded).")
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.debug(
                     f"[Fetch Events] Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, "
