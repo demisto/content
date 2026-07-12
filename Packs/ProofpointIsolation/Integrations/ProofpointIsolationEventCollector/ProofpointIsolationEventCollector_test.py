@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MOCK_BASEURL = "https://example.com"
@@ -159,6 +160,31 @@ def test_no_more_events_after_second_call(mocker):
     mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=new_last_run)
     events, new_last_run = fetch_events(client, limit)
     assert len(events) == 1
+
+
+def test_fetch_events_no_events_advances_start_date(mocker):
+    """
+    Given: A mock Proofpoint client that returns no events and a last run with a start_date.
+    When: Fetching events.
+    Then: Ensure the start_date in the new last_run advances to the end date,
+     so the next fetch cycle does not re-query the same time window.
+    """
+    from ProofpointIsolationEventCollector import fetch_events
+
+    client = create_client()
+    mocker.patch("ProofpointIsolationEventCollector.Client.get_events", return_value={"data": []})
+
+    last_run_mock = {"start_date": "2025-01-01T00:00:00Z", "ids": []}
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=last_run_mock)
+
+    fixed_time = datetime(2025, 1, 2, 0, 0, 0)
+    mocker.patch("ProofpointIsolationEventCollector.get_current_time", return_value=fixed_time)
+
+    events, new_last_run = fetch_events(client, 10)
+
+    assert len(events) == 0
+    assert new_last_run["start_date"] == fixed_time.strftime(DATE_FORMAT)
+    assert new_last_run["ids"] == []
 
 
 def test_fetch_events(mocker):
