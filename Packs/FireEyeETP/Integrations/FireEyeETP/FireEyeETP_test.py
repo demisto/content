@@ -551,6 +551,80 @@ def test_get_alert_list_with_alert_id(mocker):
     assert result.outputs == alert_data
 
 
+@pytest.mark.parametrize(
+    "token_url_value, expected_url",
+    [
+        # Default commercial URL when no override is configured (TOKEN_URL stays as DEFAULT_TOKEN_URL)
+        (
+            "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token",
+            "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token",
+        ),
+        # GovCloud override — user provides base URL, code appends /iam/v1.0/token via urljoin
+        (
+            "https://iam.us.trellix-gov.com/iam/v1.0/token",
+            "https://iam.us.trellix-gov.com/iam/v1.0/token",
+        ),
+    ],
+)
+def test_fetch_oauth_token_uses_configured_url(mocker, token_url_value, expected_url):
+    """
+    Given:
+        - A resolved TOKEN_URL (default commercial or GovCloud after urljoin).
+    When:
+        - Calling fetch_oauth_token.
+    Then:
+        - Ensure the OAuth token request is sent to the resolved URL.
+    """
+    mocker.patch("FireEyeETP.TOKEN_URL", token_url_value)
+    mocker.patch("FireEyeETP.CLIENT_ID", "test_id")
+    mocker.patch("FireEyeETP.CLIENT_SECRET", "test_secret")
+    mocker.patch("FireEyeETP.SCOPES", "etp.alrt.ro")
+    mocker.patch("FireEyeETP.USE_SSL", True)
+    mocker.patch("FireEyeETP.get_integration_context", return_value={})
+    mocker.patch("FireEyeETP.set_integration_context")
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"access_token": "test_token", "expires_in": 600}
+    mock_response.raise_for_status.return_value = None
+    mock_post = mocker.patch("FireEyeETP.requests.post", return_value=mock_response)
+
+    token = FireEyeETP.fetch_oauth_token()
+
+    assert token == "test_token"
+    mock_post.assert_called_once()
+    actual_url = mock_post.call_args[0][0]
+    assert actual_url == expected_url
+
+
+def test_token_url_resolution_with_override():
+    """
+    Given:
+        - A GovCloud base URL override.
+    When:
+        - TOKEN_URL is resolved using urljoin with TOKEN_URL_SUFFIX.
+    Then:
+        - Ensure the full token URL is correctly constructed.
+    """
+    from CommonServerPython import urljoin
+
+    base_url = "https://iam.us.trellix-gov.com"
+    suffix = FireEyeETP.TOKEN_URL_SUFFIX
+    resolved = urljoin(base_url, suffix)
+    assert resolved == "https://iam.us.trellix-gov.com/iam/v1.0/token"
+
+
+def test_token_url_resolution_without_override():
+    """
+    Given:
+        - No override is configured (empty string).
+    When:
+        - TOKEN_URL is resolved.
+    Then:
+        - Ensure the default commercial URL is used.
+    """
+    assert FireEyeETP.DEFAULT_TOKEN_URL == "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+
+
 def test_get_alert_list_without_alert_id(mocker):
     """
     Given:

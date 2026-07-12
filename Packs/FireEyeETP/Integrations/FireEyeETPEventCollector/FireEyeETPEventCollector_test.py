@@ -468,6 +468,63 @@ def test_validate_authentication_params(client_id, client_secret, api_key, scope
 
 
 @pytest.mark.parametrize(
+    "token_url_init, expected_url",
+    [
+        # Default URL when no override is configured (empty string -> DEFAULT_TOKEN_URL)
+        (
+            "",
+            "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token",
+        ),
+        # GovCloud override — user provides base URL, Client.__init__ uses urljoin to append suffix
+        (
+            "https://iam.us.trellix-gov.com",
+            "https://iam.us.trellix-gov.com/iam/v1.0/token",
+        ),
+    ],
+)
+def test_client_fetch_oauth_token_uses_configured_url(mocker, token_url_init, expected_url):
+    """
+    Given:
+        - A Client instance with a configured token_url (empty for default, or GovCloud base URL).
+    When:
+        - Calling _fetch_oauth_token on the Client.
+    Then:
+        - Ensure the OAuth token request is sent to the expected resolved URL.
+    """
+    mocker.patch.object(
+        FireEyeETPEventCollector.Client,
+        "__init__",
+        lambda self, *a, **kw: None,
+    )
+    from CommonServerPython import urljoin
+
+    client = FireEyeETPEventCollector.Client.__new__(FireEyeETPEventCollector.Client)
+    client.client_id = "test_id"
+    client.client_secret = "test_secret"
+    client.scope = "etp.alrt.ro"
+    client._verify = True
+    # Simulate the same logic as Client.__init__
+    client.token_url = (
+        urljoin(token_url_init, FireEyeETPEventCollector.TOKEN_URL_SUFFIX)
+        if token_url_init
+        else FireEyeETPEventCollector.DEFAULT_TOKEN_URL
+    )
+
+    mock_response = mocker.MagicMock()
+    mock_response.json.return_value = {"access_token": "test_token", "expires_in": 600}
+    mock_response.raise_for_status.return_value = None
+    mock_post = mocker.patch("requests.post", return_value=mock_response)
+    mocker.patch("FireEyeETPEventCollector.set_integration_context")
+
+    token = client._fetch_oauth_token()
+
+    assert token == "test_token"
+    mock_post.assert_called_once()
+    actual_url = mock_post.call_args[0][0]
+    assert actual_url == expected_url
+
+
+@pytest.mark.parametrize(
     "client_id, client_secret, api_key, expected_result, expected_exception",
     [
         # Case 1: SUCCESS - OAuth2 configuration
