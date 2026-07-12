@@ -556,7 +556,7 @@ script:
     - name: file_name
       description: The file name to download from the InterACT library.
       required: true
-  dockerimage: xsoar-registry.pan.dev/demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.9059085
   runonce: false
   subtype: python3
 fromversion: 6.10.0
