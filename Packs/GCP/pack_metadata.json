@@ -2,7 +2,7 @@
     "name": "GCP",
     "description": "Manage and secure your Google Cloud Platform (GCP) environment from Cortex. This pack lets you automate cloud operations across GCP services.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -29,6 +29,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "managed": true,
-    "source": "cooc"
+    "source": "cooc",
+    "managed": true
 }
