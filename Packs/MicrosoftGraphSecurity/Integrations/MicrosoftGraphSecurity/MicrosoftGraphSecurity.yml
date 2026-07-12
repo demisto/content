@@ -156,18 +156,12 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Max incidents per fetch
   name: fetch_limit
   type: 0
   section: Collect
   required: false
   defaultvalue: '10'
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Fetch incidents of the given service sources only.
   additionalinfo: Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
   name: fetch_service_sources

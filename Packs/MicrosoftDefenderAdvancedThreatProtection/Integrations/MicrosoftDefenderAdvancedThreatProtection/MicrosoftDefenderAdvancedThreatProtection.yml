@@ -184,9 +184,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   type: 0
