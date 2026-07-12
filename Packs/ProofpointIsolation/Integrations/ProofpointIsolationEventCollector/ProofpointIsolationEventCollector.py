@@ -201,6 +201,7 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
             demisto.debug(f"[Fetch] No more events found. Total: {len(output)}")
+            event_date = end
             break
 
         demisto.debug(f"[Fetch] Processing {len(events)} events.")
