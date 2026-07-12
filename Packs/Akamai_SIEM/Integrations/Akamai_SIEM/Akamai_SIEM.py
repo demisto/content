@@ -720,6 +720,7 @@ def fetch_events_command(
             )
             page_size = remaining_events_to_fetch
         demisto.debug(f"{log_prefix} Requesting events with {offset=}, {page_size=}, {fetch_limit=}.")
+        _fetch_t0 = time.time()  # MEM DIAG (REMOVE — CIAC-17118): time the Akamai API request
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
@@ -739,11 +740,13 @@ def fetch_events_command(
             else:
                 raise DemistoException(e)
 
+        _fetch_secs = time.time() - _fetch_t0  # MEM DIAG (REMOVE — CIAC-17118)
         if not events:
-            demisto.debug(f"{log_prefix} Received no events, breaking.")
+            demisto.debug(f"{log_prefix} Received no events (fetch took {_fetch_secs:.2f}s), breaking.")
             break
         last_page_size = len(events)
-        demisto.debug(f"{log_prefix} Received {last_page_size} events, processing.")
+        demisto.debug(f"{log_prefix} Received {last_page_size} events in {_fetch_secs:.2f}s (Akamai API), processing.")
+        _decode_t0 = time.time()  # MEM DIAG (REMOVE — CIAC-17118): time the decode loop for this page
         if should_skip_decode_events:
             demisto.debug(f"{log_prefix} should_skip_decode_events is set, skipping events decode.")
         else:
@@ -778,9 +781,13 @@ def fetch_events_command(
                     demisto.debug(f"{log_prefix} Couldn't decode {event=}, reason: {e}")
                 finally:
                     events[index] = event
+        _decode_secs = time.time() - _decode_t0  # MEM DIAG (REMOVE — CIAC-17118)
         total_events_count += last_page_size
         execution_counter += 1
-        demisto.debug(f"{log_prefix} Yielding page of {last_page_size} events ({total_events_count=}).")
+        demisto.debug(
+            f"{log_prefix} Page timing: {last_page_size} events, fetch={_fetch_secs:.2f}s decode={_decode_secs:.2f}s "
+            f"({total_events_count=})."
+        )
         yield events, offset, total_events_count, auto_trigger_next_run
     yield [], offset, total_events_count, auto_trigger_next_run
 
@@ -1456,6 +1463,8 @@ def main():  # pragma: no cover
                 )
                 page_size = FETCH_EVENTS_MAX_PAGE_SIZE
             limit = int(params.get("fetchLimit", MAX_ALLOWED_FETCH_LIMIT))
+            limit = 60000  # TEMP TEST OVERRIDE (REMOVE — CIAC-17118): hardcode fetch_limit to 60000 for client testing
+            demisto.debug(f"[Fetch Events] TEMP TEST BUILD: fetch_limit hardcoded to {limit}.")
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.debug(
                     f"[Fetch Events] Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, "
@@ -1475,6 +1484,7 @@ def main():  # pragma: no cover
             page_counter = 0
             offset = total_events_count = 0  # ensure defined even if the generator yields nothing
             auto_trigger_next_run = False
+            _total_send_secs = 0.0  # MEM DIAG (REMOVE — CIAC-17118): total XSIAM send time across the cycle
             _mem_log(  # build stamp + start-of-cycle baseline (the floor before any data)
                 f"CYCLE_START build={_MEM_BUILD_STAMP}",
                 _MEM_T0,
@@ -1531,6 +1541,7 @@ def main():  # pragma: no cover
                         )
                         data_size = len(events)
                         should_fail = False
+                        _send_t0 = time.time()  # MEM DIAG (REMOVE — CIAC-17118): time the XSIAM send of this page
                         try:
                             send_events_to_xsiam(
                                 events,
@@ -1548,12 +1559,14 @@ def main():  # pragma: no cover
                             raise DemistoException(
                                 "Encountered an error while sending events to xsiam, will attempt to send all events again."
                             )
+                        _send_secs = time.time() - _send_t0  # MEM DIAG (REMOVE — CIAC-17118)
+                        _total_send_secs += _send_secs  # MEM DIAG (REMOVE — CIAC-17118): accumulate send time for the cycle
                         demisto.debug("Finished executing streaming send_events_to_xsiam.")
                         _mem_log(  # RAM right after the (streaming, free-as-you-go) send of this page completed
                             f"page_sent page={page_counter}",
                             _MEM_T0,
                             _mem_peak(),
-                            extra=f"sent_events={data_size} total_so_far={total_events_count}",
+                            extra=f"sent_events={data_size} total_so_far={total_events_count} send_secs={_send_secs:.2f}",
                         )
                         demisto.debug(
                             f"[Send Events] Done sending {data_size} events to xsiam. "
@@ -1573,13 +1586,21 @@ def main():  # pragma: no cover
                             extra=f"iter_end_rss={_iter_end_rss:.1f}MB freed_since_iter_start={_freed:+.1f}MB",
                         )
                         _prev_iter_baseline = _iter_end_rss  # update so the next iteration's drift/delta are correct
+            _cycle_secs = time.time() - _MEM_T0  # MEM DIAG (REMOVE — CIAC-17118)
+            _other_secs = _cycle_secs - _total_send_secs  # MEM DIAG (REMOVE — CIAC-17118): fetch+decode+overhead
+            demisto.debug(
+                f"[Fetch Events] Cycle complete: sent {total_events_count} total events to XSIAM across "
+                f"{page_counter} page(s) in {_cycle_secs:.2f}s (send={_total_send_secs:.2f}s, "
+                f"fetch+decode+overhead={_other_secs:.2f}s)."
+            )
             _mem_log(  # end-of-cycle summary: rss_peak + cgroup_peak are the headline before/after numbers
                 f"CYCLE_END build={_MEM_BUILD_STAMP}",
                 _MEM_T0,
                 _mem_peak(),
                 extra=(
                     f"total_events={total_events_count} pages={page_counter} "
-                    f"cycle_time={time.time() - _MEM_T0:.2f}s auto_trigger_next_run={auto_trigger_next_run}"
+                    f"cycle_time={_cycle_secs:.2f}s send_time={_total_send_secs:.2f}s "
+                    f"other_time={_other_secs:.2f}s auto_trigger_next_run={auto_trigger_next_run}"
                 ),
             )
             _MEM_SAMPLER = None
