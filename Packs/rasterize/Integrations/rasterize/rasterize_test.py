@@ -920,6 +920,133 @@ def test_handle_request_paused(mocker: MockerFixture):
     assert mock_fail_request.call_args[1]["errorReason"] == "Aborted"
 
 
+def test_handle_request_paused_continues_non_blocked_url(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - A paused request for a URL that does NOT match any blocked pattern.
+    When:
+        - Running the 'handle_request_paused' function.
+    Then:
+        - Verify that tab.Fetch.continueRequest is called with the correct requestId,
+          and tab.Fetch.failRequest is NOT called.
+        This is the defensive `else` branch that prevents non-blocked paused requests
+        from hanging forever (the bug that caused the 180s page load deadlock).
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    kwargs = {"requestId": "2", "request": {"url": "https://example.com/main.css"}}
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_continue_request = mocker.patch.object(mock_fetch, "continueRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    tab_event_handler.handle_request_paused(**kwargs)
+
+    mock_fail_request.assert_not_called()
+    assert mock_continue_request.call_args[1]["requestId"] == "2"
+
+
+def test_handle_request_paused_blocks_multiple_matching_urls(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - Multiple sequential paused requests for different URLs that all match the blocked pattern.
+    When:
+        - Running 'handle_request_paused' for each of them.
+    Then:
+        - Verify that tab.Fetch.failRequest is called for EVERY matching URL (not just the first).
+        This proves the pre-fix bug where `Fetch.disable()` was called after the first abort,
+        which caused subsequent matching URLs to silently slip through, is closed.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    blocked_requests = [
+        {"requestId": "10", "request": {"url": "https://cdnjs.cloudflare.com/lib/a.css"}},
+        {"requestId": "11", "request": {"url": "https://cdnjs.cloudflare.com/lib/b.js"}},
+        {"requestId": "12", "request": {"url": "https://cdnjs.cloudflare.com/lib/c.js"}},
+    ]
+    for kwargs in blocked_requests:
+        tab_event_handler.handle_request_paused(**kwargs)
+
+    assert mock_fail_request.call_count == 3
+    aborted_request_ids = [call.kwargs["requestId"] for call in mock_fail_request.call_args_list]
+    assert aborted_request_ids == ["10", "11", "12"]
+
+
+def test_tab_lifecycle_manager_enables_fetch_with_scoped_patterns(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS contains two patterns: 'cloudflare.com' and 'tracker.io'.
+    When:
+        - TabLifecycleManager.__enter__ is invoked (the proactive Fetch.enable code path).
+    Then:
+        - Verify tab.Fetch.enable is called with a `patterns` argument containing exactly
+          one entry per blocked URL, each using glob-equivalent substring matching and
+          targeting the 'Request' stage.
+        This proves the proactive scoped-pattern fix is in place, preventing the race
+        condition where the first blocked URL slipped through unblocked and the
+        deadlock where bare Fetch.enable() intercepted (and hung) every request.
+    """
+    blocked_urls = ["cloudflare.com", "tracker.io"]
+    mocker.patch("rasterize.BLOCKED_URLS", blocked_urls)
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    returned_tab = manager.__enter__()
+
+    assert returned_tab is mock_tab
+    mock_tab.Fetch.enable.assert_called_once()
+    call_kwargs = mock_tab.Fetch.enable.call_args.kwargs
+    assert "patterns" in call_kwargs
+    patterns = call_kwargs["patterns"]
+    assert len(patterns) == len(blocked_urls)
+    for pat, blocked in zip(patterns, blocked_urls):
+        assert pat["urlPattern"] == f"*{blocked}*"
+        assert pat["requestStage"] == "Request"
+
+
+def test_tab_lifecycle_manager_skips_fetch_enable_when_no_blocked_urls(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS is empty (the common case for users not using URL blocking).
+    When:
+        - TabLifecycleManager.__enter__ is invoked.
+    Then:
+        - Verify tab.Fetch.enable is NOT called, so the integration doesn't pay any
+          interception cost when no URLs are configured to be blocked.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", [])
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    manager.__enter__()
+
+    mock_tab.Fetch.enable.assert_not_called()
+
+
 def test_retry_loading(mocker: MockerFixture):
     """
     Test the retry_loading method of PychromeEventHandler
@@ -1549,3 +1676,249 @@ def test_rasterize_extract_command_string_error(mocker):
     assert len(results) == 1
     assert results[0].entry_type == EntryType.ERROR
     assert "Error rasterizing" in results[0].readable_output
+
+
+# region Memory Pressure Monitoring tests
+
+
+def test_get_container_working_set_bytes_success(mocker):
+    """
+    Given: cgroup v2 memory.current and memory.stat files with valid values.
+    When: Calling get_container_working_set_bytes.
+    Then: It returns memory.current minus inactive_file.
+    """
+    from unittest.mock import mock_open
+
+    def fake_open(path, *args, **kwargs):
+        if path == "/sys/fs/cgroup/memory.current":
+            return mock_open(read_data="1000\n")()
+        if path == "/sys/fs/cgroup/memory.stat":
+            return mock_open(read_data="active_file 50\ninactive_file 300\nother 1\n")()
+        raise FileNotFoundError(path)
+
+    mocker.patch("builtins.open", side_effect=fake_open)
+    assert rasterize.get_container_working_set_bytes() == 700
+
+
+def test_get_container_working_set_bytes_unreadable(mocker):
+    """
+    Given: cgroup v2 files that cannot be read.
+    When: Calling get_container_working_set_bytes.
+    Then: It returns 0.
+    """
+    mocker.patch("builtins.open", side_effect=FileNotFoundError)
+    assert rasterize.get_container_working_set_bytes() == 0
+
+
+def test_get_container_available_memory_bytes_no_limit(mocker):
+    """
+    Given: cgroup memory.max set to "max" (no hard limit).
+    When: Calling get_container_available_memory_bytes.
+    Then: It returns -1.
+    """
+    from unittest.mock import mock_open
+
+    mocker.patch("builtins.open", mock_open(read_data="max\n"))
+    assert rasterize.get_container_available_memory_bytes() == -1
+
+
+def test_get_container_available_memory_bytes_with_limit(mocker):
+    """
+    Given: A hard memory limit and a known working set.
+    When: Calling get_container_available_memory_bytes.
+    Then: It returns max(0, mem_max - working_set).
+    """
+    from unittest.mock import mock_open
+
+    mocker.patch("builtins.open", mock_open(read_data="1000\n"))
+    mocker.patch.object(rasterize, "get_container_working_set_bytes", return_value=300)
+    assert rasterize.get_container_available_memory_bytes() == 700
+
+
+def test_get_container_available_memory_bytes_unreadable(mocker):
+    """
+    Given: cgroup memory.max that cannot be read.
+    When: Calling get_container_available_memory_bytes.
+    Then: It returns 0.
+    """
+    mocker.patch("builtins.open", side_effect=FileNotFoundError)
+    assert rasterize.get_container_available_memory_bytes() == 0
+
+
+# endregion
+
+
+# region CDP / freeze tests
+
+
+def test_safe_call_cdp_with_args_none_tab():
+    """
+    Given: A None tab.
+    When: Calling _safe_call_cdp_with_args.
+    Then: It is a no-op and does not raise.
+    """
+    rasterize._safe_call_cdp_with_args(None, "Page.stopLoading", "tab_id", "path")
+
+
+def test_safe_call_cdp_with_args_invokes_method(mocker):
+    """
+    Given: A tab with a nested CDP method.
+    When: Calling _safe_call_cdp_with_args with kwargs.
+    Then: The resolved method is invoked with the forwarded kwargs.
+    """
+    tab = mocker.MagicMock()
+    rasterize._safe_call_cdp_with_args(tab, "Network.emulateNetworkConditions", "tab_id", "path", offline=True)
+    tab.Network.emulateNetworkConditions.assert_called_once_with(offline=True)
+
+
+def test_safe_call_cdp_with_args_swallows_exception(mocker):
+    """
+    Given: A CDP method that raises.
+    When: Calling _safe_call_cdp_with_args.
+    Then: The exception is swallowed and not propagated.
+    """
+    tab = mocker.MagicMock()
+    tab.Page.stopLoading.side_effect = Exception("disconnected")
+    # Should not raise
+    rasterize._safe_call_cdp_with_args(tab, "Page.stopLoading", "tab_id", "path")
+
+
+def test_freeze_tab_for_screenshot_none_tab():
+    """
+    Given: A None tab.
+    When: Calling _freeze_tab_for_screenshot.
+    Then: It is a no-op and does not raise.
+    """
+    rasterize._freeze_tab_for_screenshot(None, "tab_id", "path")
+
+
+def test_freeze_tab_for_screenshot_invokes_cdp_sequence(mocker):
+    """
+    Given: A valid tab.
+    When: Calling _freeze_tab_for_screenshot.
+    Then: The full freeze CDP sequence is invoked via the safe helper.
+    """
+    safe_call = mocker.patch.object(rasterize, "_safe_call_cdp_with_args")
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=1024 * 1024)
+    tab = mocker.MagicMock()
+
+    rasterize._freeze_tab_for_screenshot(tab, "tab_id", "path")
+
+    called_methods = [call.kwargs["method_path"] for call in safe_call.call_args_list]
+    for expected in [
+        "Network.enable",
+        "Network.emulateNetworkConditions",
+        "Fetch.enable",
+        "Page.stopLoading",
+        "Emulation.setScriptExecutionDisabled",
+        "Page.setWebLifecycleState",
+        "HeapProfiler.collectGarbage",
+        "Memory.forciblyPurgeJavaScriptMemory",
+        "Network.clearBrowserCache",
+    ]:
+        assert expected in called_methods
+
+
+# endregion
+
+
+# region wait_for_page_load_with_memory_guard tests
+
+
+def test_wait_for_page_load_no_cgroup_limit(mocker):
+    """
+    Given: No cgroup memory limit (get_container_available_memory_bytes returns -1).
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: It performs a single blocking wait and returns True.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=-1)
+    event = threading.Event()
+    event.set()
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=1, tab_id="tab_id", path="path", tab=mocker.MagicMock()
+    )
+
+    assert result is True
+    # In the no-limit fast path the tab is not frozen.
+    freeze.assert_not_called()
+
+
+def test_wait_for_page_load_normal_completion(mocker):
+    """
+    Given: A cgroup limit exists and the page finishes loading (event already set).
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: It freezes the tab and returns True.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab
+    )
+
+    assert result is True
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+def test_wait_for_page_load_memory_pressure(mocker):
+    """
+    Given: A cgroup limit exists, the page does not finish loading, and available memory
+           drops below the tolerance.
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: It freezes the tab, sets the event and returns False (aborted early).
+    """
+    # First call (initial -1 check) returns a positive value; subsequent samples are below tolerance.
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    mocker.patch.object(rasterize.time, "sleep")  # avoid the 30s diagnostic sleep
+    event = threading.Event()  # never set
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event,
+        navigation_timeout=5,
+        tolerance_bytes=650 * 1024 * 1024,
+        poll_interval=0.01,
+        tab_id="tab_id",
+        path="path",
+        tab=tab,
+    )
+
+    assert result is False
+    assert event.is_set()
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+def test_wait_for_page_load_timeout(mocker):
+    """
+    Given: A cgroup limit exists, the page never finishes loading, but memory stays
+           above the tolerance until the navigation timeout elapses.
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: It stops loading via CDP and returns True (caller handles the timeout warning).
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    safe_call = mocker.patch.object(rasterize, "_safe_call_cdp_with_args")
+    event = threading.Event()  # never set
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event,
+        navigation_timeout=0,
+        tolerance_bytes=1,
+        poll_interval=0.01,
+        tab_id="tab_id",
+        path="path",
+        tab=tab,
+    )
+
+    assert result is True
+    stopped = [call.kwargs["method_path"] for call in safe_call.call_args_list]
+    assert "Page.stopLoading" in stopped
+
+
+# endregion
