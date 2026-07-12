@@ -71,22 +71,24 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value.
+- additionalinfo: 'Deprecated. No longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
   defaultvalue: 1h
-  display: Cache Lock Timeout
+  display: Cache Lock Timeout (Deprecated)
   name: cache_lock_timeout
   type: 0
   section: Connect
   advanced: true
   required: false
-- additionalinfo: How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout.
+  hidden: true
+- additionalinfo: 'Deprecated. No longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
   defaultvalue: 1h
-  display: Cache Lock Age
+  display: Cache Lock Age (Deprecated)
   name: cache_lock_age
   type: 0
   section: Connect
   advanced: true
   required: false
+  hidden: true
 - additionalinfo: The TTL for 404 responses in the cache.
   defaultvalue: 1m
   display: Cache 404 TTL
@@ -485,13 +487,13 @@ tests:
 - EDL Performance Test
 fromversion: 5.5.0
 triggers:
-  - conditions:
-      - name: engine
-        operator: not_exists
-      - name: isEngineGroup
-        operator: not_exists
-    effects:
-      - name: longRunningPort
-        action:
-          hidden: true
-          required: false
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

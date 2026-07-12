@@ -223,16 +223,16 @@ class DemistoWSGIHandler(WSGIHandler):
                 else "write stopped before the app finished streaming"
             )
             detail = (
-                f"body_diff=\"app produced {app_bytes} body bytes but only {sent_bytes} "
+                f'body_diff="app produced {app_bytes} body bytes but only {sent_bytes} '
                 f"reached the socket; {missing} bytes ({pct:.1f}%) were not sent - "
-                f"likely {cause}\""
+                f'likely {cause}"'
             )
         else:
             extra = delta
             detail = (
-                f"body_diff=\"socket sent {sent_bytes} bytes, {extra} MORE than the "
+                f'body_diff="socket sent {sent_bytes} bytes, {extra} MORE than the '
                 f"{app_bytes} body bytes the app counted - extra bytes are likely "
-                f"response framing/headers or a double-write\""
+                f'response framing/headers or a double-write"'
             )
         return detail
 
@@ -309,7 +309,7 @@ class RequestLoggingMiddleware:
         demisto.info(
             f"wsgi request-start: rid={rid} seq={seq} received={received_iso} "
             f"nginx_wait={nginx_wait_str} "
-            f"client={remote_addr} method={method} uri=\"{full_path}\" {headers_str}"
+            f'client={remote_addr} method={method} uri="{full_path}" {headers_str}'
         )
 
         # Capture the response status/headers via a wrapped start_response.
@@ -368,9 +368,7 @@ class RequestLoggingMiddleware:
             elapsed = end_perf - start_perf
             time_to_headers = (timings["t_headers"] - t_app_start) if timings["t_headers"] else None
             ttfb = (timings["t_first_byte"] - start_perf) if timings["t_first_byte"] else None
-            stream_time = (
-                end_perf - timings["t_first_byte"] if timings["t_first_byte"] else None
-            )
+            stream_time = end_perf - timings["t_first_byte"] if timings["t_first_byte"] else None
 
             def _fmt(value):
                 return f"{value:.3f}s" if value is not None else "-"
@@ -666,6 +664,8 @@ server {
 
 """
 NGINX_MAX_POLLING_TRIES = 5
+
+
 def create_nginx_server_conf(file_path: str, port: int, params: dict):
     """Create nginx conf file
 
@@ -686,12 +686,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     timeout = _normalize_nginx_time(params.get("timeout"), default="3600", param_name="timeout")
     cache_refresh_rate = _normalize_nginx_time(params.get("cache_refresh_rate"), default=timeout, param_name="cache_refresh_rate")
 
-    # Ensure cache lock directives are at least as large as the upstream timeout. Otherwise, when an
-    # upstream request takes longer than the lock timeout/age, waiting clients bypass the cache lock
-    # and stampede the upstream (each waiter then produces an uncached response), defeating the purpose
-    # of `proxy_cache_lock on`. Defaults match `timeout`; explicit smaller values are bumped up.
-    cache_lock_timeout = _normalize_nginx_time(params.get("cache_lock_timeout"), default=timeout, param_name="cache_lock_timeout")
-    cache_lock_age = _normalize_nginx_time(params.get("cache_lock_age"), default=timeout, param_name="cache_lock_age")
     cache_404_ttl = _normalize_nginx_time(params.get("cache_404_ttl"), default="1m", param_name="cache_404_ttl")
     cache_default_ttl = _normalize_nginx_time(params.get("cache_default_ttl"), default="1m", param_name="cache_default_ttl")
 
@@ -702,16 +696,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     # the `keepalive_timeout` param is explicitly set.
     keepalive_timeout = _normalize_nginx_time(params.get("keepalive_timeout"), default="65", param_name="keepalive_timeout")
 
-    # Ensure cache_refresh_rate is at least as large as timeout, and apply the same anti-stampede
-    # floor to the cache lock directives. All values are now guaranteed to end in "s" (the helper
-    # always returns `<int>s`), so an O(1) integer compare on the prefix is safe.
+    # Ensure cache_refresh_rate is at least as large as timeout. All values are now guaranteed to
+    # end in "s" (the helper always returns `<int>s`), so an O(1) integer compare on the prefix is safe.
     timeout_seconds = int(timeout[:-1])
     if int(cache_refresh_rate[:-1]) < timeout_seconds:
         cache_refresh_rate = timeout
-    if int(cache_lock_timeout[:-1]) < timeout_seconds:
-        cache_lock_timeout = timeout
-    if int(cache_lock_age[:-1]) < timeout_seconds:
-        cache_lock_age = timeout
 
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
@@ -753,8 +742,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         proxy_set_range_header=proxy_set_range_header,
         timeout=timeout,
         cache_refresh_rate=cache_refresh_rate,
-        cache_lock_timeout=cache_lock_timeout,
-        cache_lock_age=cache_lock_age,
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
         keepalive_timeout=keepalive_timeout,
@@ -767,7 +754,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         "edl: nginx effective settings -> "
         f"listen_port={port} upstream_port={serverport} fetch_tier_port={fetchport} ssl={'on' if ssl else 'off'} "
         f"timeout={timeout} cache_refresh_rate={cache_refresh_rate} "
-        f"cache_lock_timeout={cache_lock_timeout} cache_lock_age={cache_lock_age} "
         f"cache_404_ttl={cache_404_ttl} cache_default_ttl={cache_default_ttl} "
         f"keepalive_timeout={keepalive_timeout} "
         f"extra_cache_keys=[{extra_cache_keys_str}]"
@@ -861,7 +847,6 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
     while True:
         gevent.sleep(60)
         nginx_log_process(nginx_process)
-
 
 
 def test_nginx_web_server(port: int, params: dict):
@@ -1086,8 +1071,6 @@ def get_params_port(params: dict = None) -> int:
     else:
         raise ValueError("Please provide a Listen Port.")
     return port
-
-
 
 
 def run_long_running(params: dict = None, is_test: bool = False):

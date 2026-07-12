@@ -379,7 +379,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     # attribute is not present.
     original_stdout_lock_timeout = getattr(demisto, "_stdout_lock_timeout", 60)
     try:
-        setattr(demisto, "_stdout_lock_timeout", 600)  # 10 minutes
+        demisto._stdout_lock_timeout = 600  # 10 minutes
         demisto.debug(
             f"Temporarily set demisto._stdout_lock_timeout to 600 seconds "
             f"(was {original_stdout_lock_timeout}) for the indicators iteration."
@@ -421,7 +421,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             if version.get("platform") == "x2" or is_demisto_version_ge("8") or version.get("platform") == "unified_platform":
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
     finally:
-        setattr(demisto, "_stdout_lock_timeout", original_stdout_lock_timeout)
+        demisto._stdout_lock_timeout = original_stdout_lock_timeout
         demisto.debug(f"Restored demisto._stdout_lock_timeout to {original_stdout_lock_timeout} seconds.")
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
