@@ -789,6 +789,7 @@ def format_user_results(user: dict):
             "email": user.get("profile", {}).get("email", ""),
             "real_name": user.get("profile", {}).get("real_name", ""),
             "display_name": user.get("profile", {}).get("display_name", ""),
+            "status_text": user.get("profile", {}).get("status_text", ""),
         },
     }
 
@@ -1205,15 +1206,16 @@ def mirror_investigation():
             "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
             " long running must be enabled."
         )
-    demisto.debug(f"SlackV3 integration: This is the arguments for the mirror-investigation command: {demisto.args()}")
-    mirror_type = demisto.args().get("type", "all")
-    auto_close = demisto.args().get("autoclose", "true")
-    mirror_direction = demisto.args().get("direction", "both")
-    mirror_to = demisto.args().get("mirrorTo", "group")
-    channel_name = demisto.args().get("channelName", "")
-    channel_topic = demisto.args().get("channelTopic", "")
-    kick_admin = argToBoolean(demisto.args().get("kickAdmin", "false"))
-    private = argToBoolean(demisto.args().get("private", "false"))
+    args = demisto.args()
+    demisto.debug(f"SlackV3 integration: This is the arguments for the mirror-investigation command: {args}")
+    mirror_type = args.get("type", "all")
+    auto_close = args.get("autoclose", "true")
+    mirror_direction = args.get("direction", "both")
+    mirror_to = args.get("mirrorTo", "group")
+    channel_name = args.get("channelName", "")
+    channel_topic = args.get("channelTopic", "")
+    kick_admin = argToBoolean(args.get("kickAdmin", "false"))
+    private = argToBoolean(args.get("private", "false"))
 
     investigation = demisto.investigation()
     demisto.debug(f"SlackV3 integration: This is the investigation - {investigation}")
@@ -1283,6 +1285,18 @@ def mirror_investigation():
     else:
         mirror = mirrors.pop(mirrors.index(current_mirror[0]))
         conversation_id = mirror["channel_id"]
+        # Special case (XSUP-70395): `type` is the only provided argument, combined as
+        # "<mirror_type>:<mirror_direction>" (e.g. "all:ToDemisto"). Split it and keep the other values
+        # from the existing mirror context instead of overriding them with defaults.
+        if len(args) == 1 and "type" in args and ":" in mirror_type:
+            mirror_type, mirror_direction = mirror_type.split(":", 1)
+            auto_close = mirror.get("auto_close")
+            mirror_to = mirror.get("mirror_to")
+            demisto.debug(
+                f"SlackV3 integration: 'type' was the only argument and contained a ':'. "
+                f"Split into mirror_type='{mirror_type}', mirror_direction='{mirror_direction}'. "
+                f"Kept auto_close={auto_close}, mirror_to={mirror_to} from the existing mirror context."
+            )
         if mirror_type:
             mirror["mirror_type"] = mirror_type
         if auto_close:
@@ -3198,12 +3212,13 @@ def get_user():
         "Name": profile.get("real_name_normalized") or profile.get("real_name"),
         "DisplayName": profile.get("display_name"),
         "Email": profile.get("email"),
+        "StatusText": profile.get("status_text"),
     }
 
     hr = tableToMarkdown(
         "Details for Slack user: " + user_input,
         result_user,
-        headers=["ID", "Username", "Name", "DisplayName", "Email"],
+        headers=["ID", "Username", "Name", "DisplayName", "Email", "StatusText"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
