@@ -2,6 +2,7 @@ name: GoogleDriveStandardConnector
 category: IT Services
 provider: Google
 display: Google Drive (Standard Connector)
+deprecated: true
 sectionorder:
 - Connect
 - Collect
@@ -3238,33 +3239,6 @@ script:
     - contextPath: GoogleDrive.File.parents
       description: The list of parent folder IDs.
       type: Unknown
-  - name: get-file-content
-    hidden: true
-    description: 'Retrieves a file from Google Drive by its URL and returns it in a generic unified format under the FileContent context key. For Google Workspace files (Docs, Sheets, Slides) the content is exported and returned in ''Content'' - text exports inline, binary exports (e.g. PDF) base64-encoded with ''Type'' suffixed by '';base64''. The command automatically extracts the file ID from the URL. The maximum supported file size is 5 MB.'
-    arguments:
-    - description: 'Max file size: 5 MB. The file must be shared with the logged-in user''s email.'
-      name: url
-      prettyname: The Google Drive file URL
-      required: true
-    outputs:
-    - contextPath: FileContent.Id
-      description: The unique identifier of the file.
-      type: String
-    - contextPath: FileContent.Title
-      description: The title of the file.
-      type: String
-    - contextPath: FileContent.Type
-      description: The MIME type of the returned content. For binary exports (e.g. PDF) the type is suffixed with ';base64' to indicate the 'Content' field is base64-encoded.
-      type: String
-    - contextPath: FileContent.Name
-      description: The name of the file.
-      type: String
-    - contextPath: FileContent.Content
-      description: The exported content. Text exports (csv / plain / svg) are inline; binary exports (e.g. PDF) are base64-encoded - decode using the ';base64' suffix on Type.
-      type: String
-    - contextPath: FileContent.Url
-      description: The original URL used to retrieve the file.
-      type: String
   dockerimage: demisto/googleapi-python3:1.0.0.8516410
   isfetch: true
   runonce: false
