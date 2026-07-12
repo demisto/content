@@ -445,7 +445,7 @@ class TestFetchActivity:
         assert "params" in called_kwargs
         assert called_kwargs["params"].get("sysparm_limit") == 40
         assert called_kwargs["params"].get("sysparm_offset") == 5
-        assert called_kwargs["params"].get("sysparm_query") == "sys_created_on>2025-01-01 00:00:00"
+        assert called_kwargs["params"].get("sysparm_query") == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
 
     @pytest.mark.parametrize(
         "log_type, expected_default_limit",
@@ -514,6 +514,31 @@ class TestFetchActivity:
         # 3. Verify that the 'sysparm_limit' in the 'params' dictionary matches the expected default.
         assert "params" in called_kwargs
         assert called_kwargs["params"].get("sysparm_limit") == 40
+
+    # ------------- Test Client.search_events ORDERBY (XSUP-71435) ------------- #
+    @pytest.mark.parametrize(
+        "log_type",
+        [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.CASE],
+    )
+    def test_search_events_standard_query_is_ordered_ascending(self, mocker, log_type):
+        """
+        Regression test for XSUP-71435.
+
+        Given:
+            - A standard log type (audit, syslog transactions, or case).
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - The sysparm_query orders by sys_created_on in ascending order so ServiceNow can
+              use the index instead of scanning the full table, preventing timeouts on large
+              instances. Ascending order also preserves the last_run/dedup contract.
+        """
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=log_type, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert called_kwargs["params"]["sysparm_query"] == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
 
     # ------------- Test Client._get_api_url --------------------- #
     @pytest.mark.parametrize(
@@ -1269,6 +1294,104 @@ def test_module_of_testing_success_and_failure(mocker):
 
     mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
     assert module_of_testing(client, [LogType.AUDIT]) == "ok"
+
+
+def test_module_of_testing_caps_and_restores_fetch_limits(mocker):
+    """
+    Test that module_of_testing runs the real fetch flow with the fetch limits temporarily
+    capped to a single record, and restores the original limits afterwards.
+
+    Given:
+        - A client configured with large per-log-type fetch limits.
+    When:
+        - module_of_testing is called.
+    Then:
+        - fetch_events_command is invoked while client.fetch_limits are all capped to 1.
+        - After the call, the original fetch_limits are restored.
+    """
+    original_limits = {
+        LogType.AUDIT: 10000,
+        LogType.SYSLOG_TRANSACTIONS: 10000,
+        LogType.CASE: 10000,
+        LogType.OUTBOUND_HTTP_LOG: 10000,
+    }
+    client = Client(
+        use_oauth=True,
+        username="test",
+        password="test",
+        client_id="id",
+        client_secret="secret",
+        server_url="https://example.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=10000,
+        fetch_limit_syslog=10000,
+        fetch_limit_case=10000,
+        fetch_limit_outbound_http=10000,
+    )
+    client.fetch_limits = dict(original_limits)
+
+    captured_limits = {}
+
+    def fake_fetch(passed_client, last_run, log_types):
+        # Capture the fetch limits in effect while the fetch runs.
+        captured_limits.update(passed_client.fetch_limits)
+        return [], {}
+
+    mocker.patch("ServiceNowEventCollector.fetch_events_command", side_effect=fake_fetch)
+
+    assert module_of_testing(client, [LogType.AUDIT]) == "ok"
+
+    # During the test-module run, every log type's limit must be capped to 1.
+    assert all(value == 1 for value in captured_limits.values())
+    # After the run, the original limits must be restored.
+    assert client.fetch_limits == original_limits
+
+
+def test_module_of_testing_restores_fetch_limits_on_failure(mocker):
+    """
+    Test that module_of_testing restores the original fetch limits even when the
+    underlying fetch raises an exception.
+
+    Given:
+        - A client configured with specific fetch limits.
+        - fetch_events_command raises an exception.
+    When:
+        - module_of_testing is called.
+    Then:
+        - The exception propagates.
+        - The original fetch_limits are restored (finally block).
+    """
+    original_limits = {
+        LogType.AUDIT: 500,
+        LogType.SYSLOG_TRANSACTIONS: 500,
+        LogType.CASE: 500,
+        LogType.OUTBOUND_HTTP_LOG: 500,
+    }
+    client = Client(
+        use_oauth=True,
+        username="test",
+        password="test",
+        client_id="id",
+        client_secret="secret",
+        server_url="https://example.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=500,
+        fetch_limit_syslog=500,
+        fetch_limit_case=500,
+        fetch_limit_outbound_http=500,
+    )
+    client.fetch_limits = dict(original_limits)
+
+    mocker.patch("ServiceNowEventCollector.fetch_events_command", side_effect=DemistoException("boom"))
+
+    with pytest.raises(DemistoException):
+        module_of_testing(client, [LogType.AUDIT])
+
+    assert client.fetch_limits == original_limits
 
 
 # ---------------- Test login_command ------------- #
