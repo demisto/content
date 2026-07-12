@@ -205,12 +205,14 @@ def test_fetch_events_ids_reset_when_no_more_events(mocker):
     When: Fetching events with a limit higher than the available event count (so the loop exhausts all events).
     Then: Ensure the returned last_run has an empty 'ids' list, confirming stale dedup IDs are cleared
           when the pagination loop ends with no more events.
+          Also ensure start_date advances to the end date so the next fetch cycle starts from the correct point.
     """
     from ProofpointIsolationEventCollector import fetch_events
 
     client = create_client()
     mocked_events = util_load_json("test_data/get_events_raw_response.json")
 
+    end_date = "2025-02-01T00:00:00Z"
     # First call returns events, second call returns empty — simulating end of pagination.
     mocker.patch(
         "ProofpointIsolationEventCollector.Client.get_events",
@@ -220,6 +222,10 @@ def test_fetch_events_ids_reset_when_no_more_events(mocker):
     stale_ids = ["https://stale.url/&staleUser@example.com"]
     last_run_mock = {"start_date": "2025-01-01T19:44:35Z", "ids": stale_ids}
     mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=last_run_mock)
+    mocker.patch(
+        "ProofpointIsolationEventCollector.get_current_time",
+        return_value=__import__("datetime").datetime.strptime(end_date, DATE_FORMAT),
+    )
 
     # Set limit higher than available events so the loop exhausts and hits the empty-response branch.
     limit = 100
@@ -229,3 +235,47 @@ def test_fetch_events_ids_reset_when_no_more_events(mocker):
     assert len(events) == len(mocked_events["data"])
     # The critical assertion: when no more events are found, ids must be reset to an empty list.
     assert new_last_run["ids"] == []
+    # Verify the cursor advanced to the end date so the next cycle doesn't re-fetch old events.
+    assert new_last_run["start_date"] == end_date
+
+
+def test_fetch_events_stops_at_limit(mocker):
+    """
+    Given: A mock Proofpoint client that returns more events than the fetch limit allows.
+    When: Fetching events with a limit smaller than the total available events.
+    Then:
+        - The loop exits via the limit branch (not the empty-response branch).
+        - Exactly fetch_limit events are returned.
+        - new_last_run is set so the next fetch cycle can continue from where it stopped.
+    """
+    from ProofpointIsolationEventCollector import fetch_events
+
+    client = create_client()
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
+    total_available = len(mocked_events["data"])  # 13 events
+
+    # The API keeps returning the same batch — the loop must stop at the limit, not keep going.
+    mocker.patch(
+        "ProofpointIsolationEventCollector.Client.get_events",
+        return_value=mocked_events,
+    )
+
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value={})
+    mocker.patch(
+        "ProofpointIsolationEventCollector.get_current_time",
+        return_value=__import__("datetime").datetime(2025, 2, 1, 0, 0, 0),
+    )
+
+    limit = 3
+    assert limit < total_available, "Test requires limit < total events to verify the limit branch"
+
+    events, new_last_run = fetch_events(client, limit)
+
+    # Exactly fetch_limit events should be returned.
+    assert len(events) == limit
+    # new_last_run must have a start_date so the next cycle continues from the correct point.
+    assert new_last_run["start_date"]
+    # new_last_run must have ids so the next cycle can deduplicate.
+    assert new_last_run["ids"]
+    # The start_date should NOT be the end date — it should be the date of the last processed event.
+    assert new_last_run["start_date"] != "2025-02-01T00:00:00Z"
