@@ -20689,7 +20689,6 @@ def test_create_rule_group_common_kwargs_invalid_json_argument():
     Then:
         - A DemistoException naming the offending argument should be raised.
     """
-    import pytest
     from AWS import create_rule_group_common_kwargs
     from CommonServerPython import DemistoException
 
@@ -20711,7 +20710,6 @@ def test_create_rule_group_common_kwargs_empty_args():
         - A DemistoException should be raised because neither 'rules' nor a RuleGroup content
           argument was supplied.
     """
-    import pytest
     from AWS import create_rule_group_common_kwargs
     from CommonServerPython import DemistoException
 
