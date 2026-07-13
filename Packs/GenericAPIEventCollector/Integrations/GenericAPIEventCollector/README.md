@@ -57,13 +57,13 @@ This is the default integration for this content pack when configured by the Dat
 You must specify the authentication method required by the server.
 The supported authentication types include:
 
-- Basic authentication (username and password)
-- Token-based authentication
-- Bearer token
-- Api-Key token
+- Basic Authentication (username and password)
+- Token Based Authentication (Token key)
+- Bearer Token (API key)
 - Raw Token (for custom token-based authentication)
-- OAuth 2.0 (Client Credentials and Authorization Code flows)
 - No Authorization (for publicly accessible data)
+- Api-Key (API key sent in a request header)
+- OAuth 2.0 (Client Credentials and Authorization Code flows)
 
 For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
 
