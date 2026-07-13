@@ -4,7 +4,7 @@ A dummy integration demonstrating a Client that inherits from `ContentClient`,
 indicator fetching, and a test-module connectivity check.
 All data returned is mocked locally.
 """
-
+import os
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -160,11 +160,11 @@ def main() -> None:
     command = demisto.command()
 
     base_url = params.get("url", "https://api.dummy-example.com")
-    credentials = params.get("credentials") or {}
+    credentials = params["credentials"]
     api_key = str(credentials.get("password", "")) if isinstance(credentials, dict) else ""
-    verify_certificate = not argToBoolean(params.get("insecure", False))
+    verify_certificate = not argToBoolean(params["insecure"])
     proxy = argToBoolean(params.get("proxy", False))
-    tlp_color = params.get("tlp_color")
+    tlp_color = params["tlp_color"]
     feed_reliability = params.get("feedReliability") or DBotScoreReliability.C
     indicators_limit = arg_to_number(params.get("max_indicator_fetch")) or DEFAULT_INDICATORS_LIMIT
 
@@ -180,6 +180,28 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-indicators":
+            path = args.get("path")
+            marketplace = args.get("marketplace")
+            entry_id = args.get("entry_id")
+
+            fp = open(os.path.join(path, "markdown.md"), "r")
+            fp.close()
+
+            VALID_MARKETPLACES = {"xsoar", "marketplacev2", "xpanse"}
+
+            if marketplace not in VALID_MARKETPLACES:
+                raise ValueError("Invalid marketplace.")  # <-- flag THIS raise line
+            demisto.info(marketplace)
+
+            get_file_path_res = demisto.getFilePath(entry_id)
+            file_path = get_file_path_res["path"]
+            file_name = get_file_path_res["name"]
+            with open(file_path, "rb") as fopen:
+                file_bytes = fopen.read()
+
+            demisto.info(file_bytes)
+
+
             indicators = fetch_indicators_command(client, tlp_color, feed_reliability, limit=indicators_limit)
             for indicator_batch in batch(indicators, batch_size=INDICATOR_BATCH_SIZE):
                 demisto.createIndicators(indicator_batch)

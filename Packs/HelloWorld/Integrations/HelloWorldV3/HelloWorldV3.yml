@@ -66,7 +66,16 @@ script:
   commands:
   - name: fetch-indicators
     description: Fetches indicators from the feed and creates them in Cortex.
-    arguments: []
+    arguments:
+    - name: path
+      description: The path to fetch indicators from.
+      required: false
+    - name: marketplace
+      description: The marketplace.
+      required: false
+    - name: entry_id
+      description: The file entry id.
+      required: false
     outputs: []
   dockerimage: demisto/fastapi:0.125.0.9094740
   feed: true
