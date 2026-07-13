@@ -15,13 +15,13 @@
                 "details": {
                     "simple": "description"
                 },
-                "devicesecurityincidenturl": {
+                "Device Security Incident URL": {
                     "simple": "devicesecurityincidenturl"
                 },
-                "devicesecurityservicenowtablename": {
+                "Device Security ServiceNow Table Name": {
                     "simple": "devicesecurityservicenowtablename"
                 },
-                "devicesecurityservicenowrecordid": {
+                "Device Security ServiceNow Record ID": {
                     "simple": "devicesecurityservicenowrecordid"
                 }
             }
@@ -38,13 +38,13 @@
                 "details": {
                     "simple": "vulnerability_name"
                 },
-                "devicesecurityincidenturl": {
+                "Device Security Incident URL": {
                     "simple": "devicesecurityincidenturl"
                 },
-                "devicesecurityservicenowtablename": {
+                "Device Security ServiceNow Table Name": {
                     "simple": "devicesecurityservicenowtablename"
                 },
-                "devicesecurityservicenowrecordid": {
+                "Device Security ServiceNow Record ID": {
                     "simple": "devicesecurityservicenowrecordid"
                 }
             }
