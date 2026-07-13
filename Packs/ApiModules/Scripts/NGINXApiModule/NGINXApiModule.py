@@ -74,7 +74,7 @@ def _next_request_seq() -> int:
 
 def _iso_now() -> str:
     """Human-readable UTC timestamp for absolute received/responded times in logs."""
-    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
 # Request headers worth capturing for client/cache/conditional diagnostics.
@@ -357,6 +357,7 @@ class RequestLoggingMiddleware:
             # A client disconnect / write error surfaces here; record it so the
             # END line explains why a transfer stopped short.
             error_str = type(exc).__name__
+            demisto.debug(f"WSGI app raised {error_str} while streaming response; re-raising.\n{traceback.format_exc()}")
             raise
         finally:
             end_perf = time.perf_counter()

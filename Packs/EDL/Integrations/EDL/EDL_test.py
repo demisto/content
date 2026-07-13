@@ -1564,3 +1564,104 @@ def test_domain_glob_wildcard_expansion(indicator_value: str, indicator_type: st
 
     # Verify the output matches expected
     assert sorted(output_lines) == sorted(expected_output)
+
+
+def test_get_request_id_without_request_context(mocker):
+    """
+    Given:
+      - get_request_id is called outside of an active Flask request context.
+    When:
+      - Accessing request.headers raises a RuntimeError.
+    Then:
+      - A fresh 12-char hex id is generated and a debug log is emitted.
+    """
+    import EDL as edl
+
+    mock_request = mocker.MagicMock()
+    mock_request.headers.get.side_effect = RuntimeError("Working outside of request context.")
+    mocker.patch.object(edl, "request", mock_request)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    request_id = edl.get_request_id()
+
+    assert len(request_id) == 12
+    assert all(c in "0123456789abcdef" for c in request_id)
+    debug_mock.assert_called_once()
+
+
+def test_get_request_id_reuses_forwarded_header(mocker):
+    """
+    Given:
+      - get_request_id is called within a request context that carries X-Request-ID.
+    When:
+      - The forwarded header is present.
+    Then:
+      - The forwarded id is reused as-is (so it can be grepped across NGINX -> WSGI -> EDL).
+    """
+    import EDL as edl
+
+    mock_request = mocker.MagicMock()
+    mock_request.headers.get.return_value = "forwarded-id-123"
+    mocker.patch.object(edl, "request", mock_request)
+
+    assert edl.get_request_id() == "forwarded-id-123"
+    mock_request.headers.get.assert_called_once_with("X-Request-ID")
+
+
+def test_get_indicators_to_format_restores_stdout_lock_timeout(mocker):
+    """
+    Given:
+      - A server runtime that exposes demisto._stdout_lock_timeout.
+    When:
+      - get_indicators_to_format iterates over indicators (temporarily raising the timeout).
+    Then:
+      - The original _stdout_lock_timeout value is restored after the iteration completes.
+    """
+    import EDL as edl
+
+    demisto._stdout_lock_timeout = 60
+    try:
+        indicator_searcher = IndicatorsSearcher(4)
+        request_args = edl.RequestArguments(
+            out_format="TEXT",
+            query="",
+            limit=3,
+            url_port_stripping=True,
+            url_protocol_stripping=True,
+            url_truncate=True,
+        )
+
+        get_indicators_to_format(indicator_searcher, request_args)
+
+        assert demisto._stdout_lock_timeout == 60
+    finally:
+        delattr(demisto, "_stdout_lock_timeout")
+
+
+def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
+    """
+    Given:
+      - A server runtime that does NOT expose demisto._stdout_lock_timeout.
+    When:
+      - get_indicators_to_format iterates over indicators.
+    Then:
+      - The attribute is not created (the timeout tweak is a true no-op).
+    """
+    import EDL as edl
+
+    if hasattr(demisto, "_stdout_lock_timeout"):
+        delattr(demisto, "_stdout_lock_timeout")
+
+    indicator_searcher = IndicatorsSearcher(4)
+    request_args = edl.RequestArguments(
+        out_format="TEXT",
+        query="",
+        limit=3,
+        url_port_stripping=True,
+        url_protocol_stripping=True,
+        url_truncate=True,
+    )
+
+    get_indicators_to_format(indicator_searcher, request_args)
+
+    assert not hasattr(demisto, "_stdout_lock_timeout")

@@ -71,7 +71,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'Deprecated. No longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
+- additionalinfo: 'The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
   defaultvalue: 1h
   display: Cache Lock Timeout (Deprecated)
   name: cache_lock_timeout
@@ -80,7 +80,7 @@ configuration:
   advanced: true
   required: false
   hidden: true
-- additionalinfo: 'Deprecated. No longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
+- additionalinfo: 'The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
   defaultvalue: 1h
   display: Cache Lock Age (Deprecated)
   name: cache_lock_age

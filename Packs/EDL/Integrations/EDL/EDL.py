@@ -375,16 +375,18 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     # the default 60s timeout, causing the heartbeat thread to fail with "Timeout acquiring stdout lock".
     # Instead of disabling the heartbeat thread (which can make the server consider the container unresponsive),
     # we temporarily raise the stdout lock timeout to 10 minutes so the heartbeat keeps running safely, and
-    # restore the original value afterwards. getattr is used for reading so this is a no-op on servers where
-    # the attribute is not present. This attribute is dynamically injected by the server runtime and is not part
-    # of the demistomock type stub, so mypy's attr-defined check is suppressed on the assignments below.
+    # restore the original value afterwards. This attribute is dynamically injected by the server runtime; when
+    # it is not present (e.g. older servers or unit tests) we skip the tweak entirely so this stays a true no-op.
+    # It is not part of the demistomock type stub, so mypy's attr-defined check is suppressed on the assignments.
+    stdout_lock_timeout_supported = hasattr(demisto, "_stdout_lock_timeout")
     original_stdout_lock_timeout = getattr(demisto, "_stdout_lock_timeout", 60)
     try:
-        demisto._stdout_lock_timeout = 600  # type: ignore[attr-defined]  # 10 minutes
-        demisto.debug(
-            f"Temporarily set demisto._stdout_lock_timeout to 600 seconds "
-            f"(was {original_stdout_lock_timeout}) for the indicators iteration."
-        )
+        if stdout_lock_timeout_supported:
+            demisto._stdout_lock_timeout = 600  # type: ignore[attr-defined]  # 10 minutes
+            demisto.debug(
+                f"Temporarily set demisto._stdout_lock_timeout to 600 seconds "
+                f"(was {original_stdout_lock_timeout}) for the indicators iteration."
+            )
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
@@ -422,8 +424,9 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             if version.get("platform") == "x2" or is_demisto_version_ge("8") or version.get("platform") == "unified_platform":
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
     finally:
-        demisto._stdout_lock_timeout = original_stdout_lock_timeout  # type: ignore[attr-defined]
-        demisto.debug(f"Restored demisto._stdout_lock_timeout to {original_stdout_lock_timeout} seconds.")
+        if stdout_lock_timeout_supported:
+            demisto._stdout_lock_timeout = original_stdout_lock_timeout  # type: ignore[attr-defined]
+            demisto.debug(f"Restored demisto._stdout_lock_timeout to {original_stdout_lock_timeout} seconds.")
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write("]")
@@ -1197,6 +1200,7 @@ def get_request_id() -> str:
         forwarded = request.headers.get("X-Request-ID")
     except RuntimeError:
         # No active Flask request context (e.g. called outside a route).
+        demisto.debug("get_request_id called without an active Flask request context; generating a fresh id.")
         forwarded = None
     return forwarded if forwarded else uuid.uuid4().hex[:12]
 
