@@ -21,6 +21,9 @@ To successfully set up the Generic API Event Collector, you need to provide the 
    - No Authorization (for publicly accessible data)
    - Api-Key (API key sent in a request header)
    - OAuth 2.0 (Client Credentials and Authorization Code flows)
+
+    For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
+
 5. HTTP Method
    Specify the HTTP method the collector should use to reach the API endpoint. The supported methods are:
    - GET (to retrieve information)

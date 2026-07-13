@@ -487,11 +487,11 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         client_secret = params.get("oauth_client_secret")
 
         if not token_url:
-            return_error("Oauth token url is required for OAuth 2.0 Authentication.")
+            return_error("OAuth token url is required for OAuth 2.0 Authentication.")
         if not client_id:
-            return_error("Oauth client id is required for OAuth 2.0 Authentication.")
+            return_error("OAuth client id is required for OAuth 2.0 Authentication.")
         if not client_secret:
-            return_error("Oauth client secret is required for OAuth 2.0 Authentication.")
+            return_error("OAuth client secret is required for OAuth 2.0 Authentication.")
 
         add_sensitive_log_strs(client_secret)
         # For OAuth 2.0 the access token is acquired and refreshed dynamically by the
