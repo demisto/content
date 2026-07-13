@@ -1,7 +1,7 @@
 id: Reco - Reduce Risk - Google Publicly Exposed Files
 version: -1
 name: Reco - Reduce Risk - Google Publicly Exposed Files
-description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive. It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
+description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive, It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
 starttaskid: "0"
 tasks:
   "0":
