@@ -190,20 +190,6 @@ def get_events(
             finding_ids += list_findings.get("FindingIds", [])
             next_token = list_findings.get("NextToken", "")
 
-            # Handle duplicates and findings updated at the same time.
-            # XSUP-67097: drop EVERY id we've already seen, regardless of position.
-            # The previous implementation sliced after a single stored id, which
-            # silently lost any same-second siblings AWS happened to return before
-            # that id on subsequent pages.
-            if seen_ids and any(fid in seen_ids for fid in finding_ids):
-                before = list(finding_ids)
-                finding_ids = [fid for fid in finding_ids if fid not in seen_ids]
-                demisto.debug(
-                    f"AWSGuardDutyEventCollector - Dedup removed already-seen ids "
-                    f"for {detector_id=}. Before: {before}, after: {finding_ids}, "
-                    f"removed via {seen_ids=}."
-                )
-
         # Handle duplicates in response while preserving order
         finding_ids_unique = list(dict.fromkeys(finding_ids))
         demisto.debug(f"Detector id {detector_id} unique finding ids found: {finding_ids_unique}")
@@ -215,6 +201,32 @@ def get_events(
             demisto.debug(f"Getting {chunk_of_finding_ids=}")
             findings_response = aws_client.get_findings(DetectorId=detector_id, FindingIds=chunk_of_finding_ids)
             detector_events += findings_response.get("Findings", [])
+
+        # Dedup already-seen findings — but only at the cursor second.
+        #
+        # XSUP-67097: drop every finding we already ingested that still shares the cursor's UpdatedAt
+        # second (same-second siblings re-returned by the inclusive Gte query).
+        #
+        # XSUP-72455: do NOT drop a finding whose UpdatedAt has advanced past the cursor second. GuardDuty
+        # findings are long-lived and update in place; when a recurring finding gets a new occurrence its
+        # UpdatedAt moves forward and AWS returns it again. That is a legitimate new event and must be
+        # ingested. The previous ID-only dedup dropped it because its id was in last_ids, which produced an
+        # empty result and, because the cursor only advances when events are ingested, pinned the fetch
+        # behind that finding indefinitely.
+        if seen_ids:
+            before_ids = [ev.get("Id") for ev in detector_events]
+            detector_events = [
+                ev
+                for ev in detector_events
+                if ev.get("Id") not in seen_ids or parse_date_string(_event_updated_at(ev)) != updated_at
+            ]
+            after_ids = [ev.get("Id") for ev in detector_events]
+            if before_ids != after_ids:
+                demisto.debug(
+                    f"AWSGuardDutyEventCollector - Dedup removed already-seen same-second findings "
+                    f"for {detector_id=}. Before: {before_ids}, after: {after_ids}, removed via {seen_ids=} "
+                    f"at cursor second {updated_at=}."
+                )
 
         demisto.debug(f"AWSGuardDutyEventCollector - {detector_id=} findings found ({len(detector_events)}): {detector_events}")
         events += detector_events

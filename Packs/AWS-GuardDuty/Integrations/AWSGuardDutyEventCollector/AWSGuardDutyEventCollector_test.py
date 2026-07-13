@@ -469,7 +469,17 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
             {"detector_id1": "finding_id0"},
             [{"DetectorIds": ["detector_id1"]}],
             [{"FindingIds": ["finding_id0", "finding_id1"]}],
-            [{"Findings": [update_finding_id(FINDING.copy(), "finding_id1", updated_at="2022-09-28T10:12:39.923854")]}],
+            # XSUP-72455: both ids are fetched so the collector can inspect each finding's
+            # UpdatedAt. finding_id0 still shares the cursor second (already ingested) and is
+            # deduped after the fetch; finding_id1 is new and is ingested.
+            [
+                {
+                    "Findings": [
+                        update_finding_id(FINDING.copy(), "finding_id0", updated_at="2022-08-28T10:12:39.923854"),
+                        update_finding_id(FINDING.copy(), "finding_id1", updated_at="2022-09-28T10:12:39.923854"),
+                    ]
+                }
+            ],
             [call(MaxResults=50)],
             [
                 call(
@@ -478,7 +488,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                     )
                 )
             ],
-            [call(DetectorId="detector_id1", FindingIds=["finding_id1"])],
+            [call(DetectorId="detector_id1", FindingIds=["finding_id0", "finding_id1"])],
             [update_finding_id(FINDING_OUTPUT.copy(), "finding_id1", updated_at="2022-09-28T10:12:39.923854")],
             {"detector_id1": "2022-09-28T10:12:39.923854"},
             {"detector_id1": ["finding_id1"]},
@@ -489,7 +499,9 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
             {"detector_id1": "finding_id0"},
             [{"DetectorIds": ["detector_id1"]}],
             [{"FindingIds": ["finding_id0"]}],
-            [],
+            # XSUP-72455: the id is fetched so its UpdatedAt can be inspected. It still shares the
+            # cursor second (already ingested), so it is deduped after the fetch — no events, cursor unchanged.
+            [{"Findings": [update_finding_id(FINDING.copy(), "finding_id0", updated_at="2022-08-28T10:12:39.923854")]}],
             [call(MaxResults=50)],
             [
                 call(
@@ -498,10 +510,11 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                     )
                 )
             ],
-            [],
+            [call(DetectorId="detector_id1", FindingIds=["finding_id0"])],
             [],
             {"detector_id1": "2022-08-28T10:12:39.923854"},
-            {"detector_id1": "finding_id0"},
+            # last_ids preserves the already-seen id at the unchanged cursor second.
+            {"detector_id1": ["finding_id0"]},
             id="1 detector, 1 old finding",
         ),
         pytest.param(
@@ -895,3 +908,119 @@ def test_exclude_archived_adds_criterion_xsup_71079(mocker):
     )
     criterion2 = list_findings_mock2.call_args.kwargs["FindingCriteria"]["Criterion"]
     assert "service.archived" not in criterion2
+
+
+# ---------------------------------------------------------------------------
+# Regression test for XSUP-72455 — a recurring finding that is RE-UPDATED after
+# being stored in last_ids must not be suppressed forever.
+#
+# Scenario: finding_X is ingested at cursor second T1 and stored in last_ids.
+# Later GuardDuty aggregates a new occurrence into the same finding, moving its
+# UpdatedAt to a strictly-later second T2. AWS returns it again (Gte is
+# inclusive). The old ID-only dedup dropped it because its id was in last_ids,
+# producing an empty result — which also prevented the cursor from advancing,
+# pinning the fetch behind that finding indefinitely.
+# ---------------------------------------------------------------------------
+
+
+def test_reupdated_finding_is_not_suppressed_xsup_72455(mocker):
+    """
+    Given:
+        finding_X was ingested on a previous run at cursor second T1 and is
+        stored in last_ids[det1]. On the next run GuardDuty returns finding_X
+        again, but its UpdatedAt has advanced to a strictly-later second T2
+        (a real new occurrence aggregated into the long-lived finding).
+
+    When:
+        get_events runs with collect_from=T1 and last_ids={det1: [finding_X]}.
+
+    Then:
+        finding_X must be ingested (the update is a legitimate new event) and
+        the cursor must advance to T2. The old ID-only dedup dropped it and
+        left the cursor pinned at T1 with zero events — this test fails on the
+        buggy code and passes once dedup is scoped to the cursor second.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — dedup must only drop findings
+        whose UpdatedAt equals the stored cursor second, never later updates.
+    """
+    t1 = "2026-07-03T15:48:55.563000"
+    t2 = "2026-07-04T08:04:55.843000"
+    # Same finding id as what is already stored in last_ids, but re-updated to T2.
+    reupdated = update_finding_id(FINDING.copy(), "finding_X", updated_at=t2)
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # AWS returns the already-seen id again because Gte(T1) is inclusive and
+        # the finding's UpdatedAt (T2) is >= T1.
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [reupdated]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t1},
+        collect_from_default=datetime(2026, 7, 3, 7, 0, 0),
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # The re-updated finding is a legitimate new event and must be ingested.
+    assert [e["Id"] for e in events] == ["finding_X"], (
+        "XSUP-72455: a finding whose UpdatedAt advanced past the stored cursor "
+        "second was dropped by ID-only dedup, so no events were ingested."
+    )
+    # The cursor must advance to the finding's new second (T2), not stay pinned at T1.
+    assert new_collect_from == {"det1": t2}, (
+        "XSUP-72455: cursor stayed pinned at the old second because the "
+        "re-updated finding was suppressed, blocking all forward progress."
+    )
+    # last_ids now reflects the new cursor second (T2), holding finding_X so a
+    # same-second re-query does not re-ingest it.
+    assert new_last_ids == {"det1": ["finding_X"]}
+
+
+def test_same_id_same_second_still_deduped_xsup_72455(mocker):
+    """
+    Given:
+        finding_X is stored in last_ids at cursor second T1 and GuardDuty
+        returns it again with the SAME UpdatedAt (T1) — the inclusive-Gte
+        re-read of an already-ingested finding, not a new update.
+
+    When:
+        get_events runs with collect_from=T1 and last_ids={det1: [finding_X]}.
+
+    Then:
+        finding_X must be deduped (not re-ingested) and the cursor stays at T1.
+        This guards that the XSUP-72455 fix does not regress the original
+        same-second dedup (XSUP-67097) behavior.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — same-second re-reads are still deduped.
+    """
+    t1 = "2026-07-03T15:48:55.563000"
+    same_second_again = update_finding_id(FINDING.copy(), "finding_X", updated_at=t1)
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [same_second_again]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t1},
+        collect_from_default=datetime(2026, 7, 3, 7, 0, 0),
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # Already ingested at T1 with the same UpdatedAt — must not be re-ingested.
+    assert events == []
+    # Cursor unchanged; finding_X remembered for the next same-second re-query.
+    assert new_collect_from == {"det1": t1}
+    assert new_last_ids == {"det1": ["finding_X"]}
