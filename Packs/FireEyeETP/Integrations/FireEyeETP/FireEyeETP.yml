@@ -489,7 +489,7 @@ script:
       Cloud message ID.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10404775
 tests:
 - No Test
 defaultclassifier: Trellix Incident Classifier
