@@ -102,6 +102,10 @@ configuration:
   - Out
   - Both
   defaultvalue: None
+  hidden:
+  - marketplacev2
+  - platform
+  additionalinfo: Cortex XSOAR only parameter.
 
 - display: Close Mirrored XSOAR Incidents
   name: close_xsoar_incident
@@ -1095,7 +1099,7 @@ script:
       description: Task instructions.
       type: Dictionary
 
-  dockerimage: demisto/resilient:2.0.0.1825395
+  dockerimage: demisto/resilient:2.0.0.10133006
   isfetch: true
   runonce: false
   script: '-'

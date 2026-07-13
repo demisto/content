@@ -2,6 +2,9 @@ commonfields:
   id: CiscoSMA
   version: -1
 name: CiscoSMA
+sectionorder:
+- Connect
+- Collect
 display: Cisco Security Management Appliance
 category: Email
 provider: Cisco Systems
@@ -12,18 +15,21 @@ configuration:
   type: 0
   required: true
   additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
+  section: Connect
 - name: credentials
   display: Username
   required: true
   type: 9
   additionalinfo: ""
   displaypassword: Password
+  section: Connect
 - name: max_fetch
   display: Maximum incidents per fetch
   defaultvalue: 50
   type: 0
   additionalinfo: Default is 50. Maximum is 100.
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
@@ -32,7 +38,9 @@ configuration:
     Timestamp in ISO format or <number> <time unit>,
     e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
   required: false
+  section: Collect
 - name: filter_by
+  section: Collect
   display: Filter by
   type: 15
   additionalinfo: Message field by which to filter the results.
@@ -42,6 +50,7 @@ configuration:
   - subject
   required: false
 - name: filter_operator
+  section: Collect
   display: Filter operator
   type: 15
   additionalinfo: Operator on the message field.
@@ -53,11 +62,13 @@ configuration:
   - does_not_contain
   required: false
 - name: filter_value
+  section: Collect
   display: Filter value
   type: 0
   additionalinfo: The value to search for.
   required: false
 - name: recipient_filter_operator
+  section: Collect
   display: Recipient filter operator
   type: 15
   additionalinfo: Recipient operator filter.
@@ -69,31 +80,37 @@ configuration:
   - does_not_contain
   required: false
 - name: recipient_filter_value
+  section: Collect
   display: Recipient filter value
   type: 0
   additionalinfo: Recipient filter value to fetch by message field.
   required: false
 - name: timeout
+  section: Connect
   display: Timeout
   type: 0
   defaultvalue: '60'
   additionalinfo: HTTP requests timeout in seconds. The default is 60 seconds.
   required: false
 - name: proxy
+  section: Connect
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
 - name: insecure
+  section: Connect
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   required: false
 - display: Incident type
+  section: Collect
   name: incidentType
   type: 13
   required: false
 - display: Fetch incidents
+  section: Collect
   name: isFetch
   type: 8
   required: false
@@ -101,7 +118,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10325753
   isfetch: true
   commands:
   - name: cisco-sma-spam-quarantine-message-search

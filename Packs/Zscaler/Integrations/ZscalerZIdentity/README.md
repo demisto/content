@@ -58,7 +58,7 @@ Gets a list of URLs and IPs that are in the denylist.
 ### zia-denylist-update
 
 ***
-Updates the list of URLs and IPs that are in the denylist.
+Updates the list of URLs in the denylist.
 
 #### Base Command
 
@@ -69,7 +69,7 @@ Updates the list of URLs and IPs that are in the denylist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs to update the denylist. For example, snapchat.com,facebook.com. | Optional |
-| ip | A comma-separated list of IPs to update the denylist. For example, 1.2.3.4,8.8.8.8. | Optional |
+| ip | Deprecated. The Zscaler blacklistUrls field only supports URLs. Use the url argument instead. | Optional |
 | action | The action applied to the denylist. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 
 #### Context Output
@@ -124,7 +124,7 @@ Gets a list of URLs and IPs that are in the allowlist.
 ### zia-allowlist-update
 
 ***
-Updates the list of URLs that are in the allowlist.
+Updates the list of URLs in the allowlist.
 
 #### Base Command
 
@@ -135,7 +135,7 @@ Updates the list of URLs that are in the allowlist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com. | Optional |
-| ip | A comma-separated list of IPs to update in the allowlist. For example, 1.2.3.4,8.8.8.8. | Optional |
+| ip | Deprecated. The Zscaler whitelistUrls field only supports URLs. Use the url argument instead. | Optional |
 | action | The action applied to the allowlist. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 
 #### Context Output
@@ -228,7 +228,7 @@ Updates the URL category for the specified ID.
 | --- | --- | --- |
 | category_id | The URL category for the specified ID. For more information about category ID values, see [the Zscaler documentation](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories). | Required |
 | url | A comma-separated list of URLs to update in the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (\`). Example: url=\`["https://example.com/foo,bar"]\`. | Optional |
-| ip | A comma-separated list of IP ranges to update in the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
+| ip | A comma-separated list of custom IP address ranges to update in the specified category. Values must be in CIDR notation. For example, 1.2.3.4/32,8.8.8.8/32. Up to 2000 custom IP address ranges and retaining parent custom IP address ranges can be added, per organization, across all categories. Note: This field is available only if the option to configure custom IP ranges is enabled for your organization. To enable this option, contact Zscaler Support. | Optional |
 | action | The action applied to the URL category. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 | keywords | Custom keywords associated with a URL category. Up to 2048 custom keywords can be added per organization across all categories. | Optional |
 | description | Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category. | Optional |

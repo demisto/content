@@ -629,6 +629,22 @@ def is_empty(item_to_check: Any) -> bool:
     return item_to_check is not False and not item_to_check
 
 
+def is_timestamp_field(key: str) -> bool:
+    """
+    Check if a field name represents a timestamp field that should be converted.
+
+    Args:
+        key (str): The field name to check.
+
+    Returns:
+        bool: True if the field should be treated as a timestamp, False otherwise.
+    """
+    # Only convert fields that are actual timestamp fields, not fields that merely contain "time"
+    # Examples of timestamp fields: _time, insert_timestamp, created_time, resolution_time
+    # Examples of non-timestamp fields: reopenedbuffertime, runtime, lifetime
+    return key.endswith(("_time", "timestamp")) or key == "time"
+
+
 def handle_timestamp_item(item_to_convert: Any) -> Union[Any, str]:
     """
         Try to convert a given value to datestring.
@@ -670,7 +686,7 @@ def format_results(list_to_format: list, remove_empty_fields: bool = True) -> li
                 formatted_res = format_dict(value)
                 if is_empty(formatted_res) and remove_empty_fields:
                     continue  # do not add item to the new dict
-                if "time" in key:
+                if is_timestamp_field(key):
                     new_dict[key] = handle_timestamp_item(formatted_res)
                 else:
                     new_dict[key] = formatted_res
@@ -799,6 +815,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     max_fields = arg_to_number(args.get("max_fields", 20))
     if max_fields is None:
         raise DemistoException("Please provide a valid number for max_fields argument.")
+
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({"query_name": args.get("query_name", "")})
     outputs_prefix = get_outputs_prefix(command_name)
@@ -829,6 +846,19 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = "Query is still running, it may take a little while..."
         return command_results
+
+    # If the query failed, raise an error with the details from the API response.
+    if outputs.get("status") == "FAIL":
+        raw_error = outputs.get("error") or outputs.get("error_message") or "Unknown error"
+        # The 'error' field from the API can be a dict (e.g. {"<id>": "ERR_...", "validation_message": "..."})
+        if isinstance(raw_error, dict):
+            error_parts = [f"{k}: {v}" for k, v in raw_error.items()]
+            error_message = "; ".join(error_parts)
+        else:
+            error_message = str(raw_error)
+        query_id = args.get("query_id", "unknown")
+        demisto.debug(f"Query {query_id} failed with error: {error_message}")
+        raise DemistoException(f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. Error: {error_message}")
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop("results")
