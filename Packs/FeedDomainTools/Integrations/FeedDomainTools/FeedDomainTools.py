@@ -4,7 +4,7 @@ import json
 
 from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable, Iterator
-
+from domaintools import API
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 RISK_THRESHOLD = 70
 
 
-class DomainToolsClient(BaseClient):
+class DomainToolsClient:
     """
     Client to use in the DomainTools Feed integration.
     """
@@ -29,8 +29,15 @@ class DomainToolsClient(BaseClient):
     DOMAINRISK = "domainrisk"
     DOMAINHOTLIST = "domainhotlist"
 
-    FEED_URL = "/v1/feed"
-    DOMAINTOOLS_API_BASE_URL = "https://api.domaintools.com"
+    FEED_METHOD_MAP = {
+        "nod": "nod",
+        "nad": "nad",
+        "noh": "noh",
+        "domainrdap": "domainrdap",
+        "domaindiscovery": "domaindiscovery",
+        "domainrisk": "realtime_domain_risk",
+        "domainhotlist": "domainhotlist",
+    }
 
     def __init__(
         self,
@@ -41,50 +48,55 @@ class DomainToolsClient(BaseClient):
         tags: str = "",
         tlp_color: str | None = None,
     ):
-        self.feed_type = "nod"  # default to NOD feeds
-        self.tags = tags
-        self.tlp_color = tlp_color
-
         if not (api_username and api_key):
             raise DemistoException("The 'API Username' and 'API Key' parameters are required.")
 
-        self.api_username = api_username
-        self.api_key = api_key
+        self.tags = tags
+        self.tlp_color = tlp_color
 
-        super().__init__(
-            base_url=self.DOMAINTOOLS_API_BASE_URL, headers={"Content-Type": "application/json"}, verify=verify_ssl, proxy=proxy
+        proxy_url = None
+        if proxy:
+            proxies = handle_proxy()
+            proxy_url = proxies.get("https") or proxies.get("http") or None
+
+        self._api = API(
+            api_username,
+            api_key,
+            app_partner=self.APP_PARTNER,
+            app_name=self.APP_NAME,
+            app_version=self.APP_VERSION,
+            proxy_url=proxy_url,
+            verify_ssl=verify_ssl,
+            always_sign_api_key=True,
         )
 
     def _get_dt_feeds(
         self,
+        feed_type: str,
         session_id: str | None = None,
         domain: str | None = None,
         after: str | None = None,
         before: str | None = None,
         top: int | None = None,
     ) -> list[str]:
-        feed_type_name = self.feed_type.upper()
+        method_name = self.FEED_METHOD_MAP[feed_type]
+        api_method = getattr(self._api, method_name)
 
-        query_params = {
-            "api_key": self.api_key,
-            "api_username": self.api_username,
-            "app_partner": self.APP_PARTNER,
-            "app_name": self.APP_NAME,
-            "top": top,
-            "sessionID": session_id,
-            "after": after,
-            "before": before,
-            "domain": domain,
+        kwargs: dict[str, Any] = {
+            k: v
+            for k, v in {
+                "sessionID": session_id,
+                "domain": domain,
+                "after": after,
+                "before": before,
+                "top": top,
+            }.items()
+            if v is not None
         }
 
-        demisto.info(f"Fetching DomainTools {feed_type_name} feed type with params: {query_params}")
+        demisto.info(f"Fetching DomainTools {feed_type.upper()} feed type with params: {kwargs}")
 
-        response = self._http_request(
-            "GET", url_suffix=f"{self.FEED_URL}/{self.feed_type}/", params=query_params, resp_type="text", raise_on_status=True
-        )
-
-        results = response.strip().split("\n") if response else []
-        return results
+        return list(api_method(**kwargs).response())
 
     def _format_parameter(self, key: str, value: Any) -> Any:
         """Format the parameter value based on the given key
@@ -113,8 +125,6 @@ class DomainToolsClient(BaseClient):
         Returns:
             list:  A list of objects, containing the indicators.
         """
-        self.feed_type = feed_type
-
         # DomainTools feeds optional arguments
         session_id = dt_feed_kwargs.get("session_id", "dt-cortex-feeds")
         top = int(dt_feed_kwargs.get("top") or "5000")
@@ -122,7 +132,7 @@ class DomainToolsClient(BaseClient):
         after = dt_feed_kwargs.get("after")
         before = dt_feed_kwargs.get("before")
 
-        demisto.info(f"Start building list of indicators for {self.feed_type} feed.")
+        demisto.info(f"Start building list of indicators for {feed_type} feed.")
 
         limit_counter = 0
         processed_feeds = 0
@@ -136,6 +146,7 @@ class DomainToolsClient(BaseClient):
                 before = self._format_parameter(key="before", value=before)
 
             dt_feeds = self._get_dt_feeds(
+                feed_type=feed_type,
                 session_id=session_id,
                 domain=domain,
                 after=after,
@@ -144,7 +155,7 @@ class DomainToolsClient(BaseClient):
             )
 
             total_dt_feeds = len(dt_feeds)
-            demisto.info(f"Fetched {total_dt_feeds} of {self.feed_type} feeds.")
+            demisto.info(f"Fetched {total_dt_feeds} of {feed_type} feeds.")
 
             ud_tags = [tag.strip() for tag in self.tags.split(",")]
 
@@ -167,14 +178,14 @@ class DomainToolsClient(BaseClient):
                     "value": indicator,
                     "type": indicator_type,
                     "timestamp": timestamp,
-                    "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
+                    "tags": ["DomainToolsFeeds", feed_type] + ud_tags,
                     "tlp_color": self.tlp_color,
                     "parsed_record": parsed_record,
                     "overall_risk_score": overall_risk_score,
                 }
 
-                # for domaihotlist & domainriks feed, we will be returning the risk scores
-                if self.feed_type in (self.DOMAINRISK, self.DOMAINHOTLIST):
+                # for domainhotlist & domainrisk feed, we will be returning the risk scores
+                if feed_type in (self.DOMAINRISK, self.DOMAINHOTLIST):
                     risk_score_details = {
                         "phishing_risk": json_feed.get("phishing_risk"),
                         "malware_risk": json_feed.get("malware_risk"),
@@ -183,7 +194,7 @@ class DomainToolsClient(BaseClient):
                         "overall_risk": json_feed.get("overall_risk"),
                     }
 
-                    if self.feed_type == self.DOMAINHOTLIST:
+                    if feed_type == self.DOMAINHOTLIST:
                         risk_score_details["expires"] = json_feed.get("expires")
 
                     # update the parsed dt feed data
@@ -195,7 +206,7 @@ class DomainToolsClient(BaseClient):
                     limit_counter += 1
                     processed_feeds += 1
 
-            demisto.info(f"Done processing {processed_feeds} out of {total_dt_feeds} {self.feed_type} feeds.")
+            demisto.info(f"Done processing {processed_feeds} out of {total_dt_feeds} {feed_type} feeds.")
         except Exception as err:
             demisto.debug(str(err))
             raise ValueError(f"Could not parse returned data as indicator. \n\nError massage: {str(err)}")
