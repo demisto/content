@@ -3,6 +3,7 @@
 # STD packages
 import asyncio
 from datetime import datetime
+import re
 import time
 import json
 
@@ -417,56 +418,30 @@ class TestCommandsFunctions:
         assert total_events_count == fetch_limit
         assert offset == "b"
 
-    @pytest.mark.parametrize(
-        "error_entry, error_message, expect_extra_info",
-        [
-            (
-                {
-                    "clientIp": "192.0.2.228",
-                    "detail": "Expired offset parameter in the request",
-                    "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
-                    "method": "GET",
-                    "requestId": "test",
-                    "requestTime": "2023-06-20T15:02:30Z",
-                    "serverIp": "1.1.1.1",
-                    "title": "Expired offset parameter in the request",
-                },
-                "Error in API call [416] - Requested Range Not Satisfiable",
-                True,
-            ),
-            (
-                {
-                    "clientIp": "192.0.2.85",
-                    "detail": "The specified user is unauthorized to access the requested data",
-                    "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
-                    "method": "GET",
-                    "requestId": "9cf2274",
-                    "requestTime": "2023-06-20T15:01:11Z",
-                    "serverIp": "1.1.1.1",
-                    "title": "Unauthorized",
-                },
-                "Error in API call [403] - Unauthorized",
-                False,
-            ),
-        ],
-    )
-    def test_response_errors(self, mocker, client, error_entry, error_message, expect_extra_info):
+    def test_response_error_non_416_raises(self, mocker, client):
         """
         Given:
-        - A client object and an error entry
-        - Case 1: Mock error entry for 416 error.
-        - Case 2: Mock error entry for 403 error.
+        - A client object that raises a non-416 error (e.g. 403 Unauthorized) from get_events_with_offset.
         When:
-        - Calling fetch_events_command and get_events_with_offset throw that error.
+        - Calling fetch_events_command.
         Then:
-        - Ensure that the error was caught by the fetch_events_command and the relevant message was added along the error itself.
-        - Case 1: Should add extra information to the message.
-        - Case 2: Shouldn't add extra information to the message.
+        - Ensure the error is re-raised (non-recoverable errors are not swallowed).
         """
-        err_msg = f"{error_message}\n{json.dumps(error_entry)}"
+        error_entry = {
+            "clientIp": "192.0.2.85",
+            "detail": "The specified user is unauthorized to access the requested data",
+            "instance": "https://test.akamaiapis.net/siem/v1/configs=12345?offset=123",
+            "method": "GET",
+            "requestId": "9cf2274",
+            "requestTime": "2023-06-20T15:01:11Z",
+            "serverIp": "1.1.1.1",
+            "title": "Unauthorized",
+        }
+        err_msg = f"Error in API call [403] - Unauthorized\n{json.dumps(error_entry)}"
         mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=DemistoException(err_msg, res={}))
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=False)
-        error_log_mocker = mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, "debug")
         with pytest.raises(DemistoException) as e:
             for _, _, _ in Akamai_SIEM.fetch_events_command(
                 client,  # noqa: B007
@@ -478,9 +453,229 @@ class TestCommandsFunctions:
                 False,
             ):
                 pass
-        error_log_mocker.assert_called_with(f"Got an error when trying to request for new events from Akamai\n{err_msg}")
-        assert ("Got offset out of range error when attempting to fetch events from Akamai." in str(e)) == expect_extra_info
-        assert ("Expired offset parameter in the request" in str(e)) == expect_extra_info
+        assert "Unauthorized" in str(e)
+
+    def test_response_error_416_recovers_in_run(self, mocker, client):
+        """
+        Given:
+        - A client whose first offset-based request fails with a 416 (expired/out-of-range offset),
+          and whose second (recovery) request succeeds and returns events.
+        When:
+        - Calling fetch_events_command with a stored offset.
+        Then:
+        - Ensure the 416 does NOT raise; instead the offset is reset, the fetch restarts from the safe
+          lookback window, and the events from the recovery request are yielded.
+        """
+        err_msg = "Error in API call [416] - Requested Range Not Satisfiable"
+        recovery_events = ['{"event": "1"}', '{"offset": "recovered_offset"}']
+        mocker.patch.object(
+            Akamai_SIEM.Client,
+            "get_events_with_offset",
+            side_effect=[
+                DemistoException(err_msg, res={}),  # first call: stale offset -> 416
+                (recovery_events[:-1], "recovered_offset"),  # recovery call: time-based fetch succeeds
+                ([], "recovered_offset"),  # loop termination
+            ],
+        )
+        mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+        reset_offset_mock = mocker.patch.object(Akamai_SIEM, "reset_offset_command")
+        mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "info")
+
+        collected = []
+        for events, _, _, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
+            "3 days",
+            220,
+            "",
+            {"offset": "stale_offset"},
+            5000,
+            True,  # should_skip_decode_events, so events pass through unchanged
+        ):
+            if events:
+                collected.extend(events)
+
+        # The stale offset was reset as part of recovery.
+        reset_offset_mock.assert_called_once()
+        # The recovery request's events were yielded (no exception raised).
+        assert collected == recovery_events[:-1]
+
+
+@pytest.mark.parametrize(
+    "error, expected",
+    [
+        (DemistoException("Error in API call [416] - Requested Range Not Satisfiable"), True),
+        (DemistoException("Requested Range Not Satisfiable"), True),
+        (DemistoException("Error in API call [403] - Unauthorized"), False),
+        (DemistoException("Some other error"), False),
+    ],
+)
+def test_is_offset_out_of_range_error(error, expected):
+    """
+    Given:
+    - Various Akamai errors (416 offset-expired and non-416).
+    When:
+    - Calling is_offset_out_of_range_error.
+    Then:
+    - Only the '416 Requested Range Not Satisfiable' errors are identified as offset-out-of-range.
+    """
+    assert Akamai_SIEM.is_offset_out_of_range_error(error) is expected
+
+
+@pytest.mark.parametrize("reset_context_offset", [True, False])
+def test_handle_offset_out_of_range(mocker, reset_context_offset):
+    """
+    Given:
+    - A 416 offset-out-of-range error.
+    When:
+    - Calling handle_offset_out_of_range with reset_context_offset True (fetch-events) or False (long-running).
+    Then:
+    - The context offset is reset only when reset_context_offset is True.
+    - The returned from_epoch corresponds to AKAMAI_MAX_LOOKBACK_MINUTES ago (within Akamai's 12h limit).
+    """
+    reset_offset_mock = mocker.patch.object(Akamai_SIEM, "reset_offset_command")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
+    error = DemistoException("Error in API call [416] - Requested Range Not Satisfiable")
+
+    from_epoch = Akamai_SIEM.handle_offset_out_of_range(error, reset_context_offset=reset_context_offset)
+
+    if reset_context_offset:
+        reset_offset_mock.assert_called_once()
+    else:
+        reset_offset_mock.assert_not_called()
+
+    # from_epoch is a Unix-epoch seconds string within the safe lookback window (just under 12h).
+    now_epoch = int(time.time())
+    expected_epoch = now_epoch - Akamai_SIEM.AKAMAI_MAX_LOOKBACK_MINUTES * 60
+    assert isinstance(from_epoch, str)
+    # Allow a small delta for execution time between computing expected and actual.
+    assert abs(int(from_epoch) - expected_epoch) <= 5
+    # The recovery window must stay under Akamai's hard 12-hour limit.
+    assert (now_epoch - int(from_epoch)) < 12 * 60 * 60
+
+
+@pytest.mark.parametrize("msg", ["", None])
+def test_decode_message_empty_string(msg):
+    """
+    Given:
+    - An empty / falsy message.
+    When:
+    - Calling decode_message.
+    Then:
+    - An empty list is returned (guard clause), without attempting to base64-decode.
+    """
+    assert Akamai_SIEM.decode_message(msg) == []
+
+
+@pytest.mark.parametrize("headers", ["", None])
+def test_decode_url_empty_string(headers):
+    """
+    Given:
+    - Empty / falsy headers.
+    When:
+    - Calling decode_url.
+    Then:
+    - An empty dict is returned (guard clause), without attempting to parse.
+    """
+    assert Akamai_SIEM.decode_url(headers) == {}
+
+
+def test_fetch_events_command_decodes_in_place_and_counts_last_page_size(client, mocker):
+    """
+    Given:
+    - A single page of raw JSON events (with attackData and httpMessage) followed by an empty page.
+    When:
+    - Calling fetch_events_command with should_skip_decode_events=False.
+    Then:
+    - The events are decoded in place (each list item becomes a dict), and the yielded total_events_count
+      equals the number of events in the page (last_page_size accounting).
+    """
+    raw_page = [
+        json.dumps({"attackData": {"rules": "cnVsZTE="}, "httpMessage": {"requestHeaders": "", "responseHeaders": ""}}),
+        json.dumps({"attackData": {"rules": "cnVsZTI="}, "httpMessage": {"requestHeaders": "", "responseHeaders": ""}}),
+    ]
+    mocker.patch.object(
+        Akamai_SIEM.Client,
+        "get_events_with_offset",
+        side_effect=[(list(raw_page), "off1"), ([], "off1")],
+    )
+    mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+
+    collected = []
+    last_total = 0
+    for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+        client, "3 days", 220, "50170", {}, 5000, False
+    ):
+        if events:
+            collected = events
+            last_total = total_events_count
+
+    assert last_total == len(raw_page)
+    # Every event was decoded from a raw JSON string into a dict in place.
+    assert all(isinstance(event, dict) for event in collected)
+
+
+def test_fetch_events_command_skip_decode_keeps_raw_strings(client, mocker):
+    """
+    Given:
+    - A page of raw JSON event strings.
+    When:
+    - Calling fetch_events_command with should_skip_decode_events=True.
+    Then:
+    - The events are yielded as-is (raw strings), without being decoded to dicts.
+    """
+    raw_page = ['{"attackData": {"rules": "cnVsZTE="}}', '{"attackData": {"rules": "cnVsZTI="}}']
+    mocker.patch.object(
+        Akamai_SIEM.Client,
+        "get_events_with_offset",
+        side_effect=[(list(raw_page), "off1"), ([], "off1")],
+    )
+    mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+
+    collected = []
+    for events, _, _, _ in Akamai_SIEM.fetch_events_command(client, "3 days", 220, "50170", {}, 5000, True):  # noqa: B007
+        if events:
+            collected = events
+
+    assert collected == raw_page
+    assert all(isinstance(event, str) for event in collected)
+
+
+def test_fetch_events_command_malformed_json_left_in_place(client, mocker):
+    """
+    Given:
+    - A page containing a malformed JSON event that cannot be decoded.
+    When:
+    - Calling fetch_events_command with should_skip_decode_events=False.
+    Then:
+    - The malformed event is left in place (as its original raw string) instead of crashing the fetch,
+      and it is still counted in total_events_count.
+    """
+    malformed = "{not-valid-json"
+    valid = json.dumps({"attackData": {"rules": "cnVsZTE="}, "httpMessage": {"requestHeaders": "", "responseHeaders": ""}})
+    raw_page = [valid, malformed]
+    mocker.patch.object(
+        Akamai_SIEM.Client,
+        "get_events_with_offset",
+        side_effect=[(list(raw_page), "off1"), ([], "off1")],
+    )
+    mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+
+    collected = []
+    last_total = 0
+    for events, _, total_events_count, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+        client, "3 days", 220, "50170", {}, 5000, False
+    ):
+        if events:
+            collected = events
+            last_total = total_events_count
+
+    assert last_total == len(raw_page)
+    # Valid event decoded to dict; malformed event kept as its original raw string.
+    assert isinstance(collected[0], dict)
+    assert collected[1] == malformed
 
 
 @pytest.mark.parametrize(
@@ -637,7 +832,7 @@ async def test_get_events_from_akamai_success(mocker, client, requests_mock):
     - Ensure the right log type and text returned. And the right length of events, offset, and counter returned.
     """
     response_mock = '{"id": 1, "httpMessage": {"start": 1}}\n{"id": 2, "httpMessage": {"start": 2}}\n{"offset": "a"}'
-    demisto_info = mocker.patch.object(demisto, "info")
+    demisto_debug = mocker.patch.object(demisto, "debug")
     requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", text=response_mock)
     async for events, counter, response_offset in Akamai_SIEM.get_events_from_akamai(
         client=client, config_ids="50170", from_time="1 day", page_size=100, offset="test_offset", max_concurrent_tasks=300
@@ -645,21 +840,21 @@ async def test_get_events_from_akamai_success(mocker, client, requests_mock):
         assert counter == 1
         assert len(events) == 2
         assert response_offset == "a"
-        demisto_info.assert_called_with("Running in interval = 1. got 2 events and offset='a'.")
+        demisto_debug.assert_any_call("Running in interval = 1. got 2 events and offset='a'.")
         break
 
 
 @pytest.mark.asyncio
-async def test_get_events_from_akamai_failure(mocker, client, requests_mock):
+async def test_get_events_from_akamai_non_416_failure(mocker, client, requests_mock):
     """
     Given:
-    - An error mock http response.
+    - A non-416 error mock http response.
     When:
     - Calling get_events_from_akamai().
     Then:
-    - Ensure the right log type and text returned.
+    - Ensure the error is reported to module health with is_error=True (non-recoverable).
     """
-    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", status_code=416, text="Requested Range Not Satisfiable")
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=test_offset", status_code=403, text="Unauthorized")
     mocker.patch.object(demisto, "error")
     # cause an exception to break endless loop.
     update_module_health = mocker.patch.object(demisto, "updateModuleHealth", side_effect=Exception("Interrupted execution"))
@@ -669,15 +864,40 @@ async def test_get_events_from_akamai_failure(mocker, client, requests_mock):
         ):
             pass
     assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
-    expected_error_msg = (
-        "Running in interval = 1. Got offset out of range error when attempting to fetch events from Akamai.\n"
-        "This occurred due to offset pointing to events older than 12 hours which isn't supported by akamai.\nRestarting"
-        " fetching events to start from 1 day ago. For more information, please refer to the Troubleshooting section in the"
-        " integration documentation.\noriginal error: [Error in API call [416] - None\nRequested Range Not Satisfiable]"
-    )
-
-    assert expected_error_msg in update_module_health.mock_calls[0][1]
     assert {"is_error": True} in update_module_health.mock_calls[0]
+
+
+@pytest.mark.asyncio
+async def test_get_events_from_akamai_416_recovers(mocker, client, requests_mock):
+    """
+    Given:
+    - A 416 offset-out-of-range error on the offset-based request, followed by a successful
+      time-based (recovery) request.
+    When:
+    - Calling get_events_from_akamai() with a stale offset.
+    Then:
+    - The 416 is treated as a self-healing situation: the offset is dropped, the fetch window is
+      shortened to AKAMAI_MAX_LOOKBACK_MINUTES, module health is NOT flagged with is_error=True,
+      and the recovery request's events are yielded.
+    """
+    # First request (offset-based) fails with 416; the recovery request is time-based (uses 'from').
+    requests_mock.get(f"{BASE_URL}/50170?limit=100&offset=stale_offset", status_code=416, text="Requested Range Not Satisfiable")
+    recovery_response = '{"id": 1, "httpMessage": {"start": 1}}\n{"offset": "recovered"}'
+    requests_mock.get(re.compile(rf"{re.escape(BASE_URL)}/50170\?.*from="), text=recovery_response)
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(asyncio, "sleep")  # don't actually sleep between iterations
+    update_module_health = mocker.patch.object(demisto, "updateModuleHealth")
+
+    async for events, _, response_offset in Akamai_SIEM.get_events_from_akamai(
+        client=client, config_ids="50170", from_time="3 days", page_size=100, offset="stale_offset", max_concurrent_tasks=300
+    ):
+        assert len(events) == 1
+        assert response_offset == "recovered"
+        break
+
+    # The 416 recovery must NOT flag the run as an error (we keep running).
+    for call in update_module_health.mock_calls:
+        assert {"is_error": True} not in call
 
 
 @pytest.mark.asyncio
@@ -726,7 +946,7 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
         f'{{"id": 1, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}',
         f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}',
     ]
-    demisto_info = mocker.patch.object(demisto, "info")
+    demisto_debug = mocker.patch.object(demisto, "debug")
     send_events_to_xsiam_akamai = mocker.patch(
         "Akamai_SIEM.send_events_to_xsiam_akamai", side_effect=Exception("Interrupted execution")
     )  # to break endless loop.
@@ -735,7 +955,7 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
     assert str(e.value) == "Interrupted execution"  # Ensure the exception indeed was the planned one.
     assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == events
     assert isinstance(send_events_to_xsiam_akamai.call_args_list[0][0][0][0], str)
-    demisto_info.assert_has_calls(
+    demisto_debug.assert_has_calls(
         [
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. Skipping decode events."),
@@ -766,7 +986,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
         f'{{"id": 1, "httpMessage": {{"start": 1491303422, "requestHeaders": "{requestHeaders}"}}}}',
         f'{{"id": 2, "httpMessage": {{"start": 1591303422, "requestHeaders": "{requestHeaders}"}}}}',
     ]
-    demisto_info = mocker.patch.object(demisto, "info")
+    demisto_debug = mocker.patch.object(demisto, "debug")
     send_events_to_xsiam_akamai = mocker.patch(
         "Akamai_SIEM.send_events_to_xsiam_akamai", side_effect=Exception("Interrupted execution")
     )  # to break endless loop.
@@ -793,7 +1013,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
     ]
     assert send_events_to_xsiam_akamai.call_args_list[0][0][0] == processed_events
     assert isinstance(send_events_to_xsiam_akamai.call_args_list[0][0][0][0], dict)
-    demisto_info.assert_has_calls(
+    demisto_debug.assert_has_calls(
         [
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. decoding events."),
