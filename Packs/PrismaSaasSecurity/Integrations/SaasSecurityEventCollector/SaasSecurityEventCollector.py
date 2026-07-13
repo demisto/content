@@ -14,84 +14,57 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 VENDOR = "paloaltonetworks"
 PRODUCT = "saassecurity"
 
-# The SaaS Security /log_events_bulk endpoint returns at most 100 events per call,
-# regardless of the requested 'size'. This is a hard server-side cap (verified against the API).
+# The /log_events_bulk endpoint returns at most 100 events per GET, regardless of the requested 'size'
+# (hard server-side cap). Throughput therefore comes only from issuing many GETs.
 MAX_EVENTS_PER_REQUEST = 100
-# Per-execution iteration cap. Each iteration pulls up to MAX_EVENTS_PER_REQUEST (100) events, so this is a
-# high upper bound on how many events a single execution may drain (900 * 100 = 90,000). In practice a cycle is
-# almost always stopped earlier by the wall-clock EXECUTION_TIME_BUDGET_SECONDS guard, NOT by this cap - the
-# budget is the real limiter that keeps a cycle safely under the engine's ~5-minute hard timeout regardless of
-# how high this value is. This cap is therefore mostly headroom: it lets a cycle keep draining a very large
-# backlog for the full time budget instead of stopping at an artificially low iteration count. Combined with the
-# nextTrigger mechanism (re-fires in 1 second while the queue is not drained), the collector sustains a drain
-# rate well above the upstream production rate. Raised to 900 to keep draining a sustained high-volume backlog.
+
+# Max GET calls per execution. At 100 events/call this is a high upper bound (900 * 100 = 90,000 events),
+# but in practice EXECUTION_TIME_BUDGET_SECONDS stops a cycle first. MIN_MAX_ITERATIONS is a code-level floor
+# so an instance saved with a low legacy value (e.g. 50) cannot cap throughput without editing its config.
 MAX_ITERATIONS = 900
-# Hard code-level floor for the effective max iterations. An instance whose 'max_iterations' parameter was
-# saved before this floor existed (e.g. the legacy default of 50) would otherwise permanently under-drain a
-# high-volume queue. We take max(configured, MIN_MAX_ITERATIONS) so a stale/low instance value cannot cap
-# throughput below what is needed to keep pace - without requiring the instance configuration to be edited.
 MIN_MAX_ITERATIONS = 900
-# Number of GET requests issued concurrently against the destructive-read queue within a single round.
-# The /log_events_bulk endpoint is a pop-style queue (each GET dequeues and acks the next <=100 events
-# server-side, with no cursor), so N concurrent GETs dequeue N distinct, non-overlapping batches. This is
-# the primary throughput lever: it multiplies the drain rate by ~N versus the previous fully-serial loop,
-# letting the collector keep pace with high upstream event rates. Bounded to keep connection/CPU use sane.
-#
-# IMPORTANT (thread safety): each worker thread MUST use its own Client instance / requests.Session. A single
-# requests.Session (and the urllib3 connection pool behind it) is NOT thread-safe; sharing one across the
-# concurrent GETs interleaves response bytes on shared sockets and produces intermittent, offset-varying JSON
-# decode errors (e.g. "Expecting value: line 1 column 1", "Extra data", truncation at an 8 KB read boundary).
-# See build_client / get_events_batch below.
+
+# Number of GETs issued concurrently per round. /log_events_bulk is a pop-style queue (each GET dequeues the
+# next <=100 events server-side, no cursor), so N concurrent GETs return N distinct, non-overlapping batches.
+# This is the main throughput lever. Each worker MUST use its own Client/requests.Session: a Session is not
+# thread-safe, and sharing one across threads interleaves response bytes and corrupts the JSON (see build_client).
 DEFAULT_CONCURRENCY = 10
 MAX_CONCURRENCY = 30
-# Events are streamed to XSIAM in batches of this size as they are fetched (rather than buffering an entire
-# execution in memory before a single push). This bounds memory use and makes ingestion incrementally durable.
-# Kept modest so that, if a send ever fails, only a small chunk is left un-acknowledged and re-stashed - the
-# stash shrinks every cycle and cannot get permanently wedged on one oversized batch.
+
+# Events are streamed to XSIAM in batches of this size as they are fetched, so memory stays bounded and a
+# failed send leaves only a small un-acked chunk to re-stash (the stash shrinks each cycle, never wedges).
 SEND_BATCH_SIZE = 2000
+
 MAX_LIMIT = 5000
 DEFAULT_LIMIT = 1000
 NEXT_TRIGGER_VALUE = "1"
-# After this many consecutive fetch cycles where the queue is still not drained, emit a high-visibility
-# warning so sustained backlog/lag is observable instead of silent.
+
+# Emit a high-visibility warning after this many consecutive cycles where the queue never drained, so a
+# sustained backlog (growing lag) is observable instead of silent.
 BACKLOG_WARNING_THRESHOLD = 10
-# Wall-clock budget for a single fetch-events execution. The XSIAM engine hard-kills an execution at ~5
-# minutes (300s); if that happens mid-drain, the process is terminated BEFORE setIntegrationContext /
-# setLastRun run, so progress (including the shrunk stash and nextTrigger) is not persisted. We stop issuing
-# new drain rounds once this budget is exceeded and return cleanly, well under the engine timeout, so the
-# collector always persists its state and immediately re-fires via nextTrigger to continue draining. This
-# makes progress durable regardless of backlog size.
+
+# Wall-clock budget for one fetch-events execution. The engine hard-kills an execution at ~5 minutes; if that
+# happens mid-drain, state is not persisted. We stop starting new rounds past this budget and return cleanly
+# (well under the timeout), so progress is always persisted and re-fired via nextTrigger.
 EXECUTION_TIME_BUDGET_SECONDS = 240
-# Stable, machine-parseable prefix for the per-cycle ingestion metrics line. This line is emitted on every
-# fetch cycle so ingestion completeness can be audited from the logs: 'sent' can be summed over a time window
-# and reconciled against the dataset row count, and 'queue_drained=True' is the positive "the collector has
-# caught up (no events currently waiting upstream)" signal.
+
+# Prefix for the per-cycle ingestion metrics log line. 'sent' can be summed over a window and reconciled
+# against the dataset row count; 'queue_drained=True' means the collector has caught up.
 METRICS_LOG_PREFIX = "SaaSSecurityIngestionMetrics"
-# When True, a send that fails ONLY because XSIAM returned a 200 with an empty/blank body (no JSON ack
-# to parse) is treated as accepted: the events were delivered over the wire, the platform simply did not
-# return the expected JSON acknowledgement. This lets the collector keep draining instead of re-stashing
-# and looping forever on a known server-side quirk, while the platform team fixes the empty-body response.
-# It is deliberately scoped to the blank-body case only - a truncated or non-empty unparseable body is a
-# real failure and is still raised, stashed, and retried. Toggleable via the instance param below.
+
+# When True, a send that fails ONLY because XSIAM returned a 200 with an empty/blank body (no JSON ack) is
+# treated as delivered: the events went over the wire, the platform just omitted the ack. Scoped to the blank
+# -body case only; a truncated/non-empty unparseable body is still raised, stashed, and retried.
 PASS_OVER_EMPTY_XSIAM_RESPONSE_DEFAULT = True
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """API client for the SaaS Security platform (token handling + event fetch).
 
-    This Client implements API calls to the Saas Security platform, and does not contain any XSOAR logic.
-    Handles the token retrieval.
-
-    Note: an instance of this class wraps a single requests.Session and is therefore NOT safe to share across
-    threads. For the concurrent fetch path, build one Client per worker thread via ``build_client``.
-
-    :param base_url (str): Saas Security server url.
-    :param client_id (str): client ID.
-    :param client_secret (str): client secret.
-    :param verify (bool): specifies whether to verify the SSL certificate or not.
-    :param proxy (bool): specifies if to use XSOAR proxy settings.
+    Wraps a single requests.Session, so a Client instance is NOT thread-safe. In the concurrent fetch path,
+    build one Client per worker thread via ``build_client``.
     """
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool, **kwargs):
@@ -112,15 +85,7 @@ class Client(BaseClient):
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
     def get_access_token(self) -> str:
-        """
-        Obtains access and refresh token from server.
-        Access token is used and stored in the integration context until expiration time.
-        After expiration, new refresh token and access token are obtained and stored in the
-        integration context.
-
-         Returns:
-             str: the access token.
-        """
+        """Return a valid access token, caching it in the integration context until it expires."""
         integration_context = get_integration_context()
         access_token = integration_context.get("access_token")
         token_initiate_time = integration_context.get("token_initiate_time")
@@ -131,7 +96,7 @@ class Client(BaseClient):
         ):
             return access_token
 
-        # there's no token or it is expired
+        # No token yet, or it expired: request a new one.
         access_token, token_expiration_seconds = self.get_token_request()
         integration_context = {
             "access_token": access_token,
@@ -144,12 +109,7 @@ class Client(BaseClient):
         return access_token
 
     def get_token_request(self) -> tuple[str, str]:
-        """
-         Sends request to retrieve token.
-
-        Returns:
-            tuple[str, str]: token and its expiration date
-        """
+        """Request a new token from the server. Returns (access_token, expires_in_seconds)."""
         base64_encoded_creds = b64_encode(f"{self.client_id}:{self.client_secret}")
         headers = {
             "accept": "application/json",
@@ -176,21 +136,7 @@ class Client(BaseClient):
 
 
 def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
-    """
-    Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
-    seconds minus a minute.
-
-    for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
-
-    300.0001 - 240 < 120 - 60
-
-    Args:
-        token_initiate_time (float): the time in which the token was initiated in seconds.
-        token_expiration_seconds (float): the time in which the token should be expired in seconds.
-
-    Returns:
-        bool: True if token has expired, False if not.
-    """
+    """Return True if the token is within 60 seconds of its expiry (refresh a minute early to be safe)."""
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
@@ -221,81 +167,29 @@ def get_max_fetch(limit: Optional[int]) -> int:
 
 
 def get_max_iterations(configured: Optional[int]) -> int:
-    """
-    Resolve the effective per-execution iteration cap.
-
-    We take ``max(configured, MIN_MAX_ITERATIONS)`` so that an instance whose ``max_iterations`` parameter was
-    saved with a low legacy value (e.g. 50) cannot permanently under-drain a high-volume queue. This lets the
-    fix take effect without requiring the (possibly inaccessible) instance configuration to be edited.
-    """
+    """Resolve the per-execution iteration cap, floored at MIN_MAX_ITERATIONS so a low legacy instance value
+    (e.g. 50) can't under-drain the queue without editing the instance config."""
     if not configured or configured <= 0:
         return MAX_ITERATIONS
     return max(configured, MIN_MAX_ITERATIONS)
 
 
 def get_concurrency(concurrency: Optional[int]) -> int:
-    """
-    Validate and clamp the number of concurrent GET calls issued per fetch round.
-
-    - Falls back to ``DEFAULT_CONCURRENCY`` when not provided or non-positive.
-    - Clamps to ``MAX_CONCURRENCY`` to keep connection/CPU use bounded.
-    """
+    """Resolve the per-round concurrency: default when unset/non-positive, clamped to MAX_CONCURRENCY."""
     if not concurrency or concurrency <= 0:
         return DEFAULT_CONCURRENCY
     return min(concurrency, MAX_CONCURRENCY)
 
 
-def events_integrity_fingerprint(events: list) -> str:
-    """
-    Build a compact, structural fingerprint of an events list for diagnostics at the integration-context
-    boundary. It does NOT log event contents (PII/volume), only shape + a serialization health check.
-
-    This exists to rule out a specific hypothesis: that events become malformed while being round-tripped
-    through the integration context (setIntegrationContext -> getIntegrationContext). If the events restored
-    from context are already not a clean list[dict], or no longer JSON-serializable, this line will show it -
-    letting us distinguish "context corrupted the payload" from "the SaaS/XSIAM HTTP response was corrupted".
-
-    The fingerprint reports:
-      - count and container type,
-      - whether every element is a dict (all_dicts),
-      - the type of the first and last element,
-      - whether the whole list re-serializes cleanly via json.dumps (json_serializable) and its byte length,
-      - or the serialization error if it does not.
-    """
-    count = len(events)
-    all_dicts = all(isinstance(e, dict) for e in events)
-    first_type = type(events[0]).__name__ if events else "n/a"
-    last_type = type(events[-1]).__name__ if events else "n/a"
-    try:
-        serialized = json.dumps(events)
-        serial_info = f"json_serializable=true serialized_bytes={len(serialized)}"
-    except Exception as exc:  # pragma: no cover - defensive; exercised via unit test with a non-serializable input
-        serial_info = f"json_serializable=false serialize_error={exc}"
-    return (
-        f"count={count} container={type(events).__name__} all_dicts={all_dicts} "
-        f"first_type={first_type} last_type={last_type} {serial_info}"
-    )
-
-
 def describe_xsiam_response_failure(exc: Exception) -> tuple[str, bool]:
-    """
-    Capture and describe the ACTUAL response body that XSIAM returned on a failed
-    ``send_events_to_xsiam`` call, so we can see what the platform is really sending back.
+    """Describe the XSIAM response body behind a failed send, for logging.
 
-    Why this works without touching CommonServerPython internals: the send path in
-    ``send_data_to_xsiam`` calls ``response.json()`` on the raw ``requests.Response``. When the
-    body is empty/blank/truncated, that raises ``json.JSONDecodeError`` (a subclass of
-    ``ValueError``) whose ``.doc`` attribute is *the exact raw response text that failed to parse*
-    and whose ``.pos`` is the byte offset. That is precisely the XSIAM response body we want to
-    inspect, surfaced to us for free on the exception object.
+    When ``send_data_to_xsiam`` calls ``response.json()`` on a bad body it raises ``json.JSONDecodeError``,
+    whose ``.doc`` holds the raw response text and ``.pos`` the byte offset - so we can inspect what the
+    platform actually returned.
 
-    Returns:
-        tuple[str, bool]:
-            - a diagnostic string describing the response (status is not on the exception, but the
-              body, its length, and a bounded repr-safe prefix are), and
-            - ``benign_empty_body``: True when the response body is empty or whitespace-only. This is
-              the "acknowledged-with-no-JSON-ack" case that the platform team can fix server-side, and
-              which we may choose to pass over rather than re-stash and loop.
+    Returns (description, benign_empty_body), where ``benign_empty_body`` is True when the body is empty or
+    whitespace-only (the "delivered but no JSON ack" case we may pass over instead of re-stashing).
     """
     doc = getattr(exc, "doc", None)
     pos = getattr(exc, "pos", None)
@@ -304,8 +198,7 @@ def describe_xsiam_response_failure(exc: Exception) -> tuple[str, bool]:
         return f"response_body=<unavailable> exc_type={type(exc).__name__} exc={exc}", False
 
     body_len = len(doc)
-    stripped = doc.strip()
-    benign_empty_body = stripped == ""
+    benign_empty_body = doc.strip() == ""
     # Bounded, repr-safe prefix so control chars / newlines are visible and the log line stays small.
     preview = repr(doc[:200])
     return (
@@ -316,13 +209,9 @@ def describe_xsiam_response_failure(exc: Exception) -> tuple[str, bool]:
 
 
 def build_client(params: dict) -> Client:
-    """
-    Construct a fresh ``Client`` (and therefore a fresh requests.Session / connection pool).
-
-    Each concurrent worker thread MUST call this to obtain its OWN client; sharing a single Client across
-    threads is not safe (see the DEFAULT_CONCURRENCY note) and corrupts responses under load. The cached
-    OAuth token is shared safely via the integration context, so per-thread clients do not trigger re-auth.
-    """
+    """Build a fresh ``Client`` (and its own requests.Session). Each concurrent worker MUST call this to get
+    its OWN client; sharing one across threads corrupts responses. The cached token is shared via the
+    integration context, so per-thread clients don't re-auth."""
     return Client(
         base_url=params.get("url", "").rstrip("/"),
         client_id=params.get("credentials", {}).get("identifier", ""),
@@ -407,15 +296,10 @@ def get_events_batch(client: Client) -> tuple[list[dict], bool]:
 def fetch_events_from_saas_security(
     client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
 ) -> tuple[list[dict], Exception | None, bool]:
-    """
-    Serially fetch a single execution's worth of events from the SaaS Security queue.
+    """Serially drain the queue for one execution. Used by the manual ``saas-security-get-events`` command;
+    the scheduled ``fetch-events`` path uses the concurrent drain for throughput.
 
-    This serial path is retained for the manual ``saas-security-get-events`` command, where a bounded,
-    deterministic, single-threaded drain is preferable. The scheduled ``fetch-events`` path uses the
-    concurrent, streamed drain in :func:`fetch_and_send_events_concurrently` for throughput.
-
-    Returns:
-        tuple: (events, exception, queue_drained) - queue_drained is True if got 204 (no more events in queue).
+    Returns (events, exception, queue_drained); queue_drained is True on a 204 (queue empty).
     """
     events: list[dict] = []
     under_max_fetch = True
@@ -453,28 +337,14 @@ def send_events_in_chunks(
     product: str,
     pass_over_empty_response: bool = PASS_OVER_EMPTY_XSIAM_RESPONSE_DEFAULT,
 ) -> int:
-    """
-    Send ``events`` to XSIAM in fixed-size chunks, removing each chunk from the list only after it has been
-    acknowledged. On the first failing chunk the exception is raised, leaving ``events`` holding exactly the
-    not-yet-sent remainder (the list is mutated in place).
+    """Send ``events`` to XSIAM in fixed-size chunks, removing each chunk from the list only after it is
+    acknowledged. On the first failing chunk we raise, leaving ``events`` holding just the not-yet-sent
+    remainder (mutated in place) - so a stash self-heals, shrinking each cycle instead of retrying forever.
 
-    This is what lets a poisoned/oversized stash self-heal: every cycle the successfully-sent chunks are
-    removed and only the shrinking remainder is re-stashed, instead of re-stashing the whole batch and
-    retrying it forever.
+    If ``pass_over_empty_response`` is True and the only failure is a 200 with an empty/blank body (no JSON
+    ack), the chunk is treated as delivered and removed. Any other failure is re-raised for stash-and-retry.
 
-    Response capture: on a send failure we log the ACTUAL response body XSIAM returned (surfaced via the
-    JSONDecodeError from ``response.json()``; see ``describe_xsiam_response_failure``). This is what lets us
-    see, from the logs, exactly what the platform sent back.
-
-    Pass-over of a benign empty body: when ``pass_over_empty_response`` is True and the failure is only that
-    XSIAM returned a 200 with an empty/blank body (no JSON ack to parse), the chunk is treated as delivered:
-    the events already went over the wire, the platform merely omitted the JSON acknowledgement. We remove
-    the chunk and keep going instead of re-stashing and looping forever on a known server-side quirk. Any
-    other failure (truncated or non-empty unparseable body, network error, DemistoException) is re-raised so
-    the existing stash-and-retry path handles it and no events are lost.
-
-    Returns:
-        int: the number of events successfully sent (including any passed-over benign-empty-body chunks).
+    Returns the number of events successfully sent (including passed-over empty-body chunks).
     """
     sent = 0
     while events:
@@ -513,26 +383,16 @@ def fetch_and_send_events_concurrently(
     pass_over_empty_response: bool = PASS_OVER_EMPTY_XSIAM_RESPONSE_DEFAULT,
 ) -> tuple[int, int, bool, list[dict], Exception | None]:
     """
-    High-throughput scheduled-fetch drain: issues ``concurrency`` GET calls per round against the
-    destructive-read queue and streams the results to XSIAM in batches as they arrive.
+    High-throughput scheduled-fetch drain: issues ``concurrency`` GETs per round and streams the results to
+    XSIAM in batches. Each GET runs on its own ``Client`` (own Session) via ``build_client`` - sharing a
+    Session across threads corrupts responses. This is safe because /log_events_bulk is a pop-style queue,
+    so N concurrent GETs return N distinct, non-overlapping batches.
 
-    Thread safety: each concurrent GET runs on its own ``Client`` (own requests.Session), built via
-    ``build_client``. Sharing one Client/session across threads corrupts responses (interleaved socket
-    reads -> JSON decode errors), so a client is created per worker submission.
+    No data loss on this destructive-read queue: ``pending_events`` from a prior failed run are flushed first
+    (self-heal), new events are flushed every ``send_batch_size``, and on a send failure everything not yet
+    acknowledged is returned so the caller can stash it.
 
-    Why concurrency is safe against the queue: ``/log_events_bulk`` is a pop-style queue - each GET dequeues
-    and acks the next <=100 events server-side (no cursor/offset). Therefore N concurrent GETs return N
-    distinct, non-overlapping batches.
-
-    Durability model (no data loss on a destructive-read queue):
-      * ``pending_events`` (events previously popped but not yet sent) are flushed first, in chunks, so a
-        prior failure self-heals: only the un-sent remainder is ever carried forward.
-      * Newly fetched events are buffered and flushed every ``send_batch_size`` events.
-      * If a send fails, everything not yet acknowledged into XSIAM is returned so the caller can stash it.
-
-    Returns:
-        tuple[int, int, bool, list[dict], Exception | None]:
-            (fetched_count, sent_count, queue_drained, unsent_events, exception)
+    Returns (fetched_count, sent_count, queue_drained, unsent_events, exception).
     """
     buffer: list[dict] = list(pending_events or [])
     fetched_count = len(buffer)
@@ -543,16 +403,27 @@ def fetch_and_send_events_concurrently(
     deadline = time.time() + time_budget_seconds
 
     def flush(force: bool) -> None:
-        """Send full ``send_batch_size`` chunks from the buffer (or everything, when ``force``)."""
+        """Send full ``send_batch_size`` chunks from the buffer (or everything, when ``force``).
+
+        ``send_events_in_chunks`` removes each acknowledged chunk from ``buffer`` in place, so we count sent
+        events by the drop in ``buffer`` length. This is done in a ``finally`` so a mid-flush send failure
+        still credits the chunks that did land before the exception propagates.
+        """
         nonlocal sent_count
         if force:
-            sent_count += send_events_in_chunks(
-                buffer, send_batch_size, vendor, product, pass_over_empty_response=pass_over_empty_response
-            )
+            before = len(buffer)
+            try:
+                send_events_in_chunks(buffer, send_batch_size, vendor, product, pass_over_empty_response=pass_over_empty_response)
+            finally:
+                sent_count += before - len(buffer)
         else:
             while len(buffer) >= send_batch_size:
-                sent_count += send_events_in_chunks(
-                    buffer[:send_batch_size], send_batch_size, vendor, product,
+                chunk = buffer[:send_batch_size]
+                send_events_in_chunks(
+                    chunk,
+                    send_batch_size,
+                    vendor,
+                    product,
                     pass_over_empty_response=pass_over_empty_response,
                 )
                 del buffer[:send_batch_size]
@@ -607,6 +478,9 @@ def fetch_and_send_events_concurrently(
 
 
 def main() -> None:  # pragma: no cover
+    # The concurrent drain issues GET calls from worker threads that touch the demisto object (e.g. the
+    # cached OAuth token in the integration context). support_multithreading() serializes those server
+    # calls with a lock so concurrent threads cannot corrupt the demisto <-> server channel.
     support_multithreading()
     params = demisto.params()
     args = demisto.args()
@@ -614,15 +488,7 @@ def main() -> None:  # pragma: no cover
     max_fetch = get_max_fetch(arg_to_number(args.get("limit") or params.get("max_fetch")))
     max_iterations = get_max_iterations(arg_to_number(params.get("max_iterations")))
     concurrency = get_concurrency(arg_to_number(params.get("event_fetch_concurrency")))
-    pass_over_empty_response = argToBoolean(
-        params.get("event_pass_over_empty_response", PASS_OVER_EMPTY_XSIAM_RESPONSE_DEFAULT)
-    )
-    # The concurrent drain issues GET calls from worker threads, and each worker's client may touch the
-    # XSOAR/XSIAM server via the demisto object (e.g. reading/writing the cached OAuth token in the
-    # integration context). support_multithreading() serializes those server calls with a lock so
-    # concurrent threads cannot corrupt the demisto <-> server channel. This does NOT affect the outbound
-    # SaaS/XSIAM HTTP sessions (those are made thread-safe by giving each worker its own Client).
-    support_multithreading()
+    pass_over_empty_response = argToBoolean(params.get("event_pass_over_empty_response", PASS_OVER_EMPTY_XSIAM_RESPONSE_DEFAULT))
 
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
@@ -638,14 +504,7 @@ def main() -> None:  # pragma: no cover
             # flushed first, so a prior push failure never loses data on this destructive-read queue.
             pending_events = integration_context.get("events") or []
             if from_context:
-                # Log the STRUCTURE (not contents) of what we restored from context. If the payload was
-                # corrupted while round-tripping through the integration context, this fingerprint will not
-                # match the one logged when it was stashed - letting us rule the context in or out as the
-                # source of the malformed-JSON send failures.
-                demisto.info(
-                    f"Restoring pending events from integration context before fetching. "
-                    f"restored_integrity: {events_integrity_fingerprint(pending_events)}"
-                )
+                demisto.info(f"Restoring {len(pending_events)} pending events from integration context before fetching.")
 
             fetched_count, sent_count, queue_drained, unsent_events, exception = fetch_and_send_events_concurrently(
                 params=params,
@@ -659,16 +518,12 @@ def main() -> None:  # pragma: no cover
                 # A send failed mid-drain: persist everything not yet acknowledged into XSIAM so it is
                 # retried on the next execution, and force an immediate retry via nextTrigger. Because sends
                 # are chunked and the sent chunks were removed, this stash is strictly smaller than before.
-                # Log the STRUCTURE of what we are about to persist to context. Comparing this fingerprint
-                # with the 'restored_integrity' line on the next cycle proves whether the integration context
-                # round-trip is preserving the payload or malforming it.
-                # Also capture the ACTUAL response body XSIAM returned for this failure, so the log shows
-                # exactly what the platform sent back (empty/blank/truncated body vs. real error).
+                # Capture the actual XSIAM response body for the failure so the log shows what the platform
+                # sent back (empty/blank/truncated body vs. a real error).
                 xsiam_response = describe_xsiam_response_failure(exception)[0] if exception else "response_body=<none>"
                 demisto.error(
                     f"Received error when sending events to XSIAM; stashing {len(unsent_events)} unsent events. "
-                    f"[{exception}] stashed_integrity: {events_integrity_fingerprint(unsent_events)} "
-                    f"xsiam_response: {xsiam_response}"
+                    f"[{exception}] xsiam_response: {xsiam_response}"
                 )
                 demisto.setIntegrationContext({"events": unsent_events})
                 queue_drained = False

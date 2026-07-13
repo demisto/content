@@ -161,6 +161,7 @@ def test_send_events_in_chunks_failure_keeps_only_remainder(mocker):
     """
     import SaasSecurityEventCollector
 
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
     calls = {"n": 0}
 
     def flaky_send(events, vendor, product, **kwargs):
@@ -194,10 +195,10 @@ def _json_decode_error(body: str):
 @pytest.mark.parametrize(
     "body, expect_benign",
     [
-        ("", True),            # completely empty body -> benign empty-body case
-        ("   \n\t ", True),    # whitespace-only body -> benign empty-body case
+        ("", True),  # completely empty body -> benign empty-body case
+        ("   \n\t ", True),  # whitespace-only body -> benign empty-body case
         ("<html>502</html>", False),  # non-empty unparseable body -> real failure
-        ('{"ok":true}xtra', False),   # trailing garbage (Extra data) -> real failure
+        ('{"ok":true}xtra', False),  # trailing garbage (Extra data) -> real failure
     ],
 )
 def test_describe_xsiam_response_failure_classification(body, expect_benign):
@@ -238,6 +239,8 @@ def test_send_events_in_chunks_passes_over_empty_body(mocker):
     """
     import SaasSecurityEventCollector
 
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
+
     def empty_body_send(events, vendor, product, **kwargs):
         raise _json_decode_error("")  # empty response body
 
@@ -258,6 +261,8 @@ def test_send_events_in_chunks_does_not_pass_over_non_empty_body(mocker):
     """
     import SaasSecurityEventCollector
 
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
+
     def truncated_body_send(events, vendor, product, **kwargs):
         raise _json_decode_error("<html>bad gateway</html>")
 
@@ -276,6 +281,8 @@ def test_send_events_in_chunks_empty_body_not_passed_over_when_disabled(mocker):
     then even a benign empty body is treated as a failure (exception propagates) and events are preserved.
     """
     import SaasSecurityEventCollector
+
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
 
     def empty_body_send(events, vendor, product, **kwargs):
         raise _json_decode_error("")
@@ -344,6 +351,7 @@ def test_concurrent_fetch_send_failure_returns_shrunk_unsent(mocker):
     """
     import SaasSecurityEventCollector
 
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
     calls = {"n": 0}
 
     def flaky_send(events, vendor, product, **kwargs):
@@ -423,45 +431,3 @@ def test_get_max_fetch_negative_number():
 
     with pytest.raises(DemistoException):
         get_max_fetch(-1)
-
-
-# ---------------------------------------------------------------------------
-# events_integrity_fingerprint - context-boundary diagnostics
-# ---------------------------------------------------------------------------
-
-
-def test_events_integrity_fingerprint_healthy_payload():
-    """
-    Given a clean list[dict] of events,
-    when fingerprinting for the context-boundary diagnostic,
-    then it reports all_dicts=true and json_serializable=true (proves the payload is well-formed).
-    """
-    from SaasSecurityEventCollector import events_integrity_fingerprint
-
-    fp = events_integrity_fingerprint([{"id": 1}, {"id": 2}])
-    assert "count=2" in fp
-    assert "container=list" in fp
-    assert "all_dicts=True" in fp
-    assert "json_serializable=true" in fp
-
-
-def test_events_integrity_fingerprint_empty():
-    from SaasSecurityEventCollector import events_integrity_fingerprint
-
-    fp = events_integrity_fingerprint([])
-    assert "count=0" in fp
-    assert "first_type=n/a" in fp
-    assert "json_serializable=true" in fp
-
-
-def test_events_integrity_fingerprint_non_serializable_flagged():
-    """
-    Given a payload that is NOT JSON-serializable (i.e. malformed for the send path),
-    when fingerprinting,
-    then json_serializable=false is reported - this is the signal that would prove context corruption.
-    """
-    from SaasSecurityEventCollector import events_integrity_fingerprint
-
-    fp = events_integrity_fingerprint([{"id": {1, 2, 3}}])  # a set is not JSON-serializable
-    assert "json_serializable=false" in fp
-    assert "serialize_error=" in fp
