@@ -47,7 +47,7 @@ from argus_api.lib.events.v1.pcap import get_pcap
 from argus_api.lib.pdns.v3.search import search_records
 from argus_api.lib.reputation.v1.observation import (
     fetch_observations_for_domain,
-    fetch_observations_for_i_p,
+    fetch_observations_for_ip,
 )
 
 # Disable insecure warnings
@@ -1248,12 +1248,12 @@ def fetch_observations_for_domain_command(args: dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_observations_for_i_p_command(args: dict[str, Any]) -> CommandResults:
+def fetch_observations_for_ip_command(args: dict[str, Any]) -> CommandResults:
     ip = args.get("ip")
     if not ip:
         raise ValueError("ip not specified")
 
-    result = fetch_observations_for_i_p(ip=ip)
+    result = fetch_observations_for_ip(ip=ip)
     return CommandResults(
         readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
         outputs_prefix="Argus.ObservationsIP",
@@ -1404,7 +1404,7 @@ def main() -> None:
             return_results(fetch_observations_for_domain_command(demisto.args()))
 
         elif demisto.command() == "argus-fetch-observations-for-ip":
-            return_results(fetch_observations_for_i_p_command(demisto.args()))
+            return_results(fetch_observations_for_ip_command(demisto.args()))
 
         elif demisto.command() == "argus-print-case-comments":
             return_results(print_case_comments_command(demisto.args()))
