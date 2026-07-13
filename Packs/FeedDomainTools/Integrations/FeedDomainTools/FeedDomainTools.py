@@ -67,7 +67,7 @@ class DomainToolsClient:
             app_version=self.APP_VERSION,
             proxy_url=proxy_url,
             verify_ssl=verify_ssl,
-            always_sign_api_key=True,
+            always_sign_api_key=False,
         )
 
     def _get_dt_feeds(
