@@ -40,8 +40,10 @@ DEFAULT_LIMIT = 1000
 NEXT_TRIGGER_VALUE = "1"
 
 # Emit a high-visibility warning after this many consecutive cycles where the queue never drained, so a
-# sustained backlog (growing lag) is observable instead of silent.
+# sustained backlog (growing lag) is observable instead of silent. Once past the threshold, re-emit only
+# every BACKLOG_WARNING_INTERVAL cycles so a long-running backlog does not flood the logs.
 BACKLOG_WARNING_THRESHOLD = 10
+BACKLOG_WARNING_INTERVAL = 10
 
 # Wall-clock budget for one fetch-events execution. The engine hard-kills an execution at ~5 minutes; if that
 # happens mid-drain, state is not persisted. We stop starting new rounds past this budget and return cleanly
@@ -313,15 +315,15 @@ def fetch_events_from_saas_security(
             if drained:  # queue is empty, stop.
                 queue_drained = True
                 break
-            demisto.debug(f"fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
+            demisto.debug(f"[Pagination Loop] fetched events length: ({len(fetched_events)}) in iteration {iteration_num}")
             events.extend(fetched_events)
             events_len = len(events)
             if max_fetch:
                 under_max_fetch = events_len < max_fetch
             iteration_num += 1
         demisto.info(
-            f"Finished fetch iteration loop: collected {len(events)} events over {iteration_num - 1} iteration(s), "
-            f"queue_drained={queue_drained} (max_iterations={max_iterations}, max_fetch={max_fetch})."
+            f"[Fetch] Finished fetch iteration loop: collected {len(events)} events over {iteration_num - 1} "
+            f"iteration(s), queue_drained={queue_drained} (max_iterations={max_iterations}, max_fetch={max_fetch})."
         )
     except Exception as exc:
         demisto.info(f"Got error get_events: {exc}")
@@ -541,16 +543,23 @@ def main() -> None:  # pragma: no cover
                 # (= growing ingestion lag) is observable instead of failing silently.
                 consecutive_backlog_cycles = int(last_run.get("consecutive_backlog_cycles", 0)) + 1
                 last_run["consecutive_backlog_cycles"] = consecutive_backlog_cycles
-                if consecutive_backlog_cycles >= BACKLOG_WARNING_THRESHOLD:
+                # Only surface the high-visibility error at the threshold and then periodically (every
+                # BACKLOG_WARNING_INTERVAL cycles) so a sustained backlog does not flood the logs with an
+                # identical error on every back-to-back cycle.
+                should_warn = (
+                    consecutive_backlog_cycles >= BACKLOG_WARNING_THRESHOLD
+                    and (consecutive_backlog_cycles - BACKLOG_WARNING_THRESHOLD) % BACKLOG_WARNING_INTERVAL == 0
+                )
+                if should_warn:
                     demisto.error(
-                        f"SaaS Security ingestion backlog: the event queue has not fully drained for "
+                        f"[Fetch] SaaS Security ingestion backlog: the event queue has not fully drained for "
                         f"{consecutive_backlog_cycles} consecutive fetch cycles. The upstream event rate may "
                         f"exceed the collector throughput, which can cause ingestion lag. Consider increasing "
                         f"'The maximum number of iterations to retrieve events' or distributing the load across "
                         f"multiple instances."
                     )
                 else:
-                    demisto.debug("Batching in progress. Next run will be triggered in 1 second.")
+                    demisto.debug("[Fetch] Batching in progress. Next run will be triggered in 1 second.")
             else:
                 consecutive_backlog_cycles = 0
                 last_run.pop("nextTrigger", None)
