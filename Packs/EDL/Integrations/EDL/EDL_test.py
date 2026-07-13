@@ -9,6 +9,7 @@ from tempfile import mkdtemp
 
 import demistomock as demisto
 import pytest
+import EDL as edl
 from EDL import (
     DONT_COLLAPSE,
     check_platform_and_version,
@@ -1575,8 +1576,6 @@ def test_get_request_id_without_request_context(mocker):
     Then:
       - A fresh 12-char hex id is generated and a debug log is emitted.
     """
-    import EDL as edl
-
     mock_request = mocker.MagicMock()
     mock_request.headers.get.side_effect = RuntimeError("Working outside of request context.")
     mocker.patch.object(edl, "request", mock_request)
@@ -1598,8 +1597,6 @@ def test_get_request_id_reuses_forwarded_header(mocker):
     Then:
       - The forwarded id is reused as-is (so it can be grepped across NGINX -> WSGI -> EDL).
     """
-    import EDL as edl
-
     mock_request = mocker.MagicMock()
     mock_request.headers.get.return_value = "forwarded-id-123"
     mocker.patch.object(edl, "request", mock_request)
@@ -1617,8 +1614,6 @@ def test_get_indicators_to_format_restores_stdout_lock_timeout(mocker):
     Then:
       - The original _stdout_lock_timeout value is restored after the iteration completes.
     """
-    import EDL as edl
-
     demisto._stdout_lock_timeout = 60
     try:
         indicator_searcher = IndicatorsSearcher(4)
@@ -1647,8 +1642,6 @@ def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
     Then:
       - The attribute is not created (the timeout tweak is a true no-op).
     """
-    import EDL as edl
-
     if hasattr(demisto, "_stdout_lock_timeout"):
         delattr(demisto, "_stdout_lock_timeout")
 
