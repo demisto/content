@@ -38,7 +38,7 @@ DEFAULT_PAGE_SIZE = 50
 ID_OR_KEY_MISSING_ERROR = "Please provide either an issue ID or issue key."
 ID_AND_KEY_GIVEN = "Please provide only one, either an issue Id or issue key."
 EPIC_ID_OR_KEY_MISSING_ERROR = "Please provide either an epic ID or epic key."
-CLOSE_INCIDENT_REASON = 'Issue was marked as "Resolved", or status was changed to "Done"'
+CLOSE_INCIDENT_REASON = 'Issue was resolved or status category changed to "Done"'
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 # This will be appended to the attachment's name when mirroring an attachment from XSOAR to Jira
 ATTACHMENT_MIRRORED_FROM_XSOAR = "_mirrored_from_xsoar"
