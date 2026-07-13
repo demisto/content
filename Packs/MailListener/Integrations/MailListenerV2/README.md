@@ -6,30 +6,28 @@ Listens to a mailbox and enables incident triggering via e-mail.
 
 ---
 
-## Configure Mail Listener v2 on Cortex XSOAR
+## Configure Mail Listener v2 in Cortex
 
----
-
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Mail Listener v2.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Fetch incidents__: Whether to fetch incidents or not
-    * __MailServerURL__: Mail Server Hostname / IP address
-    * __port__: IMAP Port
-    * __credentials__: Username and password
-    * __folder__: Incoming mail folder
-    * __permittedFromAdd__: Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com)
-    * __first_fetch__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)
-    * __limit__: The maximum number of incidents to fetch each time
-    * __delete_processed__: Delete processed emails
-    * __Include_raw_body__: Include raw body in incidents
-    * __save_file__: Save the email .eml file
-    * __TLS_connection__: Use TLS for connection (defaults to True)
-    * __insecure__: Trust any certificate (not secure)
-    * __incidentFetchInterval__: Incidents Fetch Interval
-    * __clientCertAndKey__: Client Certificate And Private Key (PEM) (Use this parameter if the IMAP server requires client certificates and private keys)
-4. Click __Test__ to validate the connection and the authentication.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Mail Server Hostname / IP address |  | True |
+| IMAP Port | Default is 143. | True |
+| Username |  | True |
+| Incoming mail folder | Default is INBOX. | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com) |  | False |
+| Fetch mails from these domains only (eg. demo.com, test.com) |  | False |
+| Query search with headers | Whether to query search with headers when filtering by sender's email address. Default is false. | False |
+| First fetch time | Default is 1 hour. | False |
+| The maximum number of incidents to fetch each time | Default is 50. | False |
+| Delete processed emails |  | False |
+| Include raw body in incidents |  | False |
+| Save the email .eml file |  | False |
+| Fetch by email date | Whether to fetch by email date. Default is true. | False |
+| Use TLS for connection (defaults to True) | Default is true. | False |
+| Trust any certificate (not secure) |  | False |
+| Client Certificate And Private Key (List of PEMs) |  | False |
 
 ## Commands
 
