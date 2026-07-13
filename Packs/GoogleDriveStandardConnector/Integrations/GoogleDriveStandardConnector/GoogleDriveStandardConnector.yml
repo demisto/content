@@ -2,7 +2,6 @@ name: GoogleDriveStandardConnector
 category: IT Services
 provider: Google
 display: Google Drive (Standard Connector)
-deprecated: true
 sectionorder:
 - Connect
 - Collect
