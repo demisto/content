@@ -1100,3 +1100,121 @@ def test_base_dn_verified_exception(mocker):
     assert error_mock.call_count == 1
     assert "Error during Base DN verification" in error_mock.call_args[0][0]
     assert "Connection timeout" in error_mock.call_args[0][0]
+
+
+# ===== Tests for prepare_attribute_value =====
+
+
+@pytest.mark.parametrize(
+    "attribute_value, attribute_type, expected",
+    [
+        pytest.param("displayName", None, "displayName", id="no-type-returns-string"),
+        pytest.param("some value", "", "some value", id="empty-type-returns-string"),
+        pytest.param(
+            "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "byte",
+            bytes(21),
+            id="byte-type-21-zeros-logonHours-full-lockout",
+        ),
+        pytest.param("0, 255, 128", "byte", bytes([0, 255, 128]), id="byte-type-with-whitespace"),
+        pytest.param("1,2,3", "BYTE", bytes([1, 2, 3]), id="byte-type-case-insensitive"),
+    ],
+)
+def test_prepare_attribute_value_success(attribute_value, attribute_type, expected):
+    """
+    Given:
+        A valid attribute value and an optional attribute type.
+    When:
+        Calling prepare_attribute_value.
+    Then:
+        The correct Python object is returned (bytes for 'byte' type, str otherwise).
+    """
+    from Active_Directory_Query import prepare_attribute_value
+
+    result = prepare_attribute_value(attribute_value, attribute_type)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "attribute_value, attribute_type, expected_error_fragment",
+    [
+        pytest.param(
+            "[byte[]](0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)",
+            "byte",
+            "cannot be parsed as a comma-separated list of integers",
+            id="byte-type-powershell-syntax-rejected",
+        ),
+        pytest.param("0,256,0", "byte", "out-of-range integers", id="byte-type-value-above-255"),
+        pytest.param("0,-1,0", "byte", "out-of-range integers", id="byte-type-negative-value"),
+        pytest.param(None, "byte", "attribute-value must be provided", id="byte-type-none-value"),
+        pytest.param("", "byte", "attribute-value must be provided", id="byte-type-empty-string"),
+    ],
+)
+def test_prepare_attribute_value_errors(attribute_value, attribute_type, expected_error_fragment):
+    """
+    Given:
+        An invalid attribute value for the given attribute type.
+    When:
+        Calling prepare_attribute_value.
+    Then:
+        A DemistoException is raised with a descriptive message.
+    """
+    from CommonServerPython import DemistoException
+
+    from Active_Directory_Query import prepare_attribute_value
+
+    with pytest.raises(DemistoException, match=expected_error_fragment):
+        prepare_attribute_value(attribute_value, attribute_type)
+
+
+def test_update_user_with_byte_attribute(mocker):
+    """
+    Given:
+        The ad-update-user command is called with attribute-type='byte' and a comma-separated
+        list of integers representing logonHours (21 zero bytes = full lockout).
+    When:
+        update_user() is executed.
+    Then:
+        The LDAP modify call receives a raw bytes object (not a string) as the attribute value,
+        which is what the AD server requires for Octet String attributes.
+    """
+    import Active_Directory_Query
+
+    class MockConnection:
+        result = {"description": "success", "result": 0}
+        last_dn: str = ""
+        last_modification: dict = {}
+
+        def modify(self, dn, modification):
+            self.last_dn = dn
+            self.last_modification = modification
+            self.result = {"description": "success", "result": 0}
+            return True
+
+    mock_conn = MockConnection()
+    Active_Directory_Query.connection = mock_conn
+
+    # Mock user_dn so we skip the LDAP search entirely
+    mocker.patch.object(
+        Active_Directory_Query,
+        "user_dn",
+        return_value="CN=Test User,DC=example,DC=com",
+    )
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "username": "testuser",
+            "attribute-name": "logonHours",
+            "attribute-value": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "attribute-type": "byte",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+
+    Active_Directory_Query.update_user("dc=example,dc=com")
+
+    # The value sent to LDAP must be raw bytes, not a string
+    sent_value = mock_conn.last_modification["logonHours"][0][1]
+    assert isinstance(sent_value, bytes), f"Expected bytes, got {type(sent_value)}"
+    assert sent_value == bytes(21)
