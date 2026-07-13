@@ -10653,7 +10653,7 @@ class NetworkFirewall:
         }
         kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Listing rule groups with parameters: {kwargs}")
+        print_debug_logs(client, f"Listing rule groups with parameters: {list(kwargs.keys())}")
         response = client.list_rule_groups(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
