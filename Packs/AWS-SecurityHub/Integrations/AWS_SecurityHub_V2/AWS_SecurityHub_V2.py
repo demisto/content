@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import urllib3.util
 from datetime import UTC
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
@@ -7,13 +6,10 @@ from botocore.client import BaseClient as BotoClient
 from dateparser import parse
 
 
-# Disable insecure warnings
-urllib3.disable_warnings()
-
 DEFAULT_RETRIES = 5
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 50
+MAX_FETCH_LIMIT = 100  # AWS Security Hub V2 caps get_findings_v2 MaxResults at 100.
 FETCH_SORT_CRITERIA = [{"Field": "finding_info.created_time_dt", "SortOrder": "asc"}]
 
 # ----- Mirroring (AWS Security Hub <-> XSOAR) -----
@@ -667,7 +663,7 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
 def fetch_incidents(client: BotoClient, params: dict) -> None:
     """Fetch AWS Security Hub V2 findings as XSOAR incidents."""
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    max_fetch = min(arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT)
     last_run = demisto.getLastRun()
     demisto.debug(
         f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
@@ -675,7 +671,9 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     )
     first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
     format_first_fetch = parse(f"{first_fetch} UTC")
-    last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()  # type: ignore
+    if not format_first_fetch:
+        raise DemistoException(f"Invalid 'First fetch time' value: {first_fetch!r}.")
+    last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()
     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: {last_fetch=}")
 
     next_token = last_run.get("next_token")
@@ -743,14 +741,12 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
 
     new_last_run = {
         "last_fetch": last_fetch,
-        "next_token": new_next_token if new_findings else None,
+        "next_token": new_next_token,
         "fetched_ids": matching_uids,
         "filters": json.dumps(filters) if new_next_token else {},
     }
 
-    demisto.debug(
-        f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; " f"new lastRun -> {new_last_run=}"
-    )
+    demisto.info(f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; new lastRun -> {new_last_run=}")
     demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
@@ -1042,6 +1038,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Error has occurred in the AWS Security Hub V2 Integration: {type(e)} {e}", error=e)
 
 

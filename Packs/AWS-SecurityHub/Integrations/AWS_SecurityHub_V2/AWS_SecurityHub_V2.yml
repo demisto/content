@@ -1,3 +1,5 @@
+name: AWS - Security Hub v2
+display: AWS - Security Hub v2
 category: IT Services
 sectionorder:
 - Connect
@@ -5,22 +7,8 @@ sectionorder:
 commonfields:
   id: AWS - Security Hub v2
   version: -1
-name: AWS - Security Hub v2
-display: AWS - Security Hub v2
 description: Unified security and compliance findings management using the AWS Security Hub V2 API.
 configuration:
-- display: Role Arn
-  name: role_arn
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
-- display: Role Session Name
-  name: role_session_name
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
 - display: AWS Default Region
   name: region
   options:
@@ -46,21 +34,33 @@ configuration:
   type: 15
   section: Connect
   required: true
-- display: Role Session Duration
-  name: session_duration
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   section: Connect
   required: false
+- display: Role Arn
+  name: role_arn
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Name
+  name: role_session_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Duration
+  name: session_duration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
   defaultvalue: 60,10
   type: 0
   section: Connect
@@ -69,7 +69,7 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. Note: Increasing the number of retries will increase the execution time."
   type: 0
   section: Connect
   advanced: true
@@ -124,7 +124,7 @@ configuration:
   required: false
 - display: Minimum severity to fetch
   name: min_severity
-  additionalinfo: Only fetch findings with this severity or higher (based on the OCSF severity_id). Leave empty to fetch all severities.
+  additionalinfo: The minimum severity of findings to fetch, based on the OCSF severity_id. Findings with this severity or higher are fetched. Leave empty to fetch all severities.
   options:
   - Informational
   - Low
@@ -137,14 +137,14 @@ configuration:
   required: false
 - display: Additional fetch filters
   name: fetch_filters
-  additionalinfo: 'Extra string filters to narrow the fetch, in the same format as the string_filters command argument: "fieldname=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
+  additionalinfo: 'The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "fieldname=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
   type: 0
   section: Collect
   advanced: true
   required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
-  additionalinfo: 'Choose the direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
+  additionalinfo: 'The direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex), Outgoing (from Cortex to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex and AWS - Security Hub).'
   type: 15
   section: Collect
   options:
@@ -154,9 +154,9 @@ configuration:
   - Incoming And Outgoing
   defaultvalue: None
   required: false
-- display: Resolve finding of closed incident from XSOAR in AWS Security Hub
+- display: Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub
   name: resolve_finding
-  additionalinfo: 'When enabled, closing an incident in Cortex XSOAR sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
+  additionalinfo: 'Whether closing an incident in Cortex sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
   type: 8
   section: Collect
   defaultvalue: 'false'
@@ -180,22 +180,22 @@ script:
     description: "Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2."
     arguments:
     - name: string_filters
-      description: 'String field filters. Each entry: "fieldname=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: fieldname=severity,value=High,comparison=EQUALS;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD.'
+      description: 'The string field filters. Each entry: "fieldname=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: fieldname=severity,value=High,comparison=EQUALS;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD.'
       required: false
     - name: date_filters
-      description: 'Date field filters. Each entry must use EITHER an absolute range ("fieldname=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("fieldname=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,value=7,unit=DAYS OR fieldname=finding_info.modified_time_dt,days=7.'
+      description: 'The date field filters. Each entry must use EITHER an absolute range ("fieldname=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("fieldname=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,value=7,unit=DAYS OR fieldname=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
-      description: 'Boolean field filters. Each entry: "fieldname=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
+      description: 'The boolean field filters. Each entry: "fieldname=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
       required: false
     - name: number_filters
-      description: 'Number field filters. Each entry: "fieldname=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: fieldname=severity_id,gte=4 OR fieldname=severity_id,gte=4,lte=6.'
+      description: 'The number field filters. Each entry: "fieldname=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: fieldname=severity_id,gte=4 OR fieldname=severity_id,gte=4,lte=6.'
       required: false
     - name: map_filters
-      description: 'Map field filters. Each entry: "fieldname=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'
+      description: 'The map field filters. Each entry: "fieldname=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'
       required: false
     - name: ip_filters
-      description: 'IP field filters. Each entry: "fieldname=<field>,cidr=<IP address>", multiple entries separated by ";". Allowed fieldname values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1.'
+      description: 'The IP field filters. Each entry: "fieldname=<field>,cidr=<IP address>", multiple entries separated by ";". Allowed fieldname values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1.'
       required: false
     - name: filter_operator
       description: The logical operator used to combine the filter conditions within the composite filter.
@@ -245,7 +245,7 @@ script:
       required: false
       isArray: true
     - name: finding_identifiers
-      description: 'Composite finding identifiers to update. Each entry: "cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id>", multiple entries separated by ";".'
+      description: 'The composite finding identifiers to update. Each entry: "cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id>", multiple entries separated by ";".'
       required: false
     - name: comment
       description: The reason for updating the findings.
@@ -270,7 +270,7 @@ script:
       description: The finding metadata UID to retrieve.
       required: true
     - name: lastUpdate
-      description: A date string in local time representing the last time the incident was updated.
+      description: The date string in local time representing the last time the incident was updated.
       required: false
   - name: get-mapping-fields
     description: 'Returns the list of fields available for outgoing mirroring. This command is used for mirroring and is not intended to be run manually.'
