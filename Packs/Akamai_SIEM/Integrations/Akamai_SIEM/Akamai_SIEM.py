@@ -41,10 +41,12 @@ INTEGRATION_CONTEXT_NAME = "Akamai"
 VENDOR = "Akamai"
 PRODUCT = "WAF"
 FETCH_EVENTS_MAX_PAGE_SIZE = 20000  # Allowed events limit per request.
+DEFAULT_PAGE_SIZE = 10000  # Default events per request
 TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a safe zone delta.
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 80000
+DEFAULT_FETCH_LIMIT = 20  # Default total items per fetch
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
 AKAMAI_MAX_LOOKBACK_MINUTES = 715  # 11h55m: max recovery window (12h) minus a 5-minute safety buffer.
 
@@ -1330,14 +1332,14 @@ def main():  # pragma: no cover
                     "Please make sure to set either isFetchEvents or longRunning to false in"
                     " the integration configuration."
                 )
-            page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
+            page_size = int(params.get("page_size", DEFAULT_PAGE_SIZE))
             if page_size > FETCH_EVENTS_MAX_PAGE_SIZE:
                 demisto.debug(
                     f"Got {page_size=} larger than max {FETCH_EVENTS_MAX_PAGE_SIZE}, "
                     f"lowering page_size to {FETCH_EVENTS_MAX_PAGE_SIZE}."
                 )
                 page_size = FETCH_EVENTS_MAX_PAGE_SIZE
-            limit = int(params.get("fetchLimit", MAX_ALLOWED_FETCH_LIMIT))
+            limit = int(params.get("fetchLimit", DEFAULT_FETCH_LIMIT))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.debug(
                     f"[Fetch Events] Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, "
@@ -1351,7 +1353,8 @@ def main():  # pragma: no cover
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             should_fail = False
             page_counter = 0
-            offset = total_events_count = 0  # ensure defined even if the generator yields nothing
+            total_events_count = 0
+            offset = None
             auto_trigger_next_run = False
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
                 fetch_events_command(

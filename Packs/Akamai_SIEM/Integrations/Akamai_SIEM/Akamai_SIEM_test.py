@@ -443,8 +443,8 @@ class TestCommandsFunctions:
         mocker.patch.object(demisto, "error")
         mocker.patch.object(demisto, "debug")
         with pytest.raises(DemistoException) as e:
-            for _, _, _ in Akamai_SIEM.fetch_events_command(
-                client,  # noqa: B007
+            for _, _, _, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+                client,
                 "3 days",
                 220,
                 "",
@@ -960,7 +960,8 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. Skipping decode events."),
             mocker.call(
-                f"Running in interval = 1. Sending {len(events)} events to xsiam. latest event time is: 2020-06-04T20:43:42Z"
+                f"[Latest Event Time] Running in interval = 1. Sending {len(events)} events to xsiam. "
+                "latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]
     )
@@ -1018,7 +1019,8 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. decoding events."),
             mocker.call(
-                f"Running in interval = 1. Sending {len(events)} events to xsiam. latest event time is: 2020-06-04T20:43:42Z"
+                f"[Latest Event Time] Running in interval = 1. Sending {len(events)} events to xsiam. "
+                "latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]
     )
