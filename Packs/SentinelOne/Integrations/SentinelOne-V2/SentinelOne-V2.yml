@@ -3127,6 +3127,35 @@ script:
     - contextPath: SentinelOne.Threat.ZippedFile
       description: Details of the zipped folder.
       type: String
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    - name: limit
+      required: false
+      description: "The max number of timeline entries to return, default is 5000"
+    name: sentinelone-export-full-threat-timeline
+    description: Exports the threat's full timeline as a JSON File.
+    outputs:
+    - contextPath: SentinelOne.Export.Timeline.ThreatId
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Export.Timeline.Filename
+      description: The name of the file containing the Timeline.
+      type: Boolean
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    name: sentinelone-export-threat-events
+    description: Exports the threat's events as a JSON File.
+    outputs:
+    - contextPath: SentinelOne.Export.Events.ThreatId
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Export.Events.Filename
+      description: The name of the file containing the Timeline.
+      type: Boolean
   dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   ismappable: true
