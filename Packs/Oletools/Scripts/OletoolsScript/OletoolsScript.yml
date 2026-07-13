@@ -125,7 +125,7 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
 subtype: python3
-dockerimage: demisto/parse-emails:1.0.0.3555598
+dockerimage: devdemisto/parse-emails:1.0.0.10967821
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
