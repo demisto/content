@@ -10,14 +10,13 @@ This integration uses the Cisco Email Threat Defense REST API.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| ETD API Base URL | Base URL of the Cisco Email Threat Defense API (for example, `https://api.ironport.com`). | Yes |
+| ETD API Base URL | Base URL of the Cisco Email Threat Defense API (for example, `https://your-etd-instance.example.com`). | Yes |
 | ETD API Key | API key used to authenticate requests to Cisco ETD. | Yes |
 | Client ID | Cisco ETD OAuth Client ID. | Yes |
 | Client Secret | Cisco ETD OAuth Client Secret. | Yes |
 | Event Types | Select one or more Cisco ETD log types to ingest (`message`, `audit`, or `connection`). | Yes |
 | Max fetch | Maximum number of events to ingest during a single fetch cycle. | No |
 | Fetch Events | Enables continuous event collection into Cortex XSIAM. | No |
-
 
 ## Commands
 

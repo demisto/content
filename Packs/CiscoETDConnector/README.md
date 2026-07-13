@@ -90,14 +90,13 @@ Before configuring the integration, ensure the following requirements are met:
 
 | Parameter                 | Description                                                                   |
 | ------------------------- | ----------------------------------------------------------------------------- |
-| ETD Base URL              | Cisco ETD API URL (for example: `https://api.ironport.com`)                   |
+| ETD Base URL              | Cisco ETD API URL (for example, `https://your-etd-instance.example.com`).                  |
 | API Key                   | Cisco ETD API Key                                                             |
 | Client ID                 | Cisco ETD Client ID                                                           |
 | Client Secret             | Cisco ETD Client Secret                                                       |
 | First Fetch Time          | Initial log collection window (for example: `5 days`, `7 days`, or `30 days`) |
 | Fetch Events              | Enable continuous log ingestion into Cortex XSIAM                             |
 | Use system proxy settings | Enable if your environment requires a proxy                                   |
-
 
 > **Note:** You must enable **Fetch Events** for continuous log ingestion into Cortex XSIAM.
 
