@@ -635,7 +635,7 @@ def test_generate_authentication_headers_oauth_missing_token_url(mock_return_err
     }
     with pytest.raises(SystemExit):
         generate_authentication_headers(params)
-    mock_return_error.assert_called_once_with("Oauth token url is required for OAuth 2.0 Authentication.")
+    mock_return_error.assert_called_once_with("OAuth token url is required for OAuth 2.0 Authentication.")
 
 
 @patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
@@ -652,7 +652,7 @@ def test_generate_authentication_headers_oauth_missing_client_id(mock_return_err
     }
     with pytest.raises(SystemExit):
         generate_authentication_headers(params)
-    mock_return_error.assert_called_once_with("Oauth client id is required for OAuth 2.0 Authentication.")
+    mock_return_error.assert_called_once_with("OAuth client id is required for OAuth 2.0 Authentication.")
 
 
 @patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
@@ -669,7 +669,7 @@ def test_generate_authentication_headers_oauth_missing_client_secret(mock_return
     }
     with pytest.raises(SystemExit):
         generate_authentication_headers(params)
-    mock_return_error.assert_called_once_with("Oauth client secret is required for OAuth 2.0 Authentication.")
+    mock_return_error.assert_called_once_with("OAuth client secret is required for OAuth 2.0 Authentication.")
 
 
 # ---------------------------------------------------------------------------
