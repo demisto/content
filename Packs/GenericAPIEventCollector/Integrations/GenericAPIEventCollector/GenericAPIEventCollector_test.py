@@ -571,11 +571,61 @@ def test_get_oauth2_auth_handler_scope_defaults_to_none_when_empty():
     assert handler.scope is None
 
 
-@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
-def test_get_oauth2_auth_handler_missing_token_url(mock_return_error):
+def test_get_oauth2_auth_handler_missing_token_url():
     """
     Given: OAuth 2.0 params missing the oauth_token_url.
     When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+def test_get_oauth2_auth_handler_missing_client_id():
+    """
+    Given: OAuth 2.0 params missing the oauth_client_id.
+    When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+def test_get_oauth2_auth_handler_missing_client_secret():
+    """
+    Given: OAuth 2.0 params missing the oauth_client_secret.
+    When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+# ---------------------------------------------------------------------------
+# generate_authentication_headers - OAuth 2.0 validation
+# ---------------------------------------------------------------------------
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_authentication_headers_oauth_missing_token_url(mock_return_error):
+    """
+    Given: OAuth 2.0 params missing the oauth_token_url.
+    When: generate_authentication_headers is called.
     Then: return_error is called with a token-url specific message.
     """
     params = {
@@ -584,15 +634,15 @@ def test_get_oauth2_auth_handler_missing_token_url(mock_return_error):
         "oauth_client_secret": "my-secret",
     }
     with pytest.raises(SystemExit):
-        get_oauth2_auth_handler(params)
+        generate_authentication_headers(params)
     mock_return_error.assert_called_once_with("Oauth token url is required for OAuth 2.0 Authentication.")
 
 
 @patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
-def test_get_oauth2_auth_handler_missing_client_id(mock_return_error):
+def test_generate_authentication_headers_oauth_missing_client_id(mock_return_error):
     """
     Given: OAuth 2.0 params missing the oauth_client_id.
-    When: get_oauth2_auth_handler is called.
+    When: generate_authentication_headers is called.
     Then: return_error is called with a client-id specific message.
     """
     params = {
@@ -601,15 +651,15 @@ def test_get_oauth2_auth_handler_missing_client_id(mock_return_error):
         "oauth_client_secret": "my-secret",
     }
     with pytest.raises(SystemExit):
-        get_oauth2_auth_handler(params)
+        generate_authentication_headers(params)
     mock_return_error.assert_called_once_with("Oauth client id is required for OAuth 2.0 Authentication.")
 
 
 @patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
-def test_get_oauth2_auth_handler_missing_client_secret(mock_return_error):
+def test_generate_authentication_headers_oauth_missing_client_secret(mock_return_error):
     """
     Given: OAuth 2.0 params missing the oauth_client_secret.
-    When: get_oauth2_auth_handler is called.
+    When: generate_authentication_headers is called.
     Then: return_error is called with a client-secret specific message.
     """
     params = {
@@ -618,7 +668,7 @@ def test_get_oauth2_auth_handler_missing_client_secret(mock_return_error):
         "oauth_client_id": "my-client-id",
     }
     with pytest.raises(SystemExit):
-        get_oauth2_auth_handler(params)
+        generate_authentication_headers(params)
     mock_return_error.assert_called_once_with("Oauth client secret is required for OAuth 2.0 Authentication.")
 
 
