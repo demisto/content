@@ -67,12 +67,14 @@ script:
   - name: fetch-indicators
     description: Fetches indicators from the feed and creates them in Cortex.
     arguments:
-    - name: path
+    - name: paths
       description: The path to fetch indicators from.
       required: false
-    - name: marketplace
-      description: The marketplace.
+      isArray: true
+    - name: first_date
+      description: The date.
       required: false
+      type: 3
     - name: entry_id
       description: The file entry id.
       required: false
