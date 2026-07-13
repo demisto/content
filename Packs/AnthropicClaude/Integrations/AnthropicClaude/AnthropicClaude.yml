@@ -527,7 +527,7 @@ script:
     - contextPath: AnthropicClaude.ProjectDocument.content
       description: The document text content.
       type: String
-  dockerimage: demisto/parse-emails:1.0.0.3555598
+  dockerimage: demisto/parse-emails:0.1.48.10569905
   runonce: false
   script: ''
   subtype: python3
@@ -537,5 +537,6 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 marketplaces:
+- xsoar
 - marketplacev2
 - platform
