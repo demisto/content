@@ -3133,7 +3133,7 @@ script:
       description: "Please provide the Valid Threat ID. Example: 14629133470822878."
     - name: limit
       required: false
-      description: "The max number of timeline entries to return, default is 5000"
+      description: "The max number of timeline entries to return, default is 5000."
     name: sentinelone-export-full-threat-timeline
     description: Exports the threat's full timeline as a JSON File.
     outputs:
