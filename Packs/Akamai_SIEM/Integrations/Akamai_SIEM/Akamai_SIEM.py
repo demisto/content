@@ -1347,7 +1347,7 @@ def main():  # pragma: no cover
             if limit < page_size:
                 demisto.debug(f"[Fetch Events] Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
-            demisto.debug(f"[Fetch Events] Fetching with fetch_limit={limit}, page_size={page_size}.")
+            demisto.info(f"[Fetch Events] Fetching with fetch_limit={limit}, page_size={page_size}.")
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             should_fail = False
             page_counter = 0
@@ -1394,7 +1394,7 @@ def main():  # pragma: no cover
                         f"Sent {total_events_count} events to xsiam in total during this interval."
                     )
                     events.clear()
-            demisto.debug(
+            demisto.info(
                 f"[Fetch Events] Cycle complete: sent {total_events_count} total events to XSIAM across "
                 f"{page_counter} page(s)."
             )
@@ -1403,7 +1403,7 @@ def main():  # pragma: no cover
             demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
             next_run = {}
             if auto_trigger_next_run or total_events_count >= limit:
-                demisto.debug(
+                demisto.info(
                     f"[Fetch Events] Got {auto_trigger_next_run=} or at least {limit} events this interval - "
                     f"setting nextTrigger=0."
                 )
