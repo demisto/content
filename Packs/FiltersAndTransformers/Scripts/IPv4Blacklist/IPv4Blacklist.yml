@@ -22,7 +22,7 @@ args:
   isArray: true
 scripttarget: 0
 isllm: false
-dockerimage: demisto/netutils:1.0.0.3562043
+dockerimage: demisto/netutils:1.0.0.10187688
 runas: DBotWeakRole
 tests:
 - No test - unit test
