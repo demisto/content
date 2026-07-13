@@ -3343,8 +3343,7 @@ class TestBaseClient:
             Then
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
-        from CommonServerPython import DemistoException
-        with pytest.raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(CommonServerPython.DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
@@ -3363,7 +3362,6 @@ class TestBaseClient:
             - Retry is called without the backoff_jitter kwarg (no TypeError is raised)
             - The https:// adapter is mounted on the session with the configured retry object
         """
-        import CommonServerPython
         from urllib3.util import Retry as RealRetry
 
         class RetryDefaultNoJitter:
@@ -3398,7 +3396,6 @@ class TestBaseClient:
         Then:
             - Retry is called with the backoff_jitter kwarg set to the given value
         """
-        import CommonServerPython
         from urllib3.util import Retry as RealRetry
 
         class RetryDefaultWithJitter:
