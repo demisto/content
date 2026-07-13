@@ -353,7 +353,11 @@ class EndpointCommandRunner:
                 continue
 
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
-                command_error_outputs.append(hr_to_command_results(command, args, contents, entry_type=entry_type))  # type: ignore[arg-type]
+                # hr_to_command_results returns None when the entry has no human-readable content
+                # (e.g. PCI built-in commands emit an empty-contents error entry when nothing is found).
+                # Guard against appending None, otherwise return_results crashes on 'NoneType'.readable_output.
+                if error_result := hr_to_command_results(command, args, contents, entry_type=entry_type):  # type: ignore[arg-type]
+                    command_error_outputs.append(error_result)
             elif entry_type == EntryType.NOTE:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")

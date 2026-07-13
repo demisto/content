@@ -296,7 +296,9 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     errors_command_results = []
     human_readable_list = []
     entry_context_list = []
-    for entry in res:
+    # PCI built-in commands may return no entries (None) on a not-found result;
+    # guard against 'NoneType' object is not iterable.
+    for entry in res or []:
         entry_context_list.append((entry.get("EntryContext") or {}) | {"instance": entry.get("ModuleName")})
         if is_error(entry):
             errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))

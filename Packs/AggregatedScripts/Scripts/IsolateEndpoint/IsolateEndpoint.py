@@ -14,6 +14,7 @@ class Brands(StrEnum):
     FIREEYE_HX_V2 = "FireEyeHX v2"
     CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
     CORTEX_CORE_IR = "Cortex Core - IR"
+    BUILTIN = "Builtin"
     MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION = "Microsoft Defender Advanced Threat Protection"
 
     @classmethod
@@ -55,9 +56,11 @@ def initialize_commands() -> list:
     """
     commands = [
         Command(
-            # Can be used only in XSIAM
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-isolate-endpoint" if not is_platform() else "isolateEndpoint",
+            # Can be used only in XSIAM / unified platform.
+            # On the platform, get-endpoint-data reports Core endpoints under the built-in brand
+            # "Builtin" and the command is exposed as the PCI built-in "isolateEndpoint".
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="isolateEndpoint" if is_platform() else "core-isolate-endpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},
         ),
         Command(
