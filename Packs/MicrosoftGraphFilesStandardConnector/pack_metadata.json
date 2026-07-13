@@ -1,0 +1,28 @@
+{
+    "name": "Microsoft Graph Files (Standard Connector)",
+    "description": "Satellite pack of Microsoft Graph Files used for the Standard Connector deployment. Shares core logic with the Microsoft Graph Files pack via the MicrosoftGraphFilesApiModule.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.15.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-06-30T00:00:00Z",
+    "categories": [
+        "Email"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr",
+        "cloud"
+    ],
+    "hidden": false
+}

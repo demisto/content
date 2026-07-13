@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "NODE-001",
+    "status": "Available",
+    "workingDirectory": "C:\\automate\\temp",
+    "address": "automate-node-1"
+  },
+  {
+    "id": 2,
+    "name": "NODE-002",
+    "status": "Processing",
+    "workingDirectory": "C:\\automate\\temp",
+    "address": "automate-node-2",
+    "applications": [
+      {
+        "ApplicationId": 1,
+        "ApplicationName": "AXIOM Process",
+        "ApplicationVersion": "7.0.0",
+        "ApplicationPath": "C:\\Program Files\\Magnet Forensics\\Magnet AUTOMATE\\agent\\AXIOM Process\\AXIOMProcess.CLI.exe"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "NODE-003",
+    "status": "Offline",
+    "workingDirectory": "C:\\automate\\temp",
+    "address": "automate-node-3",
+    "applications": [
+      {
+        "ApplicationId": 5,
+        "ApplicationName": "Griffeye Processing Engine",
+        "ApplicationPath": "C:\\Program Files\\Magnet Forensics\\Magnet AUTOMATE\\agent\\AXIOM Process\\AXIOMProcess.CLI.exe"
+      }
+    ]
+  }
+]
