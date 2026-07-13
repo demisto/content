@@ -108,6 +108,20 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def resolve_max_fetch(params: dict) -> int:
+    """
+    Resolves the max_fetch value from the integration params, falling back to DEFAULT_MAX_FETCH
+    when the parameter is missing, empty, or evaluates to a falsy value.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        The resolved max_fetch value.
+    """
+    return arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+
+
 def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_date: str, to_date: str):
     """
     Fetches up to logging_to_fetch activity logging avaiable from Workday.
@@ -272,7 +286,7 @@ def main() -> None:  # pragma: no cover
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    max_fetch = resolve_max_fetch(params)
     first_fetch = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True)
 
     demisto.debug(f"Command being called is {command}")

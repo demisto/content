@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
-from WorkdayEventCollector import DATE_FORMAT, MAX_PAGE_SIZE, Client
+from WorkdayEventCollector import DATE_FORMAT, DEFAULT_MAX_FETCH, MAX_PAGE_SIZE, Client
 
 
 def util_load_json(path):
@@ -147,6 +147,27 @@ class TestFetchActivity:
         assert request_mock.call_count == 3
         assert [call.kwargs["offset"] for call in request_mock.call_args_list] == [0, MAX_PAGE_SIZE, available_events]
         assert len(res) == available_events
+
+    def test_resolve_max_fetch_uses_provided_value(self):
+        """
+        Given: a max_fetch value is provided in the params.
+        When: running resolve_max_fetch.
+        Then: the provided value is returned (as an int).
+        """
+        from WorkdayEventCollector import resolve_max_fetch
+
+        assert resolve_max_fetch({"max_fetch": "500"}) == 500
+
+    @pytest.mark.parametrize("params", [{}, {"max_fetch": None}, {"max_fetch": ""}], ids=["missing", "none", "empty"])
+    def test_resolve_max_fetch_falls_back_to_default(self, params):
+        """
+        Given: max_fetch is missing, None, or empty in the params.
+        When: running resolve_max_fetch.
+        Then: DEFAULT_MAX_FETCH is returned.
+        """
+        from WorkdayEventCollector import resolve_max_fetch
+
+        assert resolve_max_fetch(params) == DEFAULT_MAX_FETCH
 
     DUPLICATED_ACTIVITY_LOGGINGS = [
         (("2023-04-15T07:00:00Z", 5, 2, 0), 5, {}),
