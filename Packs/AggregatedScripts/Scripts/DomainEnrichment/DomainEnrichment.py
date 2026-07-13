@@ -65,6 +65,7 @@ def domain_enrichment_script(
         if is_platform():
             # PCI commands are injected by the server as built-ins (no integration brand to enable),
             # so they must run as BUILTIN and skip the using-brand injection.
+            demisto.info("TMP-NBS DomainEnrichment: is_platform=True, prevalence command chosen='getDomainAnalyticsPrevalence'")
             command_batch2.append(
                 Command(
                     name="getDomainAnalyticsPrevalence",
@@ -76,6 +77,7 @@ def domain_enrichment_script(
                 )
             )
         else:
+            demisto.info("TMP-NBS DomainEnrichment: is_platform=False, prevalence command chosen='core-get-domain-analytics-prevalence'")
             command_batch2.append(
                 Command(
                     name="core-get-domain-analytics-prevalence",

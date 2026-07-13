@@ -450,6 +450,10 @@ class XDRHandler(BrandHandler):
             self.quarantine_command = "quarantineFile" if is_platform() else "core-quarantine-files"
         else:
             self.quarantine_command = "xdr-file-quarantine"
+        demisto.info(
+            f"TMP-NBS QuarantineFile: is_platform={is_platform()}, brand={self.brand}, "
+            f"quarantine command chosen='{self.quarantine_command}'"
+        )
 
     def validate_args(self, args: dict) -> None:
         """
@@ -492,6 +496,10 @@ class XDRHandler(BrandHandler):
             status_command_name = "getFileQuarantineStatus"
         else:
             status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
+        demisto.info(
+            f"TMP-NBS QuarantineFile: is_platform={is_platform()}, brand={self.brand}, "
+            f"quarantine-status command chosen='{status_command_name}'"
+        )
         status_cmd = Command(
             name=status_command_name,
             args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},

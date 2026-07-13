@@ -96,6 +96,7 @@ def file_enrichment_script(
         if is_platform():
             # PCI commands are injected by the server as built-ins (no integration brand to enable),
             # so they must run as BUILTIN and skip the using-brand injection.
+            demisto.info("TMP-NBS FileEnrichment: is_platform=True, prevalence command chosen='getHashAnalyticsPrevalence'")
             command_batch2.append(
                 Command(
                     name="getHashAnalyticsPrevalence",
@@ -107,6 +108,7 @@ def file_enrichment_script(
                 )
             )
         else:
+            demisto.info("TMP-NBS FileEnrichment: is_platform=False, prevalence command chosen='core-get-hash-analytics-prevalence'")
             command_batch2.append(
                 Command(
                     name="core-get-hash-analytics-prevalence",
