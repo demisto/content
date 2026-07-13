@@ -403,10 +403,7 @@ def test_module(client: Client) -> str:
             client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, max_fetch=fetch_limit, look_back=0
         )
 
-        if incidents:
-            return "ok"
-        else:
-            return "no data in the system, but connection looks ok"
+        return "ok"
     except Exception as e:
         if "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key was set correctly"

@@ -317,6 +317,44 @@ def test_fetch_incidents_query_uses_window(mocker):
     assert "TO *" not in call_arg
 
 
+@freeze_time("2024-01-01T11:00:00Z")
+def test_test_module_returns_ok_when_no_messages(mocker):
+    """
+    Given:
+    - A valid connection to PhishER that returns zero messages
+
+    When:
+    - test-module is called (e.g. from XSOAR integration config)
+
+    Then:
+    - "ok" is returned — empty inbox is not a failure
+    """
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
+    mocker.patch("knowbe4Phisher.demisto").getLastRun.return_value = {}
+    mocker.patch.object(client, "max_fetch", 50)
+    result = phisher.test_module(client)
+    assert result == "ok"
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_test_module_returns_ok_when_messages_exist(mocker):
+    """
+    Given:
+    - A valid connection to PhishER that returns messages
+
+    When:
+    - test-module is called
+
+    Then:
+    - "ok" is returned
+    """
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A]))
+    mocker.patch("knowbe4Phisher.demisto").getLastRun.return_value = {}
+    mocker.patch.object(client, "max_fetch", 50)
+    result = phisher.test_module(client)
+    assert result == "ok"
+
+
 def test_time_creation():
     """
     Given:
