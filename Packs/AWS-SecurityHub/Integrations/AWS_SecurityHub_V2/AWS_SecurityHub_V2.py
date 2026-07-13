@@ -12,41 +12,33 @@ DEFAULT_MAX_FETCH = 50
 MAX_FETCH_LIMIT = 100  # AWS Security Hub V2 caps get_findings_v2 MaxResults at 100.
 FETCH_SORT_CRITERIA = [{"Field": "finding_info.created_time_dt", "SortOrder": "asc"}]
 
-# ----- Mirroring (AWS Security Hub <-> XSOAR) -----
-# Maps the human-readable mirror direction (integration param) to the value XSOAR stores on incidents.
+# Maps the integration mirror-direction param to the value XSOAR stores on incidents.
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
     "Incoming": "In",
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-# OCSF status_id values (https://schema.ocsf.io). 1=New, 2=In Progress, 3=Suppressed, 4=Resolved.
+# OCSF status_id values (https://schema.ocsf.io).
 OCSF_STATUS_ID_NEW = 1
 OCSF_STATUS_ID_IN_PROGRESS = 2
 OCSF_STATUS_ID_SUPPRESSED = 3
-# OCSF status_id representing a resolved finding, applied on outgoing mirroring when 'resolve_finding' is enabled
-# and the XSOAR incident is closed.
 OCSF_STATUS_ID_RESOLVED = 4
-# When a finding reaches one of these OCSF statuses in AWS, the mirrored-in XSOAR incident is closed
-# (full lifecycle sync). Each maps to the XSOAR close reason recorded on the incident.
+# OCSF statuses that close the mirrored-in XSOAR incident, mapped to the XSOAR close reason.
 OCSF_STATUS_ID_TO_CLOSE_REASON = {
     OCSF_STATUS_ID_RESOLVED: "Resolved",
-    OCSF_STATUS_ID_SUPPRESSED: "Other",  # Suppressed has no dedicated XSOAR close reason; use "Other".
+    OCSF_STATUS_ID_SUPPRESSED: "Other",
 }
-# OCSF statuses that represent an OPEN finding; if a closed XSOAR incident's finding returns to one of
-# these, the incident is reopened on mirror-in.
+# OCSF statuses that reopen the mirrored-in XSOAR incident.
 OCSF_OPEN_STATUS_IDS = {OCSF_STATUS_ID_NEW, OCSF_STATUS_ID_IN_PROGRESS}
-# Delta keys (incident fields, as produced by the outgoing mapper) that are written verbatim to the
-# corresponding ``batch_update_findings_v2`` kwarg (value coerced to int for the numeric ids).
+# Outgoing delta keys written verbatim to the batch_update_findings_v2 kwarg.
 OUTGOING_DELTA_TO_KWARG = {
     "severityid": "SeverityId",
     "statusid": "StatusId",
     "comment": "Comment",
 }
-# Every incident field the outgoing mirror consumes, with the description surfaced by
-# ``get-mapping-fields``. Includes the built-in "severity" field, which is translated (not written
-# verbatim) to OCSF SeverityId in update_remote_system_command. Kept as the single source of truth
-# for the outgoing mapping schema so it never drifts from what the code actually mirrors.
+# Outgoing mapping schema surfaced by get-mapping-fields. Includes the built-in "severity" field,
+# which is translated (not written verbatim) to OCSF SeverityId in update_remote_system_command.
 OUTGOING_FIELD_DESCRIPTIONS = {
     "severityid": "The OCSF severity_id to set on the finding (1=Informational .. 6=Fatal).",
     "statusid": "The OCSF status_id to set on the finding (1=New, 2=In Progress, 3=Suppressed, 4=Resolved).",
@@ -54,20 +46,16 @@ OUTGOING_FIELD_DESCRIPTIONS = {
     "severity": "The built-in incident severity; mirrored to the finding's OCSF severity in AWS.",
 }
 
-# OCSF severity_id (https://schema.ocsf.io) -> XSOAR incident severity.
-# OCSF: 0=Unknown, 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal.
-# XSOAR: 0=Unknown, 0.5=Informational, 1=Low, 2=Medium, 3=High, 4=Critical.
-# XSOAR has no severity above Critical, so OCSF "Fatal" (6) collapses to XSOAR Critical.
+# OCSF severity_id -> XSOAR incident severity. Fatal (6) collapses to Critical (XSOAR has no higher).
 OCSF_SEVERITY_ID_TO_XSOAR = {
     1: IncidentSeverity.INFO,
     2: IncidentSeverity.LOW,
     3: IncidentSeverity.MEDIUM,
     4: IncidentSeverity.HIGH,
     5: IncidentSeverity.CRITICAL,
-    6: IncidentSeverity.CRITICAL,  # Fatal -> Critical (XSOAR has no higher severity)
+    6: IncidentSeverity.CRITICAL,
 }
-# XSOAR incident severity -> OCSF severity_id, used to mirror OUT changes to the built-in "severity"
-# field. XSOAR Unknown (0) has no OCSF equivalent and is skipped by the caller.
+# XSOAR incident severity -> OCSF severity_id. XSOAR Unknown (0) has no OCSF equivalent (skipped by caller).
 XSOAR_SEVERITY_TO_OCSF_ID = {
     IncidentSeverity.INFO: 1,
     IncidentSeverity.LOW: 2,
@@ -78,12 +66,13 @@ XSOAR_SEVERITY_TO_OCSF_ID = {
 
 
 def effective_severity_id(finding: dict) -> int:
-    """Return the severity_id shown for the finding in the AWS Security Hub console.
+    """Return the finding's current severity_id (top-level), falling back to vendor_attributes, else 0.
 
-    The top-level ``severity_id`` is the value the console displays and that reflects an
-    analyst's severity change. ``vendor_attributes.severity_id`` holds the original
-    vendor-reported severity and is used only as a fallback. Returns ``0`` (OCSF
-    "Unknown") when neither is present.
+    Args:
+        finding (dict): The OCSF finding.
+
+    Returns:
+        int: The OCSF severity_id, or 0 (Unknown) when absent.
     """
     vendor_attributes = finding.get("vendor_attributes") or {}
     return finding.get("severity_id") or vendor_attributes.get("severity_id") or 0
@@ -100,15 +89,9 @@ SEVERITY_LABEL_TO_OCSF_ID = {
 }
 
 
-# Configuration driving the generic ``parse_filters`` helper. For each filter category, ``fields``
-# maps a user-facing entry key to a (API ``Filter`` key, value-coercion callable) tuple, ``required``
-# lists the entry keys that must be present for an entry to be valid, and ``defaults`` provides
-# fallback values applied when the user omits an optional key.
-#   * string  -> Filter {Value, Comparison}
-#   * number  -> Filter {Eq|Gt|Gte|Lt|Lte} (the operator is the entry key, value is numeric)
-#   * boolean -> Filter {Value}
-#   * map     -> Filter {Key, Value, Comparison}
-#   * ip      -> Filter {Cidr}
+# Drives the generic parse_filters helper. Per category: "fields" maps an entry key to
+# (API Filter key, coercion callable); "required" lists mandatory entry keys; "defaults" supplies
+# fallbacks; "require_any" (optional) requires at least one of the listed keys.
 FILTER_CONFIGS: dict[str, dict] = {
     "string": {
         "fields": {"value": ("Value", str), "comparison": ("Comparison", str)},
@@ -149,17 +132,13 @@ FILTER_CONFIGS: dict[str, dict] = {
 
 
 def parse_filter_entries(filters_str: str) -> list[dict]:
-    """Parse a filter argument into a list of key/value entry dictionaries.
-
-    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
-    For example ``fieldname=severity,value=High,comparison=EQUALS;fieldname=status,value=New``
-    yields two entries, each a dict of its key/value pairs.
+    """Parse a filter argument (";"-separated entries of ","-separated key=value pairs) into dicts.
 
     Args:
         filters_str (str): The raw filter argument string.
 
     Returns:
-        list[dict]: A list of dictionaries, one per entry.
+        list[dict]: One key/value dict per entry.
     """
     entries = []
     for raw_entry in filters_str.split(";"):
@@ -178,20 +157,14 @@ def parse_filter_entries(filters_str: str) -> list[dict]:
 
 
 def parse_filters(filters_str: str, category: str) -> list[dict]:
-    """Generically parse a filter argument into the API ``{FieldName, Filter}`` structure.
+    """Parse a filter argument into the API ``{FieldName, Filter}`` structure using FILTER_CONFIGS.
 
-    The per-category mapping in ``FILTER_CONFIGS`` controls which user-facing entry keys are
-    accepted, how they map to the API ``Filter`` keys, and how each value is coerced (str/number/
-    bool). This single helper backs the ``string``, ``number``, ``boolean``, ``map`` and ``ip``
-    filter categories (``date`` is handled separately by ``parse_date_filters`` due to its
-    ``oneOf`` structure).
-
-    Each entry requires ``fieldname`` plus the category-specific required keys. Entries missing
-    ``fieldname`` or any required key are skipped.
+    Backs the string/number/boolean/map/ip categories (date is handled by parse_date_filters).
+    Entries missing ``fieldname`` or a category-required key are skipped.
 
     Args:
         filters_str (str): The raw filter argument string.
-        category (str): The filter category key into ``FILTER_CONFIGS``.
+        category (str): The FILTER_CONFIGS category key.
 
     Returns:
         list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
@@ -218,18 +191,10 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
 
 
 def parse_date_filters(filters_str: str) -> list[dict]:
-    """Parse ``date_filters`` arg entries into the API ``DateFilters`` structure.
+    """Parse ``date_filters`` entries into the API ``DateFilters`` structure.
 
-    The API's date ``Filter`` is a ``oneOf`` of two mutually exclusive forms:
-        * Absolute range: ``Start`` and ``End`` (both required together).
-        * Relative ``DateRange``: ``{Value, Unit, Comparison}`` describing a window relative to now.
-
-    Each entry supports the following keys:
-        * ``fieldname`` (required).
-        * Absolute form: ``start`` + ``end`` (both required together).
-        * Relative form: ``value`` (required) with optional ``unit`` (default ``DAYS``) and
-          optional ``comparison``. ``days`` is accepted as a convenience alias for
-          ``value`` with ``unit=DAYS``.
+    Each entry uses exactly one form: absolute (``start`` + ``end``) or relative DateRange
+    (``value`` with optional ``unit``/``comparison``; ``days`` is an alias for ``value`` + ``unit=DAYS``).
 
     Args:
         filters_str (str): The raw date filters argument string.
@@ -238,8 +203,7 @@ def parse_date_filters(filters_str: str) -> list[dict]:
         list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
 
     Raises:
-        DemistoException: If an entry mixes the absolute and relative forms, provides only one of
-            ``start``/``end``, or provides neither form.
+        DemistoException: If an entry mixes both forms, provides only one of ``start``/``end``, or neither.
     """
     filters = []
     for e in parse_filter_entries(filters_str):
@@ -276,10 +240,7 @@ def parse_date_filters(filters_str: str) -> list[dict]:
 
 
 def generate_filters_for_get_findings(args: dict) -> dict | None:
-    """Build the Security Hub V2 composite ``Filters`` object from the per-category filter arguments.
-
-    Each filter category (string, date, boolean, number, map, ip) is parsed from its dedicated
-    command argument and placed in a single composite filter, combined using ``composite_operator``.
+    """Build the composite ``Filters`` object for get-findings from the per-category filter arguments.
 
     Args:
         args (dict): Demisto command arguments.
@@ -305,9 +266,8 @@ def generate_filters_for_get_findings(args: dict) -> dict | None:
 
 
 def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
-    """Parse the ``finding_identifiers`` argument into the API ``FindingIdentifiers`` structure.
+    """Parse ``finding_identifiers`` into the API ``FindingIdentifiers`` structure.
 
-    Each entry is a comma-separated list of ``key=value`` pairs, and entries are separated by ``;``.
     Required keys per entry: ``cloud_account_uid``, ``finding_info_uid``, ``metadata_product_uid``.
 
     Args:
@@ -328,12 +288,10 @@ def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
 
 
 def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
-    """Build the Security Hub V2 composite ``Filters`` object used by the fetch loop.
+    """Build the composite ``Filters`` object for the fetch loop.
 
-    The fetch filters on the OCSF ``finding_info.created_time_dt`` field within the
-    ``[start_time, end_time]`` window (the server requires a bounded ``{Start, End}`` date filter).
-    Optionally, a minimum severity (mapped to an OCSF ``severity_id >=`` number filter) and any extra
-    string filters are combined with ``AND``.
+    Filters on ``finding_info.created_time_dt`` within ``[start_time, end_time]``, AND-ed with an
+    optional minimum-severity number filter and optional extra string filters.
 
     Args:
         start_time (str): ISO8601 inclusive lower bound of the fetch window.
@@ -364,29 +322,22 @@ def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None
 
 
 def parse_tags(tags_str: str) -> dict:
-    """Parse a string of key/value pairs into the flat tag mapping the Security Hub V2 API expects.
-
-    The expected input format is ``key=<key>,value=<value>`` with multiple pairs separated by ``;``.
+    """Parse ``key=<key>,value=<value>`` pairs (``;``-separated) into a flat ``{key: value}`` tag mapping.
 
     Args:
         tags_str (str): The keys and values string.
 
     Returns:
-        dict: A flat mapping of ``{<key>: <value>}`` suitable for the ``Tags`` API parameter.
+        dict: A flat mapping suitable for the ``Tags`` API parameter.
     """
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     return dict(regex.findall(tags_str))
 
 
 def build_client(params: dict) -> BotoClient:
-    """Build and return a boto3 Security Hub client based on the integration parameters.
+    """Build a boto3 ``securityhub`` client via the shared ``AWSClient`` (AWSApiModule).
 
-    The client is created through the shared ``AWSClient`` (AWSApiModule), which centrally
-    handles STS role assumption, credentials, certificate (SSL) verification, request
-    timeouts, retries and proxy resolution. Proxy support is wired automatically: the
-    ``AWSClient`` constructor calls ``handle_proxy(proxy_param_name="proxy", ...)``
-    internally, so the integration's ``proxy`` parameter is honored without any extra
-    handling here.
+    ``AWSClient`` handles role assumption, credentials, SSL verification, timeouts, retries and proxy.
 
     Args:
         params (dict): The integration parameters (``demisto.params()``).
@@ -488,10 +439,7 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. Optional per-category filter arguments (``string_filters``,
-            ``date_filters``, ``boolean_filters``, ``number_filters``, ``map_filters``, ``ip_filters``,
-            ``filter_operator``, ``composite_operator``), plus ``sort_field``, ``sort_order``
-            (``asc``/``desc``), ``limit`` (default 50) and ``next_token``.
+        args (dict): Command arguments (per-category filters, sort_field/sort_order, limit, next_token).
 
     Returns:
         CommandResults: The retrieved findings and the pagination token, if any.
@@ -533,16 +481,12 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
 
 
 def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResults:
-    """Update one or more AWS Security Hub V2 findings in a single batch request.
-
-    Findings can be targeted either by ``metadata_uids`` (a comma-separated list of OCSF metadata
-    UIDs) or by ``finding_identifiers`` (composite identifier triples). At least one targeting
-    argument is required.
+    """Update one or more findings in a single batch request.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. Targeting: ``metadata_uids`` and/or ``finding_identifiers``.
-            Updates: ``comment``, ``severity_id`` (OCSF severity ID), ``status_id`` (OCSF status ID).
+        args (dict): Targeting (``metadata_uids`` and/or ``finding_identifiers``) and updates
+            (``comment``, ``severity_id``, ``status_id``).
 
     Returns:
         CommandResults: The processed and unprocessed findings returned by the API.
@@ -589,42 +533,34 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
 
 
 def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_direction: str | None = None) -> tuple[list, list]:
-    """Filter already-seen findings and build XSOAR incidents from the new ones.
+    """Drop already-seen findings and build XSOAR incidents from the new ones.
 
-    Two dedup rules are applied against the previous fetch boundary:
-      * STALE: a finding created strictly before ``last_fetch`` was covered by an earlier window and is dropped.
-      * ALREADY-SEEN BOUNDARY: a finding created exactly at ``last_fetch`` whose uid is in ``fetched_ids`` was
-        already ingested on the previous run (the fetch window uses an inclusive ``Start``) and is dropped.
-
-    When ``mirror_direction`` is set, each surviving finding is tagged with the mirroring metadata
-    (``mirror_direction`` and ``mirror_instance``) XSOAR needs to route subsequent mirror updates.
+    Against the previous fetch boundary (inclusive ``Start``), a finding is dropped if it was created
+    before ``last_fetch`` (stale) or exactly at ``last_fetch`` with its uid in ``fetched_ids`` (already
+    ingested). Surviving findings are tagged with mirroring metadata when ``mirror_direction`` is set.
 
     Args:
         findings (list): Raw OCSF findings returned by ``get_findings_v2``.
-        last_fetch (str): ISO8601 boundary timestamp from the previous run (the fetch window's inclusive Start).
-        fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary timestamp.
-        mirror_direction (str | None): The XSOAR mirror direction (``In``/``Out``/``Both``) to stamp on each
-            incident, or ``None`` to disable mirroring tagging.
+        last_fetch (str): ISO8601 boundary timestamp from the previous run.
+        fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary.
+        mirror_direction (str | None): XSOAR mirror direction to stamp on incidents, or ``None`` to disable.
 
     Returns:
-        tuple[list, list]: ``(new_findings, incidents)`` - the surviving raw findings and their XSOAR incident dicts.
+        tuple[list, list]: ``(new_findings, incidents)``.
     """
     incidents: list = []
     new_findings: list = []
-    skipped_count = 0
     for finding in findings:
         finding_info = finding.get("finding_info") or {}
         created_time = finding_info.get("created_time_dt")
         uid = finding.get("metadata", {}).get("uid")
 
         if created_time and last_fetch and created_time < last_fetch:
-            skipped_count += 1
             demisto.debug(
                 f"[AWS_Security_Hub_V2] Dedup: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
             )
             continue
         if created_time and last_fetch and created_time == last_fetch and uid in fetched_ids:
-            skipped_count += 1
             demisto.debug(
                 f"[AWS_Security_Hub_V2] Dedup: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
             )
@@ -794,23 +730,18 @@ def build_close_reopen_entries(finding: dict) -> list:
 
 
 def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResponse:
-    """Fetch the current state of a single mirrored finding and return it for incoming mirroring.
+    """Re-fetch a single mirrored finding by its uid and return its current state for incoming mirroring.
 
-    Security Hub V2 does not advance ``finding_info.modified_time_dt`` on manual finding edits, so a
-    time-window "what changed" query is unreliable. Instead this integration deliberately does NOT
-    implement ``get-modified-remote-data``: without it, the XSOAR server falls back to invoking
-    ``get-remote-data`` for EVERY mirror-enrolled incident on each mirror cycle. This command simply
-    re-fetches the finding by its OCSF ``metadata.uid`` and returns its current state; the XSOAR server
-    then diffs the returned object against the incident and applies any differences. This catches manual
-    edits (e.g. severity/status changes in the AWS console) that carry no updated timestamp.
+    ``get-modified-remote-data`` is intentionally not implemented: Security Hub V2 does not advance
+    ``modified_time_dt`` on manual edits, so the server instead calls this per mirror-enrolled incident
+    each cycle and diffs the returned finding against the incident (catching untimestamped console edits).
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve (the UID lookup
-            is authoritative; no timestamp filtering is applied).
+        args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve.
 
     Returns:
-        GetRemoteDataResponse: The updated finding object to apply to the XSOAR incident.
+        GetRemoteDataResponse: The updated finding object and any close/reopen entries.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
     demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: raw args from server: {json.dumps(args, default=str)}")
@@ -854,16 +785,11 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         return GetRemoteDataResponse(mirrored_object={}, entries=[])
 
     finding = findings[0]
-    # Attach the ready-to-use XSOAR severity number directly on the object so the incoming mapper can
-    # map it 1:1 (simple mapping, no transformer). effective_severity_id prefers the top-level
-    # severity_id (the value shown in the AWS console / that reflects an analyst change) and falls
-    # back to vendor_attributes.severity_id. The server diffs this against the incident and applies it.
+    # Attach the XSOAR severity so the incoming mapper can map it 1:1 (no transformer).
     severity_id = effective_severity_id(finding)
     finding["xsoar_severity"] = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
 
-    # Full lifecycle sync: when the finding is Resolved/Suppressed in AWS, close the XSOAR incident;
-    # when it returns to an open status, reopen it. The close/reopen instruction is delivered as an
-    # entry (dbotIncidentClose / dbotIncidentReopen), which is the standard XSOAR mirroring mechanism.
+    # Lifecycle sync: close/reopen the XSOAR incident to match the AWS finding status.
     entries = build_close_reopen_entries(finding)
 
     demisto.debug(
@@ -876,11 +802,7 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
-    """Return the schema of fields available for outgoing mirroring.
-
-    XSOAR uses this (in the mapper UI and for outgoing mirroring) to know which incident fields can be
-    pushed to AWS Security Hub V2. Only the fields that ``update-remote-system`` actually mirrors are
-    declared here: the finding severity (OCSF ``severity_id``), status (OCSF ``status_id``) and a comment.
+    """Return the schema of fields available for outgoing mirroring (from OUTGOING_FIELD_DESCRIPTIONS).
 
     Returns:
         GetMappingFieldsResponse: The outgoing mapping schema for the Security Hub finding incident type.
@@ -896,21 +818,18 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def update_remote_system_command(client: BotoClient, args: dict, resolve_finding: bool) -> str:
-    """Push local (XSOAR) incident changes to the corresponding AWS Security Hub V2 finding.
+    """Push local (XSOAR) incident changes to the corresponding finding via batch_update_findings_v2.
 
-    XSOAR invokes this whenever a mirror-enrolled incident changes. Only the fields present in the
-    ``delta`` and whitelisted in ``OUTGOING_DELTA_TO_KWARG`` are mirrored out via
-    ``batch_update_findings_v2``, targeting the finding by its OCSF ``metadata.uid``. When
-    ``resolve_finding`` is enabled and the incident was closed in XSOAR, the finding's status is set
-    to Resolved.
+    Mirrors out only delta fields whitelisted in ``OUTGOING_DELTA_TO_KWARG`` (plus the built-in severity).
+    When ``resolve_finding`` is enabled and the incident is closed, the finding is set to Resolved.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
-        args (dict): The ``update-remote-system`` arguments (data, entries, delta, incident status, remote id).
+        args (dict): The ``update-remote-system`` arguments (delta, incident status, remote id, etc.).
         resolve_finding (bool): Whether closing the incident in XSOAR should resolve the finding in AWS.
 
     Returns:
-        str: The remote finding uid that was updated (so XSOAR can track it).
+        str: The remote finding uid that was updated.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-out: ===== update-remote-system START =====")
     parsed_args = UpdateRemoteSystemArgs(args)
@@ -982,13 +901,15 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
 
 def test_module(client: BotoClient) -> str:
     """Test connectivity and authentication against the AWS Security Hub V2 API.
+
     Args:
         client (BotoClient): An initialized boto3 ``securityhub`` client.
+
     Returns:
         str: ``"ok"`` if the call succeeds.
+
     Raises:
-        DemistoException: With a user-friendly message when Security Hub V2 is not enabled
-            or the credentials/role do not have sufficient permissions.
+        DemistoException: When Security Hub V2 is not enabled or permissions are insufficient.
     """
     demisto.debug("[AWS_Security_Hub_V2] Test Connectivity and Authentication")
     try:
