@@ -3,8 +3,8 @@
 import json
 
 import pytest
+import SaasSecurityEventCollector
 from CommonServerPython import *  # noqa
-from SaasSecurityEventCollector import Client
 
 BASE_PARAMS = {
     "url": "https://test.com/",
@@ -14,7 +14,9 @@ BASE_PARAMS = {
 
 @pytest.fixture
 def mock_client():
-    return Client(base_url="https://test.com/api", client_id="", client_secret="", verify=False, proxy=False)
+    return SaasSecurityEventCollector.Client(
+        base_url="https://test.com/api", client_id="", client_secret="", verify=False, proxy=False
+    )
 
 
 def create_events(start_id=1, end_id=100, should_dump=True):
@@ -35,10 +37,8 @@ def test_module(mocker, mock_client):
     """
     Given a valid access token, when testing the module, then it returns 'ok'.
     """
-    from SaasSecurityEventCollector import test_module
-
-    mocker.patch.object(Client, "get_token_request")
-    assert test_module(client=mock_client) == "ok"
+    mocker.patch.object(SaasSecurityEventCollector.Client, "get_token_request")
+    assert SaasSecurityEventCollector.test_module(client=mock_client) == "ok"
 
 
 def test_get_new_access_token(mocker, mock_client):
@@ -69,9 +69,7 @@ def test_get_max_iterations_floor(configured, expected):
     when resolving the effective value,
     then it is never below MIN_MAX_ITERATIONS so throughput cannot be capped by a stale instance param.
     """
-    from SaasSecurityEventCollector import get_max_iterations
-
-    assert get_max_iterations(configured) == expected
+    assert SaasSecurityEventCollector.get_max_iterations(configured) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -84,9 +82,7 @@ def test_get_max_iterations_floor(configured, expected):
     [(None, 10), (0, 10), (-5, 10), (5, 5), (30, 30), (100, 30)],
 )
 def test_get_concurrency(configured, expected):
-    from SaasSecurityEventCollector import get_concurrency
-
-    assert get_concurrency(configured) == expected
+    assert SaasSecurityEventCollector.get_concurrency(configured) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -99,10 +95,8 @@ def test_build_client_returns_independent_instances():
     Given params, when building clients for concurrent workers,
     then each call returns a distinct Client with its own session (required for thread safety).
     """
-    from SaasSecurityEventCollector import build_client
-
-    c1 = build_client(BASE_PARAMS)
-    c2 = build_client(BASE_PARAMS)
+    c1 = SaasSecurityEventCollector.build_client(BASE_PARAMS)
+    c2 = SaasSecurityEventCollector.build_client(BASE_PARAMS)
     assert c1 is not c2
     assert c1._session is not c2._session
 
@@ -113,19 +107,19 @@ def test_build_client_returns_independent_instances():
 
 
 def test_get_events_batch_204_is_drained(mocker, mock_client):
-    from SaasSecurityEventCollector import get_events_batch
-
-    mocker.patch.object(Client, "http_request", return_value=MockedResponse(status_code=204))
-    events, drained = get_events_batch(mock_client)
+    mocker.patch.object(SaasSecurityEventCollector.Client, "http_request", return_value=MockedResponse(status_code=204))
+    events, drained = SaasSecurityEventCollector.get_events_batch(mock_client)
     assert events == []
     assert drained is True
 
 
 def test_get_events_batch_200_returns_events(mocker, mock_client):
-    from SaasSecurityEventCollector import get_events_batch
-
-    mocker.patch.object(Client, "http_request", return_value=MockedResponse(status_code=200, text=create_events(1, 100)))
-    events, drained = get_events_batch(mock_client)
+    mocker.patch.object(
+        SaasSecurityEventCollector.Client,
+        "http_request",
+        return_value=MockedResponse(status_code=200, text=create_events(1, 100)),
+    )
+    events, drained = SaasSecurityEventCollector.get_events_batch(mock_client)
     assert len(events) == 100
     assert drained is False
 
@@ -140,8 +134,6 @@ def test_send_events_in_chunks_success_empties_list(mocker):
     Given events and a working send, when sending in chunks,
     then all events are sent and the source list is emptied (all acknowledged).
     """
-    import SaasSecurityEventCollector
-
     send_mock = mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
     events = [{"id": i} for i in range(2500)]
     sent = SaasSecurityEventCollector.send_events_in_chunks(events, send_batch_size=1000, vendor="v", product="p")
@@ -159,8 +151,6 @@ def test_send_events_in_chunks_failure_keeps_only_remainder(mocker):
     This is the self-heal guarantee: the poisoned/oversized stash shrinks every cycle instead of being
     re-stashed whole and retried forever.
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "demisto")
     calls = {"n": 0}
 
@@ -207,8 +197,6 @@ def test_describe_xsiam_response_failure_classification(body, expect_benign):
     then the helper surfaces the ACTUAL body length and classifies blank bodies as benign
     (pass-over candidate) while non-empty unparseable bodies are NOT benign.
     """
-    import SaasSecurityEventCollector
-
     exc = _json_decode_error(body)
     description, benign = SaasSecurityEventCollector.describe_xsiam_response_failure(exc)
     assert benign is expect_benign
@@ -221,8 +209,6 @@ def test_describe_xsiam_response_failure_non_decode_error():
     Given an exception that is NOT a JSONDecodeError (e.g. a network/DemistoException),
     then there is no response body to show and it is not classified as a benign empty body.
     """
-    import SaasSecurityEventCollector
-
     description, benign = SaasSecurityEventCollector.describe_xsiam_response_failure(RuntimeError("boom"))
     assert benign is False
     assert "response_body=<unavailable>" in description
@@ -237,8 +223,6 @@ def test_send_events_in_chunks_passes_over_empty_body(mocker):
 
     This is the "catch and pass over a benign empty response while the platform team fixes it" behavior.
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "demisto")
 
     def empty_body_send(events, vendor, product, **kwargs):
@@ -259,8 +243,6 @@ def test_send_events_in_chunks_does_not_pass_over_non_empty_body(mocker):
     when sending in chunks with pass_over_empty_response=True,
     then it is treated as a real failure: the exception propagates and the unsent remainder is preserved.
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "demisto")
 
     def truncated_body_send(events, vendor, product, **kwargs):
@@ -280,8 +262,6 @@ def test_send_events_in_chunks_empty_body_not_passed_over_when_disabled(mocker):
     Given the pass-over is disabled, when XSIAM returns an empty body,
     then even a benign empty body is treated as a failure (exception propagates) and events are preserved.
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "demisto")
 
     def empty_body_send(events, vendor, product, **kwargs):
@@ -306,8 +286,6 @@ def test_concurrent_fetch_uses_own_client_per_worker(mocker):
     Given the concurrent drain, when it issues GET calls,
     then it builds a fresh client per worker (never shares a session across threads).
     """
-    import SaasSecurityEventCollector
-
     build_client_mock = mocker.patch.object(
         SaasSecurityEventCollector, "build_client", wraps=SaasSecurityEventCollector.build_client
     )
@@ -327,8 +305,6 @@ def test_concurrent_fetch_flushes_pending_first(mocker):
     when running the concurrent drain,
     then the pending events are flushed to XSIAM (context self-heal) before/independent of new fetches.
     """
-    import SaasSecurityEventCollector
-
     send_mock = mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
     mocker.patch.object(SaasSecurityEventCollector, "get_events_batch", return_value=([], True))
     pending = [{"id": i} for i in range(3077)]
@@ -349,8 +325,6 @@ def test_concurrent_fetch_send_failure_returns_shrunk_unsent(mocker):
     then the exception is captured and the returned unsent list is smaller than the original stash
     (so the next cycle retries a strictly smaller batch - no infinite full-batch replay).
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "demisto")
     calls = {"n": 0}
 
@@ -377,8 +351,6 @@ def test_concurrent_fetch_stops_at_time_budget(mocker):
     then the drain stops before issuing any GET round and returns queue_drained=False (so main persists
     state and re-fires, instead of the engine hard-killing the execution at 5 minutes with progress lost).
     """
-    import SaasSecurityEventCollector
-
     get_batch_mock = mocker.patch.object(SaasSecurityEventCollector, "get_events_batch", return_value=([{"id": 1}], False))
     mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
 
@@ -396,8 +368,6 @@ def test_concurrent_fetch_stops_at_max_iterations(mocker):
     Given a queue that never drains, when running the concurrent drain,
     then it stops at max_iterations and reports queue_drained=False (backlog signal).
     """
-    import SaasSecurityEventCollector
-
     mocker.patch.object(SaasSecurityEventCollector, "get_events_batch", return_value=([{"id": 1}], False))
     mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
 
@@ -414,20 +384,14 @@ def test_concurrent_fetch_stops_at_max_iterations(mocker):
 
 
 def test_get_max_fetch_default():
-    from SaasSecurityEventCollector import get_max_fetch
-
-    assert get_max_fetch(None) == 1000
+    assert SaasSecurityEventCollector.get_max_fetch(None) == 1000
 
 
 def test_get_max_fetch_clamped_and_rounded():
-    from SaasSecurityEventCollector import get_max_fetch
-
-    assert get_max_fetch(99999) == 5000  # clamp to MAX_LIMIT
-    assert get_max_fetch(105) == 100  # round down to multiple of 10
+    assert SaasSecurityEventCollector.get_max_fetch(99999) == 5000  # clamp to MAX_LIMIT
+    assert SaasSecurityEventCollector.get_max_fetch(105) == 100  # round down to multiple of 10
 
 
 def test_get_max_fetch_negative_number():
-    from SaasSecurityEventCollector import get_max_fetch
-
     with pytest.raises(DemistoException):
-        get_max_fetch(-1)
+        SaasSecurityEventCollector.get_max_fetch(-1)
