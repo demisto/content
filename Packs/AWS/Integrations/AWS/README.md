@@ -6791,3 +6791,204 @@ Deletes the specified FirewallPolicy. Required permissions: network-firewall:Del
 #### Context Output
 
 There is no context output for this command.
+
+### aws-network-firewall-rule-group-create
+
+***
+Creates a specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags. You must provide either at least one of the rule group arguments (rules_source is required, and ip_sets, port_sets, ip_sets_references, and stateful_rule_options_rule_order are optional) or the rules argument. Required permissions: network-firewall:CreateRuleGroup, network-firewall:TagResource.
+
+#### Base Command
+
+`aws-network-firewall-rule-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| rule_group_name | The descriptive name of the rule group. You can't change the name of a rule group after you create it. | Required |
+| type | The type of the rule group. Can be stateless or stateful. Possible values are: STATELESS, STATEFUL, STATEFUL_DOMAIN. | Required |
+| capacity | The maximum operating resources that the rule group can use. This value is fixed at creation and cannot be changed or exceeded in the firewall policy. | Required |
+| ip_sets | The JSON string specifying an object of IP addresses and address ranges in CIDR notation, used as part of RuleVariables. Example format: `{"string": {"Definition": ["string"]}}`. | Optional |
+| port_sets | The JSON string specifying an object of port ranges, used as part of a RuleVariables. For example: `{"string": {"Definition": ["string"]}}`. | Optional |
+| ip_sets_references | The JSON string specifying an object of IP set references. For example: `{"string": {"ReferenceArn": "string"}}`. | Optional |
+| rules_source | The JSON string specifying the stateful rules or stateless rules for the rule group. Required if you choose to use the RuleGroup option. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`. | Optional |
+| stateful_rule_options_rule_order | The order of the rule evaluation for the rule group. Possible values are: DEFAULT_ACTION_ORDER, STRICT_ORDER. | Optional |
+| rules | The string containing stateful rule group rule specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import existing Suricata compatible rule groups. Provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both. For example: `pass tcp 10.0.0.0/8 any -&gt; any any (sid:1;)`. | Optional |
+| description | The description of the rule group. | Optional |
+| tags | The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2. | Optional |
+| encryption_configuration_key_id | The ID of the Amazon Web Services Key Management Service (KMS) customer managed key. | Optional |
+| encryption_configuration_key_type | The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources. Possible values are: CUSTOMER_KMS, AWS_OWNED_KMS_KEY. | Optional |
+| source_metadata_arn | The Amazon Resource Name (ARN) of the rule group that your own rule group is copied from. | Optional |
+| source_metadata_update_token | The update token of the Amazon Web Services managed rule group that your own rule group is copied from. | Optional |
+| analyze_rule_group | Whether you want Network Firewall to analyze the stateless rules in the rule group for rule behavior such as asymmetric routing. If set to TRUE, Network Firewall runs the analysis and then creates the rule group for you. Possible values are: true, false. | Optional |
+| summary_configuration_rule_options | A comma-separated list of the rule options to include in the rule group summary. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.RuleGroups.UpdateToken | String | The token used for optimistic locking, which tracks the state of the rule group resource at the time of the request. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupName | String | The descriptive name of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupArn | String | The Amazon Resource Name \(ARN\) of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupId | String | The unique identifier for the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Description | String | The description of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Type | String | The type of the rule group. Can be stateless or stateful. |
+| AWS.NetworkFirewall.RuleGroups.Capacity | Number | The maximum operating resources that this rule group can use. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupStatus | String | The current status of a rule group, includes detailed information. |
+| AWS.NetworkFirewall.RuleGroups.Tags | Unknown | The key:value pairs to associate with the resource. |
+| AWS.NetworkFirewall.RuleGroups.ConsumedCapacity | Number | The number of capacity units currently consumed by the rule group rules. |
+| AWS.NetworkFirewall.RuleGroups.NumberOfAssociations | Number | The number of firewall policies that use this rule group. |
+| AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group. |
+| AWS.NetworkFirewall.RuleGroups.LastModifiedTime | String | The last time that the rule group was changed. |
+
+### aws-network-firewall-rule-group-delete
+
+***
+Deletes the specified rule group. Required permissions: network-firewall:DeleteRuleGroup.
+
+#### Base Command
+
+`aws-network-firewall-rule-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| rule_group_name | The descriptive name of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| rule_group_arn | The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| type | The type of the rule group. Can be stateless or stateful. This setting is required for requests that do not include the rule_group_arn. Possible values are: STATELESS, STATEFUL, STATEFUL_DOMAIN. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-rule-group-describe
+
+***
+Returns the data objects for the specified rule group. Required permissions: network-firewall:DescribeRuleGroup.
+
+#### Base Command
+
+`aws-network-firewall-rule-group-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| rule_group_name | The descriptive name of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| rule_group_arn | The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| type | The type of the rule group. Can be stateless or stateful. This setting is required for requests that do not include the rule_group_arn. Possible values are: STATELESS, STATEFUL, STATEFUL_DOMAIN. | Optional |
+| analyze_rule_group | Whether you want Network Firewall to analyze the stateless rules in the rule group for rule behavior such as asymmetric routing. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.RuleGroups.UpdateToken | String | The token used for optimistic locking, which tracks the state of the rule group resource at the time of the request. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupName | String | The descriptive name of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupArn | String | The Amazon Resource Name \(ARN\) of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupId | String | The unique identifier for the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Description | String | The description of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Type | String | The type of the rule group. Can be stateless or stateful. |
+| AWS.NetworkFirewall.RuleGroups.Capacity | Number | The maximum operating resources that this rule group can use. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupStatus | String | The current status of a rule group, includes detailed information. |
+| AWS.NetworkFirewall.RuleGroups.Tags | Unknown | The key:value pairs to associate with the resource. |
+| AWS.NetworkFirewall.RuleGroups.ConsumedCapacity | Number | The number of capacity units currently consumed by the rule group rules. |
+| AWS.NetworkFirewall.RuleGroups.NumberOfAssociations | Number | The number of firewall policies that use this rule group. |
+| AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group. |
+| AWS.NetworkFirewall.RuleGroups.SourceMetadata | Unknown | The metadata for the rule group that your own rule group is copied from. |
+| AWS.NetworkFirewall.RuleGroups.SnsTopic | String | The Amazon resource name \(ARN\) of the Amazon Simple Notification Service SNS topic that is used to record changes to the managed rule group. |
+| AWS.NetworkFirewall.RuleGroups.LastModifiedTime | String | The last time that the rule group was changed. |
+| AWS.NetworkFirewall.RuleGroups.AnalysisResults | Unknown | The list of analysis results for AnalyzeRuleGroup. If you set AnalyzeRuleGroup to TRUE in your request, the analysis results are returned in an AnalysisResult object alongside the rule group. |
+| AWS.NetworkFirewall.RuleGroups.SummaryConfiguration | Unknown | A complex type that contains the rule options that are used when summarizing the rules in the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleVariables | Unknown | The rule settings that are available for use in the rule group. |
+| AWS.NetworkFirewall.RuleGroups.ReferenceSets | Unknown | The list of a rule group's reference sets. |
+| AWS.NetworkFirewall.RuleGroups.RulesSource | Unknown | The stateful rules or stateless rules for the rule group. |
+| AWS.NetworkFirewall.RuleGroups.StatefulRuleOptions | Unknown | Additional options governing how Network Firewall handles stateful rules. |
+
+### aws-network-firewall-rule-groups-list
+
+***
+Retrieves metadata for defined rule groups. Depending on the max_results setting and the number of rule groups, a single call might not return the full list. Required permissions: network-firewall:ListRuleGroups.
+
+#### Base Command
+
+`aws-network-firewall-rule-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| limit | The maximum number of objects that you want Network Firewall to return for this request. Default is 50. | Optional |
+| next_token | The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken. | Optional |
+| scope | The scope of the request. The default setting of ACCOUNT or a setting of NULL returns all of the rule groups in your account. A setting of MANAGED returns all available managed rule groups. Possible values are: MANAGED, ACCOUNT. Default is ACCOUNT. | Optional |
+| managed_type | The general category of the Amazon Web Services managed rule group. Possible values are: AWS_MANAGED_THREAT_SIGNATURES, AWS_MANAGED_DOMAIN_LISTS, ACTIVE_THREAT_DEFENSE, PARTNER_MANAGED. | Optional |
+| type | The type of the rule group. Can be stateless or stateful. Possible values are: STATELESS, STATEFUL, STATEFUL_DOMAIN. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupName | String | The descriptive name of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupArn | String | The Amazon Resource Name \(ARN\) of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.VendorName | String | The name of the Amazon Web Services Marketplace seller that provides this rule group. |
+| AWS.NetworkFirewall.RuleGroupsNextToken | String | The token used to request the next page of results when a limit is set. Provided in the response of a previous request when the number of remaining objects exceeds the maximum limit specified. |
+
+### aws-network-firewall-rule-group-update
+
+***
+Updates the rule settings for the specified rule group. Modifying a rule group updates all firewall policies referencing it. You must provide either the rules argument or at least one of the rule_group arguments (rules_source, ip_sets, port_sets, ip_sets_references, stateful_rule_options_rule_order). Required permissions: network-firewall:UpdateRuleGroup.
+
+#### Base Command
+
+`aws-network-firewall-rule-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| update_token | The token used for optimistic locking to ensure the rule group has not changed since it was last retrieved. The update token can be retrieved by running the aws-network-firewall-rule-group-describe command. | Required |
+| rule_group_name | The descriptive name of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| rule_group_arn | The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both. | Optional |
+| type | The type of the rule group. Can be stateless or stateful. This setting is required for requests that do not include the rule_group_arn. Possible values are: STATELESS, STATEFUL, STATEFUL_DOMAIN. | Optional |
+| ip_sets | The JSON string specifying an object of IP addresses and address ranges in CIDR notation, used as part of RuleVariables. Example format: `{"string": {"Definition": ["string"]}}`. | Optional |
+| port_sets | The JSON string specifying an object of port ranges, used as part of a RuleVariables. `{"string": {"Definition": ["string"]}}`. | Optional |
+| ip_sets_references | The JSON string specifying an object of IP set references. For example: `{"string": {"ReferenceArn": "string"}}`. | Optional |
+| rules_source | The JSON string specifying the stateful rules or stateless rules for the rule group. For example: `{"RulesString": "string", "RulesSourceList": {"Targets": ["string"]}}`. | Optional |
+| stateful_rule_options_rule_order | The order of the rule evaluation for the rule group. Possible values are: DEFAULT_ACTION_ORDER, STRICT_ORDER. | Optional |
+| rules | The string containing stateful rule group rule specifications in Suricata flat format, with one rule per line (newline-separated). Use this to import existing Suricata compatible rule groups. Provide either this argument or at least one of the rule_group arguments (ip_sets, port_sets, ip_sets_references, rules_source, stateful_rule_options_rule_order), but not both. For example: `pass tcp 10.0.0.0/8 any -&gt; any any (sid:1;)`. | Optional |
+| description | The description of the rule group. | Optional |
+| encryption_configuration_key_id | The ID of the Amazon Web Services Key Management Service (KMS) customer managed key. | Optional |
+| encryption_configuration_key_type | The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources. Possible values are: CUSTOMER_KMS, AWS_OWNED_KMS_KEY. | Optional |
+| source_metadata_arn | The Amazon Resource Name (ARN) of the rule group that your own rule group is copied from. | Optional |
+| source_metadata_update_token | The update token of the Amazon Web Services managed rule group that your own rule group is copied from. | Optional |
+| analyze_rule_group | Whether you want Network Firewall to analyze the stateless rules in the rule group for rule behavior such as asymmetric routing. If set to TRUE, Network Firewall runs the analysis and then updates the rule group for you. Possible values are: true, false. | Optional |
+| summary_configuration_rule_options | A comma-separated list of the rule options to include in the rule group summary. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.RuleGroups.UpdateToken | String | The token used for optimistic locking, which tracks the state of the rule group resource at the time of the request. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupName | String | The descriptive name of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupArn | String | The Amazon Resource Name \(ARN\) of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupId | String | The unique identifier for the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Description | String | The description of the rule group. |
+| AWS.NetworkFirewall.RuleGroups.Type | String | The type of the rule group. Can be stateless or stateful. |
+| AWS.NetworkFirewall.RuleGroups.Capacity | Number | The maximum operating resources that this rule group can use. |
+| AWS.NetworkFirewall.RuleGroups.RuleGroupStatus | String | The current status of a rule group, includes detailed information. |
+| AWS.NetworkFirewall.RuleGroups.Tags | Unknown | The key:value pairs to associate with the resource. |
+| AWS.NetworkFirewall.RuleGroups.ConsumedCapacity | Number | The number of capacity units currently consumed by the rule group rules. |
+| AWS.NetworkFirewall.RuleGroups.NumberOfAssociations | Number | The number of firewall policies that use this rule group. |
+| AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group. |
+| AWS.NetworkFirewall.RuleGroups.LastModifiedTime | String | The last time that the rule group was changed. |
