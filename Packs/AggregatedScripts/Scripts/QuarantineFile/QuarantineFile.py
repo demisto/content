@@ -445,9 +445,11 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
-        self.quarantine_command = (
-            "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
-        )
+        if self.command_prefix == self.CORE_COMMAND_PREFIX:
+            # On the platform, the Core quarantine command is exposed as the PCI builtin "quarantineFile".
+            self.quarantine_command = "quarantineFile" if is_platform() else "core-quarantine-files"
+        else:
+            self.quarantine_command = "xdr-file-quarantine"
 
     def validate_args(self, args: dict) -> None:
         """
@@ -485,8 +487,13 @@ class XDRHandler(BrandHandler):
                       }
         """
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
+        if self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform():
+            # On the platform, the Core quarantine-status command is exposed as the PCI builtin "getFileQuarantineStatus".
+            status_command_name = "getFileQuarantineStatus"
+        else:
+            status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
         status_cmd = Command(
-            name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
+            name=status_command_name,
             args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},
             brand=self.brand,
         )

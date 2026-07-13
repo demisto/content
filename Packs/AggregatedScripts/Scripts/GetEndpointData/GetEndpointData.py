@@ -25,6 +25,9 @@ class Brands(StrEnum):
     CORTEX_CORE_IR = "Cortex Core - IR"
     FIREEYE_HX_V2 = "FireEyeHX v2"
     GENERIC_COMMAND = "Generic Command"
+    # On the unified Cortex platform, Core commands are provided by the built-in PCI module
+    # (server-injected built-ins) rather than by the Cortex Core - IR integration.
+    BUILTIN = "Builtin"
 
     @classmethod
     def get_all_values(cls) -> list[str]:
@@ -134,6 +137,10 @@ class ModuleManager:
             bool: True if the brand is in both the list of brands to run and the set of enabled brands;
                   False otherwise.
         """
+        # PCI commands are injected by the server as built-ins on the unified platform,
+        # so they are always available there and are not tied to an installed integration brand.
+        if command.brand == Brands.BUILTIN:
+            return is_platform()
         return False if not self.is_brand_in_brands_to_run(command) else command.brand in self._enabled_brands
 
     def get_enabled_brands(self):
@@ -509,8 +516,8 @@ def initialize_commands(
             not_found_checker="was not found",
         ),
         Command(
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-list-risky-hosts",
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="getRiskyHosts" if is_platform() else "core-list-risky-hosts",
             output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
@@ -532,8 +539,8 @@ def initialize_commands(
 
     list_args_commands = [
         Command(
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-get-endpoints",
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="getEndpoints" if is_platform() else "core-get-endpoints",
             output_keys=["Core.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
             output_mapping={
@@ -614,7 +621,7 @@ def run_single_args_commands(
             )
 
             if endpoint_output:
-                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR, Brands.BUILTIN]:
                     update_endpoint_in_mapping(endpoint_output, ir_mapping)
                 else:
                     endpoint_outputs_list.extend(endpoint_output)
@@ -667,7 +674,7 @@ def run_list_args_commands(
         )
 
         if endpoint_output:
-            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR, Brands.BUILTIN]:
                 add_endpoint_to_mapping(endpoint_output, ir_mapping)
             else:
                 multiple_endpoint_outputs.extend(endpoint_output)

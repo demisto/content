@@ -57,7 +57,7 @@ def initialize_commands() -> list:
         Command(
             # Can be used only in XSIAM
             brand=Brands.CORTEX_CORE_IR,
-            name="core-isolate-endpoint",
+            name="core-isolate-endpoint" if not is_platform() else "isolateEndpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},
         ),
         Command(

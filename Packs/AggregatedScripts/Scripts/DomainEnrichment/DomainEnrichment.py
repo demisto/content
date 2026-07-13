@@ -60,15 +60,31 @@ def domain_enrichment_script(
     command_batch2: list[Command] = []
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
-        command_batch2.append(
-            Command(
-                name="core-get-domain-analytics-prevalence",
-                args={"domain_name": valid_inputs},
-                command_type=CommandType.INTERNAL,
-                brand="Cortex Core - IR",  # keep the brand you use elsewhere
-                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+        # On the unified Cortex platform the command is provided by the built-in PCI module
+        # under the new name; on legacy XSIAM it is provided by the Cortex Core - IR integration.
+        if is_platform():
+            # PCI commands are injected by the server as built-ins (no integration brand to enable),
+            # so they must run as BUILTIN and skip the using-brand injection.
+            command_batch2.append(
+                Command(
+                    name="getDomainAnalyticsPrevalence",
+                    args={"domain_name": valid_inputs},
+                    command_type=CommandType.BUILTIN,
+                    brand="Builtin",
+                    context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+                    ignore_using_brand=True,
+                )
             )
-        )
+        else:
+            command_batch2.append(
+                Command(
+                    name="core-get-domain-analytics-prevalence",
+                    args={"domain_name": valid_inputs},
+                    command_type=CommandType.INTERNAL,
+                    brand="Cortex Core - IR",  # keep the brand you use elsewhere
+                    context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+                )
+            )
     demisto.debug("Command Batch 2: Enriching indicators")
     command_batch2.append(
         Command(

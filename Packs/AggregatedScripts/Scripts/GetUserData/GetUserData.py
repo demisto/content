@@ -69,6 +69,10 @@ class Modules:
         Returns:
             bool: True if the brand is available and in the list of brands to run, False otherwise.
         """
+        # PCI commands are injected by the server as built-ins on the unified platform,
+        # so they are always available there and are not tied to an installed integration brand.
+        if command.brand == "Builtin":
+            return is_platform()
         is_available = command.brand in self._enabled_brands
         if not is_available:
             demisto.debug(f"Skipping command '{command.name}' since the brand '{command.brand}' is not available.")
@@ -1292,11 +1296,13 @@ def main():
         #################################
         ### Running for Core ###
         #################################
+        # On the unified Cortex platform the Core commands are provided by the built-in PCI module
+        # under new names; on legacy XSIAM they are provided by the Cortex Core - IR integration.
         readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
             modules=modules,
-            brand_name="Cortex Core - IR",
-            first_command="core-list-risky-users",
-            second_command="core-list-users",
+            brand_name="Builtin" if is_platform() else "Cortex Core - IR",
+            first_command="getRiskyUsers" if is_platform() else "core-list-risky-users",
+            second_command="getSystemUsers" if is_platform() else "core-list-users",
             user_names=users_names,
             additional_fields=additional_fields,
             list_non_risky_users=list_non_risky_users,

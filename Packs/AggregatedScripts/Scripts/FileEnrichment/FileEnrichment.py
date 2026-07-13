@@ -91,15 +91,31 @@ def file_enrichment_script(
     # Add the prevalence command only when at least one SHA256 hash is present.
     sha256_inputs = [file for file in valid_inputs if get_hash_type(file) == "sha256"]
     if sha256_inputs:
-        command_batch2.append(
-            Command(
-                name="core-get-hash-analytics-prevalence",
-                args={"sha256": sha256_inputs},
-                brand="Cortex Core - IR",
-                command_type=CommandType.INTERNAL,
-                context_output_mapping={},
+        # On the unified Cortex platform the command is provided by the built-in PCI module
+        # under the new name; on legacy XSIAM it is provided by the Cortex Core - IR integration.
+        if is_platform():
+            # PCI commands are injected by the server as built-ins (no integration brand to enable),
+            # so they must run as BUILTIN and skip the using-brand injection.
+            command_batch2.append(
+                Command(
+                    name="getHashAnalyticsPrevalence",
+                    args={"sha256": sha256_inputs},
+                    brand="Builtin",
+                    command_type=CommandType.BUILTIN,
+                    context_output_mapping={},
+                    ignore_using_brand=True,
+                )
             )
-        )
+        else:
+            command_batch2.append(
+                Command(
+                    name="core-get-hash-analytics-prevalence",
+                    args={"sha256": sha256_inputs},
+                    brand="Cortex Core - IR",
+                    command_type=CommandType.INTERNAL,
+                    context_output_mapping={},
+                )
+            )
 
     commands = [command_batch1, command_batch2]
     demisto.debug("Commands Batches")
