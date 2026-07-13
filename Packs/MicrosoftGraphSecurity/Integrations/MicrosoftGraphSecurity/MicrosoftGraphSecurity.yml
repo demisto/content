@@ -3122,7 +3122,7 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Export.Location
       description: The Location header URL returned for the export operation.
       type: String
-  dockerimage: demisto/crypto:1.0.0.8187750
+  dockerimage: demisto/crypto:1.0.0.10120494
   isfetch: true
   runonce: false
   script: '-'
