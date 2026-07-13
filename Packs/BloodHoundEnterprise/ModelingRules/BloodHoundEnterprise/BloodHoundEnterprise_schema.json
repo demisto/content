@@ -1,0 +1,32 @@
+{
+    "bloodhound_enterprise_raw": {
+      "source_ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "actor_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "actor_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "actor_email": {
+        "type": "string",
+        "is_array": false
+      },
+      "fields": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
