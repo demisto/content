@@ -2207,8 +2207,6 @@ def build_rule_update_body(args: Dict[str, Any]) -> Dict[str, Any]:
 
     if args.get("name"):
         body["name"] = args["name"]
-    if "enabled" in args:
-        body["enabled"] = argToBoolean(args["enabled"])
     if args.get("schedule_interval"):
         body["schedule"] = {"interval": args["schedule_interval"]}
     if args.get("consumer"):
@@ -2219,15 +2217,27 @@ def build_rule_update_body(args: Dict[str, Any]) -> Dict[str, Any]:
         body["tags"] = argToList(args.get("tags"))
     if args.get("alert_delay_active") is not None:
         body["alertDelay"] = {"active": arg_to_number(args["alert_delay_active"])}
-    if "flapping_enabled" in args:
-        body["flapping"] = body.get("flapping", {})
-        body["flapping"]["enabled"] = argToBoolean(args["flapping_enabled"])
-    if args.get("flapping_look_back_window") is not None:
-        body["flapping"] = body.get("flapping", {})
-        body["flapping"]["lookBackWindow"] = arg_to_number(args["flapping_look_back_window"])
-    if args.get("flapping_status_change_threshold") is not None:
-        body["flapping"] = body.get("flapping", {})
-        body["flapping"]["statusChangeThreshold"] = arg_to_number(args["flapping_status_change_threshold"])
+
+    flapping_enabled = args.get("flapping_enabled")
+    flapping_look_back_window = args.get("flapping_look_back_window")
+    flapping_status_change_threshold = args.get("flapping_status_change_threshold")
+
+    if flapping_enabled is not None:
+        # When the flapping object is provided, look_back_window and status_change_threshold are required by the API.
+        if flapping_look_back_window is None:
+            raise DemistoException(
+                '"flapping_look_back_window" is required when configuring flapping settings.'
+            )
+        if flapping_status_change_threshold is None:
+            raise DemistoException(
+                '"flapping_status_change_threshold" is required when configuring flapping settings.'
+            )
+        flapping: Dict[str, Any] = {
+            "look_back_window": arg_to_number(flapping_look_back_window),
+            "status_change_threshold": arg_to_number(flapping_status_change_threshold),
+        }
+        flapping["enabled"] = argToBoolean(flapping_enabled)
+        body["flapping"] = flapping
 
     artifacts: Dict[str, Any] = {}
     if args.get("artifacts_dashboards_id"):

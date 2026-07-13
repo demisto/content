@@ -1201,23 +1201,16 @@ script:
       - stackAlerts
       - uptime
       description: The name of the application or feature that owns the rule.
-    - name: enabled
-      defaultValue: 'true'
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-      description: Indicates whether you want the rule to run on an interval basis after it is created.
     - name: flapping_enabled
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: Determines whether the rule can enter the flapping state.
+      description: Determines whether the rule can enter the flapping state. When provided, flapping_look_back_window and flapping_status_change_threshold are required.
     - name: flapping_look_back_window
-      description: The minimum number of runs in which the threshold must be met. Minimum value is 2, maximum value is 20.
+      description: The minimum number of runs in which the threshold must be met. Minimum value is 2, maximum value is 20. Required when configuring flapping settings.
     - name: flapping_status_change_threshold
-      description: The minimum number of times an alert must switch states within the defined look back window time.
+      description: The minimum number of times an alert must switch states within the defined look back window time. Minimum value is 2, maximum value is 20. Required when configuring flapping settings.
     - name: name
       description: The name of the rule.
     - name: notify_when
