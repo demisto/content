@@ -321,7 +321,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def _format_user_entity(entity: dict) -> str:
+def _format_user_entity(entity: dict[str, Any]) -> str:
     """
     Builds a readable user identity from a User entity, retaining the full identity
     (userPrincipalName or accountName) together with the domain, instead of only the domain name.
@@ -340,7 +340,7 @@ def _format_user_entity(entity: dict) -> str:
     return user or domain
 
 
-def _get_impacted_entities(alerts_list: list) -> list:
+def _get_impacted_entities(alerts_list: list[dict[str, Any]]) -> list[str]:
     """
     Collects the impacted user entities across all alerts, keeping the full user identity
     and preserving order while removing duplicates and empty values.
@@ -353,7 +353,7 @@ def _get_impacted_entities(alerts_list: list) -> list:
     """
     impacted_entities: list = []
     for alert in alerts_list:
-        for entity in alert.get("entities", []):
+        for entity in alert.get("entities") or []:
             if entity.get("entityType") != "User":
                 continue
             formatted_user = _format_user_entity(entity)
