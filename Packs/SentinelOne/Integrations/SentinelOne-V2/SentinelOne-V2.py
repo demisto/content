@@ -1680,7 +1680,7 @@ class Client(BaseClient):
         )
         timeline: list = response.get("data", [])
         cursor = dict_safe_get(response, ["pagination", "nextCursor"])
-        while cursor and (max_entries == 0 or len(timeline) < max_entries):
+        while cursor and len(timeline) < max_entries:
             query_params["cursor"] = cursor
             response = self._http_request(
                 method="GET",
@@ -1690,7 +1690,7 @@ class Client(BaseClient):
             timeline.extend(response.get("data", []))
             cursor = dict_safe_get(response, ["pagination", "nextCursor"])
 
-        return timeline if len(timeline) <= max_entries or max_entries == 0 else timeline[:max_entries]
+        return timeline[:max_entries]
 
     def threat_export_events(self, threat_id: str) -> list[dict[str, str]]:
         endpoint_url = f"export/threats/{threat_id}/explore/events"
