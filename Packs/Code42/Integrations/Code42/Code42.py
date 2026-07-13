@@ -321,13 +321,13 @@ class Code42Client(BaseClient):
         # This helper method does this for incoming sessions.
         alert.riskSeverity = SESSION_SEVERITY_LIST[max(alert.scores, key=lambda x: x.severity).severity]
         alert.state = max(alert.states, key=lambda x: x.source_timestamp).state_v2
-        alert.actor = self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
+        alert.actor = alert.actor_name or self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
         rule_name_list = []
         # It is possible for a session to trigger an alert rule that no longer exists.
         # We need to handle the 404 case.
         for rule in alert.triggered_alerts:
             try:
-                rule_name_list.append(self.incydr_sdk.alert_rules.v2.get_rule(rule.rule_id).name)
+                rule_name_list.append(rule.rule_name or self.incydr_sdk.alert_rules.v2.get_rule(rule.rule_id).name)
             except HTTPError:
                 pass
         alert.rule_names = ", ".join(rule_name_list)

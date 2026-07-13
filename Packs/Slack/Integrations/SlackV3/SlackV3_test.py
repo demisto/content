@@ -1115,6 +1115,64 @@ def test_mirror_investigation_existing_investigation(mocker):
     assert our_mirror == new_mirror
 
 
+def test_mirror_investigation_existing_mirror_combined_type_only(mocker):
+    """
+    Given:
+        - An existing mirror in the context with non-default values (auto_close=False).
+        - The mirror-investigation command is invoked with only the `type` argument, containing a
+          combined "<mirror_type>:<mirror_direction>" value (e.g. "all:FromDemisto") - XSUP-70395.
+    When:
+        - Running mirror_investigation.
+    Then:
+        - The `type` value is split into mirror_type and mirror_direction.
+        - The existing `auto_close` and `mirror_to` values are preserved from the context and are NOT
+          overridden with the command defaults.
+    """
+    from SlackV3 import mirror_investigation
+
+    # Set - an existing mirror with auto_close=False (differs from the "true" default)
+    mirrors = [
+        {
+            "channel_id": "GKQ86DVPH",
+            "channel_name": "incident-681",
+            "channel_topic": "incident-681",
+            "investigation_id": "681",
+            "mirror_type": "all",
+            "mirror_direction": "both",
+            "mirror_to": "channel",
+            "auto_close": False,
+            "mirrored": True,
+        }
+    ]
+    set_integration_context({"mirrors": js.dumps(mirrors), "users": USERS, "conversations": CONVERSATIONS, "bot_id": "W12345678"})
+
+    def api_call(method: str, http_verb: str = "POST", file: str = None, params=None, json=None, data=None):
+        return None
+
+    # Only the `type` argument is provided, with a combined "<type>:<direction>" value.
+    mocker.patch.object(demisto, "args", return_value={"type": "chat:FromDemisto"})
+    mocker.patch.object(demisto, "investigation", return_value={"id": "681", "users": ["spengler"]})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "getIntegrationContext", side_effect=get_integration_context)
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, "api_call", side_effect=api_call)
+
+    # Arrange
+    mirror_investigation()
+
+    # Assert
+    new_context = demisto.setIntegrationContext.call_args[0][0]
+    new_mirrors = js.loads(new_context["mirrors"])
+    our_mirror = next(m for m in new_mirrors if m["investigation_id"] == "681")
+
+    # The combined type was split correctly
+    assert our_mirror["mirror_type"] == "chat"
+    assert our_mirror["mirror_direction"] == "FromDemisto"
+    # The existing values were preserved and NOT overridden with the defaults ("true" / "group")
+    assert our_mirror["auto_close"] is False
+    assert our_mirror["mirror_to"] == "channel"
+
+
 def test_mirror_investigation_existing_channel(mocker):
     from SlackV3 import mirror_investigation
 
