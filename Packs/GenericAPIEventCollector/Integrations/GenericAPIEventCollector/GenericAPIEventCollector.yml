@@ -61,26 +61,23 @@ configuration:
     display: Oauth token url
     type: 0
     required: false
-    additionalinfo: 'The Auth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token.'
+    additionalinfo: 'OAuth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token'
   - name: oauth_client_id
     section: Connect
     display: Oauth client id
     type: 0
     required: false
-    additionalinfo: The OAuth Client ID issued by the IdP.
+    additionalinfo: OAuth Client ID issued by the IdP.
   - name: oauth_client_secret
     section: Connect
-    display: The Oauth client secret
+    display: Oauth client secret
     type: 14
     required: false
-    displaypassword: The Oauth client secret
-    hiddenusername: true
-    additionalinfo: The OAuth Client Secret.
+    additionalinfo: OAuth Client Secret.
   - name: authorization_code
     section: Connect
     type: 14
-    hiddenusername: true
-    displaypassword: Authorization code
+    display: Authorization code
     required: false
     additionalinfo: The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code.
   - name: redirect_uri
@@ -88,7 +85,7 @@ configuration:
     display: Redirect uri
     type: 0
     required: false
-    additionalinfo: The URI used by the IdP to provide an authorization code.
+    additionalinfo: Used by Idp to provide an authorization code.
   - name: oauth_scopes
     section: Connect
     display: Oauth scopes
@@ -293,168 +290,6 @@ script:
   subtype: python3
   dockerimage: demisto/fastapi:0.125.0.7178097
 fromversion: 6.8.0
-triggers:
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: OAuth 2.0
-    effects:
-      - name: oauth_token_url
-        action:
-          required: true
-      - name: oauth_client_id
-        action:
-          required: true
-      - name: oauth_client_secret
-        action:
-          required: true
-      - name: authorization_code
-        action:
-          hidden: false
-      - name: redirect_uri
-        action:
-          hidden: false
-      - name: oauth_scopes
-        action:
-          hidden: false
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: Basic
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: Token
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: Bearer
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: No Authorization
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: RawToken
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: authentication
-        operator: equal
-        value: Api-Key
-    effects:
-      - name: oauth_token_url
-        action:
-          hidden: true
-      - name: oauth_client_id
-        action:
-          hidden: true
-      - name: oauth_client_secret
-        action:
-          hidden: true
-      - name: authorization_code
-        action:
-          hidden: true
-      - name: redirect_uri
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
 marketplaces:
   - marketplacev2
   - platform
