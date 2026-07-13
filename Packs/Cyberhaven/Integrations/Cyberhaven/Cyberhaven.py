@@ -480,7 +480,7 @@ def validate_cyberhaven_url(url: str) -> None:
     from urllib.parse import urlparse
 
     host = urlparse(url).hostname or ""
-    if not host.endswith("cyberhaven.io"):
+    if host != "cyberhaven.io" and not host.endswith(".cyberhaven.io"):
         raise ValueError(ERROR_MESSAGES["INVALID_URL"].format(url))
 
 

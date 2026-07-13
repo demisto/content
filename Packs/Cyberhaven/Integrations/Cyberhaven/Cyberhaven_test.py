@@ -1937,6 +1937,7 @@ def test_validate_cyberhaven_url_valid(url):
         "https://tenant.example.com",
         "https://cyberhaven.io.evil.com",
         "https://notcyberhaven.io.com",
+        "https://evilcyberhaven.io",
         "https://tenant.cyberhaven.io.fake",
         "",
     ],
