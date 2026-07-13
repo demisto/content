@@ -34,7 +34,7 @@ configuration:
   name: token_url
   type: 0
   required: false
-  additionalinfo: "Override the OAuth 2.0 token endpoint base URL. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to https://iam.us.trellix-gov.com."
+  additionalinfo: "The OAuth 2.0 token endpoint base URL override. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to https://iam.us.trellix-gov.com."
   section: Connect
   advanced: true
 - display: API key

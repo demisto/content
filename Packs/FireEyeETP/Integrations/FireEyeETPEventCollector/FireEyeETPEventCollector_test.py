@@ -491,23 +491,21 @@ def test_client_fetch_oauth_token_uses_configured_url(mocker, token_url_init, ex
     Then:
         - Ensure the OAuth token request is sent to the expected resolved URL.
     """
+    # Mock _get_valid_oauth_token to prevent real token fetch during __init__
     mocker.patch.object(
         FireEyeETPEventCollector.Client,
-        "__init__",
-        lambda self, *a, **kw: None,
+        "_get_valid_oauth_token",
+        return_value="init_token",
     )
-    from CommonServerPython import urljoin
 
-    client = FireEyeETPEventCollector.Client.__new__(FireEyeETPEventCollector.Client)
-    client.client_id = "test_id"
-    client.client_secret = "test_secret"
-    client.scope = "etp.alrt.ro"
-    client._verify = True
-    # Simulate the same logic as Client.__init__
-    client.token_url = (
-        urljoin(token_url_init, FireEyeETPEventCollector.TOKEN_URL_SUFFIX)
-        if token_url_init
-        else FireEyeETPEventCollector.DEFAULT_TOKEN_URL
+    client = FireEyeETPEventCollector.Client(
+        base_url="https://test.com",
+        verify_certificate=True,
+        proxy=False,
+        client_id="test_id",
+        client_secret="test_secret",
+        scope="etp.alrt.ro",
+        token_url=token_url_init,
     )
 
     mock_response = mocker.MagicMock()
