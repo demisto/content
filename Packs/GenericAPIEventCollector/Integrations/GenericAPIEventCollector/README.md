@@ -17,11 +17,11 @@ This is the default integration for this content pack when configured by the Dat
 | API Token | API Key to access the service REST API. | False |
 | Username | Username &amp;amp; Password to use for basic authentication. | False |
 | Password |  | False |
-| Oauth token url | The Auth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token. | False |
-| Oauth client id | The OAuth Client ID issued by the IdP. | False |
-| The Oauth client secret | The OAuth Client Secret. | False |
-| None | The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code. | False |
-| Redirect uri | The URI used by the IdP to provide an authorization code. | False |
+| Oauth token url | OAuth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token | False |
+| Oauth client id | OAuth Client ID issued by the IdP. | False |
+| Oauth client secret | OAuth Client Secret. | False |
+| Authorization code | The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code. | False |
+| Redirect uri | Used by Idp to provide an authorization code. | False |
 | Oauth scopes | Space-separated scopes, e.g. events:read alerts:read. | False |
 | Add Fields To header | If the additional header is required, add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
 | Use system proxy settings |  | False |

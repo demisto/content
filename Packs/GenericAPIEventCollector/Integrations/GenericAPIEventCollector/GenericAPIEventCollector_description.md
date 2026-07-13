@@ -19,6 +19,8 @@ To successfully set up the Generic API Event Collector, you need to provide the 
    - Bearer Token (API key)
    - Raw Token (for custom token-based authentication)
    - No Authorization (for publicly accessible data)
+   - Api-Key (API key sent in a request header)
+   - OAuth 2.0 (client credentials flow)
 5. HTTP Method
    Specify the HTTP method the collector should use to reach the API endpoint. The supported methods are:
    - GET (to retrieve information)
