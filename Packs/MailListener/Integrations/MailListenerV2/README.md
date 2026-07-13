@@ -50,7 +50,7 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MailListener.EmailPreview.Subject | String | The subject of the mail |
 | MailListener.EmailPreview.Date | Date | The date when the mail was received. |
@@ -99,13 +99,13 @@ Fetches an email by email ID
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message-id | Message ID as fetched in 'mail-listener-list-emails' command. | Required |
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MailListener.Email.to | String | The recipients of the mail. |
 | MailListener.Email.cc | String | The mail's cc. |
@@ -174,7 +174,7 @@ Fetches an email by message ID and download it's eml file
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message-id | Message ID as fetched in 'mail-listener-list-emails' command. | Required |
 
