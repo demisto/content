@@ -1006,6 +1006,79 @@ def test_wipe_request_create_command(mocker, absolute_client_v3):
     assert command_results.readable_output == "Wipe request 23dbd460-0547-466d-a655-99d9340ff598 has been successfully created."
 
 
+def test_wipe_request_create_command_with_all_args(mocker, absolute_client_v3):
+    """
+    Given:
+        - All optional arguments for the wipe request create command
+
+    When:
+        - wipe_request_create_command is executed with all arguments
+
+    Then:
+        - The http request is called with the right payload including all optional fields
+    """
+    from Absolute import wipe_request_create_command
+
+    response = {"requestUid": "23dbd460-0547-466d-a655-99d9340ff598"}
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    command_results = wipe_request_create_command(
+        args={
+            "device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+            "name": "Test Wipe",
+            "description": "Test wipe description",
+            "firmware_wipe_requested": "true",
+            "crypto_wipe_requested": "false",
+            "wipe_used_space_only": "true",
+            "delete_all_files_requested": "true",
+            "disable_window_os": "false",
+            "secure_erase_count": "3",
+            "mac_user_name": "admin",
+            "mac_pwd": "password123",
+            "unenroll_devices_and_free_licenses": "true",
+        },
+        client=absolute_client_v3,
+    )
+    assert command_results.readable_output == "Wipe request 23dbd460-0547-466d-a655-99d9340ff598 has been successfully created."
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["deviceUids"] == ["497f6eca-6276-4993-bfeb-53cbbbba6f08"]
+    assert payload["name"] == "Test Wipe"
+    assert payload["description"] == "Test wipe description"
+    assert payload["firmwareWipeRequested"] is True
+    assert payload["cryptoWipeRequested"] is False
+    assert payload["wipeUsedSpaceOnly"] is True
+    assert payload["deleteAllFilesRequested"] is True
+    assert payload["disableWindowOs"] is False
+    assert payload["secureEraseCount"] == 3
+    assert payload["macUsername"] == "admin"
+    assert payload["macPwd"] == "password123"
+    assert payload["unenrollDevicesAndFreeLicenses"] is True
+
+
+def test_wipe_request_create_command_invalid_secure_erase_count(mocker, absolute_client_v3):
+    """
+    Given:
+        - An invalid secure_erase_count value (not 1, 3, or 7)
+
+    When:
+        - wipe_request_create_command is executed
+
+    Then:
+        - A DemistoException is raised with the appropriate error message
+    """
+    from Absolute import wipe_request_create_command
+
+    with pytest.raises(DemistoException, match="secure_erase_count must be one of: 1, 3, 7."):
+        wipe_request_create_command(
+            args={
+                "device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                "secure_erase_count": "5",
+            },
+            client=absolute_client_v3,
+        )
+
+
 def test_wipe_request_cancel_command(mocker, absolute_client_v3):
     """
     Given:

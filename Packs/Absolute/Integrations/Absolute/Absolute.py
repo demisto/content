@@ -1266,15 +1266,47 @@ def wipe_request_create_command(args, client) -> CommandResults:
     device_uids = argToList(args.get("device_uids"))
     mac_user_name = args.get("mac_user_name")
     mac_pwd = args.get("mac_pwd")
+    name = args.get("name")
+    description = args.get("description")
+    secure_erase_count = arg_to_number(args.get("secure_erase_count"), required=False)
 
-    payload = {
+    payload: dict[str, Any] = {
         "deviceUids": device_uids,
         "unenrollDevicesAndFreeLicenses": argToBoolean(args.get("unenroll_devices_and_free_licenses", False)),
     }
+    if name:
+        payload["name"] = name
+    if description:
+        payload["description"] = description
     if mac_user_name:
         payload["macUsername"] = mac_user_name
     if mac_pwd:
         payload["macPwd"] = mac_pwd
+
+    firmware_wipe_requested = args.get("firmware_wipe_requested")
+    if firmware_wipe_requested is not None:
+        payload["firmwareWipeRequested"] = argToBoolean(firmware_wipe_requested)
+
+    crypto_wipe_requested = args.get("crypto_wipe_requested")
+    if crypto_wipe_requested is not None:
+        payload["cryptoWipeRequested"] = argToBoolean(crypto_wipe_requested)
+
+    wipe_used_space_only = args.get("wipe_used_space_only")
+    if wipe_used_space_only is not None:
+        payload["wipeUsedSpaceOnly"] = argToBoolean(wipe_used_space_only)
+
+    delete_all_files_requested = args.get("delete_all_files_requested")
+    if delete_all_files_requested is not None:
+        payload["deleteAllFilesRequested"] = argToBoolean(delete_all_files_requested)
+
+    disable_window_os = args.get("disable_window_os")
+    if disable_window_os is not None:
+        payload["disableWindowOs"] = argToBoolean(disable_window_os)
+
+    if secure_erase_count is not None:
+        if secure_erase_count not in (1, 3, 7):
+            raise_demisto_exception("secure_erase_count must be one of: 1, 3, 7.")
+        payload["secureEraseCount"] = secure_erase_count
 
     res = client.api_request_absolute(
         "POST",
