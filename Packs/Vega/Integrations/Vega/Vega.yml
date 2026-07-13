@@ -380,7 +380,6 @@ script:
           isArray: true
         - name: alert_id
           description: >-
-          description: >-
             A comma-separated list of Vega alert IDs to update. Deprecated alias for alert_ids.
           isArray: true
           hidden: true
@@ -447,7 +446,6 @@ script:
             without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation.
           isArray: true
         - name: incident_id
-          description: >-
           description: >-
             A comma-separated list of Vega incident IDs to update. Deprecated alias for incident_ids.
           isArray: true
