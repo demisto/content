@@ -28,6 +28,7 @@ import ipaddress
 import gc
 # region constants and configurations
 
+
 pypdf_logger = logging.getLogger("PyPDF2")
 pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
 
