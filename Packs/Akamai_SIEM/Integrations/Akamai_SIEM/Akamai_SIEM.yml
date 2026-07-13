@@ -66,12 +66,12 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
-- display: Fetch limit
+- display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
-  defaultvalue: '50000'
+  defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
+  additionalinfo: The maximum number of items to retrieve per fetch. For incident fetching (XSOAR) the maximum is 2000. For event collection (XSIAM) you can use a larger value, up to 80k.
   section: Collect
 - display: Akamai Page size
   name: page_size
@@ -79,7 +79,7 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '10000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
+  additionalinfo: The number of events to fetch per request to Akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 20k.
   hidden:
   - xsoar
   supportedModules:
