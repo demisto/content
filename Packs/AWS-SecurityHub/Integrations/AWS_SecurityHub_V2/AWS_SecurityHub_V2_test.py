@@ -229,7 +229,15 @@ def test_findings_get_command_success(mocker):
     """
     mock_client = mocker.Mock()
     mock_client.get_findings_v2.return_value = {
-        "Findings": [{"metadata": {"uid": "f-1"}, "severity": "High"}],
+        "Findings": [
+            {
+                "metadata": {"uid": "f-1"},
+                "severity": "High",
+                "status": "New",
+                "class_name": "Compliance Finding",
+                "resources": [{"uid": "res-1"}, {"uid": "res-2"}, {"name": "no-uid"}],
+            }
+        ],
         "NextToken": "tok-123",
     }
     args = {"string_filters": "field_name=severity,value=High", "sort_field": "time", "sort_order": "desc", "limit": "10"}
@@ -243,6 +251,9 @@ def test_findings_get_command_success(mocker):
     findings_output = result.outputs["AWS.SecurityHubV2.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)"]
     assert findings_output[0]["metadata"]["uid"] == "f-1"
     assert result.outputs["AWS.SecurityHubV2(true)"] == {"FindingsNextToken": "tok-123"}
+    # Readable table surfaces uid/severity/status/class_name and joins only resource entries that have a uid.
+    assert "res-1, res-2" in result.readable_output
+    assert "f-1" in result.readable_output
 
 
 def test_findings_get_command_no_results(mocker):
@@ -300,8 +311,8 @@ def test_findings_batch_update_command_success(mocker):
     """
     mock_client = mocker.Mock()
     mock_client.batch_update_findings_v2.return_value = {
-        "ProcessedFindings": [{"metadata": {"uid": "u-1"}}],
-        "UnprocessedFindings": [],
+        "ProcessedFindings": [{"MetadataUid": "u-1", "metadata": {"uid": "u-1"}}],
+        "UnprocessedFindings": [{"MetadataUid": "u-9", "ErrorCode": "AccessDenied"}],
     }
     args = {"metadata_uids": "u-1,u-2", "comment": "triage", "severity_id": "4", "status_id": "2"}
 
@@ -314,6 +325,9 @@ def test_findings_batch_update_command_success(mocker):
     assert call_kwargs["StatusId"] == 2
     assert result.outputs_prefix == "AWS.SecurityHubV2.BatchUpdateFindings"
     assert result.outputs["ProcessedFindings"][0]["metadata"]["uid"] == "u-1"
+    # Readable output lists the processed and unprocessed metadata UIDs (not just counts).
+    assert "u-1" in result.readable_output
+    assert "u-9" in result.readable_output
 
 
 def test_findings_batch_update_command_with_identifiers(mocker):

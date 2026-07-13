@@ -475,7 +475,9 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
             "status": finding.get("status"),
             "class_name": finding.get("class_name"),
             "resource_uid": ", ".join(
-                resource.get("uid") for resource in (finding.get("resources") or []) if resource.get("uid")
+                resource["uid"]
+                for resource in (finding.get("resources") or [])
+                if isinstance(resource, dict) and resource.get("uid")
             ),
         }
         for finding in findings
