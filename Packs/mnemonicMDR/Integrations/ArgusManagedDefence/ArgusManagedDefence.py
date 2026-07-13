@@ -41,7 +41,7 @@ from argus_api.lib.events.v1.aggregated import (
     list_aggregated_events,
 )
 from argus_api.lib.events.v1.case.case import get_events_for_case
-from argus_api.lib.events.v1.nids import find_n_i_d_s_events, list_n_i_d_s_events
+from argus_api.lib.events.v1.nids import find_nids_events, list_nids_events
 from argus_api.lib.events.v1.payload import get_payload
 from argus_api.lib.events.v1.pcap import get_pcap
 from argus_api.lib.pdns.v3.search import search_records
@@ -1145,7 +1145,7 @@ def get_pcap_command(args: dict[str, Any]) -> Any:
 
 def find_nids_events_command(args: dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
-    result = find_n_i_d_s_events(
+    result = find_nids_events(
         skipFutureEvents=args.get("skip_future_events"),
         exclude=args.get("exclude"),
         eventIdentifier=argToList(args.get("event_identifier")),
@@ -1192,7 +1192,7 @@ def find_nids_events_command(args: dict[str, Any]) -> CommandResults:
 
 
 def list_nids_events_command(args: dict[str, Any]) -> CommandResults:
-    result = list_n_i_d_s_events(
+    result = list_nids_events(
         customerID=args.get("customer_id"),
         signature=args.get("signature"),
         ip=args.get("ip"),
