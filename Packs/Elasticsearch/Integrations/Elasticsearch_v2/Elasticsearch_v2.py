@@ -388,6 +388,7 @@ def kibana_http_request(
     files: Optional[Dict[str, Any]] = None,
     proxies: Optional[Dict[str, str]] = None,
     ok_codes: Optional[tuple] = None,
+    allow_not_found: bool = False,
 ) -> Any:
     """
     Performs an HTTP request against the Kibana REST API.
@@ -406,9 +407,13 @@ def kibana_http_request(
         files: Optional dict of files for multipart/form-data requests (e.g. file attachments).
         proxies: Optional proxies dict, as returned by handle_proxy().
         ok_codes: Optional tuple of HTTP status codes considered successful. Defaults to (200, 201, 204).
+        allow_not_found: When True, a 404 response is treated as "no entries found" and None is
+            returned instead of raising a DemistoException. Intended for read (GET) commands where
+            a missing resource should be surfaced to the user as an empty result rather than an error.
 
     Returns:
-        Any: The parsed JSON response, or an empty dict for empty (e.g. 204) responses.
+        Any: The parsed JSON response, an empty dict for empty (e.g. 204) responses, or None when
+            allow_not_found is True and the response status code is 404.
 
     Raises:
         DemistoException: If the request fails or returns an unexpected status code.
@@ -438,6 +443,10 @@ def kibana_http_request(
         )
     except requests.exceptions.RequestException as e:
         raise DemistoException(f"Failed connecting to Kibana at {url}: {e}")
+
+    if allow_not_found and response.status_code == 404:
+        demisto.debug(f"Kibana API request to {url} returned 404, treating as no entries found.")
+        return None
 
     if response.status_code not in ok_codes:
         error_message = response.text
@@ -1842,8 +1851,10 @@ def es_kibana_case_list_command(args: Dict[str, Any], proxies) -> CommandResults
     case_id = args.get("case_id")
 
     if case_id:
-        response = kibana_http_request("GET", f"/api/cases/{case_id}", space_id=space_id, proxies=proxies)
-        cases = [response]
+        response = kibana_http_request(
+            "GET", f"/api/cases/{case_id}", space_id=space_id, proxies=proxies, allow_not_found=True
+        )
+        cases = [response] if response else []
     else:
         params: Dict[str, Any] = {}
         param_arg_map = {
@@ -1897,7 +1908,7 @@ def es_kibana_case_alerts_list_command(args: Dict[str, Any], proxies) -> Command
         params["offset"] = args["offset"]
 
     response = kibana_http_request(
-        "GET", f"/api/cases/{case_id}/alerts", space_id=space_id, params=params, proxies=proxies
+        "GET", f"/api/cases/{case_id}/alerts", space_id=space_id, params=params, proxies=proxies, allow_not_found=True
     )
     alerts = response if isinstance(response, list) else []
 
@@ -2128,8 +2139,10 @@ def es_kibana_rule_list_command(args: Dict[str, Any], proxies) -> CommandResults
     rule_id = args.get("rule_id")
 
     if rule_id:
-        response = kibana_http_request("GET", f"/api/alerting/rule/{rule_id}", space_id=space_id, proxies=proxies)
-        rules = [response]
+        response = kibana_http_request(
+            "GET", f"/api/alerting/rule/{rule_id}", space_id=space_id, proxies=proxies, allow_not_found=True
+        )
+        rules = [response] if response else []
     else:
         params: Dict[str, Any] = {}
         param_arg_map = {
@@ -2471,9 +2484,14 @@ def es_kibana_endpoint_exception_list_item_list_command(args: Dict[str, Any], pr
 
     if item_id:
         response = kibana_http_request(
-            "GET", "/api/endpoint_list/items", space_id=space_id, params={"item_id": item_id}, proxies=proxies
+            "GET",
+            "/api/endpoint_list/items",
+            space_id=space_id,
+            params={"item_id": item_id},
+            proxies=proxies,
+            allow_not_found=True,
         )
-        items = [response]
+        items = [response] if response else []
     else:
         params: Dict[str, Any] = {}
         param_arg_map = {"filter": "filter", "sort_field": "sort_field", "sort_order": "sort_order", "page": "page", "size": "per_page"}
@@ -2524,8 +2542,10 @@ def es_kibana_exception_list_list_command(args: Dict[str, Any], proxies) -> Comm
             params["id"] = exception_list_id
         if list_id:
             params["list_id"] = list_id
-        response = kibana_http_request("GET", "/api/exception_lists", space_id=space_id, params=params, proxies=proxies)
-        lists_ = [response]
+        response = kibana_http_request(
+            "GET", "/api/exception_lists", space_id=space_id, params=params, proxies=proxies, allow_not_found=True
+        )
+        lists_ = [response] if response else []
     else:
         params = {}
         param_arg_map = {
@@ -2664,8 +2684,10 @@ def es_kibana_exception_list_item_list_command(args: Dict[str, Any], proxies) ->
             params["id"] = exception_list_item_id
         if item_id:
             params["item_id"] = item_id
-        response = kibana_http_request("GET", "/api/exception_lists/items", space_id=space_id, params=params, proxies=proxies)
-        items = [response]
+        response = kibana_http_request(
+            "GET", "/api/exception_lists/items", space_id=space_id, params=params, proxies=proxies, allow_not_found=True
+        )
+        items = [response] if response else []
     else:
         params = {}
         param_arg_map = {
@@ -2826,8 +2848,10 @@ def es_kibana_value_lists_list_command(args: Dict[str, Any], proxies) -> Command
     value_list_id = args.get("value_list_id")
 
     if value_list_id:
-        response = kibana_http_request("GET", "/api/lists", space_id=space_id, params={"id": value_list_id}, proxies=proxies)
-        lists_ = [response]
+        response = kibana_http_request(
+            "GET", "/api/lists", space_id=space_id, params={"id": value_list_id}, proxies=proxies, allow_not_found=True
+        )
+        lists_ = [response] if response else []
     else:
         params: Dict[str, Any] = {}
         param_arg_map = {
@@ -2870,8 +2894,10 @@ def es_kibana_value_list_item_get_command(args: Dict[str, Any], proxies) -> Comm
             params["id"] = value_list_item_id
         if value:
             params["value"] = value
-        response = kibana_http_request("GET", "/api/lists/items", space_id=space_id, params=params, proxies=proxies)
-        items = [response]
+        response = kibana_http_request(
+            "GET", "/api/lists/items", space_id=space_id, params=params, proxies=proxies, allow_not_found=True
+        )
+        items = [response] if response else []
     else:
         params = {}
         param_arg_map = {
