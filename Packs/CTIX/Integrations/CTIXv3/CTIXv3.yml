@@ -58,7 +58,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: CTIX Intel
-- additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands. Does not affect indicators fetched via the indicator feed (see the separate Source Reliability param under Connect).
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
@@ -79,7 +79,7 @@ configuration:
   defaultvalue: "4320"
   section: Collect
   required: false
-  additionalinfo: 'The date and time from which to start fetching on the first run. If left empty, defaults to 3 days ago. For example, 10 days or P10D'
+  additionalinfo: 'The date and time from which to start fetching on the first run, used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. If left empty, defaults to 3 days ago. For example, 10 days or P10D'
 - display: Maximum number of incidents per fetch
   additionalinfo: Allowed Range is 1-200. Default is 10
   name: max_fetch
@@ -127,7 +127,7 @@ configuration:
   required: false
   defaultvalue: "12 hours"
   additionalinfo: How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence.
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed (see the separate Source Reliability param under Collect, which governs incident fetch and reputation commands instead).
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -186,7 +186,7 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-- additionalinfo: Supports CSV values.
+- additionalinfo: Tags to apply to indicators fetched via the indicator feed. Supports CSV values.
   display: Tags
   name: feedTags
   required: false
