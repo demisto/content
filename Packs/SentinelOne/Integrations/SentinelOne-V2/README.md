@@ -2310,7 +2310,7 @@ Exports the threat's events as a JSON File.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Export.Events.ThreatId | String | The threat ID. |
-| SentinelOne.Export.Events.Filename | Boolean | The name of the file containing the Timeline. |
+| SentinelOne.Export.Events.Filename | String | The name of the file containing the Events. |
 
 ### sentinelone-export-full-threat-timeline
 
@@ -2333,4 +2333,4 @@ Exports the threat's full timeline as a JSON File.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Export.Timeline.ThreatId | String | The threat ID. |
-| SentinelOne.Export.Timeline.Filename | Boolean | The name of the file containing the Timeline. |
+| SentinelOne.Export.Timeline.Filename | String | The name of the file containing the Timeline. |

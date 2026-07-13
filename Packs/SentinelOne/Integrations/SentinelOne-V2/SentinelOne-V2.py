@@ -1686,13 +1686,15 @@ class Client(BaseClient):
                 method="GET",
                 url_suffix=endpoint_url,
                 params=query_params,
+                retries=3,
+                backoff_factor=5,
             )
             timeline.extend(response.get("data", []))
             cursor = dict_safe_get(response, ["pagination", "nextCursor"])
 
         return timeline[:max_entries]
 
-    def threat_export_events(self, threat_id: str) -> list[dict[str, str]]:
+    def threat_export_events(self, threat_id: str) -> dict[str, Any]:
         endpoint_url = f"export/threats/{threat_id}/explore/events"
 
         # The format parameter is mandatory. Options are CSV and JSON.
@@ -3899,7 +3901,7 @@ def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResults | list]:
+def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResults | dict]:
     """Retrieve the full timeline information for the threat
 
     Args:
@@ -3925,13 +3927,13 @@ def export_full_threat_timeline(client: Client, args: dict) -> list[CommandResul
             outputs_prefix="SentinelOne.Export.Timeline",
             outputs_key_field="ThreatId",
             outputs=context_entry,
-            raw_response=file_result,
+            raw_response=timeline,
         ),
-        *[file_result],
+        file_result,
     ]
 
 
-def export_threat_events(client: Client, args: dict[str, Any]) -> list[CommandResults | list]:
+def export_threat_events(client: Client, args: dict[str, Any]) -> list[CommandResults | dict]:
     """Retrieves the events related to the Threat and returns them as a file
 
     Args:
@@ -3956,9 +3958,9 @@ def export_threat_events(client: Client, args: dict[str, Any]) -> list[CommandRe
             outputs_prefix="SentinelOne.Export.Events",
             outputs_key_field="ThreatId",
             outputs=context_entry,
-            raw_response=file_result,
+            raw_response=threat_events,
         ),
-        *[file_result],
+        file_result,
     ]
 
 
