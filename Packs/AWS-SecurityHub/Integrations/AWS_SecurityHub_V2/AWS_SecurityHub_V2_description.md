@@ -8,7 +8,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 - Role Session Name: A descriptive name for the assumed role session. For example, xsoar-IAM.integration-Role_SESSION.
 - Role Session Duration: The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
 - Minimum severity to fetch: The minimum severity of findings to fetch, based on the OCSF severity_id. Findings with this severity or higher are fetched. Leave empty to fetch all severities.
-- Additional fetch filters: Extra string filters to narrow the fetch, in the format `fieldname=<OCSF field>,value=<value>,comparison=<comparison>`, with multiple entries separated by `;`. Combined with the time and severity filters using AND.
+- Additional fetch filters: Extra string filters to narrow the fetch, in the format `field_name=<OCSF field>,value=<value>,comparison=<comparison>`, with multiple entries separated by `;`. Combined with the time and severity filters using AND.
 - Incident Mirroring Direction: The direction to mirror the finding between Cortex and AWS - Security Hub (Incoming, Outgoing, or Incoming And Outgoing).
 - Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub: When enabled, closing an incident in Cortex sets the corresponding finding's status to Resolved in AWS Security Hub (applies to outgoing mirroring).
 

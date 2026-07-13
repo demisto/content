@@ -137,7 +137,7 @@ configuration:
   required: false
 - display: Additional fetch filters
   name: fetch_filters
-  additionalinfo: 'The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "fieldname=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
+  additionalinfo: 'The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
   type: 0
   section: Collect
   advanced: true
@@ -163,39 +163,39 @@ configuration:
   required: false
 script:
   commands:
-  - name: aws-securityhub-security-hub-enable
+  - name: aws-securityhub-v2-security-hub-enable
     description: "Enables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:EnableSecurityHubV2."
     arguments:
     - name: tags
       description: "The tags to assign to the Security Hub V2 resource, in the format: key=key1,value=value1;key=key2,value=value2."
       required: false
     outputs:
-    - contextPath: AWS.SecurityHub.Hub.HubV2Arn
+    - contextPath: AWS.SecurityHubV2.Hub.HubV2Arn
       description: The ARN of the enabled Security Hub V2 resource.
       type: String
-  - name: aws-securityhub-security-hub-disable
+  - name: aws-securityhub-v2-security-hub-disable
     description: "Disables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:DisableSecurityHubV2."
     arguments: []
-  - name: aws-securityhub-findings-get
+  - name: aws-securityhub-v2-findings-get
     description: "Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2."
     arguments:
     - name: string_filters
-      description: 'The string field filters. Each entry: "fieldname=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: fieldname=severity,value=High,comparison=EQUALS;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD.'
+      description: 'The string field filters. Each entry: "field_name=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
       required: false
     - name: date_filters
-      description: 'The date field filters. Each entry must use EITHER an absolute range ("fieldname=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("fieldname=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,value=7,unit=DAYS OR fieldname=finding_info.modified_time_dt,days=7.'
+      description: 'The date field filters. Each entry must use EITHER an absolute range ("field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
-      description: 'The boolean field filters. Each entry: "fieldname=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
+      description: 'The boolean field filters. Each entry: "field_name=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
       required: false
     - name: number_filters
-      description: 'The number field filters. Each entry: "fieldname=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: fieldname=severity_id,gte=4 OR fieldname=severity_id,gte=4,lte=6.'
+      description: 'The number field filters. Each entry: "field_name=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6.'
       required: false
     - name: map_filters
-      description: 'The map field filters. Each entry: "fieldname=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'
+      description: 'The map field filters. Each entry: "field_name=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'
       required: false
     - name: ip_filters
-      description: 'The IP field filters. Each entry: "fieldname=<field>,cidr=<IP address>", multiple entries separated by ";". Allowed fieldname values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1.'
+      description: 'The IP field filters. Each entry: "field_name=<field>,cidr=<IP address>", multiple entries separated by ";". Allowed field_name values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
       required: false
     - name: filter_operator
       description: The logical operator used to combine the filter conditions within the composite filter.
@@ -231,17 +231,17 @@ script:
       description: The pagination token returned from a previous request, used to retrieve the next set of results.
       required: false
     outputs:
-    - contextPath: AWS.SecurityHub.Findings
+    - contextPath: AWS.SecurityHubV2.Findings
       description: The list of OCSF-formatted findings returned by Security Hub V2. Each finding is a free-form OCSF object containing fields such as metadata, finding_info, severity, status, cloud, resources, and time.
       type: Unknown
-    - contextPath: AWS.SecurityHub.FindingsNextToken
+    - contextPath: AWS.SecurityHubV2.FindingsNextToken
       description: The pagination token to use when requesting the next set of findings.
       type: String
-  - name: aws-securityhub-findings-batch-update
+  - name: aws-securityhub-v2-findings-batch-update
     description: "Updates one or more AWS Security Hub V2 findings in a single batch request. Findings are targeted by metadata_uids and/or finding_identifiers. Required IAM Permission: securityhub:BatchUpdateFindingsV2."
     arguments:
     - name: metadata_uids
-      description: A comma-separated list of OCSF finding metadata UIDs to update. Each UID must be a 64-character lowercase hexadecimal string (pattern ^[0-9a-z]{64}$), exactly as returned in the metadata.uid field by aws-securityhub-findings-get.
+      description: A comma-separated list of OCSF finding metadata UIDs to update. Each UID must be a 64-character lowercase hexadecimal string (pattern ^[0-9a-z]{64}$), exactly as returned in the metadata.uid field by aws-securityhub-v2-findings-get.
       required: false
       isArray: true
     - name: finding_identifiers
@@ -251,16 +251,30 @@ script:
       description: The reason for updating the findings.
       required: false
     - name: severity_id
-      description: The new OCSF severity ID to assign to the findings (e.g., 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal).
+      description: The new OCSF severity ID to assign to the findings (1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal).
       required: false
+      auto: PREDEFINED
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
     - name: status_id
-      description: The new OCSF status ID to assign to the findings (e.g., 1=New, 2=In Progress, 3=Suppressed, 4=Resolved).
+      description: The new OCSF status ID to assign to the findings (1=New, 2=In Progress, 3=Suppressed, 4=Resolved).
       required: false
+      auto: PREDEFINED
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
     outputs:
-    - contextPath: AWS.SecurityHub.BatchUpdateFindings.ProcessedFindings
+    - contextPath: AWS.SecurityHubV2.BatchUpdateFindings.ProcessedFindings
       description: The list of findings that were successfully updated.
       type: Unknown
-    - contextPath: AWS.SecurityHub.BatchUpdateFindings.UnprocessedFindings
+    - contextPath: AWS.SecurityHubV2.BatchUpdateFindings.UnprocessedFindings
       description: The list of findings that could not be updated, including the error for each.
       type: Unknown
   - name: get-remote-data

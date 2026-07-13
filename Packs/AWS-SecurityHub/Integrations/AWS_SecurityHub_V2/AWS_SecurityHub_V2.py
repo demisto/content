@@ -160,7 +160,7 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
     """Parse a filter argument into the API ``{FieldName, Filter}`` structure using FILTER_CONFIGS.
 
     Backs the string/number/boolean/map/ip categories (date is handled by parse_date_filters).
-    Entries missing ``fieldname`` or a category-required key are skipped.
+    Entries missing ``field_name`` or a category-required key are skipped.
 
     Args:
         filters_str (str): The raw filter argument string.
@@ -175,7 +175,7 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
     filters = []
 
     for entry in parse_filter_entries(filters_str):
-        field_name = entry.get("fieldname")
+        field_name = entry.get("field_name")
         if not field_name:
             continue
         if any(not entry.get(key) for key in required):
@@ -207,7 +207,7 @@ def parse_date_filters(filters_str: str) -> list[dict]:
     """
     filters = []
     for e in parse_filter_entries(filters_str):
-        field_name = e.get("fieldname")
+        field_name = e.get("field_name")
         if not field_name:
             continue
         start, end = e.get("start"), e.get("end")
@@ -407,7 +407,7 @@ def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResult
     hub_arn = response.get("HubV2Arn")
     outputs = {"HubV2Arn": hub_arn}
     return CommandResults(
-        outputs_prefix="AWS.SecurityHub.Hub",
+        outputs_prefix="AWS.SecurityHubV2.Hub",
         outputs_key_field="HubV2Arn",
         outputs=outputs,
         readable_output=tableToMarkdown("AWS Security Hub V2 Enabled", outputs, removeNull=True),
@@ -465,15 +465,27 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
 
     next_token = response.get("NextToken")
     outputs = {
-        "AWS.SecurityHub.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)": findings,
-        "AWS.SecurityHub(true)": {"FindingsNextToken": next_token},
+        "AWS.SecurityHubV2.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)": findings,
+        "AWS.SecurityHubV2(true)": {"FindingsNextToken": next_token},
     }
+    findings_table = [
+        {
+            "uid": finding.get("metadata", {}).get("uid"),
+            "severity": finding.get("severity"),
+            "status": finding.get("status"),
+            "class_name": finding.get("class_name"),
+            "resource_uid": ", ".join(
+                resource.get("uid") for resource in (finding.get("resources") or []) if resource.get("uid")
+            ),
+        }
+        for finding in findings
+    ]
     return CommandResults(
         outputs=remove_empty_elements(outputs),
         readable_output=tableToMarkdown(
             "AWS Security Hub V2 Findings",
-            findings,
-            headers=["finding_info", "severity", "status", "class_name", "compliance", "cloud", "resources"],
+            findings_table,
+            headers=["uid", "severity", "status", "class_name", "resource_uid"],
             removeNull=True,
         ),
         raw_response=response,
@@ -521,11 +533,14 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     }
     readable_output = tableToMarkdown(
         "AWS Security Hub V2 Batch Update Findings",
-        {"Processed": len(processed), "Unprocessed": len(unprocessed)},
+        {
+            "Processed": [finding.get("MetadataUid") for finding in processed],
+            "Unprocessed": [finding.get("MetadataUid") for finding in unprocessed],
+        },
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="AWS.SecurityHub.BatchUpdateFindings",
+        outputs_prefix="AWS.SecurityHubV2.BatchUpdateFindings",
         outputs=remove_empty_elements(outputs),
         readable_output=readable_output,
         raw_response=response,
@@ -938,13 +953,13 @@ def main():  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client))
-        elif command == "aws-securityhub-security-hub-enable":
+        elif command == "aws-securityhub-v2-security-hub-enable":
             return_results(enable_security_hub_command(client, args))
-        elif command == "aws-securityhub-security-hub-disable":
+        elif command == "aws-securityhub-v2-security-hub-disable":
             return_results(disable_security_hub_command(client, args))
-        elif command == "aws-securityhub-findings-get":
+        elif command == "aws-securityhub-v2-findings-get":
             return_results(findings_get_command(client, args))
-        elif command == "aws-securityhub-findings-batch-update":
+        elif command == "aws-securityhub-v2-findings-batch-update":
             return_results(findings_batch_update_command(client, args))
         elif command == "fetch-incidents":
             fetch_incidents(client, params)

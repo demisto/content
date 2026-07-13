@@ -3,7 +3,7 @@ This integration was integrated and tested with the AWS Security Hub V2 API.
 
 ## Prerequisites
 
-- AWS Security Hub V2 must be enabled in the target AWS account and region. You can enable it from the AWS console or with the `aws-securityhub-security-hub-enable` command.
+- AWS Security Hub V2 must be enabled in the target AWS account and region. You can enable it from the AWS console or with the `aws-securityhub-v2-security-hub-enable` command.
 - AWS credentials (an access key/secret key pair or an assumable IAM role) with the required Security Hub V2 permissions:
   - `securityhub:EnableSecurityHubV2`
   - `securityhub:DisableSecurityHubV2`
@@ -31,7 +31,7 @@ This integration was integrated and tested with the AWS Security Hub V2 API.
 | First fetch time | The time range to consider for the initial data fetch, in the format &lt;number&gt; &lt;unit&gt; \(for example, 3 days, 12 hours, 7 minutes\). | False |
 | Maximum number of incidents per fetch | The maximum number of findings to fetch per cycle. The maximum is 100. | False |
 | Minimum severity to fetch | The minimum severity of findings to fetch, based on the OCSF severity_id. Findings with this severity or higher are fetched. Leave empty to fetch all severities. | False |
-| Additional fetch filters | The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "fieldname=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;comparison&gt;", multiple entries separated by ";". Combined with the time and severity filters using AND. | False |
+| Additional fetch filters | The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "field_name=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;comparison&gt;", multiple entries separated by ";". Combined with the time and severity filters using AND. | False |
 | Incident Mirroring Direction | The direction to mirror the finding: Incoming \(from AWS - Security Hub to Cortex\), Outgoing \(from Cortex to AWS - Security Hub\), or Incoming And Outgoing \(from/to Cortex and AWS - Security Hub\). | False |
 | Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub | Whether closing an incident in Cortex sets the corresponding finding's status to Resolved in AWS Security Hub \(applies to outgoing mirroring\). | False |
 
@@ -40,14 +40,14 @@ This integration was integrated and tested with the AWS Security Hub V2 API.
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### aws-securityhub-security-hub-enable
+### aws-securityhub-v2-security-hub-enable
 
 ***
 Enables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:EnableSecurityHubV2.
 
 #### Base Command
 
-`aws-securityhub-security-hub-enable`
+`aws-securityhub-v2-security-hub-enable`
 
 #### Input
 
@@ -59,40 +59,40 @@ Enables AWS Security Hub V2 for the configured account and region. Required IAM 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SecurityHub.Hub.HubV2Arn | String | The ARN of the enabled Security Hub V2 resource. |
+| AWS.SecurityHubV2.Hub.HubV2Arn | String | The ARN of the enabled Security Hub V2 resource. |
 
-### aws-securityhub-security-hub-disable
+### aws-securityhub-v2-security-hub-disable
 
 ***
 Disables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:DisableSecurityHubV2.
 
 #### Base Command
 
-`aws-securityhub-security-hub-disable`
+`aws-securityhub-v2-security-hub-disable`
 
 #### Input
 
 There are no input arguments for this command.
 
-### aws-securityhub-findings-get
+### aws-securityhub-v2-findings-get
 
 ***
 Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2.
 
 #### Base Command
 
-`aws-securityhub-findings-get`
+`aws-securityhub-v2-findings-get`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| string_filters | The string field filters. Each entry: "fieldname=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;EQUALS\|PREFIX\|NOT_EQUALS\|PREFIX_NOT_EQUALS\|CONTAINS_WORD&gt;", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: fieldname=severity,value=High,comparison=EQUALS;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD. | Optional |
-| date_filters | The date field filters. Each entry must use EITHER an absolute range ("fieldname=&lt;OCSF field&gt;,start=&lt;ISO8601&gt;,end=&lt;ISO8601&gt;" - both start and end are required) OR a relative DateRange ("fieldname=&lt;OCSF field&gt;,value=&lt;number&gt;,unit=&lt;unit&gt;,comparison=&lt;comparison&gt;" - value is required, unit defaults to DAYS, comparison is optional). "days=&lt;number&gt;" is accepted as a shorthand for "value=&lt;number&gt;,unit=DAYS". Multiple entries separated by ";". Examples: fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR fieldname=finding_info.modified_time_dt,value=7,unit=DAYS OR fieldname=finding_info.modified_time_dt,days=7. | Optional |
-| boolean_filters | The boolean field filters. Each entry: "fieldname=&lt;OCSF field&gt;,value=&lt;true\|false&gt;", multiple entries separated by ";". | Optional |
-| number_filters | The number field filters. Each entry: "fieldname=&lt;OCSF field&gt;,&lt;operator&gt;=&lt;number&gt;" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: fieldname=severity_id,gte=4 OR fieldname=severity_id,gte=4,lte=6. | Optional |
-| map_filters | The map field filters. Each entry: "fieldname=&lt;OCSF field&gt;,key=&lt;key&gt;,value=&lt;value&gt;,comparison=&lt;EQUALS\|NOT_EQUALS&gt;", multiple entries separated by ";". Comparison defaults to EQUALS. | Optional |
-| ip_filters | The IP field filters. Each entry: "fieldname=&lt;field&gt;,cidr=&lt;IP address&gt;", multiple entries separated by ";". Allowed fieldname values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1. | Optional |
+| string_filters | The string field filters. Each entry: "field_name=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;EQUALS\|PREFIX\|NOT_EQUALS\|PREFIX_NOT_EQUALS\|CONTAINS_WORD&gt;", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD. | Optional |
+| date_filters | The date field filters. Each entry must use EITHER an absolute range ("field_name=&lt;OCSF field&gt;,start=&lt;ISO8601&gt;,end=&lt;ISO8601&gt;" - both start and end are required) OR a relative DateRange ("field_name=&lt;OCSF field&gt;,value=&lt;number&gt;,unit=&lt;unit&gt;,comparison=&lt;comparison&gt;" - value is required, unit defaults to DAYS, comparison is optional). "days=&lt;number&gt;" is accepted as a shorthand for "value=&lt;number&gt;,unit=DAYS". Multiple entries separated by ";". Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7. | Optional |
+| boolean_filters | The boolean field filters. Each entry: "field_name=&lt;OCSF field&gt;,value=&lt;true\|false&gt;", multiple entries separated by ";". | Optional |
+| number_filters | The number field filters. Each entry: "field_name=&lt;OCSF field&gt;,&lt;operator&gt;=&lt;number&gt;" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6. | Optional |
+| map_filters | The map field filters. Each entry: "field_name=&lt;OCSF field&gt;,key=&lt;key&gt;,value=&lt;value&gt;,comparison=&lt;EQUALS\|NOT_EQUALS&gt;", multiple entries separated by ";". Comparison defaults to EQUALS. | Optional |
+| ip_filters | The IP field filters. Each entry: "field_name=&lt;field&gt;,cidr=&lt;IP address&gt;", multiple entries separated by ";". Allowed field_name values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: field_name=evidences.src_endpoint.ip,cidr=10.0.0.1. | Optional |
 | filter_operator | The logical operator used to combine the filter conditions within the composite filter. Possible values are: AND, OR. Default is AND. | Optional |
 | composite_operator | The logical operator used to combine multiple composite filters. Possible values are: AND, OR. Default is AND. | Optional |
 | sort_field | The finding field to sort the results by. | Optional |
@@ -104,34 +104,34 @@ Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required I
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SecurityHub.Findings | Unknown | The list of OCSF-formatted findings returned by Security Hub V2. Each finding is a free-form OCSF object containing fields such as metadata, finding_info, severity, status, cloud, resources, and time. |
-| AWS.SecurityHub.FindingsNextToken | String | The pagination token to use when requesting the next set of findings. |
+| AWS.SecurityHubV2.Findings | Unknown | The list of OCSF-formatted findings returned by Security Hub V2. Each finding is a free-form OCSF object containing fields such as metadata, finding_info, severity, status, cloud, resources, and time. |
+| AWS.SecurityHubV2.FindingsNextToken | String | The pagination token to use when requesting the next set of findings. |
 
-### aws-securityhub-findings-batch-update
+### aws-securityhub-v2-findings-batch-update
 
 ***
 Updates one or more AWS Security Hub V2 findings in a single batch request. Findings are targeted by metadata_uids and/or finding_identifiers. Required IAM Permission: securityhub:BatchUpdateFindingsV2.
 
 #### Base Command
 
-`aws-securityhub-findings-batch-update`
+`aws-securityhub-v2-findings-batch-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| metadata_uids | A comma-separated list of OCSF finding metadata UIDs to update. Each UID must be a 64-character lowercase hexadecimal string (pattern ^[0-9a-z]{64}$), exactly as returned in the metadata.uid field by aws-securityhub-findings-get. | Optional |
+| metadata_uids | A comma-separated list of OCSF finding metadata UIDs to update. Each UID must be a 64-character lowercase hexadecimal string (pattern ^[0-9a-z]{64}$), exactly as returned in the metadata.uid field by aws-securityhub-v2-findings-get. | Optional |
 | finding_identifiers | The composite finding identifiers to update. Each entry: "cloud_account_uid=&lt;id&gt;,finding_info_uid=&lt;id&gt;,metadata_product_uid=&lt;id&gt;", multiple entries separated by ";". | Optional |
 | comment | The reason for updating the findings. | Optional |
-| severity_id | The new OCSF severity ID to assign to the findings (e.g., 1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal). | Optional |
-| status_id | The new OCSF status ID to assign to the findings (e.g., 1=New, 2=In Progress, 3=Suppressed, 4=Resolved). | Optional |
+| severity_id | The new OCSF severity ID to assign to the findings (1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal). Possible values are: 1, 2, 3, 4, 5, 6. | Optional |
+| status_id | The new OCSF status ID to assign to the findings (1=New, 2=In Progress, 3=Suppressed, 4=Resolved). Possible values are: 1, 2, 3, 4. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SecurityHub.BatchUpdateFindings.ProcessedFindings | Unknown | The list of findings that were successfully updated. |
-| AWS.SecurityHub.BatchUpdateFindings.UnprocessedFindings | Unknown | The list of findings that could not be updated, including the error for each. |
+| AWS.SecurityHubV2.BatchUpdateFindings.ProcessedFindings | Unknown | The list of findings that were successfully updated. |
+| AWS.SecurityHubV2.BatchUpdateFindings.UnprocessedFindings | Unknown | The list of findings that could not be updated, including the error for each. |
 
 ### get-remote-data
 

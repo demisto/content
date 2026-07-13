@@ -57,7 +57,7 @@ def test_enable_security_hub_command_success(mocker):
 
     call_kwargs = mock_client.enable_security_hub_v2.call_args[1]
     assert call_kwargs["Tags"] == {"env": "prod"}
-    assert result.outputs_prefix == "AWS.SecurityHub.Hub"
+    assert result.outputs_prefix == "AWS.SecurityHubV2.Hub"
     assert result.outputs == {"HubV2Arn": "dummy_arn"}
     assert "AWS Security Hub V2 Enabled" in result.readable_output
 
@@ -129,7 +129,7 @@ def test_parse_filters_string():
     Then: It returns the StringFilters API structure with EQUALS as the default comparison.
     """
     result = parse_filters(
-        "fieldname=severity,value=High;fieldname=finding_info.title,value=root,comparison=CONTAINS_WORD", "string"
+        "field_name=severity,value=High;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD", "string"
     )
     assert result == [
         {"FieldName": "severity", "Filter": {"Value": "High", "Comparison": "EQUALS"}},
@@ -143,7 +143,7 @@ def test_parse_filters_number():
     When: parse_filters is called for the "number" category.
     Then: It maps the operator key to the API key and converts the value to a number.
     """
-    result = parse_filters("fieldname=severity_id,gte=3", "number")
+    result = parse_filters("field_name=severity_id,gte=3", "number")
     assert result == [{"FieldName": "severity_id", "Filter": {"Gte": 3}}]
 
 
@@ -153,7 +153,7 @@ def test_parse_filters_boolean():
     When: parse_filters is called for the "boolean" category.
     Then: It returns the BooleanFilters API structure with the value coerced to a bool.
     """
-    result = parse_filters("fieldname=compliance.assessments.meets_criteria,value=false", "boolean")
+    result = parse_filters("field_name=compliance.assessments.meets_criteria,value=false", "boolean")
     assert result == [{"FieldName": "compliance.assessments.meets_criteria", "Filter": {"Value": False}}]
 
 
@@ -163,7 +163,7 @@ def test_parse_filters_map():
     When: parse_filters is called for the "map" category.
     Then: It returns the MapFilters API structure with EQUALS as the default comparison.
     """
-    result = parse_filters("fieldname=resources.tags,key=env,value=prod", "map")
+    result = parse_filters("field_name=resources.tags,key=env,value=prod", "map")
     assert result == [{"FieldName": "resources.tags", "Filter": {"Key": "env", "Value": "prod", "Comparison": "EQUALS"}}]
 
 
@@ -173,20 +173,20 @@ def test_parse_filters_ip():
     When: parse_filters is called for the "ip" category.
     Then: It returns the IpFilters API structure.
     """
-    result = parse_filters("fieldname=evidences.src_endpoint.ip,cidr=10.0.0.1", "ip")
+    result = parse_filters("field_name=evidences.src_endpoint.ip,cidr=10.0.0.1", "ip")
     assert result == [{"FieldName": "evidences.src_endpoint.ip", "Filter": {"Cidr": "10.0.0.1"}}]
 
 
 def test_parse_filters_skips_invalid_entries():
     """
-    Given: Filter entries missing the fieldname or a required key.
+    Given: Filter entries missing the field_name or a required key.
     When: parse_filters is called.
     Then: Invalid entries are skipped while valid ones are kept.
     """
-    # Missing fieldname, missing value, and a number entry without any operator are all skipped.
+    # Missing field_name, missing value, and a number entry without any operator are all skipped.
     assert parse_filters("value=High", "string") == []
-    assert parse_filters("fieldname=severity", "string") == []
-    assert parse_filters("fieldname=severity_id", "number") == []
+    assert parse_filters("field_name=severity", "string") == []
+    assert parse_filters("field_name=severity_id", "number") == []
 
 
 def test_generate_filters_for_get_findings_empty():
@@ -205,9 +205,9 @@ def test_generate_filters_for_get_findings_composite():
     Then: It builds the composite Filters structure with the conditions and operators.
     """
     args = {
-        "string_filters": "fieldname=severity,value=High",
-        "number_filters": "fieldname=severity_id,gte=4",
-        "date_filters": "fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
+        "string_filters": "field_name=severity,value=High",
+        "number_filters": "field_name=severity_id,gte=4",
+        "date_filters": "field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
         "composite_operator": "OR",
     }
     result = generate_filters_for_get_findings(args)
@@ -232,7 +232,7 @@ def test_findings_get_command_success(mocker):
         "Findings": [{"metadata": {"uid": "f-1"}, "severity": "High"}],
         "NextToken": "tok-123",
     }
-    args = {"string_filters": "fieldname=severity,value=High", "sort_field": "time", "sort_order": "desc", "limit": "10"}
+    args = {"string_filters": "field_name=severity,value=High", "sort_field": "time", "sort_order": "desc", "limit": "10"}
 
     result = findings_get_command(mock_client, args)
 
@@ -240,9 +240,9 @@ def test_findings_get_command_success(mocker):
     assert call_kwargs["MaxResults"] == 10
     assert call_kwargs["SortCriteria"] == [{"Field": "time", "SortOrder": "desc"}]
     assert call_kwargs["Filters"]["CompositeFilters"][0]["StringFilters"][0]["FieldName"] == "severity"
-    findings_output = result.outputs["AWS.SecurityHub.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)"]
+    findings_output = result.outputs["AWS.SecurityHubV2.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)"]
     assert findings_output[0]["metadata"]["uid"] == "f-1"
-    assert result.outputs["AWS.SecurityHub(true)"] == {"FindingsNextToken": "tok-123"}
+    assert result.outputs["AWS.SecurityHubV2(true)"] == {"FindingsNextToken": "tok-123"}
 
 
 def test_findings_get_command_no_results(mocker):
@@ -312,7 +312,7 @@ def test_findings_batch_update_command_success(mocker):
     assert call_kwargs["Comment"] == "triage"
     assert call_kwargs["SeverityId"] == 4
     assert call_kwargs["StatusId"] == 2
-    assert result.outputs_prefix == "AWS.SecurityHub.BatchUpdateFindings"
+    assert result.outputs_prefix == "AWS.SecurityHubV2.BatchUpdateFindings"
     assert result.outputs["ProcessedFindings"][0]["metadata"]["uid"] == "u-1"
 
 
@@ -363,16 +363,16 @@ def test_findings_batch_update_command_error(mocker):
     [
         # Absolute form: both start and end.
         (
-            "fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
+            "field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
             {"Start": "2024-01-01T00:00:00Z", "End": "2024-02-01T00:00:00Z"},
         ),
         # Relative "days" shorthand -> DateRange with Unit defaulting to DAYS.
-        ("fieldname=finding_info.created_time_dt,days=7", {"DateRange": {"Value": 7, "Unit": "DAYS"}}),
+        ("field_name=finding_info.created_time_dt,days=7", {"DateRange": {"Value": 7, "Unit": "DAYS"}}),
         # Relative explicit value/unit.
-        ("fieldname=finding_info.created_time_dt,value=14,unit=DAYS", {"DateRange": {"Value": 14, "Unit": "DAYS"}}),
+        ("field_name=finding_info.created_time_dt,value=14,unit=DAYS", {"DateRange": {"Value": 14, "Unit": "DAYS"}}),
         # Relative with an explicit comparison.
         (
-            "fieldname=finding_info.created_time_dt,value=7,unit=DAYS,comparison=GREATER_THAN",
+            "field_name=finding_info.created_time_dt,value=7,unit=DAYS,comparison=GREATER_THAN",
             {"DateRange": {"Value": 7, "Unit": "DAYS", "Comparison": "GREATER_THAN"}},
         ),
     ],
@@ -390,9 +390,9 @@ def test_parse_date_filters_builds_absolute_and_relative(filters_str, expected_f
     "filters_str,match",
     [
         # start without end is invalid (oneOf requires both, or a DateRange).
-        ("fieldname=finding_info.created_time_dt,start=2024-01-01T00:00:00Z", "requires either the relative 'DateRange' form"),
+        ("field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z", "requires either the relative 'DateRange' form"),
         # mixing the relative and absolute forms is invalid.
-        ("fieldname=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z", "not both"),
+        ("field_name=finding_info.created_time_dt,days=7,start=2024-01-01T00:00:00Z", "not both"),
     ],
 )
 def test_parse_date_filters_invalid_combinations_raise(filters_str, match):
@@ -405,9 +405,9 @@ def test_parse_date_filters_invalid_combinations_raise(filters_str, match):
         parse_date_filters(filters_str)
 
 
-def test_parse_date_filters_skips_entry_without_fieldname():
+def test_parse_date_filters_skips_entry_without_field_name():
     """
-    Given: A date_filters string whose entry has no fieldname.
+    Given: A date_filters string whose entry has no field_name.
     When: parse_date_filters is called.
     Then: The entry is skipped and an empty list is returned (no exception raised).
     """
@@ -445,7 +445,7 @@ def test_build_fetch_filters_with_severity_and_additional():
         "2024-01-01T00:00:00.000Z",
         "2024-01-02T00:00:00.000Z",
         "High",
-        "fieldname=cloud.region,value=us-east-1",
+        "field_name=cloud.region,value=us-east-1",
     )
     composite = result["CompositeFilters"][0]
     assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
