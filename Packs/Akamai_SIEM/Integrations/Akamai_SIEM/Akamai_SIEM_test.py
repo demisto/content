@@ -960,7 +960,7 @@ async def test_process_and_send_events_to_xsiam_skip_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. Skipping decode events."),
             mocker.call(
-                f"[Latest Event Time] Running in interval = 1. Sending {len(events)} events to xsiam. "
+                f"[Fetch] Running in interval = 1. Sending {len(events)} events to xsiam. "
                 "latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]
@@ -1019,7 +1019,7 @@ async def test_process_and_send_events_to_xsiam_with_events_decoding(mocker):
             mocker.call(f"Running in interval = 1. got {len(events)} events, moving to processing events data."),
             mocker.call("Running in interval = 1. decoding events."),
             mocker.call(
-                f"[Latest Event Time] Running in interval = 1. Sending {len(events)} events to xsiam. "
+                f"[Fetch] Running in interval = 1. Sending {len(events)} events to xsiam. "
                 "latest event time is: 2020-06-04T20:43:42Z"
             ),
         ]

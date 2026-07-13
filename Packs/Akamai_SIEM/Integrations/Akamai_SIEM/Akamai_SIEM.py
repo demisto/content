@@ -692,10 +692,10 @@ def post_latest_event_time(latest_event, base_msg):
         latest_event_time = date_format_converter(
             from_format="epoch", date_before=latest_event.get("httpMessage", {}).get("start", "0")
         )
-        demisto.debug(f"[Latest Event Time] {base_msg} latest event time is: {latest_event_time}")
+        demisto.debug(f"[Fetch] {base_msg} latest event time is: {latest_event_time}")
     except Exception as e:
-        demisto.debug(f"[Latest Event Time] Caught an exception when attempting to compute latest event time: {e}")
-        demisto.debug(f"[Latest Event Time] {base_msg}")
+        demisto.debug(f"[Fetch] Caught an exception when attempting to compute latest event time: {e}")
+        demisto.debug(f"[Fetch] {base_msg}")
 
 
 ############################################## Beginning of beta part ##############################################
