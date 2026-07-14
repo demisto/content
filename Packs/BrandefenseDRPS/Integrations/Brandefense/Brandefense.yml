@@ -13,6 +13,9 @@ detaileddescription: |-
   To learn more about how Brandefense can help protect your organization from cyber threats, visit our website at www.brandefense.io
 defaultclassifier: Brandefense - Classifier
 defaultmapperin: Brandefense - Incoming Mapper
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g. https://api.brandefense.io)
   name: url
