@@ -2494,6 +2494,19 @@ script:
       isArray: true
     description: Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
     name: tenable-sc-get-organization
+  - arguments:
+    - description: The maximum number of assets to return.
+      name: limit
+      defaultValue: '500'
+    - auto: PREDEFINED
+      description: Whether to push the fetched assets to the Cortex XSIAM dataset. Used for debugging the fetch-assets flow.
+      name: should_push_assets
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    description: Manually fetch host assets from Tenable.sc and display them in the war room. This command wraps the fetch-assets flow for debugging purposes.
+    name: tenable-sc-get-assets
   isfetch: true
   isfetchassets: true
   script: ''

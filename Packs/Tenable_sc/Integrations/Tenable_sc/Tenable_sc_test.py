@@ -18,6 +18,7 @@ from Tenable_sc import (
     get_alert_command,
     get_all_scan_results_command,
     get_asset_command,
+    get_assets_command,
     get_device_command,
     get_organization_command,
     get_query,
@@ -1242,6 +1243,79 @@ def test_search_hosts_client_method(mocker):
         },
     )
     assert result == test_data["first_page"]
+
+
+def test_get_assets_command(mocker):
+    """
+    Given:
+    - A mock hosts/search response with two assets.
+
+    When:
+    - Running get_assets_command without should_push_assets.
+
+    Then:
+    - The assets are returned in the raw response and rendered in the human readable output.
+    - No data is pushed to XSIAM.
+    """
+    import Tenable_sc
+
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["first_page"])
+    push_mock = mocker.patch.object(Tenable_sc, "send_data_to_xsiam")
+
+    result = get_assets_command(client_mocker, {"limit": "10"})
+
+    assert len(result.raw_response) == 2
+    assert result.raw_response[0]["name"] == "TestHost1"
+    assert "Tenable.sc Assets" in result.readable_output
+    assert "TestHost1" in result.readable_output
+    push_mock.assert_not_called()
+
+
+def test_get_assets_command_respects_limit(mocker):
+    """
+    Given:
+    - A mock hosts/search response with two assets.
+
+    When:
+    - Running get_assets_command with a limit of 1.
+
+    Then:
+    - Only a single asset is returned.
+    """
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["first_page"])
+
+    result = get_assets_command(client_mocker, {"limit": "1"})
+
+    assert len(result.raw_response) == 1
+
+
+def test_get_assets_command_should_push_assets(mocker):
+    """
+    Given:
+    - A mock hosts/search response with two assets.
+
+    When:
+    - Running get_assets_command with should_push_assets=true in an XSIAM environment.
+
+    Then:
+    - The fetched assets are pushed to XSIAM.
+    """
+    import Tenable_sc
+
+    test_data = load_json("./test_data/test_search_hosts.json")
+    mocker.patch.object(client_mocker, "send_request", return_value=test_data["first_page"])
+    mocker.patch.object(Tenable_sc, "is_xsiam", return_value=True)
+    mocker.patch.object(Tenable_sc, "is_platform", return_value=True)
+    push_mock = mocker.patch.object(Tenable_sc, "send_data_to_xsiam")
+
+    get_assets_command(client_mocker, {"limit": "10", "should_push_assets": "true"})
+
+    push_mock.assert_called_once()
+    _, kwargs = push_mock.call_args
+    assert len(kwargs["data"]) == 2
+    assert kwargs["data_type"] == "assets"
 
 
 """ VULNERABILITY FETCH TESTS """
