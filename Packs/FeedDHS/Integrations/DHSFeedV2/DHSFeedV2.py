@@ -201,8 +201,8 @@ def main():  # pragma: no cover
     objects_to_fetch = params.get("objects_to_fetch", [])
 
     initial_interval = params.get("initial_interval", DEFAULT_FETCH_INTERVAL)
-    limit = arg_to_number(params.get("limit")) or -1
-    limit_per_request = arg_to_number(params.get("limit_per_request")) or DEFAULT_LIMIT_PER_REQUEST
+    limit = arg_to_number(params.get("limit", -1)) or -1
+    limit_per_request = arg_to_number(params.get("limit_per_request", DEFAULT_LIMIT_PER_REQUEST)) or DEFAULT_LIMIT_PER_REQUEST
     default_api_root = params.get("default_api_root", "public")
 
     command = demisto.command()
