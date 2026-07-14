@@ -28,7 +28,7 @@ alter
     xdm.alert.original_threat_name = threatname,
     xdm.alert.original_threat_id = threatattackid,
     xdm.source.host.hostname = get_host,
-    xdm.source.user.group.guid = agentgrpguid,
+    // xdm.source.user.group.guid = agentgrpguid, // commented out: XDM validation rejects unused field xdm.source.user.group.guid (101704 install failure)
     xdm.source.user.groups = arraycreate(coalesce(agentgrpname, userrole)),
     xdm.source.host.os = get_host_os,
     xdm.source.host.os_family = if(
