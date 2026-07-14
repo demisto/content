@@ -16,7 +16,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 
 ## Cleaning up duplicate incidents
 
-The **DoppelDedupeIncidents** automation consolidates duplicate Doppel incidents (for example, duplicates created by an earlier fetch issue). It groups incidents by the Doppel alert id and, within each group, keeps a single canonical **open** incident, then closes or optionally deletes the remaining **open** duplicates.
+The **DoppelDedupeIncidents** automation consolidates duplicate Doppel incidents (for example, duplicates created by an earlier fetch issue). It groups incidents by the Doppel alert ID and, within each group, keeps a single canonical **open** incident, then closes or optionally deletes the remaining **open** duplicates.
 
 How it works:
 
@@ -30,20 +30,20 @@ How it works:
 | --- | --- | --- |
 | `action` | `close` (reversible) or `delete` (permanent). | `close` |
 | `dry_run` | When `true`, only report the planned actions. | `true` |
-| `query` | Incident search query. Leave empty to use the built-in Doppel Alert type query. | built-in |
+| `query` | Incident search query. Leave empty to search across all Doppel Alert incident types. | built-in |
 | `page_size` | Incidents fetched per search page (keep at or below 100). | `100` |
 | `max_pages` | Safety ceiling on search pages to scan. | `1000` |
 | `limit` | Maximum incidents to close/delete per run (0 = no limit). | `0` |
 
 ### Recommended rollout
 
-1. Run a dry run to review the plan (and the attached CSV of planned actions):
+1. Preview the plan with a dry run (the full list of planned actions is also attached as a CSV):
 
    ```
    !DoppelDedupeIncidents dry_run=true
    ```
 
-2. For a large backlog, drain it in batches with `limit` and re-run until the report shows `Remaining: 0`:
+2. For a large backlog, process it in batches using `limit`, re-running until the report shows `Remaining: 0`:
 
    ```
    !DoppelDedupeIncidents dry_run=false action=close limit=500

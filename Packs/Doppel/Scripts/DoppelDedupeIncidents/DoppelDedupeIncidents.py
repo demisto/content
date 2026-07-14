@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 import csv
 import io
-from datetime import datetime
+import traceback
+from datetime import datetime, timezone
 
 ACTION_COLUMNS = ["alert_id", "keep_id", "victim_id", "victim_name", "victim_owner", "victim_close_reason"]
 INLINE_SAMPLE = 50
@@ -23,21 +24,17 @@ DOPPEL_INCIDENT_TYPES = [
 DEFAULT_QUERY = " or ".join(f'type:"{t}"' for t in DOPPEL_INCIDENT_TYPES)
 
 
-def _to_dt(value):
+def _to_dt(value: Any) -> datetime | None:
+    """Parse a timestamp into a timezone-aware datetime, or None if it can't be parsed."""
     if not value:
         return None
-    text = str(value).replace("Z", "").replace("T", " ")
-    if "." in text:
-        text = text.split(".")[0]
-    for date_format in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
-        try:
-            return datetime.strptime(text[:19], date_format)
-        except (ValueError, TypeError):
-            continue
-    return None
+    try:
+        return arg_to_datetime(str(value))
+    except (ValueError, TypeError):
+        return None
 
 
-def _alert_key(incident):
+def _alert_key(incident: dict) -> str:
     """Returns the Doppel alert id used to group duplicates."""
     key = incident.get("dbotMirrorId")
     if key:
@@ -49,11 +46,11 @@ def _alert_key(incident):
     return ""
 
 
-def _ranked(group):
+def _ranked(group: list) -> list:
     """Sort a group deterministically: oldest created first, then lowest incident id."""
 
     def sort_key(inc):
-        created = _to_dt(inc.get("created")) or datetime.max
+        created = _to_dt(inc.get("created")) or datetime.max.replace(tzinfo=timezone.utc)
         try:
             inc_id = int(inc.get("id"))
         except (ValueError, TypeError):
@@ -63,10 +60,10 @@ def _ranked(group):
     return sorted(group, key=sort_key)
 
 
-def _is_closed(incident):
+def _is_closed(incident: dict) -> bool:
     """True if the incident is already closed, so we never touch or overwrite it."""
     status = incident.get("status")
-    if status in (2, "2"):  # XSOAR status 2 == Closed
+    if status in (IncidentStatus.DONE, str(int(IncidentStatus.DONE))):  # XSOAR "Closed" status
         return True
     if str(incident.get("closeReason") or "").strip():
         return True
@@ -76,7 +73,7 @@ def _is_closed(incident):
     return False
 
 
-def plan_dedupe(incidents):
+def plan_dedupe(incidents: list) -> dict:
     """Group incidents by Doppel alert id; keep one OPEN survivor, action the rest.
 
     Only OPEN incidents are ever acted on. Already-closed incidents (any reason -
@@ -138,7 +135,7 @@ def plan_dedupe(incidents):
 _SLIM_CUSTOM_FIELDS = ("alertid", "doppelalertid", "alertID", "doppelalertID")
 
 
-def _slim(inc):
+def _slim(inc: dict) -> dict:
     """Keep only the fields the dedupe logic needs.
 
     getIncidents returns the full incident object (~69 fields incl. SLA blocks,
@@ -160,7 +157,7 @@ def _slim(inc):
     }
 
 
-def search_incidents(query, page_size, max_pages):
+def search_incidents(query: str, page_size: int, max_pages: int) -> list:
     """Page through getIncidents until a short/empty page (or the page ceiling).
 
     We deliberately do NOT trust the 'total' field: some XSOAR versions return
@@ -176,11 +173,13 @@ def search_incidents(query, page_size, max_pages):
     page = 0
     while page < max_pages:
         res = demisto.executeCommand("getIncidents", {"query": query, "page": page, "size": page_size})
+        if is_error(res):
+            raise DemistoException(f"getIncidents failed: {get_error(res)}")
         if not res or not isinstance(res, list):
             break
         contents = res[0].get("Contents") or {}
-        if isinstance(contents, str):
-            raise DemistoException(f"getIncidents failed: {contents}")
+        if not isinstance(contents, dict):
+            break
         batch = contents.get("data") or []
         if not batch:
             break
@@ -196,7 +195,7 @@ def search_incidents(query, page_size, max_pages):
     return incidents
 
 
-def _actions_csv(rows):
+def _actions_csv(rows: list) -> str:
     buf = io.StringIO()
     writer = csv.DictWriter(buf, fieldnames=ACTION_COLUMNS)
     writer.writeheader()
@@ -205,8 +204,8 @@ def _actions_csv(rows):
     return buf.getvalue()
 
 
-def close_incident(victim_id, keep_id, alert_id):
-    demisto.executeCommand(
+def close_incident(victim_id: Any, keep_id: Any, alert_id: str) -> None:
+    res = demisto.executeCommand(
         "closeInvestigation",
         {
             "id": str(victim_id),
@@ -215,20 +214,24 @@ def close_incident(victim_id, keep_id, alert_id):
             f"{alert_id}; canonical incident: {keep_id}.",
         },
     )
+    if is_error(res):
+        raise DemistoException(f"Failed to close incident {victim_id}: {get_error(res)}")
 
 
-def delete_incident(victim_id):
-    demisto.executeCommand("deleteIncidents", {"ids": str(victim_id), "force": "true"})
+def delete_incident(victim_id: Any) -> None:
+    res = demisto.executeCommand("deleteIncidents", {"ids": str(victim_id), "force": "true"})
+    if is_error(res):
+        raise DemistoException(f"Failed to delete incident {victim_id}: {get_error(res)}")
 
 
-def main():
+def main() -> None:
     args = demisto.args()
     action = (args.get("action") or "close").lower()
     dry_run = argToBoolean(args.get("dry_run", "true"))
     query = args.get("query") or DEFAULT_QUERY
-    page_size = int(args.get("page_size") or 100)
-    max_pages = int(args.get("max_pages") or 1000)
-    limit = int(args.get("limit") or 0)
+    page_size = arg_to_number(args.get("page_size")) or 100
+    max_pages = arg_to_number(args.get("max_pages")) or 1000
+    limit = arg_to_number(args.get("limit")) or 0
 
     try:
         incidents = search_incidents(query, page_size, max_pages)
@@ -313,6 +316,7 @@ def main():
 
         return_results(results)
     except Exception as e:  # noqa: BLE001
+        demisto.error(traceback.format_exc())
         return_error(f"DoppelDedupeIncidents failed: {e}")
 
 

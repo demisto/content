@@ -6,7 +6,7 @@ args:
   - delete
   default: true
   defaultValue: close
-  description: Whether to close (default, reversible) or permanently delete the duplicate incidents.
+  description: The action to take on duplicate incidents (close or delete).
 - name: dry_run
   auto: PREDEFINED
   predefined:
@@ -14,24 +14,28 @@ args:
   - 'false'
   default: true
   defaultValue: 'true'
-  description: When true (default), only report the planned actions without changing anything.
+  description: Whether to only report the planned actions without changing anything.
+  type: boolean
 - name: query
-  description: Incident search query used to find candidate Doppel incidents. Leave empty to use the built-in Doppel Alert type query.
+  description: The incident search query used to find candidate Doppel incidents. Leave empty to use the built-in Doppel Alert type query.
 - name: page_size
   defaultValue: '100'
-  description: Number of incidents to fetch per search page (keep at or below 100).
+  description: The number of incidents to fetch per search page (keep at or below 100).
+  type: number
 - name: max_pages
   defaultValue: '1000'
-  description: Safety ceiling on the number of search pages to scan.
+  description: The safety ceiling on the number of search pages to scan.
+  type: number
 - name: limit
   defaultValue: '0'
-  description: Maximum number of incidents to close/delete in a single run (0 = no limit). Use to process a large backlog in safe batches; re-run until the report shows 0 remaining.
+  description: The maximum number of incidents to close/delete in a single run (0 = no limit). Use to process a large backlog in safe batches; re-run until the report shows 0 remaining.
+  type: number
 comment: |-
   Cleans up duplicate Doppel incidents created by the fetch duplication bug.
 
-  Incidents are grouped by the Doppel alert id (dbotMirrorId). Within each group only OPEN incidents are considered: the survivor kept as canonical is the oldest open incident that has an owner (analyst work in progress), or the oldest open incident if none are owned. The remaining OPEN duplicates are CLOSED as "Duplicate" (default, reversible) or DELETED (explicit opt-in).
+  Incidents are grouped by the Doppel alert ID (dbotMirrorId). Within each group, only OPEN incidents are considered: the survivor kept as canonical is the oldest open incident that has an owner (analyst work in progress), or the oldest open incident if none are owned. The remaining OPEN duplicates are CLOSED as "Duplicate" (default, reversible) or DELETED (explicit opt-in).
 
-  Already-closed incidents are NEVER touched - regardless of their close reason (Duplicate, False Positive, Resolved, ...). An analyst's disposition is never overwritten, and incidents already closed as Duplicate are never chosen as the canonical survivor and never re-processed, so re-runs / batched runs are idempotent.
+  Already-closed incidents are NEVER touched, regardless of their close reason (Duplicate, False Positive, Resolved, ...). An analyst's disposition is never overwritten, and incidents already closed as Duplicate are never chosen as the canonical survivor and never re-processed, so re-runs / batched runs are idempotent.
 
   Safety model: defaults to a dry run that only reports what it would do; defaults to close (not delete) so any incident is fully recoverable by reopening it; and the report flags any open duplicate that has an owner for human review before a non-dry run.
 commonfields:
@@ -41,7 +45,7 @@ name: DoppelDedupeIncidents
 script: '-'
 outputs:
 - contextPath: Doppel.Dedupe.scanned
-  description: Number of incidents scanned.
+  description: The number of incidents scanned.
   type: Number
 - contextPath: Doppel.Dedupe.dry_run
   description: Whether the run was a dry run (no changes made).
@@ -53,21 +57,21 @@ outputs:
   description: The per-run cap on the number of incidents actioned (0 = no limit).
   type: Number
 - contextPath: Doppel.Dedupe.duplicate_groups
-  description: Number of Doppel alert groups that had open redundant incidents.
+  description: The number of Doppel alert groups that had open redundant incidents.
   type: Number
 - contextPath: Doppel.Dedupe.skipped_closed
-  description: Number of already-closed incidents left untouched.
+  description: The number of already-closed incidents left untouched.
   type: Number
 - contextPath: Doppel.Dedupe.total_actions
-  description: Total number of open duplicate incidents planned for action.
+  description: The total number of open duplicate incidents planned for action.
   type: Number
 - contextPath: Doppel.Dedupe.remaining
-  description: Number of planned actions not performed in this run (re-run to continue).
+  description: The number of planned actions not performed in this run (re-run to continue).
   type: Number
 - contextPath: Doppel.Dedupe.actions
   description: The full list of planned close/delete actions.
 - contextPath: Doppel.Dedupe.flagged
-  description: Open duplicates that have an owner and warrant review.
+  description: The open duplicates that have an owner and warrant review.
 - contextPath: Doppel.Dedupe.performed
   description: The actions performed in this run (empty on a dry run).
 tags:

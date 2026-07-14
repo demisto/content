@@ -24,7 +24,10 @@ def _inc(inc_id, alert_id, created, owner="", status=1, close_reason="", closed=
 
 
 def test_to_dt():
-    assert _to_dt("2025-01-27T07:55:10.063742Z") == __import__("datetime").datetime(2025, 1, 27, 7, 55, 10)
+    parsed = _to_dt("2025-01-27T07:55:10.063742Z")
+    assert parsed is not None
+    assert (parsed.year, parsed.month, parsed.day, parsed.hour, parsed.minute, parsed.second) == (2025, 1, 27, 7, 55, 10)
+    assert parsed.tzinfo is not None  # arg_to_datetime returns a timezone-aware datetime
     assert _to_dt("") is None
     assert _to_dt(None) is None
     assert _to_dt("garbage") is None
@@ -110,7 +113,8 @@ def test_plan_dedupe_single_open_no_action():
 
 
 def _page(data):
-    return [{"Contents": {"data": data}}]
+    # Mirror a real XSOAR command entry (note type) so is_error() can inspect it.
+    return [{"Type": 1, "Contents": {"data": data}}]
 
 
 def test_search_incidents_pages_until_short_page(mocker):

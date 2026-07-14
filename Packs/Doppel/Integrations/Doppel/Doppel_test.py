@@ -23,8 +23,8 @@ from Doppel import (
     _parse_fetch_timeout,
     _parse_max_fetch,
     _incident_alert_id,
-    _seen_ids_from_queue,
     _alert_to_incident,
+    _xsoar_severity,
     Client,
 )
 
@@ -159,9 +159,9 @@ def test_fetch_incidents_command(mocker):
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_timeout(mocker):
@@ -216,9 +216,9 @@ def test_fetch_incidents_timeout(mocker):
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_max_fetch(mocker):
@@ -273,9 +273,9 @@ def test_fetch_incidents_max_fetch(mocker):
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_no_alerts(mocker):
@@ -297,8 +297,8 @@ def test_fetch_incidents_no_alerts(mocker):
     fetch_incidents_command(client=None, args={})
 
     # Assertions
-    demisto.info.assert_called_with("No incidents to create. Exiting fetch_incidents_command.")
     demisto.incidents.assert_called_with([])  # Ensure no incidents are created
+    demisto.debug.assert_any_call("Doppel - Created 0 incident(s) in XSOAR.")
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -1147,26 +1147,27 @@ def test_incident_alert_id():
     assert _incident_alert_id({}) == ""
 
 
-def test_seen_ids_from_queue():
-    """Every resolvable alert id in the queue is collected; blanks are ignored."""
-    queue = [
-        {"dbotMirrorId": "TET-1"},
-        {"rawJSON": json.dumps({"id": "TET-2"})},
-        {"rawJSON": json.dumps({"id": ""})},
-    ]
-    assert _seen_ids_from_queue(queue) == {"TET-1", "TET-2"}
-
-
 def test_alert_to_incident():
-    """An alert becomes an incident named by its external id, with dbotMirrorId and merged mirroring fields."""
-    alert = {"id": "TET-1953443", "created_at": "2025-01-27T07:55:10.063742"}
+    """An alert becomes an incident named by its external id, with dbotMirrorId, severity, and merged mirroring fields."""
+    alert = {"id": "TET-1953443", "created_at": "2025-01-27T07:55:10.063742", "severity": "high"}
     incident = _alert_to_incident(alert, {"mirror_direction": "In"})
     assert incident["name"] == "Doppel Alert TET-1953443"
     assert incident["type"] == "Doppel Alert"
     assert incident["dbotMirrorId"] == "TET-1953443"
     assert incident["occurred"] == "2025-01-27T07:55:10Z"
+    assert incident["severity"] == 3
     raw = json.loads(incident["rawJSON"])
     assert raw["mirror_direction"] == "In"
+
+
+def test_xsoar_severity():
+    """Doppel severities map to XSOAR numeric severities; unknown/blank values default to 0 (Unknown)."""
+    assert _xsoar_severity({"severity": "low"}) == 1
+    assert _xsoar_severity({"severity": "Medium"}) == 2
+    assert _xsoar_severity({"severity": "HIGH"}) == 3
+    assert _xsoar_severity({"severity": "critical"}) == 4
+    assert _xsoar_severity({"severity": "bogus"}) == 0
+    assert _xsoar_severity({}) == 0
 
 
 def _fetch_demisto_mocks(mocker, params, last_run):
