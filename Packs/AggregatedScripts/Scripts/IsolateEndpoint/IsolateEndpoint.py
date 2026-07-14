@@ -339,7 +339,6 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     if are_there_missing_args(command, endpoint_args, endpoint_output):  # type: ignore[arg-type]
         return
     mapped_args = map_args(command, endpoint_args)
-    demisto.info(f"TMP-NBS IsolateEndpoint: is_platform={is_platform()}, isolate command chosen='{command.name}' (brand={command.brand})")
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
     raw_response = demisto.executeCommand(command.name, mapped_args)
     demisto.debug(f"Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}")

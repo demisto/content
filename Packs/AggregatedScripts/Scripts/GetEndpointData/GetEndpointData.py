@@ -477,12 +477,6 @@ def initialize_commands(
     """
     command_runner = EndpointCommandRunner(module_manager=module_manager, add_additional_fields=add_additional_fields)
 
-    demisto.info(
-        f"TMP-NBS GetEndpointData: is_platform={is_platform()}, "
-        f"risky-hosts command chosen='{'getRiskyHosts' if is_platform() else 'core-list-risky-hosts'}', "
-        f"endpoints command chosen='{'getEndpoints' if is_platform() else 'core-get-endpoints'}'"
-    )
-
     single_args_commands = [
         Command(
             brand=Brands.GENERIC_COMMAND,

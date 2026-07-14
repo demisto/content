@@ -106,7 +106,6 @@ def ip_enrichment_script(
                 brand="Cortex Core - IR",
                 context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
             )
-        demisto.info(f"TMP-NBS IPEnrichment: is_platform={is_platform()}, prevalence command chosen='{prevalence_command.name}'")
         command_batch2.append(prevalence_command)
 
     demisto.debug("Command Batch 2: Enriching indicators")

@@ -1300,11 +1300,6 @@ def main():
         #################################
         # On the unified Cortex platform the Core commands are provided by the built-in PCI module
         # under new names; on legacy XSIAM they are provided by the Cortex Core - IR integration.
-        demisto.info(
-            f"TMP-NBS GetUserData: is_platform={is_platform()}, "
-            f"risky-users command chosen='{'getRiskyUsers' if is_platform() else 'core-list-risky-users'}', "
-            f"list-users command chosen='{'getSystemUsers' if is_platform() else 'core-list-users'}'"
-        )
         readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
             modules=modules,
             brand_name="Builtin" if is_platform() else "Cortex Core - IR",
