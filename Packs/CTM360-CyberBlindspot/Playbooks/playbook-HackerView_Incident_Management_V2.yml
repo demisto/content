@@ -2,9 +2,10 @@ id: HackerView Incident Management V2
 version: -1
 fromversion: "6.10.0"
 name: HackerView Incident Management V2
-description: This playbook runs the incidents through indicator enrichment, then based
-  on the mirroring settings, it can communicate with the remote server to track the progress
-  of the investigation.
+description: |-
+  This playbook runs the incidents through indicator enrichment, then based on the mirroring settings, it can communicate with the remote server to track the progress of the investigation.
+
+  When the remote HackerView ticket status becomes inactive, the playbook automatically closes the local incident via the Close Incident Locally task (closeInvestigation). The HackerView Incident type is configured to run this playbook with autorun enabled, so no analyst prompt is required for that auto-close path.
 starttaskid: "0"
 tasks:
   "0":
@@ -140,7 +141,7 @@ tasks:
       - "12"
     scriptarguments:
       closeReason:
-        simple: Incident closed by DBot via playbook
+        simple: ${inputs.closeReason}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -282,6 +283,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "12"
       A False Positive:
       - "28"
       An Acceptable Risk:
@@ -725,6 +728,7 @@ tasks:
       id: af10c0c3-238f-4260-8360-18beba5020f5
       version: -1
       name: Is Source Instance Enabled?
+      description: Checks whether the incident source integration instance is currently enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -806,7 +810,11 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: closeReason
+  value:
+    simple: Incident closed by DBot via playbook
+  required: false
+  description: The reason recorded when the playbook closes the local incident after the remote HackerView ticket becomes inactive.
 outputs: []
 sourceplaybookid: HackerView Incident Management
-quiet: true
