@@ -7,8 +7,15 @@ def count_dict(value):
         return value
     users = value.split(",")
 
-    return [{"User": user for user in users}]
+    return [{"User": user} for user in users]
+
+
+def main():
+    try:
+        return_results(count_dict(**demisto.args()))
+    except Exception as e:
+        return_error(f"Failed to execute MS365DefenderUserListToTable. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    return_results(count_dict(**demisto.args()))
+    main()
