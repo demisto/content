@@ -149,7 +149,6 @@ def test_fetch_incidents(
     next_run, incidents = fetch_incidents(
         client,
         {},
-        is_staging=False,
         fetch_alerts=True,
         fetch_vulns=True,
     )
@@ -251,7 +250,6 @@ def test_fetch_incidents_special(
     next_run, incidents = fetch_incidents(
         client,
         {},
-        is_staging=False,
         fetch_alerts=True,
         fetch_vulns=True,
     )
