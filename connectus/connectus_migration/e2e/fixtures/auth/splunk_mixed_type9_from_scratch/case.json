@@ -1,0 +1,25 @@
+{
+  "description": "Splunk (from scratch) — mixed type-9: a visible-user Username&Password credential plus a separate hiddenusername HEC token, in one Passthrough profile. Input-only TDD red target.",
+  "connector_title": "Splunk",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "Splunk",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "authentication.identifier": "username",
+          "authentication.password": "password",
+          "cred_hec_token.password": "hec_token"
+        }
+      }
+    ],
+    "other_connection": [
+      "host",
+      "port",
+      "unsecure",
+      "proxy"
+    ]
+  }
+}

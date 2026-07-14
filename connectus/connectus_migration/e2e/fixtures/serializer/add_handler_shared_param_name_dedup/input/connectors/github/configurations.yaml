@@ -1,0 +1,64 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration
+view_groups:
+- id: github
+  label: GitHub
+  help_text: Configurations settings for GitHub.
+general_configurations:
+  configurations:
+  - view_group: github
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-github.
+        placeholder: Select log level
+        default_value: 'Off'
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_github
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: team
+      field_type: input
+      title: Team
+      options:
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: github

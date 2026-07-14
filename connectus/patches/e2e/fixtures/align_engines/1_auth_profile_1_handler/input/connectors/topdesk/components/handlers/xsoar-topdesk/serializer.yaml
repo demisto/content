@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+computed_fields:
+- output:
+  - id: isFetch
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_topdesk
+        value: 'on'

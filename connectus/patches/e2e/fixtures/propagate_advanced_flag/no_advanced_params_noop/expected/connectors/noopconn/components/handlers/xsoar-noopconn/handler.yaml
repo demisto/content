@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-noopconn
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for NoOpConn (no advanced params).
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: NoOpConn
+    xsoar-pack-id: noopconn
+  args: {}
+capabilities:
+- auth_options:
+  - id: plain.noopconn_basic
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

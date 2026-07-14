@@ -1,0 +1,250 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: cisco-umbrella-cloud-security-v2
+  label: Cisco Umbrella Cloud Security v2
+- id: cisco-umbrella-enforcement
+  label: Cisco Umbrella Enforcement
+- id: cisco-umbrella-investigate
+  label: Cisco Umbrella Investigate
+- id: cisco-umbrella-reporting
+  label: Cisco Umbrella Reporting
+general_configurations:
+  configurations:
+  - view_group: cisco-umbrella-cloud-security-v2
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-cisco-umbrella-cloud-security-v2.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - view_group: cisco-umbrella-enforcement
+    fields:
+    - id: xsoar-cisco-umbrella-enforcement_integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-cisco-umbrella-enforcement.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - view_group: cisco-umbrella-investigate
+    fields:
+    - id: xsoar-cisco-umbrella-investigate_integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-cisco-umbrella-investigate.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - view_group: cisco-umbrella-reporting
+    fields:
+    - id: xsoar-cisco-umbrella-reporting_integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-cisco-umbrella-reporting.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_cisco-umbrella-cloud-security-v2
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: cisco-umbrella-cloud-security-v2
+- id: automation-and-remediation_cisco-umbrella-enforcement
+  view_group: cisco-umbrella-enforcement
+  configurations:
+  - fields:
+    - id: xsoar-cisco-umbrella-enforcement_defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: automation-and-remediation_cisco-umbrella-investigate
+  view_group: cisco-umbrella-investigate
+  configurations:
+  - fields:
+    - id: xsoar-cisco-umbrella-investigate_defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: integrationReliability
+      field_type: select
+      options:
+        values:
+        - key: A+ - 3rd party enrichment
+          label: A+ - 3rd party enrichment
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
+        default_value: B - Usually reliable
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Source Reliability
+  - fields:
+    - id: suspicious_threshold
+      field_type: input
+      title: DBot Score Suspicious Threshold (-100 to 100)
+      options:
+        help_text: Make sure the suspicious threshold is greater than the malicious threshold.
+        default_value: '0'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: dboscore_threshold
+      field_type: input
+      title: Score Malicious Threshold (-100 to 100)
+      options:
+        help_text: Make sure the malicious threshold is less than the suspicious threshold.
+        default_value: '-90'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: automation-and-remediation_cisco-umbrella-reporting
+  view_group: cisco-umbrella-reporting
+  configurations:
+  - fields:
+    - id: xsoar-cisco-umbrella-reporting_defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

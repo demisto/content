@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+NegCase,Packs/NegCase/Integrations/NegCase/NegCase.yml,NegCase,connectors/negcase,xsoar,"{""auth_types"":[{""type"":""Plain""},{""type"":""API Key""}]}"

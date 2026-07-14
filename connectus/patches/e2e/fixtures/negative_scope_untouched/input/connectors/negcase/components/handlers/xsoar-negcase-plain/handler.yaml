@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-negcase-plain
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for NegCase (basic auth).
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: NegCase
+    xsoar-pack-id: auth
+  args: {}
+capabilities:
+- auth_options:
+  - id: plain.negcase_basic
+  - id: api_key.negcase_token
+  - id: api_key.negcase_vault
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

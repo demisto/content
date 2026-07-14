@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: protectwise
+enabled: true
+metadata:
+  title: ProtectWise
+  description: ProtectWise provides network security threat detection and response. When integrated, event data is received as a continuous stream that can be handled by the platform.
+  version: 1.0.0
+  categories:
+  - Network Security
+  tags: []
+  vendor: Verizon Communications
+  publisher: Palo Alto Networks
+  author_image: protectwise.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true

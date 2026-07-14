@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-cisco-umbrella-enforcement_integrationLogLevel
+  field_name: integrationLogLevel
+- id: xsoar-cisco-umbrella-enforcement_defaultIgnore
+  field_name: defaultIgnore
+- id: api_key_cisco_umbrella_enforcement_proxy
+  field_name: proxy
+- id: api_key_cisco_umbrella_enforcement_insecure
+  field_name: insecure
+- id: api_key_cisco_umbrella_enforcement_engine_mode
+  field_name: engine_mode
+- id: api_key_cisco_umbrella_enforcement_engine
+  field_name: engine
+- id: api_key_cisco_umbrella_enforcement_engineGroup
+  field_name: engineGroup

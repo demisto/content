@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: democonn
+  label: Demo
+profiles:
+- id: api_key.democonn
+  type: api_key
+  view_group: democonn
+  title: API Key
+  description: API key authentication profile for DemoConn.
+  configurations:
+  - fields:
+    - id: api_key
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: apikey
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false

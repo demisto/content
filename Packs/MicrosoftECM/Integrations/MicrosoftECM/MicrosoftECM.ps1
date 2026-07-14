@@ -1443,6 +1443,44 @@ function Main
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 	param()
+
+	# ----------------------------------------------------------------------
+	# ConnectUs params-parity probe (test-module only).
+	#
+	# Fire on EVERY test-module (gate ONLY on command, NOT on the magic param):
+	# the harness arms the instance with the magic param so it can create the
+	# instance, but the probe must NOT depend on reading it back. Emit the full
+	# demisto.Params() as the sentinel-prefixed test-module FAILURE message and
+	# HALT before any real setup runs (which would otherwise fail on the
+	# harness's dummy credentials and mask the dump).
+	#
+	# CRITICAL: raise with `throw` (NOT `ReturnError`). `ReturnError` only writes
+	# a result entry and RETURNS — it does NOT end test-module with our message,
+	# so the harness reads a later entry (a hashtable rendered as @{...}) and
+	# never finds the sentinel. An uncaught `throw` surfaces as the test-module
+	# failure message. The probe sits BEFORE any setup so the thrown sentinel
+	# escapes Main directly.
+	# ----------------------------------------------------------------------
+	if ($Demisto.GetCommand() -eq "test-module") {
+		$demisto.Debug("[params-parity] test-module probe reached; emitting sentinel via throw.")
+		try {
+			$pp_payload = @{
+				'__params_parity_dump__' = $true
+				'params'                 = $demisto.Params()
+			}
+			$pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+			throw "PARAMS_PARITY_DUMP::$pp_json"
+		}
+		catch {
+			# Re-throw OUR sentinel so test-module ends with the dump message.
+			# Any other error must NOT break test-module — log and fall through.
+			if ($_.Exception.Message -like 'PARAMS_PARITY_DUMP::*') {
+				throw
+			}
+			$demisto.Debug("[params-parity] probe error (non-sentinel), continuing: $($_.Exception.Message)")
+		}
+	}
+
 	# Parse Params
 	$global:computerName = $demisto.Params()['ComputerName']
 	$userName = $demisto.Params()['credentials']['identifier']

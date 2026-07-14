@@ -1,0 +1,6 @@
+{
+  "description": "Connection.yaml per-profile row promotion: timeout (mixed-row split) and debug_mode (whole-row promotion) gain `advanced: true`. server_url and api_key are untouched. New sibling rows must NOT carry view_group (schema-forbidden in per-profile context).",
+  "connector": "apiconn",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

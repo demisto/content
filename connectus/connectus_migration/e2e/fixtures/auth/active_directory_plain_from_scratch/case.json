@@ -1,0 +1,24 @@
+{
+  "description": "Active Directory Query (from scratch) — visible-user type-9 Plain auth alongside non-credential auth-mode selectors (NTLM, secure connection, SSL version) which flow to connection fields. Input-only TDD red target.",
+  "connector_title": "Microsoft Active Directory",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Plain",
+        "name": "plain",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        }
+      }
+    ],
+    "other_connection": [
+      "server_ip",
+      "port",
+      "ntlm",
+      "secure_connection",
+      "ssl_version"
+    ]
+  }
+}

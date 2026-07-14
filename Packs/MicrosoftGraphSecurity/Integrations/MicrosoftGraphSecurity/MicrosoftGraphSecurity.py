@@ -2142,6 +2142,45 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
         )
 
 
+def debug_params_command() -> CommandResults:
+    """Debug helper: returns the unified-connector metadata, the resolved
+    ``demisto.params()`` and the raw command args so the UCP interpolation
+    result can be inspected.
+
+    Useful for verifying that:
+      - secret credential fields were interpolated via ``param_map`` into the
+        nested ``credentials`` param (XSOAR type 9), and
+      - non-secret fields marked ``metadata.event.publish`` are delivered as
+        flat params.
+    """
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata()
+    except Exception as e:
+        connector_metadata = "unavailable: {}".format(e)
+
+    params = demisto.params()
+    # Avoid echoing the raw secret in the human-readable output.
+    safe_params = dict(params)
+    creds = safe_params.get("credentials")
+    if isinstance(creds, dict):
+        masked = dict(creds)
+        if masked.get("password"):
+            masked["password"] = "***"
+        safe_params["credentials"] = masked
+
+    output = {
+        "unifiedConnectorMetadata": connector_metadata,
+        "params": safe_params,
+        "raw": demisto.args(),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("MS Graph Security UCP Debug", output),
+        outputs_prefix="MsGraph.DebugParams",
+        outputs=output,
+        raw_response=output,
+    )
+
+
 def get_message_user(client, message_user):
     is_email = re.search(EMAIL_REGEX, message_user)
     if is_email:
@@ -2524,6 +2563,8 @@ def main():
             return_results(get_last_estimate_statistics_command(args, client))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
+        elif command == "msg-debug-params":
+            return_results(debug_params_command())
         elif demisto.command() == "msg-generate-login-url":
             return_results(generate_login_url(client.ms_client))
 

@@ -1,0 +1,13 @@
+{
+  "description": "align_engines: 2 auth profiles (api_key + plain), single handler. Each profile's engine trio (engine_mode/engine/engine_group, incl. the plain_protectwise_* prefixed variant) is merged into one fields block, engine_group is renamed to engineGroup (connection field id, triggers effect/condition ids, and serializer field_mappings id), and engine + engineGroup get create/edit required: true.",
+  "connector": "protectwise",
+  "csv": "connectus-migration-pipeline.csv",
+  "script": "patches/align_engines.py",
+  "args": [
+    "--csv", "{csv}",
+    "--connectors-dir", "{connectors_dir}",
+    "--path", "{path}",
+    "{dry_run}"
+  ],
+  "expect_modified": true
+}

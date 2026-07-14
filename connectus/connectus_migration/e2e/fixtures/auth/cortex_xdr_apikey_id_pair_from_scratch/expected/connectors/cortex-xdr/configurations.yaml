@@ -1,0 +1,38 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration
+view_groups:
+- id: cortex-xdr-ir
+  label: Palo Alto Networks Cortex XDR - Investigation and Response
+  help_text: Configurations settings for Palo Alto Networks Cortex XDR - Investigation
+    and Response.
+general_configurations:
+  configurations:
+  - view_group: cortex-xdr-ir
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-cortex-xdr-ir.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations: []

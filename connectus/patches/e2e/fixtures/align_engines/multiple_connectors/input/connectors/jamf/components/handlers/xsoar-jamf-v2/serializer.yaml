@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-jamf-v2_integrationLogLevel
+  field_name: integrationLogLevel
+- id: passthrough_jamf_v2_proxy
+  field_name: proxy
+- id: passthrough_jamf_v2_insecure
+  field_name: insecure
+- id: passthrough_jamf_v2_engine_mode
+  field_name: engine_mode
+- id: passthrough_jamf_v2_engine
+  field_name: engine
+- id: passthrough_jamf_v2_engine_group
+  field_name: engineGroup
+- id: plain_jamf_v2_url
+  field_name: url
+- id: plain_jamf_v2_proxy
+  field_name: proxy
+- id: plain_jamf_v2_insecure
+  field_name: insecure
+- id: plain_jamf_v2_engine_mode
+  field_name: engine_mode
+- id: plain_jamf_v2_engine
+  field_name: engine
+- id: plain_jamf_v2_engine_group
+  field_name: engineGroup

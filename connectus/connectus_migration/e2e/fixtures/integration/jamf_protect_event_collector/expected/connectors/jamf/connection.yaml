@@ -1,0 +1,180 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: jamf-protect-event-collector
+  label: Jamf Protect Event Collector
+  help_text: Connection settings for Jamf Protect Event Collector.
+profiles:
+- id: plain.jamf_protect_event_collector
+  type: plain
+  view_group: jamf-protect-event-collector
+  title: plain
+  description: Authentication profile for Jamf (plain).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client:credentials.identifier,client:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Credentials Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: client
+      options:
+        mask: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Credentials Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: client
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: base_url
+      field_type: input
+      title: Server URL (e.g., https://example.protect.jamfcloud.com)
+      options:
+        description: REST API Endpoint of Jamf Protect server.
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Jamf Protect Event Collector
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Jamf Protect Event Collector
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

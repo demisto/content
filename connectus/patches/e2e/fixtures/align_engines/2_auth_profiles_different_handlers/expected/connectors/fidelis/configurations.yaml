@@ -1,0 +1,319 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings
+view_groups:
+- id: fidelis-edr
+  label: Fidelis EDR
+- id: fidelis-elevate-network
+  label: Fidelis Elevate Network
+general_configurations:
+  configurations:
+  - view_group: fidelis-edr
+    fields:
+    - id: integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-fidelis-edr.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - view_group: fidelis-elevate-network
+    fields:
+    - id: xsoar-fidelis-elevate-network_integrationLogLevel
+      title: Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for xsoar-fidelis-elevate-network.
+        placeholder: Select log level
+        default_value: 'Off'
+        searchable: true
+        clearable: true
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: automation-and-remediation_fidelis-edr
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: fidelis-edr
+- id: fetch-issues_fidelis-edr
+  configurations:
+  - fields:
+    - id: incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis EDR
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incidentFetchInterval
+      title: Issues Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis EDR
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis EDR
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: fetch_limit
+      field_type: input
+      title: Fetch limit (minimum 5)
+      options:
+        default_value: '50'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: fetch_time
+      field_type: input
+      title: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+      options:
+        default_value: 3 days
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: fidelis-edr
+- id: automation-and-remediation_fidelis-elevate-network
+  view_group: fidelis-elevate-network
+  configurations:
+  - fields:
+    - id: xsoar-fidelis-elevate-network_defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: fetch-issues_fidelis-elevate-network
+  view_group: fidelis-elevate-network
+  configurations:
+  - fields:
+    - id: xsoar-fidelis-elevate-network_incidentType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis Elevate Network
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: xsoar-fidelis-elevate-network_incidentFetchInterval
+      title: Issues Fetch Interval
+      field_type: duration
+      options:
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+  - fields:
+    - id: xsoar-fidelis-elevate-network_incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis Elevate Network
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: xsoar-fidelis-elevate-network_mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Fidelis Elevate Network
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: xsoar-fidelis-elevate-network_fetch_time
+      field_type: input
+      title: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+      options:
+        default_value: 3 days
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

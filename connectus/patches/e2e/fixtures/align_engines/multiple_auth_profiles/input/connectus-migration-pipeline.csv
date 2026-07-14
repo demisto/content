@@ -1,0 +1,5 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+Cisco Umbrella Cloud Security v2,Packs/CiscoUmbrella/Integrations/UmbrellaCloudSecurityv2/UmbrellaCloudSecurityv2.yml,cisco-umbrella,connectors/cisco-umbrella,xsoar,"{""auth_types"":[{""type"":""API"",""name"":""API""}]}"
+Cisco Umbrella Enforcement,Packs/CiscoUmbrella/Integrations/UmbrellaEnforcement/UmbrellaEnforcement.yml,cisco-umbrella,connectors/cisco-umbrella,xsoar,"{""auth_types"":[{""type"":""API"",""name"":""API""}]}"
+Cisco Umbrella Investigate,Packs/CiscoUmbrellaInvestigate/Integrations/UmbrellaInvestigate/UmbrellaInvestigate.yml,cisco-umbrella,connectors/cisco-umbrella,xsoar,"{""auth_types"":[{""type"":""API"",""name"":""API""}]}"
+Cisco Umbrella Reporting,Packs/CiscoUmbrellaReporting/Integrations/UmbrellaReporting/UmbrellaReporting.yml,cisco-umbrella,connectors/cisco-umbrella,xsoar,"{""auth_types"":[{""type"":""API"",""name"":""API""}]}"

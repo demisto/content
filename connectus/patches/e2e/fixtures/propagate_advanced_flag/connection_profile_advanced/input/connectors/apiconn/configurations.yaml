@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../schema/configurations.schema.json
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration settings.
+view_groups:
+- id: apiconn
+  label: ApiConn
+general_configurations:
+  description: General settings for ApiConn.
+  configurations: []

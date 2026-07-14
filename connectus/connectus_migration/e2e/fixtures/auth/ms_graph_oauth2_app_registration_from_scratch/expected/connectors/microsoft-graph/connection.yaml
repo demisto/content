@@ -1,0 +1,239 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: microsoftgraphmail
+  label: O365 Outlook Mail (Using Graph API)
+  help_text: Connection settings for O365 Outlook Mail (Using Graph API).
+profiles:
+- id: passthrough.microsoftgraphmail
+  type: passthrough
+  view_group: microsoftgraphmail
+  title: App Registration
+  description: Authentication profile for Microsoft Graph (passthrough).
+  vault_mappings:
+  - id: creds_auth_id
+    map:
+      password: client_id
+  - id: creds_tenant_id
+    map:
+      password: tenant_id
+  - id: credentials
+    map:
+      password: client_secret
+  - id: creds_certificate
+    map:
+      password: certificate
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client_secret:credentials.password,client_id:creds_auth_id.password,certificate:creds_certificate.password,tenant_id:creds_tenant_id.password
+  configurations:
+  - fields:
+    - id: credentials
+      title: Key or Client Secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: creds_auth_id
+      title: Application ID or Client ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_id
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: creds_certificate
+      title: Private Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: certificate
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: creds_tenant_id
+      title: Token or Tenant ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: tenant_id
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: url
+      field_type: input
+      title: Server URL
+      options:
+        default_value: https://graph.microsoft.com
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: self_deployed
+      field_type: checkbox
+      options:
+        description: Select this checkbox if you are using a self-deployed Azure application.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      title: Use a self deployed Azure application
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: MicrosoftGraphMail
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: MicrosoftGraphMail
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

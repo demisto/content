@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+computed_fields:
+- output:
+  - id: isFetch
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_protectwise
+        value: 'on'
+- output:
+  - id: email
+    value: ''
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: automation-and-remediation_protectwise
+        value: 'on'
+    - type: capability
+      options:
+        capability_id: fetch-issues_protectwise
+        value: 'on'
+- output:
+  - id: password
+    value: ''
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: automation-and-remediation_protectwise
+        value: 'on'
+    - type: capability
+      options:
+        capability_id: fetch-issues_protectwise
+        value: 'on'
+field_mappings:
+- id: plain_protectwise_url
+  field_name: url
+- id: plain_protectwise_proxy
+  field_name: proxy
+- id: plain_protectwise_insecure
+  field_name: insecure
+- id: plain_protectwise_engine_mode
+  field_name: engine_mode
+- id: plain_protectwise_engine
+  field_name: engine
+- id: plain_protectwise_engineGroup
+  field_name: engineGroup

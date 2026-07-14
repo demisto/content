@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+enabled: true
+id: qualys
+metadata:
+  is_recommended: false
+  title: Qualys VMDR
+  description: Slimmed-down multi-handler fixture connector for the propagate_advanced_flag e2e suite.
+  version: 1.0.0
+  categories:
+  - Vulnerability Management
+  tags:
+  - Example
+  domain: security
+  vendor: Qualys
+  publisher: Palo Alto Networks
+  ownership:
+    team: platform
+    maintainers:
+    - '@platform-team'
+settings:
+  grouped: false

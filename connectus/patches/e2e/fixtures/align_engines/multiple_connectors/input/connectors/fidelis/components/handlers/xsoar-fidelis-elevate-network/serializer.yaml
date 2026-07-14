@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-fidelis-elevate-network_fetch_time
+  field_name: fetch_time
+- id: xsoar-fidelis-elevate-network_integrationLogLevel
+  field_name: integrationLogLevel
+- id: xsoar-fidelis-elevate-network_defaultIgnore
+  field_name: defaultIgnore
+- id: xsoar-fidelis-elevate-network_incidentType
+  field_name: incidentType
+- id: xsoar-fidelis-elevate-network_incidentFetchInterval
+  field_name: incidentFetchInterval
+- id: xsoar-fidelis-elevate-network_incomingMapperId
+  field_name: incomingMapperId
+- id: xsoar-fidelis-elevate-network_mappingId
+  field_name: mappingId
+- id: plain_fidelis_elevate_network_credentials_username
+  field_name: credentials_username
+- id: plain_fidelis_elevate_network_credentials_password
+  field_name: credentials_password
+- id: plain_fidelis_elevate_network_proxy
+  field_name: proxy
+- id: plain_fidelis_elevate_network_engine_mode
+  field_name: engine_mode
+- id: plain_fidelis_elevate_network_engine
+  field_name: engine
+- id: plain_fidelis_elevate_network_engine_group
+  field_name: engineGroup
+computed_fields:
+- output:
+  - id: isFetch
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: fetch-issues_fidelis-elevate-network
+        value: 'on'

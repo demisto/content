@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+TOPdesk,Packs/TOPdesk/Integrations/TOPdesk/TOPdesk.yml,topdesk,connectors/topdesk,xsoar,"{""auth_types"":[{""type"":""Basic"",""name"":""Basic Auth""}]}"

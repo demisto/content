@@ -1,0 +1,336 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: protectwise
+  label: ProtectWise
+  help_text: |
+    To configure this integration you can either use Email and Password, or the API token.
+    To obtain the API token navigate to the `Settings` page in the Visualizer UI, and under `Your Settings` select `GENERATE TOKEN`.
+profiles:
+- id: api_key.protectwise
+  type: api_key
+  view_group: protectwise
+  title: API Key
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:credentials_api_token.password
+  configurations:
+  - fields:
+    - id: credentials_api_token
+      title: API Token
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: url
+      field_type: input
+      title: Url
+      options:
+        default_value: https://api.protectwise.com/api/v1/
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: plain.protectwise
+  type: plain
+  view_group: protectwise
+  title: Basic Auth
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: username:credentials_login.identifier,password:credentials_login.password
+  configurations:
+  - fields:
+    - id: credentials_login_username
+      title: Email
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: credentials_login_password
+      title: Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: plain_protectwise_url
+      field_type: input
+      title: Url
+      options:
+        default_value: https://api.protectwise.com/api/v1/
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: plain_protectwise_proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: plain_protectwise_insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: plain_protectwise_engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: plain_protectwise_engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: plain_protectwise_engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: ProtectWise
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

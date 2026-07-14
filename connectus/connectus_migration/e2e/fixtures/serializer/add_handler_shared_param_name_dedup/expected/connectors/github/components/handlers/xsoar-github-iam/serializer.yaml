@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: xsoar-github-iam_team
+  field_name: team
+- id: xsoar-github-iam_integrationLogLevel
+  field_name: integrationLogLevel
+- id: xsoar-github-iam_defaultIgnore
+  field_name: defaultIgnore

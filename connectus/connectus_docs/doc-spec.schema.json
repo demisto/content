@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "doc-spec.schema.json",
+  "title": "ConnectUs connector documentation spec",
+  "description": "AI-authored documentation spec for one grouped connector (stage C output). Validated by validate_doc_spec.py against this schema PLUS the custom §9 rules. Fixed metadata title/description strings are NOT authored here; the apply step sets them to canonical values (§8.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["connector_slug", "members", "connector", "capabilities", "connection", "configurations", "summary"],
+  "properties": {
+    "connector_slug": { "type": "string", "minLength": 1 },
+    "connector_id": { "type": "string" },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["integration_id", "view_group_id"],
+        "properties": {
+          "integration_id": { "type": "string", "minLength": 1 },
+          "view_group_id": { "type": "string", "minLength": 1 },
+          "commonfields_name": { "type": "string" },
+          "description_md_len": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "connector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "description"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["view_groups"],
+      "properties": {
+        "view_groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "help_text": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "null" }
+                ]
+              },
+              "_evidence": { "type": "object" }
+            }
+          }
+        },
+        "profiles": {
+          "type": "array",
+          "description": "OPTIONAL (§8.3a). AI-authored title/description overrides, keyed by profile id. HIGH BAR: carries ONLY profiles whose current copy has jargon, is empty/missing, redundant, or wrong/misleading; clear-and-accurate profiles are omitted. Apply matches by id and sets only the provided field(s); description:null DELETES the description (§8.3a.5).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "anyOf": [ { "required": ["title"] }, { "required": ["description"] } ],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "title": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "null" }
+                ]
+              },
+              "description": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "null" }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "configurations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["view_groups"],
+      "properties": {
+        "view_groups": {
+          "type": "array",
+          "description": "OPTIONAL per member (§8.4). help_text present only where there is real config content.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "help_text": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "null" }
+                ]
+              },
+              "_evidence": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "next_steps": { "type": ["string", "null"] }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: fidelis
+enabled: true
+metadata:
+  title: Fidelis
+  description: Fidelis Endpoint provides advanced endpoint detection and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation. Fidelis Elevate Network automates detection and response to network threats and data leakage in your organization. Supported version - 9.2.
+  version: 1.0.0
+  categories:
+  - Endpoint
+  - Network Security
+  tags: []
+  vendor: Skyview Capital
+  publisher: Palo Alto Networks
+  author_image: fidelis.png
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+settings:
+  allow_skip_verification: true
+  grouped: true
+  skip_cut_off_check: true

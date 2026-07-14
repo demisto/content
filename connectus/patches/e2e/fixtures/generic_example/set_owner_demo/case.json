@@ -1,0 +1,12 @@
+{
+  "description": "GENERIC harness demo: drive an arbitrary script (examples/set_metadata_owner.py) with a custom flag contract (--owner) via the `script` + `args` template. Proves the harness is not tied to add_vault_support.py. AFTER == BEFORE with metadata.owner set.",
+  "connector": "democonn",
+  "script": "patches/e2e/examples/set_metadata_owner.py",
+  "args": [
+    "--connectors-dir", "{connectors_dir}",
+    "--path", "{path}",
+    "--owner", "connectors-team@example.com",
+    "{dry_run}"
+  ],
+  "expect_modified": true
+}

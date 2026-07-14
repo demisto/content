@@ -1,0 +1,65 @@
+commonfields:
+  id: GitHub IAM
+  version: -1
+name: GitHub IAM
+display: GitHub IAM
+category: Utilities
+provider: GitHub
+configuration:
+  - name: credentials
+    display: Username / Password
+    type: 9
+    required: true
+  - name: url
+    display: Server URL
+    type: 0
+    required: true
+  - name: max_fetch
+    display: Maximum number of incidents per fetch
+    type: 0
+    required: false
+  - name: first_fetch
+    display: First fetch time
+    type: 0
+    required: false
+    hidden: true
+    default_value: 10
+  - additionalinfo: Reliability of the source providing the intelligence data
+    defaultvalue: A - Completely reliable
+    display: Source Reliability
+    name: feedReliability
+    options:
+    - A - Completely reliable
+    - B - Usually reliable
+    - C - Fairly reliable
+    - D - Not usually reliable
+    - E - Unreliable
+    - F - Reliability cannot be judged
+    required: true
+    type: 15
+    section: Collect
+  - name: feedTags
+    display: Tags
+    type: 0
+    required: false
+  - name: proxy
+    display: Use system proxy settings
+    type: 8
+    required: false
+  - name: insecure
+    display: Trust any certificate (not secure)
+    type: 8
+    required: false
+  - defaultvalue: '30'
+    display: Incidents Fetch Interval
+    name: incidentFetchInterval
+    hidden: true
+    required: false
+    type: 19
+    section: Collect
+script:
+  script: ''
+  type: python
+  isfetch: true
+  feed: true
+  commands: []

@@ -1,0 +1,58 @@
+commonfields:
+  id: Active Directory Query v2
+  version: -1
+name: Active Directory Query v2
+display: Active Directory Query v2
+category: Authentication & Identity Management
+provider: Microsoft
+description: The Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
+configuration:
+- display: Server IP address (for example, 192.168.0.1)
+  name: server_ip
+  type: 0
+  required: true
+- display: Server port. If not specified, the default port is 389 for LDAP, 636 for LDAPS, or 3268 for global catalog servers.
+  name: port
+  type: 0
+  advanced: true
+  required: false
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: Password
+- display: NTLM authentication
+  name: ntlm
+  type: 8
+  advanced: true
+  required: false
+- display: Secure Connection
+  name: secure_connection
+  defaultvalue: SSL
+  type: 15
+  required: true
+  options:
+  - None
+  - SSL
+  - TLS
+  - Start TLS
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
+  defaultvalue: None
+  display: SSL Version
+  name: ssl_version
+  options:
+  - None
+  - TLS
+  - TLSv1
+  - TLSv1_1
+  - TLSv1_2
+  - TLS_CLIENT
+  type: 15
+  advanced: true
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands: []
+fromversion: 5.0.0

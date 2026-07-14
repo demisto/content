@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-cisco-umbrella-enforcement
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Cisco Umbrella Enforcement.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Cisco Umbrella Enforcement
+    xsoar-pack-id: Cisco-umbrella-enforcement
+  args: {}
+capabilities:
+- id: automation-and-remediation_cisco-umbrella-enforcement
+  auth_options:
+  - id: api_key.cisco_umbrella_enforcement
+    workloads:
+    - xsoar-pod
+    - xsoar-automationhub-runner
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
+test_connection_metro:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
