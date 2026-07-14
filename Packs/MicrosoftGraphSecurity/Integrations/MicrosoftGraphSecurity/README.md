@@ -1628,7 +1628,8 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 #### Human Readable Output
 
 >eDiscovery purge status is succeeded.
->- Operation ID: example-operation-id
+>
+>* Operation ID: example-operation-id
 
 ### msg-delete-ediscovery-search
 
@@ -2579,8 +2580,9 @@ Export results from an estimated ediscoverySearch. For details, see Manage a col
 #### Human Readable Output
 
 >eDiscovery export request was submitted successfully.
->- Case ID: 00000000-0000-0000-0000-000000000000
->- Operation ID: example-operation-id
+>
+>* Case ID: 00000000-0000-0000-0000-000000000000
+>* Operation ID: example-operation-id
 
 ### msg-delete-ediscovery-case-hold-policy
 
