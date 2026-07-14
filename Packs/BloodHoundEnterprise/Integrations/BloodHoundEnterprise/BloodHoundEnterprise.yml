@@ -39,9 +39,10 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch audit logs from BloodHound Enterprise as events in Cortex XSIAM.
+description: Deprecated. Use the SpecterOps BloodHound Enterprise integration instead. Use this integration to fetch audit logs from BloodHound Enterprise as events in Cortex XSIAM.
 display: BloodHoundEnterprise
 name: BloodHoundEnterprise
+deprecated: true
 script:
   commands:
   - arguments:
