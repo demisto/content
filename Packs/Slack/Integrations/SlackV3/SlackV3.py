@@ -29,6 +29,12 @@ SEVERITY_DICT = {"Unknown": 0, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 
 USER_TAG_EXPRESSION = "<@(.*?)>"
 CHANNEL_TAG_EXPRESSION = "<#(.*?)>"
+# Matches an already-resolved Slack user/bot ID (e.g. U012A3CDE, W01AB2CD3, B0123ABCD).
+# Slack IDs are uppercase, start with U/W/B and are followed by uppercase letters/digits.
+# Real IDs are currently ~9-11 chars; the generous upper bound (8-15 total) leaves room
+# for future ID-length growth while keeping the match tight enough to avoid treating
+# human display names as IDs.
+SLACK_USER_ID_EXPRESSION = re.compile(r"^[UWB][A-Z0-9]{7,14}$")
 URL_EXPRESSION = r"<(https?://.+?)(?:\|.+)?>"
 GUID_REGEX = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
 ENTITLEMENT_REGEX = rf"{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b"
@@ -2724,7 +2730,12 @@ def handle_tags_in_message_sync(message: str) -> str:
     """
     matches = re.finditer(USER_TAG_EXPRESSION, message)
     for match in matches:
-        slack_user = get_user_by_name(match.group(1))
+        tag = match.group(1)
+        # If the tag is already a resolved Slack user/bot ID (e.g. "<@U12345678>"),
+        # skip the expensive get_user_by_name lookup — the mention is already valid.
+        if SLACK_USER_ID_EXPRESSION.match(tag):
+            continue
+        slack_user = get_user_by_name(tag)
         if slack_user:
             message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
         else:
