@@ -80,7 +80,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  defaultvalue: '10000'
+  defaultvalue: '20000'
   additionalinfo: The number of events to fetch per single request to Akamai (multiple requests may be made in each fetch, up to the total Fetch limit). If you're getting aggregated delays, increase this value. The maximum per request is 20k. Note that if your API has a higher ingestion rate, the integration will detect it and immediately start the next run in order to fetch events quicker.
   hidden:
   - xsoar

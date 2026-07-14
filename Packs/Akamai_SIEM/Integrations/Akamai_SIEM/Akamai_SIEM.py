@@ -41,7 +41,7 @@ INTEGRATION_CONTEXT_NAME = "Akamai"
 VENDOR = "Akamai"
 PRODUCT = "WAF"
 FETCH_EVENTS_MAX_PAGE_SIZE = 20000  # Allowed events limit per request.
-DEFAULT_PAGE_SIZE = 10000  # Default events per request
+DEFAULT_PAGE_SIZE = 20000  # Default events per request
 TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a safe zone delta.
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
@@ -80,7 +80,7 @@ class Client(BaseClient):
                     occurred from offset. This is a required parameter for offset mode and you can't use it in time-based
                     requests.
             limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
-                   time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
+                   time-based modes. The default limit is 20000. Expect requests to return a slightly higher number of
                    security events than you set in the limit parameter, because data is stored in different buckets.
             from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
                         This is a required parameter to get time-based results for a set period, and you can't use it in
@@ -427,7 +427,7 @@ def get_events_command(
         offset: This token denotes the last message. If specified, this operation fetches only security events that have
                 occurred from offset. This is a required parameter for offset mode and you can't use it in time-based requests.
         limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
-               time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
+               time-based modes. The default limit is 20000. Expect requests to return a slightly higher number of
                security events than you set in the limit parameter, because data is stored in different buckets.
         from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
                     This is a required parameter to get time-based results for a set time_stamp, and you can't use it in
