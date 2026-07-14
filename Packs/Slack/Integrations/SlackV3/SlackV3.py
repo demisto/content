@@ -2739,7 +2739,9 @@ def handle_tags_in_message_sync(message: str) -> str:
         if slack_user:
             message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
         else:
-            message = re.sub(USER_TAG_EXPRESSION, r"\1", message)
+            # Only strip the brackets of this specific unresolved tag, not every tag in the
+            # message (a blanket re.sub would also break already-valid ID mentions we skipped).
+            message = message.replace(match.group(0), tag)
     return message
 
 
