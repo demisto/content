@@ -52,22 +52,22 @@ CBS_DEFAULT_MODULE_DISPLAY = "Incidents"
 CBS_DEFAULT_MODULE_TYPE = "incidents"
 
 DEFAULT_FIELDS = [
-    {"name": "first_seen", "description": "The creation date of the incident"},
-    {"name": "last_seen", "description": "The date the incident got last updated"},
-    {"name": "timestamp", "description": "The timestamp of when the record was created"},
-    {"name": "brand", "description": "The organization the incident belongs to"},
-    {"name": "status", "description": "Incident's current state of affairs"},
-    {"name": "severity", "description": "The severity of the incident"},
-    {"name": "remarks", "description": "Remarks about the incident"},
-    {"name": "type", "description": "Incident type"},
-    {"name": "id", "description": "Unique ID for the incident record"},
-    {"name": "external_link", "description": "External link to the remote platform"},
+    {"name": "first_seen", "description": "The creation date of the incident."},
+    {"name": "last_seen", "description": "The date the incident was last updated."},
+    {"name": "timestamp", "description": "The timestamp of when the record was created."},
+    {"name": "brand", "description": "The organization the incident belongs to."},
+    {"name": "status", "description": "The current state of affairs of the incident."},
+    {"name": "severity", "description": "The severity of the incident."},
+    {"name": "remarks", "description": "The remarks about the incident."},
+    {"name": "type", "description": "The incident type."},
+    {"name": "id", "description": "The unique ID for the incident record."},
+    {"name": "external_link", "description": "The external link to the remote platform."},
 ]
 CBS_INCIDENT_FIELDS = [
-    {"name": "subject", "description": "Asset or title of incident"},
-    {"name": "screenshots", "description": "The screenshot evidence if available"},
-    {"name": "class", "description": "Subject class"},
-    {"name": "coa", "description": "The possible course of action"},
+    {"name": "subject", "description": "The asset or title of the incident."},
+    {"name": "screenshots", "description": "The screenshot evidence if available."},
+    {"name": "class", "description": "The subject class."},
+    {"name": "coa", "description": "The possible course of action."},
     *DEFAULT_FIELDS,
 ]
 
@@ -81,7 +81,7 @@ CBS_CARD_FIELDS = [
 
 CBS_MALWARE_LOG_FIELDS = [
     {"name": "masked_password", "description": "The masked password related to the breached data."},
-    {"name": "password", "description": "Password found in the breached data or compromised account."},
+    {"name": "password", "description": "The password found in the breached data or compromised account."},
     {"name": "software", "description": "The software related to the breached data."},
     {"name": "user", "description": "The user related to the breached data."},
     {"name": "user_domain", "description": "The domain of the user related to the breached data."},
@@ -103,10 +103,10 @@ CBS_MALWARE_LOG_FIELDS = [
 CBS_CRED_FIELDS = [
     {"name": "breach_source", "description": "The source of breached data."},
     {"name": "domain", "description": "The domain related to the breached data."},
-    {"name": "email", "description": "Email found in the breached data."},
-    {"name": "username", "description": "Username found in the breached data."},
-    {"name": "executive_name", "description": "Executive member's name related to the breached data."},
-    {"name": "password", "description": "Password found in the breached data."},
+    {"name": "email", "description": "The email found in the breached data."},
+    {"name": "username", "description": "The username found in the breached data."},
+    {"name": "executive_name", "description": "The executive member's name related to the breached data."},
+    {"name": "password", "description": "The password found in the breached data."},
     *DEFAULT_FIELDS,
 ]
 
@@ -118,43 +118,43 @@ CBS_DOMAIN_INFRINGE_FIELDS = [
 ]
 
 CBS_SMF_FIELDS = [
-    {"name": "platform", "description": "Social network platform (e.g. Twitter)."},
-    {"name": "subject", "description": "Subject URL or profile link."},
-    {"name": "risk_score", "description": "Numeric risk score from CBS."},
-    {"name": "risks", "description": "Risk indicators associated with the finding."},
-    {"name": "incident_status", "description": "Platform-specific incident status."},
+    {"name": "platform", "description": "The social network platform for social media fraud findings."},
+    {"name": "subject", "description": "The subject URL or profile link."},
+    {"name": "risk_score", "description": "The numeric risk score from CBS."},
+    {"name": "risks", "description": "The risk indicators associated with the finding."},
+    {"name": "incident_status", "description": "The platform-specific incident status."},
     *DEFAULT_FIELDS,
 ]
 
 CBS_MM_FIELDS = [
-    {"name": "money_mule_id", "description": "CBS money mule finding ID."},
-    {"name": "account_identifier", "description": "Account identifier tied to the mule."},
-    {"name": "suspect_names", "description": "Names associated with the money mule."},
-    {"name": "suspect_emails", "description": "Email addresses associated with the money mule."},
-    {"name": "suspect_phones", "description": "Phone numbers associated with the money mule."},
-    {"name": "transfer_amount", "description": "Transfer amount when present."},
-    {"name": "transfer_currency", "description": "Currency code for the transfer."},
-    {"name": "bank_account_holder_name", "description": "Name on the bank account."},
-    {"name": "bank_name", "description": "Bank name tied to the mule."},
-    {"name": "bank_account_country", "description": "Country of the bank account."},
-    {"name": "bic", "description": "Bank Identifier Code."},
+    {"name": "money_mule_id", "description": "The CBS money mule finding ID."},
+    {"name": "account_identifier", "description": "The account identifier tied to the money mule."},
+    {"name": "suspect_names", "description": "The names associated with the money mule."},
+    {"name": "suspect_emails", "description": "The email addresses associated with the money mule."},
+    {"name": "suspect_phones", "description": "The phone numbers associated with the money mule."},
+    {"name": "transfer_amount", "description": "The transfer amount when present."},
+    {"name": "transfer_currency", "description": "The currency code for the transfer."},
+    {"name": "bank_account_holder_name", "description": "The name on the bank account."},
+    {"name": "bank_name", "description": "The bank name tied to the money mule."},
+    {"name": "bank_account_country", "description": "The country of the bank account."},
+    {"name": "bic", "description": "The Bank Identifier Code."},
     *DEFAULT_FIELDS,
 ]
 
 CBS_GS_FIELDS = [
-    {"name": "finding_id", "description": "CBS gambling-site finding ID."},
-    {"name": "url", "description": "Primary gambling site URL."},
-    {"name": "submitted_url", "description": "URL submitted to CBS for scanning."},
-    {"name": "landing_url", "description": "Landing page URL observed for the site."},
-    {"name": "title", "description": "Page title observed during scan."},
-    {"name": "resolving_ip", "description": "Resolved IP for the site."},
-    {"name": "tags", "description": "Tags applied to the finding."},
-    {"name": "status_code", "description": "HTTP status code from scan."},
-    {"name": "url_status", "description": "URL reachability status."},
-    {"name": "scan_status", "description": "Scan completion status."},
-    {"name": "enrichment", "description": "DNS enrichment payload."},
-    {"name": "external_links", "description": "External links discovered."},
-    {"name": "internal_links", "description": "Internal links discovered."},
+    {"name": "finding_id", "description": "The CBS gambling-site finding ID."},
+    {"name": "url", "description": "The primary gambling site URL."},
+    {"name": "submitted_url", "description": "The URL submitted to CBS for scanning."},
+    {"name": "landing_url", "description": "The landing page URL observed for the site."},
+    {"name": "title", "description": "The page title observed during scan."},
+    {"name": "resolving_ip", "description": "The resolved IP for the gambling site."},
+    {"name": "tags", "description": "The tags applied to the gambling site finding."},
+    {"name": "status_code", "description": "The HTTP status code from scan."},
+    {"name": "url_status", "description": "The URL reachability status."},
+    {"name": "scan_status", "description": "The scan completion status."},
+    {"name": "enrichment", "description": "The DNS enrichment payload."},
+    {"name": "external_links", "description": "The external links discovered on the gambling site."},
+    {"name": "internal_links", "description": "The internal links discovered on the gambling site."},
     *DEFAULT_FIELDS,
 ]
 
