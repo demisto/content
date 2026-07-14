@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 
 """IMPORTS"""
 import json
+import mimetypes
 import warnings
 from datetime import datetime, UTC
 
@@ -1747,6 +1748,9 @@ def build_case_body(args: Dict[str, Any], require_owner: bool = False) -> Dict[s
     connector = build_case_connector(args)
     if connector:
         body["connector"] = connector
+    else:
+        # The Kibana Cases API requires "connector" on create; default to the no-op connector.
+        body["connector"] = {"fields": None, "id": "none", "name": "none", "type": ".none"}
 
     settings: Dict[str, Any] = {}
     if "sync_alerts" in args:
@@ -1755,6 +1759,9 @@ def build_case_body(args: Dict[str, Any], require_owner: bool = False) -> Dict[s
         settings["extractObservables"] = argToBoolean(args["extract_observables"])
     if settings:
         body["settings"] = settings
+    else:
+        # The Kibana Cases API requires "settings" on create; default to syncing alerts.
+        body["settings"] = {"syncAlerts": True}
 
     custom_fields = build_case_custom_fields(args)
     if custom_fields:
@@ -2045,17 +2052,42 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
         file_info = demisto.getFilePath(entry_id)
     except Exception as e:
         raise DemistoException(f"Failed to retrieve file info for entry_id={entry_id}: {e}")
+
     file_path = file_info.get("path") if file_info else None
     if not file_path:
         raise DemistoException(f"Could not resolve file path for entry_id={entry_id}")
 
     file_name = args.get("file_name") or file_info.get("name")
+    
+    mime_type, _ = mimetypes.guess_type(file_name or file_path)
+    if not mime_type:
+        demisto.debug(f"Could not determine MIME type for file {file_name or file_path}, defaulting to text/plain")
+        mime_type = "text/plain"  # Default to text/plain if MIME type cannot be determined
 
-    with open(file_path, "rb") as f:
-        files = {"file": (file_name, f)}
-        response = kibana_http_request(
-            "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies
+    root, ext = os.path.splitext(file_name)
+    if not ext:
+        guessed_ext = mimetypes.guess_extension(mime_type)
+        if guessed_ext:
+            demisto.debug(
+                f"File {file_name} has no extension, but MIME type {mime_type} suggests extension {guessed_ext}"
+            )
+            file_name += guessed_ext
+        else:
+            demisto.debug(
+                f"File {file_name} has no extension and MIME type {mime_type} does not suggest an extension, defaulting to .txt"
+            )
+            file_name += ".txt"
+        
+    files = {
+        "file": (
+            file_name,
+            open(file_path, "rb"),
+            mime_type
         )
+    }
+    response = kibana_http_request(
+        "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies, json_data={"filename": file_name}
+    )
 
     comments = response.get("comments", []) if isinstance(response, dict) else []
     last_comment = comments[-1] if comments else {}
@@ -2336,8 +2368,9 @@ def es_kibana_detection_alert_status_set_command(args: Dict[str, Any], proxies) 
     signal_ids = argToList(args.get("signal_ids"))
     if signal_ids:
         body["signal_ids"] = signal_ids
-    if args.get("query"):
-        body["query"] = args["query"]
+    query_dict = safe_load_json(args.get("query"))
+    if query_dict:
+        body["query"] = query_dict
     if args.get("reason"):
         body["reason"] = args["reason"]
     if args.get("conflicts"):
