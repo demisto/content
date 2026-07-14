@@ -61,10 +61,7 @@ def domain_enrichment_script(
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
         # On the unified Cortex platform the command is provided by the built-in PCI module
-        # under the new name; on legacy XSIAM it is provided by the Cortex Core - IR integration.
         if is_platform():
-            # PCI commands are injected by the server as built-ins (no integration brand to enable),
-            # so they must run as BUILTIN and skip the using-brand injection.
             command_batch2.append(
                 Command(
                     name="getDomainAnalyticsPrevalence",

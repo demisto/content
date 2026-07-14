@@ -56,9 +56,7 @@ def initialize_commands() -> list:
     """
     commands = [
         Command(
-            # Can be used only in XSIAM / unified platform.
-            # On the platform, get-endpoint-data reports Core endpoints under the built-in brand
-            # "Builtin" and the command is exposed as the PCI built-in "isolateEndpoint".
+            # On platform, we use the core-content-module builtin commands and brand Builtin
             brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
             name="isolateEndpoint" if is_platform() else "core-isolate-endpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},

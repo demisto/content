@@ -25,8 +25,6 @@ class Brands(StrEnum):
     CORTEX_CORE_IR = "Cortex Core - IR"
     FIREEYE_HX_V2 = "FireEyeHX v2"
     GENERIC_COMMAND = "Generic Command"
-    # On the unified Cortex platform, Core commands are provided by the built-in PCI module
-    # (server-injected built-ins) rather than by the Cortex Core - IR integration.
     BUILTIN = "Builtin"
 
     @classmethod
@@ -353,9 +351,7 @@ class EndpointCommandRunner:
                 continue
 
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
-                # hr_to_command_results returns None when the entry has no human-readable content
-                # (e.g. PCI built-in commands emit an empty-contents error entry when nothing is found).
-                # Guard against appending None, otherwise return_results crashes on 'NoneType'.readable_output.
+                # PCI built-in commands may return no entries (None) on a not-found result, guard against 'NoneType' object is not iterable
                 if error_result := hr_to_command_results(command, args, contents, entry_type=entry_type):  # type: ignore[arg-type]
                     command_error_outputs.append(error_result)
             elif entry_type == EntryType.NOTE:
