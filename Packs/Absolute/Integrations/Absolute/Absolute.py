@@ -1219,7 +1219,7 @@ def wipe_actions_list_command(args, client) -> CommandResults:
 
 def wipe_request_cancel_command(args, client) -> CommandResults:
     """
-    cancel a wipe request based on provided arguments.
+    Cancel a wipe request based on provided arguments.
 
     Args:
         args (Dict[str, Any]): Command arguments.
@@ -1308,6 +1308,8 @@ def wipe_request_create_command(args, client) -> CommandResults:
         "/v3/actions/requests/wipe",
         body=payload,
     )
+    if not res:
+        raise DemistoException(f"{INTEGRATION} error: Failed to create wipe request - received empty response from API.")
 
     return CommandResults(
         readable_output=f"Wipe request {res.get('requestUid')} has been successfully created.",
