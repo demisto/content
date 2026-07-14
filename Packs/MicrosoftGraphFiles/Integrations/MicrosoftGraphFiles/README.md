@@ -1091,7 +1091,7 @@ Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as
 >
 >|Item Id|Sensitivity Label Id|Location|
 >|---|---|---|
->| 01EXAMPLE | 08973045-2fd6-4014-9177-9f2a3e55c29e | https://contoso.sharepoint.com/_api/v2.0/monitor/MyMonitorJobId |
+>| 01EXAMPLE | 08973045-2fd6-4014-9177-9f2a3e55c29e | <https://contoso.sharepoint.com/_api/v2.0/monitor/MyMonitorJobId> |
 >
 ### msgraph-driveitem-update
 

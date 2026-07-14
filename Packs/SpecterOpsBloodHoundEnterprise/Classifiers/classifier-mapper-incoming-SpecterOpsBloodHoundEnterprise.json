@@ -1,0 +1,52 @@
+{
+    "description": "Incoming mapper for SpecterOps BloodHound Enterprise attack path findings.",
+    "feed": false,
+    "id": "SpecterOpsBloodHoundEnterprise - Incoming Mapper",
+    "mapping": {
+        "SpecterOpsBloodHoundEnterprise Attack Path": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Title": {
+                    "simple": "Name"
+                },
+                "Domain": {
+                    "simple": "Domain"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Severity",
+                        "transformers": [
+                            {
+                                "operator": "MapValuesTransformer",
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "low,medium,moderate,high,critical"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "1,2,2,3,4"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "SpecterOpsBloodHoundEnterprise - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

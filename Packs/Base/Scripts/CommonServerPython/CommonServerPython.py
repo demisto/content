@@ -62,6 +62,9 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
+# Max number of characters of an external API response body kept when appended
+# to a CortexExternalApiError message (avoids dumping huge payloads).
+MAX_API_RESPONSE_BODY_LENGTH = 500
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
@@ -608,6 +611,80 @@ class ErrorTypes(object):
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
     RETRY_ERROR = "RetryError"
+
+
+class CortexErrorCode(object):
+    """Error codes for content standardized errors.
+
+    Provides a unified taxonomy covering argument validation, resource lookup,
+    API/network issues, data parsing, permissions, and execution failures.
+    Used by :class:`CortexError` and its subclasses so that LLM agents can
+    programmatically distinguish error categories and decide whether to retry,
+    fix an argument, or escalate.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    # -- Argument Errors ----------------------------------------------
+    MISSING_ARGUMENT = "MISSING_ARGUMENT"
+    INVALID_ARGUMENT = "INVALID_ARGUMENT"
+    CONFLICTING_ARGUMENTS = "CONFLICTING_ARGUMENTS"
+
+    # -- Resource Errors ----------------------------------------------
+    RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
+
+    # -- API / Network Errors -----------------------------------------
+    API_ERROR = "API_ERROR"
+    AUTH_ERROR = "AUTH_ERROR"
+    QUOTA_ERROR = "QUOTA_ERROR"
+    SERVICE_ERROR = "SERVICE_ERROR"
+    CONNECTION_ERROR = "CONNECTION_ERROR"
+    PROXY_ERROR = "PROXY_ERROR"
+    SSL_ERROR = "SSL_ERROR"
+    TIMEOUT_ERROR = "TIMEOUT_ERROR"
+
+    # -- Data Errors (failures parsing data returned by the API/service) --
+    API_RESPONSE_PARSE_ERROR = "API_RESPONSE_PARSE_ERROR"
+
+    # -- Permission Errors --------------------------------------------
+    PERMISSION_ERROR = "PERMISSION_ERROR"
+
+    # -- Execution Errors ---------------------------------------------
+    EXECUTION_ERROR = "EXECUTION_ERROR"
+    UNSUPPORTED_COMMAND = "UNSUPPORTED_COMMAND"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+
+
+# Key used inside the ``ExtendedPayload`` dict of an error entry to carry
+# the content error type.  Defined as a module-level constant so the name
+# can be changed in one place.
+EXTENDED_PAYLOAD_ERROR_CODE_KEY = 'error_code'
+
+# Value returned by ``demisto.caller()`` when the script/command is executed
+# from an Agentix (LLM agent) flow.  Used to decide whether ``return_error``
+# should surface the automatic, machine-friendly error message instead of a
+# human-authored one.
+AGENTIX_CALLER = 'agentix'
+
+
+def is_caller_agentix():
+    """Check whether the current execution was triggered by an Agentix agent.
+
+    Uses ``demisto.caller()`` (when available) and compares it to
+    :data:`AGENTIX_CALLER`.  Safe to call on older servers that do not expose
+    the ``caller`` method - in that case it returns ``False``.
+
+    :return: ``True`` if the caller is Agentix, ``False`` otherwise.
+    :rtype: ``bool``
+    """
+    try:
+        if not hasattr(demisto, 'caller'):
+            return False
+        return demisto.caller() == AGENTIX_CALLER
+    except Exception as exc:
+        demisto.debug('is_caller_agentix failed to determine caller: {}'.format(exc))
+        return False
 
 
 class FeedIndicatorType(object):
@@ -1395,6 +1472,86 @@ def is_error(execute_command_result):
 
 
 isError = is_error
+
+
+def get_error_code(execute_command_result):
+    """Extract the standardized error code from an ``executeCommand`` result.
+
+    Reads the machine-readable error code that :func:`return_error` attaches to
+    an error entry's ``ExtendedPayload`` (under
+    :data:`EXTENDED_PAYLOAD_ERROR_CODE_KEY`). The value is a
+    :class:`CortexErrorCode` member (e.g. ``"AUTH_ERROR"``,
+    ``"MISSING_ARGUMENT"``), letting a calling script/playbook classify the
+    failure of a sub-command without parsing the human-readable ``Contents``.
+
+    Accepts either a single entry (``dict``) or a list of entries (the typical
+    shape returned by ``demisto.executeCommand()``); for a list, the first
+    error entry that carries an error code is returned.
+
+    :type execute_command_result: ``dict`` or ``list``
+    :param execute_command_result: Result of ``demisto.executeCommand()`` - a
+        single entry dict or a list of entry dicts.
+
+    :rtype: ``str`` or ``None``
+    :return: The :class:`CortexErrorCode` value from ``ExtendedPayload``, or
+        ``None`` if no error code is present.
+    """
+    if isinstance(execute_command_result, dict):
+        execute_command_result = [execute_command_result]
+
+    if isinstance(execute_command_result, list):
+        for entry in execute_command_result:
+            if isinstance(entry, dict) and entry.get('Type') == entryTypes['error']:
+                extended = entry.get('ExtendedPayload') or {}
+                error_code = extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
+                if error_code:
+                    return error_code
+    return None
+
+
+def _classify_error_message(message):
+    """Classify an error message into a :class:`CortexErrorCode` value.
+
+    Uses text heuristics to detect common error patterns - including
+    server-generated errors (e.g. ``"Unsupported Command"``) that have
+    no ``ExtendedPayload``.
+
+    :type message: ``str``
+    :param message: The error message to classify.
+
+    :rtype: ``str`` or ``None``
+    :return: A :class:`CortexErrorCode` value, or *None* if unrecognised.
+    """
+    if not message:
+        return None
+    msg = message.lower()
+    if 'unsupported command' in msg:
+        return CortexErrorCode.UNSUPPORTED_COMMAND
+    if 'no integration instance' in msg or 'verify you have proper integration' in msg:
+        return CortexErrorCode.EXECUTION_ERROR
+    if any(kw in msg for kw in ('unauthorized', 'authentication failed', 'invalid credentials')):
+        return CortexErrorCode.AUTH_ERROR
+    if any(kw in msg for kw in ('rate limit', 'quota exceeded', 'too many requests')):
+        return CortexErrorCode.QUOTA_ERROR
+    if any(kw in msg for kw in ('timed out', 'timeout', 'request timeout')):
+        return CortexErrorCode.TIMEOUT_ERROR
+    if any(kw in msg for kw in ('connection error', 'connection refused', 'unreachable', 'connect timeout')):
+        return CortexErrorCode.CONNECTION_ERROR
+    if any(kw in msg for kw in ('permission denied', 'forbidden', 'insufficient permissions')):
+        return CortexErrorCode.PERMISSION_ERROR
+    if any(kw in msg for kw in ('invalid argument', 'invalid value', 'invalid parameter', 'is not a valid')):
+        return CortexErrorCode.INVALID_ARGUMENT
+    if any(kw in msg for kw in ('missing argument', 'missing required argument', 'required argument')):
+        return CortexErrorCode.MISSING_ARGUMENT
+    if 'not found' in msg:
+        return CortexErrorCode.RESOURCE_NOT_FOUND
+    if any(kw in msg for kw in ('ssl', 'certificate verify')):
+        return CortexErrorCode.SSL_ERROR
+    if 'proxy' in msg:
+        return CortexErrorCode.PROXY_ERROR
+    if any(kw in msg for kw in ('failed to parse', 'json decode', 'jsondecodeerror', 'invalid json', 'unable to parse')):
+        return CortexErrorCode.API_RESPONSE_PARSE_ERROR
+    return None
 
 
 def FormatADTimestamp(ts):
@@ -8065,15 +8222,86 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     demisto.results(return_entry)
 
 
+def _get_auto_error_message(error):
+    """Return the automatic (unified) error message for a content error, if any.
+
+    Looks for a :class:`CortexError` first in the ``error`` argument and then
+    in the currently-handled exception, and returns its automatic, unified
+    message built by :meth:`CortexError.auto_message` - which is built purely
+    from the error's structured arguments and *always ignores* any custom
+    message supplied by the caller (so Agentix always gets the standardized
+    message).
+
+    :type error: ``str`` or ``Exception``
+    :param error: The ``error`` value passed to :func:`return_error`.
+
+    :return: The automatic message, or ``None`` if no content error is available.
+    :rtype: ``str`` or ``None``
+    """
+    content_error = None
+    if isinstance(error, CortexError):
+        content_error = error
+    else:
+        exc = sys.exc_info()[1]
+        if isinstance(exc, CortexError):
+            content_error = exc
+    if content_error is None:
+        return None
+    try:
+        return content_error.auto_message()
+    except Exception as exc:
+        demisto.debug('_get_auto_error_message failed to build message: {}'.format(exc))
+        return str(content_error)
+
+
+def _select_error_message(message, error):
+    """Choose which message ``return_error`` should surface.
+
+    Selection rules:
+      * **Agentix caller** -> always use the automatic, unified message built
+        from the :class:`CortexError` (when one is available); otherwise fall
+        back to the explicitly-passed ``message``.
+      * **Non-Agentix caller** -> prefer the explicitly-passed ``message``; if
+        none was provided, fall back to the automatic message.
+
+    :type message: ``str``
+    :param message: The explicit message passed to :func:`return_error`.
+
+    :type error: ``str`` or ``Exception``
+    :param error: The ``error`` value passed to :func:`return_error`.
+
+    :return: The message to display in the error entry.
+    :rtype: ``str``
+    """
+    auto_message = _get_auto_error_message(error)
+    if is_caller_agentix():
+        # Agentix prefers the machine-friendly, standardized message.
+        return auto_message or message
+    # Non-Agentix: respect an explicit message, otherwise use the auto one.
+    if message:
+        return message
+    return auto_message or message
+
+
 def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return to the entry (required)
+        :param message: The message to return to the entry (required).
+            Message selection: when the caller is Agentix
+            (see :func:`is_caller_agentix`), the automatic, unified message
+            built from the :class:`CortexError` is used (falling back to this
+            ``message`` if none is available).  Otherwise this explicit
+            ``message`` is used, falling back to the automatic message when it
+            is empty.
 
         :type error: ``str`` or Exception
-        :param error: The raw error message to log (optional)
+        :param error: The raw error message to log (optional).
+            When *error* is a :class:`CortexError`, its ``error_code`` is
+            automatically attached to the error entry via ``ExtendedPayload``
+            and its :meth:`CortexError.build_message` provides the automatic,
+            unified message used for Agentix callers.
 
         :type outputs: ``dict or None``
         :param outputs: the outputs that will be returned to playbook/investigation context (optional)
@@ -8086,6 +8314,9 @@ def return_error(message, error='', outputs=None):
         is_server_handled = is_command and (demisto.command() in FETCH_COMMANDS or demisto.command() == LONG_RUNNING_COMMAND)
     except Exception:
         is_server_handled = False
+    # Decide which message to surface based on the caller (Agentix vs. others)
+    # and whether a CortexError with an automatic, unified message is present.
+    message = _select_error_message(message, error)
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -8110,12 +8341,41 @@ def return_error(message, error='', outputs=None):
             half_length = MAX_ERROR_MESSAGE_LENGTH // 2
             message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
 
-        demisto.results({
+        error_entry = {
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
             'EntryContext': outputs,
-        })
+        }
+
+        # Attach the content error type (and, when available, the retryable
+        # flag) inside ExtendedPayload so LLM agents can classify the failure
+        # and decide whether to retry, without parsing the human-readable
+        # Contents string.
+        # Priority for the CortexError source: error param -> current exception.
+        _cortex_error = error if isinstance(error, CortexError) else None
+        if _cortex_error is None:
+            exc = sys.exc_info()[1]
+            if isinstance(exc, CortexError):
+                _cortex_error = exc
+
+        # Error code: CortexError first, then a text-based heuristic fallback.
+        _error_type = _cortex_error.error_code if _cortex_error else None
+        if not _error_type:
+            _error_type = _classify_error_message(message)
+
+        extended_payload = {}
+        if _error_type:
+            extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] = _error_type
+        # Expose only the boolean retryable flag (true/false), taken from the
+        # CortexError details.
+        if _cortex_error is not None and EXTENDED_PAYLOAD_RETRYABLE_KEY in _cortex_error.details:
+            extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] = \
+                _cortex_error.details[EXTENDED_PAYLOAD_RETRYABLE_KEY]
+        if extended_payload:
+            error_entry['ExtendedPayload'] = extended_payload
+
+        demisto.results(error_entry)
         sys.exit(0)
 
 
@@ -8604,6 +8864,22 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
+            # Reuse the standardized error code from the failing sub-command's
+            # ExtendedPayload when present, otherwise classify from the message.
+            error_code = get_error_code(res)
+            if not error_code:
+                error_code = _classify_error_message(error_message)
+            if error_code:
+                # Use the base CortexError so the standardized error_code taken
+                # from the failing sub-command (which may be any category, e.g.
+                # AUTH_ERROR/QUOTA_ERROR) is carried as-is.
+                raise CortexError(
+                    # Original message kept for backward compatibility; the
+                    # error_code carries the standardized classification.
+                    override_message='Failed to execute {}. Error details:\n{}'.format(command, error_message),
+                    error_code=error_code,
+                    details={"command": command, "raw_error": error_message},
+                )
             raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
         else:
             return False, error_message
@@ -10962,6 +11238,760 @@ class UcpException(DemistoException):
         super(UcpException, self).__init__(
             message or self.DEFAULT_MESSAGE, exception=exception, res=res, error_type=error_type, *args
         )
+
+
+# -- Agentix Standardized Error Hierarchy -----------------------------
+#
+# These exceptions provide structured error information (error_code,
+# details dict) that ``return_error`` serializes via ``ExtendedPayload``
+# so that LLM agents can programmatically distinguish error categories
+# and decide whether to retry, fix an argument, or escalate.
+#
+# Hierarchy:
+#   DemistoException
+#     +-- CortexError  (base - carries error_code + details)
+#           +-- CortexMissingArgError
+#           +-- CortexInvalidArgError
+#           +-- CortexConflictingArgsError
+#           +-- CortexResourceNotFoundError
+#           +-- CortexExternalApiError
+#           |     +-- CortexAuthError
+#           |     +-- CortexRateLimitError
+#           |     +-- CortexTimeoutError
+#           |     +-- CortexConnectionError
+#           +-- CortexParseError
+#           +-- CortexPermissionError
+#           +-- CortexExecutionError
+
+
+class RetryGuidance(object):
+    """Whether (and how) an operation that failed is worth retrying.
+
+    Used by :class:`CortexError` to append an automatic retry hint to the
+    error message and to expose machine-readable guidance via
+    ``ExtendedPayload`` so that LLM agents can decide whether to retry, fix an
+    argument, or escalate.
+
+    * :data:`NOT_RETRYABLE` - retrying as-is will not help (e.g. invalid
+      credentials, missing permissions). Requires human/config intervention.
+    * :data:`RETRY_AFTER_FIX` - retrying can succeed only after the *input* is
+      corrected (e.g. a missing or invalid argument).
+    * :data:`RETRY_LATER` - the same request may succeed if retried later,
+      typically after a short wait (e.g. rate limiting, timeouts, transient
+      connection issues).
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    NOT_RETRYABLE = "not_retryable"
+    RETRY_AFTER_FIX = "retry_after_fix"
+    RETRY_LATER = "retry_later"
+
+    # Human-readable hint appended to the error message for each guidance value.
+    _HINTS = {
+        NOT_RETRYABLE: "Retrying will not help; this requires fixing the configuration or contacting support.",
+        RETRY_AFTER_FIX: "You can retry after correcting the input.",
+        RETRY_LATER: "This may be transient - you can retry the same request later.",
+    }
+
+    @classmethod
+    def hint(cls, guidance):
+        # type: (str) -> str
+        """Return the human-readable retry hint for a guidance value.
+
+        :type guidance: ``str``
+        :param guidance: A :class:`RetryGuidance` value.
+
+        :return: The human-readable retry hint, or an empty string if unknown.
+        :rtype: ``str``
+        """
+        return cls._HINTS.get(guidance, "")
+
+    @classmethod
+    def is_retryable(cls, guidance):
+        # type: (str) -> bool
+        """Return whether the given guidance value indicates a retry may help.
+
+        :type guidance: ``str``
+        :param guidance: A :class:`RetryGuidance` value.
+
+        :return: ``True`` if a retry may help, ``False`` otherwise.
+        :rtype: ``bool``
+        """
+        return guidance in (cls.RETRY_AFTER_FIX, cls.RETRY_LATER)
+
+
+# Key used inside ``details`` (and thus ``ExtendedPayload``) to carry the
+# retry guidance and the boolean retryable flag.
+EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY = 'retry_guidance'
+EXTENDED_PAYLOAD_RETRYABLE_KEY = 'retryable'
+
+
+class CortexError(DemistoException):
+    """Base exception for all content standardized errors.
+
+    Carries structured error information including ``error_code``,
+    ``retry_guidance`` and ``details`` that are attached to the error entry via
+    ``ExtendedPayload`` for LLM agent consumption.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | Generic fallback for an error that fits none of the specific         |
+    | subclasses below. PREFER a specific subclass whenever one applies -  |
+    | it sets the correct error_code and retry_guidance automatically,     |
+    | letting LLM agents (Agentix) classify the failure and decide whether |
+    | to retry. Use the base class directly only as a last resort.         |
+    +======================================================================+
+
+    :type override_message: ``str``
+    :param override_message: An OPTIONAL, fully-custom message that REPLACES the
+        automatically-built message for human (non-Agentix) display. Its primary
+        purpose is **backward compatibility** - preserving an existing,
+        hand-written error string while still gaining the structured
+        ``error_code`` / ``retry_guidance`` metadata. Leave it ``None`` to use
+        the standardized auto-built message (the recommended default).
+        Note: it is ignored for Agentix callers, who always receive the
+        machine-friendly :meth:`auto_message`. The structured arguments of each
+        subclass (e.g. the argument name, status code) build the auto message
+        and populate ``details`` regardless of this value.
+
+    :type error_code: ``str``
+    :param error_code: Machine-readable code from :class:`CortexErrorCode`.
+
+    :type details: ``dict``
+    :param details: Arbitrary key/value pairs providing context about the error.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.INTERNAL_ERROR  # type: str
+
+    # Default, auto-generated message used by ``build_message`` when no explicit
+    # message is supplied.  Subclasses override this (or ``build_message``) to
+    # provide a category-specific default.
+    _default_message = 'An error occurred.'  # type: str
+
+    # Whether/how this error category is worth retrying.  Subclasses override
+    # this with the appropriate :class:`RetryGuidance` value.  ``None`` means
+    # "unknown" and no retry hint is added.
+    retry_guidance = None  # type: Optional[str]
+
+    def __init__(self, override_message=None, error_code=None, details=None, **kwargs):
+        # Respect an instance-level error_code already set by a subclass
+        # __init__ (e.g. CortexExternalApiError status-code auto-classification) before
+        # delegating here; then the explicit param; then the class default.
+        self.error_code = error_code or self.__dict__.get('error_code') or self.__class__.error_code
+        self.details = details or {}
+        # Stores the optional, caller-supplied override message (if any) so that
+        # ``build_message`` can return it instead of the auto-built message.
+        # Subclasses that rely solely on the auto-built message pass
+        # ``override_message=None``.
+        self._custom_message = override_message
+        # Expose retry guidance (machine-readable) in details/ExtendedPayload.
+        if self.retry_guidance is not None:
+            self.details.setdefault(EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY, self.retry_guidance)
+            self.details.setdefault(
+                EXTENDED_PAYLOAD_RETRYABLE_KEY, RetryGuidance.is_retryable(self.retry_guidance)
+            )
+        super(CortexError, self).__init__(self.build_message(), error_type=self.error_code, **kwargs)
+
+    def _base_message(self):
+        """Return the *auto-generated* message body, ignoring any custom message.
+
+        Subclasses override this to build their category-specific message from
+        their own arguments (e.g. the missing argument name, the resource
+        identifier, the HTTP status code).  This method must NOT consult
+        :attr:`_custom_message` - that is handled centrally by
+        :meth:`build_message`.  The retry hint is appended by
+        :meth:`build_message` / :meth:`auto_message`.
+
+        :return: The auto-generated error message body (without retry hint).
+        :rtype: ``str``
+        """
+        return self._default_message
+
+    def _with_retry_hint(self, message):
+        """Append the retry hint (if any) to the given message."""
+        hint = RetryGuidance.hint(self.retry_guidance) if self.retry_guidance is not None else ""
+        if hint:
+            return "{} {}".format(message, hint)
+        return message
+
+    def auto_message(self):
+        """Build the automatic, unified message - always ignoring any custom message.
+
+        This is the machine-friendly, standardized message used for Agentix
+        callers.  It is built purely from the error's structured arguments
+        (via :meth:`_base_message`) plus the automatic retry hint, regardless of
+        whether a custom ``message`` was supplied to ``__init__``.
+
+        :return: The automatic, unified error message.
+        :rtype: ``str``
+        """
+        return self._with_retry_hint(self._base_message())
+
+    def build_message(self):
+        """Build the human-readable message to display for this error.
+
+        When an explicit ``message`` was supplied by the caller, it is returned
+        verbatim (no retry hint) so callers retain full control over the
+        wording.  Otherwise the automatic message (see :meth:`auto_message`) is
+        returned.
+
+        :return: The error message to display.
+        :rtype: ``str``
+        """
+        if self._custom_message:
+            return self._custom_message
+        return self.auto_message()
+
+
+class CortexMissingArgError(CortexError):
+    """Raised when a required argument (or one of several) is not provided.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | A mandatory command/script argument was not supplied at all (missing |
+    | or empty). Also for "at least one of these arguments is required".   |
+    | DO NOT use for an argument that WAS provided but holds a bad value - |
+    | use CortexInvalidArgError instead.                                   |
+    +======================================================================+
+
+    Supports three shapes, selected automatically:
+
+    * **Single required argument** - pass a single name as ``arg_name``::
+
+        CortexMissingArgError('hostname')
+        # "Required argument 'hostname' was not provided."
+
+    * **At least one of several** (``require_one=True``, the default when a
+      list/tuple of names is passed) - the user must supply at least one of
+      the listed arguments::
+
+        CortexMissingArgError(['endpoint_id', 'endpoint_ip', 'endpoint_hostname'])
+        # "At least one of the following arguments must be provided:
+        #  'endpoint_id', 'endpoint_ip', 'endpoint_hostname'."
+
+    * **All of several required** (``require_one=False``) - every listed
+      argument is mandatory::
+
+        CortexMissingArgError(['user_id', 'token'], require_one=False)
+        # "The following required arguments were not provided: 'user_id', 'token'."
+
+    :type arg_name: ``str`` or ``list``
+    :param arg_name: Name of the missing argument, or a list of argument names.
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :type require_one: ``bool``
+    :param require_one: When a list of names is provided, whether only *one* of
+        them is required (``True``, default) or *all* of them (``False``).
+        Ignored when a single argument name is provided.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.MISSING_ARGUMENT
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
+
+    def __init__(self, arg_name, override_message=None, require_one=True):
+        # Normalize to a list internally while remembering whether the caller
+        # passed a single name or several.
+        if isinstance(arg_name, (list, tuple, set)):
+            self.arg_names = [str(a) for a in arg_name]
+            self._is_multi = True
+        else:
+            self.arg_names = [str(arg_name)]
+            self._is_multi = False
+        self.arg_name = self.arg_names[0] if not self._is_multi else None
+        self.require_one = require_one
+
+        details = {"arguments": self.arg_names}  # type: dict
+        if not self._is_multi:
+            details["argument"] = self.arg_names[0]
+        else:
+            details["require_one"] = require_one
+
+        super(CortexMissingArgError, self).__init__(override_message, details=details)
+
+    def _quoted_args(self):
+        return ', '.join("'{}'".format(a) for a in self.arg_names)
+
+    def _base_message(self):
+        if not self._is_multi:
+            return "Required argument '{}' was not provided.".format(self.arg_names[0])
+        if self.require_one:
+            return "At least one of the following arguments must be provided: {}.".format(self._quoted_args())
+        return "The following required arguments were not provided: {}.".format(self._quoted_args())
+
+
+class CortexInvalidArgError(CortexError):
+    """Raised when an argument has an invalid value.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | An argument WAS provided but its value is unacceptable - wrong       |
+    | format, out of range, or not an allowed value (e.g. a non-numeric    |
+    | "limit", an unknown enum option, a malformed date).                  |
+    | DO NOT use for: a missing argument (CortexMissingArgError),          |
+    | contradicting arguments (CortexConflictingArgsError), or a parsing   |
+    | failure of API response data (CortexParseError).                     |
+    +======================================================================+
+
+    :type arg_name: ``str``
+    :param arg_name: Name of the invalid argument.
+
+    :type value: ``any``
+    :param value: The invalid value that was provided.
+
+    :type reason: ``str``
+    :param reason: Explanation of why the value is invalid.
+
+    :type allowed_values: ``list``
+    :param allowed_values: List of acceptable values, if applicable.
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.INVALID_ARGUMENT
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
+
+    def __init__(self, arg_name, value=None, reason=None, allowed_values=None, override_message=None):
+        self.arg_name = arg_name
+        self.value = value
+        self.reason = reason
+        self.allowed_values = allowed_values
+
+        details = {"argument": arg_name}
+        if value is not None:
+            details["value"] = str(value)
+        if allowed_values:
+            details["allowed_values"] = [str(v) for v in allowed_values]
+
+        super(CortexInvalidArgError, self).__init__(override_message, details=details)
+
+    def _base_message(self):
+        parts = ["Invalid value for argument '{}'".format(self.arg_name)]
+        if self.value is not None:
+            parts.append(": got '{}'".format(self.value))
+        if self.reason:
+            parts.append(". {}".format(self.reason))
+        if self.allowed_values:
+            parts.append(". Allowed values: {}".format(', '.join(str(v) for v in self.allowed_values)))
+        return "".join(parts)
+
+
+class CortexConflictingArgsError(CortexError):
+    """Raised when arguments contradict each other.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | Two or more individually-valid arguments cannot be used together     |
+    | (mutually exclusive), or the combination is contradictory (e.g. both |
+    | ip and hostname given when only one is allowed, or start_time later  |
+    | than end_time).                                                      |
+    | DO NOT use for: a single bad value (CortexInvalidArgError) or a      |
+    | missing argument (CortexMissingArgError).                            |
+    +======================================================================+
+
+    Builds a smart, actionable message that explains *which* arguments
+    conflict, *why* they conflict, and *what* a valid combination looks like.
+
+    There are two common conflict shapes, selected automatically:
+
+    * **Mutually exclusive** (``mutually_exclusive=True`` - the default when
+      ``arguments`` are given): only one of the listed arguments may be
+      provided at a time.  The message tells the user to pick exactly one.
+    * **Free-form**: when ``reason`` / ``resolution`` are supplied (or a custom
+      ``message`` is passed), those are used to describe the conflict and the
+      valid path forward.
+
+    :type arguments: ``list``
+    :param arguments: Names of the conflicting arguments that were supplied together.
+
+    :type override_message: ``str``
+    :param override_message: Optional fully-custom message that overrides the
+        auto-built one (for backward compatibility).
+
+    :type reason: ``str``
+    :param reason: Optional explanation of *why* the arguments conflict.
+
+    :type resolution: ``str``
+    :param resolution: Optional explanation of *what* would be a valid combination.
+        When omitted and the conflict is mutually exclusive, a sensible
+        "provide only one of ..." resolution is generated automatically.
+
+    :type mutually_exclusive: ``bool``
+    :param mutually_exclusive: Whether the listed arguments are mutually
+        exclusive. Defaults to ``True`` when ``arguments`` are provided.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.CONFLICTING_ARGUMENTS
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
+
+    def __init__(self, override_message=None, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
+        self.arguments = list(arguments or [])
+        self.reason = reason
+        self.resolution = resolution
+        # Default to mutual exclusivity when a list of arguments is provided
+        # and the caller did not explicitly say otherwise.
+        self.mutually_exclusive = bool(self.arguments) if mutually_exclusive is None else mutually_exclusive
+
+        details = {"arguments": self.arguments}  # type: dict
+        if reason:
+            details["reason"] = reason
+        if resolution:
+            details["resolution"] = resolution
+
+        super(CortexConflictingArgsError, self).__init__(override_message, details=details)
+
+    def _quoted_args(self):
+        return ', '.join("'{}'".format(a) for a in self.arguments)
+
+    def _base_message(self):
+        parts = []
+        # 1. What conflicts.
+        if self.arguments:
+            parts.append("Conflicting arguments: {}.".format(self._quoted_args()))
+        else:
+            parts.append("Conflicting arguments were provided.")
+
+        # 2. Why they conflict.
+        if self.reason:
+            parts.append(self.reason)
+        elif self.mutually_exclusive and self.arguments:
+            parts.append("These arguments are mutually exclusive and cannot be used together.")
+
+        # 3. What would be valid.
+        if self.resolution:
+            parts.append(self.resolution)
+        elif self.mutually_exclusive and self.arguments:
+            parts.append("Provide only one of: {}.".format(self._quoted_args()))
+
+        return ' '.join(parts)
+
+
+class CortexResourceNotFoundError(CortexError):
+    """Raised when a requested resource is not found.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | A specific entity the user asked for does not exist on the remote    |
+    | system (e.g. an incident/ticket/endpoint/user ID returns 404 or an   |
+    | empty result). The identifier was syntactically valid - it just has  |
+    | no match.                                                            |
+    | DO NOT use for: a malformed identifier value (CortexInvalidArgError) |
+    | or a generic non-2xx API failure (CortexExternalApiError).           |
+    +======================================================================+
+
+    :type resource_type: ``str``
+    :param resource_type: Type of resource (e.g. "endpoint", "incident").
+
+    :type identifier: ``any``
+    :param identifier: The identifier that was looked up.
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.RESOURCE_NOT_FOUND
+    retry_guidance = RetryGuidance.RETRY_AFTER_FIX
+
+    def __init__(self, resource_type, identifier=None, override_message=None):
+        self.resource_type = resource_type
+        self.identifier = identifier
+        super(CortexResourceNotFoundError, self).__init__(override_message, details={
+            "resource_type": resource_type,
+            "identifier": str(identifier) if identifier else None,
+        })
+
+    def _base_message(self):
+        if self.identifier:
+            return "{} '{}' not found".format(self.resource_type, self.identifier)
+        return "{} not found".format(self.resource_type)
+
+
+class CortexExternalApiError(CortexError):
+    """Raised when an external API returns an error.
+
+    +========================================================================+
+    | WHEN TO USE                                                            |
+    | A request to the third-party/external service failed with a non-2xx    |
+    | HTTP status (or an equivalent transport error) and no more specific    |
+    | subclass applies. Pass status_code so the error is auto-classified     |
+    | (auth / quota / service) and retry guidance is set correctly.          |
+    | PREFER a specific subclass when it fits: CortexAuthError (401/403),    |
+    | CortexRateLimitError (429), CortexTimeoutError, CortexConnectionError. |
+    | DO NOT use for: a valid response whose BODY cannot be parsed           |
+    | (CortexParseError) or a 404 for a specific entity                      |
+    | (CortexResourceNotFoundError).                                         |
+    +========================================================================+
+
+    Automatically classifies by HTTP status code when ``api_error_type``
+    is not provided:
+
+    - 401/403 -> ``AUTH_ERROR``
+    - 429 -> ``QUOTA_ERROR``
+    - 5xx -> ``SERVICE_ERROR``
+
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :type status_code: ``int``
+    :param status_code: HTTP status code from the API response.
+
+    :type api_error_type: ``str``
+    :param api_error_type: A :class:`CortexErrorCode` value for explicit
+        classification (e.g. ``CortexErrorCode.SERVICE_ERROR``). When provided,
+        it becomes the error's ``error_code`` directly.
+
+    :type response_body: ``str`` or ``bytes``
+    :param response_body: The original API error body (truncated to 500 chars,
+        bytes are decoded). It is appended to the built/auto message
+        (``... Original API error: <body>``) so the raw API error travels
+        together with the unified, human-readable message.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.API_ERROR
+    # API/network errors are commonly transient, so default to "retry later".
+    # Auth-related status codes (401/403) override this to NOT_RETRYABLE below.
+    retry_guidance = RetryGuidance.RETRY_LATER
+
+    # Default, auto-generated message used when no explicit message is supplied.
+    _default_message = "An error occurred while communicating with the external API."
+
+    def __init__(self, override_message=None, status_code=None, api_error_type=None, response_body=None):
+        self.status_code = status_code
+        # Original error body returned by the API. It is appended to the built
+        # (auto) message rather than exposed as a separate field, so the raw API
+        # error travels together with the unified, human-readable message.
+        if response_body:
+            # Decode bytes cleanly so the original API error reads as text
+            # (avoids leaking a b'...' repr into the message).
+            if isinstance(response_body, bytes):
+                response_body = response_body.decode("utf-8", errors="replace")
+            response_body = str(response_body)[:MAX_API_RESPONSE_BODY_LENGTH]
+        self.response_body = response_body
+        details = {}  # type: dict
+        if status_code:
+            details["status_code"] = status_code
+
+        # When the caller passes an explicit api_error_type (a CortexErrorCode
+        # value) it becomes the error_code directly.
+        if api_error_type:
+            self.error_code = api_error_type
+            details["api_error_type"] = api_error_type
+        # Otherwise auto-classify based on the HTTP status code.
+        elif status_code:
+            if status_code in (401, 403):
+                self.error_code = CortexErrorCode.AUTH_ERROR
+                details["api_error_type"] = CortexErrorCode.AUTH_ERROR
+                # Auth failures won't be fixed by retrying as-is.
+                self.retry_guidance = RetryGuidance.NOT_RETRYABLE
+            elif status_code == 429:
+                self.error_code = CortexErrorCode.QUOTA_ERROR
+                details["api_error_type"] = CortexErrorCode.QUOTA_ERROR
+            elif status_code >= 500:
+                self.error_code = CortexErrorCode.SERVICE_ERROR
+                details["api_error_type"] = CortexErrorCode.SERVICE_ERROR
+
+        super(CortexExternalApiError, self).__init__(override_message, details=details)
+
+    def _base_message(self):
+        message = self._default_message
+        if self.status_code:
+            message = "{} (HTTP {})".format(message, self.status_code)
+        # Append the original API error body (when available) so the raw API
+        # error is conveyed within the message itself.
+        if self.response_body:
+            message = "{} Original API error: {}".format(message, self.response_body)
+        return message
+
+
+class CortexAuthError(CortexExternalApiError):
+    """Raised when authentication fails (401/403).
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The external service rejected the request due to authentication      |
+    | problems - invalid/expired credentials, API key, or token.           |
+    | Marked not-retryable (retrying as-is won't help).                    |
+    +======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.AUTH_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
+    _default_message = "Authentication failed. Check your credentials or API key."
+
+    def __init__(self, override_message=None, **kwargs):
+        super(CortexAuthError, self).__init__(override_message, api_error_type=CortexErrorCode.AUTH_ERROR, **kwargs)
+
+
+class CortexRateLimitError(CortexExternalApiError):
+    """Raised when API rate limit is exceeded (429).
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The external service throttled the request (rate/quota limit).       |
+    | Marked retryable-later; pass retry_after when the service indicates  |
+    | how long to wait.                                                    |
+    +======================================================================+
+
+    :type retry_after: ``int``
+    :param retry_after: Seconds to wait before retrying, if known.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.QUOTA_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
+    _default_message = "API rate limit exceeded. Please retry later."
+
+    def __init__(self, override_message=None, retry_after=None, **kwargs):
+        self.retry_after = retry_after
+        super(CortexRateLimitError, self).__init__(override_message, api_error_type=CortexErrorCode.QUOTA_ERROR, **kwargs)
+        if retry_after:
+            self.details["retry_after_seconds"] = retry_after
+
+    def _base_message(self):
+        if self.retry_after:
+            return "{} Retry after {} seconds.".format(self._default_message, self.retry_after)
+        return self._default_message
+
+
+class CortexTimeoutError(CortexExternalApiError):
+    """Raised when an API request times out.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The request was sent but the external service did not respond within |
+    | the allotted time (read/connect timeout). Marked retryable-later.    |
+    +======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.TIMEOUT_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
+    _default_message = "The request timed out. Please try again."
+
+    def __init__(self, override_message=None, **kwargs):
+        super(CortexTimeoutError, self).__init__(override_message, api_error_type=CortexErrorCode.TIMEOUT_ERROR, **kwargs)
+
+
+class CortexConnectionError(CortexExternalApiError):
+    """Raised when unable to connect to the service.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The connection to the external service could not be established at   |
+    | all (DNS failure, connection refused/reset, network unreachable) -   |
+    | i.e. there was no HTTP response. Marked retryable-later.             |
+    | DO NOT use for: a connection that succeeded but returned an error    |
+    | status - use CortexExternalApiError (or a more specific subclass).   |
+    +======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.CONNECTION_ERROR
+    retry_guidance = RetryGuidance.RETRY_LATER
+    _default_message = "Unable to connect to the service. Check network connectivity."
+
+    def __init__(self, override_message=None, **kwargs):
+        super(CortexConnectionError, self).__init__(override_message, api_error_type=CortexErrorCode.CONNECTION_ERROR, **kwargs)
+
+
+class CortexParseError(CortexError):
+    """Raised when data returned by the external API/service cannot be parsed.
+
+    +=======================================================================+
+    | WHEN TO USE                                                           |
+    | A RESPONSE received from the external service could not be decoded or |
+    | interpreted (invalid JSON/XML, unexpected schema, missing fields).    |
+    | The call itself succeeded - the problem is the payload.               |
+    | Marked not-retryable.                                                 |
+    | DO NOT use for: invalid user input (CortexInvalidArgError) or a       |
+    | non-2xx API status (CortexExternalApiError).                          |
+    +=======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.API_RESPONSE_PARSE_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
+    _default_message = "Failed to parse the response received from the API."
+
+
+class CortexPermissionError(CortexError):
+    """Raised when the user lacks required permissions.
+
+    +======================================================================+
+    | WHEN TO USE                                                          |
+    | The action is understood and authenticated, but the user/account is  |
+    | not authorized to perform it (authorization, not authentication).    |
+    | Marked not-retryable.                                                |
+    | DO NOT use for: failed authentication/credentials (CortexAuthError). |
+    +======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.PERMISSION_ERROR
+    retry_guidance = RetryGuidance.NOT_RETRYABLE
+    _default_message = "Permission denied. You do not have the required permissions to perform this action."
+
+
+class CortexExecutionError(CortexError):
+    """Raised when a command or script execution fails.
+
+    +=======================================================================+
+    | WHEN TO USE                                                           |
+    | A command/script failed during its own logic for a reason not covered |
+    | by the other categories (e.g. a sub-command returned an error, a      |
+    | business rule could not be satisfied, an internal step failed).       |
+    | Retry guidance is left unset (retryability depends on the case).      |
+    | DO NOT use for: input validation, external API failures, or parsing   |
+    | problems - prefer the dedicated subclasses for those.                 |
+    +=======================================================================+
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    error_code = CortexErrorCode.EXECUTION_ERROR
+    _default_message = "The command or script execution failed."
+
+
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
@@ -13753,7 +14783,6 @@ class ISOEncoder(json.JSONEncoder):
 #     UCP Functions     #
 ###########################################
 
-# -- To be set when implementing interpolate -- 
 _UCP_AUTH_PARAMS_INJECTED = False
 
 # Seconds before token expiry to consider the cache stale and re-fetch.
@@ -13765,9 +14794,369 @@ _ucp_creds_cache = {}  # type: Dict[str, Dict[str, Any]]
 # Command-to-capability mapping.  Default: 'automation-and-remediation'.
 _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 _UCP_COMMAND_CAPABILITIES = {
-    'fetch-incidents': 'collection-and-ingestion',
-    'fetch-assets': 'collection-and-ingestion',
+    'fetch-incidents': 'fetch-issues',
+    'fetch-events': 'log-collection',
+    'fetch-credentials': 'fetch-secrets',
+    'fetch-indicators': 'threat-intelligence-and-enrichment',
+    'fetch-assets': 'fetch-assets-and-vulnerabilities',
 }
+
+# Canonical credential-envelope schema per profile type.
+#
+# ``api_key`` and ``plain`` profiles have FIXED envelope schemas: the secret
+# always lives under a known key inside ``creds[creds["type"]]`` regardless of
+# what ``interpolation_mapping`` left-hand id (``field_id``) the manifest emits.
+# The common scripts therefore OWN this knowledge and resolve those values from
+# the canonical location, rather than trusting the generator-emitted field_id.
+#
+# Each entry maps the mapping's left-hand ``field_id`` (which equals the field's
+# ``metadata.auth.parameter``) to the actual key inside the flattened envelope.
+# Note the api_key alias: ``auth.parameter`` is ``api_key`` (per the connection
+# schema / OPA contract) but the runtime envelope stores the value under ``key``.
+#
+# ``passthrough`` is the free-form escape hatch and intentionally has NO entry:
+# its values are looked up generically by field_id.
+_UCP_CANONICAL_FIELD_KEYS = {
+    'api_key': {'api_key': 'key'},
+    'plain': {'username': 'username', 'password': 'password'},
+}
+
+
+# -- UCP helper: interpolate connector field values into demisto.params() --
+
+def _place_by_path(target, path, value):
+    # type: (dict, str, Any) -> None
+    """Place ``value`` into ``target`` at the dotted ``path``, creating
+    intermediate dicts as needed.
+
+    The destination string is split on ``.``; each segment except the last
+    becomes (or reuses) a nested dict, and the final segment receives the
+    value. Two paths that share a parent therefore merge into a single nested
+    dict -- this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
+    ``{"credentials": {"identifier": ..., "password": ...}}``).
+
+    A single-segment path (e.g. ``"url"``) places a flat scalar.
+
+    :type target: ``dict``
+    :param target: The destination params dict (mutated in place).
+
+    :type path: ``str``
+    :param path: A non-empty dotted destination path (e.g. ``"a.b.c"``).
+
+    :type value: ``Any``
+    :param value: The value to set at the leaf of ``path``.
+
+    :return: ``None``
+    :rtype: ``None``
+    """
+    segments = [seg for seg in path.split('.') if seg != '']
+    if not segments:
+        return
+    cursor = target
+    for segment in segments[:-1]:
+        existing = cursor.get(segment)
+        if not isinstance(existing, dict):
+            existing = {}
+            cursor[segment] = existing
+        cursor = existing
+    cursor[segments[-1]] = value
+
+
+def _parse_param_map(param_map):
+    # type: (Any) -> list
+    """Parse a UCP ``param_map`` into a list of ``(field_id, destination)`` pairs.
+
+    The canonical form is a **single comma-separated string** of
+    ``field_id:dotted.destination`` entries, e.g.::
+
+        "username:credentials.identifier,password:credentials.password,server_url:server_url"
+
+    Empty/invalid entries are skipped.
+
+    :type param_map: ``Any``
+    :param param_map: The raw ``param_map`` value from the profile (a
+        comma-separated string).
+
+    :return: List of ``(field_id, destination)`` tuples (order preserved).
+    :rtype: ``list``
+    """
+    pairs = []  # type: list
+    if not param_map:
+        return pairs
+    items = []
+    for entry in str(param_map).split(','):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if ':' not in entry:
+            demisto.error(
+                "[UCP][CommonServerPython.py] _parse_param_map: malformed entry '{}' (no ':'); skipping.".format(entry)
+            )
+            continue
+        field_id, destination = entry.split(':', 1)
+        items.append((field_id, destination))
+    for field_id, destination in items:
+        field_id = (field_id or '').strip()
+        destination = (destination or '').strip()
+        if not field_id or not destination:
+            demisto.debug(
+                "[UCP][CommonServerPython.py] _parse_param_map: empty field id or destination "
+                "('{}' -> '{}'); skipping.".format(field_id, destination)
+            )
+            continue
+        pairs.append((field_id, destination))
+    return pairs
+
+
+def _select_ucp_profiles(profiles, capability):
+    # type: (list, str) -> list
+    """Select ALL connection profiles in scope for the current command.
+
+    Interpolation is **metadata-first and capability-scoped**: starting from the
+    connector metadata's ``connectionProfiles``, it keeps **every** profile whose
+    ``capability`` matches ``capability``. More than one profile may be active at
+    a time, so this returns a list (not a single profile). When no profile matches
+    ``capability``, falls back to the first profile that has an
+    ``interpolation_mapping``.
+
+    :type profiles: ``list``
+    :param profiles: The ``connectionProfiles`` from the connector metadata.
+
+    :type capability: ``str``
+    :param capability: The resolved capability for the current command.
+
+    :return: List of matching profile dicts (possibly empty).
+    :rtype: ``list``
+    """
+    if not profiles:
+        demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no connectionProfiles in metadata.')
+        return []
+
+    matched = [p for p in profiles if p.get('capability') == capability]
+    demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: found {} profile(s) with capability {}.'.format(
+        len(matched), capability))
+    if matched:
+        return matched
+
+    for p in profiles:
+        if ((p.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping'):
+            demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no capability match; '
+                          'falling back to first profile with an interpolation_mapping.')
+            return [p]
+    return matched
+
+
+def build_ucp_params(connector_metadata, capability=None):
+    # type: (Optional[dict], Optional[str]) -> dict
+    """Build the reshaped params dict from UCP connector metadata.
+
+    Pure, side-effect-free core of UCP param interpolation. It is
+    **metadata-first**: it scans ``connectionProfiles`` to find every profile in
+    scope for the current capability/sub_capability, then for each such profile
+    reads its ``param_map`` (a mapping of connector field id -> dotted destination
+    path) together with the platform-supplied field values, and *interpolates*
+    them into the nested shape integrations expect -- most importantly folding
+    flat fields (e.g. ``username`` / ``password``) into a single structured param
+    (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
+
+    **Multiple profiles may be active at once.** Each matching profile that
+    carries a ``param_map`` contributes its values; results are merged into one
+    params dict (**last-wins** when two profiles target the same destination
+    path, in ``connectionProfiles`` order).
+
+    This function does NOT touch ``demisto`` state, so it can be reused from
+    either ``interpolate_ucp_params()`` (the CommonServerPython applier) or a
+    Demisto class ``params()`` override.
+
+    Expected metadata shape (from ``demisto.unifiedConnectorMetadata()``)::
+
+        {
+            "connectionProfiles": [
+                {
+                    "method_unique_id": "...",
+                    "capability": "automation-and-remediation",
+                    "sub_capabilities": ["salesforce-iam"],
+                    "type": "oauth2",
+                    "param_map": {"username": "credentials.identifier", ...},
+                    "fields": {"username": "alice", "password": "s3cr3t", ...}
+                }
+            ]
+        }
+
+    :type connector_metadata: ``Optional[dict]``
+    :param connector_metadata: The connector metadata, as returned by
+        ``demisto.unifiedConnectorMetadata()``. When falsy, an empty dict is
+        returned.
+
+    :type capability: ``Optional[str]``
+    :param capability: The resolved capability for the current command. When
+        ``None``, resolved automatically via ``resolve_ucp_capability()``.
+
+    :return: A new params dict containing the interpolated values from all
+        matching profiles, merged in ``connectionProfiles`` order
+        (**last-wins** on conflicting destination paths). Returns ``{}`` when
+        ``connector_metadata`` is falsy or when nothing is interpolated.
+    :rtype: ``dict``
+    """
+    result = {}  # type: Dict[str, Any]
+    if not connector_metadata:
+        return result
+
+    if capability is None:
+        capability = resolve_ucp_capability()
+
+    profiles = connector_metadata.get('connectionProfiles') or []
+
+    selected = _select_ucp_profiles(profiles, capability)
+    demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: capability={!r}, selected {} of {} profile(s).'.format(
+        capability, len(selected), len(profiles)))
+
+    for profile in selected:
+        method_unique_id = profile.get('method_unique_id')
+        # The interpolation mapping lives under the profile's module-namespaced
+        # metadata: profile['metadata']['xsoar']['interpolation_mapping'].
+        interpolation_mapping = ((profile.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping')
+        demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: profile id {} interpolation_mapping={!r}'.format(
+            method_unique_id, interpolation_mapping))
+        pairs = _parse_param_map(interpolation_mapping)
+        if not pairs:
+            demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: no interpolation pairs for profile id {}; skipping.'.format(method_unique_id))
+            continue
+        credentials = get_ucp_credentials(method_unique_id)
+        # The credentials envelope is nested under a type key, e.g.
+        # {"type": "plain", "plain": {"username": "...", "password": "..."}}.
+        # Flatten: look up the field inside creds[creds["type"]], with a
+        # top-level fallback for already-flat envelopes.
+        cred_values = {}  # type: Dict[str, Any]
+        if isinstance(credentials, dict):
+            cred_type = credentials.get('type')
+            type_data = credentials.get(cred_type) if cred_type else None
+            if isinstance(type_data, dict):
+                cred_values = type_data
+            else:
+                cred_values = credentials
+            # Some envelope types (e.g. passthrough) wrap the actual field
+            # values one level deeper under a "parameters" sub-dict:
+            #   {"type": "passthrough", "passthrough": {"parameters": {...}}}
+            # while others (e.g. plain) place them directly under the type key.
+            # Descend into "parameters" when present.
+            inner_params = cred_values.get('parameters') if isinstance(cred_values, dict) else None
+            if isinstance(inner_params, dict):
+                cred_values = inner_params
+        cred_type = credentials.get('type') if isinstance(credentials, dict) else None
+        # Field names only (never values) to keep credential material out of logs.
+        demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: cred_type={!r}, flattened cred keys={}.'.format(
+            cred_type, sorted(cred_values.keys())))
+        # For fixed-schema types (api_key, plain) resolve the value from the
+        # canonical envelope key, aliasing the mapping's field_id as needed
+        # (e.g. api_key -> "key"). Free-form types (passthrough) fall back to a
+        # generic field_id lookup.
+        canonical_keys = _UCP_CANONICAL_FIELD_KEYS.get(cred_type, {})
+        for field_id, destination in pairs:
+            lookup_key = canonical_keys.get(field_id, field_id)
+            field_value = cred_values.get(lookup_key)
+            if field_value is None:
+                demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: missing value for field {} for profile id {}.'.format(field_id, method_unique_id))
+                continue
+            _place_by_path(result, destination, field_value)
+
+    demisto.debug('[UCP][CommonServerPython.py] build_ucp_params: interpolated {} top-level param(s).'.format(len(result)))
+    return result
+
+
+def _deep_merge_dicts(target, source):
+    # type: (dict, dict) -> dict
+    """Recursively merge ``source`` into ``target`` in place.
+
+    For every key in ``source``:
+
+    * If both the existing value in ``target`` and the incoming value in
+      ``source`` are dicts, the two are merged recursively (deep-merge).
+    * Otherwise the incoming value overwrites the existing one (this includes
+      the cases where types differ, e.g. a dict overwrites a scalar or a scalar
+      overwrites a dict).
+
+    Keys present only in ``target`` are preserved; keys present only in
+    ``source`` are added. ``target`` is mutated in place (its object identity,
+    and the identity of any nested dicts that are recursed into, is preserved)
+    and returned.
+
+    :type target: ``dict``
+    :param target: The dict to merge into (mutated in place).
+
+    :type source: ``dict``
+    :param source: The dict whose values take precedence on conflicts.
+
+    :return: The same ``target`` dict, mutated in place.
+    :rtype: ``dict``
+    """
+    for key, source_value in source.items():
+        target_value = target.get(key)
+        if isinstance(target_value, dict) and isinstance(source_value, dict):
+            _deep_merge_dicts(target_value, source_value)
+        else:
+            target[key] = source_value
+    return target
+
+
+def interpolate_ucp_params(connector_metadata=None):
+    # type: (Optional[dict]) -> bool
+    """Interpolate UCP connector field values into ``demisto.params()``.
+
+    Thin CommonServerPython-side applier around the pure
+    :func:`build_ucp_params`. Fetches the connector metadata (if not provided),
+    builds the reshaped params, and merges them into
+    ``demisto.callingContext['params']`` so that subsequent ``demisto.params()``
+    calls observe them. When no ``param_map`` is present the function is a no-op
+    and the legacy params are left untouched.
+
+    On success the module-level ``_UCP_AUTH_PARAMS_INJECTED`` flag is set to
+    ``True`` so that ``should_use_ucp_auth()`` knows credentials have already
+    been pre-injected.
+
+    :type connector_metadata: ``Optional[dict]``
+    :param connector_metadata: The connector metadata. If ``None``, fetched via
+        ``demisto.unifiedConnectorMetadata()``.
+
+    :return: ``True`` if any params were interpolated, ``False`` otherwise.
+    :rtype: ``bool``
+    """
+    global _UCP_AUTH_PARAMS_INJECTED
+    try:
+        if connector_metadata is None:
+            connector_metadata = demisto.unifiedConnectorMetadata()
+            if connector_metadata is None:# we arent in ucpland
+                return False
+    except AttributeError:
+        demisto.debug("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() not available.")
+        return False
+    except Exception as e:
+        demisto.error("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() error: {}".format(e))
+        return False
+
+    # Capability-scoped, multi-profile: resolve the capability for the current
+    # command and interpolate every active profile that carries a param_map.
+    capability = None
+    try:
+        capability = resolve_ucp_capability()
+    except Exception as e:
+        demisto.debug(
+            "[UCP][CommonServerPython.py] interpolate_ucp_params: could not resolve capability ({}).".format(e)
+        )
+
+    interpolated = build_ucp_params(connector_metadata, capability=capability)
+    if not interpolated:
+        return False
+
+    params = demisto.callingContext.setdefault('params', {})
+    _deep_merge_dicts(params, interpolated)
+    _UCP_AUTH_PARAMS_INJECTED = True
+    demisto.debug(
+        "[UCP][CommonServerPython.py] interpolate_ucp_params: interpolated {} top-level param(s) "
+        "for capability={}.".format(len(interpolated), capability)
+    )
+    return True
 
 
 # -- UCP helper: extract expiry from credentials response --
@@ -13986,8 +15375,8 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 # -- Credential fetching with in-process TTL cache --
 
 
-def get_ucp_credentials(method_unique_id=None):
-    # type: (Optional[str]) -> dict
+def get_ucp_credentials(method_unique_id=None, body=None):
+    # type: (Optional[str], Optional[dict]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -14003,6 +15392,13 @@ def get_ucp_credentials(method_unique_id=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
+
+    :type body: ``Optional[dict]``
+    :param body: Optional request body passed through to
+        ``demisto.getUCPCredentials``. Use this to forward credential-fetch
+        parameters (e.g., a specific grant type or scopes) required by the
+        backend for this profile. When ``None``, no body is sent and the
+        backend uses its profile defaults.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
@@ -14028,7 +15424,7 @@ def get_ucp_credentials(method_unique_id=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
@@ -14050,6 +15446,20 @@ def invalidate_ucp_credentials(method_unique_id):
     """
     _ucp_creds_cache.pop(method_unique_id, None)
     demisto.debug("[UCP][CommonServerPython.py] Invalidated cached credentials for method_unique_id={}".format(method_unique_id))
+
+
+# -- Auto-run interpolation at import time --
+# Placed at the end of the UCP section so every UCP helper it depends on
+# (get_ucp_method_unique_id -> resolve_ucp_capability, profile matching) is
+# already defined. When the integration is not running under UCP, this is a
+# cheap no-op (unifiedConnectorMetadata() is empty / unavailable).
+try:
+    interpolate_ucp_params()
+except Exception as _ucp_import_err:
+    # Import-time safety net: never let interpolation break module import.
+    demisto.error(
+        "[UCP][CommonServerPython.py] import-time interpolate_ucp_params() swallowed error: {}".format(_ucp_import_err)
+    )
 
 
 ###########################################
@@ -14205,6 +15615,7 @@ def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
     validate_pickle_opcodes(data)
     unpickler_cls = _make_restricted_unpickler(allowed_classes, safe_module_prefixes)
     return unpickler_cls(_io.BytesIO(data)).load()
+
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
