@@ -90,7 +90,7 @@ script:
       required: true
     description: Disables IOCs in the Cortex server.
     name: core-iocs-disable
-  dockerimage: demisto/google-cloud-storage:1.0.0.7039514
+  dockerimage: demisto/google-cloud-storage:1.0.0.10120494
   runonce: false
   script: '-'
   subtype: python3
