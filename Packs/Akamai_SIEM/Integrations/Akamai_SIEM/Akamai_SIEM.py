@@ -609,7 +609,15 @@ def fetch_events_command(
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
-            demisto.error(f"{log_prefix} Failed requesting new events from Akamai: {e}")
+            except DemistoException as e:
+    if is_offset_out_of_range_error(e):
+        # Expected & self-healing; handle_offset_out_of_range already logs the recovery.
+        from_epoch = handle_offset_out_of_range(e, reset_context_offset=True)
+        offset = None
+        continue
+    demisto.error(f"{log_prefix} Failed requesting new events from Akamai: {e}")
+    raise DemistoException(e)
+
             if is_offset_out_of_range_error(e):
                 # The stored offset expired (older than 12h). Recover in-run: drop the stale offset and
                 # restart from the latest window Akamai still accepts, then retry immediately.
