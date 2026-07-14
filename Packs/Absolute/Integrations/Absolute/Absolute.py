@@ -1142,7 +1142,7 @@ def get_device_location_command(args, client) -> CommandResults:
         return CommandResults(readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
-def prepare_wipe_request_query(args: dict, status) -> str:
+def prepare_wipe_request_query(args: dict, status: str, next_page: Optional[str] = None, page_size: Optional[int] = None) -> str:
     created_from = args.get("created_from_date_time_utc")
     created_to = args.get("created_to_date_time_utc")
     request_status = args.get("request_status") or args.get("action_status")
@@ -1154,6 +1154,10 @@ def prepare_wipe_request_query(args: dict, status) -> str:
         query_params.append(f"createdToDateTimeUtc={created_to}")
     if request_status:
         query_params.append(f"{status}={request_status}")
+    if next_page:
+        query_params.append(f"nextPage={next_page}")
+    if page_size:
+        query_params.append(f"pageSize={page_size}")
 
     return "&".join(query_params)
 
@@ -1171,32 +1175,26 @@ def wipe_actions_list_command(args, client) -> CommandResults:
     """
     request_uid = args.get("request_uid")
     device_uids = argToList(args.get("device_uids"))
-    page = arg_to_number(args.get("page", 0))
+    next_page = args.get("page")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
-    payload = {}
-    if device_uids:
-        payload["deviceUids"] = device_uids
+    payload: dict[str, Any] = {}
+    payload["deviceUids"] = device_uids
 
+    query_string = prepare_wipe_request_query(args, "actionStatus", next_page=next_page, page_size=limit)
     if request_uid:
         res = client.api_request_absolute(
             "POST",
             f"/v3/actions/wipe/get-actions/{request_uid}",
-            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            query_string=query_string,
             body=payload,
-            page=page,
-            page_size=limit,
-            specific_page=True,
         )
     else:
         res = client.api_request_absolute(
             "POST",
             "/v3/actions/wipe/get-actions",
-            query_string=prepare_wipe_request_query(args, "actionStatus"),
+            query_string=query_string,
             body=payload,
-            page=page,
-            page_size=limit,
-            specific_page=True,
         )
 
     if res:
@@ -1232,18 +1230,15 @@ def wipe_request_cancel_command(args, client) -> CommandResults:
     """
     request_uid = args.get("request_uid")
     action_uids = argToList(args.get("action_uids"))
-    cancel_all_actions = argToBoolean(args.get("cancel_all_actions", False))
+    cancel_all_actions = args.get("cancel_all_actions", False)
 
-    payload = {}
+    payload: dict[str, Any] = {}
     if action_uids:
         payload["actionUids"] = action_uids
-    if cancel_all_actions:
-        payload["cancelAllActions"] = cancel_all_actions
+    payload["cancelAllActions"] = argToBoolean(cancel_all_actions)
 
     res = client.api_request_absolute(
-        "POST",
-        f"/v3/actions/wipe/cancel-actions/{request_uid}",
-        body=payload,
+        "POST", f"/v3/actions/wipe/cancel-actions/{request_uid}", body=payload, success_status_code=[202]
     )
 
     return CommandResults(
@@ -1301,7 +1296,7 @@ def wipe_request_create_command(args, client) -> CommandResults:
 
     disable_window_os = args.get("disable_window_os")
     if disable_window_os is not None:
-        payload["disableWindowOs"] = argToBoolean(disable_window_os)
+        payload["disableWindowOS"] = argToBoolean(disable_window_os)
 
     if secure_erase_count is not None:
         if secure_erase_count not in (1, 3, 7):
@@ -1332,7 +1327,7 @@ def wipe_request_list_command(args, client) -> CommandResults:
         CommandResults: The command results.
     """
     request_uid = args.get("request_uid")
-    page = arg_to_number(args.get("page", 0))
+    next_page = args.get("page")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     hr_headers = [
@@ -1348,16 +1343,13 @@ def wipe_request_list_command(args, client) -> CommandResults:
     ]
 
     if request_uid:
-        res = client.api_request_absolute("GET", f"/v3/actions/requests/wipe/{request_uid}")
+        response = client.send_request_to_api("GET", f"/v3/actions/requests/wipe/{request_uid}", "", ok_codes=(200,))
+        res = response.get("data") if isinstance(response, dict) else response
     else:
-        res = client.api_request_absolute(
-            "GET",
-            "/v3/actions/requests/wipe",
-            query_string=prepare_wipe_request_query(args, "requestStatus"),
-            page=page,
-            page_size=limit,
-            specific_page=True,
-        )
+        query_string = prepare_wipe_request_query(args, "requestStatus", next_page=next_page, page_size=limit)
+        query_string = client.prepare_query_string_for_canonical_request(query_string)
+        response = client.send_request_to_api("GET", "/v3/actions/requests/wipe", query_string, ok_codes=(200,))
+        res = response.get("data") if isinstance(response, dict) else response
 
     if res:
         human_readable = tableToMarkdown(

@@ -947,13 +947,37 @@ def test_wipe_request_list_command(mocker, absolute_client_v3):
     from Absolute import wipe_request_list_command
 
     response = util_load_json("test_data/wipe_requests.json")
-    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    mocker.patch.object(absolute_client_v3, "send_request_to_api", return_value={"data": response})
     command_results = wipe_request_list_command(
         args={"created_from_date_time_utc": "2018-1-03T10:15:30.000Z", "created_to_date_time_utc": "2020-1-03T10:15:30.000Z"},
         client=absolute_client_v3,
     )
     assert isinstance(command_results.outputs, list)
     assert command_results.outputs[0].get("requestUid") == "23dbd460-0547-466d-a655-99d9340ff598"
+
+
+def test_wipe_request_list_command_with_request_uid(mocker, absolute_client_v3):
+    """
+    Given:
+        - A request_uid argument is provided
+
+    When:
+        - wipe_request_list_command is executed
+
+    Then:
+        - The http request is called with the right endpoint and the single request data is returned
+    """
+    from Absolute import wipe_request_list_command
+
+    response = util_load_json("test_data/wipe_requests.json")
+    mock_api = mocker.patch.object(absolute_client_v3, "send_request_to_api", return_value={"data": response[0]})
+    command_results = wipe_request_list_command(
+        args={"request_uid": "23dbd460-0547-466d-a655-99d9340ff598"},
+        client=absolute_client_v3,
+    )
+    assert command_results.outputs.get("requestUid") == "23dbd460-0547-466d-a655-99d9340ff598"
+    call_args = mock_api.call_args
+    assert "/v3/actions/requests/wipe/23dbd460-0547-466d-a655-99d9340ff598" in call_args[0][1]
 
 
 def test_wipe_actions_list_command(mocker, absolute_client_v3):
@@ -1049,7 +1073,7 @@ def test_wipe_request_create_command_with_all_args(mocker, absolute_client_v3):
     assert payload["cryptoWipeRequested"] is False
     assert payload["wipeUsedSpaceOnly"] is True
     assert payload["deleteAllFilesRequested"] is True
-    assert payload["disableWindowOs"] is False
+    assert payload["disableWindowOS"] is False
     assert payload["secureEraseCount"] == 3
     assert payload["macUsername"] == "admin"
     assert payload["macPwd"] == "password123"
@@ -1096,3 +1120,54 @@ def test_wipe_request_cancel_command(mocker, absolute_client_v3):
     mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
     command_results = wipe_request_cancel_command(args={"request_uid": "1"}, client=absolute_client_v3)
     assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
+
+
+def test_wipe_request_cancel_command_cancel_all(mocker, absolute_client_v3):
+    """
+    Given:
+        - cancel_all_actions is set to true and no action_uids are provided
+
+    When:
+        - wipe_request_cancel_command is executed
+
+    Then:
+        - The payload includes cancelAllActions=true and does not include actionUids
+    """
+    from Absolute import wipe_request_cancel_command
+
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    command_results = wipe_request_cancel_command(
+        args={"request_uid": "1", "cancel_all_actions": "true"},
+        client=absolute_client_v3,
+    )
+    assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["cancelAllActions"] is True
+    assert "actionUids" not in payload
+
+
+def test_wipe_request_cancel_command_cancel_all_false(mocker, absolute_client_v3):
+    """
+    Given:
+        - cancel_all_actions is explicitly set to false
+
+    When:
+        - wipe_request_cancel_command is executed
+
+    Then:
+        - The payload includes cancelAllActions=false (not silently dropped)
+    """
+    from Absolute import wipe_request_cancel_command
+
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    wipe_request_cancel_command(
+        args={"request_uid": "1", "action_uids": "uid1", "cancel_all_actions": "false"},
+        client=absolute_client_v3,
+    )
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["cancelAllActions"] is False
+    assert payload["actionUids"] == ["uid1"]

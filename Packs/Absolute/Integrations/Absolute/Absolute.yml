@@ -833,7 +833,7 @@ script:
     - name: created_to_date_time_utc
       description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
     - name: page
-      description: The page number for pagination.
+      description: The pagination token for the next page of results.
     - name: limit
       description: Pagination limit - maximum number of events to return.
       defaultValue: '50'
@@ -900,13 +900,13 @@ script:
       - Pending
       - Canceled
       - Processing
-      - Succeeded
+      - Completed
     - name: created_from_date_time_utc
       description: Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
     - name: created_to_date_time_utc
       description: Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format <yyyy-MM-dd'T'HH:mm:ss.SSS'Z'>. Example 2011-12-03T10:15:30.000Z.
     - name: page
-      description: The page number for pagination.
+      description: The pagination token for the next page of results.
     - name: limit
       description: Pagination limit - maximum number of events to return.
       defaultValue: '50'
@@ -1000,10 +1000,7 @@ script:
       defaultValue: 'false'
     name: absolute-wipe-request-create
     description: Create a Wipe request for the devices.
-    outputs:
-    - contextPath: Absolute.WipeRequest.requestUid
-      description: The unique identifier of the created wipe request.
-      type: String
+    outputs: []
   - arguments:
     - name: request_uid
       description: The system-defined unique identifier of the Device Action request.
@@ -1011,7 +1008,6 @@ script:
     - name: action_uids
       description: The system-defined unique identifiers of the actions included in the request.
       isArray: true
-      required: true
     - name: cancel_all_actions
       description: Indicates whether all actions in the request should be canceled.
       auto: PREDEFINED
@@ -1021,22 +1017,7 @@ script:
       defaultValue: 'false'
     name: absolute-wipe-request-cancel
     description: Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
-    outputs:
-    - contextPath: Absolute.WipeRequest.code
-      description: The error code of the cancel wipe request response.
-      type: String
-    - contextPath: Absolute.WipeRequest.message
-      description: The error message of the cancel wipe request response.
-      type: String
-    - contextPath: Absolute.WipeRequest.details.code
-      description: The detailed error code of the cancel wipe request response.
-      type: String
-    - contextPath: Absolute.WipeRequest.details.message
-      description: The detailed error message of the cancel wipe request response.
-      type: String
-    - contextPath: Absolute.WipeRequest.details.field
-      description: The field associated with the error detail.
-      type: String
+    outputs: []
   runonce: false
   script: '-'
   type: python
