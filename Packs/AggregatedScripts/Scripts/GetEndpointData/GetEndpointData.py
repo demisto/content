@@ -351,7 +351,8 @@ class EndpointCommandRunner:
                 continue
 
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
-                # PCI built-in commands may return no entries (None) on a not-found result, guard against 'NoneType' object is not iterable
+                # PCI built-in commands may return no entries (None) on a not-found result
+                # guard against 'NoneType' object is not iterable
                 if error_result := hr_to_command_results(command, args, contents, entry_type=entry_type):  # type: ignore[arg-type]
                     command_error_outputs.append(error_result)
             elif entry_type == EntryType.NOTE:
