@@ -6,7 +6,7 @@
     "ownerOnly": false,
     "description": "URL submitted to CBS for scanning.",
     "cliName": "ctm360cyberblindspotgssubmittedurl",
-    "type": "longText",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,

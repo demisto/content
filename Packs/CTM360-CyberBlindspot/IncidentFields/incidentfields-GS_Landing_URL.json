@@ -6,7 +6,7 @@
     "ownerOnly": false,
     "description": "Landing page URL observed for the site.",
     "cliName": "ctm360cyberblindspotgslandingurl",
-    "type": "longText",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,

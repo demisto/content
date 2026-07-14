@@ -1,7 +1,7 @@
 {
 	"id": "HackerView Deep Scan Dashboard",
 	"description": "Dashboard for HackerView Deep Scan module metrics",
-	"isPredefined": false,
+	"isPredefined": true,
 	"version": -1,
 	"fromVersion": "6.10.0",
 	"fromDate": "0001-01-01T00:00:00Z",
@@ -1532,7 +1532,6 @@
 	],
 	"system": false,
 	"isCommon": false,
-	"owner": "s.alqasim",
 	"locked": false,
 	"hidePivot": false,
 	"hideSearch": false,
