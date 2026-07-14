@@ -1,9 +1,10 @@
 import json
-import traceback
-from datetime import datetime, timedelta, timezone
-from typing import List, Tuple
 import hashlib
 import requests
+import traceback
+from typing import Any
+from datetime import datetime, timedelta, UTC
+
 from ContentClientApiModule import *
 
 """  CONSTANTS """
@@ -17,54 +18,37 @@ class ETDClient(ContentClient):
     def __init__(self, base_url: str, params: dict):
         self.params = params
         super().__init__(
-            base_url=base_url,
-            headers={},
-            verify=not params.get("insecure", False),
-            proxy=params.get("proxy", False)
+            base_url=base_url, headers={}, verify=not params.get("insecure", False), proxy=params.get("proxy", False)
         )
         token = self.get_access_token()
-        self._headers.update({
-            "Authorization": f"Bearer {token}",
-            "x-api-key": get_credential(params.get("api_key")),
-            "Content-Type": "application/json",
-        })
+        self._headers.update(
+            {
+                "Authorization": f"Bearer {token}",
+                "x-api-key": get_credential(params.get("api_key")),
+                "Content-Type": "application/json",
+            }
+        )
 
     def get_access_token(self) -> str:
-        api_key = get_credential(
-            self.params.get("api_key")
-        )
-        client_secret = get_credential(
-            self.params.get("client_secret")
-        )
+        api_key = get_credential(self.params.get("api_key"))
+        client_secret = get_credential(self.params.get("client_secret"))
         headers = {"x-api-key": api_key}
+        client_id = self.params.get("client_id") or ""
         res = self._http_request(
             method="POST",
             url_suffix="/v1/oauth/token",
             headers=headers,
-            auth=(
-                self.params.get("client_id"),
-                client_secret
-            ),
-            timeout=30
+            auth=(client_id, client_secret),
+            timeout=30,
         )
         token = res.get("accessToken")
         if not token:
-            raise DemistoException(
-                f"Token not found: {res}"
-            )
+            raise DemistoException(f"Token not found: {res}")
         return token
 
     def request_log_export(self, start: str, end: str) -> dict:
-        body = {
-            "timeRange": [start, end],
-            "logTypes": ETD_LOG_TYPE
-        }
-        return self._http_request(
-            method="POST",
-            url_suffix="/v1/logs/downloadLinks",
-            json_data=body,
-            timeout=120
-        )
+        body = {"timeRange": [start, end], "logTypes": ETD_LOG_TYPE}
+        return self._http_request(method="POST", url_suffix="/v1/logs/downloadLinks", json_data=body, timeout=120)
 
     # GET LINKS
     def get_links(self, response: dict) -> list:
@@ -89,10 +73,7 @@ class ETDClient(ContentClient):
                         continue
                     events.append(event)
                 except Exception as e:
-                    demisto.error(
-                        f"Failed parsing ETD event: {str(e)}\n"
-                        f"{traceback.format_exc()}"
-                    )
+                    demisto.error(f"Failed parsing ETD event: {str(e)}\n" f"{traceback.format_exc()}")
                     continue
         return events
 
@@ -100,16 +81,10 @@ class ETDClient(ContentClient):
 """ UTIL """
 
 
-def get_credential(param: dict | str) -> str:
+def get_credential(param: dict[str, Any] | str | None) -> str:
     if isinstance(param, dict):
-        return (
-            param.get("password")
-            or param.get(
-                "credentials",
-                {}
-            ).get("password")
-        )
-    return param
+        return param.get("password") or param.get("credentials", {}).get("password") or ""
+    return param or ""
 
 
 def generate_intervals(start_dt: datetime, end_dt: datetime) -> list:
@@ -125,22 +100,19 @@ def generate_intervals(start_dt: datetime, end_dt: datetime) -> list:
 
 
 def get_event_time(event: dict) -> str:
-    timestamp = (
-        event.get("message", {}).get("timestamp")
-        or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    )
+    timestamp = event.get("message", {}).get("timestamp") or datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
-        dt = arg_to_datetime(timestamp).astimezone(timezone.utc)
+        dt = arg_to_datetime(timestamp)
+        if dt is None:
+            return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+        dt = dt.astimezone(UTC)
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     except Exception:
-        return datetime.now(timezone.utc).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
+        return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def get_event_id(event: dict) -> str:
-    return hashlib.sha256(
-        json.dumps(event, sort_keys=True).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(event, sort_keys=True).encode()).hexdigest()
 
 
 """ FETCH INCIDENTS"""
@@ -148,33 +120,20 @@ def get_event_id(event: dict) -> str:
 
 def fetch_incidents(client: ETDClient, params: dict) -> list:
     demisto.debug("ETD fetch-incidents started")
-    now = datetime.now(timezone.utc).replace(
-        minute=0,
-        second=0,
-        microsecond=0
-    )
+    now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
     last_run = demisto.getLastRun() or {}
     last_fetch = last_run.get("last_fetch")
-    last_ids = set(
-        last_run.get(
-            "last_ids",
-            []
-        )
-    )
+    last_ids = set(last_run.get("last_ids", []))
     # Determine Fetch window
     if not last_fetch:
         start_dt = now - timedelta(hours=1)
     else:
-        start_dt = arg_to_datetime(
-            last_fetch
-        ).astimezone(timezone.utc)
+        parsed_start = arg_to_datetime(last_fetch)
+        if parsed_start is None:
+            raise DemistoException("Invalid last_fetch checkpoint")
+        start_dt = parsed_start.astimezone(UTC)
     end_dt = now
-    demisto.info(
-        f"Fetching ETD logs from "
-        f"{start_dt.isoformat()} "
-        f"to "
-        f"{end_dt.isoformat()}"
-    )
+    demisto.info(f"Fetching ETD logs from " f"{start_dt.isoformat()} " f"to " f"{end_dt.isoformat()}")
     max_fetch = int(params.get("max_fetch", 500))
     incidents = []
     seen_ids = set()
@@ -185,14 +144,11 @@ def fetch_incidents(client: ETDClient, params: dict) -> list:
         start_time = start.strftime("%Y-%m-%dT%H")
         end_time = end.strftime("%Y-%m-%dT%H")
         try:
-            demisto.debug(f"Fetching interval "f"{start_time} -> {end_time}")
+            demisto.debug(f"Fetching interval " f"{start_time} -> {end_time}")
             response = client.request_log_export(start_time, end_time)
             links = client.get_links(response)
             if not links:
-                demisto.debug(
-                    f"No logs found for "
-                    f"{start_time} -> {end_time}"
-                )
+                demisto.debug(f"No logs found for " f"{start_time} -> {end_time}")
                 continue
             events = client.download_logs(links)
             demisto.debug(f"Downloaded {len(events)} events")
@@ -204,25 +160,26 @@ def fetch_incidents(client: ETDClient, params: dict) -> list:
                     continue
                 seen_ids.add(event_id)
                 if last_fetch:
-                    checkpoint = arg_to_datetime(last_fetch).astimezone(timezone.utc)
-                    current_event_time = arg_to_datetime(event_time).astimezone(timezone.utc)
+                    checkpoint = arg_to_datetime(last_fetch)
+                    current_event_time = arg_to_datetime(event_time)
+                    if checkpoint is None or current_event_time is None:
+                        continue
+                    checkpoint = checkpoint.astimezone(UTC)
+                    current_event_time = current_event_time.astimezone(UTC)
                     if current_event_time < checkpoint:
                         continue
-                    if (
-                        current_event_time == checkpoint
-                        and event_id in last_ids
-                    ):
+                    if current_event_time == checkpoint and event_id in last_ids:
                         continue
                 sender = msg.get("fromAddresses", "unknown")
-                verdict = ((msg.get("verdict") or {}).get("verdict", "").lower())
+                verdict = (msg.get("verdict") or {}).get("verdict", "").lower()
                 timestamp = event_time
                 incident = {
-                    "name": (f"[ETD] " f"{verdict.upper()} "f"Email - {sender}"),
+                    "name": (f"[ETD] " f"{verdict.upper()} " f"Email - {sender}"),
                     "occurred": timestamp,
                     "rawJSON": json.dumps(event),
                     "severity": 3,
                     "type": "ETD Malicious Email",
-                    "CustomFields": {"etdmessageid": msg.get("id")}
+                    "CustomFields": {"etdmessageid": msg.get("id")},
                 }
                 incidents.append(incident)
                 if len(incidents) >= max_fetch:
@@ -230,28 +187,16 @@ def fetch_incidents(client: ETDClient, params: dict) -> list:
             if len(incidents) >= max_fetch:
                 break
         except Exception as ex:
-            demisto.error(
-                f"Interval failed {start_time} -> {end_time}: {str(ex)}\n"
-                f"{traceback.format_exc()}"
-            )
-    incidents.sort(key=lambda x: x.get("occurred", ""))
+            demisto.error(f"Interval failed {start_time} -> {end_time}: {str(ex)}\n" f"{traceback.format_exc()}")
+    incidents.sort(key=lambda x: str(x["occurred"]))
     if incidents:
         newest_time = incidents[-1]["occurred"]
-        newest_ids = [
-            get_event_id(
-                json.loads(i["rawJSON"])
-            )
-            for i in incidents
-            if i["occurred"] == newest_time
-        ]
-        demisto.setLastRun({
-            "last_fetch": newest_time,
-            "last_ids": newest_ids
-        })
+        newest_ids = [get_event_id(json.loads(str(i["rawJSON"]))) for i in incidents if i["occurred"] == newest_time]
+        demisto.setLastRun({"last_fetch": newest_time, "last_ids": newest_ids})
     else:
         demisto.debug("No new incidents found")
     demisto.info(f"Checkpoint saved: {demisto.getLastRun()}")
-    demisto.info(f"Total incidents created: "f"{len(incidents)}")
+    demisto.info(f"Total incidents created: " f"{len(incidents)}")
     demisto.incidents(incidents)
     return incidents
 
@@ -260,26 +205,12 @@ def etd_move_message_command(client: ETDClient, args: dict) -> CommandResults:
     message_id = args.get("message_id")
     verdict = args.get("verdict")
     folder = args.get("folder")
-    body = {
-        "folder": folder,
-        "verdict": verdict,
-        "ids": [message_id]
-    }
-    result = client._http_request(
-        method="POST",
-        url_suffix="/v1/messages/move",
-        json_data=body,
-        timeout=120
-    )
+    body = {"folder": folder, "verdict": verdict, "ids": [message_id]}
+    result = client._http_request(method="POST", url_suffix="/v1/messages/move", json_data=body, timeout=120)
     return CommandResults(
-        readable_output=(
-            f"ETD message updated\n\n"
-            f"Message ID: {message_id}\n"
-            f"Verdict: {verdict}\n"
-            f"Folder: {folder}"
-        ),
+        readable_output=(f"ETD message updated\n\n" f"Message ID: {message_id}\n" f"Verdict: {verdict}\n" f"Folder: {folder}"),
         outputs_prefix="CiscoETD.MessageUpdate",
-        outputs=result
+        outputs=result,
     )
 
 
@@ -287,20 +218,12 @@ def etd_move_message_command(client: ETDClient, args: dict) -> CommandResults:
 
 
 def test_module(client: ETDClient) -> str:
-    now = datetime.now(timezone.utc).replace(
-        minute=0,
-        second=0,
-        microsecond=0
-    )
-    response = client.request_log_export(
-        (now - timedelta(hours=1)).strftime("%Y-%m-%dT%H"),
-        now.strftime("%Y-%m-%dT%H")
-    )
+    now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
+    response = client.request_log_export((now - timedelta(hours=1)).strftime("%Y-%m-%dT%H"), now.strftime("%Y-%m-%dT%H"))
     links = client.get_links(response)
     if links:
         client.download_logs(links)
     return "ok"
-
 
 
 """ MAIN"""
@@ -309,28 +232,18 @@ def test_module(client: ETDClient) -> str:
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
-    client = ETDClient(
-        base_url=params.get("etd_base_url"),
-        params=params
-    )
+    client = ETDClient(base_url=params.get("etd_base_url"), params=params)
     try:
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-incidents":
             fetch_incidents(client, params)
         elif command == "etd-move-message":
-            return_results(
-                etd_move_message_command(client, demisto.args())
-            )
+            return_results(etd_move_message_command(client, demisto.args()))
     except Exception as e:
-        demisto.error(
-            f"{str(e)}\n"
-            f"{traceback.format_exc()}"
-        )
+        demisto.error(f"{str(e)}\n" f"{traceback.format_exc()}")
         return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-register_module_line('ETDXsoarConnector', 'end', __line__())

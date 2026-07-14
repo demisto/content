@@ -1,15 +1,10 @@
 # ETD XSOAR Connector
 
-
 ## Overview
-
 
 The ETD XSOAR Connector integrates Cisco Email Threat Defense (ETD) with Cortex XSOAR. The integration fetches ETD message events, creates incidents for malicious and suspicious emails, and provides remediation and reclassification capabilities through Cisco ETD APIs.
 
-
-
 ## Use Cases
-
 
 * Fetch malicious and suspicious email events from Cisco ETD.
 
@@ -21,9 +16,7 @@ The ETD XSOAR Connector integrates Cisco Email Threat Defense (ETD) with Cortex 
 
 * Support analyst-driven email investigation and response workflows.
 
-
 ## What does this pack do?
-
 
 ### Integration
 
@@ -39,18 +32,13 @@ Fetches Cisco ETD message events and creates incidents in Cortex XSOAR.
 
 Custom incident type used for Cisco ETD email incidents.
 
-
 ### Incident Fields
 
 #### ETD Message ID
 
 Stores the Cisco ETD Message ID required for email remediation and reclassification actions.
 
-
-
 ### Playbook
-
-
 
 #### ETD Email Reclassification and Remediation**
 
@@ -88,7 +76,7 @@ Allows analysts to review ETD email incidents and perform remediation and reclas
 
 ### Cortex XSOAR Version
 
-* 6.10.0 
+* 6.10.0
 
 ### Cisco ETD Requirements
 
@@ -98,15 +86,9 @@ Allows analysts to review ETD email incidents and perform remediation and reclas
 
 * API access enabled
 
-
-
 ## Workflow
 
-
-
 ### Incident Creation
-
-
 
 1. Cisco ETD generates a message event.
 
@@ -114,11 +96,7 @@ Allows analysts to review ETD email incidents and perform remediation and reclas
 
 3. Cortex XSOAR creates an ETD Malicious Email incident.
 
-
-
 ### Incident Response
-
-
 
 1. Analyst opens the incident.
 
@@ -127,8 +105,6 @@ Allows analysts to review ETD email incidents and perform remediation and reclas
 3. Analyst selects a new verdict and remediation action.
 
 4. Cortex XSOAR submits the action to Cisco ETD.
-
-
 
 ## Author
 

@@ -56,7 +56,7 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-  defaultvalue: '500'
+  defaultvalue: '100'
 - display: Use system proxy settings
   name: proxy
   type: 8

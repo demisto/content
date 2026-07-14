@@ -3,7 +3,6 @@ This integration was integrated and tested with ETDXsoarConnector.
 
 ## Configure ETDXsoarConnector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | ETD Base URL | True |
@@ -36,14 +35,14 @@ Reclassify and Remediate ETD message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | ETD message ID. | Required | 
-| verdict | New verdict. | Required | 
-| folder | New folder action. | Required | 
+| message_id | ETD message ID. | Required |
+| verdict | New verdict. | Required |
+| folder | New folder action. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ETD.Message.ID | String | Message ID. | 
-| ETD.Message.Verdict | String | Updated verdict. | 
-| ETD.Message.Folder | String | Updated folder. | 
+| ETD.Message.ID | String | Message ID. |
+| ETD.Message.Verdict | String | Updated verdict. |
+| ETD.Message.Folder | String | Updated folder. |
