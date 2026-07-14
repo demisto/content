@@ -8,7 +8,7 @@ args:
   isArray: false
   name: rule_name
   required: false
-- description: Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+- description: Panorama log test forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
   isArray: false
   name: log_forwarding_name
   required: false
