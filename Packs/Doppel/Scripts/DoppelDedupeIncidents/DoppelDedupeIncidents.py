@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import csv
 import io
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 ACTION_COLUMNS = ["alert_id", "keep_id", "victim_id", "victim_name", "victim_owner", "victim_close_reason"]
 INLINE_SAMPLE = 50
@@ -50,12 +50,10 @@ def _ranked(group: list) -> list:
     """Sort a group deterministically: oldest created first, then lowest incident id."""
 
     def sort_key(inc):
-        created = _to_dt(inc.get("created")) or datetime.max.replace(tzinfo=timezone.utc)
-        try:
-            inc_id = int(inc.get("id"))
-        except (ValueError, TypeError):
-            inc_id = float("inf")
-        return (created, inc_id)
+        created = _to_dt(inc.get("created")) or datetime.max.replace(tzinfo=UTC)
+        inc_id = arg_to_number(inc.get("id"))
+        # Unparseable ids sort last, keeping the ordering deterministic within a group.
+        return (created, inc_id if inc_id is not None else 10**18)
 
     return sorted(group, key=sort_key)
 
@@ -67,10 +65,9 @@ def _is_closed(incident: dict) -> bool:
         return True
     if str(incident.get("closeReason") or "").strip():
         return True
+    # A non-default closed timestamp (year 0001 is XSOAR's "never closed") means closed.
     closed = str(incident.get("closed") or "")
-    if closed and not closed.startswith("0001"):  # default empty timestamp is year 0001
-        return True
-    return False
+    return bool(closed and not closed.startswith("0001"))
 
 
 def plan_dedupe(incidents: list) -> dict:
@@ -86,7 +83,7 @@ def plan_dedupe(incidents: list) -> dict:
     Returns 'actions' (open duplicates to close/delete), 'flagged' (a subset that
     have an owner and warrant a human glance), 'group_count', and 'skipped_closed'.
     """
-    groups = {}
+    groups: dict[str, list] = {}
     for inc in incidents:
         key = _alert_key(inc)
         if not key:

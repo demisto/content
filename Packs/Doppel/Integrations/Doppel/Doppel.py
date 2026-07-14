@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
@@ -582,12 +582,12 @@ def _alert_to_incident(alert, mirroring_object):
     if created_at_str:
         for date_format in (DOPPEL_PAYLOAD_DATE_FORMAT, DOPPEL_API_DATE_FORMAT):
             try:
-                created_at_datetime = datetime.strptime(created_at_str, date_format).replace(tzinfo=timezone.utc)
+                created_at_datetime = datetime.strptime(created_at_str, date_format).replace(tzinfo=UTC)
                 break
             except (ValueError, TypeError):
                 continue
     if created_at_datetime is None:
-        created_at_datetime = datetime.now(timezone.utc)
+        created_at_datetime = datetime.now(UTC)
     severity = _xsoar_severity(alert)
     alert.update(mirroring_object)
     # Use the external Doppel alert id (e.g. TET-1953421) as the incident name so it
@@ -659,7 +659,7 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     # instead of being buffered in lastRun. We do NOT skip the boundary second; instead
     # we persist the ids emitted at that second so the inclusive re-pull on the next run
     # is de-duplicated rather than lost.
-    occurred_times = [inc.get("occurred") for inc in incidents if inc.get("occurred")]
+    occurred_times = [str(inc["occurred"]) for inc in incidents if inc.get("occurred")]
     if occurred_times:
         newest_occurred = max(occurred_times)
         next_fetch = newest_occurred

@@ -97,8 +97,10 @@ def test_plan_dedupe_never_touches_closed():
     # Only the two open ones are consolidated; the closed one is never a victim or survivor.
     victim_ids = {a["victim_id"] for a in plan["actions"]}
     keep_ids = {a["keep_id"] for a in plan["actions"]}
-    assert "10" not in victim_ids and "10" not in keep_ids
-    assert victim_ids == {"12"} and keep_ids == {"11"}
+    assert "10" not in victim_ids
+    assert "10" not in keep_ids
+    assert victim_ids == {"12"}
+    assert keep_ids == {"11"}
 
 
 def test_plan_dedupe_single_open_no_action():
