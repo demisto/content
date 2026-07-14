@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
-try:
-    ContentClient
-except NameError:
+if "ContentClient" not in globals():
     ContentClient = BaseClient
 from typing import Any, Optional
 from urllib.parse import quote
