@@ -2231,8 +2231,8 @@ def _download_drive_file_content(client: "GSuiteClient", file_id: str, mime_type
         # Text payload — decode with replacement so a single bad byte cannot crash us.
         return raw_bytes.decode("utf-8", errors="replace"), effective_mime
 
-    # Binary payload (PDF, image, etc.) — base64-encode and tag with ';base64'.
-    return base64.b64encode(raw_bytes).decode("ascii"), f"{effective_mime};base64"
+    # Binary payload (PDF, image, etc.) — base64-encode.
+    return base64.b64encode(raw_bytes).decode("ascii"), f"{effective_mime}"
 
 
 @logger
