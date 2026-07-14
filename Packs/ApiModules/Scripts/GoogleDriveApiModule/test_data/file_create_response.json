@@ -1,0 +1,7 @@
+{
+    "kind": "drive#file",
+    "id": "new_folder_id_456",
+    "name": "Quarantine Folder",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": ["root"]
+}
