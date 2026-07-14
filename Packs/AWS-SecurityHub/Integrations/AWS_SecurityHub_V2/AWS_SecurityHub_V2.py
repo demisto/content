@@ -692,11 +692,12 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
 
         last_fetch = first_created_time
 
+    next_token_to_persist = new_next_token if new_findings else None
     new_last_run = {
         "last_fetch": last_fetch,
-        "next_token": new_next_token,
+        "next_token": next_token_to_persist,
         "fetched_ids": matching_uids,
-        "filters": json.dumps(filters) if new_next_token else {},
+        "filters": json.dumps(filters) if next_token_to_persist else {},
     }
 
     demisto.info(f"[AWS_Security_Hub_V2] Fetch: summary -> created {len(incidents)} incidents; new lastRun -> {new_last_run=}")
