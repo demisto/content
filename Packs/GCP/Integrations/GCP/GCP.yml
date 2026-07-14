@@ -14,7 +14,7 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
-  additionalinfo: "The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM (version < 3.0). On Cortex XSIAM (version >= 3.0) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM & Admin > Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here."
+  additionalinfo: "The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM & Admin > Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here."
 - display: GCP Project ID
   name: project_id
   type: 0
@@ -44,7 +44,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the firewall rule to update.
@@ -157,7 +157,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the firewall rule to create.
@@ -245,7 +245,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
@@ -303,7 +303,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Firewall rule name.
@@ -335,7 +335,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
@@ -419,7 +419,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Snapshot name.
@@ -496,7 +496,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: ip_address
       required: true
       description: The IP address to search for.
@@ -533,7 +533,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: Zone of the VM (e.g., us-central1-a).
@@ -691,7 +691,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the GCS bucket.
@@ -793,7 +793,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
       description: GCP region.
@@ -997,7 +997,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
       description: GCP region.
@@ -1319,7 +1319,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: resource_name
       required: true
       description: Name of the bucket.
@@ -1618,7 +1618,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       required: false
       description: Maximum number of buckets to return.
@@ -1677,7 +1677,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to retrieve.
@@ -1730,7 +1730,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to list objects from.
@@ -1807,7 +1807,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to retrieve IAM policy from.
@@ -1834,7 +1834,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket to set IAM policy on.
@@ -1865,7 +1865,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket containing the object.
@@ -1891,7 +1891,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: Name of the bucket containing the object.
@@ -1918,7 +1918,7 @@ script:
     description: "Removes a specified IAM role binding from a GCP project. Required permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy."
     arguments:
     - name: project_id
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: member
@@ -1935,7 +1935,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: dataset_id
       required: true
       description: The dataset ID of the requested dataset.
@@ -2099,7 +2099,7 @@ script:
       The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: zone
@@ -2190,7 +2190,7 @@ script:
       The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       isArray: false
@@ -2308,7 +2308,7 @@ script:
     description: "Starts an instance that was stopped using the instances().stop method. Required permission: compute.instances.start."
     arguments:
     - name: project_id
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: zone
@@ -2391,7 +2391,7 @@ script:
     - description: Name of the network to return.
       name: network
       required: true
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2455,7 +2455,7 @@ script:
 
 # gcp-compute-image-get
   - arguments:
-    - description: Project ID for this request. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The project ID for this request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2618,7 +2618,7 @@ script:
     - description: Name of the region resource to return.
       name: region
       required: true
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2688,7 +2688,7 @@ script:
     - description: The name of the instance group.
       name: instance_group
       required: true
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2749,7 +2749,7 @@ script:
     - description: Name of the zone resource to return.
       name: zone
       required: true
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2804,7 +2804,7 @@ script:
 
 # gcp-compute-networks-list
   - arguments:
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -2878,7 +2878,7 @@ script:
 
 # gcp-compute-network-insert
   - arguments:
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -3001,7 +3001,7 @@ script:
     description: "Stops and cleanly shuts down a running instance, allowing you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using such as persistent disks and static IP addresses will continue to be charged until they are deleted. Required permission: compute.instances.stop."
     arguments:
     - name: project_id
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: zone
@@ -3081,7 +3081,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - description: The name of the zone for this request.
       name: zone
       required: true
@@ -3239,7 +3239,7 @@ script:
         description: Informational warning message.
         type: Object
   - arguments:
-    - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: project_id
       required: false
       required:platform: true
@@ -3439,7 +3439,7 @@ script:
       - description: Name of the instance resource to return.
         name: instance
         required: true
-      - description: The GCP project ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         name: project_id
         required: false
         required:platform: true
@@ -4228,7 +4228,8 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.8516410
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
+source: 'cooc'
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
