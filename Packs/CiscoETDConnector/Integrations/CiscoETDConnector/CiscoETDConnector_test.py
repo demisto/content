@@ -90,23 +90,28 @@ def test_get_event_time_missing():
     assert value.endswith("Z")
 
 
-def test_get_event_id_connection():
-    event = {"connection_id": "conn123"}
-    value = get_event_id(event, "connection")
+def test_get_event_id_audit():
+    event = {
+        "timestamp": "2026-07-01T10:00:00Z",
+        "action": "login",
+        "category": "auth",
+        "user": "admin",
+        "metadata": {"awsRequestId": "123"},
+    }
+    value = get_event_id(event, "audit")
     assert isinstance(value, str)
     assert len(value) == 64
+
+
+def test_get_event_id_connection():
+    event = {"connection_id": "conn123"}
+    assert get_event_id(event, "connection") == "conn123"
 
 
 @patch.object(ETDClient, "get_access_token", return_value="dummy")
 def test_get_links_empty(mock_token):
     client = ETDClient(base_url="dummy", params={})
     assert client.get_links({"data": {}}, ["message"]) == []
-
-
-def test_get_event_id_audit():
-    event = {"timestamp": "2026-07-01T10:00:00Z"}
-    value = get_event_id(event, "audit")
-    assert len(value) == 64
 
 
 def test_deduplicate_same_checkpoint():

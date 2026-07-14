@@ -54,6 +54,19 @@ def get_event_time(event: dict[str, Any], log_type: str) -> str:
 
 
 def get_event_id(event: dict[str, Any], log_type: str) -> str:
+    if log_type == "message":
+        return hashlib.sha256(json.dumps(event, sort_keys=True).encode()).hexdigest()
+    elif log_type == "connection":
+        return event.get("connection_id", "")
+    elif log_type == "audit":
+        audit_identity = {
+            "timestamp": event.get("timestamp"),
+            "action": event.get("action"),
+            "category": event.get("category"),
+            "user": event.get("user"),
+            "metadata": event.get("metadata"),
+        }
+        return hashlib.sha256(json.dumps(audit_identity, sort_keys=True).encode()).hexdigest()
     return hashlib.sha256(json.dumps(event, sort_keys=True).encode()).hexdigest()
 
 
