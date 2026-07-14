@@ -3135,7 +3135,7 @@ script:
       required: false
       description: "The max number of timeline entries to return, default is 5000."
     name: sentinelone-export-full-threat-timeline
-    description: Exports the threat's full timeline as a JSON File.
+    description: Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
     outputs:
     - contextPath: SentinelOne.Export.Timeline.ThreatId
       description: The threat ID.
@@ -3148,7 +3148,7 @@ script:
       required: true
       description: "Please provide the Valid Threat ID. Example: 14629133470822878."
     name: sentinelone-export-threat-events
-    description: Exports the threat's events as a JSON File.
+    description: Exports the threat's events as a JSON File. Relevant for API version 2.1.
     outputs:
     - contextPath: SentinelOne.Export.Events.ThreatId
       description: The threat ID.

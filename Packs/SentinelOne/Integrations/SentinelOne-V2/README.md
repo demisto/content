@@ -2315,7 +2315,7 @@ Exports the threat's events as a JSON File.
 ### sentinelone-export-full-threat-timeline
 
 ***
-Exports the threat's full timeline as a JSON File.
+Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
 
 #### Base Command
 
