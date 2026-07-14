@@ -27,8 +27,8 @@ class Brands(StrEnum):
         _ALIASES = {
             "Microsoft Defender ATP": "Microsoft Defender Advanced Threat Protection",
             # On the unified platform, get-endpoint-data reports Core endpoints under the
-            # built-in brand "Builtin". Map it to Cortex Core - IR so the correct handler
-            # (and platform-swapped commands) are selected.
+            # built-in brand "Builtin". Map it to "Cortex Core - IR" so the correct handler
+            # is selected and the legacy Core quarantine commands are used.
             "Builtin": cls.CORTEX_CORE_IR.value,
         }
         """Normalize a brand string (alias → canonical enum)."""
@@ -156,9 +156,6 @@ class Command:
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
-        # PCI built-in commands may return no entries (None) on a not-found result;
-        # normalize to a list to avoid 'NoneType' object is not iterable.
-        raw_response = raw_response or []
 
         verbose_results = []
         for result in raw_response:
@@ -452,14 +449,8 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
-        if self.command_prefix == self.CORE_COMMAND_PREFIX:
-            # On the platform, the Core quarantine command is exposed as the PCI builtin "quarantineFile".
-            self.quarantine_command = "quarantineFile" if is_platform() else "core-quarantine-files"
-        else:
-            self.quarantine_command = "xdr-file-quarantine"
-        demisto.info(
-            f"TMP-NBS QuarantineFile: is_platform={is_platform()}, brand={self.brand}, "
-            f"quarantine command chosen='{self.quarantine_command}'"
+        self.quarantine_command = (
+            "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
         )
 
     def validate_args(self, args: dict) -> None:
@@ -498,17 +489,8 @@ class XDRHandler(BrandHandler):
                       }
         """
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
-        if self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform():
-            # On the platform, the Core quarantine-status command is exposed as the PCI builtin "getFileQuarantineStatus".
-            status_command_name = "getFileQuarantineStatus"
-        else:
-            status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
-        demisto.info(
-            f"TMP-NBS QuarantineFile: is_platform={is_platform()}, brand={self.brand}, "
-            f"quarantine-status command chosen='{status_command_name}'"
-        )
         status_cmd = Command(
-            name=status_command_name,
+            name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
             args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},
             brand=self.brand,
         )
@@ -517,10 +499,6 @@ class XDRHandler(BrandHandler):
             self.orchestrator.verbose_results.extend(verbose_res)
 
         status_context = Command.get_entry_contexts(raw_response)
-        demisto.info(
-            f"TMP-NBS QuarantineFile._execute_quarantine_status_command: endpoint={endpoint_id}, "
-            f"raw_response={raw_response}, status_context={status_context}"
-        )
         if not status_context or not isinstance(status_context[0], dict):
             return {}
 
@@ -608,13 +586,8 @@ class XDRHandler(BrandHandler):
         """
         demisto.debug(f"[{self.brand} Handler] Initiating quarantine action.")
 
-        # PCI "quarantineFile" (platform builtin) requires the endpoint arg as "endpoint_ids"
-        # (plural array), whereas the legacy "core-quarantine-files"/"xdr-file-quarantine"
-        # commands use "endpoint_id_list". Select the correct name per environment.
-        is_platform_core = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform()
-        endpoint_ids_arg_name = "endpoint_ids" if is_platform_core else "endpoint_id_list"
         quarantine_args = {
-            endpoint_ids_arg_name: args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
+            "endpoint_id_list": args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
             "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
             "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
@@ -625,34 +598,13 @@ class XDRHandler(BrandHandler):
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
-        demisto.info(
-            f"TMP-NBS QuarantineFile.initiate_quarantine: is_platform={is_platform()}, brand={self.brand}, "
-            f"quarantine_command={self.quarantine_command}, raw_response={raw_response}"
-        )
-        metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
-        demisto.info(f"TMP-NBS QuarantineFile.initiate_quarantine: Metadata for polling={metadata}")
-
-        if is_platform_core:
-            # On platform-Core the PCI "quarantineFile" self-schedules its poll against the
-            # get_action_status API, which returns 403 when re-invoked from within a script
-            # context. Instead, poll via "getFileQuarantineStatus" (the /quarantine/status API),
-            # which succeeds under the script's execution context. We track each endpoint
-            # individually and finalize directly from the per-endpoint status results.
-            job = {
-                "brand": self.brand,
-                "poll_via_status": True,
-                "endpoint_ids": list(args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG) or []),
-                "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
-                "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
-            }
-            demisto.info(f"TMP-NBS QuarantineFile.initiate_quarantine: built status-poll job={job}")
-            return job
+        metadata = raw_response[0].get("Metadata", {})
+        demisto.debug(f"[{self.brand} Handler] Received metadata for polling: {metadata}")
 
         job = {
             "brand": self.brand,
-            "poll_via_status": False,
             "poll_command": metadata.get("pollingCommand", self.quarantine_command),
-            "poll_args": metadata.get("pollingArgs", {}) or {},
+            "poll_args": metadata.get("pollingArgs", {}),
             "finalize_args": {
                 "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
                 "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
@@ -679,9 +631,6 @@ class XDRHandler(BrandHandler):
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
             last_poll_response, "GetActionStatus"
         )
-        # get_entry_context_object_containing_key returns None when the key is absent from the
-        # poll response; guard against 'NoneType' object is not iterable.
-        quarantine_endpoints_final_results = quarantine_endpoints_final_results or []
 
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
@@ -1224,12 +1173,6 @@ class QuarantineOrchestrator:
             demisto.debug(f"[Orchestrator] The Job: {job}")
             demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
 
-            if job.get("poll_via_status"):
-                # Platform-Core path: poll each endpoint via "getFileQuarantineStatus"
-                # instead of the PCI action-status poll (which 403s under script context).
-                self._check_status_poll_job(job, remaining_jobs)
-                continue
-
             # Get the command for this job to poll for status. i.e.: GetActionStatus
             poll_cmd = Command(name=job["poll_command"], args=job["poll_args"], brand=job["brand"])
             raw_response, verbose_res = poll_cmd.execute()
@@ -1237,16 +1180,11 @@ class QuarantineOrchestrator:
                 self.verbose_results.extend(verbose_res)
 
             metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
-            demisto.info(
-                f"TMP-NBS QuarantineFile._check_pending_jobs: is_platform={is_platform()}, "
-                f"poll_command={job.get('poll_command')}, poll_args={job.get('poll_args')}, "
-                f"raw_response={raw_response}, Metadata={metadata}"
-            )
             demisto.debug(f"The raw response from executing: {raw_response}")
 
             if self._job_is_still_polling(metadata):
                 demisto.debug(f"[Orchestrator] Job for brand '{job['brand']}' is still pending. Re-scheduling.")
-                job["poll_args"] = metadata.get("pollingArgs", {}) or {}
+                job["poll_args"] = metadata.get("pollingArgs", {})
                 remaining_jobs.append(job)
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
@@ -1255,71 +1193,6 @@ class QuarantineOrchestrator:
                 self.completed_results.extend(final_results)
 
         self.pending_jobs = remaining_jobs
-
-    def _check_status_poll_job(self, job: dict, remaining_jobs: list) -> None:
-        """
-        Polls a platform-Core job by querying "getFileQuarantineStatus" per endpoint.
-
-        For each endpoint that has not yet been confirmed quarantined, it queries the
-        quarantine status. Endpoints reported as quarantined are finalized and removed
-        from the job. If any endpoints remain unresolved, the job is re-scheduled so the
-        @polling_function keeps polling (subject to its overall timeout).
-
-        Args:
-            job (dict): The status-poll job (with keys 'brand', 'endpoint_ids',
-                        'file_hash', 'file_path').
-            remaining_jobs (list): The list to append the job to if it still has
-                                   unresolved endpoints.
-        """
-        handler = handler_factory(job["brand"], self)
-        if not isinstance(handler, XDRHandler):
-            # status-poll jobs are only created for the Core brand (XDRHandler).
-            demisto.error(f"[Orchestrator] status-poll job has unexpected handler for brand '{job['brand']}'.")
-            return
-        pending_endpoint_ids: list = list(job.get("endpoint_ids") or [])
-        still_pending: list = []
-
-        demisto.info(
-            f"TMP-NBS QuarantineFile._check_status_poll_job: brand={job.get('brand')}, "
-            f"pending_endpoint_ids={pending_endpoint_ids}"
-        )
-
-        for endpoint_id in pending_endpoint_ids:
-            try:
-                status_data = handler._execute_quarantine_status_command(
-                    str(endpoint_id), str(job.get("file_hash") or ""), str(job.get("file_path") or "")
-                )
-                demisto.info(
-                    f"TMP-NBS QuarantineFile._check_status_poll_job: endpoint={endpoint_id}, "
-                    f"status_data={status_data}"
-                )
-                if status_data.get("status"):
-                    # Quarantine confirmed for this endpoint. Finalize it now.
-                    self.completed_results.append(
-                        QuarantineResult.create(
-                            endpoint_id=str(endpoint_id),
-                            status=QuarantineResult.Statuses.SUCCESS,
-                            message=QuarantineResult.Messages.SUCCESS,
-                            brand=job["brand"],
-                            script_args=self.args,
-                        )
-                    )
-                else:
-                    # Not quarantined yet; keep polling this endpoint.
-                    still_pending.append(endpoint_id)
-            except Exception as e:
-                demisto.error(f"[Orchestrator] Failed to poll quarantine status for endpoint {endpoint_id}: {e}")
-                # Keep polling on transient errors so the @polling_function timeout governs.
-                still_pending.append(endpoint_id)
-
-        if still_pending:
-            demisto.debug(
-                f"[Orchestrator] {len(still_pending)} endpoints still pending for brand '{job['brand']}'. Re-scheduling."
-            )
-            job["endpoint_ids"] = still_pending
-            remaining_jobs.append(job)
-        else:
-            demisto.debug(f"[Orchestrator] All endpoints resolved for brand '{job['brand']}'.")
 
     def _all_jobs_have_failed(self) -> bool:
         """
