@@ -446,7 +446,7 @@ Terminates a process on an endpoint by process ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The endpoint ID. | Required |
-| pid | The ID of the processs to kill. | Required |
+| pid | The ID of the process to kill. | Required |
 
 #### Context Output
 
@@ -1619,3 +1619,233 @@ To set up the mirroring:
     | Both | Synchronizes status changes bidirectionally between Cortex XSOAR and GravityZone incidents. |
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+### gz-endpoint-users-loggedin
+
+***
+Retrieves details of all active user sessions on a specific managed endpoint.
+
+#### Base Command
+
+`gz-endpoint-users-loggedin`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The target endpoint ID. The endpoint must be accessible to you. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GravityZone.Endpoint.ID | String | The endpoint ID. |
+| GravityZone.Endpoint.Hostname | String | The endpoint hostname. |
+| GravityZone.Endpoint.ActiveSessions.Username | String | The username of the currently logged-in user. |
+| GravityZone.Endpoint.ActiveSessions.ConnectionType | String | The connection type for the session. |
+| GravityZone.Endpoint.ActiveSessions.StartTime | Date | The session start time, if available (e.g., "2021-05-19T10:37:56Z"). |
+| GravityZone.Endpoint.ActiveSessions.UserSID | String | The Security Identifier (SID) of the logged-in user, if available. |
+| GravityZone.Endpoint.ActiveSessions.DomainSID | String | The Security Identifier (SID) of the logged-in user's domain, if available. |
+| GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN | String | The full distinguished name (DN) of the organizational unit, if available. |
+| GravityZone.Endpoint.ActiveSessions.MemberOfSIDs | Array | The SIDs for the groups to which the logged-in user belongs, if available. |
+
+#### Command example
+
+```!gz-endpoint-users-loggedin id=6942a43afe8d4e463ca5c197```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "Endpoint": {
+            "ID": "6942a43afe8d4e463ca5c197",
+            "Hostname": "bdvm",
+            "ActiveSessions": [
+                {
+                    "Username": "user@example.com",
+                    "ConnectionType": "local",
+                    "StartTime": "2021-05-19T10:37:56Z",
+                    "UserSID": "S-1-5-21-1111111111-1111111111-1111111111-1001",
+                    "DomainSID": "S-1-5-21-1111111111-1111111111-1111111111",
+                    "OrganizationalUnitDN": "OU=Users,DC=example,DC=com",
+                    "MemberOfSIDs": [
+                        "S-1-5-32-544",
+                        "S-1-5-32-545"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Active sessions on endpoint 6942a43afe8d4e463ca5c197
+>
+>|Username|ConnectionType|StartTime|UserSID|DomainSID|OrganizationalUnitDN|MemberOfSIDs|
+>|---|---|---|---|---|---|---|
+>| TESTDOMAIN\\full.user | local | 2021-05-19T10:37:56Z | S-1-2-25-33 | S-1-23-131231 | OU=office,OU=Developers,OU=Users,DC=microsoft,DC=com | S-1-5-32-450 |
+>| basic.user | remote | 2021-05-19T11:00:00Z |  |  |  |  |
+
+### gz-endpoint-create-memory-dump
+
+***
+Initiates the creation of a memory dump for the specified endpoint. Once the dump is successfully generated, the resulting archive is uploaded to the Bitdefender cloud.
+
+*Important*:
+
+- Please contact Bitdefender Enterprise Support to configure this feature.
+- The resulting memory dump archive is automatically deleted from the Bitdefender cloud after 24 hours.
+- The memory dump creation task completes successfully only when the generated memory dump archive is 16 GB or smaller.
+
+#### Base Command
+
+`gz-endpoint-create-memory-dump`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The target endpoint ID. The endpoint must be accessible and run a Windows operating system. | Required |
+| path | The full path to the destination folder on the specified endpoint where the memory dump archive will be created. | Required |
+| password | The password used to secure the memory dump archive after it is created. It must contain at least 12 characters, including one uppercase letter, one lowercase letter, one digit, and one special character. | Required |
+| polling | Whether the command waits for the memory dump task completion. If set to true, the command returns the final result after the task completes. If set to false, the command returns only the endpoint ID and task ID immediately after the task is initiated. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GravityZone.MemoryDump.TaskID | String | The memory dump task ID. |
+| GravityZone.MemoryDump.TaskType | String | The task type. |
+| GravityZone.MemoryDump.Status | String | The memory dump task status. |
+| GravityZone.MemoryDump.EndpointID | String | The endpoint ID. |
+| GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
+| GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z"). |
+| GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z"). |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the memory dump task fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the memory dump task fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the task completes successfully. |
+
+#### Command example
+
+```!gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 password="ComplexPass123!" path=C:\\test2```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "MemoryDump": {
+            "TaskID": "6836f4a01a2b3c4d5e6f7a8b",
+            "TaskType": "CreateMemoryDump",
+            "Status": "Processed",
+            "EndpointID": "6942a43afe8d4e463ca5c197",
+            "Hostname": "bdvm",
+            "StartDate": "2026-05-25T10:00:00Z",
+            "EndDate": "2026-05-25T10:01:00Z",
+            "ErrorCode": "Success",
+            "Error": "Success",
+            "DownloadURL": "https://example.com/memory-dump.zip"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+This example illustrates the human-readable output when `polling` is set to `true`. When `polling` is `false`, the table contains only the task ID and endpoint ID.
+
+> ### Memory dump for endpoint 6942a43afe8d4e463ca5c197
+>
+>|EndpointID|Hostname|StartDate|EndDate|Error|DownloadURL|
+>|---|---|---|---|---|---|
+>| 6942a43afe8d4e463ca5c197 | bdvm | 2026-05-25T10:00:00Z | 2026-05-25T10:01:00Z | Success | https://example.com/memory-dump.zip |
+
+### gz-endpoint-memory-dump-status
+
+***
+Verifies the status of a task initiated via gz-endpoint-create-memory-dump.
+
+#### Base Command
+
+`gz-endpoint-memory-dump-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | The ID of the task started through gz-endpoint-create-memory-dump. This ID is returned upon task initiation. | Required |
+| endpoint_id | The ID of the endpoint for which the specified task was initiated. | Required |
+| polling | Whether the command waits for the gz-endpoint-create-memory-dump task completion. If set to true, the command returns the final result after the task completes successfully or fails. If set to false, the command returns immediately, providing only the task status. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GravityZone.MemoryDump.TaskID | String | The ID of the task started through gz-endpoint-create-memory-dump. |
+| GravityZone.MemoryDump.TaskType | String | The task type. |
+| GravityZone.MemoryDump.Status | String | The status of the task started through gz-endpoint-create-memory-dump. |
+| GravityZone.MemoryDump.EndpointID | String | The endpoint ID. |
+| GravityZone.MemoryDump.Hostname | String | The endpoint hostname. |
+| GravityZone.MemoryDump.StartDate | Date | The date and time when the memory dump task started (e.g., "2026-05-25T10:00:00Z"). |
+| GravityZone.MemoryDump.EndDate | Date | The date and time when the memory dump task ended, if available (e.g., "2026-05-25T10:01:00Z"). |
+| GravityZone.MemoryDump.ErrorCode | String | An error code if the task started through gz-endpoint-create-memory-dump fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.Error | String | An error message if the task started through gz-endpoint-create-memory-dump fails, or "Success" if the task completes successfully. |
+| GravityZone.MemoryDump.DownloadURL | String | The memory dump download URL, available after the memory dump creation task completes successfully. |
+
+#### Command example
+
+```!gz-endpoint-memory-dump-status task_id=6836f4a01a2b3c4d5e6f7a8b endpoint_id=6942a43afe8d4e463ca5c197```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "MemoryDump": {
+            "TaskID": "6836f4a01a2b3c4d5e6f7a8b",
+            "TaskType": "CreateMemoryDump",
+            "Status": "Processed",
+            "EndpointID": "6942a43afe8d4e463ca5c197",
+            "Hostname": "bdvm",
+            "StartDate": "2026-05-25T10:00:00Z",
+            "EndDate": "2026-05-25T10:01:00Z",
+            "ErrorCode": "Success",
+            "Error": "Success",
+            "DownloadURL": "https://example.com/memory-dump.zip"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+This example illustrates the human-readable output when `polling` is set to `true`. When `polling` is `false`, only the status of the memory dump creation task is displayed.
+
+> ### Memory dump for endpoint 6942a43afe8d4e463ca5c197
+>
+>|EndpointID|Hostname|StartDate|EndDate|Error|DownloadURL|
+>|---|---|---|---|---|---|
+>| 6942a43afe8d4e463ca5c197 | bdvm | 2026-05-25T10:00:00Z | 2026-05-25T10:01:00Z | Success | https://example.com/memory-dump.zip |
+
+### gz-poll-endpoint-users-loggedin-status
+
+***
+Verifies the status of a task initiated via gz-endpoint-users-loggedin. This command is invoked automatically and is not intended for direct use.
+
+#### Base Command
+
+`gz-poll-endpoint-users-loggedin-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | The ID of the task started through gz-endpoint-users-loggedin. | Required |
+| endpoint_id | The ID of the managed endpoint associated with the specified task. | Required |
+
+#### Context Output
+
+There is no context output for this command.
