@@ -22,7 +22,7 @@ from GSuiteApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx", ".yaml"}
+APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
@@ -34,10 +34,6 @@ MIME_TO_EXTENSION = {
     "application/x-jsonlines": ".jsonl",
     "text/csv": ".csv",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
-    "text/yaml": ".yaml",
-    "text/x-yaml": ".yaml",
-    "application/yaml": ".yaml",
-    "application/x-yaml": ".yaml",
     "application/vnd.google-apps.document": ".md",
     "application/vnd.google-apps.spreadsheet": ".csv",
 }
