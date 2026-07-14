@@ -1608,15 +1608,27 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 #### Command example
 
-`!msg-purge-ediscovery-data ...`
+`!msg-purge-ediscovery-data case_id=00000000-0000-0000-0000-000000000000 search_id=11111111-1111-1111-1111-111111111111 purge_type=permanentlyDelete purge_areas=mailboxes`
 
 #### Context Example
 
-`{}`
+```json
+{
+    "MsGraph": {
+        "eDiscoveryCase": {
+            "Purge": {
+                "OperationID": "example-operation-id",
+                "Status": "succeeded"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->
+>eDiscovery purge status is succeeded.
+>- Operation ID: example-operation-id
 
 ### msg-delete-ediscovery-search
 
@@ -2546,15 +2558,29 @@ Export results from an estimated ediscoverySearch. For details, see Manage a col
 
 #### Command example
 
-`!msg-export-result-ediscovery-data ...`
+`!msg-export-result-ediscovery-data case_id=00000000-0000-0000-0000-000000000000 search_id=11111111-1111-1111-1111-111111111111 additional_options=none export_criteria=searchHits export_format=pst display_name="Example Export"`
 
 #### Context Example
 
-`{}`
+```json
+{
+    "MsGraph": {
+        "eDiscoveryCase": {
+            "Export": {
+                "CaseID": "00000000-0000-0000-0000-000000000000",
+                "Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/00000000-0000-0000-0000-000000000000/operations/example-operation-id",
+                "OperationID": "example-operation-id"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->
+>eDiscovery export request was submitted successfully.
+>- Case ID: 00000000-0000-0000-0000-000000000000
+>- Operation ID: example-operation-id
 
 ### msg-delete-ediscovery-case-hold-policy
 
