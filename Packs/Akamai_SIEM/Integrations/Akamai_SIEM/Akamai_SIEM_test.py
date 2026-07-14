@@ -1085,3 +1085,228 @@ def test_test_fetch_events_long_running_command_flow(mocker, client, caplog):
 
     asyncio.run(test_fetch_events_long_running_command_flow(mocker, client))
     caplog.clear()
+
+
+def test_fetch_events_command_double_416_raises_no_spin(client, mocker):
+    """
+    Given:
+    - A stored offset whose request fails with a 416 (expired offset), and whose recovery request
+      ALSO fails with a 416.
+    When:
+    - Calling fetch_events_command with a bounded fetch_limit.
+    Then:
+    - Ensure the loop does NOT spin forever: after a single recovery, a second consecutive 416 is
+      surfaced as a DemistoException (guard against an infinite retry loop). The offset is reset
+      exactly once.
+    """
+    err_msg = "Error in API call [416] - Requested Range Not Satisfiable"
+    mocker.patch.object(
+        Akamai_SIEM.Client,
+        "get_events_with_offset",
+        side_effect=[
+            DemistoException(err_msg, res={}),  # first: stale offset -> 416 (recovered)
+            DemistoException(err_msg, res={}),  # recovery ALSO -> 416 -> must raise, not spin
+        ],
+    )
+    mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
+    reset_offset_mock = mocker.patch.object(Akamai_SIEM, "reset_offset_command")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+
+    with pytest.raises(DemistoException) as e:
+        for _events, _, _, _ in Akamai_SIEM.fetch_events_command(  # noqa: B007
+            client,
+            "3 days",
+            220,
+            "",
+            {"offset": "stale_offset"},
+            5000,
+            True,
+        ):
+            pass
+
+    assert "Requested Range Not Satisfiable" in str(e.value)
+    # Only one recovery was attempted before aborting - no infinite reset spin.
+    reset_offset_mock.assert_called_once()
+
+
+""" main() tests """
+
+
+def _run_main_fetch_events(mocker, params, ctx, fetch_events_pages, send_side_effect=None):
+    """Helper to drive main() for the 'fetch-events' command with everything mocked.
+
+    Returns a dict with the mocks so individual tests can assert on them.
+    """
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(Akamai_SIEM, "EdgeGridAuth", return_value=None)
+    mocker.patch.object(Akamai_SIEM, "get_integration_context", return_value=ctx)
+    set_context_mock = mocker.patch.object(Akamai_SIEM, "set_integration_context")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    update_health_mock = mocker.patch.object(demisto, "updateModuleHealth")
+    send_events_mock = mocker.patch.object(Akamai_SIEM, "send_events_to_xsiam", side_effect=send_side_effect)
+    return_error_mock = mocker.patch.object(Akamai_SIEM, "return_error")
+
+    captured_kwargs = {}
+
+    def fake_fetch_events_command(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        yield from fetch_events_pages
+
+    mocker.patch.object(Akamai_SIEM, "fetch_events_command", side_effect=fake_fetch_events_command)
+
+    Akamai_SIEM.main()
+
+    return {
+        "set_context": set_context_mock,
+        "set_last_run": set_last_run_mock,
+        "update_health": update_health_mock,
+        "send_events": send_events_mock,
+        "return_error": return_error_mock,
+        "captured_kwargs": captured_kwargs,
+    }
+
+
+BASE_MAIN_PARAMS = {
+    "configIds": "50170",
+    "host": "https://example.com",
+    "isFetch": False,
+}
+
+
+@pytest.mark.parametrize(
+    "page_size_param, fetch_limit_param, expected_page_size, expected_limit",
+    [
+        (Akamai_SIEM.FETCH_EVENTS_MAX_PAGE_SIZE + 5000, 80000, Akamai_SIEM.FETCH_EVENTS_MAX_PAGE_SIZE, 80000),
+        (10000, Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT + 1, 10000, Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT),
+        (10000, 3000, 3000, 3000),
+        (5000, 40000, 5000, 40000),
+    ],
+)
+def test_main_fetch_events_param_clamps(mocker, page_size_param, fetch_limit_param, expected_page_size, expected_limit):
+    """
+    Given:
+    - fetch-events params with various page_size / fetchLimit values (out-of-bounds and in-bounds).
+    When:
+    - Running main() for the fetch-events command.
+    Then:
+    - Ensure page_size and fetch_limit are clamped correctly (bad path) or left unchanged (good path)
+      before being passed to fetch_events_command.
+    """
+    params = {**BASE_MAIN_PARAMS, "page_size": page_size_param, "fetchLimit": fetch_limit_param}
+    result = _run_main_fetch_events(mocker, params, ctx={"offset": "ctx_offset"}, fetch_events_pages=[([], None, 0, False)])
+    captured = result["captured_kwargs"]
+    assert captured["page_size"] == expected_page_size
+    assert captured["fetch_limit"] == expected_limit
+
+
+def test_main_fetch_events_offset_persisted_on_success(mocker):
+    """
+    Given:
+    - A successful fetch-events run that yields a page of events and a new offset.
+    When:
+    - Running main() and send_events_to_xsiam succeeds.
+    Then:
+    - Ensure the new offset is persisted to integration context and eventsPulled is reported.
+    """
+    pages = [
+        (['{"id": 1}', '{"id": 2}'], "new_offset", 2, False),
+        ([], "new_offset", 2, False),
+    ]
+    result = _run_main_fetch_events(mocker, {**BASE_MAIN_PARAMS}, ctx={"offset": "old"}, fetch_events_pages=pages)
+    result["set_context"].assert_called_once_with({"offset": "new_offset"})
+    result["update_health"].assert_called_once_with({"eventsPulled": 2})
+    result["return_error"].assert_not_called()
+
+
+def test_main_fetch_events_offset_not_persisted_on_send_failure(mocker):
+    """
+    Given:
+    - A fetch-events run that yields events, but send_events_to_xsiam raises.
+    When:
+    - Running main().
+    Then:
+    - Ensure should_fail is set, the offset is NOT persisted (data-integrity guard),
+      and the error is surfaced via return_error.
+    """
+    pages = [(['{"id": 1}'], "new_offset", 1, False)]
+    result = _run_main_fetch_events(
+        mocker,
+        {**BASE_MAIN_PARAMS},
+        ctx={"offset": "old"},
+        fetch_events_pages=pages,
+        send_side_effect=Exception("send failed"),
+    )
+    result["set_context"].assert_not_called()
+    result["return_error"].assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "pages, expected_next_trigger",
+    [
+        ([([f'{{"id": {i}}}' for i in range(20)], "off", 20, False), ([], "off", 20, False)], "0"),
+        ([(['{"id": 1}'], "off", 1, True), ([], "off", 1, True)], "0"),
+        ([(['{"id": 1}'], "off", 1, False), ([], "off", 1, False)], None),
+    ],
+)
+def test_main_fetch_events_next_trigger(mocker, pages, expected_next_trigger):
+    """
+    Given:
+    - fetch-events runs with different (total_events_count, auto_trigger_next_run) outcomes.
+    When:
+    - Running main() with fetchLimit=20.
+    Then:
+    - Ensure nextTrigger is set to "0" when the interval hit the limit or requested an auto-trigger,
+      and is absent otherwise.
+    """
+    params = {**BASE_MAIN_PARAMS, "fetchLimit": 20}
+    result = _run_main_fetch_events(mocker, params, ctx={"offset": "old"}, fetch_events_pages=pages)
+    next_run = result["set_last_run"].call_args[0][0]
+    assert next_run.get("nextTrigger") == expected_next_trigger
+
+
+def test_main_fetch_events_streaming_clears_events_on_success(mocker):
+    """
+    Given:
+    - A fetch-events run that yields a page of events and send_events_to_xsiam succeeds.
+    When:
+    - Running main().
+    Then:
+    - Ensure the yielded page list is cleared after a successful streaming send (memory hygiene).
+    """
+    page_events = ['{"id": 1}', '{"id": 2}']
+    pages = [(page_events, "off", 2, False), ([], "off", 2, False)]
+    result = _run_main_fetch_events(mocker, {**BASE_MAIN_PARAMS}, ctx={"offset": "old"}, fetch_events_pages=pages)
+    result["send_events"].assert_called_once()
+    assert page_events == []
+
+
+def test_main_fetch_events_streaming_raises_and_keeps_events_on_failure(mocker):
+    """
+    Given:
+    - A fetch-events run that yields a page of events, but send_events_to_xsiam raises.
+    When:
+    - Running main().
+    Then:
+    - Ensure the streaming failure is surfaced via return_error, the offset is NOT persisted
+      (data-integrity guard), and the page list is NOT cleared (so the events can be retried).
+    """
+    page_events = ['{"id": 1}', '{"id": 2}']
+    pages = [(page_events, "off", 2, False)]
+    result = _run_main_fetch_events(
+        mocker,
+        {**BASE_MAIN_PARAMS},
+        ctx={"offset": "old"},
+        fetch_events_pages=pages,
+        send_side_effect=Exception("send failed"),
+    )
+    result["send_events"].assert_called_once()
+    result["return_error"].assert_called_once()
+    result["set_context"].assert_not_called()
+    # events.clear() is only reached after a successful send, so on failure the page is preserved.
+    assert page_events == ['{"id": 1}', '{"id": 2}']

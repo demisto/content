@@ -588,6 +588,7 @@ def fetch_events_command(
     execution_counter = 0
     base_page_size = page_size
     log_prefix = "[Fetch Events]"
+    offset_recovery_attempted = False
     while total_events_count < fetch_limit:
         if execution_counter > 0:
             demisto.debug(f"{log_prefix} Execution number {execution_counter}: checking for breaking conditions.")
@@ -609,22 +610,21 @@ def fetch_events_command(
         try:
             events, offset = client.get_events_with_offset(config_ids, offset, page_size, from_epoch)
         except DemistoException as e:
-            except DemistoException as e:
-    if is_offset_out_of_range_error(e):
-        # Expected & self-healing; handle_offset_out_of_range already logs the recovery.
-        from_epoch = handle_offset_out_of_range(e, reset_context_offset=True)
-        offset = None
-        continue
-    demisto.error(f"{log_prefix} Failed requesting new events from Akamai: {e}")
-    raise DemistoException(e)
-
             if is_offset_out_of_range_error(e):
+                if offset_recovery_attempted:
+                    demisto.error(
+                        f"{log_prefix} Offset still out of range after recovery - aborting to avoid an infinite retry loop."
+                    )
+                    raise DemistoException(e)
                 # The stored offset expired (older than 12h). Recover in-run: drop the stale offset and
                 # restart from the latest window Akamai still accepts, then retry immediately.
+                offset_recovery_attempted = True
                 from_epoch = handle_offset_out_of_range(e, reset_context_offset=True)
                 offset = None
                 continue
+            demisto.error(f"{log_prefix} Failed requesting new events from Akamai: {e}")
             raise DemistoException(e)
+        offset_recovery_attempted = False
 
         if not events:
             demisto.debug(f"{log_prefix} Received no events, breaking.")
@@ -1291,7 +1291,7 @@ def send_events_to_xsiam_akamai(
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
-def main():  # pragma: no cover
+def main():
     params = demisto.params()
 
     # Validate that configIds is not empty
