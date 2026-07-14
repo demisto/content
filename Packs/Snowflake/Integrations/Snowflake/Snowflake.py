@@ -312,7 +312,7 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
+    args = {"limit": MAX_ROWS, "query": FETCH_QUERY}
     column_descriptions, data = snowflake_query(args)
     data.sort(key=lambda k: k[DATETIME_COLUMN])
     # convert the data/events to demisto incidents
