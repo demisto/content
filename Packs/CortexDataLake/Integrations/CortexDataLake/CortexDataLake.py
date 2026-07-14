@@ -31,6 +31,11 @@ FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
 REFRESH_TOKEN_CONST = "refresh_token"
 IS_FEDRAMP_CONST = "is_fedramp"
+AUTH_MODE_CONST = "auth_mode"
+
+# Authentication modes
+AUTH_MODE_OPROXY = "oproxy"
+AUTH_MODE_SCM = "scm"
 
 FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
@@ -38,6 +43,11 @@ STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
 FEDRAMP_TOKEN_URL = (
     "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
 )
+
+# SCM (Cortex GW) gateway base URLs and path suffix
+SCM_GATEWAY_URL = "https://cortex-gateway.paloaltonetworks.com"  # guardrails-disable-line
+SCM_GATEWAY_FEDERAL_URL = "https://cortex-gateway-federal.paloaltonetworks.com"  # guardrails-disable-line
+SCM_TOKEN_PATH = "/api/xdr_gateway/external_services/scm/get_access_token"
 
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
@@ -59,15 +69,64 @@ FETCH_TABLE_HR_NAME = {
 BAD_REQUEST_REGEX = r"^Error in API call \[400\].*"
 
 
+def get_scm_token_url() -> str:
+    """Resolves the SCM (Cortex GW) get_access_token URL based on the tenant region."""
+    base_url = SCM_GATEWAY_FEDERAL_URL if is_fedramp_tenant() else SCM_GATEWAY_URL
+    return f"{base_url}{SCM_TOKEN_PATH}"
+
+
+def build_scm_signature(encryption_key_b64: str, client_secret: Optional[str], timestamp: int) -> str:
+    """Builds the base64 AES-GCM signature required by the SCM gateway.
+
+    Args:
+        encryption_key_b64: The base64-encoded 32-byte AES-GCM encryption key.
+        client_secret: The SCM client secret.
+        timestamp: Unix epoch seconds; must match the outer request timestamp.
+
+    Returns:
+        The base64-encoded (gcm_nonce + ciphertext) signature.
+    """
+    try:
+        encryption_key = base64.b64decode(encryption_key_b64)
+    except Exception as e:
+        raise DemistoException("Invalid Encryption Key: must be a valid base64 string.") from e
+    if len(encryption_key) != 32:
+        raise DemistoException("Invalid Encryption Key: the key must be the base64 value of exactly 32 raw bytes.")
+    nonce = base64.b64encode(os.urandom(16)).decode("ascii")
+    plaintext = json.dumps({"nonce": nonce, "timestamp": timestamp, "client_secret": client_secret}).encode("utf-8")
+    gcm_nonce = os.urandom(12)
+    ciphertext = AESGCM(encryption_key).encrypt(gcm_nonce, plaintext, None)
+    return base64.b64encode(gcm_nonce + ciphertext).decode("ascii")
+
+
+def build_scm_request_body(registration_id: str, encryption_key_b64: str, client_secret: Optional[str]) -> dict:
+    """Builds the SCM get_access_token request body with a bound inner/outer timestamp."""
+    timestamp = int(time.time())
+    signature = build_scm_signature(encryption_key_b64, client_secret, timestamp)
+    return {"registration_id": registration_id, "timestamp": timestamp, "signature": signature}
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
+    def __init__(
+        self,
+        token_retrieval_url,
+        registration_id,
+        use_ssl,
+        proxy,
+        refresh_token,
+        enc_key,
+        client_secret: Optional[str] = None,
+        auth_mode: str = AUTH_MODE_OPROXY,
+    ):
+        self.auth_mode = auth_mode
         headers = get_x_content_info_headers()
-        headers["Authorization"] = registration_id
+        if self.auth_mode == AUTH_MODE_OPROXY:
+            headers["Authorization"] = registration_id
         headers["Accept"] = "application/json"
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
         self.refresh_token = refresh_token
@@ -75,6 +134,7 @@ class Client(BaseClient):
         self.use_ssl = use_ssl
         self.use_fr_token_headers = bool(FEDRAMP_HOSTNAME_SUFFIX in token_retrieval_url)
         self.registration_id = registration_id
+        self.client_secret = client_secret
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
         self._set_access_token()
@@ -89,19 +149,26 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         valid_until = integration_context.get(EXPIRES_IN)
-        if access_token and valid_until and int(time.time()) < valid_until:
+        stored_auth_mode = (
+            integration_context.get(AUTH_MODE_CONST) or AUTH_MODE_OPROXY
+        )  # default to oproxy, since this field wasn't written before
+        auth_mode_matches = stored_auth_mode == self.auth_mode
+        if access_token and valid_until and int(time.time()) < valid_until and auth_mode_matches:
             self.access_token = access_token
             self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
             self.instance_id = integration_context.get(INSTANCE_ID_CONST)
             return
-        demisto.debug(f"access token time: {valid_until} expired/none. Will call oproxy")
-        access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
+        demisto.debug(f"access token time: {valid_until} expired/none (auth_mode={self.auth_mode}). Will authorize.")
+        access_token, api_url, instance_id, refresh_token, expires_in = (
+            self._scm_authorize() if self.auth_mode == AUTH_MODE_SCM else self._oproxy_authorize()
+        )
         integration_context.update(
             {
                 ACCESS_TOKEN_CONST: access_token,
                 EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
                 API_URL_CONST: api_url,
                 INSTANCE_ID_CONST: instance_id,
+                AUTH_MODE_CONST: self.auth_mode,
             }
         )
         if refresh_token:
@@ -111,7 +178,73 @@ class Client(BaseClient):
         self.api_url = api_url
         self.instance_id = instance_id
 
+    def _scm_authorize(self) -> tuple[Any, Any, Any, Any, int]:
+        """Authorizes against the SCM (Cortex GW) gateway and returns the same shape as _oproxy_authorize."""
+        body = build_scm_request_body(self.registration_id, self.enc_key, self.client_secret)
+        scm_url = get_scm_token_url()
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+        demisto.debug("CDL: authenticating via SCM (Cortex GW) auth mode")
+
+        try:
+            raw_response = self._http_request(
+                "POST",
+                full_url=scm_url,
+                json_data=body,
+                headers=headers,
+                timeout=(60 * 3, 60 * 3),
+                resp_type="response",
+            )
+        except DemistoException as e:
+            status_code = e.res.status_code if e.res is not None else None
+            demisto.debug(f"CDL SCM request failed with status_code={status_code}")
+            if status_code == 429:
+                raise DemistoException(
+                    "SCM rate limit exceeded (60 requests/min per registration_id) - try again shortly."
+                ) from e
+            if status_code == 401:
+                raise DemistoException(
+                    "SCM authentication failed (check Registration ID, Encryption Key, and Client Secret)."
+                ) from e
+            raise
+
+        raw_text = raw_response.text or ""
+        demisto.debug(
+            f"CDL SCM raw response status={raw_response.status_code} "
+            f"content_type={raw_response.headers.get('Content-Type')!r} "
+            f"content_length={raw_response.headers.get('Content-Length')!r} "
+            f"body_len={len(raw_text)} history={[h.status_code for h in raw_response.history]}"
+        )
+        if not raw_text.strip():
+            raise DemistoException(
+                f"SCM returned an empty response body (status={raw_response.status_code}, "
+                f"content_type={raw_response.headers.get('Content-Type')!r}). "
+                "Expected a JSON body with an access_token. Check the SCM token URL, redirects, and proxy settings."
+            )
+
+        try:
+            response = raw_response.json()
+        except ValueError as e:
+            # A non-JSON body here is an error body from the gateway
+            raise DemistoException(
+                f"SCM returned a non-JSON response (status={raw_response.status_code}): {raw_text[:200]!r}"
+            ) from e
+
+        access_token = response.get(ACCESS_TOKEN_CONST)
+        if not access_token:
+            raise DemistoException("Missing access_token in SCM response.")
+        expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
+        demisto.debug(f"CDL: SCM auth succeeded (expires_in={expires_in})")
+        api_url = DEFAULT_API_URL
+        instance_id = ""
+        refresh_token = None
+        return access_token, api_url, instance_id, refresh_token, expires_in
+
     def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Implements the legacy OProxy-based access-token retrieval.
+        """
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get("url")
@@ -128,8 +261,10 @@ class Client(BaseClient):
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
-        """Implements a backoff strategy for retrieving an access token.
-        Raises an exception if the call is within one of the time windows, otherwise fetches the access token
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Implements a backoff strategy for retrieving an access token.
+        Raises an exception if the call is within one of the time windows, otherwise fetches the access token.
 
         Returns: The oproxy response or raising a DemistoException
 
@@ -182,8 +317,10 @@ class Client(BaseClient):
                     raise DemistoException(err_msg.format(window - time_from_last_failure, "minutes"))
 
     def _get_access_token(self) -> dict:
-        """Performs an http request to oproxy-cdl access token endpoint
-        In case of failure, handles the error, otherwise reset the failure counters and return the response
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Performs an http request to oproxy-cdl access token endpoint.
+        In case of failure, handles the error, otherwise reset the failure counters and return the response.
 
         Returns: The oproxy response or raising a DemistoException
 
@@ -954,7 +1091,10 @@ def build_where_clause(args: dict) -> str:
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
-    """
+    """LEGACY OProxy authentication (DEPRECATED).
+
+    Encrypts the auth_id for the legacy OProxy token request. This is part of the legacy OProxy auth
+    path, DEPRECATED in favor of the SCM (Cortex GW) auth.
 
     Args:
         auth_id (str): auth_id from oproxy
@@ -1561,7 +1701,18 @@ def main():
     # If there's a stored token in integration context, it's newer than current
     refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
     enc_key = params.get("credentials_auth_key", {}).get("password") or params.get("auth_key")
-    if not enc_key or not refresh_token or not registration_id_and_url:
+    client_secret = params.get("credentials_client_secret", {}).get("password")
+    auth_mode = AUTH_MODE_SCM if client_secret else AUTH_MODE_OPROXY
+
+    demisto.debug(
+        f"CDL auth routing: auth_mode={auth_mode} client_secret_set={bool(client_secret)} "
+        f"enc_key_set={bool(enc_key)} refresh_token_set={bool(refresh_token)} "
+        f"registration_id_set={bool(registration_id_and_url)}"
+    )
+    if auth_mode == AUTH_MODE_SCM:
+        if not enc_key or not registration_id_and_url:
+            raise DemistoException("Registration ID, Encryption Key and Client Secret must be provided.")
+    elif not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException("Key, Token and ID must be provided.")
 
     use_ssl = not params.get("insecure", False)
@@ -1578,7 +1729,16 @@ def main():
         return
 
     token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+    client = Client(
+        token_retrieval_url,
+        registration_id,
+        use_ssl,
+        proxy,
+        refresh_token,
+        enc_key,
+        client_secret=client_secret,
+        auth_mode=auth_mode,
+    )
 
     try:
         if command == "test-module":
