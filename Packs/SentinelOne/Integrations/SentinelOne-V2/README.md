@@ -2293,7 +2293,7 @@ Updates the status for a group of UAM alerts. Relevant for API version 2.1.
 ### sentinelone-export-threat-events
 
 ***
-Exports the threat's events as a JSON File.
+Exports the threat's events as a JSON File.  Relevant for API version 2.1.
 
 #### Base Command
 
