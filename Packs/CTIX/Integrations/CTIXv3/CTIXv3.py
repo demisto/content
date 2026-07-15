@@ -1516,7 +1516,7 @@ def parse_cyware_indicator(
         isfalsepositive=cyware_data.get("is_false_positive"),
         isdeprecated=cyware_data.get("is_deprecated"),
         isreviewed=cyware_data.get("is_reviewed"),
-        iswhitelisted=cyware_data.get("is_whitelisted"),
+        iswhitelisted=cyware_data.get("is_whitelist"),
         isrevoked=cyware_data.get("is_revoked"),
     )
     if hash_fields:
