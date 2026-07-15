@@ -246,9 +246,11 @@ def test_get_assets_api_error_raises():
     mock_resp.ok = False
     mock_resp.status_code = 403
     mock_resp.text = "Forbidden"
-    with patch("Axonius.make_api_call", return_value=mock_resp):
-        with pytest.raises(DemistoException, match="HTTP 403"):
-            get_assets({"asset_type": "devices"})
+    with (
+        patch("Axonius.make_api_call", return_value=mock_resp),
+        pytest.raises(DemistoException, match="HTTP 403")
+    ):
+        get_assets({"asset_type": "devices"})
 
 
 # ---------------------------------------------------------------------------
