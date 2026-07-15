@@ -328,12 +328,14 @@ Search using ES|QL query (Elasticsearch 8.11 and above).
 
 #### Human Readable Output
 
->### Search query:
+>### Search query
+>
 >|Query|Total|
 >|---|---|
 >| FROM logs-* \| WHERE host.name == "web-01" \| LIMIT 5 | 1 |
 >
->### Results:
+>### Results
+>
 >|@timestamp|host.name|message|
 >|---|---|---|
 >| 2024-01-15T10:23:45.000Z | web-01 | Connection established |
@@ -390,6 +392,7 @@ Retrieves the health of the Kibana alerting framework.
 #### Human Readable Output
 
 >### Kibana Alerting Framework Health
+>
 >|Is sufficiently secure|Has permanent encryption key|Decryption status|Execution status|Read status|
 >|---|---|---|---|---|
 >| true | true | ok | ok | ok |
@@ -446,6 +449,7 @@ Retrieves all rule types available in Kibana.
 #### Human Readable Output
 
 >### Kibana Rule Types
+>
 >|Rule type ID|Name|Category|Producer|Action Group Id|
 >|---|---|---|---|---|
 >| .index-threshold | Index threshold | management | stackAlerts | threshold met, recovered |
@@ -513,6 +517,7 @@ Retrieves information about rules.
 #### Human Readable Output
 
 >### Kibana Rules
+>
 >|Rule ID|Enabled|Name|Type ID|Creation date|
 >|---|---|---|---|---|
 >| 1234 | true | CPU threshold alert | .index-threshold | 2024-01-10T08:00:00.000Z |
@@ -772,6 +777,7 @@ Set the status of one or more detection alerts.
 #### Human Readable Output
 
 >### Kibana Detection Alert Status Update
+>
 >|Total|Updated|
 >|---|---|
 >| 2 | 2 |
@@ -865,6 +871,7 @@ Creates a new case in Kibana.
 #### Human Readable Output
 
 >### Kibana Case
+>
 >|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
 >|---|---|---|---|---|---|---|---|
 >| Suspicious login | 1234 | Multiple failed logins detected | securitySolution | medium | open | 2024-01-15T10:00:00.000Z | .none |
@@ -961,6 +968,7 @@ Update cases in Kibana.
 #### Human Readable Output
 
 >### Kibana Case(s) Updated
+>
 >|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
 >|---|---|---|---|---|---|---|---|
 >| Suspicious login - updated | 1234 | Multiple failed logins detected | securitySolution | high | open | 2024-01-15T10:00:00.000Z | .none |
@@ -1074,6 +1082,7 @@ Retrieves the details of Kibana cases.
 #### Human Readable Output
 
 >### Kibana Cases
+>
 >|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
 >|---|---|---|---|---|---|---|---|
 >| Suspicious login | 1234 | Multiple failed logins detected | securitySolution | medium | open | 2024-01-15T10:00:00.000Z | .none |
@@ -1133,6 +1142,7 @@ Retrieves all alerts for a case.
 #### Human Readable Output
 
 >### Alerts for Case 1234
+>
 >|Case id|Attached at|Alert id|Index|
 >|---|---|---|---|
 >| 1234 | 2024-01-15T11:00:00.000Z | 5678 | .alerts-security.alerts-default |
@@ -1195,6 +1205,7 @@ Add a case comment or alert.
 #### Human Readable Output
 
 >### Kibana Case Comment Added
+>
 >|Case id|Comment|Created by|
 >|---|---|---|
 >| 1234 | Investigated and confirmed malicious activity. | analyst |
@@ -1262,6 +1273,7 @@ Update a case comment or alert.
 #### Human Readable Output
 
 >### Kibana Case Comment Updated
+>
 >|Case id|Comment|Updated by|Updated at|
 >|---|---|---|---|
 >| 1234 | Updated: confirmed false positive. | analyst | 2024-01-15T12:00:00.000Z |
@@ -1416,6 +1428,7 @@ Create an Elastic Endpoint exception list item, and associate it with the Elasti
 #### Human Readable Output
 
 >### Kibana Endpoint Exception List Item
+>
 >|ID|Item ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|---|
 >| 1234 | trusted-process-1 | endpoint_list | Trusted process | Allow known safe process | 2024-01-15T10:00:00.000Z |
@@ -1487,6 +1500,7 @@ Update an Elastic Endpoint exception list item.
 #### Human Readable Output
 
 >### Kibana Endpoint Exception List Item
+>
 >|ID|Item ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|---|
 >| 1234 | trusted-process-1 | endpoint_list | Trusted process updated | Updated description | 2024-01-15T10:00:00.000Z |
@@ -1585,6 +1599,7 @@ Retrieves Elastic Endpoint exception list items.
 #### Human Readable Output
 
 >### Kibana Endpoint Exception List Items
+>
 >|ID|Item ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|---|
 >| 1234 | trusted-process-1 | endpoint_list | Trusted process | Allow known safe process | 2024-01-15T10:00:00.000Z |
@@ -1649,6 +1664,7 @@ Get a list of all exception list containers.
 #### Human Readable Output
 
 >### Kibana Exception Lists
+>
 >|Exception list ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|
 >| 1234 | my-exception-list | My Exception List | Exceptions for trusted processes | 2024-01-15T10:00:00.000Z |
@@ -1713,6 +1729,7 @@ Create an exception list.
 #### Human Readable Output
 
 >### Kibana Exception List
+>
 >|Exception list ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|
 >| 1234 | my-exception-list | My Exception List | Exceptions for trusted processes | 2024-01-15T10:00:00.000Z |
@@ -1778,6 +1795,7 @@ Updates an existing exception list.
 #### Human Readable Output
 
 >### Kibana Exception List
+>
 >|Exception list ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|
 >| 1234 | my-exception-list | My Exception List Updated | Updated description | 2024-01-15T10:00:00.000Z |
@@ -1882,6 +1900,7 @@ Get a list of all exception list items in the specified list.
 #### Human Readable Output
 
 >### Kibana Exception List Items
+>
 >|ID|Item ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|---|
 >| 1234 | my-item-1 | my-exception-list | Trusted IP | Known safe IP address | 2024-01-15T10:00:00.000Z |
@@ -1956,6 +1975,7 @@ Create an exception item and associate it with the specified exception list.
 #### Human Readable Output
 
 >### Kibana Exception List Item
+>
 >|ID|Item ID|List ID|Name|Description|Creation date|
 >|---|---|---|---|---|---|
 >| 1234 | my-item-1 | my-exception-list | Trusted IP | Known safe IP address | 2024-01-15T10:00:00.000Z |
@@ -2033,6 +2053,7 @@ Updates an existing exception list item.
 #### Human Readable Output
 
 >### Kibana Exception List Item Updated
+>
 >|Exception list item ID|Item Id|List ID|Name|Description|Update date|
 >|---|---|---|---|---|---|
 >| 1234 | my-item-1 | my-exception-list | Trusted IP updated | Updated safe IP | 2024-01-15T12:00:00.000Z |
@@ -2130,6 +2151,7 @@ Retrieves details of a value list (the list container).
 #### Human Readable Output
 
 >### Kibana Value Lists
+>
 >|Value list ID|Name|Description|Creation date|
 >|---|---|---|---|
 >| 1234 | trusted-ips | List of trusted IP addresses | 2024-01-15T10:00:00.000Z |
@@ -2194,6 +2216,7 @@ Retrieves value list items.
 #### Human Readable Output
 
 >### Kibana Value List Items
+>
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 192.168.1.1 | 2024-01-15T10:00:00.000Z |
@@ -2251,6 +2274,7 @@ Adds a new item to a value list.
 #### Human Readable Output
 
 >### Kibana Value List Item
+>
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
@@ -2308,6 +2332,7 @@ Updates an existing value list item.
 #### Human Readable Output
 
 >### Kibana Value List Item
+>
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.2 | 2024-01-15T10:00:00.000Z |
@@ -2436,6 +2461,7 @@ Import value list items from a TXT or CSV file.
 #### Human Readable Output
 
 >### Kibana Value List Item
+>
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
