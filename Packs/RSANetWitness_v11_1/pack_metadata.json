@@ -16,7 +16,7 @@
     "dependencies": {
         "RsaNetWitnessPacketsAndLogs": {
             "mandatory": false,
-            "minVersion": "1.0.6",
+            "minVersion": "1.0.11",
             "author": "Cortex XSOAR",
             "name": "RSA NetWitness Packets and Logs",
             "certification": "certified"
