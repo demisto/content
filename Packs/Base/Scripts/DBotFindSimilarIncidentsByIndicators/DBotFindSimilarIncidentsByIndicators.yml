@@ -32,7 +32,7 @@ args:
   name: fromDate
 - description: Argument for the query of similar incidents.
   name: query
-comment: Finds similar incidents based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
+comment: Finds similar incidents based s on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
 commonfields:
   id: DBotFindSimilarIncidentsByIndicators
   version: -1
