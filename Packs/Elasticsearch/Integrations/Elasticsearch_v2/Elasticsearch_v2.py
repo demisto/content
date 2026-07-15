@@ -2351,7 +2351,7 @@ def es_kibana_detection_alert_status_set_command(args: Dict[str, Any], proxies) 
     signal_ids = argToList(args.get("signal_ids"))
     if signal_ids:
         body["signal_ids"] = signal_ids
-    query_dict = safe_load_json(args.get("query"))
+    query_dict = safe_load_json(args.get("query")) if args.get("query") else None
     if query_dict:
         body["query"] = query_dict
     if args.get("reason"):
