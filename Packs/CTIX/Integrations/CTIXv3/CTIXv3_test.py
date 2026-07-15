@@ -2100,6 +2100,11 @@ class TestFetchIndicators:
         page2 = util_load_json("test_data/fetch_indicators_result_set.json")
         page1["next"] = "https://example.com/ctixapi/ingestion/rules/save_result_set/?page=2&page_size=100"
         page2["next"] = None
+        # Give page 2 distinct ids so cross-page id-dedup does not collapse the two pages;
+        # this test validates that two pages combine their distinct items, not dedup.
+        for result_set in page2["results"]:
+            for ind in result_set["data"]:
+                ind["id"] = f"{ind['id']}-p2"
 
         requests_mock.get(
             f"{BASE_URL}ingestion/rules/save_result_set/",
@@ -2177,14 +2182,15 @@ class TestFetchIndicators:
         assert abs(from_ts - expected_low) <= 5
 
     def test_deduplication(self, requests_mock):
-        """Test that duplicate indicators from the saved result set are preserved.
+        """Test that indicators with distinct ids are all kept.
 
-        Deduplication is performed later when indicators are submitted to XSOAR
-        (e.g. via demisto.createIndicators). The fetch_indicators function
-        intentionally returns all collected items from the saved result set.
+        Source-side dedup keys on the inner ``id``. This duplicate is given a *new*
+        id, so it is a distinct indicator and must survive; only same-id occurrences
+        are collapsed (see the dedicated same-id tests). XSOAR's value-based upsert in
+        demisto.createIndicators still applies on top at submission time.
         """
         mock_response = util_load_json("test_data/fetch_indicators_result_set.json")
-        # Add a duplicate indicator to the data
+        # Clone an indicator but give it a distinct id -> distinct indicator, kept.
         dup_indicator = dict(mock_response["results"][0]["data"][0])
         dup_indicator["id"] = "ind-dup-001"
         mock_response["results"][0]["data"].append(dup_indicator)
@@ -2208,8 +2214,111 @@ class TestFetchIndicators:
 
         next_run, indicators = fetch_indicators(client, params, {})
 
-        # Deduplication is delegated to demisto.createIndicators; fetch_indicators returns all
+        # Distinct ids are all kept (4 original + 1 with a new id).
         assert len(indicators) == 5
+
+    def test_same_id_higher_ctix_modified_wins(self, requests_mock):
+        """Two occurrences of one id: the one with the higher ctix_modified wins."""
+        mock_response = util_load_json("test_data/fetch_indicators_result_set.json")
+        base = dict(mock_response["results"][0]["data"][0])  # an IP indicator with a value
+
+        older = dict(base)
+        older["ctix_modified"] = 1700000000
+        older["ctix_score"] = 85
+        older["confidence_score"] = 85
+        older["tags"] = ["old-tag"]
+
+        newer = dict(base)
+        newer["ctix_modified"] = 1700009999
+        newer["ctix_score"] = 40
+        newer["confidence_score"] = 40
+        newer["tags"] = ["new-tag"]
+
+        # Both occurrences in a single result set, older first.
+        mock_response["results"] = [{"data": [older, newer]}]
+        requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/", json=mock_response)
+
+        client = Client(base_url=BASE_URL, access_id=ACCESS_ID, secret_key=SECRET_KEY, verify=False, timeout=15, proxies={})
+        params = {"first_fetch": "4320", "retrieve_enriched_data": False, "integrationReliability": "C - Fairly reliable"}
+
+        _, indicators = fetch_indicators(client, params, {})
+
+        assert len(indicators) == 1
+        assert indicators[0]["fields"]["confidence"] == 40
+        assert indicators[0]["fields"]["tags"] == ["new-tag"]
+
+    def test_same_id_tied_ctix_modified_keeps_last(self, requests_mock):
+        """Same id, identical ctix_modified, different content: the last occurrence wins.
+
+        Mirrors the real saved-result-set case where an indicator recurs with a frozen
+        ctix_modified but changing tags / is_deprecated.
+        """
+        mock_response = util_load_json("test_data/fetch_indicators_result_set.json")
+        base = dict(mock_response["results"][0]["data"][0])
+
+        first = dict(base)
+        first["ctix_modified"] = 1700000000
+        first["is_deprecated"] = False
+        first["tags"] = ["first"]
+
+        last = dict(base)
+        last["ctix_modified"] = 1700000000  # identical -> tie
+        last["is_deprecated"] = True
+        last["tags"] = ["last"]
+
+        mock_response["results"] = [{"data": [first, last]}]
+        requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/", json=mock_response)
+
+        client = Client(base_url=BASE_URL, access_id=ACCESS_ID, secret_key=SECRET_KEY, verify=False, timeout=15, proxies={})
+        params = {"first_fetch": "4320", "retrieve_enriched_data": False, "integrationReliability": "C - Fairly reliable"}
+
+        _, indicators = fetch_indicators(client, params, {})
+
+        assert len(indicators) == 1
+        assert indicators[0]["fields"]["isdeprecated"] is True
+        assert indicators[0]["fields"]["tags"] == ["last"]
+
+    def test_dedup_spans_pages(self, requests_mock):
+        """A duplicate id appearing on page 1 and page 2 collapses to one, keeping the fresher one."""
+        page1 = util_load_json("test_data/fetch_indicators_result_set.json")
+        page2 = util_load_json("test_data/fetch_indicators_result_set.json")
+        base = dict(page1["results"][0]["data"][0])
+
+        older = dict(base)
+        older["ctix_modified"] = 1700000000
+        older["ctix_score"] = 85
+        older["confidence_score"] = 85
+        older["tags"] = ["page1"]
+
+        newer = dict(base)
+        newer["ctix_modified"] = 1700009999
+        newer["ctix_score"] = 40
+        newer["confidence_score"] = 40
+        newer["tags"] = ["page2"]
+
+        page1["results"] = [{"data": [older]}]
+        page1["next"] = "https://example.com/ctixapi/ingestion/rules/save_result_set/?page=2&page_size=100"
+        page2["results"] = [{"data": [newer]}]
+        page2["next"] = None
+
+        requests_mock.get(
+            f"{BASE_URL}ingestion/rules/save_result_set/",
+            [{"json": page1}, {"json": page2}],
+        )
+
+        client = Client(base_url=BASE_URL, access_id=ACCESS_ID, secret_key=SECRET_KEY, verify=False, timeout=15, proxies={})
+        params = {
+            "first_fetch": "4320",
+            "retrieve_enriched_data": False,
+            "integrationReliability": "C - Fairly reliable",
+            "feedFetchInterval": "12 hours",
+        }
+
+        _, indicators = fetch_indicators(client, params, {})
+
+        assert len(indicators) == 1
+        assert indicators[0]["fields"]["confidence"] == 40
+        assert indicators[0]["fields"]["tags"] == ["page2"]
 
     def test_empty_result_set(self, requests_mock):
         requests_mock.get(

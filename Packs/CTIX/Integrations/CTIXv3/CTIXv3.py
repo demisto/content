@@ -1792,6 +1792,21 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
     return _store_completed_fetch_state(last_run, state_keys), incidents
 
 
+def _add_deduped_indicator(store: dict[str, dict], ind: dict) -> None:
+    """Keep the freshest occurrence of each indicator, keyed by inner ``id``.
+
+    Recency is judged by ``ctix_modified`` (CTIX's own last-touched timestamp), not the
+    source-provided ``modified``, which does not update on CTIX-side changes (tags/score).
+    On a ``ctix_modified`` tie the later occurrence encountered wins, matching the
+    ascending order in which the API delivers result sets. ``id`` is mandatory on
+    saved_result_set ``data[]`` entries, so it is used directly as the key.
+    """
+    ind_id = ind["id"]
+    existing = store.get(ind_id)
+    if existing is None or (ind.get("ctix_modified") or 0) >= (existing.get("ctix_modified") or 0):
+        store[ind_id] = ind
+
+
 def _collect_saved_result_set_indicators(
     client: Client,
     from_timestamp: int,
@@ -1806,9 +1821,18 @@ def _collect_saved_result_set_indicators(
     Uses the existing ``client.saved_result_set()`` method.
     All object types returned by the API are collected; type normalisation into the
     correct XSOAR indicator type is handled downstream by ``parse_cyware_indicator``.
-    Deduplication is intentionally delegated to ``demisto.createIndicators`` at submission time.
+
+    Indicators are deduplicated here by inner ``id`` (a stable per-indicator UUID),
+    keeping the occurrence with the highest ``ctix_modified`` (CTIX's own last-touched
+    timestamp) so the freshest snapshot wins deterministically across pages and across
+    the createIndicators batch boundary. XSOAR's value-based upsert in
+    ``demisto.createIndicators`` still applies on top for distinct ids that share a value.
     """
-    all_indicators: list[dict] = []
+    all_indicators: dict[str, dict] = {}
+
+    def _deduped_list() -> list[dict]:
+        return list(all_indicators.values())
+
     page_size = PAGE_SIZE
     current_page_number = page_number
     pages_processed = 0
@@ -1825,7 +1849,7 @@ def _collect_saved_result_set_indicators(
         )
     except DemistoException as e:
         demisto.error(f"CTIX fetch_indicators: Error at initial request: {e}")
-        return all_indicators, current_page_number, False
+        return _deduped_list(), current_page_number, False
 
     while response and pages_processed < iteration_threshold:
         data = response.get("data", {}) if response else {}
@@ -1833,20 +1857,20 @@ def _collect_saved_result_set_indicators(
 
         if not result_sets:
             demisto.debug("CTIX fetch_indicators: No more results")
-            return all_indicators, current_page_number, True
+            return _deduped_list(), current_page_number, True
 
         for result_set in result_sets:
             indicators_data = result_set.get("data", [])
             if not indicators_data:
                 continue
             for ind in indicators_data:
-                all_indicators.append(ind)
+                _add_deduped_indicator(all_indicators, ind)
 
         # Move to the next page for pagination
         next_url = data.get("next")
         pages_processed += 1
         if not next_url:
-            return all_indicators, current_page_number, True
+            return _deduped_list(), current_page_number, True
 
         current_page_number += 1
         if pages_processed >= iteration_threshold:
@@ -1854,7 +1878,7 @@ def _collect_saved_result_set_indicators(
                 f"CTIX fetch_indicators: Iteration threshold reached at page_number={current_page_number}, "
                 "saving checkpoint for next run"
             )
-            return all_indicators, current_page_number, False
+            return _deduped_list(), current_page_number, False
 
         try:
             response = execute_with_retry(
@@ -1869,11 +1893,11 @@ def _collect_saved_result_set_indicators(
         except DemistoException as e:
             if RATE_LIMIT_STATUS_ERR in str(e):
                 demisto.error(f"CTIX fetch_indicators: Rate limit hit again during pagination: {e}")
-                return all_indicators, current_page_number, False
+                return _deduped_list(), current_page_number, False
             demisto.error(f"CTIX fetch_indicators: Error following next page: {e}")
-            return all_indicators, current_page_number, False
+            return _deduped_list(), current_page_number, False
 
-    return all_indicators, current_page_number, False
+    return _deduped_list(), current_page_number, False
 
 
 def _merge_enrichment_into_indicators(
