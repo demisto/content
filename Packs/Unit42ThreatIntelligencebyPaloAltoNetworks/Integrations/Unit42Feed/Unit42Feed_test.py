@@ -12,7 +12,6 @@ from Unit42Feed import (
     sort_indicator_types_by_priority,
     fetch_indicator_type,
     fetch_threat_objects_with_limit,
-    push_indicators_in_batches,
     calculate_limit_per_type,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,

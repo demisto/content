@@ -938,7 +938,9 @@ def fetch_indicator_type(
 
         total_fetched += len(page_indicators)
 
-        demisto.debug(f"UNIT42FEED: Parsed and pushed {len(page_indicators)} {indicator_type} indicators (total: {total_fetched})")
+        demisto.debug(
+            f"UNIT42FEED: Parsed and pushed {len(page_indicators)} {indicator_type} indicators (total: {total_fetched})"
+        )
 
         # Check for next page
         metadata = response.get("metadata", {})
