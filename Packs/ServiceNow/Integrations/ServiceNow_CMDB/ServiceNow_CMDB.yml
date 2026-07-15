@@ -7,7 +7,7 @@ commonfields:
   id: ServiceNow CMDB
   version: -1
 configuration:
-- display: ServiceNow URL, in the format https://company.service-now.com/
+- display: ServiceNow URL, in the test format https://company.service-now.com/
   name: url
   required: true
   type: 0
