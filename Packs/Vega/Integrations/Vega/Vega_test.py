@@ -1101,10 +1101,10 @@ def test_format_bullet_list():
 def test_format_key_findings_html_dark_theme_layout():
     findings = [
         "Suspicious activity from 10.0.0.1",
-        "Domain example.com contacted by host",
+        "Domain test-observable contacted by host",
     ]
     assets = ["10.0.0.1"]
-    observables = ["example.com"]
+    observables = ["test-observable"]
 
     result = _format_key_findings_html(findings, assets, observables)
 
@@ -1113,7 +1113,7 @@ def test_format_key_findings_html_dark_theme_layout():
     assert "See Investigation" not in result
     assert "border-radius:999px" in result
     assert "10.0.0.1" in result
-    assert "example.com" in result
+    assert "test-observable" in result
     assert ">1</div>" in result
     assert ">2</div>" in result
     assert "border-bottom:1px solid #333333" in result

@@ -18,9 +18,14 @@
     ],
     "keywords": [
         "Alerts",
-        "Incidents"
+        "Incidents",
+        "Vega"
     ],
-    "githubUser": [],
+    "githubUser": [
+        "sumitk-metron",
+        "alakeshk-metron",
+        "kapil-metron"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
