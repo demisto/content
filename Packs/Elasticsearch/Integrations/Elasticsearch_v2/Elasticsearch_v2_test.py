@@ -1632,7 +1632,6 @@ class TestKibanaHttpRequest:
 
     @pytest.fixture(autouse=True)
     def setup(self, mocker):
-
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment.es.us-central1.gcp.cloud.es.io")
         mocker.patch("Elasticsearch_v2.get_kibana_auth_headers", return_value={"Authorization": "Basic dXNlcjpwYXNz"})
         mocker.patch("Elasticsearch_v2.INSECURE", True)
