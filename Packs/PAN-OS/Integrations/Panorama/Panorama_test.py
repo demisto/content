@@ -3540,11 +3540,11 @@ class TestUniversalCommand:
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
         """Given the output XML for show system info, assert it is parsed into the dataclasses correctly."""
-        from Panorama import UniversalCommand
+        import Panorama
 
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
 
-        result = UniversalCommand.get_system_info(mock_topology)
+        result = Panorama.UniversalCommand.get_system_info(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
             for value in result_dataclass.__dict__.values():
@@ -3554,6 +3554,35 @@ class TestUniversalCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
+
+    def test_get_system_info_ignores_platform_injected_args(self, mocker):
+        """
+        Regression (CRTX-240383): when the command is invoked with a brand-scoped context
+        (e.g. as an Agentix action), the platform injects a 'using-brand' arg. The
+        pan-os-platform-get-system-info handler must not forward it to the typed
+        get_system_info() function (which would raise 'unexpected keyword argument').
+        """
+        import Panorama
+
+        mocker.patch.object(Panorama, "get_topology", return_value=MagicMock())
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"device_filter_string": "fw1", "target": "007", "using-brand": "Panorama"},
+        )
+        mocker.patch.object(demisto, "command", return_value="pan-os-platform-get-system-info")
+        mocker.patch.object(demisto, "params", return_value=integration_firewall_params)
+        get_system_info_mock = mocker.patch.object(Panorama, "get_system_info", return_value=MagicMock())
+        mocker.patch.object(Panorama, "dataclasses_to_command_results", return_value=MagicMock())
+        mocker.patch.object(Panorama, "return_results")
+
+        Panorama.main()
+
+        # Must have been called without raising, and without the platform-injected key.
+        get_system_info_mock.assert_called_once()
+        _, kwargs = get_system_info_mock.call_args
+        assert "using-brand" not in kwargs
+        assert kwargs == {"device_filter_string": "fw1", "target": "007"}
 
     def test_get_available_software(self, mock_topology):
         """
@@ -3869,6 +3898,7 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(requests, "request", return_value=request_result)
     command_result: CommandResults = apply_dns_signature_policy_command(args)
 
@@ -3891,6 +3921,7 @@ def test_panorama_apply_dns_command2(mocker):
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(Panorama, "http_request", return_value={})
     apply_dns_signature_policy_command({"anti_spyware_profile_name": "fake_profile_name"})
 
