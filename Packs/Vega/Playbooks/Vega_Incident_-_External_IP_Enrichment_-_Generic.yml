@@ -1,5 +1,5 @@
 id: Vega Incident - External IP Enrichment - Generic
-version: 26
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Vega Incident - External IP Enrichment - Generic
 fromversion: 6.10.0
@@ -19,8 +19,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      "#none#":
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -57,8 +57,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "3"
+      "#none#":
+        - "3"
     scriptarguments:
       ExecutedFromParent:
         simple: "False"
@@ -67,27 +67,27 @@ tasks:
           root: IP
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
       InternalRange:
         complex:
           root: lists
           accessor: PrivateIPs
           transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-              unpack_matches: {}
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+                unpack_matches: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ","
       ResolveIP:
         simple: "True"
       UseReputationCommand:
