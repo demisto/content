@@ -5536,7 +5536,7 @@ def parse_key_value_pairs(key_value_pairs: str | None) -> dict[str, Any]:
     return parsed
 
 
-def get_configuration_file(service: client.Service, conf_file_name: str):
+def get_configuration_file(service: client.Service, conf_file_name: str) -> client.ConfigurationFile:
     """Returns the ConfigurationFile object for the given conf file name, raising a clear error if not found."""
     try:
         return service.confs[conf_file_name]
@@ -5547,7 +5547,9 @@ def get_configuration_file(service: client.Service, conf_file_name: str):
 def splunk_configuration_file_list(service: client.Service, args: dict[str, Any]) -> CommandResults:
     """Lists the configuration (.conf) files available in the given Splunk app namespace."""
     app = args.get("app", "search")
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit"))
+    if limit is None:
+        limit = 50
     conf_files = [{"FileName": conf.name, "App": app} for conf in service.confs.list(count=limit)]
     readable_output = tableToMarkdown(
         name=f"Configuration files in app '{app}'", t=conf_files, headers=["FileName", "App"], removeNull=True
@@ -5589,7 +5591,9 @@ def splunk_configuration_stanza_list(service: client.Service, args: dict[str, An
     stanza_name = args.get("stanza_name")
     app = args.get("app", "search")
     owner = args.get("owner", "nobody")
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit"))
+    if limit is None:
+        limit = 50
     conf_file = get_configuration_file(service, conf_file_name)
 
     if stanza_name:
