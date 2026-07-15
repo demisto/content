@@ -33,6 +33,14 @@ HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
+# Automatic stuck-host recovery for the assets fetch:
+# Some hosts return a detection page so large/slow that the Qualys API cannot deliver it within the
+# execution timeout even at truncation_limit=1. Because the limit is already at its floor (1), the
+# normal limit-halving retry cannot help, so the fetch keeps re-requesting the same host forever and
+# the snapshot never progresses. To self-heal, we count consecutive timed-out runs that are stuck on
+# the SAME cursor at limit=1; once the count reaches ASSETS_STUCK_HOST_MAX_RETRIES, we advance the
+# cursor past the problematic host (id_min = host_id + 1) so the snapshot can progress and close.
+ASSETS_STUCK_HOST_MAX_RETRIES = 3
 QIDS_BATCH_SIZE = 500
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
@@ -3237,6 +3245,82 @@ def fetch_assets(client: Client, assets_last_run):
     return assets, new_last_run, amount_to_report, snapshot_id, set_new_limit
 
 
+def advance_cursor_past_stuck_host(last_run: dict) -> Optional[dict]:
+    """Automatically recover the assets fetch when it is stuck on a single problematic host.
+
+    Some hosts return a detection page so large/slow that the Qualys API cannot deliver it within the
+    execution timeout even at `truncation_limit=1`. Because the limit is already at its floor (1), the
+    normal limit-halving retry cannot help, so the fetch keeps re-requesting the SAME host forever and
+    the assets snapshot never progresses or closes.
+
+    This function detects that situation automatically (no configuration required): it counts how many
+    consecutive timed-out runs have been stuck on the same cursor (`next_page`/`id_min`) while already
+    at the minimum limit. Once that count reaches `ASSETS_STUCK_HOST_MAX_RETRIES`, it advances the
+    cursor past the problematic host (`id_min = host_id + 1`) so the fetch can continue and the snapshot
+    can complete. Every decision is logged clearly (debug while counting, warning when skipping).
+
+    Args:
+        last_run (dict): Last assets run dictionary (the run that just timed out).
+
+    Returns:
+        Optional[dict]: An updated last-run dict advanced past the stuck host when the retry threshold is
+        reached; otherwise None, in which case the caller should fall back to the normal limit-halving
+        behavior (which also increments the stuck-run counter via this function's side effect on the
+        returned/normal last_run).
+    """
+    next_page = last_run.get("next_page")
+    current_limit = int(last_run.get("limit", HOST_LIMIT))
+
+    # The stuck condition can only occur once we are already at the minimum limit (1) and still paginating.
+    if not next_page or current_limit > 1:
+        return None
+
+    # Count consecutive timed-out runs stuck on the same cursor.
+    previous_stuck_page = last_run.get("stuck_host_page")
+    if previous_stuck_page == next_page:
+        stuck_count = int(last_run.get("stuck_host_count", 0)) + 1
+    else:
+        stuck_count = 1
+
+    if stuck_count < ASSETS_STUCK_HOST_MAX_RETRIES:
+        demisto.debug(
+            f"Assets fetch appears stuck on host id_min={next_page} at limit=1 "
+            f"(consecutive timed-out attempts: {stuck_count}/{ASSETS_STUCK_HOST_MAX_RETRIES}). "
+            f"Will retry before auto-skipping."
+        )
+        # Record the stuck state so the counter persists across runs; let the caller do the normal halving.
+        last_run["stuck_host_page"] = next_page
+        last_run["stuck_host_count"] = stuck_count
+        return None
+
+    # Threshold reached: advance the cursor past the problematic host so the snapshot can progress.
+    try:
+        new_cursor = str(int(next_page) + 1)
+    except (TypeError, ValueError):
+        demisto.debug(
+            f"Assets fetch is stuck on host id_min={next_page!r} but it could not be parsed as an integer; "
+            f"cannot auto-advance the cursor. Falling back to normal retry behavior."
+        )
+        return None
+
+    demisto.info(
+        f"Assets fetch has been stuck on host id_min={next_page} at limit=1 for "
+        f"{stuck_count} consecutive timed-out attempts (threshold: {ASSETS_STUCK_HOST_MAX_RETRIES}). "
+        f"This host's Qualys detection page cannot be retrieved within the execution timeout. "
+        f"Auto-advancing the cursor past it (id_min {next_page} -> {new_cursor}) so the snapshot can progress. "
+        f"NOTE: this single host will be MISSING from the current assets snapshot."
+    )
+    new_last_run = dict(last_run)
+    new_last_run["next_page"] = new_cursor
+    new_last_run["limit"] = HOST_LIMIT  # Reset limit so the next iteration resumes at full speed past the skipped host
+    new_last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
+    new_last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    # Clear the stuck-tracking state now that we have moved past the host.
+    new_last_run.pop("stuck_host_page", None)
+    new_last_run.pop("stuck_host_count", None)
+    return new_last_run
+
+
 def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
     """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
     This instructs the server to immediately trigger the next assets fetch iteration.
@@ -3510,12 +3594,22 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             demisto.debug("Finished fetch for assets.")
 
         if set_new_limit:
-            demisto.debug(
-                f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
-                f"Set new limit: {set_new_limit}. Elapsed time: {time.time() - EXECUTION_START_TIME}."
-            )
-            new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
+            # Try to auto-recover if we are stuck on a single host that can't be fetched within the timeout.
+            # advance_cursor_past_stuck_host also increments the stuck-run counter on `last_run` (side effect)
+            # while below the retry threshold, so the count persists into the normal limit-halving path below.
+            skip_last_run = advance_cursor_past_stuck_host(last_run)
+            if skip_last_run is not None:
+                new_last_run = skip_last_run
+            else:
+                demisto.debug(
+                    f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
+                    f"Set new limit: {set_new_limit}. Elapsed time: {time.time() - EXECUTION_START_TIME}."
+                )
+                new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
         else:
+            # The fetch made progress this run, so clear any stuck-host tracking state.
+            new_last_run.pop("stuck_host_page", None)
+            new_last_run.pop("stuck_host_count", None)
             cumulative_assets_count: int = new_last_run["total_assets"]
             is_last_page = not new_last_run.get("next_page")
             demisto.debug(
@@ -3613,6 +3707,12 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+
+    # Version marker to verify the customer is running this patched build (auto stuck-host skip for assets fetch).
+    demisto.debug(
+        f"QualysV2 running build with auto stuck-host-skip for assets fetch "
+        f"(ASSETS_STUCK_HOST_MAX_RETRIES={ASSETS_STUCK_HOST_MAX_RETRIES}). Command: {command}."
+    )
 
     base_url = params.get("url")
     verify_certificate = not params.get("insecure", False)
