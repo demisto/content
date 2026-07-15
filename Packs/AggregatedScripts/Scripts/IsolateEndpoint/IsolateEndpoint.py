@@ -56,7 +56,7 @@ def initialize_commands() -> list:
     """
     commands = [
         Command(
-            # On platform, we use the core-content-module builtin commands and brand Builtin
+            # On platform, we use the built-in commands and brand Builtin
             brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
             name="isolateEndpoint" if is_platform() else "core-isolate-endpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},
