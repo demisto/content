@@ -110,5 +110,5 @@ To view logs concerning the creation of the indicator list and its current statu
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 </~XSOAR_ON_PREM>
 <~XSIAM>
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the url with `crtx`.
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
 </~XSIAM>
