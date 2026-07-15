@@ -616,7 +616,7 @@ class Client(BaseClient):
 
         request_body = {
             APIKeys.QUERY.value: {
-                APIKeys.PAGE_SIZE.value: DefaultValues.PAGE_SIZE.value,
+                APIKeys.PAGE_SIZE.value: int(DefaultValues.PAGE_SIZE.value),
                 APIKeys.FILTER_MODEL.value: filter_model,
                 APIKeys.SORT_MODEL.value: sort_model,
             }
