@@ -1173,6 +1173,8 @@ def wipe_actions_list_command(args, client) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
+    prefix = "[absolute-wipe-actions-list]"
+    demisto.debug(f"{prefix} {args=}")
     request_uid = args.get("request_uid")
     device_uids = argToList(args.get("device_uids"))
     next_page = args.get("page")
@@ -1183,6 +1185,8 @@ def wipe_actions_list_command(args, client) -> CommandResults:
 
     query_string = prepare_wipe_request_query(args, "actionStatus", next_page=next_page, page_size=limit)
     if request_uid:
+        demisto.debug(f"{prefix} request_uid provided: {request_uid}. Getting actions for the request.")
+        demisto.debug(f"{prefix} query_string: {query_string}.\nPayload: {payload}.")
         res = client.api_request_absolute(
             "POST",
             f"/v3/actions/wipe/get-actions/{request_uid}",
@@ -1190,6 +1194,8 @@ def wipe_actions_list_command(args, client) -> CommandResults:
             body=payload,
         )
     else:
+        demisto.debug(f"{prefix} request_uid not provided. Getting actions for the devices.")
+        demisto.debug(f"{prefix} query_string: {query_string}.\nPayload: {payload}.")
         res = client.api_request_absolute(
             "POST",
             "/v3/actions/wipe/get-actions",
@@ -1228,6 +1234,8 @@ def wipe_request_cancel_command(args, client) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
+    prefix = "[absolute-wipe-request-cancel]"
+    demisto.debug(f"{prefix} {args=}")
     request_uid = args.get("request_uid")
     action_uids = argToList(args.get("action_uids"))
     cancel_all_actions = args.get("cancel_all_actions", False)
@@ -1237,6 +1245,7 @@ def wipe_request_cancel_command(args, client) -> CommandResults:
         payload["actionUids"] = action_uids
     payload["cancelAllActions"] = argToBoolean(cancel_all_actions)
 
+    demisto.debug(f"{prefix} Canceling wipe actions for the request {request_uid}.\nPayload: {payload}.")
     res = client.api_request_absolute(
         "POST", f"/v3/actions/wipe/cancel-actions/{request_uid}", body=payload, success_status_code=[202]
     )
@@ -1258,6 +1267,8 @@ def wipe_request_create_command(args, client) -> CommandResults:
      Returns:
          CommandResults: The command results.
     """
+    prefix = "[absolute-wipe-request-create]"
+    demisto.debug(f"{prefix} {args=}")
     device_uids = argToList(args.get("device_uids"))
     mac_user_name = args.get("mac_user_name")
     mac_pwd = args.get("mac_pwd")
@@ -1303,6 +1314,7 @@ def wipe_request_create_command(args, client) -> CommandResults:
             raise_demisto_exception("secure_erase_count must be one of: 1, 3, 7.")
         payload["secureEraseCount"] = secure_erase_count
 
+    demisto.debug(f"{prefix} Creating wipe request with payload: {payload}")
     res = client.api_request_absolute(
         "POST",
         "/v3/actions/requests/wipe",
@@ -1328,6 +1340,8 @@ def wipe_request_list_command(args, client) -> CommandResults:
     Returns:
         CommandResults: The command results.
     """
+    prefix = "[absolute-wipe-request-list]"
+    demisto.debug(f"{prefix} {args=}")
     request_uid = args.get("request_uid")
     next_page = args.get("page")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
@@ -1345,11 +1359,14 @@ def wipe_request_list_command(args, client) -> CommandResults:
     ]
 
     if request_uid:
+        demisto.debug(f"{prefix} request_uid provided, fetching details for request_uid: {request_uid}")
         response = client.send_request_to_api("GET", f"/v3/actions/requests/wipe/{request_uid}", "", ok_codes=(200,))
         res = response.get("data") if isinstance(response, dict) else response
     else:
+        demisto.debug(f"{prefix} no request_uid provided, fetching wipe requests list with filters: {args}")
         query_string = prepare_wipe_request_query(args, "requestStatus", next_page=next_page, page_size=limit)
         query_string = client.prepare_query_string_for_canonical_request(query_string)
+        demisto.debug(f"{prefix} query_string for wipe requests list: {query_string}")
         response = client.send_request_to_api("GET", "/v3/actions/requests/wipe", query_string, ok_codes=(200,))
         res = response.get("data") if isinstance(response, dict) else response
 
