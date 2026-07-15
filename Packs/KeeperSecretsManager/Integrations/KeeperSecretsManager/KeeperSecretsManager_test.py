@@ -194,7 +194,7 @@ def test_get_file_command():
     mock_file = mock_record.add_file("file1.txt", "Samples", content="This is file 1.")
     resp_queue.add_response(mock_response)
 
-    def mock_download_get(_):
+    def mock_download_get(*args, **kwargs):
         mock_res = mock.Response()
         mock_res.status_code = 200
         mock_res.reason = "OK"
@@ -222,7 +222,7 @@ def test_get_infofile_command():
     mock_file = mock_record.add_file("file1.txt", "Samples", content="This is file 1.")
     resp_queue.add_response(mock_response)
 
-    def mock_download_get(_):
+    def mock_download_get(*args, **kwargs):
         mock_res = mock.Response()
         mock_res.status_code = 200
         mock_res.reason = "OK"
