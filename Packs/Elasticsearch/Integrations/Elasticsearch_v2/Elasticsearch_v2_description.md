@@ -56,6 +56,22 @@ The Kibana URL is derived automatically from the **Server URL** you already conf
 
 > **Requirement:** Your Elasticsearch Server URL must be an Elastic Cloud URL containing `.es.` in the hostname (e.g. `https://my-deployment.es.us-central1.gcp.cloud.es.io`). The integration replaces `.es.` with `.kb.` to reach Kibana. Self-managed deployments with a custom Kibana URL are not supported by the automatic derivation.
 
+### Required Kibana Privileges
+
+Kibana API endpoints are gated by **feature privileges**. The level required depends on the operation:
+
+| Privilege level | Operations covered |
+|---|---|
+| **Read** | GET / list / view (`es-kibana-*-list`, `es-kibana-*-get`, `es-kibana-alerting-health-get`) |
+| **All** | POST / PUT / PATCH / DELETE — create, update, delete, and change-state commands |
+
+For **Cases** and **Rules**, the required privilege is also scoped to the feature that owns the object:
+
+- Objects owned by **Security** (e.g. SIEM detection rules, Security cases) → grant the **Security** feature privilege.
+- Objects owned by **Observability** → grant the **Observability** feature privilege.
+- Objects owned by **Stack / Management** (e.g. Stack Rules) → grant the **Stack Rules** / **Management** feature privilege.
+
+
 ### Kibana Spaces (optional)
 
 If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) to separate your data, set the **Space ID** parameter in the instance configuration. All `es-kibana-*` commands will then operate within that space by default. You can also override the space per-command using the `space_id` argument.
