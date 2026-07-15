@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - ews
-comment: Returns an EWS query according to the automation's arguments.
+comment: Returns an EWS query according test to the automation's arguments.
 system: true
 args:
 - name: from
