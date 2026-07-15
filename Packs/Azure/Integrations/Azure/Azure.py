@@ -5551,7 +5551,19 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     return None
 
 
-def validate_auth_params(params: dict, connection_type: str) -> None:
+# Auth-helper commands establish or reset authentication and therefore must not require the
+# Authorization code, which is only obtained by first running azure-generate-login-url. Requiring
+# it here would create a chicken-and-egg block on the command whose purpose is to produce the code.
+AUTH_HELPER_COMMANDS = {
+    "azure-generate-login-url",
+    "azure-auth-start",
+    "azure-auth-complete",
+    "azure-auth-reset",
+    "azure-auth-test",
+}
+
+
+def validate_auth_params(params: dict, connection_type: str, command: str = "") -> None:
     """Validate that all mandatory parameters for the selected authentication type are configured.
 
     This runs only on the Cortex XSOAR / Cortex XSIAM (marketplace) path.
@@ -5562,6 +5574,9 @@ def validate_auth_params(params: dict, connection_type: str) -> None:
         - Authorization Code:     Application ID, Application redirect URI, Authorization code,
                                   Default Subscription ID
         - Azure Managed Identities: Azure Managed Identities Client ID, Default Subscription ID
+
+    The Authorization code is not required for auth-helper commands (e.g. azure-generate-login-url),
+    since those commands are used to obtain/establish authentication before a code exists.
 
     Raises:
         DemistoException: If one or more mandatory parameters for the selected auth type are missing.
@@ -5574,6 +5589,16 @@ def validate_auth_params(params: dict, connection_type: str) -> None:
     redirect_uri = params.get("redirect_uri")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
+    authorization_code_required: dict[str, Any] = {
+        "Application ID": app_id,
+        "Application redirect URI": redirect_uri,
+        "Default Subscription ID": subscription_id,
+    }
+    # Only demand the Authorization code itself when the caller is an actual data command, not an
+    # auth-helper command such as azure-generate-login-url that is run to obtain the code.
+    if command not in AUTH_HELPER_COMMANDS:
+        authorization_code_required["Authorization code"] = auth_code
+
     required_by_auth_type: dict[str, dict[str, Any]] = {
         "Client Credentials": {
             "Application ID": app_id,
@@ -5585,12 +5610,7 @@ def validate_auth_params(params: dict, connection_type: str) -> None:
             "Application ID": app_id,
             "Default Subscription ID": subscription_id,
         },
-        "Authorization Code": {
-            "Application ID": app_id,
-            "Application redirect URI": redirect_uri,
-            "Authorization code": auth_code,
-            "Default Subscription ID": subscription_id,
-        },
+        "Authorization Code": authorization_code_required,
         "Azure Managed Identities": {
             "Azure Managed Identities Client ID": managed_identities_client_id,
             "Default Subscription ID": subscription_id,
@@ -5629,7 +5649,7 @@ def get_azure_client(params: dict, args: dict, command: str, azure_ad_endpoint: 
     else:
         # Marketplace path: ensure all mandatory parameters for the selected auth type are configured
         # before attempting any API call.
-        validate_auth_params(params, connection_type)
+        validate_auth_params(params, connection_type, command)
     client = AzureClient(
         app_id=params.get("app_id", ""),
         subscription_id=params.get("subscription_id", ""),
