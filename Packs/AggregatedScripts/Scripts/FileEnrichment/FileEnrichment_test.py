@@ -64,6 +64,7 @@ def test_file_enrichment_script_end_to_end_with_files(mocker):
             "core": {"state": "active", "brand": "Cortex Core - IR"},
         },
     )
+    mocker.patch("FileEnrichment.is_platform", return_value=False)
 
     # ---------- Mock BatchExecutor.execute_list_of_batches using JSON ----------
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
@@ -158,10 +159,11 @@ def test_file_enrichment_script_end_to_end_with_files(mocker):
     assert wf2.get("Reliability") == "Low"
 
 
-def _capture_built_commands(mocker, file_list):
+def _capture_built_commands(mocker, file_list, is_platform=False):
     """Helper: runs file_enrichment_script with mocks and returns the command batches exactly as
     they were built by file_enrichment_script, captured before any brand/type filtering is applied."""
     mocker.patch.object(demisto, "args", return_value={"file_hash": ",".join(file_list)})
+    mocker.patch("FileEnrichment.is_platform", return_value=is_platform)
 
     def extractIndicators_side_effect(cmd, args=None, extract_contents=False, fail_on_error=True):
         if cmd == "extractIndicators":
@@ -260,3 +262,24 @@ def test_prevalence_command_included_when_sha256_present(mocker):
     prevalence_cmds = [cmd for batch in batches for cmd in batch if cmd.name == "core-get-hash-analytics-prevalence"]
     assert len(prevalence_cmds) == 1
     assert prevalence_cmds[0].args == {"sha256": [sha256_hash]}
+
+
+def test_file_enrichment_uses_builtin_command_on_platform(mocker):
+    """
+    Given:
+        - A SHA256 hash as input, running on the unified Cortex platform (is_platform True).
+    When:
+        - file_enrichment_script builds the command batches.
+    Then:
+        - The prevalence command is the built-in "getHashAnalyticsPrevalence".
+        - Its command_type is CommandType.BUILTIN (not the legacy INTERNAL core command).
+    """
+    from AggregatedCommandApiModule import CommandType
+
+    sha256_hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    batches = _capture_built_commands(mocker, [sha256_hash], is_platform=True)
+
+    prevalence_cmds = [cmd for batch in batches for cmd in batch if cmd.name == "getHashAnalyticsPrevalence"]
+    assert len(prevalence_cmds) == 1
+    assert prevalence_cmds[0].command_type == CommandType.BUILTIN
+    assert "core-get-hash-analytics-prevalence" not in [cmd.name for batch in batches for cmd in batch]

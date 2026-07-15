@@ -1,4 +1,5 @@
 import json
+import pytest
 import demistomock as demisto
 from DomainEnrichment import domain_enrichment_script
 
@@ -38,6 +39,7 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     mocker.patch.object(demisto, "args", return_value={"domain_list": ",".join(domain_list)})
 
     mocker.patch("DomainEnrichment.is_xsiam", return_value=True)
+    mocker.patch("DomainEnrichment.is_platform", return_value=False)
     # extractIndicators -> validates input
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
@@ -163,3 +165,55 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     assert isinstance(core_ctx, list)
     assert len(core_ctx) == 2
     assert {d["Domain"] for d in core_ctx} == {"example.com", "example2.com"}
+
+
+def test_domain_enrichment_uses_builtin_command_on_platform(mocker):
+    """
+    Given:
+        - Running on the unified Cortex platform (is_xsiam and is_platform both True).
+    When:
+        - domain_enrichment_script builds its command batches.
+    Then:
+        - The prevalence command is the built-in "getDomainAnalyticsPrevalence".
+        - Its command_type is CommandType.BUILTIN (not the legacy INTERNAL core command).
+    """
+    from AggregatedCommandApiModule import CommandType
+
+    domain_list = ["example.com"]
+    captured_batches: dict = {}
+
+    class _StopAfterCapture(Exception):
+        pass
+
+    def _capture_batches(self, list_of_batches, brands_to_run=None, verbose=False):
+        captured_batches["batches"] = list_of_batches
+        raise _StopAfterCapture()
+
+    mocker.patch.object(demisto, "args", return_value={"domain_list": ",".join(domain_list)})
+    mocker.patch("DomainEnrichment.is_xsiam", return_value=True)
+    mocker.patch("DomainEnrichment.is_platform", return_value=True)
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"Domain": domain_list}}}],
+    )
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=iter([]))
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={"coreir": {"state": "active", "brand": "Cortex Core - IR"}},
+    )
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _capture_batches)
+
+    with pytest.raises(_StopAfterCapture):
+        domain_enrichment_script(
+            domain_list=domain_list,
+            external_enrichment=True,
+            verbose=True,
+            enrichment_brands=["Cortex Core - IR"],
+            additional_fields=False,
+        )
+
+    b2_cmds = captured_batches["batches"][1]
+    prevalence_cmds = [c for c in b2_cmds if c.name == "getDomainAnalyticsPrevalence"]
+    assert len(prevalence_cmds) == 1
+    assert prevalence_cmds[0].command_type == CommandType.BUILTIN

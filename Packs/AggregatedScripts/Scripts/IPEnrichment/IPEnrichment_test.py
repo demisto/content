@@ -1,4 +1,5 @@
 import json
+import pytest
 import demistomock as demisto
 from IPEnrichment import ip_enrichment_script
 
@@ -39,6 +40,7 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
 
     # is_xsiam
     mocker.patch("IPEnrichment.is_xsiam", return_value=True)
+    mocker.patch("IPEnrichment.is_platform", return_value=False)
     # extractIndicators -> validates input
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
@@ -178,6 +180,7 @@ def test_ip_enrichment_script_with_internal_ip(mocker):
     ip_list = ["192.168.1.1"]
     mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
     mocker.patch("IPEnrichment.is_xsiam", return_value=True)
+    mocker.patch("IPEnrichment.is_platform", return_value=False)
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ip_list}}}],
@@ -248,3 +251,55 @@ def test_ip_enrichment_script_with_internal_ip(mocker):
     assert len(endpoint_ctx) == 2
     assert {e["Brand"] for e in endpoint_ctx} == {"Core"}
     assert {e["Hostname"] for e in endpoint_ctx} == {"host-1", "host-2"}
+
+
+def test_ip_enrichment_uses_builtin_command_on_platform(mocker):
+    """
+    Given:
+        - Running on the unified Cortex platform (is_xsiam and is_platform both True).
+    When:
+        - ip_enrichment_script builds its command batches.
+    Then:
+        - The prevalence command is the built-in "getIPAnalyticsPrevalence".
+        - Its command_type is CommandType.BUILTIN (not the legacy INTERNAL core command).
+    """
+    from AggregatedCommandApiModule import CommandType
+
+    ip_list = ["1.1.1.1"]
+    captured_batches: dict = {}
+
+    class _StopAfterCapture(Exception):
+        pass
+
+    def _capture_batches(self, list_of_batches, brands_to_run=None, verbose=False):
+        captured_batches["batches"] = list_of_batches
+        raise _StopAfterCapture()
+
+    mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
+    mocker.patch("IPEnrichment.is_xsiam", return_value=True)
+    mocker.patch("IPEnrichment.is_platform", return_value=True)
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ip_list}}}],
+    )
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=iter([]))
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={"coreir": {"state": "active", "brand": "Cortex Core - IR"}},
+    )
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _capture_batches)
+
+    with pytest.raises(_StopAfterCapture):
+        ip_enrichment_script(
+            ip_list=ip_list,
+            external_enrichment=True,
+            verbose=True,
+            enrichment_brands=["Cortex Core - IR"],
+            additional_fields=False,
+        )
+
+    b2_cmds = captured_batches["batches"][1]
+    prevalence_cmds = [c for c in b2_cmds if c.name == "getIPAnalyticsPrevalence"]
+    assert len(prevalence_cmds) == 1
+    assert prevalence_cmds[0].command_type == CommandType.BUILTIN
