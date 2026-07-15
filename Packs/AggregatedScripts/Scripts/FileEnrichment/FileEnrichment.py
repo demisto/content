@@ -91,7 +91,7 @@ def file_enrichment_script(
     # Add the prevalence command only when at least one SHA256 hash is present.
     sha256_inputs = [file for file in valid_inputs if get_hash_type(file) == "sha256"]
     if sha256_inputs:
-        # On the unified Cortex platform the command is provided by the built-in PCI module
+         # On platform, we use the built-in commands and brand Builtin
         if is_platform():
             command_batch2.append(
                 Command(

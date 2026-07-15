@@ -85,7 +85,7 @@ def ip_enrichment_script(
 
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
-        # On the unified Cortex platform the command is provided by the built-in PCI module
+        # On platform, we use the built-in commands and brand Builtin, which is always enabled
         # and does not require enabling the integration.
         if is_platform():
             prevalence_command = Command(

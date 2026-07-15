@@ -69,7 +69,7 @@ class Modules:
         Returns:
             bool: True if the brand is available and in the list of brands to run, False otherwise.
         """
-        # PCI commands are injected by the server as built-ins on the unified platform,
+        # Builtin commands are injected by the server on the unified platform,
         # so they are always available there and are not tied to an installed integration brand.
         if command.brand == "Builtin":
             return is_platform()
@@ -296,7 +296,7 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     errors_command_results = []
     human_readable_list = []
     entry_context_list = []
-    # PCI built-in commands may return no entries (None) on a not-found result, guard against 'NoneType' object is not iterable
+    # Built-in commands may return no entries (None) on a not-found result, guard against 'NoneType' object is not iterable
     for entry in res or []:
         entry_context_list.append((entry.get("EntryContext") or {}) | {"instance": entry.get("ModuleName")})
         if is_error(entry):

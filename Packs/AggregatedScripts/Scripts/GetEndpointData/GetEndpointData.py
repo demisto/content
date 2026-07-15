@@ -135,7 +135,7 @@ class ModuleManager:
             bool: True if the brand is in both the list of brands to run and the set of enabled brands;
                   False otherwise.
         """
-        # PCI commands are injected by the server as built-ins on the unified platform,
+        # Builtin commands are injected by the server on the unified platform,
         # so they are always available there and are not tied to an installed integration brand.
         if command.brand == Brands.BUILTIN:
             return is_platform()
@@ -351,7 +351,7 @@ class EndpointCommandRunner:
                 continue
 
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
-                # PCI built-in commands may return no entries (None) on a not-found result
+                # Built-in commands may return no entries (None) on a not-found result
                 # guard against 'NoneType' object is not iterable
                 if error_result := hr_to_command_results(command, args, contents, entry_type=entry_type):  # type: ignore[arg-type]
                     command_error_outputs.append(error_result)
