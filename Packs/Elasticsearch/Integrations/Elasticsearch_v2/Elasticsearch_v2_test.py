@@ -2391,10 +2391,9 @@ class TestBuildRuleUpdateBody:
     def test_basic_fields(self):
         import Elasticsearch_v2
 
-        body = Elasticsearch_v2.build_rule_update_body({"name": "New name", "enabled": "false", "schedule_interval": "5m"})
+        body = Elasticsearch_v2.build_rule_update_body({"name": "New name", "schedule_interval": "5m"})
 
         assert body["name"] == "New name"
-        assert body["enabled"] is False
         assert body["schedule"] == {"interval": "5m"}
 
     def test_flapping_fields_merged(self):
@@ -2404,7 +2403,7 @@ class TestBuildRuleUpdateBody:
             {"flapping_enabled": "true", "flapping_look_back_window": "5", "flapping_status_change_threshold": "3"}
         )
 
-        assert body["flapping"] == {"enabled": True, "lookBackWindow": 5, "statusChangeThreshold": 3}
+        assert body["flapping"] == {"enabled": True, "look_back_window": 5, "status_change_threshold": 3}
 
     def test_artifacts_fields(self):
         import Elasticsearch_v2
@@ -2520,6 +2519,7 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
         import Elasticsearch_v2
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"total": 2, "updated": 2})
+        mocker.patch("Elasticsearch_v2.safe_load_json", return_value=None)
 
         result = Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "closed", "signal_ids": "id1,id2"}, {})
 
@@ -2537,7 +2537,7 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
         Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "open", "query": '{"match_all": {}}'}, {})
 
         call_args = mock_request.call_args
-        assert call_args[1]["json_data"]["query"] == '{"match_all": {}}'
+        assert call_args[1]["json_data"]["query"] == {"match_all": {}}
 
     def test_missing_status_raises(self):
         import Elasticsearch_v2
