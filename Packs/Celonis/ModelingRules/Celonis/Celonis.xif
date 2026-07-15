@@ -1,31 +1,161 @@
-[MODEL: dataset="celonis_celonis_raw"]
-alter event_type = coalesce(event , authenticationEventType)
-| alter 
-    xdm.event.type = event_type,
-    xdm.source.user.upn = coalesce(email , message -> email , message -> userEmail , arrayindex(regextract(userId , "\((.*?)\)"),0)),
-    xdm.event.outcome = if(to_string(success) = "true", XDM_CONST.OUTCOME_SUCCESS, to_string(success) = "false", XDM_CONST.OUTCOME_FAILED, to_string(message -> ["login-history-enabled"]) = "true", XDM_CONST.OUTCOME_SUCCESS, to_string(message -> ["login-history-enabled"]) = "false", XDM_CONST.OUTCOME_FAILED, null),
-    xdm.auth.privilege_level = if(lowercase(userRole) = "admin" , XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
-    xdm.event.description = coalesce(message , authenticationEventType),
-    xdm.target.resource.sub_type = coalesce(message -> name , message -> teamName, message -> dataPoolName , message -> clientName , message -> spaceName , message -> object_description , message -> dataJobName , message -> dataSourceName , message -> dataModelName , message -> nodeName , message -> variableKey , message -> ["object_description"]),
-    xdm.target.resource.id = coalesce(message -> teamId , message -> userId , message -> dataPoolId , message -> id , message -> clientId , message -> ["application-key-id"] , message -> spaceId , message -> object_id , message -> dataJobId , message -> dataSourceId , message -> dataModelId , message -> nodeId , message -> ["Analysis Id"] , message -> packageKey),
-    xdm.source.user.username = message -> sender,
-    xdm.target.user.username = message -> invitee,
-    xdm.target.resource_before.value = coalesce(message -> oldUserName, arraystring(message -> ["old_permissions"][], " ; ")),
-    xdm.target.resource.value = coalesce(message -> updatedUserName , arraystring(message -> ["new_permissions"][], " ; ")),
-    xdm.observer.version = message -> version,
-    xdm.target.resource.type = if (event_type in ("EXPORT_PARQUET_DISCLAIMER_AGREEMENT_*", "ROUTING_RULE_*", "SKILL_*"), "Action Engine",
-        event_type in ("ACTIONFLOW_*"), "Action Flows",
-        event_type in ("ADMIN USER INVITED", "APPLICATION_KEY_*", "APPLICATION_PERMISSIONS_CSV_DOWNLOADED", "AUDIT_LOG*","GROUP_*", "IP_RESTRICTIONS_*", "LLM_*", "LOGIN_HISTORY_CSV_DOWNLOADED", "LOGIN_HISTORY_DELETED", "LOGIN_HISTORY_PREFERENCES_UPDATED", "MEMBER_LOCK_POLICY_UPDATED", "OPEN_SIGNUP_UPDATED", "PERMISSIONS_*", "SSO_PROVIDER_*", "STUDIO_ADOPTION_*", "TEAM_*", "TRACKING_EVENT_DELETED", "TWO_FACTOR_UPDATED", "UPLINK_*", "USER_*"), "Admin and Settings",
-        event_type in ("PROCESS_WORKSPACE_NODE_UPDATED"), "Business Miner",
-        event_type in ("ANALYSIS_EXPORT_AUDIT_LOG_EVENT", "CUSTOM_EXTRACTION_*", "DATA_*", "PROCESS_INSTALLED"), "Data Integration",
-        event_type in ("FILE_UPLOAD_*", "JOB_EXECUTION_*"), "File Uploader",
-        event_type in ("ML_*"), "Machine Learning",
-        event_type in ("OCDM_*"), "Object-centric data model",
-        event_type in ("AGENT_REGISTERED*", "CONNECTION_*", "SKILL_*", "WORKFLOW_*"), "Process Automation",
-        event_type in ("ANALYSIS_EXPORT_AUDIT_LOG_EVENT", "STUDIO_*"), "Studio",
-        event_type in ("TASK_*"), "Task Mining",
-        event_type in ("TEAM_TO_TEAM_COPY_*"), "Team To Team Copy",
-        event_type in ("OBJECTIVE_*", "REPORTING_*"), "Transformation Center",
-        event_type in ("PACKAGE_MOVED_TO_TRASH", "PACKAGE_RESTORED_FROM_TRASH"), "Trash",
-        event_type in ("LOGIN_*", "NOT_MEMBER_OF_TEAM", "LOGOUT", "OAUTH_CLIENT_*"), "Login History",
-        event_type );
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="Claude Opus 4.8"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.0-beta.1"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+//
+// Celonis EMS -- Audit Log -- XDM Data Model Rule
+// Dataset: celonis_ems_audit_raw
+// Vendor: Celonis | Product: EMS Audit Log
+//
+// One-paragraph description: Maps Celonis Execution Management System (EMS)
+// audit-log events to the Cortex XDM schema. The feed arrives already parsed
+// into top-level columns (Pattern D) with `_raw_log` empty and the per-event
+// detail carried as a JSON string in the `message` column (Pattern A). A
+// single record shape carries many vendor actions -- Studio node create /
+// update / delete / move / rename / duplicate, package version and deployment
+// creation, permission updates, input-variable changes, file uploads, job
+// executions, team-membership changes and APC threshold notifications -- so
+// the rule classifies xdm.event.operation, outcome and tags PER RECORD from
+// the `event` verb and the `message.status`, and normalises actor, target
+// resource and target user for cross-source correlation. The Celonis actor
+// identifier column packs a UUID and an e-mail as `UUID (email@domain)`; the
+// rule splits both. Tenant-adjustable touch-points: xdm.observer.vendor,
+// xdm.observer.product and the [MODEL: dataset=celonis_ems_audit_raw] header.
+//
+// ALERT / EVENT FIELD MAPPING
+// ---------------------------
+// Observer
+//   (hardcoded)              -> xdm.observer.vendor  ("Celonis", tenant-adjustable)
+//   (hardcoded)              -> xdm.observer.product ("EMS Audit Log", tenant-adjustable)
+//
+// Event identity
+//   _id                      -> xdm.event.id
+//   event                    -> xdm.event.type (normalised AUDIT / catch-all),
+//                               xdm.event.original_event_type (raw),
+//                               xdm.observer.action (raw),
+//                               xdm.event.operation (XDM_CONST.OPERATION_TYPE_*),
+//                               xdm.event.tags (EVENT_TAG_SAAS)
+//   message.status / *_SUCCEEDED / *_FAILED -> xdm.event.outcome (XDM_CONST.OUTCOME_*)
+//
+// Source (actor)
+//   ipaddress                -> xdm.source.ipv4, xdm.source.host.ipv4_addresses
+//   userid (UUID part)       -> xdm.source.user.identifier
+//   userid (email part)      -> xdm.source.user.upn, xdm.source.user.username
+//   userid "(SYSTEM)"        -> xdm.source.user.user_type (SERVICE_ACCOUNT / REGULAR)
+//   userrole                 -> xdm.source.user.roles (Array)
+//
+// Target (Celonis platform + affected object / grantee)
+//   port                     -> xdm.target.port
+//   message.object_id / packageKey        -> xdm.target.resource.id
+//   message.object_description / nodeName -> xdm.target.resource.name
+//   message.assetType / nodeType          -> xdm.target.resource.type
+//   message.subject_description / email   -> xdm.target.user.username, xdm.target.user.upn
+//
+// Description
+//   composed (event, actor, resource, target, perms, version, table, status)
+//                            -> xdm.event.description
+//
+// NOT MAPPED
+//   _collector_name/_collector_type/_device_id/_tag/_raw_json/_raw_log -- collector plumbing / empty on this feed
+//   _reporting_device_ip/_final_reporting_device_ip -- Celonis platform egress IP; underscore raw columns are not statically resolvable in a MODEL rule (ERR-027)
+//   _reporting_device_name/_final_reporting_device_name -- Celonis tenant URL; underscore raw columns not statically resolvable in a MODEL rule (ERR-027)
+//   _vendor/_product         -- constant "Celonis"; expressed via xdm.observer.* literals
+//   _insert_time             -- collector ingest time, not the event time
+//   _time/timestamp          -- Cortex sets _time automatically in MODEL rules
+//   diffpayload              -- empty on this feed; DiffPayload old/new only populated for value-change events
+//   message.version          -- deployed package/asset version, not the observer software version; preserved in xdm.event.description
+//   message.new_permissions/old_permissions -- permission grant detail; no typed XDM home; preserved in xdm.event.description
+//   message.tableName        -- job target table; no typed XDM home; preserved in xdm.event.description
+//
+// REVIEW UNMODELLED -- after deploying, list what this rule could not
+// classify, and grow it to cover those records:
+//   datamodel dataset = celonis_ems_audit_raw
+//   | filter xdm.event.type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.event.type, xdm.event.original_event_type, celonis_ems_audit_raw.message
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset="celonis_celonis_raw"
+filter
+    event != null
+| alter
+    _status        = json_extract_scalar(message, "$.status"),
+    _object_id     = json_extract_scalar(message, "$.object_id"),
+    _package_key   = json_extract_scalar(message, "$.packageKey"),
+    _object_desc   = json_extract_scalar(message, "$.object_description"),
+    _node_name     = json_extract_scalar(message, "$.nodeName"),
+    _asset_type    = json_extract_scalar(message, "$.assetType"),
+    _node_type     = json_extract_scalar(message, "$.nodeType"),
+    _pkg_version   = json_extract_scalar(message, "$.version"),
+    _subject_desc  = json_extract_scalar(message, "$.subject_description"),
+    _member_email  = json_extract_scalar(message, "$.email"),
+    _new_perms     = json_extract_scalar(message, "$.new_permissions"),
+    _job_table     = json_extract_scalar(message, "$.tableName"),
+    _actor_upn     = arrayindex(regextract(userid, "\(([^)]+)\)"), 0),
+    _actor_id      = arrayindex(regextract(userid, "^([^ (]+)"), 0)
+| alter
+    _subject_upn    = arrayindex(regextract(_subject_desc, "\(([^)]+)\)"), 0),
+    _actor_username = coalesce(if(_actor_upn ~= "@", _actor_upn, null), _actor_id),
+    _res_id         = coalesce(_object_id, _package_key),
+    _res_name       = coalesce(_object_desc, _node_name),
+    _res_type       = coalesce(_asset_type, _node_type)
+| alter
+    _tgt_upn       = coalesce(if(_subject_upn ~= "@", _subject_upn, null), if(_member_email ~= "@", _member_email, null)),
+    _tgt_username  = coalesce(_subject_upn, _member_email)
+| alter
+    xdm.observer.vendor = "Celonis",
+    xdm.observer.product = "EMS Audit Log",
+    xdm.event.id = _id,
+    xdm.event.type = if(
+        event ~= "(?i)STUDIO_|PERMISSION|PACKAGE_|DEPLOYMENT|FILE_UPLOAD|JOB_EXECUTION|TEAM_MEMBERSHIP|APC_THRESHOLD|_NODE_|VARIABLE", "AUDIT",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(event, "GOCORTEX_UNMODELLED"),
+    xdm.observer.action = event,
+    xdm.event.tags = if(
+        event ~= "(?i)STUDIO_|PERMISSION|PACKAGE_|DEPLOYMENT|FILE_UPLOAD|JOB_EXECUTION|TEAM_MEMBERSHIP|APC_THRESHOLD|_NODE_|VARIABLE", arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        event ~= "(?i)PERMISSION|THRESHOLD|VARIABLE_VALUE_CHANGED|_MOVED|_RENAMED", XDM_CONST.OPERATION_TYPE_CONFIG_CHANGE,
+        event ~= "(?i)_CREATED|_DUPLICATED|FILE_UPLOAD|VARIABLE_CREATED", XDM_CONST.OPERATION_TYPE_CREATE,
+        event ~= "(?i)_DELETED", XDM_CONST.OPERATION_TYPE_DELETE,
+        event ~= "(?i)_UPDATED", XDM_CONST.OPERATION_TYPE_UPDATE,
+        event ~= "(?i)JOB_EXECUTION|DEPLOYMENT", XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
+        event != null, XDM_CONST.OPERATION_TYPE_AUDIT),
+    xdm.event.outcome = if(
+        _status = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS,
+        _status = "FAILED", XDM_CONST.OUTCOME_FAILED,
+        event ~= "(?i)_SUCCEEDED", XDM_CONST.OUTCOME_SUCCESS,
+        event ~= "(?i)_FAILED", XDM_CONST.OUTCOME_FAILED,
+        null),
+    xdm.source.ipv4 = if(ipaddress != "", ipaddress, null),
+    xdm.source.host.ipv4_addresses = if(ipaddress != "", arraycreate(ipaddress), null),
+    xdm.target.port = to_integer(to_number(port)),
+    xdm.source.user.identifier = _actor_id,
+    xdm.source.user.upn = if(_actor_upn ~= "@", _actor_upn, null),
+    xdm.source.user.username = _actor_username,
+    xdm.source.user.roles = if(userrole != "", arraycreate(userrole), null),
+    xdm.source.user.user_type = if(
+        userid ~= "(?i)\(SYSTEM\)", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        userid != null, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.target.user.username = _tgt_username,
+    xdm.target.user.upn = _tgt_upn,
+    xdm.target.resource.id = _res_id,
+    xdm.target.resource.name = _res_name,
+    xdm.target.resource.type = _res_type,
+    xdm.event.description = concat(
+        "Celonis ", event,
+        " by ", coalesce(_actor_username, "unknown"),
+        if(_res_name != null, concat(" on ", _res_name), ""),
+        if(_res_type != null, concat(" [", _res_type, "]"), ""),
+        if(_tgt_username != null, concat(" target ", _tgt_username), ""),
+        if(_new_perms != null, concat(" perms ", _new_perms), ""),
+        if(_pkg_version != null, concat(" v", _pkg_version), ""),
+        if(_job_table != null, concat(" table ", _job_table), ""),
+        if(_status != null, concat(" status ", _status), ""))
+;
