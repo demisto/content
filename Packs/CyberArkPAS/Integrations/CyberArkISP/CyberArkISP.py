@@ -184,7 +184,7 @@ class DefaultValues(str, Enum):
 
     FROM_TIME = "1 minute ago"
     MAX_FETCH = "10000"
-    PAGE_SIZE = 1000
+    PAGE_SIZE = 500
 
 
 def get_formatted_time(date_input: str | None) -> str:
