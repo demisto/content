@@ -36,15 +36,6 @@ class Client(BaseClient):
         self.user_name = user_name
         self.user_password = user_password
         self.customer_id = customer_id
-        self._api_call_counts: dict[str, int] = {}
-
-    def reset_api_call_counts(self) -> None:
-        """Reset the API call counters."""
-        self._api_call_counts = {}
-
-    def _count_api_call(self, call_type: str) -> None:
-        """Increment the counter for a specific API call type."""
-        self._api_call_counts[call_type] = self._api_call_counts.get(call_type, 0) + 1
 
     def get_access_token(self, use_cached_token=True) -> str:
         """
@@ -102,7 +93,6 @@ class Client(BaseClient):
         }
 
         try:
-            self._count_api_call("auth")
             token_resp = self._http_request(
                 method="POST",
                 url_suffix="/oauth2/token",
@@ -151,7 +141,6 @@ class Client(BaseClient):
             "username": self.user_name,
             "password": self.user_password,
         }
-        self._count_api_call("auth")
         response: requests.Response = self._http_request(
             method="POST",
             url_suffix="/oauth2/authorize/central/api/login",
@@ -193,7 +182,6 @@ class Client(BaseClient):
         json_data = {
             "customer_id": self.customer_id,
         }
-        self._count_api_call("auth")
         response = self._http_request(
             method="POST",
             url_suffix="/oauth2/authorize/central/api",
@@ -225,7 +213,6 @@ class Client(BaseClient):
             "grant_type": "authorization_code",
             "code": auth_code,
         }
-        self._count_api_call("auth")
         response = self._http_request(
             method="POST",
             url_suffix="/oauth2/token",
@@ -298,12 +285,9 @@ class Client(BaseClient):
             amount_to_fetch = MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT
         events = []
         offset = 0
-        api_call_count = 0
 
-        demisto.debug(f"[Fetch] Audit events: starting fetch with {amount_to_fetch=}")
+        demisto.debug(f"{amount_to_fetch=}")
         while amount_to_fetch > 0:
-            api_call_count += 1
-            self._count_api_call("audit")
             response = self.http_request(
                 method="GET",
                 url_suffix="/auditlogs/v1/events",
@@ -330,7 +314,7 @@ class Client(BaseClient):
             if not response.get("remaining_records"):
                 break
 
-        demisto.debug(f"[Fetch] Audit events: made {api_call_count} API call(s), fetched {len(events)} event(s).")
+        demisto.debug(f"[Fetch] Audit events fetched {len(events)} event(s).")
         return events
 
     def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
@@ -351,12 +335,9 @@ class Client(BaseClient):
             amount_to_fetch = MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT
         events = []
         offset = 0
-        api_call_count = 0
 
         demisto.debug(f"[Fetch] Networking events: starting fetch with {amount_to_fetch=}")
         while amount_to_fetch > 0:
-            api_call_count += 1
-            self._count_api_call("networking")
             response = self.http_request(
                 method="GET",
                 url_suffix="/monitoring/v2/events",
@@ -378,7 +359,6 @@ class Client(BaseClient):
             if len(response_events) < MAX_GET_EVENTS_LIMIT:  # got the last events for this time frame
                 break
 
-        demisto.debug(f"[Fetch] Networking events: made {api_call_count} API call(s), fetched {len(events)} event(s).")
         return events
 
 
@@ -676,7 +656,6 @@ def fetch_events(
             f"The maximum number of networking events per fetch should not exceed {MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT}."
         )
 
-    client.reset_api_call_counts()
     audit_start_time = int(last_run.get("last_audit_ts", first_fetch_time))
     networking_start_time = int(last_run.get("last_networking_ts", first_fetch_time))
     end_time = int(time.time())
@@ -684,7 +663,7 @@ def fetch_events(
     audit_events = client.fetch_audit_events(
         start_time=audit_start_time, end_time=end_time, amount_to_fetch=num_audit_events_to_fetch, last_run=last_run
     )
-    demisto.debug(f"Got {len(audit_events)} audit events.")
+    demisto.debug(f"[Fetch] Got {len(audit_events)} audit events.")
 
     networking_events = None
     if fetch_networking_events:
@@ -695,11 +674,7 @@ def fetch_events(
         demisto.debug(f"Got {len(networking_events)} networking events.")
 
     next_run = create_next_run(audit_events=audit_events, networking_events=networking_events, end_time=end_time)
-    demisto.debug(
-        f"[Fetch] Fetch cycle complete. API calls by type: {client._api_call_counts}. "
-        f"Total API calls: {sum(client._api_call_counts.values())}."
-    )
-    demisto.debug(f"[Fetch] Returning {next_run=}.")
+    demisto.debug(f"Returning {next_run=}.")
     return next_run, audit_events, networking_events
 
 
