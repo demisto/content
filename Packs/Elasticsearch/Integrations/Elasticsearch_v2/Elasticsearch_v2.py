@@ -2291,6 +2291,15 @@ def es_kibana_rule_update_command(args: Dict[str, Any], proxies) -> CommandResul
     entry_id = args.get("entry_id")
     body = get_json_body_from_entry_id(entry_id) if entry_id else build_rule_update_body(args)
 
+    # The Kibana PUT /api/alerting/rule/{id} endpoint requires the rule's `params` field to be
+    # present in every update request (it does not preserve existing params on partial updates).
+    existing_rule = kibana_http_request(
+        "GET", f"/api/alerting/rule/{rule_id}", space_id=space_id, proxies=proxies
+    )
+    existing_params = existing_rule.get("params")
+    if existing_params and "params" not in body:
+        body["params"] = existing_params
+
     response = kibana_http_request(
         "PUT", f"/api/alerting/rule/{rule_id}", space_id=space_id, json_data=body, proxies=proxies
     )

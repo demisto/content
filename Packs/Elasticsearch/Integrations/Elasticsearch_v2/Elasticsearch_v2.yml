@@ -1360,6 +1360,8 @@ script:
       description: The exception item entry operator.
     - name: entries_type
       description: The exception item entry type.
+    - name: entries_value
+      description: A string that does not contain only whitespace characters.
     - name: item_id
       description: Human readable string identifier, e.g. trusted-linux-processes.
     - name: meta
