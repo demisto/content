@@ -306,6 +306,38 @@ Search using ES|QL query (Elasticsearch 8.11 and above).
 |--------------------------|----------------------|----------------------|
 | Elasticsearch.ESQLSearch | ES\|QL search result | unknown |
 
+#### Command Example
+
+```!es-esql-search query="FROM logs-* | WHERE host.name == \"web-01\" | LIMIT 5"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "ESQLSearch": [
+            {
+                "@timestamp": "2024-01-15T10:23:45.000Z",
+                "host.name": "web-01",
+                "message": "Connection established"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search query:
+>|Query|Total|
+>|---|---|
+>| FROM logs-* \| WHERE host.name == "web-01" \| LIMIT 5 | 1 |
+>
+>### Results:
+>|@timestamp|host.name|message|
+>|---|---|---|
+>| 2024-01-15T10:23:45.000Z | web-01 | Connection established |
+
 ### es-kibana-alerting-health-get
 
 ***
@@ -331,6 +363,37 @@ Retrieves the health of the Kibana alerting framework.
 | Elasticsearch.Kibana.AlertingHealth.alerting_framework_health.execution_health.status | String | The execution health status. |
 | Elasticsearch.Kibana.AlertingHealth.alerting_framework_health.read_health.status | String | The read health status. |
 
+#### Command Example
+
+```!es-kibana-alerting-health-get```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "AlertingHealth": {
+                "is_sufficiently_secure": true,
+                "has_permanent_encryption_key": true,
+                "alerting_framework_health": {
+                    "decryption_health": {"status": "ok"},
+                    "execution_health": {"status": "ok"},
+                    "read_health": {"status": "ok"}
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Alerting Framework Health
+>|Is sufficiently secure|Has permanent encryption key|Decryption status|Execution status|Read status|
+>|---|---|---|---|---|
+>| true | true | ok | ok | ok |
+
 ### es-kibana-rule-types-list
 
 ***
@@ -355,6 +418,37 @@ Retrieves all rule types available in Kibana.
 | Elasticsearch.Kibana.RuleType.category | String | The rule type category. |
 | Elasticsearch.Kibana.RuleType.producer | String | The rule type producer. |
 | Elasticsearch.Kibana.RuleType.action_groups.id | String | The action group ID. |
+
+#### Command Example
+
+```!es-kibana-rule-types-list```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "RuleType": [
+                {
+                    "id": ".index-threshold",
+                    "name": "Index threshold",
+                    "category": "management",
+                    "producer": "stackAlerts",
+                    "action_groups": [{"id": "threshold met"}, {"id": "recovered"}]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Rule Types
+>|Rule type ID|Name|Category|Producer|Action Group Id|
+>|---|---|---|---|---|
+>| .index-threshold | Index threshold | management | stackAlerts | threshold met, recovered |
 
 ### es-kibana-rule-list
 
@@ -394,6 +488,35 @@ Retrieves information about rules.
 | Elasticsearch.Kibana.Rule.rule_type_id | String | The rule type ID. |
 | Elasticsearch.Kibana.Rule.created_at | Date | The creation date of the rule. |
 
+#### Command Example
+
+```!es-kibana-rule-list rule_id="1234"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Rule": {
+                "id": "1234",
+                "enabled": true,
+                "name": "CPU threshold alert",
+                "rule_type_id": ".index-threshold",
+                "created_at": "2024-01-10T08:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Rules
+>|Rule ID|Enabled|Name|Type ID|Creation date|
+>|---|---|---|---|---|
+>| 1234 | true | CPU threshold alert | .index-threshold | 2024-01-10T08:00:00.000Z |
+
 ### es-kibana-rule-enable
 
 ***
@@ -414,6 +537,20 @@ Enable a rule.
 
 There is no context output for this command.
 
+#### Command Example
+
+```!es-kibana-rule-enable rule_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The rule 1234 has been successfully enabled.
+
 ### es-kibana-rule-disable
 
 ***
@@ -433,6 +570,20 @@ Disable a rule.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-rule-disable rule_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The rule 1234 has been successfully disabled.
 
 ### es-kibana-rule-update
 
@@ -469,6 +620,36 @@ Update a rule.
 | --- | --- | --- |
 | Elasticsearch.Kibana.Rule.id | String | The rule ID. |
 
+#### Command Example
+
+```!es-kibana-rule-update rule_id="1234" name="Updated CPU alert" schedule_interval="5m"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Rule": {
+                "id": "1234",
+                "name": "Updated CPU alert",
+                "enabled": true,
+                "rule_type_id": ".index-threshold",
+                "created_at": "2024-01-10T08:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The rule 1234 has been successfully changed.
+>
+>|Rule ID|Changed fields|
+>|---|---|
+>| 1234 | name, schedule |
+
 ### es-kibana-rule-alert-mute
 
 ***
@@ -492,6 +673,20 @@ Mute an alert, or mute all alerts for a rule.
 
 There is no context output for this command.
 
+#### Command Example
+
+```!es-kibana-rule-alert-mute rule_id="1234" mute_all="true"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The alerts have been successfully muted.
+
 ### es-kibana-rule-alert-unmute
 
 ***
@@ -513,6 +708,20 @@ Unmute an alert, or unmute all alerts for a rule.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-rule-alert-unmute rule_id="1234" unmute_all="true"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The alerts have been successfully unmuted.
 
 ### es-kibana-detection-alert-status-set
 
@@ -540,6 +749,32 @@ Set the status of one or more detection alerts.
 | --- | --- | --- |
 | Elasticsearch.Kibana.SecurityAlertSetStatus.total | Number | The total number of alerts matched by the request. |
 | Elasticsearch.Kibana.SecurityAlertSetStatus.updated | Number | The number of alerts that were updated. |
+
+#### Command Example
+
+```!es-kibana-detection-alert-status-set status="closed" signal_ids="1234,5678"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "SecurityAlertSetStatus": {
+                "total": 2,
+                "updated": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Detection Alert Status Update
+>|Total|Updated|
+>|---|---|
+>| 2 | 2 |
 
 ### es-kibana-case-create
 
@@ -601,6 +836,38 @@ Creates a new case in Kibana.
 | Elasticsearch.Kibana.Case.status | String | The status of the case. |
 | Elasticsearch.Kibana.Case.created_at | Date | The creation date of the case. |
 | Elasticsearch.Kibana.Case.connector.type | String | The connector type of the case. |
+
+#### Command Example
+
+```!es-kibana-case-create owner="securitySolution" title="Suspicious login" description="Multiple failed logins detected" severity="medium"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "id": "1234",
+                "title": "Suspicious login",
+                "description": "Multiple failed logins detected",
+                "owner": "securitySolution",
+                "severity": "medium",
+                "status": "open",
+                "created_at": "2024-01-15T10:00:00.000Z",
+                "connector": {"type": ".none"}
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case
+>|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
+>|---|---|---|---|---|---|---|---|
+>| Suspicious login | 1234 | Multiple failed logins detected | securitySolution | medium | open | 2024-01-15T10:00:00.000Z | .none |
 
 ### es-kibana-case-update
 
@@ -666,6 +933,38 @@ Update cases in Kibana.
 | Elasticsearch.Kibana.Case.created_at | Date | The creation date of the case. |
 | Elasticsearch.Kibana.Case.connector.type | String | The connector type of the case. |
 
+#### Command Example
+
+```!es-kibana-case-update case_id="1234" version="WzEsMV0=" title="Suspicious login - updated" severity="high"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "id": "1234",
+                "title": "Suspicious login - updated",
+                "description": "Multiple failed logins detected",
+                "owner": "securitySolution",
+                "severity": "high",
+                "status": "open",
+                "created_at": "2024-01-15T10:00:00.000Z",
+                "connector": {"type": ".none"}
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case(s) Updated
+>|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
+>|---|---|---|---|---|---|---|---|
+>| Suspicious login - updated | 1234 | Multiple failed logins detected | securitySolution | high | open | 2024-01-15T10:00:00.000Z | .none |
+
 ### es-kibana-case-delete
 
 ***
@@ -685,6 +984,20 @@ Deletes one or more cases by ID.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-case-delete case_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The cases 1234 have been successfully deleted.
 
 ### es-kibana-case-list
 
@@ -731,6 +1044,40 @@ Retrieves the details of Kibana cases.
 | Elasticsearch.Kibana.Case.created_at | Date | The creation date of the case. |
 | Elasticsearch.Kibana.Case.connector.type | String | The connector type of the case. |
 
+#### Command Example
+
+```!es-kibana-case-list```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": [
+                {
+                    "id": "1234",
+                    "title": "Suspicious login",
+                    "description": "Multiple failed logins detected",
+                    "owner": "securitySolution",
+                    "severity": "medium",
+                    "status": "open",
+                    "created_at": "2024-01-15T10:00:00.000Z",
+                    "connector": {"type": ".none"}
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Cases
+>|Title|ID|Description|Owner|Severity|Status|Created at|Connector type|
+>|---|---|---|---|---|---|---|---|
+>| Suspicious login | 1234 | Multiple failed logins detected | securitySolution | medium | open | 2024-01-15T10:00:00.000Z | .none |
+
 ### es-kibana-case-alerts-list
 
 ***
@@ -756,6 +1103,39 @@ Retrieves all alerts for a case.
 | Elasticsearch.Kibana.Case.Alert.id | String | The alert ID. |
 | Elasticsearch.Kibana.Case.Alert.index | String | The alert index. |
 | Elasticsearch.Kibana.Case.Alert.attached_at | Date | The date the alert was attached to the case. |
+
+#### Command Example
+
+```!es-kibana-case-alerts-list case_id="1234"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "1234": {
+                    "Alert": [
+                        {
+                            "id": "5678",
+                            "index": ".alerts-security.alerts-default",
+                            "attached_at": "2024-01-15T11:00:00.000Z"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts for Case 1234
+>|Case id|Attached at|Alert id|Index|
+>|---|---|---|---|
+>| 1234 | 2024-01-15T11:00:00.000Z | 5678 | .alerts-security.alerts-default |
 
 ### es-kibana-case-comment-add
 
@@ -787,6 +1167,37 @@ Add a case comment or alert.
 | Elasticsearch.Kibana.Case.id | String | The case ID. |
 | Elasticsearch.Kibana.Case.comments.comment | String | The comment text. |
 | Elasticsearch.Kibana.Case.comments.created_by.username | String | The user who created the comment. |
+
+#### Command Example
+
+```!es-kibana-case-comment-add case_id="1234" type="user" owner="securitySolution" comment="Investigated and confirmed malicious activity."```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "id": "1234",
+                "comments": [
+                    {
+                        "comment": "Investigated and confirmed malicious activity.",
+                        "created_by": {"username": "analyst"}
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Comment Added
+>|Case id|Comment|Created by|
+>|---|---|---|
+>| 1234 | Investigated and confirmed malicious activity. | analyst |
 
 ### es-kibana-case-comment-update
 
@@ -822,6 +1233,39 @@ Update a case comment or alert.
 | Elasticsearch.Kibana.Case.comments.updated_by.username | String | The user who updated the comment. |
 | Elasticsearch.Kibana.Case.comments.updated_at | Date | The date the comment was updated. |
 
+#### Command Example
+
+```!es-kibana-case-comment-update case_id="1234" comment_id="5678" type="user" owner="securitySolution" comment="Updated: confirmed false positive." version="WzEsMV0="```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "id": "1234",
+                "comments": [
+                    {
+                        "id": "5678",
+                        "comment": "Updated: confirmed false positive.",
+                        "updated_by": {"username": "analyst"},
+                        "updated_at": "2024-01-15T12:00:00.000Z"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Comment Updated
+>|Case id|Comment|Updated by|Updated at|
+>|---|---|---|---|
+>| 1234 | Updated: confirmed false positive. | analyst | 2024-01-15T12:00:00.000Z |
+
 ### es-kibana-case-comment-delete
 
 ***
@@ -841,6 +1285,20 @@ Deletes all comments and alerts from a case.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-case-comment-delete case_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The comments and alerts for the case 1234 have been successfully deleted.
 
 ### es-kibana-case-file-attach
 
@@ -866,6 +1324,33 @@ Attach a file to a case.
 | --- | --- | --- |
 | Elasticsearch.Kibana.Case.id | String | The case ID. |
 | Elasticsearch.Kibana.Case.comments.updated_by.username | String | The user who attached the file. |
+
+#### Command Example
+
+```!es-kibana-case-file-attach case_id="1234" entry_id="1@1"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Case": {
+                "id": "1234",
+                "comments": [
+                    {
+                        "updated_by": {"username": "analyst"}
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>File successfully attached to case 1234.
 
 ### es-kibana-endpoint-exception-list-item-create
 
@@ -904,6 +1389,36 @@ Create an Elastic Endpoint exception list item, and associate it with the Elasti
 | Elasticsearch.Kibana.EndpointExceptionListItem.name | String | The exception list item name. |
 | Elasticsearch.Kibana.EndpointExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.EndpointExceptionListItem.created_at | Date | The creation date of the exception list item. |
+
+#### Command Example
+
+```!es-kibana-endpoint-exception-list-item-create name="Trusted process" description="Allow known safe process" entries_field="process.name" entries_type="match" entries_operator="included" entries_value="safe_process.exe" os_types="windows"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointExceptionListItem": {
+                "id": "1234",
+                "item_id": "trusted-process-1",
+                "list_id": "endpoint_list",
+                "name": "Trusted process",
+                "description": "Allow known safe process",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Exception List Item
+>|ID|Item ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|---|
+>| 1234 | trusted-process-1 | endpoint_list | Trusted process | Allow known safe process | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-endpoint-exception-list-item-update
 
@@ -946,6 +1461,36 @@ Update an Elastic Endpoint exception list item.
 | Elasticsearch.Kibana.EndpointExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.EndpointExceptionListItem.created_at | Date | The creation date of the exception list item. |
 
+#### Command Example
+
+```!es-kibana-endpoint-exception-list-item-update item_id="trusted-process-1" name="Trusted process updated" description="Updated description" entries_field="process.name" entries_type="match" entries_operator="included" entries_value="safe_process.exe"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointExceptionListItem": {
+                "id": "1234",
+                "item_id": "trusted-process-1",
+                "list_id": "endpoint_list",
+                "name": "Trusted process updated",
+                "description": "Updated description",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Exception List Item
+>|ID|Item ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|---|
+>| 1234 | trusted-process-1 | endpoint_list | Trusted process updated | Updated description | 2024-01-15T10:00:00.000Z |
+
 ### es-kibana-endpoint-exception-list-item-delete
 
 ***
@@ -965,6 +1510,20 @@ Delete an Elastic Endpoint exception list item.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-endpoint-exception-list-item-delete item_id="trusted-process-1"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The item trusted-process-1 has been successfully deleted.
 
 ### es-kibana-endpoint-exception-list-item-list
 
@@ -998,6 +1557,38 @@ Retrieves Elastic Endpoint exception list items.
 | Elasticsearch.Kibana.EndpointExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.EndpointExceptionListItem.created_at | Date | The creation date of the exception list item. |
 
+#### Command Example
+
+```!es-kibana-endpoint-exception-list-item-list```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointExceptionListItem": [
+                {
+                    "id": "1234",
+                    "item_id": "trusted-process-1",
+                    "list_id": "endpoint_list",
+                    "name": "Trusted process",
+                    "description": "Allow known safe process",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Exception List Items
+>|ID|Item ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|---|
+>| 1234 | trusted-process-1 | endpoint_list | Trusted process | Allow known safe process | 2024-01-15T10:00:00.000Z |
+
 ### es-kibana-exception-list-list
 
 ***
@@ -1030,6 +1621,37 @@ Get a list of all exception list containers.
 | Elasticsearch.Kibana.ExceptionList.name | String | The exception list name. |
 | Elasticsearch.Kibana.ExceptionList.description | String | The exception list description. |
 | Elasticsearch.Kibana.ExceptionList.created_at | Date | The creation date of the exception list. |
+
+#### Command Example
+
+```!es-kibana-exception-list-list```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionList": [
+                {
+                    "id": "1234",
+                    "list_id": "my-exception-list",
+                    "name": "My Exception List",
+                    "description": "Exceptions for trusted processes",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception Lists
+>|Exception list ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|
+>| 1234 | my-exception-list | My Exception List | Exceptions for trusted processes | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-exception-list-create
 
@@ -1065,6 +1687,35 @@ Create an exception list.
 | Elasticsearch.Kibana.ExceptionList.name | String | The exception list name. |
 | Elasticsearch.Kibana.ExceptionList.description | String | The exception list description. |
 | Elasticsearch.Kibana.ExceptionList.created_at | Date | The creation date of the exception list. |
+
+#### Command Example
+
+```!es-kibana-exception-list-create type="detection" name="My Exception List" description="Exceptions for trusted processes" list_id="my-exception-list"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionList": {
+                "id": "1234",
+                "list_id": "my-exception-list",
+                "name": "My Exception List",
+                "description": "Exceptions for trusted processes",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception List
+>|Exception list ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|
+>| 1234 | my-exception-list | My Exception List | Exceptions for trusted processes | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-exception-list-update
 
@@ -1102,6 +1753,35 @@ Updates an existing exception list.
 | Elasticsearch.Kibana.ExceptionList.description | String | The exception list description. |
 | Elasticsearch.Kibana.ExceptionList.created_at | Date | The creation date of the exception list. |
 
+#### Command Example
+
+```!es-kibana-exception-list-update exception_list_id="1234" name="My Exception List Updated" description="Updated description" type="detection"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionList": {
+                "id": "1234",
+                "list_id": "my-exception-list",
+                "name": "My Exception List Updated",
+                "description": "Updated description",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception List
+>|Exception list ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|
+>| 1234 | my-exception-list | My Exception List Updated | Updated description | 2024-01-15T10:00:00.000Z |
+
 ### es-kibana-exception-list-delete
 
 ***
@@ -1123,6 +1803,20 @@ Delete an exception list using the id or list_id field.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-exception-list-delete list_id="my-exception-list"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The exception list my-exception-list has been successfully deleted.
 
 ### es-kibana-exception-list-item-list
 
@@ -1159,6 +1853,38 @@ Get a list of all exception list items in the specified list.
 | Elasticsearch.Kibana.ExceptionListItem.name | String | The exception list item name. |
 | Elasticsearch.Kibana.ExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.ExceptionListItem.created_at | Date | The creation date of the exception list item. |
+
+#### Command Example
+
+```!es-kibana-exception-list-item-list exception_list_id="my-exception-list"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionListItem": [
+                {
+                    "id": "1234",
+                    "item_id": "my-item-1",
+                    "list_id": "my-exception-list",
+                    "name": "Trusted IP",
+                    "description": "Known safe IP address",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception List Items
+>|ID|Item ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|---|
+>| 1234 | my-item-1 | my-exception-list | Trusted IP | Known safe IP address | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-exception-list-item-create
 
@@ -1203,6 +1929,36 @@ Create an exception item and associate it with the specified exception list.
 | Elasticsearch.Kibana.ExceptionListItem.name | String | The exception list item name. |
 | Elasticsearch.Kibana.ExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.ExceptionListItem.created_at | Date | The creation date of the exception list item. |
+
+#### Command Example
+
+```!es-kibana-exception-list-item-create list_id="my-exception-list" name="Trusted IP" description="Known safe IP address" entries_field="source.ip" entries_type="match" entries_operator="included" entries_value="192.168.1.1"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionListItem": {
+                "id": "1234",
+                "item_id": "my-item-1",
+                "list_id": "my-exception-list",
+                "name": "Trusted IP",
+                "description": "Known safe IP address",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception List Item
+>|ID|Item ID|List ID|Name|Description|Creation date|
+>|---|---|---|---|---|---|
+>| 1234 | my-item-1 | my-exception-list | Trusted IP | Known safe IP address | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-exception-item-list-update
 
@@ -1251,6 +2007,36 @@ Updates an existing exception list item.
 | Elasticsearch.Kibana.ExceptionListItem.description | String | The exception list item description. |
 | Elasticsearch.Kibana.ExceptionListItem.updated_at | Date | The update date of the exception list item. |
 
+#### Command Example
+
+```!es-kibana-exception-item-list-update item_id="my-item-1" name="Trusted IP updated" description="Updated safe IP" entries_field="source.ip" entries_type="match" entries_operator="included" entries_value="192.168.1.1"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ExceptionListItem": {
+                "id": "1234",
+                "item_id": "my-item-1",
+                "list_id": "my-exception-list",
+                "name": "Trusted IP updated",
+                "description": "Updated safe IP",
+                "updated_at": "2024-01-15T12:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Exception List Item Updated
+>|Exception list item ID|Item Id|List ID|Name|Description|Update date|
+>|---|---|---|---|---|---|
+>| 1234 | my-item-1 | my-exception-list | Trusted IP updated | Updated safe IP | 2024-01-15T12:00:00.000Z |
+
 ### es-kibana-exception-list-item-delete
 
 ***
@@ -1272,6 +2058,20 @@ Deletes an exception list item.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-exception-list-item-delete item_id="my-item-1"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The exception list item my-item-1 has been successfully deleted.
 
 ### es-kibana-value-lists-list
 
@@ -1303,6 +2103,36 @@ Retrieves details of a value list (the list container).
 | Elasticsearch.Kibana.ValueList.name | String | The value list name. |
 | Elasticsearch.Kibana.ValueList.description | String | The value list description. |
 | Elasticsearch.Kibana.ValueList.created_at | Date | The creation date of the value list. |
+
+#### Command Example
+
+```!es-kibana-value-lists-list```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ValueList": [
+                {
+                    "id": "1234",
+                    "name": "trusted-ips",
+                    "description": "List of trusted IP addresses",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Value Lists
+>|Value list ID|Name|Description|Creation date|
+>|---|---|---|---|
+>| 1234 | trusted-ips | List of trusted IP addresses | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-value-list-item-get
 
@@ -1338,6 +2168,36 @@ Retrieves value list items.
 | Elasticsearch.Kibana.ValueListItem.description | String | The value list item description. |
 | Elasticsearch.Kibana.ValueListItem.created_at | Date | The creation date of the value list item. |
 
+#### Command Example
+
+```!es-kibana-value-list-item-get value_list_id="1234"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ValueListItem": [
+                {
+                    "id": "5678",
+                    "list_id": "1234",
+                    "value": "192.168.1.1",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Value List Items
+>|Value list item ID|List ID|Value|Creation date|
+>|---|---|---|---|
+>| 5678 | 1234 | 192.168.1.1 | 2024-01-15T10:00:00.000Z |
+
 ### es-kibana-value-list-item-create
 
 ***
@@ -1366,6 +2226,34 @@ Adds a new item to a value list.
 | Elasticsearch.Kibana.ValueListItem.name | String | The value list item name. |
 | Elasticsearch.Kibana.ValueListItem.description | String | The value list item description. |
 | Elasticsearch.Kibana.ValueListItem.created_at | Date | The creation date of the value list item. |
+
+#### Command Example
+
+```!es-kibana-value-list-item-create value_list_id="1234" value="10.0.0.1"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ValueListItem": {
+                "id": "5678",
+                "list_id": "1234",
+                "value": "10.0.0.1",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Value List Item
+>|Value list item ID|List ID|Value|Creation date|
+>|---|---|---|---|
+>| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
 
 ### es-kibana-value-list-item-update
 
@@ -1396,6 +2284,34 @@ Updates an existing value list item.
 | Elasticsearch.Kibana.ValueListItem.description | String | The value list item description. |
 | Elasticsearch.Kibana.ValueListItem.created_at | Date | The creation date of the value list item. |
 
+#### Command Example
+
+```!es-kibana-value-list-item-update value_list_item_id="5678" value="10.0.0.2"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ValueListItem": {
+                "id": "5678",
+                "list_id": "1234",
+                "value": "10.0.0.2",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Value List Item
+>|Value list item ID|List ID|Value|Creation date|
+>|---|---|---|---|
+>| 5678 | 1234 | 10.0.0.2 | 2024-01-15T10:00:00.000Z |
+
 ### es-kibana-value-list-item-delete
 
 ***
@@ -1419,6 +2335,20 @@ Deletes a value list item.
 
 There is no context output for this command.
 
+#### Command Example
+
+```!es-kibana-value-list-item-delete value_list_item_id="5678"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The value list item 5678 has been successfully deleted.
+
 ### es-kibana-value-list-item-export
 
 ***
@@ -1438,6 +2368,20 @@ Exports all items of a value list as a file (returned to the War Room).
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-value-list-item-export value_list_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The value list 1234 has been exported successfully.
 
 ### es-kibana-value-list-item-import
 
@@ -1467,3 +2411,31 @@ Import value list items from a TXT or CSV file.
 | Elasticsearch.Kibana.ValueListItem.name | String | The value list item name. |
 | Elasticsearch.Kibana.ValueListItem.description | String | The value list item description. |
 | Elasticsearch.Kibana.ValueListItem.created_at | Date | The creation date of the value list item. |
+
+#### Command Example
+
+```!es-kibana-value-list-item-import value_list_id="1234" entry_id="1@1"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "ValueListItem": {
+                "id": "5678",
+                "list_id": "1234",
+                "value": "10.0.0.1",
+                "created_at": "2024-01-15T10:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Value List Item
+>|Value list item ID|List ID|Value|Creation date|
+>|---|---|---|---|
+>| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
