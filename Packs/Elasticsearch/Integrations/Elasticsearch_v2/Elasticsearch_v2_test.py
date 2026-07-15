@@ -1632,7 +1632,6 @@ class TestKibanaHttpRequest:
 
     @pytest.fixture(autouse=True)
     def setup(self, mocker):
-        import Elasticsearch_v2
 
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment.es.us-central1.gcp.cloud.es.io")
         mocker.patch("Elasticsearch_v2.get_kibana_auth_headers", return_value={"Authorization": "Basic dXNlcjpwYXNz"})
@@ -2042,9 +2041,7 @@ class TestEsKibanaCaseUpdateCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=[MOCK_KIBANA_CASE])
 
-        result = Elasticsearch_v2.es_kibana_case_update_command(
-            {"case_id": "case-id-1", "version": "v1", "status": "closed"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_case_update_command({"case_id": "case-id-1", "version": "v1", "status": "closed"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "PATCH"
@@ -2109,9 +2106,7 @@ class TestEsKibanaCaseListCommand:
     def test_list_search(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"cases": [MOCK_KIBANA_CASE]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"cases": [MOCK_KIBANA_CASE]})
 
         result = Elasticsearch_v2.es_kibana_case_list_command({"status": "open", "page": "1", "size": "20"}, {})
 
@@ -2171,9 +2166,7 @@ class TestEsKibanaCaseCommentCommands:
     def test_comment_add_alert_type(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"id": "case-id-1", "comments": []}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"id": "case-id-1", "comments": []})
 
         Elasticsearch_v2.es_kibana_case_comment_add_command(
             {"case_id": "case-id-1", "owner": "securitySolution", "type": "alert", "alert_id": "a1", "index": "i1"}, {}
@@ -2242,15 +2235,11 @@ class TestEsKibanaCaseFileAttachCommand:
 
         file_path = tmp_path / "report.pdf"
         file_path.write_bytes(b"%PDF-1.4 fake content")
-        mocker.patch(
-            "Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "report.pdf"}
-        )
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "report.pdf"})
         response = {"id": "case-id-1", "comments": [{"updated_by": {"username": "bob"}}]}
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
 
-        result = Elasticsearch_v2.es_kibana_case_file_attach_command(
-            {"case_id": "case-id-1", "entry_id": "123@abc"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_case_file_attach_command({"case_id": "case-id-1", "entry_id": "123@abc"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
@@ -2298,9 +2287,7 @@ class TestEsKibanaAlertingHealthGetCommand:
     def test_get_health_success(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value=MOCK_ALERTING_HEALTH_RESPONSE
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_ALERTING_HEALTH_RESPONSE)
 
         result = Elasticsearch_v2.es_kibana_alerting_health_get_command({}, {})
 
@@ -2318,9 +2305,7 @@ class TestEsKibanaRuleTypesListCommand:
     def test_list_rule_types_success(self, mocker):
         import Elasticsearch_v2
 
-        rule_types = [
-            {"id": "type1", "name": "Type 1", "category": "cat", "producer": "prod", "action_groups": [{"id": "ag1"}]}
-        ]
+        rule_types = [{"id": "type1", "name": "Type 1", "category": "cat", "producer": "prod", "action_groups": [{"id": "ag1"}]}]
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=rule_types)
 
         result = Elasticsearch_v2.es_kibana_rule_types_list_command({}, {})
@@ -2406,9 +2391,7 @@ class TestBuildRuleUpdateBody:
     def test_basic_fields(self):
         import Elasticsearch_v2
 
-        body = Elasticsearch_v2.build_rule_update_body(
-            {"name": "New name", "enabled": "false", "schedule_interval": "5m"}
-        )
+        body = Elasticsearch_v2.build_rule_update_body({"name": "New name", "enabled": "false", "schedule_interval": "5m"})
 
         assert body["name"] == "New name"
         assert body["enabled"] is False
@@ -2478,9 +2461,7 @@ class TestEsKibanaRuleAlertMuteUnmuteCommands:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
 
-        result = Elasticsearch_v2.es_kibana_rule_alert_mute_command(
-            {"rule_id": "rule-id-1", "alert_id": "alert-1"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_rule_alert_mute_command({"rule_id": "rule-id-1", "alert_id": "alert-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][1] == "/api/alerting/rule/rule-id-1/alert/alert-1/_mute"
@@ -2515,9 +2496,7 @@ class TestEsKibanaRuleAlertMuteUnmuteCommands:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
 
-        result = Elasticsearch_v2.es_kibana_rule_alert_unmute_command(
-            {"rule_id": "rule-id-1", "alert_id": "alert-1"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_rule_alert_unmute_command({"rule_id": "rule-id-1", "alert_id": "alert-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][1] == "/api/alerting/rule/rule-id-1/alert/alert-1/_unmute"
@@ -2540,13 +2519,9 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
     def test_set_status_by_signal_ids(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"total": 2, "updated": 2}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"total": 2, "updated": 2})
 
-        result = Elasticsearch_v2.es_kibana_detection_alert_status_set_command(
-            {"status": "closed", "signal_ids": "id1,id2"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "closed", "signal_ids": "id1,id2"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
@@ -2557,13 +2532,9 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
     def test_set_status_by_query(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"total": 1, "updated": 1}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"total": 1, "updated": 1})
 
-        Elasticsearch_v2.es_kibana_detection_alert_status_set_command(
-            {"status": "open", "query": '{"match_all": {}}'}, {}
-        )
+        Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "open", "query": '{"match_all": {}}'}, {})
 
         call_args = mock_request.call_args
         assert call_args[1]["json_data"]["query"] == '{"match_all": {}}'
@@ -2708,9 +2679,7 @@ class TestEsKibanaEndpointExceptionListItemListCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
 
-        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_list_command(
-            {"item_id": "trusted-linux-processes"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_list_command({"item_id": "trusted-linux-processes"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][1] == "/api/endpoint_list/items"
@@ -2719,9 +2688,7 @@ class TestEsKibanaEndpointExceptionListItemListCommand:
     def test_list_find(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]})
 
         result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_list_command({"page": "1"}, {})
 
@@ -2747,9 +2714,7 @@ class TestEsKibanaExceptionListListCommand:
     def test_list_find(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_LIST]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_LIST]})
 
         result = Elasticsearch_v2.es_kibana_exception_list_list_command({}, {})
 
@@ -2766,9 +2731,7 @@ class TestEsKibanaExceptionListCreateCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_LIST)
 
-        result = Elasticsearch_v2.es_kibana_exception_list_create_command(
-            {"name": "Test List", "type": "detection"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_exception_list_create_command({"name": "Test List", "type": "detection"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
@@ -2838,9 +2801,7 @@ class TestEsKibanaExceptionListItemListCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
 
-        result = Elasticsearch_v2.es_kibana_exception_list_item_list_command(
-            {"exception_list_item_id": "item-id-1"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_exception_list_item_list_command({"exception_list_item_id": "item-id-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][1] == "/api/exception_lists/items"
@@ -2849,9 +2810,7 @@ class TestEsKibanaExceptionListItemListCommand:
     def test_list_find(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]})
 
         result = Elasticsearch_v2.es_kibana_exception_list_item_list_command({"search": "test"}, {})
 
@@ -2868,9 +2827,7 @@ class TestEsKibanaExceptionListItemCreateCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
 
-        result = Elasticsearch_v2.es_kibana_exception_list_item_create_command(
-            {"name": "Test Item", "list_id": "list-id-1"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_exception_list_item_create_command({"name": "Test Item", "list_id": "list-id-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
@@ -2904,9 +2861,7 @@ class TestEsKibanaExceptionListItemDeleteCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
 
-        result = Elasticsearch_v2.es_kibana_exception_list_item_delete_command(
-            {"exception_list_item_id": "item-id-1"}, {}
-        )
+        result = Elasticsearch_v2.es_kibana_exception_list_item_delete_command({"exception_list_item_id": "item-id-1"}, {})
 
         call_args = mock_request.call_args
         assert call_args[0][0] == "DELETE"
@@ -2953,9 +2908,7 @@ class TestEsKibanaValueListsListCommand:
     def test_list_find(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST]})
 
         result = Elasticsearch_v2.es_kibana_value_lists_list_command({}, {})
 
@@ -2992,9 +2945,7 @@ class TestEsKibanaValueListItemGetCommand:
     def test_get_find(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch(
-            "Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST_ITEM]}
-        )
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST_ITEM]})
 
         result = Elasticsearch_v2.es_kibana_value_list_item_get_command({"value_list_id": "value-list-id-1"}, {})
 
@@ -3079,9 +3030,7 @@ class TestEsKibanaValueListItemDeleteCommand:
 
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
 
-        Elasticsearch_v2.es_kibana_value_list_item_delete_command(
-            {"value_list_id": "value-list-id-1", "value": "1.2.3.4"}, {}
-        )
+        Elasticsearch_v2.es_kibana_value_list_item_delete_command({"value_list_id": "value-list-id-1", "value": "1.2.3.4"}, {})
 
         call_args = mock_request.call_args
         assert call_args[1]["params"]["list_id"] == "value-list-id-1"
@@ -3119,9 +3068,7 @@ class TestEsKibanaValueListItemImportCommand:
 
         file_path = tmp_path / "values.txt"
         file_path.write_text("1.2.3.4\n5.6.7.8")
-        mocker.patch(
-            "Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "values.txt"}
-        )
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "values.txt"})
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=[MOCK_VALUE_LIST_ITEM])
 
         result = Elasticsearch_v2.es_kibana_value_list_item_import_command(

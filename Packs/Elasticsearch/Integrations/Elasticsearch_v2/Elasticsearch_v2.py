@@ -1858,9 +1858,7 @@ def es_kibana_case_list_command(args: Dict[str, Any], proxies) -> CommandResults
     case_id = args.get("case_id")
 
     if case_id:
-        response = kibana_http_request(
-            "GET", f"/api/cases/{case_id}", space_id=space_id, proxies=proxies, allow_not_found=True
-        )
+        response = kibana_http_request("GET", f"/api/cases/{case_id}", space_id=space_id, proxies=proxies, allow_not_found=True)
         cases = [response] if response else []
     else:
         params: Dict[str, Any] = {}
@@ -1971,9 +1969,7 @@ def es_kibana_case_comment_add_command(args: Dict[str, Any], proxies) -> Command
     space_id = args.get("space_id")
 
     body = build_case_comment_body(args)
-    response = kibana_http_request(
-        "POST", f"/api/cases/{case_id}/comments", space_id=space_id, json_data=body, proxies=proxies
-    )
+    response = kibana_http_request("POST", f"/api/cases/{case_id}/comments", space_id=space_id, json_data=body, proxies=proxies)
 
     comments = response.get("comments", [])
     last_comment = comments[-1] if comments else {}
@@ -2004,9 +2000,7 @@ def es_kibana_case_comment_update_command(args: Dict[str, Any], proxies) -> Comm
     if args.get("version"):
         body["version"] = args["version"]
 
-    response = kibana_http_request(
-        "PATCH", f"/api/cases/{case_id}/comments", space_id=space_id, json_data=body, proxies=proxies
-    )
+    response = kibana_http_request("PATCH", f"/api/cases/{case_id}/comments", space_id=space_id, json_data=body, proxies=proxies)
 
     comments = response.get("comments", [])
     updated_comment = next((c for c in comments if c.get("id") == args.get("comment_id")), comments[-1] if comments else {})
@@ -2034,9 +2028,7 @@ def es_kibana_case_comment_delete_command(args: Dict[str, Any], proxies) -> Comm
 
     kibana_http_request("DELETE", f"/api/cases/{case_id}/comments", space_id=space_id, proxies=proxies)
 
-    return CommandResults(
-        readable_output=f"The comments and alerts for the case {case_id} have been successfully deleted."
-    )
+    return CommandResults(readable_output=f"The comments and alerts for the case {case_id} have been successfully deleted.")
 
 
 def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> CommandResults:
@@ -2058,7 +2050,7 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
         raise DemistoException(f"Could not resolve file path for entry_id={entry_id}")
 
     file_name = args.get("file_name") or file_info.get("name")
-    
+
     mime_type, _ = mimetypes.guess_type(file_name or file_path)
     if not mime_type:
         demisto.debug(f"Could not determine MIME type for file {file_name or file_path}, defaulting to text/plain")
@@ -2068,23 +2060,15 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
     if not ext:
         guessed_ext = mimetypes.guess_extension(mime_type)
         if guessed_ext:
-            demisto.debug(
-                f"File {file_name} has no extension, but MIME type {mime_type} suggests extension {guessed_ext}"
-            )
+            demisto.debug(f"File {file_name} has no extension, but MIME type {mime_type} suggests extension {guessed_ext}")
             file_name += guessed_ext
         else:
             demisto.debug(
                 f"File {file_name} has no extension and MIME type {mime_type} does not suggest an extension, defaulting to .txt"
             )
             file_name += ".txt"
-        
-    files = {
-        "file": (
-            file_name,
-            open(file_path, "rb"),
-            mime_type
-        )
-    }
+
+    files = {"file": (file_name, open(file_path, "rb"), mime_type)}
     response = kibana_http_request(
         "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies, json_data={"filename": file_name}
     )
@@ -2257,13 +2241,9 @@ def build_rule_update_body(args: Dict[str, Any]) -> Dict[str, Any]:
     if flapping_enabled is not None:
         # When the flapping object is provided, look_back_window and status_change_threshold are required by the API.
         if flapping_look_back_window is None:
-            raise DemistoException(
-                '"flapping_look_back_window" is required when configuring flapping settings.'
-            )
+            raise DemistoException('"flapping_look_back_window" is required when configuring flapping settings.')
         if flapping_status_change_threshold is None:
-            raise DemistoException(
-                '"flapping_status_change_threshold" is required when configuring flapping settings.'
-            )
+            raise DemistoException('"flapping_status_change_threshold" is required when configuring flapping settings.')
         flapping: Dict[str, Any] = {
             "look_back_window": arg_to_number(flapping_look_back_window),
             "status_change_threshold": arg_to_number(flapping_status_change_threshold),
@@ -2293,16 +2273,12 @@ def es_kibana_rule_update_command(args: Dict[str, Any], proxies) -> CommandResul
 
     # The Kibana PUT /api/alerting/rule/{id} endpoint requires the rule's `params` field to be
     # present in every update request (it does not preserve existing params on partial updates).
-    existing_rule = kibana_http_request(
-        "GET", f"/api/alerting/rule/{rule_id}", space_id=space_id, proxies=proxies
-    )
+    existing_rule = kibana_http_request("GET", f"/api/alerting/rule/{rule_id}", space_id=space_id, proxies=proxies)
     existing_params = existing_rule.get("params")
     if existing_params and "params" not in body:
         body["params"] = existing_params
 
-    response = kibana_http_request(
-        "PUT", f"/api/alerting/rule/{rule_id}", space_id=space_id, json_data=body, proxies=proxies
-    )
+    response = kibana_http_request("PUT", f"/api/alerting/rule/{rule_id}", space_id=space_id, json_data=body, proxies=proxies)
 
     hr = {"Rule ID": response.get("id"), "Changed fields": list(body.keys())}
     readable_output = f"The rule {rule_id} has been successfully changed.\n" + tableToMarkdown(
@@ -2361,9 +2337,7 @@ def es_kibana_rule_alert_unmute_command(args: Dict[str, Any], proxies) -> Comman
     if not alert_id:
         raise DemistoException('The "alert_id" argument is required when "unmute_all" is not true.')
 
-    kibana_http_request(
-        "POST", f"/api/alerting/rule/{rule_id}/alert/{alert_id}/_unmute", space_id=space_id, proxies=proxies
-    )
+    kibana_http_request("POST", f"/api/alerting/rule/{rule_id}/alert/{alert_id}/_unmute", space_id=space_id, proxies=proxies)
     return CommandResults(readable_output=f"The alerts {alert_id}s have been successfully unmuted.")
 
 
@@ -2390,9 +2364,7 @@ def es_kibana_detection_alert_status_set_command(args: Dict[str, Any], proxies) 
     )
 
     hr = {"Total": response.get("total"), "Updated": response.get("updated")}
-    readable_output = tableToMarkdown(
-        "Kibana Detection Alert Status Update", hr, removeNull=True, headers=list(hr.keys())
-    )
+    readable_output = tableToMarkdown("Kibana Detection Alert Status Update", hr, removeNull=True, headers=list(hr.keys()))
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Elasticsearch.Kibana.SecurityAlertSetStatus",
@@ -2523,9 +2495,7 @@ def es_kibana_endpoint_exception_list_item_delete_command(args: Dict[str, Any], 
         raise DemistoException('Either "id" or "item_id" must be specified.')
     space_id = args.get("space_id")
 
-    kibana_http_request(
-        "DELETE", "/api/endpoint_list/items", space_id=space_id, params={"item_id": item_id}, proxies=proxies
-    )
+    kibana_http_request("DELETE", "/api/endpoint_list/items", space_id=space_id, params={"item_id": item_id}, proxies=proxies)
 
     return CommandResults(readable_output=f"The item {item_id} has been successfully deleted.")
 
@@ -2546,14 +2516,18 @@ def es_kibana_endpoint_exception_list_item_list_command(args: Dict[str, Any], pr
         items = [response] if response else []
     else:
         params: Dict[str, Any] = {}
-        param_arg_map = {"filter": "filter", "sort_field": "sort_field", "sort_order": "sort_order", "page": "page", "size": "per_page"}
+        param_arg_map = {
+            "filter": "filter",
+            "sort_field": "sort_field",
+            "sort_order": "sort_order",
+            "page": "page",
+            "size": "per_page",
+        }
         for arg_name, param_name in param_arg_map.items():
             if args.get(arg_name) is not None:
                 params[param_name] = args[arg_name]
 
-        response = kibana_http_request(
-            "GET", "/api/endpoint_list/items/_find", space_id=space_id, params=params, proxies=proxies
-        )
+        response = kibana_http_request("GET", "/api/endpoint_list/items/_find", space_id=space_id, params=params, proxies=proxies)
         items = response.get("data", []) if isinstance(response, dict) else response
 
     hr_rows = [exception_list_item_to_hr(item) for item in items]
@@ -2612,9 +2586,7 @@ def es_kibana_exception_list_list_command(args: Dict[str, Any], proxies) -> Comm
             if args.get(arg_name) is not None:
                 params[param_name] = args[arg_name]
 
-        response = kibana_http_request(
-            "GET", "/api/exception_lists/_find", space_id=space_id, params=params, proxies=proxies
-        )
+        response = kibana_http_request("GET", "/api/exception_lists/_find", space_id=space_id, params=params, proxies=proxies)
         lists_ = response.get("data", []) if isinstance(response, dict) else response
 
     hr_rows = [exception_list_to_hr(exc_list) for exc_list in lists_]
@@ -2999,9 +2971,7 @@ def es_kibana_value_list_item_create_command(args: Dict[str, Any], proxies) -> C
     if args.get("refresh") is not None:
         params["refresh"] = args["refresh"]
 
-    response = kibana_http_request(
-        "POST", "/api/lists/items", space_id=space_id, json_data=body, params=params, proxies=proxies
-    )
+    response = kibana_http_request("POST", "/api/lists/items", space_id=space_id, json_data=body, params=params, proxies=proxies)
 
     hr = value_list_item_to_hr(response)
     readable_output = tableToMarkdown("Kibana Value List Item", hr, removeNull=True, headers=list(hr.keys()))
@@ -3047,9 +3017,7 @@ def es_kibana_value_list_item_delete_command(args: Dict[str, Any], proxies) -> C
     value_list_id = args.get("value_list_id")
     value = args.get("value")
     if not value_list_item_id and not (value_list_id and value):
-        raise DemistoException(
-            'Either "value_list_item_id" or both "value_list_id" and "value" must be specified.'
-        )
+        raise DemistoException('Either "value_list_item_id" or both "value_list_id" and "value" must be specified.')
     space_id = args.get("space_id")
 
     params = {}
@@ -3076,9 +3044,7 @@ def es_kibana_value_list_item_export_command(args: Dict[str, Any], proxies) -> l
     if value_list_id:
         params["list_id"] = value_list_id
 
-    response = kibana_http_request(
-        "POST", "/api/lists/items/_export", space_id=space_id, params=params, proxies=proxies
-    )
+    response = kibana_http_request("POST", "/api/lists/items/_export", space_id=space_id, params=params, proxies=proxies)
 
     file_content = response if isinstance(response, str) else json.dumps(response)
     file_name = f"{value_list_id or 'value-list'}-items.txt"
