@@ -2068,10 +2068,11 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
             )
             file_name += ".txt"
 
-    files = {"file": (file_name, open(file_path, "rb"), mime_type)}
-    response = kibana_http_request(
-        "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies, json_data={"filename": file_name}
-    )
+    with open(file_path, "rb") as f:
+        files = {"file": (file_name, f, mime_type)}
+        response = kibana_http_request(
+            "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies, json_data={"filename": file_name}
+        )
 
     comments = response.get("comments", []) if isinstance(response, dict) else []
     last_comment = comments[-1] if comments else {}
