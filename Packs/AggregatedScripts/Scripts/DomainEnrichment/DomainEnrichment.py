@@ -60,7 +60,7 @@ def domain_enrichment_script(
     command_batch2: list[Command] = []
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
-         # On platform, we use the built-in commands and brand Builtin
+        # On platform, we use the built-in commands and brand Builtin
         if is_platform():
             command_batch2.append(
                 Command(
