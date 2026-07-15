@@ -2071,7 +2071,12 @@ def es_kibana_case_file_attach_command(args: Dict[str, Any], proxies) -> Command
     with open(file_path, "rb") as f:
         files = {"file": (file_name, f, mime_type)}
         response = kibana_http_request(
-            "POST", f"/api/cases/{case_id}/files", space_id=space_id, files=files, proxies=proxies, json_data={"filename": file_name}
+            "POST",
+            f"/api/cases/{case_id}/files",
+            space_id=space_id,
+            files=files,
+            proxies=proxies,
+            json_data={"filename": file_name},
         )
 
     comments = response.get("comments", []) if isinstance(response, dict) else []
