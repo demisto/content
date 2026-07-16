@@ -29,6 +29,7 @@ Netcraft takedown, submission and screenshot management.
     | Incidents Fetch Interval |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | 'Advanced: Time in minutes to look back when fetching incidents' | Use this parameter to determine how long backward in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, API Key, and connection.
 
@@ -1793,3 +1794,32 @@ Download associated screenshots for a specified URL.
 #### Human Readable Output
 
 >Returned file: url_screenshot_06f8715ba1b1ca5dee4af05e98bbc63a.png [Download](https://www.paloaltonetworks.com/cortex)
+
+### netcraft-get-incidents
+
+***
+Retrieve incidents from Netcraft using the same API request as fetch-incidents, filtered by ID.
+
+#### Base Command
+
+`netcraft-get-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id_after | Return only incidents with an ID greater than this value. | Required |
+| max_results | The maximum number of incidents to return. Default is 10. | Optional |
+| region | The region to filter by. If not specified, the configured region will be used. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Netcraft.Incident.id | Number | The ID of the incident. |
+| Netcraft.Incident.attack_url | String | The URL of the attack. |
+| Netcraft.Incident.attack_type | String | The type of the attack. |
+| Netcraft.Incident.status | String | The status of the incident. |
+| Netcraft.Incident.date_submitted | String | The date the incident was submitted. |
+| Netcraft.Incident.last_updated | String | The date the incident was last updated. |
+| Netcraft.Incident.target_brand | String | The target brand of the incident. |
