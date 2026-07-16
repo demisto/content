@@ -1553,7 +1553,7 @@ Retrieves Elastic Endpoint exception list items.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
+| filter | Filters the returned results according to the value of the specified field, using the `<field name>:<field value>` syntax. | Optional |
 | item_id | Either `id` or `item_id` must be specified. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
 | sort_order | Determines the sort order. | Optional |
@@ -1853,7 +1853,7 @@ Get a list of all exception list items in the specified list.
 | exception_list_item_id | Exception list item's identifier. Either `id` or `item_id` must be specified. | Optional |
 | item_id | Human readable exception item string identifier. Either `id` or `item_id` must be specified. | Optional |
 | exception_list_id | The list_ids of the items to fetch. | Optional |
-| filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
+| filter | Filters the returned results according to the value of the specified field, using the `<field name>:<field value>` syntax. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
 | search | Free-text search term applied to exception list item fields. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
@@ -2109,7 +2109,7 @@ Retrieves details of a value list (the list container).
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | value_list_id | Value list identifier (id) returned when the list was created. | Optional |
-| filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
+| filter | Filters the returned results according to the value of the specified field, using the `<field name>:<field value>` syntax. | Optional |
 | cursor | Returns the lists that come after the last lists returned in the previous call. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
 | sort_order | Determines the sort order. | Optional |
@@ -2173,7 +2173,7 @@ Retrieves value list items.
 | value_list_item_id | Value list item identifier. Required if list_id and value are not specified. | Optional |
 | value_list_id | Parent value list's id to page through items for. | Optional |
 | value | The value used to evaluate exceptions. Required if id is not specified. | Optional |
-| filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
+| filter | Filters the returned results according to the value of the specified field, using the `<field name>:<field value>` syntax. | Optional |
 | cursor | Opaque cursor returned in a previous response; pass it to continue listing from the next page. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
 | sort_order | Determines the sort order. | Optional |
