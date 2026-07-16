@@ -436,9 +436,7 @@ def get_asset_types() -> CommandResults:
     data = _handle_api_response(response=response, endpoint=endpoint)
 
     raw_types: list = data.get("asset_types") or []
-    asset_types: List[dict] = [
-        t if isinstance(t, dict) else {"asset_type": t} for t in raw_types
-    ]
+    asset_types: List[dict] = [t if isinstance(t, dict) else {"asset_type": t} for t in raw_types]
 
     readable_output = tableToMarkdown("Axonius Asset Types", asset_types, removeNull=True)
 
