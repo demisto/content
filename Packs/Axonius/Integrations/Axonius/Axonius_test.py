@@ -220,17 +220,17 @@ def _make_ok_response(body: dict) -> MagicMock:
 
 def test_get_assets_basic():
     with patch("Axonius.make_api_call", return_value=_make_ok_response(DUMMY_V2_ASSETS_RESPONSE)):
-        result = get_assets({"asset_type": "vulnerability_instances", "page_limit": "2"})
+        result = get_assets({"asset_type": "vulnerability_instances", "page_size": "2"})
     assert result.outputs["asset_type"] == "vulnerability_instances"
     assert len(result.outputs["assets"]) == 2
     assert result.outputs["count"] == 2
-    assert "next_page" not in result.outputs
+    assert "next_token" not in result.outputs
 
 
 def test_get_assets_with_cursor():
     with patch("Axonius.make_api_call", return_value=_make_ok_response(DUMMY_V2_ASSETS_RESPONSE_WITH_CURSOR)):
         result = get_assets({"asset_type": "devices"})
-    assert result.outputs["next_page"] == "cursor_token_xyz"
+    assert result.outputs["next_token"] == "cursor_token_xyz"
 
 
 def test_get_assets_no_results():
@@ -259,7 +259,7 @@ def test_get_asset_types():
     body = {"asset_types": DUMMY_ASSET_TYPES}
     with patch("Axonius.make_api_call", return_value=_make_ok_response(body)):
         result = get_asset_types()
-    assert "devices" in result.outputs
+    assert any(entry["asset_type"] == "devices" for entry in result.outputs)
 
 
 # ---------------------------------------------------------------------------
@@ -432,23 +432,10 @@ def test_get_grouped_vulnerabilities_average_cvss():
 
 
 def test_get_grouped_vulnerabilities_top_n():
-    """Verify top_n slicing — mock get_int_arg to return 1 for top_n."""
+    """Verify top_n slicing — pass top_n=1 directly in args."""
     page = _make_vi_page(DUMMY_VULNERABILITY_INSTANCES)
-    # get_int_arg reads from demisto.args() (XSOAR runtime pattern); patch it to
-    # return 1 for top_n and the default page_size for the page_size call.
-    call_count = {"n": 0}
-
-    def mock_get_int_arg(key, default=None, required=False):
-        call_count["n"] += 1
-        if key == "top_n":
-            return 1
-        return default
-
-    with (
-        patch("Axonius.make_api_call", return_value=_make_ok_response(page)),
-        patch("Axonius.get_int_arg", side_effect=mock_get_int_arg),
-    ):
-        result = get_grouped_vulnerabilities({})
+    with patch("Axonius.make_api_call", return_value=_make_ok_response(page)):
+        result = get_grouped_vulnerabilities({"top_n": "1"})
     assert len(result.outputs) == 1
 
 

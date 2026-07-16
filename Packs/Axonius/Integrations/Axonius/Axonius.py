@@ -144,13 +144,17 @@ def make_api_call(
         "content-type": "application/json",
     }
 
-    method = method.upper()
-    if method == "GET":
-        return requests.get(url, headers=headers, params=query_params, verify=certverify, timeout=REQUEST_TIMEOUT)
-    elif method == "DELETE":
-        return requests.delete(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
-    else:
-        return requests.post(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
+    try:
+        if method == "GET":
+            return requests.get(url, headers=headers, params=query_params, verify=certverify, timeout=REQUEST_TIMEOUT)
+        elif method == "DELETE":
+            return requests.delete(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
+        else:
+            return requests.post(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
+    except requests.exceptions.Timeout as exc:
+        raise DemistoException(f"Request to Axonius timed out: {exc}") from exc
+    except requests.exceptions.RequestException as exc:
+        raise DemistoException(f"Error connecting to Axonius: {exc}") from exc
 
 
 def _handle_api_response(response: Optional[requests.Response], endpoint: str) -> dict:
@@ -350,23 +354,24 @@ def get_assets(args: dict) -> CommandResults:
 
     Supports all asset types including alert_findings and
     vulnerability_instances. Returns a single page of results together with a
-    cursor (next_page) for subsequent calls.
+    cursor (next_token) for subsequent calls.
 
     Note on large payloads: when a response exceeds ~10 MB, XSOAR automatically
     stores the data as a downloadable file instead of writing it to the context.
-    Use the page_limit argument to keep responses within manageable bounds.
+    Use the page_size argument to keep responses within manageable bounds.
     """
     asset_type: str = args.get("asset_type", "devices")
     query: Optional[str] = args.get("query") or None
-    fields: List[str] = get_csv_arg(key="fields")
-    fields_to_exclude: List[str] = get_csv_arg(key="fields_to_exclude")
-    page_limit: int = get_int_arg(key="page_limit", default=V2_PAGE_SIZE_DEFAULT)
-    next_page: Optional[str] = args.get("next_page") or None
+    fields: List[str] = argToList(args.get("fields"))
+    fields_to_exclude: List[str] = argToList(args.get("fields_to_exclude"))
+    page_size: int = arg_to_number(args.get("page_size")) or V2_PAGE_SIZE_DEFAULT
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    next_token: Optional[str] = args.get("next_token") or None
     include_metadata: bool = argToBoolean(args.get("include_metadata", False))
     include_details: bool = argToBoolean(args.get("include_details", False))
     use_cache_entry: bool = argToBoolean(args.get("use_cache_entry", False))
 
-    payload: dict = {"page": _build_v2_page(limit=page_limit, cursor=next_page)}
+    payload: dict = {"page": _build_v2_page(limit=page_size, cursor=next_token)}
     if query:
         payload["query"] = query
     if fields:
@@ -385,6 +390,7 @@ def get_assets(args: dict) -> CommandResults:
     data = _handle_api_response(response=response, endpoint=endpoint)
 
     assets: List[dict] = data.get("assets") or []
+    assets = assets[:limit]
     meta: dict = data.get("meta") or {}
     next_cursor: Optional[str] = meta.get("next_page")
     page_meta: dict = meta.get("page") or {}
@@ -407,7 +413,7 @@ def get_assets(args: dict) -> CommandResults:
     if total_count is not None:
         outputs["total_count"] = total_count
     if next_cursor:
-        outputs["next_page"] = next_cursor
+        outputs["next_token"] = next_cursor
 
     return CommandResults(
         outputs_prefix="Axonius.Assets",
@@ -429,18 +435,16 @@ def get_asset_types() -> CommandResults:
     response = make_api_call(endpoint=endpoint, method="GET")
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    asset_types: list = data.get("asset_types") or []
+    raw_types: list = data.get("asset_types") or []
+    asset_types: List[dict] = [
+        t if isinstance(t, dict) else {"asset_type": t} for t in raw_types
+    ]
 
-    readable_output = tableToMarkdown(
-        "Axonius Asset Types",
-        [{"asset_type": t} for t in asset_types]
-        if isinstance(asset_types, list) and asset_types and not isinstance(asset_types[0], dict)
-        else asset_types,
-        removeNull=True,
-    )
+    readable_output = tableToMarkdown("Axonius Asset Types", asset_types, removeNull=True)
 
     return CommandResults(
         outputs_prefix="Axonius.AssetTypes",
+        outputs_key_field="asset_type",
         readable_output=readable_output,
         outputs=asset_types,
         raw_response=data,
@@ -454,17 +458,19 @@ def get_asset_types() -> CommandResults:
 
 def get_custom_data(args: dict) -> CommandResults:
     """List custom data entries via GET /api/v2/custom_data_management."""
-    limit: int = get_int_arg(key="limit", default=50)
-    offset: int = get_int_arg(key="offset", default=0)
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
     endpoint = "api/v2/custom_data_management"
     response = make_api_call(
         endpoint=endpoint,
         method="GET",
-        query_params={"limit": limit, "offset": offset},
+        query_params={"limit": min(page_size, limit), "offset": offset},
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    entries: list = data.get("custom_fields") or []
+    entries: list = (data.get("custom_fields") or [])[:limit]
 
     readable_output = tableToMarkdown(
         "Axonius Custom Data",
@@ -474,6 +480,7 @@ def get_custom_data(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix="Axonius.CustomData",
+        outputs_key_field="id",
         readable_output=readable_output,
         outputs=entries,
         raw_response=data,
@@ -526,17 +533,19 @@ def delete_custom_data(args: dict) -> CommandResults:
 
 def get_enforcements(args: dict) -> CommandResults:
     """List enforcements via GET /api/v2/enforcements."""
-    limit: int = get_int_arg(key="limit", default=50)
-    offset: int = get_int_arg(key="offset", default=0)
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
     endpoint = "api/v2/enforcements"
     response = make_api_call(
         endpoint=endpoint,
         method="GET",
-        query_params={"limit": limit, "offset": offset},
+        query_params={"limit": min(page_size, limit), "offset": offset},
     )
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    enforcements: list = data.get("enforcements") or []
+    enforcements: list = (data.get("enforcements") or [])[:limit]
 
     readable_output = tableToMarkdown(
         "Axonius Enforcements",
@@ -579,16 +588,18 @@ def run_enforcement(args: dict) -> CommandResults:
 def get_queries(args: dict) -> CommandResults:
     """List saved queries via GET /api/v2/queries."""
     asset_type: Optional[str] = args.get("asset_type") or None
-    limit: int = get_int_arg(key="limit", default=50)
-    offset: int = get_int_arg(key="offset", default=0)
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
     endpoint = "api/v2/queries"
-    qp: dict = {"limit": limit, "offset": offset}
+    qp: dict = {"limit": min(page_size, limit), "offset": offset}
     if asset_type:
         qp["asset_type"] = asset_type
     response = make_api_call(endpoint=endpoint, method="GET", query_params=qp)
     data = _handle_api_response(response=response, endpoint=endpoint)
 
-    queries: list = data.get("queries") or []
+    queries: list = (data.get("queries") or [])[:limit]
 
     readable_output = tableToMarkdown(
         "Axonius Queries",
@@ -670,9 +681,8 @@ def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: in
     all_assets: List[dict] = []
     cursor: Optional[str] = None
     endpoint = f"api/v2/assets/{asset_type}"
-    page_count: int = 0
 
-    while True:
+    for _ in range(MAX_PAGES):
         payload: dict = {"page": _build_v2_page(limit=page_size, cursor=cursor)}
         if query:
             payload["query"] = query
@@ -682,18 +692,18 @@ def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: in
 
         page_assets: List[dict] = data.get("assets") or []
         all_assets.extend(page_assets)
-        page_count += 1
 
         meta: dict = data.get("meta") or {}
         cursor = meta.get("next_page")
 
-        if not cursor or not page_assets or page_count >= MAX_PAGES:
-            if page_count >= MAX_PAGES and cursor:
-                demisto.debug(
-                    f"_fetch_all_pages: reached MAX_PAGES ({MAX_PAGES}) for '{asset_type}'; "
-                    f"stopping pagination early with {len(all_assets)} records collected."
-                )
+        if not cursor or not page_assets:
             break
+    else:
+        if cursor:
+            demisto.debug(
+                f"_fetch_all_pages: reached MAX_PAGES ({MAX_PAGES}) for '{asset_type}'; "
+                f"stopping pagination early with {len(all_assets)} records collected."
+            )
 
     return all_assets
 
@@ -727,8 +737,8 @@ def get_grouped_vulnerabilities(args: dict) -> CommandResults:
     query: Optional[str] = args.get("query") or None
     team_name: Optional[str] = args.get("team_name") or None
     urgent: Optional[str] = args.get("urgent") or None
-    top_n: int = get_int_arg(key="top_n", default=10)
-    page_size: int = get_int_arg(key="page_size", default=V2_PAGE_SIZE_ALL_PAGES)
+    top_n: int = arg_to_number(args.get("top_n")) or 10
+    page_size: int = arg_to_number(args.get("page_size")) or V2_PAGE_SIZE_ALL_PAGES
 
     # Build composite query filter
     query_parts: List[str] = []
