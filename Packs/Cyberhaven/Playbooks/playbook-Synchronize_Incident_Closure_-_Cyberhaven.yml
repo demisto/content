@@ -112,7 +112,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Confirm whether you want to close the incident in XSOAR?
+        simple: The Cyberhaven source incident was closed. Do you want to close this Cortex XSOAR incident?
       methods: []
       format: ""
       bcc:
