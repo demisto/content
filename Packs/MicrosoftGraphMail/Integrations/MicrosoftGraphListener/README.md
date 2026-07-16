@@ -22,6 +22,8 @@ For more details about the authentication used in this integration, see [Microso
 
 **Note** - The credentials (created by the Cortex XSOAR application) are valid for a single instance only.
 
+**Note** - When authenticating with the Cortex application, sign in with the same user you want to integrate with. Since this user also consents to the app's permissions, they must be an **administrator**. To let a non-admin user use the app instead, after an admin has consented the application once, go to the [Azure Portal](https://portal.azure.com/) > **Enterprise applications**, find the app, and set **Assignment required?** to **No**. This way other users can obtain the Cortex application credentials without needing to sign in or consent themselves. Alternatively, you can use a **[Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)**.
+
 ## Email Attachments Limitations
 
 * The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
