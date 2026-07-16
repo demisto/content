@@ -2495,10 +2495,10 @@ def test_odata_filter_parameteres(mocker):
 
     # validate
     expected_filter = (
-        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and "
+        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and "
         "(properties/status ne 'New' or properties/status ne 'Active') and "
-        "(contains(properties/title, 'test_title') ne true) and "
-        "(properties/productName ne 'test_alert_product_name'"
+        "(properties/productName ne 'test_alert_product_name') and "
+        "((contains(properties/title, 'test_title') ne true))"
     )
     assert client.http_request.call_args_list[0][1] == {
         "params": {
