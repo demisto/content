@@ -7,7 +7,7 @@ sectionorder:
 - Collect
 configuration:
 - name: user_service_account_json
-  display: User's Service Account JSON
+  display: User's Service Account test JSON
   defaultvalue:
   type: 4
   section: Connect
