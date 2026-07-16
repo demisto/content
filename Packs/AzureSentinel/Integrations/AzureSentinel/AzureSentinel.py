@@ -1533,11 +1533,11 @@ def fetch_incidents_lookback(
         f" {status_filter(statuses_to_fetch)}".strip()
     )
     if statuses_to_not_fetch:
-        filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+        filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
     if alert_product_names_to_not_fetch:
-        filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+        filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
     if titles_to_not_fetch:
-        filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
+        filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
 
     command_args = {
         "filter": filter_value,
@@ -1663,11 +1663,11 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if statuses_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+            filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
         if alert_product_names_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+            filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
         if titles_to_not_fetch:
-            filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
+            filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/createdTimeUtc asc",
@@ -1685,11 +1685,11 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if statuses_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+            filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
         if alert_product_names_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+            filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
         if titles_to_not_fetch:
-            filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
+            filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/incidentNumber asc",
