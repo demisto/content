@@ -1527,7 +1527,7 @@ class TestMapCtixIndicatorToXsoar:
             "is_false_positive": True,
             "is_deprecated": True,
             "is_reviewed": True,
-            "is_whitelisted": True,
+            "is_whitelist": True,
             "is_revoked": True,
         }
         result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
