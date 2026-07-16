@@ -3,7 +3,7 @@
     "feed": false,
     "id": "AWS Security Hub v2 - Incoming Mapper",
     "mapping": {
-        "AWS Security Hub Finding": {
+        "AWS Security Hub v2 Finding": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Account ID": {

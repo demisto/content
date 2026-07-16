@@ -668,6 +668,9 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
 
     findings = response.get("Findings", [])
+    if findings:
+        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: findings={findings[0]}")
+
     new_next_token = response.get("NextToken")
     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
 
