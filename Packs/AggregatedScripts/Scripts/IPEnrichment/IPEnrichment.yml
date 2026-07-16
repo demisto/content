@@ -379,5 +379,3 @@ marketplaces:
 - xsoar_saas
 - marketplacev2
 - platform
-tests:
-- IPEnrichment-Test
