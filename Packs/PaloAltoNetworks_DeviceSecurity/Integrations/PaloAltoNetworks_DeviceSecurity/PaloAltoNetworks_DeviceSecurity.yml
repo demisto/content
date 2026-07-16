@@ -3,7 +3,11 @@ commonfields:
   version: -1
 name: Palo Alto Networks Device Security
 display: Palo Alto Networks Device Security
+provider: Palo Alto Networks
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 description: Use the Palo Alto Networks Device Security integration to fetch alerts and vulnerabilities, retrieve device details, and resolve security incidents (previously Zingbox).
 defaultclassifier: Palo Alto Networks Device Security Classifier
 defaultmapperin: Palo Alto Networks Device Security Incoming Mapper
@@ -384,7 +388,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/fastapi:0.125.0.10158186
 fromversion: 6.10.0
 tests:
 - No tests

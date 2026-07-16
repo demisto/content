@@ -12,6 +12,9 @@
     "tags": [
         "Palo Alto Networks Products"
     ],
+    "itemPrefix": [
+        "Device Security"
+    ],
     "useCases": [
         "Incident Response",
         "Network Security",
@@ -29,8 +32,6 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
-    "firstCreated": "2026-06-05T05:06:31Z"
+        "marketplacev2"
+    ]
 }
