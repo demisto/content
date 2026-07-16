@@ -1,11 +1,17 @@
 id: Vega Incident - External IP Enrichment - Generic
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Vega Incident - External IP Enrichment - Generic
 fromversion: 6.10.0
-description: Enriches incoming IP addresses using the 'IP Enrichment - External -
-  Generic v2' sub-playbook and automatically posts the retrieved endpoint details
-  back to the Vega incident as a comment.
+description: Enriches incoming IP addresses using the 'IP Enrichment - External - Generic v2' sub-playbook and automatically posts the retrieved endpoint details back to the Vega incident as a comment.
+inputs:
+  - key: IP_Address
+    value:
+      complex:
+        root: IP
+        accessor: Address
+    required: false
+    description: The IP address(es) to enrich.
+    playbookInputQuery:
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +24,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#none#":
         - "2"
@@ -58,14 +65,13 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "3"
+        - "4"
     scriptarguments:
       ExecutedFromParent:
         simple: "False"
       IP:
         complex:
-          root: IP
-          accessor: Address
+          root: inputs.IP_Address
           transformers:
             - operator: uniq
       InternalRange:
@@ -125,16 +131,24 @@ tasks:
       id: 1628d981-63c2-4d1b-b4b7-ec6f02a2af82
       version: -1
       name: vega-update-incident
-      description: Immediately update Vega incident status, verdict, verdict reasoning,
-        severity, assignee emails, and/or comment on the Vega platform and sync the
-        open XSOAR investigation when run from a Vega Incident investigation.
+      description: Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails, and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Incident investigation.
       script: Vega|||vega-update-incident
       type: regular
       iscommand: true
       brand: Vega
     scriptarguments:
       comment:
-        simple: ${Endpoint}${DBotScore}${IP}
+        simple: |-
+          ### IP Enrichment Results
+
+          **IP Addresses:**
+          ${IP}
+
+          **DBot Scores:**
+          ${DBotScore}
+
+          **Endpoints:**
+          ${Endpoint}
       incident_ids:
         simple: ${incident.vegaincidentid}
     separatecontext: false
@@ -143,7 +157,42 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 450
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3c622502-0e98-4444-a15d-85f0967a1fb5
+    type: condition
+    task:
+      id: 3c622502-0e98-4444-a15d-85f0967a1fb5
+      version: -1
+      name: Is Vega Integration Available?
+      description: Checks if the Vega integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "3"
+    scriptarguments:
+      brandname:
+        simple: Vega
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
         }
       }
     note: false
@@ -158,12 +207,11 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 485,
+        "height": 595,
         "width": 380,
         "x": 450,
         "y": 40
       }
     }
   }
-inputs: []
 outputs: []
