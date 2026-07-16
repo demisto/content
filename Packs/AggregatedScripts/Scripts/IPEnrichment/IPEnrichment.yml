@@ -379,3 +379,5 @@ marketplaces:
 - xsoar_saas
 - marketplacev2
 - platform
+tests:
+- No tests (auto formatted)
