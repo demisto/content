@@ -120,9 +120,6 @@ class Client:
                 else:
                     should_continue = False
 
-                if len(credentials) < int(params["size"]):
-                    should_continue = False
-
                 returned_cursor = data.get("cursor_next", "")
                 if returned_cursor:
                     next_cursor = returned_cursor
