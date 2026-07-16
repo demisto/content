@@ -1,0 +1,17 @@
+[file:PaloAltoNetworks_DeviceSecurity.yml]
+ignore=IN126,IN145,BA108,BA109
+
+[file:device_security_alert_post_processing.yml]
+ignore=BA108,BA109
+
+[file:device_security_check_servicenow.yml]
+ignore=BA108,BA109,SC106
+
+[file:device_security_get_raci.yml]
+ignore=BA108,BA109
+
+[file:device_security_vuln_post_processing.yml]
+ignore=BA108,BA109
+
+[file:device_security_incident_url.json]
+ignore=IF100
