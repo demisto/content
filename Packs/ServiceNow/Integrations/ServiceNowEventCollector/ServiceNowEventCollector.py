@@ -109,6 +109,20 @@ class Client:
 
         return f"{self.server_url.rstrip('/')}{api_base}{api_endpoint}"
 
+    @staticmethod
+    def _is_table_api(log_type: LogType) -> bool:
+        """
+        Determines whether the given log type is served by the ServiceNow Table API
+        (/api/now/table/{tableName}, including its versioned form).
+
+        Args:
+            log_type: The LogType Enum member to check.
+
+        Returns:
+            True if the log type uses the Table API, False otherwise.
+        """
+        return log_type.api_base.strip("/") == "api/now" and log_type.api_endpoint.startswith("table/")
+
     def search_events(
         self, from_time: str, log_type: LogType, limit: Optional[int] = None, offset: int = 0
     ) -> List[Dict[str, Any]]:
@@ -145,6 +159,13 @@ class Client:
                 "sysparm_offset": offset,
                 "sysparm_query": f"ORDERBYsys_created_on^sys_created_on>{from_time}",
             }
+
+        # `sysparm_no_count=true` skips computing the total record count (X-Total-Count header).
+        # On large tables this aggregate can dominate the request time and trigger ServiceNow's
+        # "Transaction cancelled: maximum execution time exceeded" timeout.
+        # This parameter is only supported by the ServiceNow Table API (/api/now/table/{tableName})
+        if self._is_table_api(log_type):
+            api_query_params["sysparm_no_count"] = "true"
 
         full_url = self._get_api_url(log_type)
 

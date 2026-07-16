@@ -540,6 +540,48 @@ class TestFetchActivity:
         called_kwargs = mock_http_request.call_args.kwargs
         assert called_kwargs["params"]["sysparm_query"] == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
 
+    # ------------- Test Client.search_events sysparm_no_count (XSUP-71435) ------------- #
+    @pytest.mark.parametrize(
+        "log_type",
+        [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.OUTBOUND_HTTP_LOG],
+    )
+    def test_search_events_table_api_sends_sysparm_no_count(self, mocker, log_type):
+        """
+
+        Given:
+            - A Table API log type (audit, syslog transactions, or outbound HTTP log).
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - The request includes 'sysparm_no_count=true' so ServiceNow skips the expensive
+              total-count aggregate that caused "Transaction cancelled: maximum execution time
+              exceeded" timeouts on large instances.
+        """
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=log_type, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert called_kwargs["params"].get("sysparm_no_count") == "true"
+
+    def test_search_events_non_table_api_omits_sysparm_no_count(self, mocker):
+        """
+
+        Given:
+            - The CASE log type, which is served by the scoped Customer Service API
+              (/api/sn_customerservice/) and not the Table API.
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - 'sysparm_no_count' is NOT sent, since it is only supported by the Table API.
+        """
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=LogType.CASE, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert "sysparm_no_count" not in called_kwargs["params"]
+
     # ------------- Test Client._get_api_url --------------------- #
     @pytest.mark.parametrize(
         "log_type, api_version, expected_url",
