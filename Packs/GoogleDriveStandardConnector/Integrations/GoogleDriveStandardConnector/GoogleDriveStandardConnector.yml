@@ -66,13 +66,13 @@ configuration:
   advanced: true
   additionalinfo: itemName or folderName for fetching the incident.
   required: false
-- display: Fetch incidents
+- display: Fetch alerts
   name: isFetch
   type: 8
   section: Collect
   required: false
 - name: incidentType
-  display: Incident type
+  display: Alert type
   type: 13
   required: false
   section: Collect
