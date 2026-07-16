@@ -1,4 +1,5 @@
 import json
+
 import demistomock as demisto
 from FileEnrichment import file_enrichment_script
 

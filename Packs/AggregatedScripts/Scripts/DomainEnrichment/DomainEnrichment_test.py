@@ -1,6 +1,7 @@
 import json
-import pytest
+
 import demistomock as demisto
+import pytest
 from DomainEnrichment import domain_enrichment_script
 
 
