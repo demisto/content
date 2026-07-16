@@ -234,10 +234,26 @@ configuration:
   advanced: true
   required: false
   section: Collect
-- display: Odata Filter
-  additionalinfo: "Odata query string to filter fetched incidents"
-  name: odata_filter
-  type: 0
+- display: Incident Statuses to not Fetch
+  additionalinfo: "The statuses of the incidents that will not be fetched. If no status is provided then incidents of all the statuses will be fetched."
+  name: statuses_to_not_fetch
+  options:
+  - New
+  - Active
+  - Closed
+  type: 16
+  required: false
+  section: Collect
+- display: Incident Titles to not Fetch
+  additionalinfo: "The titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched."
+  name: titles_to_not_fetch
+  type: 16
+  required: false
+  section: Collect
+- display: Alert Product Names to not Fetch
+  additionalinfo: "The alert product names of the incidents that will not be fetched. If no alert product name is provided then incidents will be fetched normally."
+  name: alert_product_names_to_not_fetch
+  type: 16
   required: false
   section: Collect
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."

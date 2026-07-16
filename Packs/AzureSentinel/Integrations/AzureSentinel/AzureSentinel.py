@@ -600,6 +600,30 @@ def status_filter(statuses):
     return status_filter
 
 
+def ne_filter(filter_property, filter_property_values):
+    """
+    Create a 'properties/filter_property ne {}' Filter string,
+    when filter_property and filter_property_values are not empty.
+    """
+    _ne_filter = ""
+    if filter_property and filter_property_values:
+        conditions = [f"properties/{filter_property} ne '{s}'" for s in filter_property_values]
+        _ne_filter = f"and ({ ' or '.join(conditions) })"
+    return _ne_filter
+
+
+def not_contains_filter(filter_property, filter_property_values):
+    """
+    Create a '(contains(properties/filter_property, '{}') ne true)' Filter string,
+    when filter_property and filter_property_values are not empty.
+    """
+    _nc_filter = ""
+    if filter_property and filter_property_values:
+        conditions = [f"(contains(properties/{filter_property}, '{s}') ne true)" for s in filter_property_values]
+        _nc_filter = f"and ({ ' or '.join(conditions) })"
+    return _nc_filter
+
+
 def generic_list_incident_items(
     client,
     incident_id,
@@ -1480,6 +1504,9 @@ def fetch_incidents_lookback(
     lookback_start_time: str,
     min_severity: str,
     statuses_to_fetch: list,
+    statuses_to_not_fetch: list = [],
+    titles_to_not_fetch: list = [],
+    alert_product_names_to_not_fetch: list = [],
 ) -> list:
     """Fetch incidents that were modified within the lookback window.
 
@@ -1491,18 +1518,29 @@ def fetch_incidents_lookback(
         lookback_start_time: The start time of the lookback window.
         min_severity: Minimum severity to filter by.
         statuses_to_fetch: List of statuses to filter by.
+        statuses_to_not_fetch: A list of statuses to not fetch.
+        titles_to_not_fetch: A list of titles to not fetch.
+        alert_product_names_to_not_fetch: A list of alert product names to not fetch.
 
     Returns:
         List of incidents from the lookback window.
     """
     demisto.debug(f"Lookback: querying incidents modified since {lookback_start_time}")
 
+    filter_value = (
+        f"properties/lastModifiedTimeUtc ge {lookback_start_time}"
+        f" {severity_filter(min_severity)}"
+        f" {status_filter(statuses_to_fetch)}".strip()
+    )
+    if statuses_to_not_fetch:
+        filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+    if alert_product_names_to_not_fetch:
+        filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+    if titles_to_not_fetch:
+        filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
+
     command_args = {
-        "filter": (
-            f"properties/lastModifiedTimeUtc ge {lookback_start_time}"
-            f" {severity_filter(min_severity)}"
-            f" {status_filter(statuses_to_fetch)}".strip()
-        ),
+        "filter": filter_value,
         "orderby": "properties/lastModifiedTimeUtc asc",
     }
     demisto.debug(f"Lookback filter query: {command_args['filter']}")
@@ -1576,8 +1614,10 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
-    odata_filter: str,
     statuses_to_fetch: list = [],
+    statuses_to_not_fetch: list = [],
+    titles_to_not_fetch: list = [],
+    alert_product_names_to_not_fetch: list = [],
     look_back: int = 0,
 ) -> tuple:
     """Fetching incidents.
@@ -1586,8 +1626,10 @@ def fetch_incidents(
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
-        odata_filter: Odata filter to use when fetching incidents
         statuses_to_fetch: A list of statuses to fetch.
+        statuses_to_not_fetch: A list of statuses to not fetch.
+        titles_to_not_fetch: A list of titles to not fetch.
+        alert_product_names_to_not_fetch: A list of alert product names to not fetch.
         look_back: Lookback time in minutes. When > 0, also fetches incidents
             modified within this window to catch severity escalations.
 
@@ -1620,8 +1662,12 @@ def fetch_incidents(
             f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
             f" {status_filter(statuses_to_fetch)}".strip()
         )
-        if odata_filter:
-            filter_value = f"{filter_value} and {odata_filter}"
+        if statuses_to_not_fetch:
+            filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+        if alert_product_names_to_not_fetch:
+            filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+        if titles_to_not_fetch:
+            filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/createdTimeUtc asc",
@@ -1638,8 +1684,12 @@ def fetch_incidents(
             f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
             f" {status_filter(statuses_to_fetch)}".strip()
         )
-        if odata_filter:
-            filter_value = f"{filter_value} and {odata_filter}"
+        if statuses_to_not_fetch:
+            filter_value = f"{filter_value} {ne_filter("status", statuses_to_not_fetch)}"
+        if alert_product_names_to_not_fetch:
+            filter_value = f"{filter_value} {ne_filter("productName", alert_product_names_to_not_fetch)}"
+        if titles_to_not_fetch:
+            filter_value = f"{filter_value} {not_contains_filter("title", titles_to_not_fetch)}"
         command_args = {
             "filter": filter_value,
             "orderby": "properties/incidentNumber asc",
@@ -1674,6 +1724,9 @@ def fetch_incidents(
                 lookback_start_time=lookback_start_time,
                 min_severity=min_severity,
                 statuses_to_fetch=statuses_to_fetch,
+                statuses_to_not_fetch=statuses_to_not_fetch,
+                titles_to_not_fetch=titles_to_not_fetch,
+                alert_product_names_to_not_fetch=alert_product_names_to_not_fetch,
             )
 
             # Dedup lookback incidents using the lookback incidents from loop before and the fetched incidents
@@ -1714,7 +1767,9 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
-    odata_filter = params.get("odata_filter")
+    statuses_to_not_fetch = argToList(params.get("statuses_to_not_fetch", []))
+    titles_to_not_fetch = argToList(params.get("titles_to_not_fetch", []))
+    alert_product_names_to_not_fetch = argToList(params.get("alert_product_names_to_not_fetch", []))
     look_back = arg_to_number(params.get("look_back")) or 0
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
@@ -1724,8 +1779,10 @@ def fetch_incidents_command(client, params):
         last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
-        odata_filter=odata_filter,
         statuses_to_fetch=statuses_to_fetch,
+        statuses_to_not_fetch=statuses_to_not_fetch,
+        titles_to_not_fetch=titles_to_not_fetch,
+        alert_product_names_to_not_fetch=alert_product_names_to_not_fetch,
         look_back=look_back,
     )
     demisto.debug(f"New last run is {next_run}")
