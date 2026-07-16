@@ -79,7 +79,7 @@ def optional_int_arg(args: dict[str, Any], name: str) -> Optional[int]:
     if value in (None, ""):
         return None
     try:
-        return int(value)
+        return int(str(value))
     except (TypeError, ValueError):
         raise DemistoException(f"The {name} argument must be an integer. Invalid value: {value}")
 
