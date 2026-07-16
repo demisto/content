@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Elastic",
+        "Elasticsearch"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

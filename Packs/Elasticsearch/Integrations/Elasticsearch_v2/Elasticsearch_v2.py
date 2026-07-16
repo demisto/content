@@ -1078,20 +1078,36 @@ def incident_label_maker(source, fields=None):
     return labels
 
 
-def results_to_incidents_timestamp(response, last_fetch):
+def results_to_incidents_timestamp(response, last_fetch, last_fetch_ids=None):
     """Converts the current results into incidents.
+
+    To avoid silently dropping documents that share an identical timestamp with the
+    high-water-mark (last_fetch) - which happens when several documents have the same
+    timestamp down to the sub-second and span a fetch boundary - the time query uses an
+    inclusive lower bound (gte) and de-duplication is done by document ``_id`` rather than
+    by discarding every hit that equals the boundary timestamp. Only the ``_id``s that were
+    already ingested at the boundary timestamp are skipped; all other hits are ingested.
 
     Args:
         response(dict): the raw search results from Elasticsearch.
         last_fetch(num): the date or timestamp of the last fetch before this fetch
         - this will hold the last date of the incident brought by this fetch.
+        last_fetch_ids(list): the ``_id``s of the documents already ingested at the
+        ``last_fetch`` boundary timestamp in the previous fetch.
 
     Returns:
         (list).The incidents.
         (num).The date of the last incident brought by this fetch.
+        (list).The ``_id``s of the documents ingested at the new boundary timestamp.
     """
     current_fetch = last_fetch
+    already_fetched_ids = set(last_fetch_ids or [])
     incidents = []
+    # tracks the _ids seen at the maximum timestamp so far in this fetch.
+    # seeded with the previously-persisted boundary ids so that ids already ingested at the
+    # boundary are carried forward and not re-ingested on the next fetch. It is reset whenever
+    # a strictly newer timestamp is encountered.
+    new_fetch_ids: list = list(dict.fromkeys(last_fetch_ids or []))
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
 
@@ -1119,44 +1135,73 @@ def results_to_incidents_timestamp(response, last_fetch):
                 # if timestamp convert to iso format date and save the timestamp
                 hit_date = timestamp_to_date(str(time_field_value))
                 hit_timestamp = int(time_field_value)
+                hit_id = hit.get("_id")
 
                 if hit_timestamp > last_fetch:
+                    # a strictly newer timestamp resets the boundary id tracking
                     last_fetch = hit_timestamp
+                    new_fetch_ids = []
 
-                # avoid duplication due to weak time query
-                if hit_timestamp > current_fetch:
-                    inc = {
-                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit.get("_id")),
-                        "rawJSON": json.dumps(hit),
-                        "occurred": hit_date.isoformat() + "Z",
-                    }
-                    if hit.get("_id"):
-                        inc["dbotMirrorId"] = hit.get("_id")
+                # remember every id seen at the current maximum timestamp - including ids
+                # that are skipped below because they were already ingested - so the boundary
+                # id set is preserved across fetches and does not drift.
+                if hit_timestamp == last_fetch and hit_id and hit_id not in new_fetch_ids:
+                    new_fetch_ids.append(hit_id)
 
-                    if MAP_LABELS:
-                        inc["labels"] = incident_label_maker(hit.get("_source"))
+                # Skip only documents already ingested at the boundary timestamp,
+                # instead of dropping every hit that equals the boundary timestamp.
+                if hit_timestamp < current_fetch or (hit_id and hit_id in already_fetched_ids):
+                    demisto.debug(f"Skipping already-fetched hit ID: {hit_id} with {hit_timestamp=}.")
+                    continue
 
-                    incidents.append(inc)
+                inc = {
+                    "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit_id),
+                    "rawJSON": json.dumps(hit),
+                    "occurred": hit_date.isoformat() + "Z",
+                }
+                if hit_id:
+                    inc["dbotMirrorId"] = hit_id
 
-    return incidents, last_fetch
+                if MAP_LABELS:
+                    inc["labels"] = incident_label_maker(hit.get("_source"))
+
+                incidents.append(inc)
+
+    return incidents, last_fetch, new_fetch_ids
 
 
-def results_to_incidents_datetime(response, last_fetch):
+def results_to_incidents_datetime(response, last_fetch, last_fetch_ids=None):
     """Converts the current results into incidents.
+
+    To avoid silently dropping documents that share an identical timestamp with the
+    high-water-mark (last_fetch) - which happens when several documents have the same
+    timestamp down to the sub-second and span a fetch boundary - the time query uses an
+    inclusive lower bound (gte) and de-duplication is done by document ``_id`` rather than
+    by discarding every hit that equals the boundary timestamp. Only the ``_id``s that were
+    already ingested at the boundary timestamp are skipped; all other hits are ingested.
 
     Args:
         response(dict): the raw search results from Elasticsearch.
         last_fetch(datetime): the date or timestamp of the last fetch before this fetch or parameter default fetch time
         - this will hold the last date of the incident brought by this fetch.
+        last_fetch_ids(list): the ``_id``s of the documents already ingested at the
+        ``last_fetch`` boundary timestamp in the previous fetch.
 
     Returns:
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
+        (list).The ``_id``s of the documents ingested at the new boundary timestamp.
     """
     last_fetch = dateparser.parse(last_fetch)
     last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
+    already_fetched_ids = set(last_fetch_ids or [])
     incidents = []
+    # tracks the _ids seen at the maximum timestamp so far in this fetch.
+    # seeded with the previously-persisted boundary ids so that ids already ingested at the
+    # boundary are carried forward and not re-ingested on the next fetch. It is reset whenever
+    # a strictly newer timestamp is encountered.
+    new_fetch_ids: list = list(dict.fromkeys(last_fetch_ids or []))
 
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
@@ -1184,34 +1229,46 @@ def results_to_incidents_datetime(response, last_fetch):
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
+                hit_id = hit.get("_id")
 
                 if hit_timestamp > last_fetch_timestamp:
+                    # a strictly newer timestamp resets the boundary id tracking
                     last_fetch = hit_date
                     last_fetch_timestamp = hit_timestamp
+                    new_fetch_ids = []
 
-                if hit_timestamp > current_fetch:
-                    inc = {
-                        "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit.get("_id")),
-                        "rawJSON": json.dumps(hit),
-                        # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
-                        # and sometimes as YYYY-MM-DDThh:mm:ss
-                        # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
-                        "occurred": format_to_iso(hit_date.isoformat()),
-                    }
-                    if hit.get("_id"):
-                        inc["dbotMirrorId"] = hit.get("_id")
+                # remember every id seen at the current maximum timestamp - including ids
+                # that are skipped below because they were already ingested - so the boundary
+                # id set is preserved across fetches and does not drift.
+                if hit_timestamp == last_fetch_timestamp and hit_id and hit_id not in new_fetch_ids:
+                    new_fetch_ids.append(hit_id)
 
-                    if MAP_LABELS:
-                        # Pass both _source and normalized fields to label maker
-                        inc["labels"] = incident_label_maker(hit.get("_source"), fields=fields)
-
-                    incidents.append(inc)
-                else:
+                # Skip only documents already ingested at the boundary timestamp,
+                # instead of dropping every hit that equals the boundary timestamp.
+                if hit_timestamp < current_fetch or (hit_id and hit_id in already_fetched_ids):
                     demisto.debug(
-                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                        f"Skipping hit ID: {hit_id} since {hit_timestamp=} was already fetched (id previously ingested)"
                     )
+                    continue
 
-    return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
+                inc = {
+                    "name": "Elasticsearch: Index: " + str(hit.get("_index")) + ", ID: " + str(hit_id),
+                    "rawJSON": json.dumps(hit),
+                    # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
+                    # and sometimes as YYYY-MM-DDThh:mm:ss
+                    # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
+                    "occurred": format_to_iso(hit_date.isoformat()),
+                }
+                if hit_id:
+                    inc["dbotMirrorId"] = hit_id
+
+                if MAP_LABELS:
+                    # Pass both _source and normalized fields to label maker
+                    inc["labels"] = incident_label_maker(hit.get("_source"), fields=fields)
+
+                incidents.append(inc)
+
+    return incidents, last_fetch.isoformat(), new_fetch_ids  # type:ignore[union-attr]
 
 
 def format_to_iso(date_string):
@@ -1241,8 +1298,12 @@ def get_time_range(
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
-        start date (gt) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
-                          if this is not the fetch: use the last fetch provided
+        start date (gte) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
+                          if this is not the fetch: use the last fetch provided.
+                          Note: an inclusive lower bound (gte) is used so documents that share the exact
+                          high-water-mark timestamp are not permanently skipped by the query. De-duplication
+                          of documents already ingested at the boundary timestamp is handled by _id in
+                          results_to_incidents_datetime / results_to_incidents_timestamp.
         end date (lt) - use the given time range end param.
         When the `time_method` parameter is set to `Simple-Date` in order to avoid being related to the field datetime format,
             we add the format key to the query dict.
@@ -1255,7 +1316,7 @@ def get_time_range(
 
 
     Returns:
-        dictionary (Ex. {"range":{'gt': 1000 'lt': 1001}})
+        dictionary (Ex. {"range":{'gte': 1000 'lt': 1001}})
     """
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
@@ -1267,7 +1328,7 @@ def get_time_range(
 
     demisto.debug(f"Time range start time: {start_time}")
     if start_time:
-        range_dict["gt"] = start_time
+        range_dict["gte"] = start_time
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
@@ -1326,6 +1387,9 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time") or FETCH_TIME
+    # _ids of documents already ingested at the last_fetch boundary timestamp,
+    # used to de-duplicate hits that share an identical timestamp across fetches.
+    last_fetch_ids = last_run.get("last_fetch_ids") or []
 
     es = elasticsearch_builder(proxies)
     time_range_dict = get_time_range(time_range_start=last_fetch)
@@ -1353,12 +1417,14 @@ def fetch_incidents(proxies):
 
     if total_results > 0:
         if "Timestamp" in TIME_METHOD:
-            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
-            demisto.setLastRun({"time": last_fetch})
+            incidents, last_fetch, last_fetch_ids = results_to_incidents_timestamp(response, last_fetch, last_fetch_ids)
+            demisto.setLastRun({"time": last_fetch, "last_fetch_ids": last_fetch_ids})
 
         else:
-            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
-            demisto.setLastRun({"time": str(last_fetch)})
+            incidents, last_fetch, last_fetch_ids = results_to_incidents_datetime(
+                response, last_fetch or FETCH_TIME, last_fetch_ids
+            )
+            demisto.setLastRun({"time": str(last_fetch), "last_fetch_ids": last_fetch_ids})
 
         demisto.info(f"Extracted {len(incidents)} incidents.")
     demisto.incidents(incidents)
