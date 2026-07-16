@@ -7,7 +7,7 @@ sectionorder:
 commonfields:
   id: AWS - Security Hub v2
   version: -1
-description: Unified security and compliance findings management using the AWS Security Hub V2 API.
+description: Use the AWS Security Hub V2 integration to import, manage, and retrieve unified security and compliance findings across your cloud environments.
 configuration:
 - display: AWS Default Region
   name: region
@@ -60,7 +60,7 @@ configuration:
   required: false
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
+  additionalinfo: The timeout interval in seconds. Can be a single integer representing the read timeout (for example 60), or two comma-separated values representing the read and connect timeouts (for example 60,10). If the connect timeout is not specified, a default of 10 seconds is used.
   defaultvalue: 60,10
   type: 0
   section: Connect
@@ -69,7 +69,7 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: "The number of times to retry the connection if it fails with connection or throttling errors. Set to 0 to disable retries. Note: Increasing the number of retries will increase the execution time."
   type: 0
   section: Connect
   advanced: true
@@ -111,7 +111,7 @@ configuration:
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
-  additionalinfo: 'The time range to consider for the initial data fetch, in the format <number> <unit> (for example, 3 days, 12 hours, 7 minutes).'
+  additionalinfo: 'The time range for the initial data fetch (for example, 3 days, 12 hours, 7 minutes).'
   type: 0
   section: Collect
   required: false
@@ -137,14 +137,14 @@ configuration:
   required: false
 - display: Additional fetch filters
   name: fetch_filters
-  additionalinfo: 'The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>", multiple entries separated by ";". Combined with the time and severity filters using AND.'
+  additionalinfo: 'The additional string filters used to narrow the fetch. Follows the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>" (multiple entries must be separated by semicolons). These filters are combined with the time and severity filters using an AND operator.'
   type: 0
   section: Collect
   advanced: true
   required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
-  additionalinfo: 'The direction to mirror the finding: Incoming (from AWS - Security Hub to Cortex), Outgoing (from Cortex to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex and AWS - Security Hub).'
+  additionalinfo: 'The direction to mirror the finding. Possible values are None, Incoming (from AWS - Security Hub to Cortex), Outgoing (from Cortex to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex and AWS - Security Hub).'
   type: 15
   section: Collect
   options:
@@ -180,25 +180,25 @@ script:
     description: "Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2."
     arguments:
     - name: string_filters
-      description: 'The string field filters. Each entry: "field_name=<OCSF field>,value=<value>,comparison=<EQUALS|PREFIX|NOT_EQUALS|PREFIX_NOT_EQUALS|CONTAINS_WORD>", multiple entries separated by ";". Comparison defaults to EQUALS. For substring matching use CONTAINS_WORD (CONTAINS/NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
+      description: 'The string field filters. Each entry must follow the format: field_name=<OCSF field>,value=<value>,comparison=<comparison_type>(separate multiple entries by semicolons). Supported comparison types are EQUALS (default), PREFIX, NOT_EQUALS, PREFIX_NOT_EQUALS, and CONTAINS_WORD. For substring matching, use CONTAINS_WORD (CONTAINS and NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
       required: false
     - name: date_filters
-      description: 'The date field filters. Each entry must use EITHER an absolute range ("field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601>" - both start and end are required) OR a relative DateRange ("field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison>" - value is required, unit defaults to DAYS, comparison is optional). "days=<number>" is accepted as a shorthand for "value=<number>,unit=DAYS". Multiple entries separated by ";". Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
+      description: 'The date field filters. Each entry must use either an absolute range format: field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601> (both start and end are required), or a relative date range format: field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison> (value is required, unit defaults to DAYS, and comparison is optional). Note that days=<number>is accepted as a shorthand for value=<number>,unit=DAYS. Multiple entries must be separated by semicolons. Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
-      description: 'The boolean field filters. Each entry: "field_name=<OCSF field>,value=<true|false>", multiple entries separated by ";".'
+      description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).''
       required: false
     - name: number_filters
-      description: 'The number field filters. Each entry: "field_name=<OCSF field>,<operator>=<number>" where operator is one of eq/gt/gte/lt/lte. Multiple operators may be combined in a single entry, and multiple entries are separated by ";". Examples: field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6.'
+      description: 'The number field filters. Each entry must follow the format: field_name=<OCSF field>,<operator>=<number> where the operator is one of eq, gt, gte, lt, or lte. Multiple operators can be combined in a single entry, and multiple entries must be separated by semicolons. For example,  field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6.'
       required: false
     - name: map_filters
-      description: 'The map field filters. Each entry: "field_name=<OCSF field>,key=<key>,value=<value>,comparison=<EQUALS|NOT_EQUALS>", multiple entries separated by ";". Comparison defaults to EQUALS.'
+      description: 'The map field filters. Each entry must follow the format: field_name=<OCSF field>,key=<key>,value=<value>,comparison=<comparison_type> (multiple entries must be separated by semicolons).  Supported comparison types are EQUALS (default) and NOT_EQUALS.'
       required: false
     - name: ip_filters
-      description: 'The IP field filters. Each entry: "field_name=<field>,cidr=<IP address>", multiple entries separated by ";". Allowed field_name values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
+      description: 'The IP field filters. Each entry must follow the format: field_name=<field>,cidr=<IP address>(multiple entries must be separated by semicolons). Possible field_name values are:  evidences.src_endpoint.ip and evidences.dst_endpoint.ip. The CIDR value must be a plain IPv4 or IPv6 address (CIDR ranges such as10.0.0.0/8 are not accepted). For example, field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
       required: false
     - name: filter_operator
-      description: The logical operator used to combine the filter conditions within the composite filter.
+      description: The logical operator used to combine the filter conditions within the composite filter. Possible values are AND and OR.
       required: false
       auto: PREDEFINED
       predefined:
@@ -206,7 +206,7 @@ script:
       - OR
       defaultValue: AND
     - name: composite_operator
-      description: The logical operator used to combine multiple composite filters.
+      description: The logical operator used to combine multiple composite filters. Possible values are AND and OR.
       required: false
       auto: PREDEFINED
       predefined:
@@ -245,7 +245,7 @@ script:
       required: false
       isArray: true
     - name: finding_identifiers
-      description: 'The composite finding identifiers to update. Each entry: "cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id>", multiple entries separated by ";".'
+      description: 'The composite finding identifiers to update. Each entry must follow the format: cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id> (multiple entries must be separated by semicolons).'
       required: false
     - name: comment
       description: The reason for updating the findings.

@@ -1,8 +1,10 @@
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-#### Configure the AWS - Security Hub v2 Integration in Cortex
-- AWS Default Region: The AWS region to connect to.
-- Access Key: The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
+#### Configure the AWS - Security Hub v2 Integration in Cortex  
+
+In Cortex, configure the following integration settings.
+- **AWS Default Region**: The AWS region to connect to.
+- **Access Key**: The access key ID used for authentication that was configured during IAM user configuration. If this is used, Role ARN is not required.
 - Secret Key: The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
 - Role Arn: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. (For example: arn:aws:iam::<account-no>:role/xsoar-IAM.integration-Role).
 - Role Session Name: A descriptive name for the assumed role session. For example, xsoar-IAM.integration-Role_SESSION.
