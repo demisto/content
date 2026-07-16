@@ -510,6 +510,40 @@ class TestHelperFunction:
         from_date_datetime = handle_from_date_argument("2023-01-01T01:00:00")
         assert from_date_datetime == datetime(2023, 1, 1, 1, 0, 0)
 
+    def test_devices_only_skip_preserves_state(self, mocker, dummy_client):
+        """
+        Given:
+            - A Devices-only instance whose device-fetch interval has NOT elapsed.
+        When:
+            - fetch_events runs and skips the device fetch.
+        Then:
+            - The returned next_run is NOT empty and retains devices_last_fetch_time, so the
+              persisted lastRun does not get wiped (regression guard for XSUP-73098).
+        """
+        from ArmisEventCollector import fetch_events
+
+        fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
+        # last_fetch just 1 minute ago -> interval (1h) not reached -> skip.
+        recent = (datetime.now() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%S")
+        last_run = {"devices_last_fetch_time": recent, "devices_last_fetch_ids": ["dev1"], "devices_last_fetch_next_field": 0}
+        device_fetch_interval = timedelta(hours=1)
+
+        events, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=1000,
+            devices_max_fetch=1000,
+            last_run=last_run,
+            fetch_start_time=fetch_start_time,
+            event_types_to_fetch=["Devices"],
+            device_fetch_interval=device_fetch_interval,
+            use_multithreading=False,
+            context_manager=None,
+        )
+
+        assert events == {}
+        assert next_run.get("devices_last_fetch_time") == recent
+        assert next_run != {}
+
 
 class TestFetchFlow:
     fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
@@ -1666,6 +1700,25 @@ class TestStreamPageToXsiam:
         on_page([{"id": "1", "lastSeen": "2023-01-01T01:00:10.000000+00:00"}])
 
         assert mock_send.call_args.kwargs["product"] == f"{PRODUCT}_devices"
+
+    def test_activities_product_routing(self, mocker):
+        """
+        Given: The Activities event type (whose ``type`` is singular "activity" but whose
+            ``dataset_name`` is plural "activities").
+        When: Callback ships a page.
+        Then: send_events_to_xsiam is called with product == "<PRODUCT>_activities"
+            (plural), so events land in ``armis_security_activities_raw`` and not the
+            singular ``armis_security_activity_raw``. Regression guard for XSUP-73098.
+        """
+        from ArmisEventCollector import PRODUCT
+
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([{"activityUUID": "1", "time": "2023-01-01T01:00:10.000000+00:00"}])
+
+        assert mock_send.call_args.kwargs["product"] == f"{PRODUCT}_activities"
 
 
 class TestFetchByAqlQueryWithCallback:

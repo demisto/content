@@ -792,7 +792,7 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
             running_state["last_event_time"] = latest_time
 
         add_time_to_events(new_events, dataset)
-        product = f"{PRODUCT}_{event_type.type}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
+        product = f"{PRODUCT}_{dataset}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
 
         send_start = time.monotonic()
         send_events_to_xsiam(new_events, vendor=VENDOR, product=product)
@@ -1253,6 +1253,7 @@ def fetch_events(
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
         safe_debug("Skipping Devices fetch - interval not reached")
         event_types_to_fetch.remove("Devices")
+        next_run[DEVICES_LAST_FETCH] = last_run.get(DEVICES_LAST_FETCH)
 
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 
@@ -1463,7 +1464,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
     demisto.setLastRun(next_run)
 
 
-def events_to_command_results(events: dict[str, list], event_type) -> CommandResults:
+def events_to_command_results(events: dict[str, list], event_type: str) -> CommandResults:
     """Return a CommandResults object with a table of fetched events.
 
     Args:
