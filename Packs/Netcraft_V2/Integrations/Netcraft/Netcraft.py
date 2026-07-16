@@ -14,6 +14,8 @@ SUBMISSION_API_LIMIT = 1000
 MAX_FETCH_DEFAULT = 10
 TAKEDOWN_OK_CODE = "TD_OK"
 
+LOOKBACK_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 RES_CODE_TO_MESSAGE = {
     TAKEDOWN_OK_CODE: "The attack was submitted to Netcraft successfully.",
     "TD_EXISTS": "The attack was not submitted to Netcraft because it already exists in the system.",
@@ -470,19 +472,111 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client) -> list[dict[str, str]]:
-    # demisto.getLastRun and demisto.setLastRun hold takedown IDs
-    def to_xsoar_incident(incident: dict) -> dict:
-        demisto.debug(incident_id := incident["id"])
-        return {
-            "name": f"Takedown-{incident_id}",
-            "occurred": arg_to_datetime(  # type: ignore[union-attr]
-                incident["date_submitted"], required=True
-            ).isoformat(),
-            "rawJSON": json.dumps(incident),
-        }
+def to_xsoar_incident(incident: dict, date_format: str | None = None) -> dict:
+    """Converts a Netcraft takedown dict to an XSOAR incident dict.
 
-    params = {
+    Args:
+        incident: The raw incident dict from the Netcraft API.
+        date_format: If provided, format the 'occurred' field using this strftime format.
+            When None, uses ISO format. The lookback mechanism requires a specific format
+            that matches what update_last_run_object expects.
+
+    Returns:
+        An XSOAR incident dict.
+    """
+    incident_id = incident["id"]
+    demisto.debug(f"[fetch_incidents] Processing incident to XSOAR: {incident_id}")
+    occurred_dt = arg_to_datetime(incident["date_submitted"], required=True)
+    occurred = occurred_dt.strftime(date_format) if date_format else occurred_dt.isoformat()  # type: ignore[union-attr]
+    return {
+        "name": f"Takedown-{incident_id}",
+        "occurred": occurred,
+        "rawJSON": json.dumps(incident),
+    }
+
+
+def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[str, str]]:
+    """Fetch incidents using the timestamp-based lookback mechanism.
+
+    This method uses CommonServerPython helpers (get_fetch_run_time_range,
+    filter_incidents_by_duplicates_and_limit, update_last_run_object) to
+    re-query a time window behind the last fetch time, deduplicating results
+    using stored incident IDs. This catches incidents that Netcraft's backend
+    may assign with non-sequential IDs or delays.
+
+    Args:
+        client: The Netcraft API client.
+        look_back: Number of minutes to look back when fetching.
+
+    Returns:
+        A list of XSOAR incident dicts.
+    """
+    prefix = "[fetch_incidents_lookback] "
+    last_run = demisto.getLastRun()
+    first_fetch = PARAMS["first_fetch"]
+    max_fetch_param = arg_to_number(PARAMS.get("max_fetch")) or MAX_FETCH_DEFAULT
+    max_fetch = min(last_run.get("limit") or max_fetch_param, TAKEDOWN_API_LIMIT)
+
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=first_fetch,
+        look_back=look_back,
+        date_format=LOOKBACK_DATE_FORMAT,
+    )
+    demisto.debug(f"{prefix}Fetching from {start_fetch_time} to {end_fetch_time} (look_back={look_back}m)")
+
+    params: dict[str, Any] = {
+        "max_results": max_fetch,
+        "sort": "date_submitted",
+        "dir": "asc",
+        "region": PARAMS["region"],
+        "date_from": start_fetch_time,
+    }
+
+    raw_incidents = client.get_takedowns(params) or []
+    demisto.debug(f"{prefix}API returned {len(raw_incidents)} incidents")
+
+    xsoar_incidents = [to_xsoar_incident(incident, date_format=LOOKBACK_DATE_FORMAT) for incident in raw_incidents]
+
+    xsoar_incidents = filter_incidents_by_duplicates_and_limit(
+        incidents_res=xsoar_incidents,
+        last_run=last_run,
+        fetch_limit=max_fetch_param,
+        id_field="name",
+    )
+    demisto.debug(f"{prefix}After dedup/limit: {len(xsoar_incidents)} incidents")
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=xsoar_incidents,
+        fetch_limit=max_fetch_param,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=look_back,
+        created_time_field="occurred",
+        id_field="name",
+        date_format=LOOKBACK_DATE_FORMAT,
+    )
+
+    demisto.setLastRun(last_run)
+    return xsoar_incidents
+
+
+def fetch_incidents_by_id(client: Client) -> list[dict[str, str]]:
+    """Fetch incidents using the original ID-based mechanism.
+
+    This is the legacy fetch method that tracks the last fetched ID and
+    queries for incidents with IDs greater than that value.
+
+    Args:
+        client: The Netcraft API client.
+
+    Returns:
+        A list of XSOAR incident dicts.
+    """
+    prefix = "[fetch_incidents] "
+
+    params: dict[str, Any] = {
         "max_results": min(arg_to_number(PARAMS["max_fetch"]) or MAX_FETCH_DEFAULT, TAKEDOWN_API_LIMIT),
         "sort": "id",
         "region": PARAMS["region"],
@@ -491,20 +585,81 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
     if last_run := demisto.getLastRun():
         last_id = last_run["id"]
         params["id_after"] = last_id
-        demisto.debug(f"Fetching IDs from: {last_id}")
+        demisto.debug(f"{prefix}Fetching IDs from: {last_id}")
     else:
         last_id = None
         params["date_from"] = str(arg_to_datetime(PARAMS["first_fetch"], required=True))
-        demisto.debug(f'First fetch date: {params["date_from"]}')
+        demisto.debug(f'{prefix}First fetch date: {params["date_from"]}')
 
     incidents = client.get_takedowns(params) or []
+
+    # debug message for tracing the incidents returned by the API
+    fields = {"last_updated", "date_authed", "date_submitted", "id"}
+    filtered_incidents = [{k: incident.get(k) for k in fields} for incident in incidents]
+    demisto.debug(f"{prefix}Found {len(incidents)} incidents:\n{filtered_incidents}")
+
     if incidents:
-        demisto.setLastRun({"id": incidents[-1]["id"]})
+        last_fetched_id = incidents[-1]["id"]
+        demisto.debug(f"{prefix}Last ID fetched: {last_fetched_id}")
+        demisto.setLastRun({"id": last_fetched_id})
+        demisto.debug(f"{prefix}Setting last run ID: {last_fetched_id}")
         # the first incident from the API call should be a duplicate of last_id
         if incidents[0]["id"] == last_id:
+            demisto.debug(f"{prefix}Removing duplicate incident: {last_id}")
             del incidents[0]
 
     return list(map(to_xsoar_incident, incidents))
+
+
+def fetch_incidents(client: Client) -> list[dict[str, str]]:
+    """Fetch incidents, choosing between lookback (timestamp-based) and ID-based mechanisms.
+
+    If the 'look_back' parameter is configured (> 0), uses timestamp-based fetching
+    with deduplication to avoid missing incidents due to non-sequential IDs.
+    Otherwise, uses the original ID-based mechanism.
+
+    Args:
+        client: The Netcraft API client.
+
+    Returns:
+        A list of XSOAR incident dicts.
+    """
+    look_back = arg_to_number(PARAMS.get("look_back")) or 0
+    if look_back > 0:
+        demisto.debug(f"[fetch_incidents] Using lookback mechanism with {look_back} minutes lookback")
+        return fetch_incidents_with_lookback(client, look_back)
+    demisto.debug("[fetch_incidents] no lookback configured, using ID-based mechanism")
+    return fetch_incidents_by_id(client)
+
+
+def get_incidents_command(args: dict, client: Client) -> CommandResults:
+    """Sends the same request as fetch-incidents using the id_after argument."""
+    params: dict[str, Any] = {
+        "max_results": min(arg_to_number(args.get("max_results")) or MAX_FETCH_DEFAULT, TAKEDOWN_API_LIMIT),
+        "sort": "id",
+        "region": args.get("region") or PARAMS["region"],
+        "id_after": args["id_after"],
+    }
+    demisto.debug(f"[netcraft-get-incidents] Fetching incidents with params: {params}")
+
+    incidents = client.get_takedowns(params) or []
+    demisto.debug(f"[netcraft-get-incidents] Found {len(incidents)} incidents:\n{incidents}")
+
+    readable = tableToMarkdown(
+        "Netcraft Incidents",
+        incidents,
+        headers=["id", "attack_url", "attack_type", "status", "date_submitted", "last_updated", "target_brand"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Netcraft.Incident",
+        outputs_key_field="id",
+        outputs=incidents,
+        readable_output=readable,
+        raw_response=incidents,
+    )
 
 
 def attack_report_command(args: dict, client: Client) -> CommandResults:
@@ -1072,6 +1227,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents(client))
+        elif command == "netcraft-get-incidents":
+            return_results(get_incidents_command(args, client))
         elif command == "netcraft-attack-report":
             return_results(attack_report_command(args, client))
         elif command == "netcraft-takedown-list":
