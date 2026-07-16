@@ -4,7 +4,6 @@ from AWS_SecurityHub_V2 import (
     build_close_reopen_entries,
     build_fetch_filters,
     disable_security_hub_command,
-    effective_severity_id,
     enable_security_hub_command,
     fetch_incidents,
     findings_batch_update_command,
@@ -768,35 +767,6 @@ def test_get_remote_data_command_no_finding(mocker):
     result = get_remote_data_command(mock_client, {"id": "missing", "lastUpdate": "2024-01-01T00:00:00Z"})
 
     assert result.mirrored_object == {}
-
-
-def test_effective_severity_id_uses_top_level_and_ignores_vendor():
-    """
-    Given: A finding with a top-level severity_id and a different vendor_attributes.severity_id.
-    When: effective_severity_id is called.
-    Then: The top-level (current/effective) severity_id is returned; vendor_attributes is ignored.
-    """
-    finding = {"severity_id": 3, "vendor_attributes": {"severity_id": 2}}
-    assert effective_severity_id(finding) == 3
-
-
-def test_effective_severity_id_returns_zero_when_top_level_absent():
-    """
-    Given: A finding with no top-level severity_id (only a vendor_attributes.severity_id).
-    When: effective_severity_id is called.
-    Then: It returns 0 (OCSF Unknown) - the original vendor severity is not used as a fallback.
-    """
-    finding = {"vendor_attributes": {"severity_id": 4}}
-    assert effective_severity_id(finding) == 0
-
-
-def test_effective_severity_id_defaults_to_zero_when_absent():
-    """
-    Given: A finding with no severity information at all.
-    When: effective_severity_id is called.
-    Then: It returns 0 (OCSF Unknown).
-    """
-    assert effective_severity_id({}) == 0
 
 
 def _update_remote_args(delta, remote_id="uid-1", incident_changed=True, status=IncidentStatus.ACTIVE):

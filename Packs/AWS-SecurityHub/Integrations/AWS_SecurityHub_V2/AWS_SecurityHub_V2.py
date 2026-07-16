@@ -65,23 +65,6 @@ XSOAR_SEVERITY_TO_OCSF_ID = {
 }
 
 
-def effective_severity_id(finding: dict) -> int:
-    """Return the finding's current (top-level) severity_id, or 0 (OCSF Unknown) when absent.
-
-    Only the top-level ``severity_id`` (the current/effective severity shown in the console) is used.
-    ``vendor_attributes.severity_id`` is deliberately ignored because it holds the finding's original
-    severity, which may not reflect its current state. A present ``severity_id`` of 0 is respected.
-
-    Args:
-        finding (dict): The OCSF finding.
-
-    Returns:
-        int: The OCSF severity_id, or 0 (Unknown) when absent.
-    """
-    severity_id = finding.get("severity_id")
-    return severity_id if severity_id is not None else 0
-
-
 # Minimum severity label -> OCSF severity_id, used to build the fetch severity filter.
 SEVERITY_LABEL_TO_OCSF_ID = {
     "Informational": 1,
@@ -595,7 +578,7 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
                 f"(mirror_direction={mirror_direction}, mirror_instance={finding['mirror_instance']})."
             )
 
-        severity_id = effective_severity_id(finding)
+        severity_id = finding.get("severity_id") or 0
         xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
         incidents.append(
             {
@@ -809,7 +792,7 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
 
     finding = findings[0]
     # Attach the XSOAR severity so the incoming mapper can map it 1:1 (no transformer).
-    severity_id = effective_severity_id(finding)
+    severity_id = finding.get("severity_id") or 0
     finding["xsoar_severity"] = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
 
     # Lifecycle sync: close/reopen the XSOAR incident to match the AWS finding status.
