@@ -29,7 +29,7 @@ Netcraft takedown, submission and screenshot management.
     | Incidents Fetch Interval |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | 'Advanced: Time in minutes to look back when fetching incidents' | Use this parameter to determine how long backward in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Advanced: Time in minutes to look back when fetching incidents | The time in minutes to look back when fetching incidents, used to retrieve incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, API Key, and connection.
 
@@ -1798,7 +1798,7 @@ Download associated screenshots for a specified URL.
 ### netcraft-get-incidents
 
 ***
-Retrieve incidents from Netcraft using the same API request as fetch-incidents, filtered by ID.
+Retrieve incidents from Netcraft using the same API request as *fetch-incidents*, filtered by ID.
 
 #### Base Command
 

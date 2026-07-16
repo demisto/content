@@ -1,8 +1,8 @@
 commonfields:
-  id: Netcraft V2
+  id: Netcraft V2 - lookback test
   version: -1
-name: Netcraft V2
-display: Netcraft
+name: Netcraft V2 - lookback test
+display: Netcraft - lookback test
 category: Utilities
 provider: Netcraft
 description: Netcraft takedown, submission and screenshot management.
@@ -80,10 +80,10 @@ configuration:
   section: Collect
   required: false
 - additionalinfo: >-
-    Use this parameter to determine how long backward in time to look in the search
-    for incidents that were created before the last run time and did not
-    match the query when they were created.
-  defaultvalue: 0
+    The time in minutes to look back when fetching incidents, used to retrieve
+    incidents that were created before the last run time and did not match the
+    query when they were created.
+  defaultvalue: '0'
   display: 'Advanced: Time in minutes to look back when fetching incidents'
   name: look_back
   type: 0
@@ -1510,11 +1510,11 @@ script:
       description: The file extension of the screenshot.
       type: string
   - name: netcraft-get-incidents
-    description: Retrieve incidents from Netcraft using the same API request as fetch-incidents, filtered by ID.
+    description: Retrieves incidents from Netcraft using the same API request as fetch-incidents, filtered by ID.
     arguments:
     - name: id_after
       required: true
-      description: Return only incidents with an ID greater than this value.
+      description: The ID threshold. Only incidents with an ID greater than this value are returned.
     - name: max_results
       description: The maximum number of incidents to return.
       defaultValue: '10'
@@ -1544,7 +1544,7 @@ script:
       type: String
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.10404775
   subtype: python3
   isfetch: true
   runonce: false

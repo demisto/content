@@ -513,6 +513,14 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     """
     prefix = "[fetch_incidents_lookback] "
     last_run = demisto.getLastRun()
+
+    # Handle transition from ID-based fetch to lookback mechanism.
+    # The legacy last_run holds an "id" but no "time" key, which would cause
+    # get_fetch_run_time_range to fall back to first_fetch and re-fetch history.
+    if "id" in last_run and "time" not in last_run:
+        demisto.debug(f"{prefix}Transitioning to lookback mechanism. Initializing last_run time.")
+        last_run["time"] = (datetime.utcnow() - timedelta(minutes=look_back)).strftime(LOOKBACK_DATE_FORMAT)
+
     first_fetch = PARAMS["first_fetch"]
     max_fetch_param = arg_to_number(PARAMS.get("max_fetch")) or MAX_FETCH_DEFAULT
     max_fetch = min(last_run.get("limit") or max_fetch_param, TAKEDOWN_API_LIMIT)
@@ -582,8 +590,7 @@ def fetch_incidents_by_id(client: Client) -> list[dict[str, str]]:
         "region": PARAMS["region"],
     }
 
-    if last_run := demisto.getLastRun():
-        last_id = last_run["id"]
+    if (last_run := demisto.getLastRun()) and (last_id := last_run.get("id")):
         params["id_after"] = last_id
         demisto.debug(f"{prefix}Fetching IDs from: {last_id}")
     else:
