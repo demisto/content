@@ -80,7 +80,7 @@ For support, please contact Palo Alto Networks support or visit the [Cortex XSOA
 
 ## Additional Information
 
-- **Support Level**: XSOAR Official Support
-- **Author**: Cortex XSOAR
+- **Support Level**: Community
+- **Author**: Eric Partington
 - **Categories**: Cloud Security
 - **Supported Modules**: cloud_runtime_security, xsiam, cloud
