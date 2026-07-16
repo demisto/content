@@ -19,5 +19,15 @@
  "disabled": false,
  "reputationCalc": 0,
  "layout": "Cyberint Incident Layout",
+ "extractSettings": {
+  "mode": "Specific",
+  "fieldCliNameToExtractSettings": {
+   "cyberintrelatediocs": {
+    "extractAsIsIndicatorTypeId": "",
+    "isExtractingAllIndicatorTypes": true,
+    "extractIndicatorTypesIDs": []
+   }
+  }
+ },
  "fromVersion": "5.0.0"
 }
