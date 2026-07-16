@@ -187,7 +187,7 @@ def test_domain_enrichment_uses_builtin_command_on_platform(mocker):
 
     def _capture_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         captured_batches["batches"] = list_of_batches
-        raise _StopAfterCapture()
+        raise _StopAfterCapture
 
     mocker.patch.object(demisto, "args", return_value={"domain_list": ",".join(domain_list)})
     mocker.patch("DomainEnrichment.is_xsiam", return_value=True)

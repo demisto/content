@@ -273,7 +273,7 @@ def test_ip_enrichment_uses_builtin_command_on_platform(mocker):
 
     def _capture_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         captured_batches["batches"] = list_of_batches
-        raise _StopAfterCapture()
+        raise _StopAfterCapture
 
     mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
     mocker.patch("IPEnrichment.is_xsiam", return_value=True)
