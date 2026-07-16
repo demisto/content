@@ -163,9 +163,7 @@ def _handle_api_response(response: Optional[requests.Response], endpoint: str) -
         raise DemistoException("No URL configured for the Axonius instance.")
 
     if not response.ok:
-        raise DemistoException(
-            f"API call to '{endpoint}' failed with HTTP {response.status_code}: {response.text[:1000]}"
-        )
+        raise DemistoException(f"API call to '{endpoint}' failed with HTTP {response.status_code}: {response.text[:1000]}")
 
     if not response.content:
         return {}
@@ -173,9 +171,7 @@ def _handle_api_response(response: Optional[requests.Response], endpoint: str) -
     try:
         return response.json()
     except ValueError as exc:
-        raise DemistoException(
-            f"Failed to parse response from '{endpoint}' as JSON: {exc}"
-        ) from exc
+        raise DemistoException(f"Failed to parse response from '{endpoint}' as JSON: {exc}") from exc
 
 
 def add_note(client: Connect, args: dict) -> CommandResults:
@@ -437,8 +433,9 @@ def get_asset_types() -> CommandResults:
 
     readable_output = tableToMarkdown(
         "Axonius Asset Types",
-        [{"asset_type": t} for t in asset_types] if isinstance(asset_types, list) and asset_types
-        and not isinstance(asset_types[0], dict) else asset_types,
+        [{"asset_type": t} for t in asset_types]
+        if isinstance(asset_types, list) and asset_types and not isinstance(asset_types[0], dict)
+        else asset_types,
         removeNull=True,
     )
 
@@ -741,7 +738,7 @@ def get_grouped_vulnerabilities(args: dict) -> CommandResults:
         query_parts.append(f'(specific_data.data.team_name == "{team_name}")')
     if urgent is not None:
         urgent_bool = "true" if argToBoolean(urgent) else "false"
-        query_parts.append(f'(specific_data.data.urgent == {urgent_bool})')
+        query_parts.append(f"(specific_data.data.urgent == {urgent_bool})")
     final_query = " and ".join(query_parts) if query_parts else None
 
     instances = _fetch_all_pages(asset_type="vulnerability_instances", query=final_query, page_size=page_size)

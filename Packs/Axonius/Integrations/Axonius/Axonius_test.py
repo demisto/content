@@ -246,10 +246,7 @@ def test_get_assets_api_error_raises():
     mock_resp.ok = False
     mock_resp.status_code = 403
     mock_resp.text = "Forbidden"
-    with (
-        patch("Axonius.make_api_call", return_value=mock_resp),
-        pytest.raises(DemistoException, match="HTTP 403")
-    ):
+    with patch("Axonius.make_api_call", return_value=mock_resp), pytest.raises(DemistoException, match="HTTP 403"):
         get_assets({"asset_type": "devices"})
 
 
@@ -447,8 +444,10 @@ def test_get_grouped_vulnerabilities_top_n():
             return 1
         return default
 
-    with patch("Axonius.make_api_call", return_value=_make_ok_response(page)), \
-         patch("Axonius.get_int_arg", side_effect=mock_get_int_arg):
+    with (
+        patch("Axonius.make_api_call", return_value=_make_ok_response(page)),
+        patch("Axonius.get_int_arg", side_effect=mock_get_int_arg),
+    ):
         result = get_grouped_vulnerabilities({})
     assert len(result.outputs) == 1
 
@@ -466,10 +465,13 @@ def test_fetch_all_pages_pagination():
     page1 = _make_vi_page(DUMMY_VULNERABILITY_INSTANCES[:2], cursor="page2")
     page2 = _make_vi_page(DUMMY_VULNERABILITY_INSTANCES[2:], cursor=None)
 
-    with patch("Axonius.make_api_call", side_effect=[
-        _make_ok_response(page1),
-        _make_ok_response(page2),
-    ]):
+    with patch(
+        "Axonius.make_api_call",
+        side_effect=[
+            _make_ok_response(page1),
+            _make_ok_response(page2),
+        ],
+    ):
         all_assets = _fetch_all_pages("vulnerability_instances")
 
     assert len(all_assets) == len(DUMMY_VULNERABILITY_INSTANCES)
