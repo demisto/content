@@ -519,7 +519,7 @@ def test_incident_creation_e6(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_datetime
 
     last_fetch = "2019-08-29T14:44:00Z"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-29T14:46:00.123456+00:00"
@@ -536,7 +536,7 @@ def test_incident_creation_e7(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_datetime
 
     last_fetch = "2019-08-27T17:59:00"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-27T18:01:25.343212+00:00"
@@ -576,12 +576,208 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_timestamp
 
     lastfetch = int(datetime.strptime("2019-08-27T17:59:00Z", "%Y-%m-%dT%H:%M:%SZ").timestamp())
-    incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
+    incidents, last_fetch2, _ = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     if params.get("map_labels"):
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
     else:
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS
+
+
+# XSUP-72750: three documents sharing an identical sub-second timestamp at the fetch boundary.
+ES_IDENTICAL_TIMESTAMP_RESPONSE = {
+    "took": 1,
+    "timed_out": False,
+    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
+    "hits": {
+        "total": {"value": 3, "relation": "eq"},
+        "max_score": 1.0,
+        "hits": [
+            {"_index": "customer", "_type": "doc", "_id": "a1", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+            {"_index": "customer", "_type": "doc", "_id": "a2", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+            {"_index": "customer", "_type": "doc", "_id": "a3", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+        ],
+    },
+}
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_no_data_loss_across_fetches(params, mocker):
+    """
+    XSUP-72750 regression test (Simple-Date / datetime path).
+
+    Given:
+        - Three documents that share an identical sub-second timestamp which is the
+          fetch high-water-mark, split across two fetch cycles (first fetch returns
+          only 'a1', second fetch returns all three because the query lower bound is now inclusive).
+    When:
+        - Running results_to_incidents_datetime twice, feeding the returned last_fetch and
+          last_fetch_ids from the first call into the second (mimicking demisto.setLastRun/getLastRun).
+    Then:
+        - All three documents are ingested exactly once (no data loss, no duplicates).
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    first_response = {"hits": {"hits": [ES_IDENTICAL_TIMESTAMP_RESPONSE["hits"]["hits"][0]]}}
+
+    # First fetch: only 'a1' is available (page boundary cuts the rest off).
+    incidents1, last_fetch1, ids1 = results_to_incidents_datetime(first_response, "2019-08-27T17:59:00Z")
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert ids1 == ["a1"]
+
+    # Second fetch: query is now gte the boundary timestamp, so all three are returned.
+    incidents2, last_fetch2, ids2 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, last_fetch1, ids1)
+    # 'a1' must be skipped (already ingested), 'a2' and 'a3' must be ingested.
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2", "a3"]
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+    # Overall: all three ingested exactly once.
+    all_ingested = [inc["dbotMirrorId"] for inc in incidents1 + incidents2]
+    assert sorted(all_ingested) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_no_duplicates_on_replay(params, mocker):
+    """
+    XSUP-72750 regression test (Simple-Date / datetime path) - idempotency.
+
+    Given:
+        - A fetch that already ingested all three identically-timestamped documents.
+    When:
+        - The exact same response is returned again (e.g. no new documents arrived).
+    Then:
+        - No incidents are produced (all skipped by _id de-duplication), so no duplicates.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    incidents1, last_fetch1, ids1 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, "2019-08-27T17:59:00Z")
+    assert sorted(inc["dbotMirrorId"] for inc in incidents1) == ["a1", "a2", "a3"]
+
+    # Replay the same response with the persisted state.
+    incidents2, last_fetch2, ids2 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, last_fetch1, ids1)
+    assert incidents2 == []
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_timestamp_identical_timestamps_no_data_loss_across_fetches(params, mocker):
+    """
+    XSUP-72750 regression test (Timestamp path).
+
+    Given:
+        - Three documents that share an identical epoch-millisecond timestamp which is the
+          fetch high-water-mark, split across two fetch cycles.
+    When:
+        - Running results_to_incidents_timestamp twice, feeding the returned last_fetch and
+          last_fetch_ids from the first call into the second.
+    Then:
+        - All three documents are ingested exactly once (no data loss, no duplicates).
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    mocker.patch("Elasticsearch_v2.TIME_METHOD", "Timestamp-Milliseconds")
+    from Elasticsearch_v2 import results_to_incidents_timestamp
+
+    ts = 1566928800120  # 2019-08-27T18:00:00.120Z in epoch milliseconds
+    hit = {"_index": "customer", "_type": "doc", "_source": {"Date": ts}}
+    response = {
+        "hits": {
+            "hits": [
+                {**hit, "_id": "a1"},
+                {**hit, "_id": "a2"},
+                {**hit, "_id": "a3"},
+            ]
+        }
+    }
+    first_response = {"hits": {"hits": [{**hit, "_id": "a1"}]}}
+
+    last_fetch = 1566928740000  # earlier than ts
+    incidents1, last_fetch1, ids1 = results_to_incidents_timestamp(first_response, last_fetch)
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert last_fetch1 == ts
+    assert ids1 == ["a1"]
+
+    incidents2, last_fetch2, ids2 = results_to_incidents_timestamp(response, last_fetch1, ids1)
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2", "a3"]
+    assert last_fetch2 == ts
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_boundary_ids_persist_over_three_fetches(params, mocker):
+    """
+    XSUP-72750 regression test - continuity over three fetch cycles.
+
+    Given:
+        - Three documents sharing an identical boundary timestamp, revealed one per fetch.
+    When:
+        - Running results_to_incidents_datetime three times, always feeding back the persisted
+          last_fetch and last_fetch_ids (mimicking demisto.getLastRun/setLastRun).
+    Then:
+        - Each document is ingested exactly once and the boundary id set never drifts,
+          so no document is ever re-ingested as a duplicate on a later cycle.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    hits = ES_IDENTICAL_TIMESTAMP_RESPONSE["hits"]["hits"]
+    fetch1 = {"hits": {"hits": hits[:1]}}
+    fetch2 = {"hits": {"hits": hits[:2]}}
+    fetch3 = {"hits": {"hits": hits[:3]}}
+
+    incidents1, last_fetch, ids = results_to_incidents_datetime(fetch1, "2019-08-27T17:59:00Z")
+    incidents2, last_fetch, ids = results_to_incidents_datetime(fetch2, last_fetch, ids)
+    incidents3, last_fetch, ids = results_to_incidents_datetime(fetch3, last_fetch, ids)
+
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2"]
+    assert [inc["dbotMirrorId"] for inc in incidents3] == ["a3"]
+    assert sorted(ids) == ["a1", "a2", "a3"]
+
+    all_ingested = [inc["dbotMirrorId"] for inc in incidents1 + incidents2 + incidents3]
+    assert sorted(all_ingested) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_newer_timestamp_resets_boundary_ids(params, mocker):
+    """
+    XSUP-72750 regression test - boundary id reset when a newer timestamp appears.
+
+    Given:
+        - A page containing some documents at the boundary timestamp and some at a strictly
+          newer timestamp.
+    When:
+        - Running results_to_incidents_datetime with the boundary id already persisted.
+    Then:
+        - The previously-fetched boundary id is skipped, new documents are ingested, and the
+          returned boundary id set contains only the ids at the new (newer) high-water-mark.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    response = {
+        "hits": {
+            "hits": [
+                {"_index": "c", "_type": "doc", "_id": "a1", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+                {"_index": "c", "_type": "doc", "_id": "a2", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+                {"_index": "c", "_type": "doc", "_id": "b1", "_source": {"Date": "2019-08-27T18:05:00.500000Z"}},
+            ]
+        }
+    }
+
+    # 'a1' was already ingested at the previous boundary (18:00:00.120000).
+    incidents, last_fetch, ids = results_to_incidents_datetime(response, "2019-08-27T18:00:00.120000Z", ["a1"])
+
+    # 'a1' skipped, 'a2' and 'b1' ingested; the boundary advanced to b1's timestamp,
+    # so only 'b1' remains as the boundary id.
+    assert [inc["dbotMirrorId"] for inc in incidents] == ["a2", "b1"]
+    assert ids == ["b1"]
 
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
@@ -761,14 +957,14 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "",
             "1.1.2000 12:00:00Z",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         (
             "Timestamp-Milliseconds",
             946728000000,
             "",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         ("Timestamp-Milliseconds", "", "", "2.1.2000 12:00:00Z", {"range": {"time_field": {"lt": 949406400000}}}),
         (
@@ -776,7 +972,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "2.1.2000 12:00:00.000000",
             "",
             "",
-            {"range": {"time_field": {"gt": "2.1.2000 12:00:00.000000", "format": Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}},
+            {"range": {"time_field": {"gte": "2.1.2000 12:00:00.000000", "format": Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}},
         ),
     ],
 )
