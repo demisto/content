@@ -1722,6 +1722,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional |
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional |
 | generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on. | Optional |
+| paths_separator | The delimiter used to separate multiple file paths. Defaults to a comma (,). Set to a different character (for example, ";") when a file path itself contains a comma. Default is ,. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | timeout_in_seconds | Polling timeout in seconds. | Optional |
 | action_id | The action IDs for polling use. | Optional |
