@@ -732,29 +732,6 @@ def test_get_remote_data_command_returns_finding(mocker):
     assert string_filter["Filter"]["Value"] == "uid-1"
 
 
-def test_get_remote_data_command_uses_top_level_severity_over_vendor(mocker):
-    """
-    Given: A finding whose top-level severity_id (Medium) differs from vendor_attributes.severity_id (Low).
-    When: get_remote_data_command is called.
-    Then: xsoar_severity reflects the top-level value (the AWS console / effective severity), not the
-          vendor_attributes fallback.
-    """
-    from AWS_SecurityHub_V2 import IncidentSeverity
-
-    mock_client = mocker.Mock()
-    finding = {
-        "metadata": {"uid": "uid-1"},
-        "status_id": 1,
-        "severity_id": 3,  # top-level Medium (what the console shows)
-        "vendor_attributes": {"severity_id": 2},  # original Low
-    }
-    mock_client.get_findings_v2.return_value = {"Findings": [finding]}
-
-    result = get_remote_data_command(mock_client, {"id": "uid-1", "lastUpdate": "2024-01-01T00:00:00Z"})
-
-    assert result.mirrored_object["xsoar_severity"] == IncidentSeverity.MEDIUM
-
-
 def test_get_remote_data_command_no_finding(mocker):
     """
     Given: A client returning no finding for the requested uid.

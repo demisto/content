@@ -19,24 +19,11 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-# OCSF status_id values (https://schema.ocsf.io).
-OCSF_STATUS_ID_NEW = 1
-OCSF_STATUS_ID_IN_PROGRESS = 2
-OCSF_STATUS_ID_SUPPRESSED = 3
-OCSF_STATUS_ID_RESOLVED = 4
-# OCSF statuses that close the mirrored-in XSOAR incident, mapped to the XSOAR close reason.
-OCSF_STATUS_ID_TO_CLOSE_REASON = {
-    OCSF_STATUS_ID_RESOLVED: "Resolved",
-    OCSF_STATUS_ID_SUPPRESSED: "Other",
-}
-# OCSF statuses that reopen the mirrored-in XSOAR incident.
-OCSF_OPEN_STATUS_IDS = {OCSF_STATUS_ID_NEW, OCSF_STATUS_ID_IN_PROGRESS}
-# Outgoing delta keys written verbatim to the batch_update_findings_v2 kwarg.
-OUTGOING_DELTA_TO_KWARG = {
-    "severityid": "SeverityId",
-    "statusid": "StatusId",
-    "comment": "Comment",
-}
+# OCSF status_ids (https://schema.ocsf.io) that close the mirrored-in XSOAR incident,
+# mapped to the XSOAR close reason. Resolved=4, Suppressed=3.
+OCSF_STATUS_ID_TO_CLOSE_REASON = {4: "Resolved", 3: "Other"}
+# OCSF status_ids that reopen the mirrored-in XSOAR incident. New=1, In Progress=2.
+OCSF_OPEN_STATUS_IDS = {1, 2}
 # Outgoing mapping schema surfaced by get-mapping-fields. Includes the built-in "severity" field,
 # which is translated (not written verbatim) to OCSF SeverityId in update_remote_system_command.
 OUTGOING_FIELD_DESCRIPTIONS = {
@@ -438,7 +425,7 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
         {
             "Filters": generate_filters_for_get_findings(args),
             "SortCriteria": sort_criteria,
-            "MaxResults": arg_to_number(args.get("limit")) or 50,
+            "MaxResults": arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH,
             "NextToken": args.get("next_token"),
         }
     )
@@ -573,10 +560,6 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
         if mirror_direction:
             finding["mirror_direction"] = mirror_direction
             finding["mirror_instance"] = demisto.integrationInstance()
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Dedup: tagged uid={uid} for mirroring "
-                f"(mirror_direction={mirror_direction}, mirror_instance={finding['mirror_instance']})."
-            )
 
         severity_id = finding.get("severity_id") or 0
         xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
@@ -588,10 +571,6 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
                 "rawJSON": json.dumps(finding),
             }
         )
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Dedup: created incident uid={uid}, created={created_time}, "
-            f"severity_id={severity_id} -> xsoar_severity={xsoar_severity}."
-        )
 
         new_findings.append(finding)
 
@@ -599,7 +578,16 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
 
 
 def fetch_incidents(client: BotoClient, params: dict) -> None:
-    """Fetch AWS Security Hub V2 findings as XSOAR incidents."""
+    """Fetch AWS Security Hub V2 findings as XSOAR incidents.
+
+    Queries findings by ascending created time over an inclusive [last_fetch, now] window,
+    paginating via next_token and deduping against boundary state saved in the last run.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        params (dict): The integration parameters (first_fetch, max_fetch, min_severity,
+            fetch_filters, mirror_direction).
+    """
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents START =====")
     max_fetch = min(arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT)
     last_run = demisto.getLastRun()
@@ -612,8 +600,6 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     if not format_first_fetch:
         raise DemistoException(f"Invalid 'First fetch time' value: {first_fetch!r}.")
     last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: {last_fetch=}")
-
     next_token = last_run.get("next_token")
     fetched_ids: list = list(last_run.get("fetched_ids") or [])
 
@@ -645,7 +631,6 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
                 min_severity=params.get("min_severity"),
                 additional_filters=params.get("fetch_filters"),
             )
-            demisto.debug(f"[AWS_Security_Hub_V2] Fetch: built Filters object: {json.dumps(filters)}")
 
             response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA)
             demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
@@ -653,18 +638,10 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
 
     findings = response.get("Findings", [])
-    if findings:
-        demisto.debug(f"[AWS_Security_Hub_V2] Fetch: findings={findings[0]}")
-
     new_next_token = response.get("NextToken")
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings. {new_next_token=}")
+    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings.")
 
     mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
-    demisto.debug(
-        f"[AWS_Security_Hub_V2] Fetch: mirror_direction param={params.get('mirror_direction', 'None')} "
-        f"-> resolved dbot direction={mirror_direction} "
-        f"({'incidents will be enrolled in mirroring' if mirror_direction else 'mirroring disabled'})."
-    )
     new_findings, incidents = dedup_findings(findings, last_fetch, fetched_ids, mirror_direction)
 
     sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
@@ -750,13 +727,9 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         GetRemoteDataResponse: The updated finding object and any close/reopen entries.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: raw args from server: {json.dumps(args, default=str)}")
     remote_args = GetRemoteDataArgs(args)
     finding_uid = remote_args.remote_incident_id
-    demisto.debug(
-        f"[AWS_Security_Hub_V2] Mirror-in: fetching current state of finding uid={finding_uid} "
-        f"(server-provided lastUpdate={remote_args.last_update})"
-    )
+    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: fetching current state of finding uid={finding_uid}")
 
     filters = {
         "CompositeFilters": [
@@ -767,7 +740,6 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         ],
         "CompositeOperator": "AND",
     }
-    demisto.debug(f"[AWS_Security_Hub_V2] Mirror-in: get-remote-data Filters object: {json.dumps(filters)}")
 
     try:
         response = client.get_findings_v2(Filters=filters, MaxResults=1)
@@ -826,7 +798,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 def update_remote_system_command(client: BotoClient, args: dict, resolve_finding: bool) -> str:
     """Push local (XSOAR) incident changes to the corresponding finding via batch_update_findings_v2.
 
-    Mirrors out only delta fields whitelisted in ``OUTGOING_DELTA_TO_KWARG`` (plus the built-in severity).
+    Mirrors out only the whitelisted delta fields (severityid, statusid, comment) plus the built-in severity.
     When ``resolve_finding`` is enabled and the incident is closed, the finding is set to Resolved.
 
     Args:
@@ -848,7 +820,7 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
 
     kwargs: dict = {}
     if parsed_args.incident_changed and delta:
-        for delta_key, api_key in OUTGOING_DELTA_TO_KWARG.items():
+        for delta_key, api_key in {"severityid": "SeverityId", "statusid": "StatusId", "comment": "Comment"}.items():
             if delta_key in delta and delta[delta_key] not in (None, ""):
                 value = delta[delta_key]
                 # severity_id and status_id are numeric in the API.
@@ -870,10 +842,9 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
 
     # If configured, closing the incident in XSOAR resolves the finding in AWS (overrides any delta status).
     if resolve_finding and parsed_args.inc_status == IncidentStatus.DONE:
-        kwargs["StatusId"] = OCSF_STATUS_ID_RESOLVED
+        kwargs["StatusId"] = 4  # OCSF status_id 4 = Resolved.
         demisto.debug(
-            f"[AWS_Security_Hub_V2] Mirror-out: incident closed and resolve_finding enabled; "
-            f"forcing StatusId={OCSF_STATUS_ID_RESOLVED} (Resolved)."
+            "[AWS_Security_Hub_V2] Mirror-out: incident closed and resolve_finding enabled; " "forcing StatusId=4 (Resolved)."
         )
 
     if not kwargs:
