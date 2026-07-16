@@ -44,11 +44,11 @@ This integration includes a set of **`es-kibana-*` commands** that let you inter
 
 ### What you can do with Kibana commands
 
-- **Case Management** — create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
-- **Alerting & Rules** — list rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
-- **Detection Alerts** — bulk-update the status of security detection alerts (open, acknowledged, closed).
-- **Exception Lists & Items** — manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
-- **Value Lists** — create, update, delete, and import/export value lists used in detection rules.
+- **Case Management** — Create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
+- **Alerting & Rules** — List rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
+- **Detection Alerts** — Bulk-update the status of security detection alerts (open, acknowledged, closed).
+- **Exception Lists & Items** — Manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
+- **Value Lists** — Create, update, delete, and import/export value lists used in detection rules.
 
 ### Kibana URL
 
@@ -67,9 +67,9 @@ Kibana API endpoints are gated by **feature privileges**. The level required dep
 
 For **Cases** and **Rules**, the required privilege is also scoped to the feature that owns the object:
 
-- Objects owned by **Security** (e.g. SIEM detection rules, Security cases) → grant the **Security** feature privilege.
-- Objects owned by **Observability** → grant the **Observability** feature privilege.
-- Objects owned by **Stack / Management** (e.g. Stack Rules) → grant the **Stack Rules** / **Management** feature privilege.
+- Objects owned by **Security** (e.g. SIEM detection rules, Security cases) require the **Security** feature privilege.
+- Objects owned by **Observability** require the **Observability** feature privilege.
+- Objects owned by **Stack / Management** (e.g. Stack Rules) require the **Stack Rules** / **Management** feature privilege.
 
 
 ### Kibana Spaces (optional)

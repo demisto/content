@@ -9,7 +9,7 @@ The permissions required to use this integration depends on which operations you
 - **!es-eql-search/search/es-search/fetch-incidents** - If the Elasticsearch security features are enabled, you must have the *read* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!get-mapping-fields** - If the Elasticsearch security features are enabled, you must have the *view_index_metadata* or *manage* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
-- **!es-kibana-* commands** - To execute Kibana commands, you must have the necessary privileges for the applicable resource within the Management, Observability, or Security feature privileges, depending on the command you are using. Kibana API endpoints are gated by feature privileges granted at one of two levels: *Read* (GET / list / view operations) and *All* (POST / PUT / PATCH / DELETE operations). For rules and cases, the privilege is owner/consumer-scoped - a security-owned object needs the Security privilege, an observability-owned one needs Observability, and a stack-owned one needs Management/Stack Rules.
+- **!es-kibana-* commands** - To execute Kibana commands, you must have the necessary privileges for the applicable resource. The privilege required depends on the command you are using. Kibana API endpoints are gated by feature privileges granted at one of two levels: *Read* (GET / list / view operations) and *All* (POST / PUT / PATCH / DELETE operations). For rules and cases, the privilege is scoped to the feature that owns the object — a Security-owned object requires the **Security** feature privilege, an Observability-owned object requires the **Observability** feature privilege, and a stack-owned object requires the **Management** / **Stack Rules** feature privilege.
 
 ## Configure Elasticsearch v2 in Cortex
 
@@ -36,7 +36,7 @@ The permissions required to use this integration depends on which operations you
 | Request timeout (in seconds). |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
-| Space ID | The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a space_id argument is provided to a command, it overrides this value. See [Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) for more information. | False |
+| Space ID | The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a `space_id` argument is provided to a command, it overrides this value. See [Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) for more information. | False |
 
 ## Commands
 
@@ -469,9 +469,9 @@ Retrieves information about rules.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | rule_id | The identifier for the rule. | Optional |
-| search | An Elasticsearch simple_query_string query that filters the objects in the response. | Optional |
-| default_search_operator | The default operator to use for the simple_query_string. | Optional |
-| search_fields | The fields to perform the simple_query_string parsed query against. | Optional |
+| search | An Elasticsearch `simple_query_string` query that filters the objects in the response. | Optional |
+| default_search_operator | The default operator to use for the `simple_query_string`. | Optional |
+| search_fields | The fields to perform the `simple_query_string` parsed query against. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
 | sort_order | Determines the sort order. | Optional |
 | has_reference_id | Filters the rules that have a relation with the reference objects with a specific identifier. | Optional |
@@ -743,8 +743,8 @@ Set the status of one or more detection alerts.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | status | The new status of the detection alert(s). | Required |
-| signal_ids | List of alert ids. Use field _id on alert document or kibana.alert.uuid. | Optional |
-| query | An Elasticsearch query used to select which alerts to update, as an alternative to signal_ids. | Optional |
+| signal_ids | List of alert IDs. Use field `_id` on alert document or `kibana.alert.uuid`. | Optional |
+| query | An Elasticsearch query used to select which alerts to update, as an alternative to `signal_ids`. | Optional |
 | reason | The reason for the status change. | Optional |
 | conflicts | Determines how version conflicts should be handled. | Optional |
 
@@ -798,10 +798,10 @@ Creates a new case in Kibana.
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | assignee_uid | An array containing users that are assigned to the case. Not more than 10 elements. | Optional |
 | category | A word or phrase that categorizes the case. Maximum length is 50. | Optional |
-| connector_fields | A JSON object containing the connector fields. To create a case without a connector, specify null. | Optional |
-| connector_id | The identifier for the connector. To create a case without a connector, use none. | Optional |
-| connector_name | The name of the connector. To create a case without a connector, use none. | Optional |
-| connector_type | The type of connector. To create a case without a connector, use .none. | Optional |
+| connector_fields | A JSON object containing the connector fields. To create a case without a connector, specify `null`. | Optional |
+| connector_id | The identifier for the connector. To create a case without a connector, use `none`. | Optional |
+| connector_name | The name of the connector. To create a case without a connector, use `none`. | Optional |
+| connector_type | The type of connector. To create a case without a connector, use `none`. | Optional |
 | connector_fields_issue_type_jira | The type of issue. | Optional |
 | connector_fields_parent_jira | The key of the parent issue, when the issue type is sub-task. | Optional |
 | connector_fields_priority_jira | The priority of the issue. | Optional |
@@ -891,14 +891,14 @@ Update cases in Kibana.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | case_id | The identifier for the case. | Required |
-| version | The current version of the case. To determine this value, use es-kibana-case-list. | Required |
+| version | The current version of the case. To determine this value, use `es-kibana-case-list`. | Required |
 | assignee_uid | An array containing users that are assigned to the case. Not more than 10 elements. | Optional |
 | category | A word or phrase that categorizes the case. Maximum length is 50. | Optional |
 | close_reason | The close reason to sync to attached alerts when closing the case. | Optional |
-| connector_fields | A JSON object containing the connector fields. To remove a connector, specify null. | Optional |
-| connector_id | The identifier for the connector. To remove a connector, specify none. | Optional |
-| connector_name | The name of the connector. To remove a connector, specify none. | Optional |
-| connector_type | The type of connector. To remove a connector, specify .none. | Optional |
+| connector_fields | A JSON object containing the connector fields. To remove a connector, specify `null`. | Optional |
+| connector_id | The identifier for the connector. To remove a connector, specify `none`. | Optional |
+| connector_name | The name of the connector. To remove a connector, specify `none`. | Optional |
+| connector_type | The type of connector. To remove a connector, specify `none`. | Optional |
 | connector_fields_issue_type_jira | The type of issue. | Optional |
 | connector_fields_parent_jira | The key of the parent issue, when the issue type is sub-task. | Optional |
 | connector_fields_priority_jira | The priority of the issue. | Optional |
@@ -987,7 +987,7 @@ Deletes one or more cases by ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The cases that you want to remove. To get the case identifiers, use es-kibana-case-list. | Required |
+| case_id | The cases that you want to remove. To get the case identifiers, use `es-kibana-case-list`. | Required |
 
 #### Context Output
 
@@ -1101,7 +1101,7 @@ Retrieves all alerts for a case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The identifier for the case. To retrieve case IDs, use es-kibana-case-list. | Required |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
 | limit | Limit on the number of keys to return. | Optional |
 | offset | Starting record index to begin retrieving records from. | Optional |
 
@@ -1161,7 +1161,7 @@ Add a case comment or alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The identifier for the case. To retrieve case IDs, use es-kibana-case-list. | Required |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
 | alert_id | The alert identifiers. Required only when type is alert. | Optional |
 | index | The alert indices. Required only when type is alert. | Optional |
 | owner | The application that owns the cases: Stack Management, Observability, or Elastic Security. | Required |
@@ -1224,7 +1224,7 @@ Update a case comment or alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The identifier for the case. To retrieve case IDs, use es-kibana-case-list. | Required |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
 | comment_id | The identifier for the comment. | Optional |
 | comment | The new comment. Required only when type is user. Maximum length is 30000. | Optional |
 | alert_id | The alert identifiers. Required only when type is alert. | Optional |
@@ -1292,7 +1292,7 @@ Deletes all comments and alerts from a case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The identifier for the case. To retrieve case IDs, use es-kibana-case-list. | Required |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
 
 #### Context Output
 
@@ -1326,7 +1326,7 @@ Attach a file to a case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| case_id | The identifier for the case. To retrieve case IDs, use es-kibana-case-list. | Required |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
 | entry_id | Entry ID for the file that needs to be attached. | Required |
 | file_name | The desired name of the file being attached to the case (without file extension). | Optional |
 
@@ -1384,7 +1384,7 @@ Create an Elastic Endpoint exception list item, and associate it with the Elasti
 | entries_list_type | Specifies the Elasticsearch data type of excludes the list container holds. | Optional |
 | entries_operator | The exception item entry operator. | Optional |
 | entries_type | The exception item entry type. | Optional |
-| item_id | Human readable string identifier, e.g. trusted-linux-processes. | Optional |
+| item_id | Human readable string identifier, e.g. `trusted-linux-processes`. | Optional |
 | meta | Additional properties are allowed (JSON object). | Optional |
 | name | Exception list name. Minimum length is 1. | Optional |
 | os_types | Use this field to specify the operating system. | Optional |
@@ -1448,7 +1448,7 @@ Update an Elastic Endpoint exception list item.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | exception_list_item_id | Exception's identifier. | Optional |
-| item_id | Human readable string identifier, e.g. trusted-linux-processes. | Optional |
+| item_id | Human readable string identifier, e.g. `trusted-linux-processes`. | Optional |
 | _version | The version id, normally returned by the API when the item is retrieved. | Optional |
 | description | Describes the exception list. | Optional |
 | entries_field | A string that does not contain only whitespace characters. | Optional |
@@ -1519,7 +1519,7 @@ Delete an Elastic Endpoint exception list item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| item_id | Either id or item_id must be specified. | Required |
+| item_id | Either `id` or `item_id` must be specified. | Required |
 
 #### Context Output
 
@@ -1554,7 +1554,7 @@ Retrieves Elastic Endpoint exception list items.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
-| item_id | Either id or item_id must be specified. | Optional |
+| item_id | Either `id` or `item_id` must be specified. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
 | sort_order | Determines the sort order. | Optional |
 | page | The page number to return. Minimum value is 0. | Optional |
@@ -1618,8 +1618,8 @@ Get a list of all exception list containers.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| exception_list_id | Exception list's identifier. Either id or list_id must be specified. | Optional |
-| list_id | Human readable exception list string identifier. Either id or list_id must be specified. | Optional |
+| exception_list_id | Exception list's identifier. Either `id` or `list_id` must be specified. | Optional |
+| list_id | Human readable exception list string identifier. Either `id` or `list_id` must be specified. | Optional |
 | filter | Filters the returned results according to the value of the specified field. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
 | sort_field | Determines which field is used to sort the results. | Optional |
@@ -1814,8 +1814,8 @@ Delete an exception list using the id or list_id field.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| exception_list_id | Exception list's identifier. Either id or list_id must be specified. | Optional |
-| list_id | Human readable exception list string identifier. Either id or list_id must be specified. | Optional |
+| exception_list_id | Exception list's identifier. Either `id` or `list_id` must be specified. | Optional |
+| list_id | Human readable exception list string identifier. Either `id` or `list_id` must be specified. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
 
 #### Context Output
@@ -1850,8 +1850,8 @@ Get a list of all exception list items in the specified list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| exception_list_item_id | Exception list item's identifier. Either id or item_id must be specified. | Optional |
-| item_id | Human readable exception item string identifier. Either id or item_id must be specified. | Optional |
+| exception_list_item_id | Exception list item's identifier. Either `id` or `item_id` must be specified. | Optional |
+| item_id | Human readable exception item string identifier. Either `id` or `item_id` must be specified. | Optional |
 | exception_list_id | The list_ids of the items to fetch. | Optional |
 | filter | Filters the returned results according to the value of the specified field, using the <field name>:<field value> syntax. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
@@ -1922,7 +1922,7 @@ Create an exception item and associate it with the specified exception list.
 | comment | A string that does not contain only whitespace characters. | Optional |
 | description | Describes the exception list. | Optional |
 | expire_time | The exception item's expiration date, in ISO format. | Optional |
-| item_id | Human readable string identifier, e.g. trusted-linux-processes. | Optional |
+| item_id | Human readable string identifier, e.g. `trusted-linux-processes`. | Optional |
 | meta | Additional properties are allowed (JSON object). | Optional |
 | name | Exception list name. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
@@ -2000,7 +2000,7 @@ Updates an existing exception list item.
 | description | Describes the exception list. | Optional |
 | expire_time | The exception item's expiration date, in ISO format. | Optional |
 | exception_list_item_id | Exception's identifier. | Optional |
-| item_id | Human readable string identifier, e.g. trusted-linux-processes. | Optional |
+| item_id | Human readable string identifier, e.g. `trusted-linux-processes`. | Optional |
 | meta | Additional properties are allowed (JSON object). | Optional |
 | name | Exception list name. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
@@ -2072,8 +2072,8 @@ Deletes an exception list item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| exception_list_item_id | Exception list item's identifier. Either id or item_id must be specified. | Optional |
-| item_id | Human readable exception item string identifier. Either id or item_id must be specified. | Optional |
+| exception_list_item_id | Exception list item's identifier. Either `id` or `item_id` must be specified. | Optional |
+| item_id | Human readable exception item string identifier. Either `id` or `item_id` must be specified. | Optional |
 | namespace_type | Determines whether the returned containers are Kibana associated with a Kibana space or available in all spaces. | Optional |
 
 #### Context Output
@@ -2351,7 +2351,7 @@ Deletes a value list item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| value_list_item_id | Value list item's identifier. Required if list_id and value are not specified. | Optional |
+| value_list_item_id | Value list item's identifier. Required if `list_id` and `value` are not specified. | Optional |
 | value_list_id | Value list's identifier. | Optional |
 | value | The value used to evaluate exceptions. Required if id is not specified. | Optional |
 | refresh | Determines when changes made by the request are made visible to search. | Optional |
@@ -2388,7 +2388,7 @@ Exports all items of a value list as a file (returned to the War Room).
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| value_list_id | Value list's id to export. | Optional |
+| value_list_id | Value list's ID to export. | Optional |
 
 #### Context Output
 
@@ -2422,7 +2422,7 @@ Import value list items from a TXT or CSV file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
-| value_list_id | List's id to import. | Optional |
+| value_list_id | List's ID to import. | Optional |
 | type | Type of the importing list. | Optional |
 | refresh | Determines when changes made by the request are made visible to search. | Optional |
 | entry_id | Entry ID for the file containing the items to import. | Required |
