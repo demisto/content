@@ -1,7 +1,8 @@
 {
-    "name": "PicusAutomation",
-    "description": "Run commands on Picus and automate security validation with playbooks.",
+    "name": "PicusAutomation (Deprecated)",
+    "description": "Deprecated. Use PicusNGAutomation instead.",
     "support": "partner",
+    "hidden" : true,
     "currentVersion": "1.1.8",
     "author": "Picus Security",
     "url": "http://support.picussecurity.com",
