@@ -66,7 +66,11 @@ XSOAR_SEVERITY_TO_OCSF_ID = {
 
 
 def effective_severity_id(finding: dict) -> int:
-    """Return the finding's current severity_id (top-level), falling back to vendor_attributes, else 0.
+    """Return the finding's current (top-level) severity_id, or 0 (OCSF Unknown) when absent.
+
+    Only the top-level ``severity_id`` (the current/effective severity shown in the console) is used.
+    ``vendor_attributes.severity_id`` is deliberately ignored because it holds the finding's original
+    severity, which may not reflect its current state. A present ``severity_id`` of 0 is respected.
 
     Args:
         finding (dict): The OCSF finding.
@@ -74,8 +78,8 @@ def effective_severity_id(finding: dict) -> int:
     Returns:
         int: The OCSF severity_id, or 0 (Unknown) when absent.
     """
-    vendor_attributes = finding.get("vendor_attributes") or {}
-    return finding.get("severity_id") or vendor_attributes.get("severity_id") or 0
+    severity_id = finding.get("severity_id")
+    return severity_id if severity_id is not None else 0
 
 
 # Minimum severity label -> OCSF severity_id, used to build the fetch severity filter.
@@ -603,9 +607,7 @@ def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_di
         )
         demisto.debug(
             f"[AWS_Security_Hub_V2] Dedup: created incident uid={uid}, created={created_time}, "
-            f"effective severity_id={severity_id} (top-level={finding.get('severity_id')}, "
-            f"vendor_attributes={(finding.get('vendor_attributes') or {}).get('severity_id')}) "
-            f"-> xsoar_severity={xsoar_severity}."
+            f"severity_id={severity_id} -> xsoar_severity={xsoar_severity}."
         )
 
         new_findings.append(finding)
@@ -829,7 +831,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         GetMappingFieldsResponse: The outgoing mapping schema for the Security Hub finding incident type.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-out: get-mapping-fields")
-    finding_scheme = SchemeTypeMapping(type_name="AWS Security Hub Finding")
+    finding_scheme = SchemeTypeMapping(type_name="AWS Security Hub v2 Finding")
     for name, description in OUTGOING_FIELD_DESCRIPTIONS.items():
         finding_scheme.add_field(name=name, description=description)
 

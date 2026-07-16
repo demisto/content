@@ -186,7 +186,7 @@ script:
       description: 'The date field filters. Each entry must use either an absolute range format: field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601> (both start and end are required), or a relative date range format: field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison> (value is required, unit defaults to DAYS, and comparison is optional). Note that days=<number>is accepted as a shorthand for value=<number>,unit=DAYS. Multiple entries must be separated by semicolons. Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
-      description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).''
+      description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).'
       required: false
     - name: number_filters
       description: 'The number field filters. Each entry must follow the format: field_name=<OCSF field>,<operator>=<number> where the operator is one of eq, gt, gte, lt, or lte. Multiple operators can be combined in a single entry, and multiple entries must be separated by semicolons. For example,  field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6.'

@@ -770,24 +770,24 @@ def test_get_remote_data_command_no_finding(mocker):
     assert result.mirrored_object == {}
 
 
-def test_effective_severity_id_prefers_top_level():
+def test_effective_severity_id_uses_top_level_and_ignores_vendor():
     """
     Given: A finding with a top-level severity_id and a different vendor_attributes.severity_id.
     When: effective_severity_id is called.
-    Then: The top-level severity_id (the console value) is returned.
+    Then: The top-level (current/effective) severity_id is returned; vendor_attributes is ignored.
     """
     finding = {"severity_id": 3, "vendor_attributes": {"severity_id": 2}}
     assert effective_severity_id(finding) == 3
 
 
-def test_effective_severity_id_falls_back_to_vendor_attributes():
+def test_effective_severity_id_returns_zero_when_top_level_absent():
     """
-    Given: A finding with no top-level severity_id but a vendor_attributes.severity_id.
+    Given: A finding with no top-level severity_id (only a vendor_attributes.severity_id).
     When: effective_severity_id is called.
-    Then: The vendor_attributes value is returned as a fallback.
+    Then: It returns 0 (OCSF Unknown) - the original vendor severity is not used as a fallback.
     """
     finding = {"vendor_attributes": {"severity_id": 4}}
-    assert effective_severity_id(finding) == 4
+    assert effective_severity_id(finding) == 0
 
 
 def test_effective_severity_id_defaults_to_zero_when_absent():
@@ -913,8 +913,8 @@ def test_get_mapping_fields_command():
     result = get_mapping_fields_command()
 
     entry = result.extract_mapping()
-    assert "AWS Security Hub Finding" in entry
-    finding_fields = entry["AWS Security Hub Finding"]
+    assert "AWS Security Hub v2 Finding" in entry
+    finding_fields = entry["AWS Security Hub v2 Finding"]
     assert {"severityid", "statusid", "comment", "severity"} <= set(finding_fields)
 
 
