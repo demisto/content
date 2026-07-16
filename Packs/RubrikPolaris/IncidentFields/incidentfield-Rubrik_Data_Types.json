@@ -1,0 +1,62 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik DSPM Violation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikdatatypes",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 250
+        },
+        {
+            "displayName": "Total Hits",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "totalViolatedHits",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 50
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikdatatypes",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik Data Types",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

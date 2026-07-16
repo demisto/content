@@ -2002,8 +2002,12 @@ def get_fields_query_part(
 def get_finding_field_and_value(
     raw_field: str, finding_data: dict[str, Any], raw: dict[str, Any] | None = None
 ) -> tuple[str, Any]:
-    """Gets the value by the name of the raw_field. We don't search for equivalence because raw field
-    can be "threat_match_field|s" while the field is "threat_match_field".
+    """Gets the value by the name of the raw_field. The raw field may contain a Splunk
+    formatting suffix (e.g. "threat_match_field|s") while the actual field is "threat_match_field",
+    so we compare against the base field name (the part before the first "|").
+
+    We must NOT use a loose substring match here, because that causes field-name collisions
+    (e.g. the field "src" would wrongly match the raw field "src_ip").
 
     Args:
         raw_field (str): The raw field
@@ -2015,12 +2019,11 @@ def get_finding_field_and_value(
     """
     if not raw:
         raw = raw_to_dict(finding_data.get("_raw", ""))
-    for field_name in finding_data:
-        if field_name in raw_field:
-            return field_name, finding_data[field_name]
-    for field_name in raw:
-        if field_name in raw_field:
-            return field_name, raw[field_name]
+    base_field = raw_field.split("|")[0].strip()
+    if base_field in finding_data:
+        return base_field, finding_data[base_field]
+    if base_field in raw:
+        return base_field, raw[base_field]
     demisto.error(f"Field {raw_field} was not found in the finding.")
     return "", ""
 
@@ -2133,6 +2136,39 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search: str) -> str:
     return drilldown_search
 
 
+def escape_backslashes_in_field_filters(search: str) -> str:
+    """Re-escapes backslashes inside the value of `field="value"` filters in an SPL search.
+
+    When a drilldown search arrives as a JSON string, ``json.loads`` decodes ``\\\\`` to a single
+    backslash. Splunk SPL, however, requires backslashes inside a double-quoted filter value to be
+    escaped (doubled) in order to match.
+
+    To stay safe, this only touches values of genuine ``field="value"`` filters - the quoted value must
+    be directly preceded by a field-name token and ``=`` (e.g. ``TaskName="..."``). This deliberately
+    excludes regex/string literals that follow ``(`` or ``,`` inside SPL functions such as
+    ``eval x=replace(field,"(\\)","\\\\")`` and leaves free-text / ``rex`` regex quoted strings
+    untouched. It is idempotent - values that are already correctly escaped (``\\\\``) are left
+    unchanged.
+
+    Args:
+        search (str): The decoded SPL drilldown search.
+
+    Returns:
+        str: The SPL search with backslashes escaped inside field filter values.
+    """
+
+    def _escape(match: re.Match) -> str:
+        prefix = match.group(1)  # the field name, '=' and any surrounding whitespace
+        value = match.group(2)  # the value between the double quotes
+        normalized = value.replace("\\\\", "\\")  # normalize already-doubled backslashes
+        escaped = normalized.replace("\\", "\\\\")  # then double every backslash (idempotent)
+        return f'{prefix}"{escaped}"'
+
+    # Anchor on a field-name token so only real `field="value"` filters match. This avoids
+    # over-escaping regex literals inside function calls like replace(field,"(\\)","\\\\").
+    return re.sub(r'([\w.]+\s*=\s*)"([^"]*)"', _escape, search)
+
+
 def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, Any]]:
     """Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -2143,7 +2179,13 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
         list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
-    searches = []
+    searches: list[dict] = []
+
+    def _fix_search_backslashes(search_obj: dict[str, Any]) -> dict[str, Any]:
+        # Re-escape backslashes in the SPL search after json.loads collapsed them (XSUP-70829)
+        if isinstance(search_obj, dict) and isinstance(search_obj.get("search"), str):
+            search_obj["search"] = escape_backslashes_in_field_filters(search_obj["search"])
+        return search_obj
 
     for drilldown_search in drilldown_searches:
         try:
@@ -2151,9 +2193,9 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
             drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
-                searches.extend(search)
+                searches.extend(_fix_search_backslashes(s) for s in search)
             else:
-                searches.append(search)
+                searches.append(_fix_search_backslashes(search))
         except json.JSONDecodeError as e:
             demisto.error(
                 f"Caught an exception while parsing a drilldown search object."
@@ -4098,6 +4140,249 @@ def update_investigation_or_finding(
     return result
 
 
+# --------------------------------------------------------------------------- #
+# Splunk ES (Mission Control) REST helpers and investigation commands         #
+# --------------------------------------------------------------------------- #
+
+
+def _es_rest_request(
+    service: client.Service,
+    method: str,
+    path: str,
+    body: dict | None = None,
+    query: dict | None = None,
+) -> dict | list:
+    """Perform a request against the Splunk ES (Mission Control) public REST API.
+
+    Reuses the connected ``splunklib`` ``Service`` object's ``post``/``get`` methods so the
+    same authentication, session and namespace as the rest of the integration are used.
+
+    Args:
+        service: A connected ``splunklib.client.Service`` instance.
+        method: HTTP verb. One of ``GET`` or ``POST``.
+        path: Path under the ES public namespace (e.g. ``public/v2/investigations``).
+        body: Optional JSON-serializable body for POST requests.
+        query: Optional query string parameters for GET requests.
+
+    Returns:
+        Parsed JSON response (dict or list). Empty responses are returned as an empty dict.
+
+    Raises:
+        DemistoException: On HTTP errors or non-JSON responses.
+    """
+    # Ensure the service points at the Mission Control namespace used by all ES API calls.
+    service.namespace = namespace(app="missioncontrol", owner="nobody")
+    method_upper = method.upper()
+    demisto.debug(f"ES REST request: {method_upper} {path} body={body} query={query}")
+    try:
+        if method_upper == "GET":
+            response = service.get(path, **(query or {}))
+        elif method_upper == "POST":
+            response = service.post(path, body=json.dumps(body or {}))
+        else:
+            raise DemistoException(f"Unsupported HTTP method for ES REST helper: {method}")
+    except HTTPError as exc:
+        raise DemistoException(f"Splunk ES REST request failed ({method_upper} {path}): {exc!s}") from exc
+
+    raw = response.body.read() if hasattr(response, "body") else b""
+    if not raw:
+        return {}
+    try:
+        return json.loads(raw)
+    except ValueError:
+        # Some endpoints return a plain string body (e.g. confirmation messages).
+        return {"raw_response": raw.decode("utf-8", errors="replace")}
+
+
+# Fields forwarded as-is in the POST /public/v2/investigations create payload.
+INVESTIGATION_CREATE_FIELDS = (
+    "name",
+    "description",
+    "investigation_type",
+    "status",
+    "disposition",
+    "owner",
+    "urgency",
+    "sensitivity",
+)
+
+
+def _build_investigation_create_payload(args: dict) -> dict:
+    """Build the JSON payload for ``POST /public/v2/investigations`` from command args.
+
+    Forwards only the fields in ``INVESTIGATION_CREATE_FIELDS``: ``name``, ``description``,
+    ``investigation_type``, ``status``, ``disposition``, ``owner``, ``urgency``, ``sensitivity``.
+    ``name`` is required.
+    """
+    payload: dict[str, Any] = {}
+    for key in INVESTIGATION_CREATE_FIELDS:
+        value = args.get(key)
+        if value:
+            payload[key] = value
+    if "name" not in payload:
+        raise DemistoException("`name` is a required argument for splunk-investigation-create.")
+    return payload
+
+
+def _format_investigation_for_hr(item: dict) -> dict:
+    """Build a curated, human-readable projection of an investigation dict.
+
+    Only fields useful in the war-room table are returned, with friendly Title Case
+    keys; epoch-seconds timestamps (``create_time`` / ``update_time``) are converted
+    to ISO-8601 UTC via :func:`timestamp_to_datestring`. Raw ``outputs`` are not
+    affected by this projection.
+    """
+
+    def _to_iso(value: Any) -> str | None:
+        if value in (None, "", 0):
+            return None
+        try:
+            return timestamp_to_datestring(int(float(value)) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ", is_utc=True)
+        except (TypeError, ValueError) as exc:
+            demisto.debug(f"_format_investigation_for_hr: cannot format {value!r}: {exc!s}")
+            return None
+
+    return {
+        "Investigation ID": item.get("investigation_id"),
+        "Investigation GUID": item.get("investigation_guid"),
+        "Name": item.get("name"),
+        "Status": item.get("status_name"),
+        "Disposition": item.get("disposition_name"),
+        "Owner": item.get("owner"),
+        "Urgency": item.get("urgency"),
+        "Sensitivity": item.get("sensitivity"),
+        "Findings Count": item.get("count_findings"),
+        "Risk Score": item.get("risk_score"),
+        "Create Time": _to_iso(item.get("create_time")),
+        "Update Time": _to_iso(item.get("update_time")),
+    }
+
+
+# Ordered headers for the splunk-investigation-list HR table.
+INVESTIGATION_HR_HEADERS = [
+    "Investigation ID",
+    "Name",
+    "Status",
+    "Disposition",
+    "Owner",
+    "Urgency",
+    "Update Time",
+]
+
+
+def splunk_create_investigation_command(service: client.Service, args: dict) -> CommandResults:
+    """Create a new investigation in Splunk ES via ``POST /public/v2/investigations``.
+
+    Returns the new investigation's GUID in the ``Splunk.Investigation`` context.
+    """
+    payload = _build_investigation_create_payload(args)
+    response = _es_rest_request(service, "POST", "public/v2/investigations", body=payload)
+
+    response_dict = response if isinstance(response, dict) else {}
+    investigation_guid = response_dict.get("investigation_guid")
+    readable = tableToMarkdown(
+        "Investigation created successfully",
+        {"Investigation GUID": investigation_guid},
+        headers=["Investigation GUID"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.Investigation",
+        outputs_key_field="investigation_guid",
+        outputs=response_dict or None,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+# Scalar query parameters accepted by GET /public/v2/investigations.
+INVESTIGATION_LIST_SCALAR_PARAMS = (
+    "limit",
+    "offset",
+    "sort",
+    "create_time_min",
+    "create_time_max",
+    "update_time_min",
+    "update_time_max",
+)
+
+# Multi-value (isArray: true) query parameters for GET /public/v2/investigations.
+# Each is parsed with ``argToList()`` and re-serialized as a CSV string for the API.
+INVESTIGATION_LIST_LIST_PARAMS = (
+    "ids",
+    "disposition",
+    "status",
+    "owner",
+    "urgency",
+    "sensitivity",
+)
+
+
+def splunk_list_investigations_command(service: client.Service, args: dict) -> CommandResults:
+    """List investigations via ``GET /public/v2/investigations``.
+
+    This command supports the full set of list-investigations query filters
+    (``investigation_ids``, ``limit``, ``offset``, ``sort``, ``disposition``, ``status``,
+    ``owner``, ``urgency``, ``sensitivity``, ``create_time_min``/``max``,
+    ``update_time_min``/``max``).
+    Multi-value arguments (``investigation_ids``, ``disposition``, ``status``, ``owner``,
+    ``urgency``, ``sensitivity``) are parsed with ``argToList()`` and forwarded to the
+    matching Splunk query parameter as a CSV string (e.g., ``ids=id1,id2``,
+    ``urgency=high,critical``). Investigation IDs accept either the GUID or the display
+    ID (``ES-00001``).
+    """
+
+    if "investigation_ids" in args:
+        args["ids"] = args.get("investigation_ids")
+
+    query: dict[str, Any] = {key: args.get(key) for key in INVESTIGATION_LIST_SCALAR_PARAMS}
+    for key in INVESTIGATION_LIST_LIST_PARAMS:
+        values = argToList(args.get(key))
+        if values:
+            query[key] = ",".join(str(v) for v in values)
+    query = assign_params(**query)
+    demisto.debug(f"splunk-investigation-list: GET public/v2/investigations query={query}")
+    response = _es_rest_request(service, "GET", "public/v2/investigations", query=query)
+
+    # Normalize the response into a list of investigation dicts.
+    investigations: list[dict] = []
+    if isinstance(response, list):
+        investigations = [item for item in response if isinstance(item, dict)]
+    elif isinstance(response, dict):
+        for value in response.values():
+            if isinstance(value, list):
+                investigations = [item for item in value if isinstance(item, dict)]
+                break
+        if not investigations and ("investigation_guid" in response or "investigation_id" in response):
+            investigations = [response]
+
+    if not investigations:
+        return CommandResults(readable_output="No investigations found for the provided filters.")
+
+    hr_rows = [_format_investigation_for_hr(item) for item in investigations]
+    ids_list = argToList(args.get("ids"))
+    count = len(investigations)
+    noun = "Investigation" if count == 1 else "Investigations"
+    if ids_list:
+        title = f"Splunk ES — {count} {noun} Found ({', '.join(ids_list)})"
+    else:
+        title = f"Splunk ES — {count} {noun} Found"
+    readable = tableToMarkdown(
+        title,
+        hr_rows,
+        headers=INVESTIGATION_HR_HEADERS,
+        removeNull=True,
+    )
+    outputs: dict | list = investigations[0] if len(investigations) == 1 else investigations
+    return CommandResults(
+        outputs_prefix="Splunk.Investigation",
+        outputs_key_field="investigation_guid",
+        outputs=outputs,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
 def _fetch_modified_investigations_page(
     service: client.Service, update_time_min: str, limit: int, offset: int
 ) -> list[dict[str, Any]]:
@@ -5512,6 +5797,10 @@ def main() -> None:  # pragma: no cover
     elif command == "splunk-update-investigation" and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         return_results(splunk_update_investigation_command(service, args))
+    elif command == "splunk-investigation-create" and service is not None:
+        return_results(splunk_create_investigation_command(service, args))
+    elif command == "splunk-investigation-list" and service is not None:
+        return_results(splunk_list_investigations_command(service, args))
     elif command == "splunk-submit-event-hec":
         splunk_submit_event_hec_command(params, service, args)
     elif command == "splunk-job-status":

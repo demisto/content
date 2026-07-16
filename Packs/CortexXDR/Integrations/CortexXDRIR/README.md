@@ -3934,7 +3934,7 @@ Returns a list of asset groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sort_field | The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups. | Optional |
+| sort_field | The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups). | Optional |
 | sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
 | filter_json | The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}". For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups. | Optional |
 | limit | Maximum number of asset groups to return. Default is 50. Default is 50. | Optional |
@@ -4033,9 +4033,9 @@ Returns a list of assets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_id | A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used. | Optional |
-| sort_field | The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets. | Optional |
+| sort_field | The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets). | Optional |
 | sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
-| filter_json | The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets. | Optional |
+| filter_json | The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get to get the schema. For more information, please refer to the documentation: [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets). | Optional |
 | limit | Maximum number of assets to return. Default is 50. Default is 50. | Optional |
 | page_size | Page size for pagination. Default is 50. | Optional |
 | page | Page number for pagination. Default is 0. | Optional |
@@ -4179,7 +4179,7 @@ Creates a new BIOC.
 | is_xql | Whether the new BIOC is XQL. Possible values are: true, false. | Optional |
 | comment | The BIOC comment. | Optional |
 | status | The BIOC status. Possible values are: enabled, disabled. | Optional |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| indicator | The BIOC indicator,<br/>for example: '{"runOnCGO":true,"investigationType":"FILE_EVENT","investigation":{"FILE_EVENT":{"filter":{"AND":[{"SEARCH_FIELD":"action_file_name","SEARCH_TYPE":"EQ","SEARCH_VALUE":"testfile.exe"}]}}}}'.<br/>For more information, refer to the documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs). | Required |
 | mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
 | mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
 
@@ -4209,7 +4209,7 @@ Updates an existing BIOC.
 | is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
 | comment | BIOC comment. | Optional |
 | status | BIOC status. Possible values are: enabled, disabled. | Optional |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| indicator | The BIOC indicator,<br/>for example: '{"runOnCGO":true,"investigationType":"FILE_EVENT","investigation":{"FILE_EVENT":{"filter":{"AND":[{"SEARCH_FIELD":"action_file_name","SEARCH_TYPE":"EQ","SEARCH_VALUE":"testfile.exe"}]}}}}'.<br/>For more information, refer to the documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs). | Required |
 | mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
 | mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
 
@@ -4429,16 +4429,17 @@ Returns a list of cases based on the specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | A comma-separated list of case IDs to filter by. | Optional |
-| case_domain | A comma-separated list of case domains to filter by. | Optional |
-| severity | A comma-separated list of severities to filter by. | Optional |
+| case_domain | A comma-separated list of case domains to filter by. Note: this filter is not applied when extra_data is set to true. | Optional |
+| severity | A comma-separated list of severities to filter by. Note: this filter is not applied when extra_data is set to true. | Optional |
 | created_before | Filters cases that were created before this date. Supports natural language expressions such as "one year". | Optional |
 | created_after | Filters cases that were created after this date. Supports natural language expressions such as "one year". | Optional |
 | status | A comma-separated list of statuses to filter by. | Optional |
-| sort_field | The field by which to sort the results. Possible values are: case_id, severity, creation_time. | Optional |
+| sort_field | The field by which to sort the results. Note: sorting by severity is not supported when extra_data is set to true. Possible values are: case_id, severity, creation_time. | Optional |
 | sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
 | limit | Maximum number of cases to return. | Optional |
 | page_size | Page size for pagination. | Optional |
 | page | Page number for pagination. | Optional |
+| extra_data | Whether to retrieve extra case data including the associated issues, file artifacts, and network artifacts for each case. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -4462,6 +4463,58 @@ Returns a list of cases based on the specified filters.
 | PaloAltoNetworksXDR.Case.wildfire_hits | Number | The number of WildFire malware hits associated with the case. |
 | PaloAltoNetworksXDR.Case.tags | String | A list of tags associated with the case. |
 | PaloAltoNetworksXDR.Case.starred | Boolean | Whether the case has been starred/flagged. |
+| PaloAltoNetworksXDR.Case.high_severity_issue_count | Number | The number of high-severity issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.critical_severity_issue_count | Number | The number of critical-severity issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.resolved_timestamp | String | The time the case was resolved. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.assigned_user_mail | String | The email address of the user assigned to the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.assigned_user_pretty_name | String | The display name of the user assigned to the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.hosts | String | The hosts involved in the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.users | String | The users involved in the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.mitre_tactics_ids_and_names | String | The MITRE ATT&amp;CK tactics associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.mitre_techniques_ids_and_names | String | The MITRE ATT&amp;CK techniques associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.issue_categories | String | The categories of the issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.resolve_comment | String | The comment provided when the case was resolved. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.notes | String | Notes associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.manual_severity | String | The severity manually set for the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.manual_description | String | The description manually set for the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.rule_based_score | Number | The rule-based risk score of the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.predicted_score | Number | The predicted risk score of the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.issue_count | Number | The total number of issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.issue_id | String | The unique identifier of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.case_id | String | The identifier of the case the issue belongs to. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.detection_timestamp | Number | The detection time of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.name | String | The name of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.category | String | The category of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.severity | String | The severity of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.source | String | The source of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action | String | The action taken for the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_pretty | String | The human-readable action taken for the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.host_ip | String | The host IP addresses associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.host_name | String | The host name associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.user_name | String | The user name associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_file_name | String | The file name involved in the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_file_path | String | The file path involved in the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.mitre_tactic_id_and_name | String | The MITRE ATT&amp;CK tactic associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.mitre_technique_id_and_name | String | The MITRE ATT&amp;CK technique associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.case_id | String | The identifier of the case associated with the file artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.type | String | The type of the file artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.file_name | String | The name of the file. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.file_sha256 | String | The SHA256 hash of the file. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.file_wildfire_verdict | String | The WildFire verdict for the file. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.is_malicious | Boolean | Whether the file has been identified as malicious. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.is_process | Boolean | Whether the file was a running process. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.is_manual | Boolean | Whether the file artifact was added manually. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.file_signature_vendor_name | String | The vendor name from the file signature. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.file_signature_status | String | The status of the file digital signature. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.FileArtifacts.alert_count | Number | The number of issues associated with the file artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.case_id | String | The identifier of the case associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.type | String | The type of the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.network_remote_ip | String | The remote IP address associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.network_remote_port | Number | The remote port associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.network_domain | String | The domain associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.network_country | String | The country associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.alert_count | Number | The number of issues associated with the network artifact. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.NetworkArtifacts.is_manual | Boolean | Whether the network artifact was added manually. Returned when extra_data is set to true. |
 
 ### xdr-case-update
 
@@ -4477,9 +4530,13 @@ Updates an existing case with the specified details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The ID of the case to update. | Required |
-| status | The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided. Possible values are: new, under_investigation, resolved. | Optional |
-| resolve_reason | The reason for resolving the case. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other. | Optional |
-| resolve_comment | A comment explaining the resolution. | Optional |
+| status | The status to set for the case. When set to "resolved", the resolve_reason argument is required. Possible values are: new, under_investigation, resolved. | Optional |
+| resolve_reason | The reason for resolving the case. Can only be provided when the status is set to "resolved", and is required when resolving. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other. | Optional |
+| resolve_comment | A free-text comment explaining the resolution. Can only be provided when the status is set to "resolved". | Optional |
+| user_severity | The user-defined severity to set for the case. Provide an empty string to clear the severity. Possible values are: low, medium, high, critical. | Optional |
+| assigned_user | A valid Cortex XDR user email address to assign the case to. | Optional |
+| notes | A free-text note for the case, used for operational or intermediate comments (e.g., a ServiceNow Ticket ID). | Optional |
+| custom_fields | A JSON object string of tenant-defined custom fields to update on the case. The keys must be the exact custom field names as configured in your Cortex XDR tenant, and the values must match each field's configuration. Ensure the custom field names are valid for the tenant; the integration only validates that the input is valid JSON. Example: `{"my_custom_field": "value", "another_field": 42}`. | Optional |
 
 #### Context Output
 
