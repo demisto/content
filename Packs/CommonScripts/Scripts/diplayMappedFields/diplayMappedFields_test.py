@@ -12,7 +12,7 @@ MULTISELECT_JSON_VALUE = (
 )
 
 
-def test_extract_keys_with_values_keeps_list_values():
+def test_extract_keys_with_values_keeps_list_values() -> None:
     """A multiSelect field value (a list) must be preserved as a list, not flattened away."""
     fields = {"additionaldata": [MULTISELECT_JSON_VALUE]}
 
@@ -21,7 +21,7 @@ def test_extract_keys_with_values_keeps_list_values():
     assert ("additionaldata", [MULTISELECT_JSON_VALUE]) in items
 
 
-def test_multiselect_value_survives_to_html():
+def test_multiselect_value_survives_to_html() -> None:
     """
     A multiSelect field (additionaldata/rawevent) whose value contains empty
     objects/arrays must still be rendered in the Mapped Fields HTML.
@@ -42,7 +42,7 @@ def test_multiselect_value_survives_to_html():
     assert "suspicious" in html
 
 
-def test_value_containing_pipe_is_not_split_into_extra_columns():
+def test_value_containing_pipe_is_not_split_into_extra_columns() -> None:
     """
     A field value that literally contains a pipe character must not be broken into
     extra table columns (delimiter collision).
@@ -61,7 +61,7 @@ def test_value_containing_pipe_is_not_split_into_extra_columns():
     assert ">a|b|c</td>" in html
 
 
-def test_multiselect_list_with_multiple_items_renders_all_items():
+def test_multiselect_list_with_multiple_items_renders_all_items() -> None:
     """A multiSelect list holding several plain values renders all of them joined."""
     fields = {"labels": ["alpha", "beta", "gamma"]}
 
@@ -77,7 +77,7 @@ def test_multiselect_list_with_multiple_items_renders_all_items():
     assert html.count("<td") == 2
 
 
-def test_genuinely_empty_values_are_removed():
+def test_genuinely_empty_values_are_removed() -> None:
     """Rows that are genuinely empty ("{}", "[{}]") must still be filtered out."""
     fields = {
         "emptyobj": "{}",
@@ -96,7 +96,7 @@ def test_genuinely_empty_values_are_removed():
     assert "emptylist" not in html
 
 
-def test_key_containing_empty_marker_substring_is_not_dropped():
+def test_key_containing_empty_marker_substring_is_not_dropped() -> None:
     """
     A field whose value merely CONTAINS an empty marker as a substring (e.g. a JSON
     payload with a nested "{}") must NOT be dropped. This is the core regression.
