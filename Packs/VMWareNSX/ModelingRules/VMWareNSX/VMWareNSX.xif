@@ -1,31 +1,193 @@
 [MODEL: dataset = "vmware_nsx_raw"]
-alter 
-    check_audit = parsed_fields -> audit,
-    event_type = parsed_fields -> type,
-    useranme_1 = parsed_fields -> USER,
-    username_2 = parsed_fields -> username,
-    username_3 = parsed_fields -> UserName,
-    src_ipv4_and_port = parsed_fields -> Src,
-    log_level = parsed_fields -> level,
-    operation_status = parsed_fields -> Operationstatus,
-    pid = parsed_fields -> pid,
-    device_model_1 = parsed_fields -> node,
-    device_model_2 = parsed_fields -> component
+filter
+    _raw_log != null
 | alter
-    auditlogs = if(check_audit = "true", "AUDIT", check_audit),
-    src_ipv4 = arrayindex(regextract(src_ipv4_and_port , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
-    dst_port = arrayindex(regextract(src_ipv4_and_port ,"\:(\d+)"),0)
-| alter 
-    xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.event.type = coalesce(auditlogs , event_type),
-    xdm.source.user.username = coalesce(useranme_1 , username_2,username_3),
-    xdm.source.ipv4 = src_ipv4,
-    xdm.source.host.device_model = coalesce(device_model_2 , device_model_1),
-    xdm.source.process.pid = to_integer(pid),
-    xdm.target.port = to_integer(dst_port),
-    xdm.event.operation_sub_type = parsed_fields -> Operation,
-    xdm.event.description = parsed_fields -> description,
-    xdm.source.process.command_line = parsed_fields -> COMMAND,
-    xdm.source.process.executable.directory = parsed_fields -> PWD,
-    xdm.event.log_level = if(log_level = "ERROR",XDM_CONST.LOG_LEVEL_ERROR, log_level = "WARRNING", XDM_CONST.LOG_LEVEL_WARNING, log_level = "ALERT", XDM_CONST.LOG_LEVEL_ALERT, log_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,log_level = "DEBUG" ,XDM_CONST.LOG_LEVEL_DEBUG, log_level = "EMERGENCY" ,XDM_CONST.LOG_LEVEL_EMERGENCY, log_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "NOTICE" ,XDM_CONST.LOG_LEVEL_NOTICE, log_level),
-    xdm.event.outcome = if(operation_status = "success", XDM_CONST.OUTCOME_SUCCESS, operation_status = "failure", XDM_CONST.OUTCOME_FAILED , operation_status);
+    tmp_pri = to_integer(to_number(arrayindex(regextract(_raw_log, ".*<(\d{1,3})>"), 0))),
+    tmp_host = arrayindex(regextract(_raw_log, "^.*(?:[A-Za-z]{3}\s+\d+\s+[\d:]{7,8}|\d{4}-\d{2}-\d{2}T[\d:.]+Z?)\s+(\S+)\s"), 0),
+    tmp_proc = arrayindex(regextract(_raw_log, "^.*(?:[A-Za-z]{3}\s+\d+\s+[\d:]{7,8}|\d{4}-\d{2}-\d{2}T[\d:.]+Z?)\s+\S+\s+([A-Za-z0-9_\-]+)(?:\[|\s)"), 0),
+    tmp_pid_env = arrayindex(regextract(_raw_log, "^.*(?:[A-Za-z]{3}\s+\d+\s+[\d:]{7,8}|\d{4}-\d{2}-\d{2}T[\d:.]+Z?)\s+\S+\s+[A-Za-z0-9_\-]+\[(\d+)\]"), 0),
+    tmp_sudo_invoker = arrayindex(regextract(_raw_log, "\ssudo\s+(\S+)\s+:\s"), 0),
+    tmp_msg = arrayindex(regextract(_raw_log, "[\d:]{7,8}\s+\S+\s+(.+)$"), 0),
+    // Kernel iptables / netfilter firewall record (NETWORK) -- parsed from
+    // _raw_log because the pack Parsing Rule's ISO-timestamp gate never
+    // builds parsed_fields for these RFC 3164 lines.
+    tmp_ipt_action = arrayindex(regextract(_raw_log, "kernel\s+\[[\d.]+\]\s+(\S+?):"), 0),
+    tmp_ipt_src = arrayindex(regextract(_raw_log, "\bSRC=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    tmp_ipt_dst = arrayindex(regextract(_raw_log, "\bDST=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    tmp_ipt_proto = arrayindex(regextract(_raw_log, "\bPROTO=(\S+)"), 0),
+    tmp_ipt_spt = arrayindex(regextract(_raw_log, "\bSPT=(\d+)"), 0),
+    tmp_ipt_dpt = arrayindex(regextract(_raw_log, "\bDPT=(\d+)"), 0),
+    tmp_ipt_in = arrayindex(regextract(_raw_log, "\bIN=(\S+)"), 0),
+    // NSX manager structured audit record (AUTH) -- RFC 5424 SD element +
+    // quoted key=value message; also parsed from _raw_log for the same
+    // reason. Note the real key is `Operation status` (with a space), which
+    // the pack looks for as `Operationstatus` and therefore never matches.
+    tmp_au_username = arrayindex(regextract(_raw_log, "UserName=\"([^\"]+)\""), 0),
+    tmp_au_operation = arrayindex(regextract(_raw_log, "Operation=\"([^\"]+)\""), 0),
+    tmp_au_status = arrayindex(regextract(_raw_log, "Operation status=\"([^\"]+)\""), 0),
+    tmp_au_audit = arrayindex(regextract(_raw_log, "audit=\"?([A-Za-z]+)"), 0),
+    tmp_au_level = arrayindex(regextract(_raw_log, "\blevel=\"([^\"]+)\""), 0),
+    tmp_au_comp = arrayindex(regextract(_raw_log, "\bcomp=\"([^\"]+)\""), 0),
+    tmp_au_module = arrayindex(regextract(_raw_log, "ModuleName=\"([^\"]+)\""), 0)
+| alter
+    // Payload fields -- ALL parsed directly from _raw_log. parsed_fields is
+    // deliberately NOT read: the pack Parsing Rule's ISO-timestamp gate
+    // drops every RFC 3164 record in this feed, so that column is never
+    // populated. The rule is self-contained on the raw syslog line.
+    tmp_command = arrayindex(regextract(_raw_log, "COMMAND=(.+?)\s*$"), 0),
+    tmp_runas = arrayindex(regextract(_raw_log, "\bUSER=(\S+)"), 0),
+    tmp_username = coalesce(tmp_au_username, arrayindex(regextract(_raw_log, "\busername=\"?([^\"\s,]+)"), 0)),
+    tmp_audit = tmp_au_audit,
+    tmp_type = arrayindex(regextract(_raw_log, "\btype=\"?([^\"\s,]+)"), 0),
+    tmp_src = arrayindex(regextract(_raw_log, "\bSrc=\"?([^\"\s,]+)"), 0),
+    tmp_level = coalesce(tmp_au_level, arrayindex(regextract(_raw_log, "\blevel=\"?([^\"\s,]+)"), 0)),
+    tmp_opstatus = tmp_au_status,
+    tmp_operation = tmp_au_operation,
+    tmp_pf_hostname = arrayindex(regextract(_raw_log, "\bhostname=\"?([^\"\s,]+)"), 0),
+    tmp_pf_pid = tmp_pid_env,
+    tmp_description = arrayindex(regextract(_raw_log, "\bdescription=\"([^\"]+)\""), 0)
+| alter
+    tmp_pri_facility = to_integer(divide(tmp_pri, 8)),
+    tmp_src_ip = coalesce(tmp_ipt_src, arrayindex(regextract(tmp_src, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)),
+    tmp_src_port = coalesce(tmp_ipt_spt, arrayindex(regextract(tmp_src, ":(\d+)"), 0)),
+    tmp_dst_ip = tmp_ipt_dst,
+    tmp_dst_port = tmp_ipt_dpt,
+    tmp_username_all = coalesce(tmp_au_username, tmp_username),
+    tmp_exe_path = arrayindex(regextract(tmp_command, "^(\S+)"), 0),
+    tmp_kind = if(
+        tmp_ipt_action != null, "network",
+        tmp_au_operation != null or tmp_au_username != null, "auth",
+        tmp_command != null or tmp_proc = "sudo", "command",
+        tmp_audit = "true" or tmp_type != null, "audit",
+        tmp_proc != null, "system",
+        null)
+| alter
+    tmp_pri_severity = to_integer(subtract(tmp_pri, multiply(tmp_pri_facility, 8)))
+| alter
+    tmp_pri_log_level = if(
+        tmp_pri_severity <= 2, XDM_CONST.LOG_LEVEL_CRITICAL,
+        tmp_pri_severity = 3, XDM_CONST.LOG_LEVEL_ERROR,
+        tmp_pri_severity = 4, XDM_CONST.LOG_LEVEL_WARNING,
+        tmp_pri_severity = 5, XDM_CONST.LOG_LEVEL_NOTICE,
+        tmp_pri_severity != null, XDM_CONST.LOG_LEVEL_INFORMATIONAL)
+| alter
+    xdm.observer.vendor = "VMware",
+    xdm.observer.product = "NSX-T",
+    xdm.observer.type = "Network Virtualization",
+    xdm.observer.name = tmp_host,
+    xdm.source.host.hostname = if(
+        tmp_kind = "network", tmp_pf_hostname,
+        tmp_kind = "auth", null,
+        coalesce(tmp_pf_hostname, tmp_host)),
+    xdm.event.type = if(
+        tmp_kind = "network", "network",
+        tmp_kind = "auth", "authentication",
+        tmp_kind = "command", "command_execution",
+        tmp_kind = "audit", coalesce(tmp_type, "audit"),
+        tmp_kind = "system", "system",
+        null),
+    xdm.event.original_event_type = if(
+        tmp_kind = "network", coalesce(tmp_ipt_action, "IPTables"),
+        tmp_kind = "auth", coalesce(tmp_au_operation, tmp_au_module, "LOGIN"),
+        tmp_kind != null, coalesce(tmp_type, tmp_proc),
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.operation = if(
+        tmp_au_operation = "LOGIN", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        tmp_kind = "command", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.event.operation_sub_type = coalesce(tmp_au_operation, tmp_operation),
+    xdm.event.outcome = if(
+        tmp_au_status = "success", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_au_status = "failure", XDM_CONST.OUTCOME_FAILED,
+        tmp_ipt_action != null, XDM_CONST.OUTCOME_FAILED,
+        tmp_opstatus = "success", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_opstatus = "failure", XDM_CONST.OUTCOME_FAILED,
+        null),
+    xdm.event.log_level = coalesce(
+        if(tmp_level = "ERROR", XDM_CONST.LOG_LEVEL_ERROR,
+           tmp_level = "WARNING", XDM_CONST.LOG_LEVEL_WARNING,
+           tmp_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,
+           tmp_level = "ALERT", XDM_CONST.LOG_LEVEL_CRITICAL,
+           tmp_level = "EMERGENCY", XDM_CONST.LOG_LEVEL_CRITICAL,
+           tmp_level = "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE,
+           tmp_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+           tmp_level = "DEBUG", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+           null),
+        if(tmp_au_level = "ERROR", XDM_CONST.LOG_LEVEL_ERROR,
+           tmp_au_level = "WARNING", XDM_CONST.LOG_LEVEL_WARNING,
+           tmp_au_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,
+           tmp_au_level = "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE,
+           tmp_au_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+           null),
+        tmp_pri_log_level),
+    xdm.event.description = coalesce(tmp_description, tmp_msg),
+    xdm.event.tags = if(
+        tmp_kind = "network", arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_ONPREM),
+        tmp_kind = "auth", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION, XDM_CONST.EVENT_TAG_ONPREM),
+        tmp_kind != null, arraycreate(XDM_CONST.EVENT_TAG_ONPREM),
+        null),
+    // Actor identity -- NSX audit login (AUTH) carries a UPN-shaped
+    // UserName; sudo carries the invoking user and a run-as target.
+    xdm.source.user.username = coalesce(tmp_sudo_invoker, tmp_username_all, tmp_runas),
+    xdm.target.user.username = if(tmp_sudo_invoker != null, tmp_runas, null),
+    xdm.source.process.name = tmp_proc,
+    xdm.source.process.pid = to_integer(to_number(coalesce(tmp_pid_env, tmp_pf_pid))),
+    xdm.target.process.command_line = tmp_command,
+    xdm.target.process.executable.path = tmp_exe_path,
+    xdm.source.host.ipv4_addresses = if(tmp_src_ip != null, arraycreate(tmp_src_ip), null),
+    //
+    // SHARED transport fields -- mandatory for BOTH the network story
+    // (iptables reject: real 5-tuple) and the authentication story (NSX
+    // manager login: source port / target padded, no client IP logged).
+    xdm.source.ipv4 = tmp_src_ip,
+    xdm.source.port = if(
+        tmp_src_port != null, to_integer(to_number(tmp_src_port)),
+        tmp_kind = "auth", to_integer(0),
+        null),
+    xdm.target.ipv4 = if(
+        tmp_dst_ip != null, tmp_dst_ip,
+        tmp_kind = "auth", "",
+        null),
+    xdm.target.port = if(
+        tmp_dst_port != null, to_integer(to_number(tmp_dst_port)),
+        tmp_kind = "auth", to_integer(0),
+        null),
+    xdm.network.ip_protocol = if(
+        tmp_ipt_proto = "TCP", XDM_CONST.IP_PROTOCOL_TCP,
+        tmp_ipt_proto = "UDP", XDM_CONST.IP_PROTOCOL_UDP,
+        tmp_ipt_proto = "ICMP", XDM_CONST.IP_PROTOCOL_ICMP,
+        tmp_kind = "network", XDM_CONST.IP_PROTOCOL_IP,
+        tmp_kind = "auth", XDM_CONST.IP_PROTOCOL_TCP,
+        null),
+    //
+    // NETWORK story -- kernel iptables reject records (real 5-tuple).
+    // Gated on tmp_kind = "network" so non-network records stay null.
+    xdm.network.protocol_layers = if(tmp_kind = "network", arraycreate(coalesce(tmp_ipt_proto, "IP")), null),
+    xdm.network.http.url_category = if(tmp_kind = "network", XDM_CONST.URL_CATEGORY_UNKNOWN, null),
+    xdm.network.http.http_header.header = if(tmp_kind = "network", "", null),
+    xdm.network.http.http_header.value = if(tmp_kind = "network", "", null),
+    xdm.source.ipv6 = if(tmp_kind = "network", "", null),
+    xdm.source.is_internal_ip = if(tmp_src_ip != null, if(
+        incidr(tmp_src_ip, "10.0.0.0/8"), true,
+        incidr(tmp_src_ip, "172.16.0.0/12"), true,
+        incidr(tmp_src_ip, "192.168.0.0/16"), true,
+        false), null),
+    xdm.source.sent_bytes = if(tmp_kind = "network", to_integer(0), null),
+    xdm.source.host.device_id = if(tmp_kind = "network", "", null),
+    xdm.target.ipv6 = if(tmp_kind = "network", "", null),
+    xdm.target.is_internal_ip = if(tmp_dst_ip != null, if(
+        incidr(tmp_dst_ip, "10.0.0.0/8"), true,
+        incidr(tmp_dst_ip, "172.16.0.0/12"), true,
+        incidr(tmp_dst_ip, "192.168.0.0/16"), true,
+        false), null),
+    xdm.target.sent_bytes = if(tmp_kind = "network", to_integer(0), null),
+    xdm.target.host.device_id = if(tmp_kind = "network", "", null),
+    //
+    // AUTH story -- NSX manager login records. Gated on tmp_kind = "auth".
+    xdm.source.user.upn = if(
+        tmp_au_username contains "@", tmp_au_username,
+        tmp_au_username != null, concat(tmp_au_username, "@localhost")),
+    xdm.source.user.identity_type = if(tmp_kind = "auth", XDM_CONST.IDENTITY_TYPE_USER, null),
+    xdm.source.user.user_type = if(tmp_kind = "auth", XDM_CONST.USER_TYPE_REGULAR, null),
+    xdm.auth.service = if(tmp_kind = "auth", "Login", null)
+;
