@@ -12,15 +12,18 @@ description: Use the Palo Alto Networks Device Security integration to fetch ale
 defaultclassifier: Palo Alto Networks Device Security Classifier
 defaultmapperin: Palo Alto Networks Device Security Incoming Mapper
 configuration:
-- display: TSG ID
+- section: Connect
+  display: TSG ID
   name: tsg_id
   type: 0
   required: true
-- display: Client ID
+- section: Connect
+  display: Client ID
   name: client_id
   type: 0
   required: true
-- display: Client Secret
+- section: Connect
+  display: Client Secret
   name: client_secret
   type: 4
   required: true
