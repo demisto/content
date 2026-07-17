@@ -5603,7 +5603,6 @@ def test_fetch_sensitive_data_objects_success_without_last_run(client, requests_
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
@@ -5611,9 +5610,6 @@ def test_fetch_sensitive_data_objects_success_without_last_run(client, requests_
     detail_responses = [{"json": detail} for detail in object_detail_responses]
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
         *detail_responses,
     ]
@@ -5646,7 +5642,6 @@ def test_fetch_sensitive_data_objects_success_with_last_run(client, requests_moc
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
@@ -5654,9 +5649,6 @@ def test_fetch_sensitive_data_objects_success_with_last_run(client, requests_moc
     detail_responses = [{"json": detail} for detail in object_detail_responses]
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
         *detail_responses,
     ]
@@ -5697,7 +5689,6 @@ def test_fetch_sensitive_data_objects_with_duplicates(client, requests_mock):
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
     object_detail_responses = util_load_json("test_data/fetch_sensitive_data_objects_list_response.json")
     expected_incidents = util_load_json("test_data/fetch_sensitive_data_objects_incidents.json")
@@ -5706,9 +5697,6 @@ def test_fetch_sensitive_data_objects_with_duplicates(client, requests_mock):
     detail_responses = [{"json": detail} for detail in object_detail_responses[1:]]
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
         *detail_responses,
     ]
@@ -5741,13 +5729,9 @@ def test_fetch_sensitive_data_objects_empty_response(client, requests_mock):
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     empty_response = util_load_json("test_data/fetch_sensitive_data_objects_empty_response.json")
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": empty_response},
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
@@ -5779,7 +5763,6 @@ def test_fetch_sensitive_data_objects_no_policy_obj(client, requests_mock):
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_events_success_response.json")
 
     empty_policy_obj_response = {"data": {"policyObj": None}}
@@ -5792,9 +5775,6 @@ def test_fetch_sensitive_data_objects_no_policy_obj(client, requests_mock):
     ]
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
         *detail_responses,
     ]
@@ -5815,13 +5795,9 @@ def test_fetch_sensitive_data_objects_no_matching_events(client, requests_mock):
     """
     from RubrikPolaris import fetch_sensitive_data_objects
 
-    enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), enum_values_file_path))
     events_response = util_load_json("test_data/fetch_sensitive_data_objects_no_match_events_response.json")
 
     responses = [
-        {"json": enum_values.get("activity_type_enum")},
-        {"json": enum_values.get("event_sort_by_enum")},
-        {"json": enum_values.get("event_sort_order_enum")},
         {"json": events_response},
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)

@@ -60,11 +60,9 @@ def sync_the_sensitive_data_object_file_information(args: dict[str, Any]) -> lis
         low_risk_hits = demisto.get(node, "sensitiveHits.lowRiskHits.violatedHits") or 0
         no_risk_hits = demisto.get(node, "sensitiveHits.noRiskHits.violatedHits") or 0
         last_modified_time = node.get("lastModifiedTime")
-        last_modified_time_str = (
-            datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
-            if last_modified_time is not None
-            else ""
-        )
+        last_modified_time_str = ""
+        if last_modified_time is not None:
+            last_modified_time_str = arg_to_datetime(last_modified_time).strftime(HR_DATE_TIME_FORMAT)  # type: ignore
         data_categories = [
             {
                 "name": demisto.get(result, "analyzerGroup.name"),

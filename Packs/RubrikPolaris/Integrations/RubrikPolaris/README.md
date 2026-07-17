@@ -2414,16 +2414,16 @@ Retrieve the context of the file, folder, or file share for the provided object 
 | RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.totalCount | Number | The total number of high-risk files for the policy object. |
 | RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.violatedCount | Number | The number of high-risk files for the policy object that violates policies. |
 | RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.__typename | String | The type of the high-risk file count field. |
-| RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount | Number | Total number of medium-risk files for the policy object. |
+| RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount | Number | The total number of medium-risk files for the policy object. |
 | RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.violatedCount | Number | The number of medium-risk files for the policy object that violates policies. |
 | RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.__typename | String | The type of the medium risk file count field. |
-| RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount | Number | Total number of low-risk files for the policy object. |
+| RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount | Number | The total number of low-risk files for the policy object. |
 | RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.violatedCount | Number | The number of low-risk files for the policy object that violates policies. |
 | RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.__typename | String | The type of the low-risk file count field. |
-| RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.totalCount | Number | Total number of no-risk files for the policy object. |
+| RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.totalCount | Number | The total number of no-risk files for the policy object. |
 | RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.violatedCount | Number | The number of no-risk files for the policy object that violates policies. |
 | RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.__typename | String | The type of the no-risk file count field. |
-| RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.totalCount | Number | Total number of files for the policy object. |
+| RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.totalCount | Number | The total number of files for the policy object. |
 | RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.violatedCount | Number | The number of files for the policy object that violates policies. |
 | RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.__typename | String | The type of the total file count field. |
 | RubrikPolaris.FileContext.sensitiveFiles.__typename | String | The type of the sensitive files field. |
@@ -6266,82 +6266,82 @@ Retrieve the details of the object based on the provided object ID and snapshot 
 | RubrikPolaris.SensitiveDataObject.objectStatus.policyStatuses.status | String | The status of the policy for the object. |
 | RubrikPolaris.SensitiveDataObject.objectStatus.__typename | String | The GraphQL type name of the object status. |
 | RubrikPolaris.SensitiveDataObject.objectStatus.latestSnapshotResult.__typename | String | The GraphQL type name of the latest snapshot result. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHits | Number | Total number of sensitive data hits in the object. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violations | Number | Total number of violations in the object. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violationsDelta | Number | Change in violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHitsDelta | Number | Change in total hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHits | Number | The total number of sensitive data hits in the object. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violations | Number | The total number of violations in the object. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violationsDelta | Number | The change in violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHitsDelta | Number | The change in total hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.__typename | String | The GraphQL type name of the root file result. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.hits.__typename | String | The GraphQL type name of the root file result hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.groupType | String | The type of the analyzer group. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.id | String | The ID of the analyzer group. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.name | String | The name of the analyzer group. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHits | Number | Total hits for the analyzer group. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violations | Number | Violations for the analyzer group. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violationsDelta | Number | Change in violations for the analyzer group since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHitsDelta | Number | Change in total hits for the analyzer group since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHits | Number | The total hits for the analyzer group. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violations | Number | The violations for the analyzer group. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violationsDelta | Number | The change in violations for the analyzer group since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHitsDelta | Number | The change in total hits for the analyzer group since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.__typename | String | The GraphQL type name of the analyzer group result. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.__typename | String | The GraphQL type name of the analyzer group. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.__typename | String | The GraphQL type name of the analyzer group hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.analyzer.id | String | The ID of the analyzer. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.analyzer.name | String | The name of the analyzer. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHits | Number | Total hits for the analyzer. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violations | Number | Violations for the analyzer. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violationsDelta | Number | Change in violations for the analyzer since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHitsDelta | Number | Change in total hits for the analyzer since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHits | Number | The total hits for the analyzer. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violations | Number | The violations for the analyzer. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violationsDelta | Number | The change in violations for the analyzer since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHitsDelta | Number | The change in total hits for the analyzer since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.__typename | String | The GraphQL type name of the analyzer result hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHits | Number | Total number of files with sensitive data hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violations | Number | Number of files with violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violationsDelta | Number | Change in files with violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHitsDelta | Number | Change in files with hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHits | Number | The total number of files with sensitive data hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violations | Number | The number of files with violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violationsDelta | Number | The change in files with violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHitsDelta | Number | The change in files with hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.__typename | String | The GraphQL type name of the files with hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHits | Number | Total number of open-access files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violations | Number | Number of open-access files with violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violationsDelta | Number | Change in open-access files with violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHitsDelta | Number | Change in open-access files hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHits | Number | The total number of open-access files. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violations | Number | The number of open-access files with violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violationsDelta | Number | The change in open-access files with violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHitsDelta | Number | The change in open-access files hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.__typename | String | The GraphQL type name of the open access files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHits | Number | Total number of open-access folders. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violations | Number | Number of open-access folders with violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violationsDelta | Number | Change in open-access folders with violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHitsDelta | Number | Change in open-access folders hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHits | Number | The total number of open-access folders. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violations | Number | The number of open-access folders with violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violationsDelta | Number | The change in open-access folders with violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHitsDelta | Number | The change in open-access folders hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.__typename | String | The GraphQL type name of the open access folders. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHits | Number | Total number of open-access files with sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violations | Number | Number of open-access files with hits and violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violationsDelta | Number | Change in open-access files with hits violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHitsDelta | Number | Change in open-access files with hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHits | Number | The total number of open-access files with sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violations | Number | The number of open-access files with hits and violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violationsDelta | Number | The change in open-access files with hits violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHitsDelta | Number | The change in open-access files with hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.__typename | String | The GraphQL type name of the open access files with hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHits | Number | Total number of stale files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violations | Number | Number of stale files with violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violationsDelta | Number | Change in stale files with violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHitsDelta | Number | Change in stale files hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHits | Number | The total number of stale files. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violations | Number | The number of stale files with violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violationsDelta | Number | The change in stale files with violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHitsDelta | Number | The change in stale files hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.__typename | String | The GraphQL type name of the stale files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHits | Number | Total number of stale files with sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violations | Number | Number of stale files with hits and violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violationsDelta | Number | Change in stale files with hits violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHitsDelta | Number | Change in stale files with hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHits | Number | The total number of stale files with sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violations | Number | The number of stale files with hits and violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violationsDelta | Number | The change in stale files with hits violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHitsDelta | Number | The change in stale files with hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.__typename | String | The GraphQL type name of the stale files with hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHits | Number | Total number of open-access stale files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violations | Number | Number of open-access stale files with violations. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violationsDelta | Number | Change in open-access stale files with violations since last scan. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHitsDelta | Number | Change in open-access stale files hits since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHits | Number | The total number of open-access stale files. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violations | Number | The number of open-access stale files with violations. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violationsDelta | Number | The change in open-access stale files with violations since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHitsDelta | Number | The change in open-access stale files hits since last scan. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.__typename | String | The GraphQL type name of the open access stale files. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.totalHits | Number | Total high risk sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.violatedHits | Number | Violated high risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.totalHits | Number | The total high risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.violatedHits | Number | The violated high risk sensitive hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.__typename | String | The GraphQL type name of the high risk hits summary. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.totalHits | Number | Total medium risk sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.violatedHits | Number | Violated medium risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.totalHits | Number | The total medium risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.violatedHits | Number | The violated medium risk sensitive hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.__typename | String | The GraphQL type name of the medium risk hits summary. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.totalHits | Number | Total low risk sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.violatedHits | Number | Violated low risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.totalHits | Number | The total low risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.violatedHits | Number | The violated low risk sensitive hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.__typename | String | The GraphQL type name of the low risk hits summary. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.totalHits | Number | Total no-risk sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.violatedHits | Number | Violated no-risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.totalHits | Number | The total no-risk sensitive hits. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.violatedHits | Number | The violated no-risk sensitive hits. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.__typename | String | The GraphQL type name of the no-risk hits summary. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.totalHits | Number | Total sensitive hits across all risk levels. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.violatedHits | Number | Total violated sensitive hits across all risk levels. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.totalHits | Number | The total sensitive hits across all risk levels. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.violatedHits | Number | The total violated sensitive hits across all risk levels. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.__typename | String | The GraphQL type name of the total sensitive hits summary. |
 | RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.__typename | String | The GraphQL type name of the sensitive hits. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.numActivities | Number | Number of activities associated with the file result. |
-| RubrikPolaris.SensitiveDataObject.rootFileResult.numActivitiesDelta | Number | Change in number of activities since last scan. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.numActivities | Number | The number of activities associated with the file result. |
+| RubrikPolaris.SensitiveDataObject.rootFileResult.numActivitiesDelta | Number | The change in number of activities since last scan. |
 | RubrikPolaris.SensitiveDataObject.snappable.id | String | The ID of the snappable object. |
 | RubrikPolaris.SensitiveDataObject.snappable.name | String | The name of the snappable object. |
 | RubrikPolaris.SensitiveDataObject.snappable.objectType | String | The type of the snappable object. |
@@ -6709,7 +6709,7 @@ Retrieve the file information for the provided file path in the object.
 | RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.principalType | String | The type of the principal. |
 | RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.resolutionType | String | The resolution type of the principal SID. |
 | RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.access | String | The access level granted to the principal. |
-| RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.flags | Unknown | The permission flags. |
+| RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.flags | String | The permission flags. |
 | RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.accessMethodDetails.accessMethod | String | The access method used. |
 | RubrikPolaris.SensitiveDataObjectFile.fileMetadata.createdBy.value | String | The value of the principal who created the file. |
 | RubrikPolaris.SensitiveDataObjectFile.fileMetadata.creationTime | Number | The creation time of the file as a Unix timestamp. |
@@ -6739,7 +6739,7 @@ Retrieve the file information for the provided file path in the object.
             "owner": "S-1-5-21-0000000000-000000000-0000000000-0001",
             "permissions": [
                 {
-                    "cn": "Mike Preston",
+                    "cn": "John Doe",
                     "principalId": "S-1-5-21-0000000000-000000000-0000000000-0002",
                     "principalOrigin": "ORIGIN_INTERNAL",
                     "idpType": "ON_PREM_AD",
@@ -6813,13 +6813,13 @@ Retrieve the file information for the provided file path in the object.
     "__typename": "SensitiveFileDetailsReply",
     "fileMetadata": {
         "createdBy": {
-            "value": "admin@rubrik.com",
+            "value": "admin@example.com",
             "__typename": "FilePrincipalIdentity"
         },
         "creationTime": 1768473000,
         "lastAccessTime": 1781945100,
         "lastModifiedBy": {
-            "value": "admin@rubrik.com",
+            "value": "admin@example.com",
             "__typename": "FilePrincipalIdentity"
         },
         "lastModifiedTime": 1773151200,
@@ -6848,4 +6848,4 @@ Retrieve the file information for the provided file path in the object.
 >
 >|File Path|File Size in Bytes|Owner|Created By|Last Modified By|Create Time|Last Modified Time|Last Access Time|Exposure Type|File Count|Permissions|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| /C:/DummyPath/DummyFile.xlsx | 1665816 | S-1-5-21-0000000000-000000000-0000000000-0001 | admin@rubrik.com | admin@rubrik.com | 2026-01-15T10:30:00Z | 2026-03-10T14:00:00Z | 2026-06-20T08:45:00Z | NOT_OPEN | 1 | **-** ***id***: S-1-5-21-0000000000-000000000-0000000000-0002<br/> ***name***: Mike Preston<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-18<br/> ***name***: Local System<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-32-000<br/> ***name***: Administrators<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-32-001<br/> ***name***: Users<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Read & execute |
+>| /C:/DummyPath/DummyFile.xlsx | 1665816 | S-1-5-21-0000000000-000000000-0000000000-0001 | admin@example.com | admin@example.com | 2026-01-15T10:30:00Z | 2026-03-10T14:00:00Z | 2026-06-20T08:45:00Z | NOT_OPEN | 1 | **-** ***id***: S-1-5-21-0000000000-000000000-0000000000-0002<br/> ***name***: John Doe<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-18<br/> ***name***: Local System<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-32-000<br/> ***name***: Administrators<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Full control<br/>**-** ***id***: S-1-5-32-001<br/> ***name***: Users<br/> ***accessMethod***: WINDOWS_ACL<br/> ***access***: Read & execute |

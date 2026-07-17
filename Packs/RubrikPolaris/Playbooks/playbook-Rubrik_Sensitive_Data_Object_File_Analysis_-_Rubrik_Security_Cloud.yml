@@ -468,6 +468,7 @@ tasks:
                 value:
                   simple: Collect Object information and File Path.Answers.2
                 iscontext: true
+          - operator: trim
           - operator: concat
             args:
               prefix:
@@ -519,6 +520,7 @@ tasks:
                 value:
                   simple: Collect Object information and File Path.Answers.2
                 iscontext: true
+          - operator: trim
           - operator: ConcatFormat
             args:
               ctx_data:

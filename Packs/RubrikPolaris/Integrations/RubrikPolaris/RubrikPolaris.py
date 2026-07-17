@@ -2334,592 +2334,57 @@ IR_VIOLATION_STATUS_UPDATE_MUTATION = """mutation IdentityResilienceViolationsSt
 }
 """
 
-SENSITIVE_OBJECT_DETAIL_QUERY = """query SensitiveObjectDetailQuery(
-  $snappableFid: String!
-  $snapshotFid: String!
-  $includeWhitelistedResults: Boolean
+SENSITIVE_DATA_OBJECT_EVENT_SERIES_LIST_QUERY = """query SensitiveDataObjectEventSeriesList(
+  $after: String
+  $filters: ActivitySeriesFilter
+  $first: Int
+  $sortBy: ActivitySeriesSortField
+  $sortOrder: SortOrder
 ) {
-  policyObj(
-    snappableFid: $snappableFid
-    snapshotFid: $snapshotFid
-    includeWhitelistedResults: $includeWhitelistedResults
+  activitySeriesConnection(
+    after: $after
+    first: $first
+    filters: $filters
+    sortBy: $sortBy
+    sortOrder: $sortOrder
   ) {
-    ...SonarObjectDetailFragment
-    policySummaries {
-      ...PolicySummaryFragment
-      __typename
-    }
-    __typename
-  }
-}
-
-fragment SonarObjectDetailFragment on PolicyObj {
-  ...PolicyObjFragment
-  osType
-  isUserAccessEnabledObject
-  snappable {
-    ... on VsphereVm {
-      cdmId
-      cluster {
+    edges {
+      cursor
+      node {
         id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
+        fid
+        activitySeriesId
+        startTime
+        lastUpdated
+        lastActivityType
+        lastActivityStatus
+        location
+        objectName
+        objectId
+        objectType
+        severity
+        progress
+        cluster {
+          id
+          name
+        }
+        activityConnection {
           nodes {
-            ipAddress
-            __typename
+            id
+            message
+            severity
+            time
+            activityInfo
           }
-          __typename
         }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on LinuxFileset {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on ShareFileset {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on WindowsFileset {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on NutanixVm {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on HyperVVirtualMachine {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on VolumeGroup {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on MssqlDatabase {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    ... on NasFileset {
-      cdmId
-      cluster {
-        id
-        name
-        version
-        defaultAddress
-        clusterNodeConnection(first: 1) {
-          nodes {
-            ipAddress
-            __typename
-          }
-          __typename
-        }
-        datagovPreviewerConfig {
-          enabled
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-  __typename
-}
-
-fragment PolicyObjFragment on PolicyObj {
-  id
-  snapshotFid
-  snapshotTimestamp
-  shareType
-  riskLevel
-  objectStatus {
-    policyStatuses {
-      status
-      __typename
-    }
-    latestSnapshotResult {
-      snapshotTime
-      snapshotFid
-      __typename
-    }
-    __typename
-  }
-  rootFileResult {
-    hits {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    analyzerGroupResults {
-      ...AnalyzerGroupResultFragment
-      __typename
-    }
-    analyzerResults {
-      analyzer {
-        id
-        name
-      }
-      hits {
-        totalHits
-        violations
-        violationsDelta
-        totalHitsDelta
-        __typename
       }
     }
-    filesWithHits {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
     }
-    openAccessFiles {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    openAccessFolders {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    openAccessFilesWithHits {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    staleFiles {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    staleFilesWithHits {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    openAccessStaleFiles {
-      totalHits
-      violations
-      violationsDelta
-      totalHitsDelta
-      __typename
-    }
-    sensitiveHits {
-      highRiskHits {
-        totalHits
-        violatedHits
-        __typename
-      }
-      mediumRiskHits {
-        totalHits
-        violatedHits
-        __typename
-      }
-      lowRiskHits {
-        totalHits
-        violatedHits
-        __typename
-      }
-      noRiskHits {
-        totalHits
-        violatedHits
-        __typename
-      }
-      totalHits {
-        totalHits
-        violatedHits
-        __typename
-      }
-      __typename
-    }
-    numActivities
-    numActivitiesDelta
-    __typename
   }
-  snappable {
-    ...SnappableFragment
-    __typename
-  }
-  __typename
-}
-
-fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
-  analyzerGroup {
-    groupType
-    id
-    name
-    __typename
-  }
-  hits {
-    totalHits
-    violations
-    violationsDelta
-    totalHitsDelta
-    __typename
-  }
-  __typename
-}
-
-fragment SnappableFragment on HierarchyObject {
-  id
-  name
-  objectType
-  slaAssignment
-  logicalPath {
-    fid
-    name
-    objectType
-    __typename
-  }
-  physicalPath {
-    fid
-    name
-    objectType
-    __typename
-  }
-  ...EffectiveSlaColumnFragment
-  ... on VsphereVm {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on LinuxFileset {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on ShareFileset {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on WindowsFileset {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on NutanixVm {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on HyperVVirtualMachine {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on VolumeGroup {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  ... on O365Onedrive {
-    userPrincipalName
-    __typename
-  }
-  ... on O365SharepointDrive {
-    url
-    __typename
-  }
-  ... on AzureNativeVirtualMachine {
-    region
-    azureResourceGroupDetails {
-      azureSubscriptionDetails {
-        id
-        name
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-  ... on AzureNativeManagedDisk {
-    region
-    azureResourceGroupDetails {
-      azureSubscriptionDetails {
-        id
-        name
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-  ... on CloudDirectNasExport {
-    exportPath
-    __typename
-  }
-  ... on CloudDirectNasShare {
-    exportPath
-    __typename
-  }
-  ... on CloudDirectHierarchyObject {
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  __typename
-}
-
-fragment EffectiveSlaColumnFragment on HierarchyObject {
-  id
-  effectiveSlaDomain {
-    ...EffectiveSlaDomainFragment
-    ... on GlobalSlaReply {
-      description
-      __typename
-    }
-    __typename
-  }
-  ... on CdmHierarchyObject {
-    pendingSla {
-      ...SLADomainFragment
-      __typename
-    }
-    __typename
-  }
-  ... on CloudDirectHierarchyObject {
-    pendingSla {
-      ...SLADomainFragment
-      __typename
-    }
-    __typename
-  }
-  ... on PolarisHierarchyObject {
-    rscNativeObjectPendingSla {
-      ...CompactSLADomainFragment
-      __typename
-    }
-    __typename
-  }
-  __typename
-}
-
-fragment EffectiveSlaDomainFragment on SlaDomain {
-  id
-  name
-  ... on GlobalSlaReply {
-    isRetentionLockedSla
-    retentionLockMode
-    haPolicy {
-      id
-      __typename
-    }
-    __typename
-  }
-  ... on ClusterSlaDomain {
-    fid
-    cluster {
-      id
-      name
-      __typename
-    }
-    isRetentionLockedSla
-    retentionLockMode
-    __typename
-  }
-  __typename
-}
-
-fragment SLADomainFragment on SlaDomain {
-  id
-  name
-  ... on ClusterSlaDomain {
-    fid
-    cluster {
-      id
-      name
-      __typename
-    }
-    __typename
-  }
-  __typename
-}
-
-fragment CompactSLADomainFragment on CompactSlaDomain {
-  id
-  name
-  __typename
-}
-
-fragment PolicySummaryFragment on ClassificationPolicySummary {
-  id
-  name
-  colorEnum
-  __typename
 }
 """
 
@@ -7519,16 +6984,24 @@ def fetch_sensitive_data_objects(
         last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
         sensitive_data_object_next_run["last_fetch"] = last_run_time
 
-    event_types = ["CLASSIFICATION"]
-    filters = {"lastActivityStatus": ["SUCCESS"]}
+    filters = {
+        "lastActivityStatus": ["SUCCESS"],
+        "lastActivityType": ["CLASSIFICATION"],
+        "lastUpdatedTimeGt": last_run_time,
+    }
+    variables = {
+        "first": max_fetch,
+        "after": next_page_token,
+        "sortOrder": "ASC",
+        "filters": filters,
+    }
+    remove_nulls_from_dictionary(variables)
 
-    events = client.list_event_series(
-        activity_type=",".join(event_types),
-        start_date=last_run_time,
-        sort_order="ASC",
-        first=max_fetch,
-        after=next_page_token,
-        filters=filters,
+    events = client._query_raw(
+        raw_query=SENSITIVE_DATA_OBJECT_EVENT_SERIES_LIST_QUERY,
+        operation_name="SensitiveDataObjectEventSeriesList",
+        variables=variables,
+        timeout=60,
     )
 
     activity_series_connection = demisto.get(events, "data.activitySeriesConnection") or {}
@@ -10862,7 +10335,7 @@ def rubrik_data_security_violation_csv_download_command(client: PolarisClient, a
         ]
 
     # Check the state of file
-    target_file_name = f"{object_name}-violating-files_file_results"
+    target_file_name = f"{object_name.replace(' ', '-')}-violating-files_file_results"
     download_file_name = ""
     external_id = ""
 

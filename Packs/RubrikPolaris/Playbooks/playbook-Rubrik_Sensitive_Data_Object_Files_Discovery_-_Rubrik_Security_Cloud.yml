@@ -600,7 +600,7 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: ""
+  description: "Number of results to retrieve in the response. The maximum allowed size is 1000."
   playbookInputQuery:
 outputs: []
 tests:

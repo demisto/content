@@ -28,7 +28,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | object_id | The object ID.<br/><br/>Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command. | incident.rubrikpolarisobjectid | Optional |
 | snapshot_id | The snapshot ID.<br/><br/>Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command. | incident.rubriksnapshotid | Optional |
-| limit |  | 100 | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. | 100 | Optional |
 
 ## Playbook Outputs
 

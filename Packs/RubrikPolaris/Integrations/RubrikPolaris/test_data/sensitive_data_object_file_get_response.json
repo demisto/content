@@ -8,7 +8,7 @@
                         "owner": "S-1-5-21-0000000000-000000000-0000000000-0001",
                         "permissions": [
                             {
-                                "cn": "Mike Preston",
+                                "cn": "John Doe",
                                 "principalId": "S-1-5-21-0000000000-000000000-0000000000-0002",
                                 "principalOrigin": "ORIGIN_INTERNAL",
                                 "idpType": "ON_PREM_AD",
@@ -88,13 +88,13 @@
             "sensitiveFileDetails": {
                 "fileMetadata": {
                     "createdBy": {
-                        "value": "admin@rubrik.com",
+                        "value": "admin@example.com",
                         "__typename": "FilePrincipalIdentity"
                     },
                     "creationTime": 1768473000,
                     "lastAccessTime": 1781945100,
                     "lastModifiedBy": {
-                        "value": "admin@rubrik.com",
+                        "value": "admin@example.com",
                         "__typename": "FilePrincipalIdentity"
                     },
                     "lastModifiedTime": 1773151200,
@@ -125,7 +125,7 @@
                 "owner": "S-1-5-21-0000000000-000000000-0000000000-0001",
                 "permissions": [
                     {
-                        "cn": "Mike Preston",
+                        "cn": "John Doe",
                         "principalId": "S-1-5-21-0000000000-000000000-0000000000-0002",
                         "principalOrigin": "ORIGIN_INTERNAL",
                         "idpType": "ON_PREM_AD",
@@ -199,13 +199,13 @@
         "__typename": "SensitiveFileDetailsReply",
         "fileMetadata": {
             "createdBy": {
-                "value": "admin@rubrik.com",
+                "value": "admin@example.com",
                 "__typename": "FilePrincipalIdentity"
             },
             "creationTime": 1768473000,
             "lastAccessTime": 1781945100,
             "lastModifiedBy": {
-                "value": "admin@rubrik.com",
+                "value": "admin@example.com",
                 "__typename": "FilePrincipalIdentity"
             },
             "lastModifiedTime": 1773151200,
@@ -232,13 +232,13 @@
         "__typename": "SensitiveFileDetailsReply",
         "fileMetadata": {
             "createdBy": {
-                "value": "admin@rubrik.com",
+                "value": "admin@example.com",
                 "__typename": "FilePrincipalIdentity"
             },
             "creationTime": 1768473000,
             "lastAccessTime": 1781945100,
             "lastModifiedBy": {
-                "value": "admin@rubrik.com",
+                "value": "admin@example.com",
                 "__typename": "FilePrincipalIdentity"
             },
             "lastModifiedTime": 1773151200,

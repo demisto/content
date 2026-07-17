@@ -5,7 +5,7 @@ name: RubrikPullSensitiveDataObjectFileInformation
 script: ''
 type: python
 tags: []
-comment: Syncs the sensitive data object file information from RSC to XSOAR.
+comment: Syncs the sensitive data object file information from RSC to Cortex XSOAR.
 enabled: true
 args:
 - name: object_id
@@ -13,7 +13,7 @@ args:
 - name: snapshot_id
   description: "The Snapshot ID.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
 - name: limit
-  description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+  description: The number of results to retrieve in the response. The maximum allowed size is 1000.
   defaultValue: '1000'
 scripttarget: 0
 subtype: python3
