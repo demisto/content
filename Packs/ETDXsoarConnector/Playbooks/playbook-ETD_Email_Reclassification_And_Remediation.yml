@@ -106,7 +106,7 @@ tasks:
       - id: c48bafc9-4afb-4998-a787-bb5703a62142
         label: ""
         labelarg:
-          simple: Select new verdict
+          simple: Select the new verdict
         required: true
         gridcolumns: []
         defaultrows: []
@@ -159,9 +159,9 @@ tasks:
     task:
       id: 4e38a992-120a-45e0-8ab7-9f1d356744e9
       version: -1
-      name: etd-move-message
-      description: Reclassify and remediate ETD message.
-      script: ETDXsoarConnector|||etd-move-message
+      name: cisco-etd-move-message
+      description: Reclassifies and remediates an ETD message.
+      script: ETDXsoarConnector|||cisco-etd-move-message
       type: regular
       iscommand: true
       brand: ETDXsoarConnector

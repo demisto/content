@@ -1,39 +1,39 @@
 name: ETDXsoarConnector
-display: ETDXsoarConnector
+display: Cisco ETD Connector
 category: Analytics & SIEM
 commonfields:
   id: ETDXsoarConnector
   version: -1
-description: Fetches malicious Cisco ETD email logs and creates incidents in Cortex XSOAR.
+description: Fetches Cisco Email Threat Defense (ETD) message events and creates incidents.
 provider: Cisco
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/python3:3.11.10.111039
   isfetch: true
   commands:
-  - name: etd-move-message
-    description: Reclassify and Remediate ETD message.
+  - name: cisco-etd-move-message
+    description: Reclassifies and remediates an ETD message.
     arguments:
     - name: message_id
-      description: ETD message ID.
+      description: The ETD message ID.
       required: true
     - name: verdict
-      description: New verdict.
+      description: The new verdict.
       required: true
     - name: folder
-      description: New folder action.
+      description: The new folder action.
       required: true
     outputs:
     - contextPath: ETD.Message.ID
-      description: Message ID.
+      description: The message ID.
       type: String
     - contextPath: ETD.Message.Verdict
-      description: Updated verdict.
+      description: The updated verdict.
       type: String
     - contextPath: ETD.Message.Folder
-      description: Updated folder.
+      description: The updated folder.
       type: String
 configuration:
 - display: ETD Base URL
@@ -52,18 +52,19 @@ configuration:
   name: client_secret
   type: 9
   required: true
-- display: Max fetch
-  name: max_fetch
-  type: 0
-  required: false
-  defaultvalue: '100'
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  type: 13
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  advanced: true
+- display: First Fetch Time
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -73,19 +74,19 @@ configuration:
   name: incidentFetchInterval
   type: 19
   defaultvalue: 60
-- name: insecure
-  display: Trust any certificate (not secure)
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: ETD Malicious Email
   required: false
-  type: 8
-  advanced: true
-- name: proxy
-  display: Use system proxy settings
+- display: Max fetch
+  name: max_fetch
+  type: 0
   required: false
-  type: 8
-  advanced: true
-fromversion: 6.8.0
+  defaultvalue: '100'
+fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 - platform
 tests:
-- No tests (auto formatted)
+- Test ETDXsoarConnector

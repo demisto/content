@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* EtdXsoarConnector
+* ETDXsoarConnector
 
 ### Scripts
 
@@ -18,7 +18,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* etd-move-message
+* cisco-etd-move-message
 
 ## Playbook Inputs
 
