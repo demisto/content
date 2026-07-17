@@ -16,22 +16,22 @@
                     "simple": "title"
                 },
                 "CyberInt Alert Data": {
-					"complex": {
-						"filters": [],
-						"root": "alert_data",
-						"transformers": [
-							{
-								"args": {
-									"headers": {},
-									"is_auto_json_transform": {},
-									"json_transform_properties": {},
-									"title": {}
-								},
-								"operator": "JsonToTable"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_data",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
                 "CyberInt Attachments": {
                     "complex": {
                         "filters": [],
@@ -271,6 +271,9 @@
                 },
                 "source": {
                     "simple": "source"
+                },
+                "Cyberint Alert URL": {
+                    "simple": "alert_data.url"
                 }
             }
         },
@@ -558,6 +561,9 @@
                 },
                 "source": {
                     "simple": "source"
+                },
+                "Cyberint Alert URL": {
+                    "simple": "alert_data.url"
                 }
             }
         }

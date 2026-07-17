@@ -286,6 +286,12 @@ tasks:
       url:
         complex:
           root: inputs.URL
+      brand:
+        complex:
+          root: inputs.Brand
+      original_url:
+        complex:
+          root: inputs.OriginalURL
       alert_id:
         complex:
           root: inputs.AlertID
@@ -357,18 +363,18 @@ tasks:
       Ids:
         complex:
           root: Cyberint.takedowns_submit
-          accessor: alert_ref_id
+          accessor: id
       PollingCommandName:
         simple: cyberint-retrieve-takedowns
       PollingCommandArgName:
-        simple: alert_ref_id
+        simple: id
       AdditionalPollingCommandArgNames:
         simple: customer_id
       AdditionalPollingCommandArgValues:
         complex:
           root: inputs.CustomerID
       dt:
-        simple: Cyberint.takedowns_list(val.status == "pending" || val.status == "request_sent").alert_ref_id
+        simple: Cyberint.takedowns_list(val.status == "pending" || val.status == "request_sent").id
       Interval:
         complex:
           root: inputs.PollingInterval
@@ -618,7 +624,7 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: ${incident.cyberintalertdata.url}
+    simple: ${incident.cyberintalerturl}
   required: false
   description: 'The phishing website URL to submit for takedown. Expected format: full URL including the scheme, e.g. ``http://evil.example.com/login``. Defaults to the URL from the Cyberint alert data.'
   playbookInputQuery:
@@ -635,9 +641,20 @@ inputs:
   playbookInputQuery:
 - key: AlertID
   value:
-    simple: ${incident.cyberintalertid}
+    simple: ${incident.alertid}
   required: false
   description: 'The Cyberint alert ID associated with the phishing website. Expected format: numeric alert ID, e.g. ``123456``. Used to correlate the takedown request with the alert.'
+  playbookInputQuery:
+- key: Brand
+  value:
+    simple: ${incident.cyberinttargetedbrand}
+  required: false
+  description: 'The brand the phishing website is impersonating. Required by the takedown API to determine the original (legitimate) URL when the customer profile does not resolve it automatically. Defaults to the Cyberint alert targeted brand.'
+  playbookInputQuery:
+- key: OriginalURL
+  value: {}
+  required: false
+  description: 'The URL of the original, legitimate content being impersonated (for example, ``https://example.com``). Required by the takedown API to determine the original URL when the customer profile does not resolve it automatically.'
   playbookInputQuery:
 - key: Confidence
   value:

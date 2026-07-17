@@ -32,10 +32,12 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | The phishing website URL to submit for takedown. Defaults to the URL from the Cyberint alert data. | ${incident.cyberintalertdata.url} | Optional |
+| URL | The phishing website URL to submit for takedown. Defaults to the URL from the Cyberint alert data. | ${incident.cyberintalerturl} | Optional |
 | CustomerID | The Cyberint customer ID, as configured in the Cyberint integration. Used to submit and track the takedown request. |  | Required |
 | Reason | The takedown reason. One of: phishing, brand_abuse, impersonating_application, unofficial_application_distribution, malicious_content, social_media_impersonation, social_media_employee_impersonation, fake_job_post, sensitive_file_on_antivirus_repository, instant_messaging_impersonation, other. Default is phishing. | phishing | Optional |
-| AlertID | The Cyberint alert ID associated with the phishing website. Used to correlate the takedown request with the alert. | ${incident.cyberintalertid} | Optional |
+| AlertID | The Cyberint alert ID associated with the phishing website. Used to correlate the takedown request with the alert. | ${incident.alertid} | Optional |
+| Brand | The brand the phishing website is impersonating. Required by the takedown API to determine the original \(legitimate\) URL when the customer profile does not resolve it automatically. Defaults to the Cyberint alert targeted brand. | ${incident.cyberinttargetedbrand} | Optional |
+| OriginalURL | The URL of the original, legitimate content being impersonated. Required by the takedown API to determine the original URL when the customer profile does not resolve it automatically. |  | Optional |
 | Confidence | The confidence score (0-100) of the phishing website alert. Defaults to the Cyberint alert confidence field. | ${incident.cyberintconfidence} | Optional |
 | ConfidenceThreshold | The minimum confidence score (0-100) required to initiate a takedown. Default is 80. | 80 | Optional |
 | Severity | The severity of the incident (1-Low, 2-Medium, 3-High, 4-Critical). Defaults to the incident severity. | ${incident.severity} | Optional |
