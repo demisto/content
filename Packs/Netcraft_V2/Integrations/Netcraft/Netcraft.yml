@@ -1,8 +1,8 @@
 commonfields:
-  id: Netcraft V2 - lookback test
+  id: Netcraft V2
   version: -1
-name: Netcraft V2 - lookback test
-display: Netcraft - lookback test
+name: Netcraft V2
+display: Netcraft
 category: Utilities
 provider: Netcraft
 description: Netcraft takedown, submission and screenshot management.
