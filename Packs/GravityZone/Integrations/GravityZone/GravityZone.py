@@ -323,25 +323,48 @@ class Client(BaseClient):
         return self.call("/v1.0/jsonrpc/companies", "getCompanyDetails")
 
     @logger
-    def get_endpoints(self, limit: int) -> list[Any]:
+    def get_endpoints(self, limit: int, name: str | None = None, node_id: str | None = None) -> list[Any]:
         """
         Get the list of managed endpoints.
         Args:
             limit (int): The maximum number of endpoints to retrieve.
+            name (Optional[str]): The naming pattern of the endpoints to retrieve.
+            node_id (Optional[str]): The GravityZone company ID or group ID in the network tree.
         Returns:
             list[Any]: A list of managed endpoints.
         """
-        company_details = self.get_my_company()
-        parent_id = company_details["id"]
+        if not node_id:
+            company_details = self.get_my_company()
+            node_id = company_details["id"]
         all_endpoints = []
         page = 1
         per_page = ENDPOINTS_PER_PAGE
         while True:
             response = self.call(
-                "/v1.0/jsonrpc/network",
-                "getEndpointsList",
-                {"parentId": parent_id, "page": page, "perPage": per_page},
+                "/v1.1/jsonrpc/network",
+                "getNetworkInventoryItems",
+                {
+                    "parentId": node_id,
+                    "page": page,
+                    "perPage": per_page,
+                    "filters": {
+                        "type": {
+                            "computers": True,
+                            "virtualMachines": True,
+                        },
+                        "depth": {
+                            "allItemsRecursively": True,
+                        },
+                        "security": {
+                            "management": {
+                                "managedWithBest": True,
+                            },
+                        },
+                        **({"details": {"name": name}} if name else {}),
+                    },
+                },
             )
+
             items = response.get("items", [])
             all_endpoints.extend(items)
             if len(all_endpoints) >= limit or page >= response.get("pagesCount", 1) or not items:
@@ -1377,10 +1400,13 @@ def generate_endpoint_entry_from_list(device) -> dict[str, Any]:
     device_id = device.get("id")
     entry = {
         "ID": device_id,
+        "CompanyID": device.get("companyId"),
+        "GroupID": device.get("details", {}).get("groupId"),
         "Hostname": device.get("name"),
-        "IP": device.get("ip"),
-        "OS": device.get("operatingSystemVersion"),
-        "MAC": device.get("macs")[0],
+        "FQDN": device.get("details", {}).get("fqdn"),
+        "IP": device.get("details", {}).get("ip"),
+        "OS": device.get("details", {}).get("operatingSystemVersion"),
+        "MAC": device.get("details", {}).get("macs", [None])[0],
         "Vendor": INTEGRATION_NAME,
     }
     return entry
@@ -2636,7 +2662,16 @@ def gz_endpoint_list_command(client: Client, args: dict[str, Any]) -> CommandRes
         CommandResults: The command results containing the list of endpoints.
     """
     limit = arg_to_number(args.get("limit")) or ENDPOINTS_PER_PAGE
-    endpoints_details = client.get_endpoints(limit=limit)
+    name = args.get("name", None)
+    if name:
+        if len(name.strip("*")) < 3:
+            raise DemistoException("The 'name' argument must be at least 3 characters long.")
+        if "*" in name and not name.startswith("*"):
+            raise DemistoException("If using a wildcard, the 'name' argument must start with '*'.")
+        if name.count("*") > 1:
+            raise DemistoException("The 'name' argument can only contain one wildcard '*' character.")
+    node_id = args.get("node_id", None)
+    endpoints_details = client.get_endpoints(limit=limit, name=name, node_id=node_id)
     raw_endpoints = []
     outputs = []
     for endpoint_details in endpoints_details:
@@ -2645,7 +2680,9 @@ def gz_endpoint_list_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "GravityZone Endpoints List", outputs, headers=["ID", "Hostname", "IP", "OS", "MAC", "Vendor"]
+            "GravityZone Endpoints List",
+            outputs,
+            headers=["ID", "Hostname", "IP", "OS", "MAC", "Vendor", "FQDN", "CompanyID", "GroupID"],
         ),
         raw_response=raw_endpoints,
         outputs=outputs,
