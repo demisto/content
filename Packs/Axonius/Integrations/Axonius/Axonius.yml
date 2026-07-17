@@ -1,3 +1,6 @@
+sectionorder:
+- Connect
+- Collect
 category: Data Enrichment & Threat Intelligence
 provider: Axonius
 commonfields:
@@ -7,27 +10,33 @@ configuration:
 - display: Server URL (e.g. https://example.net)
   name: ax_url
   required: true
+  section: Connect
   type: 0
 - display: API Key
   displaypassword: API Secret
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: This integration is for fetching information about assets in Axonius.
 display: Axonius
 name: Axonius
 script:
   commands:
   - arguments:
-    - description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices
+    - description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices.
       name: saved_query_name
       required: true
     - description: The maximum number of results to return.
@@ -70,7 +79,7 @@ script:
       description: Tags assigned to the asset.
       type: String
   - arguments:
-    - description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users
+    - description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users.
       name: saved_query_name
       required: true
     - description: The maximum number of results to return.
