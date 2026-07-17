@@ -63,8 +63,8 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: 'Severity filter for fetched incidents. Accepts a single value or a comma-separated list. Supported values: LOW, MEDIUM, HIGH, CRITICAL (or numeric equivalents 10, 20, 30, 40). Example: "HIGH,CRITICAL" fetches only high and critical severity alerts.'
-  display: Risk level (comma-separated, e.g. HIGH,CRITICAL)
+- additionalinfo: 'Minimum severity threshold for fetched incidents. Accepts a single value: LOW, MEDIUM, HIGH, or CRITICAL (or numeric equivalents 10, 20, 30, 40). Alerts at or above this severity are fetched. Example: "MEDIUM" fetches medium, high, and critical severity alerts.'
+  display: Minimum risk level (e.g. MEDIUM fetches medium and higher)
   name: risk_level
   type: 0
   required: false

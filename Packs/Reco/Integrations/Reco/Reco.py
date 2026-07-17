@@ -56,25 +56,25 @@ RISK_LEVEL_TO_SEVERITY_NAME: dict[str, str] = {
     "critical": "CRITICAL",
 }
 
+# Ascending severity order, used to expand a minimum risk level into "that level and above".
+SEVERITY_ORDER: list[str] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
-def parse_risk_levels(risk_level_param: str | None) -> list[str] | None:
-    """Parse a single or comma-separated risk_level string into a list of severity names.
 
-    Accepts numeric values (10/20/30/40) or names (LOW/MEDIUM/HIGH/CRITICAL).
-    Examples: "HIGH" → ["HIGH"], "HIGH,CRITICAL" → ["HIGH", "CRITICAL"], "30,40" → ["HIGH", "CRITICAL"]
+def parse_minimum_risk_level(risk_level_param: str | None) -> list[str] | None:
+    """Parse a single risk_level value into the list of severity names at or above it.
+
+    Accepts a numeric value (10/20/30/40) or a name (LOW/MEDIUM/HIGH/CRITICAL).
+    Example: "MEDIUM" → ["MEDIUM", "HIGH", "CRITICAL"] (fetches medium severity and higher).
     """
     if not risk_level_param:
         return None
-    values = [v.strip() for v in str(risk_level_param).split(",") if v.strip()]
-    result: list[str] = []
-    for v in values:
-        severity_name = RISK_LEVEL_TO_SEVERITY_NAME.get(v) or RISK_LEVEL_TO_SEVERITY_NAME.get(v.upper())
-        if severity_name and severity_name not in result:
-            result.append(severity_name)
-        elif v.upper() not in result:
-            demisto.debug(f"Unknown risk level value '{v}', using upper-cased as-is")
-            result.append(v.upper())
-    return result or None
+    value = str(risk_level_param).strip()
+    severity_name = RISK_LEVEL_TO_SEVERITY_NAME.get(value) or RISK_LEVEL_TO_SEVERITY_NAME.get(value.upper())
+    if not severity_name:
+        demisto.debug(f"Unknown risk level value '{value}', using upper-cased as-is")
+        return [value.upper()]
+    min_index = SEVERITY_ORDER.index(severity_name)
+    return SEVERITY_ORDER[min_index:]
 
 
 def create_filter(field, value):
@@ -117,22 +117,19 @@ class RecoClient(BaseClient):
             try:
                 return self._http_request(method=method, url_suffix=url_suffix, **kwargs)
             except DemistoException as exc:
-                is_rate_limited = (
-                    exc.res is not None
-                    and getattr(exc.res, "status_code", None) == 429
-                )
+                is_rate_limited = exc.res is not None and getattr(exc.res, "status_code", None) == 429
                 if is_rate_limited and attempt < RATE_LIMIT_MAX_RETRIES - 1:
                     retry_after = int(
                         exc.res.headers.get(  # type: ignore[union-attr]
                             "Retry-After",
-                            RATE_LIMIT_RETRY_BASE_DELAY * (2 ** attempt),
+                            RATE_LIMIT_RETRY_BASE_DELAY * (2**attempt),
                         )
                     )
                     demisto.debug(
                         f"Rate limited (429) on {url_suffix}, "
                         f"retrying in {retry_after}s (attempt {attempt + 1}/{RATE_LIMIT_MAX_RETRIES})"
                     )
-                    time.sleep(retry_after)
+                    time.sleep(retry_after)  # pylint: disable=E9003
                 else:
                     raise
         raise DemistoException(f"Max retries ({RATE_LIMIT_MAX_RETRIES}) exceeded for {url_suffix}")
@@ -229,7 +226,7 @@ class RecoClient(BaseClient):
             else:
                 # Use the SCIM `in` operator — cleaner than a chain of OR clauses
                 vals = ", ".join(f'"{r}"' for r in risk_levels)
-                filter_parts.append(f'severity in [{vals}]')
+                filter_parts.append(f"severity in [{vals}]")
 
         if source:
             filter_parts.append(f'apps co "{source}"')
@@ -374,7 +371,7 @@ class RecoClient(BaseClient):
     def get_risky_users(self) -> list[dict[str, Any]]:
         """List ALL accounts flagged as risky via the external API (auto-paginated)."""
         try:
-            return self._paginate_all("accounts/list", "accounts", filters='isRiskyUser eq true')
+            return self._paginate_all("accounts/list", "accounts", filters="isRiskyUser eq true")
         except Exception as e:
             demisto.error(f"get_risky_users error: {str(e)}")
             raise
@@ -1131,7 +1128,16 @@ def get_assets_shared_externally_command(reco_client: RecoClient, email_address:
         readable_output=tableToMarkdown(
             "Assets",
             assets_list,
-            headers=["asset_id", "asset", "data_category", "data_categories", "last_access_date", "visibility", "location", "file_owner"],
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+                "file_owner",
+            ],
         ),
         outputs_prefix="Reco.Assets",
         outputs_key_field="asset_id",
@@ -1147,7 +1153,17 @@ def get_files_exposed_to_email_command(reco_client: RecoClient, email_account: s
         readable_output=tableToMarkdown(
             "Assets",
             assets_list,
-            headers=["asset_id", "asset", "data_category", "data_categories", "last_access_date", "visibility", "location", "email_account", "file_owner"],
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+                "email_account",
+                "file_owner",
+            ],
         ),
         outputs_prefix="Reco.Assets",
         outputs_key_field="asset_id",
@@ -1565,8 +1581,8 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "fetch-incidents":
-            # risk_level accepts a single value or comma-separated list (PRO-303)
-            risk_levels = parse_risk_levels(params.get("risk_level"))
+            # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
+            risk_levels = parse_minimum_risk_level(params.get("risk_level"))
             source = params.get("source")
             before = params.get("before")
             after: datetime | None = None
@@ -1662,7 +1678,9 @@ def main() -> None:  # pragma: no cover
             )
 
         elif command == "reco-add-exclusion-filter":
-            return_results(add_exclusion_filter(reco_client, demisto.args()["key_to_add"], argToList(demisto.args()["values_to_add"])))
+            return_results(
+                add_exclusion_filter(reco_client, demisto.args()["key_to_add"], argToList(demisto.args()["values_to_add"]))
+            )
 
         elif command == "reco-change-alert-status":
             return_results(change_alert_status(reco_client, demisto.args()["alert_id"], demisto.args()["status"]))
@@ -1688,52 +1706,116 @@ def main() -> None:  # pragma: no cover
         elif command == "reco-get-apps":
             before_dt = dateparser.parse(demisto.args()["before"]) if demisto.args().get("before") else None
             after_dt = dateparser.parse(demisto.args()["after"]) if demisto.args().get("after") else None
-            return_results(get_apps_command(reco_client, before=before_dt, after=after_dt, limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                get_apps_command(
+                    reco_client, before=before_dt, after=after_dt, limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-set-app-authorization-status":
-            return_results(set_app_authorization_status_command(reco_client, demisto.args()["app_id"], demisto.args()["authorization_status"]))
+            return_results(
+                set_app_authorization_status_command(
+                    reco_client, demisto.args()["app_id"], demisto.args()["authorization_status"]
+                )
+            )
 
         elif command == "reco-list-events":
-            return_results(list_events_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_events_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-posture-issues":
-            return_results(list_posture_issues_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_posture_issues_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-accounts":
-            return_results(list_accounts_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_accounts_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-devices":
-            return_results(list_devices_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_devices_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-ai-agents":
-            return_results(list_ai_agents_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_ai_agents_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-groups":
-            return_results(list_groups_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_groups_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-saas-to-saas":
-            return_results(list_saas_to_saas_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_saas_to_saas_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-ip-addresses":
-            return_results(list_ip_addresses_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_ip_addresses_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-business-units":
-            return_results(list_business_units_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_business_units_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-audit-logs":
-            return_results(list_audit_logs_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_audit_logs_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-posture-checks":
-            return_results(list_posture_checks_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_posture_checks_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-threat-detection-policies":
-            return_results(list_threat_detection_policies_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_threat_detection_policies_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-exclusions":
-            return_results(list_exclusions_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_exclusions_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         elif command == "reco-list-app-instances":
-            return_results(list_app_instances_command(reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)))
+            return_results(
+                list_app_instances_command(
+                    reco_client, filters=demisto.args().get("filters", ""), limit=int(demisto.args().get("limit") or PAGE_SIZE)
+                )
+            )
 
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
