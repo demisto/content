@@ -1,3 +1,5 @@
+name: SpecterOpsBHE
+display: SpecterOpsBHE
 sectionorder:
 - Connect
 - Collect
@@ -5,8 +7,6 @@ commonfields:
   id: SpecterOpsBHE
   version: -1
 provider: SpecterOps
-name: SpecterOpsBHE
-display: SpecterOpsBHE
 category: Network Security
 deprecated: true
 description: Deprecated. Use the SpecterOps BloodHound Enterprise integration instead. Use the SpecterOpsBHE integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.

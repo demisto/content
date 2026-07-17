@@ -1,3 +1,5 @@
+name: BloodHoundEnterprise
+display: BloodHoundEnterprise
 category: Analytics & SIEM
 provider: Specter Ops Inc
 sectionorder:
@@ -40,8 +42,6 @@ configuration:
   section: Connect
   advanced: true
 description: Deprecated. Use the SpecterOps BloodHound Enterprise integration instead. Use this integration to fetch audit logs from BloodHound Enterprise as events in Cortex XSIAM.
-display: BloodHoundEnterprise
-name: BloodHoundEnterprise
 deprecated: true
 script:
   commands:
