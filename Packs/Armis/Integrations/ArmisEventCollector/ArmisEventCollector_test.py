@@ -1709,7 +1709,8 @@ class TestStreamPageToXsiam:
             ``dataset_name`` is plural "activities").
         When: Callback ships a page.
         Then: send_events_to_xsiam is called with product == "<PRODUCT>_activities"
-            (plural), so events land in ``armis_security_activities_raw``
+            (plural), so events land in ``armis_security_activities_raw``.
+        """
         from ArmisEventCollector import PRODUCT
 
         mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
