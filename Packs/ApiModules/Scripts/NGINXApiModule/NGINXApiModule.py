@@ -24,7 +24,7 @@ class Handler:
     def write(msg: str):
         # gevent's pywsgi writes one Common-Log-Format access line per request here.
         # Tag it so it is easy to grep for and correlate with the nginx access log.
-        # Kept at debug: the structured "wsgi request:" END line subsumes this CLF line.
+        # Kept at debug: the structured "wsgi request:".
         demisto.debug(f"wsgi access: {msg.rstrip()}")
 
 
