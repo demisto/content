@@ -428,8 +428,7 @@ def recover_after_disconnection(connection: EventConnection, events: list[dict],
             connection.reconnect()
         except Exception as e:
             demisto.error(
-                f"[{connection.event_type}] Failed to reconnect after disconnection. "
-                f"Error: {e}. {traceback.format_exc()}"
+                f"[{connection.event_type}] Failed to reconnect after disconnection. " f"Error: {e}. {traceback.format_exc()}"
             )
             raise
 
