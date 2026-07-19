@@ -244,7 +244,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -277,6 +277,7 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -287,7 +288,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -323,6 +324,11 @@ tasks:
             value:
               simple: Non existing SHA-256
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSRLCheckResults
+            iscontext: true
     view: |-
       {
         "position": {
