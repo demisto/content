@@ -46,9 +46,7 @@ For Cortex XSOAR On-prem -
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 
 For Cortex XSIAM -
-`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-or
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the url to `crtx`.
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
 
 ## Use Cases
 
@@ -195,14 +193,18 @@ For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authen
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.
-  
-For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
 
-- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`  
-  Note: For Cortex XSIAM, you can use the `edl-` prefix. Alternatively, if using the `ext-` prefix, replace the `xdr` in the url to `crtx`.  
+For Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as curl.
+
+- For Cortex XSOAR, if the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
 
   For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
-- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`  
+
+- For Cortex XSIAM, if the integration is configured to run on a tenant, you must replace the `xdr` in the URL with `crtx`. For example, if the tenant URL is `https://platform-test.xdr-qa2-uat.us.example.com/`, use `https://ext-platform-test.crtx-qa2-uat.us.example.com/`.
+
+  For example: `curl -v -u user:pass https://ext-platform-test.crtx-qa2-uat.us.example.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
+
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`.
 
   For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 

@@ -771,7 +771,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -839,6 +839,302 @@ tasks:
         "position": {
           "x": 710,
           "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 8a51ec37-c60e-4e59-88eb-74a8ce22eebf
+    type: regular
+    task:
+      id: 8a51ec37-c60e-4e59-88eb-74a8ce22eebf
+      version: -1
+      name: gz-endpoint-users-loggedin
+      script: GravityZone|||gz-endpoint-users-loggedin
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a6c6f97a-0391-4f11-840b-7864603f66ec
+    type: condition
+    task:
+      id: a6c6f97a-0391-4f11-840b-7864603f66ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.Endpoint.Hostname
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GravityZone.Endpoint.ActiveSessions
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6e6c37f7-0a8b-47f0-9f8b-f4d53790c3a8
+    type: regular
+    task:
+      id: 6e6c37f7-0a8b-47f0-9f8b-f4d53790c3a8
+      version: -1
+      name: gz-endpoint-create-memory-dump
+      script: GravityZone|||gz-endpoint-create-memory-dump
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id:
+        simple: 6942a43afe8d4e463ca5c197
+      path:
+        simple: C:\\dumps\\
+      password:
+        simple: StrongPass123!
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1207,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 8b237871-4f2f-47f9-bff7-d17d7e4b7acd
+    type: condition
+    task:
+      id: 8b237871-4f2f-47f9-bff7-d17d7e4b7acd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.TaskID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.DownloadURL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1207,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1a5d2d2f-eeb6-4f89-b015-f8f3a8490992
+    type: regular
+    task:
+      id: 1a5d2d2f-eeb6-4f89-b015-f8f3a8490992
+      version: -1
+      name: gz-endpoint-memory-dump-status
+      script: GravityZone|||gz-endpoint-memory-dump-status
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      endpoint_id:
+        simple: ${GravityZone.MemoryDump.EndpointID}
+      polling:
+        simple: "true"
+      task_id:
+        simple: ${GravityZone.MemoryDump.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1724,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f918a659-13d9-4844-8fce-2763bd6f6e74
+    type: condition
+    task:
+      id: f918a659-13d9-4844-8fce-2763bd6f6e74
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.TaskID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.DownloadURL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1724,
+          "y": 1417
         }
       }
     note: false
@@ -1105,7 +1401,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
