@@ -14,6 +14,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: jamf-protect-event-collector
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -41,6 +42,7 @@ general_configurations:
           required: false
           hidden: false
   - view_group: jamf-v2
+    advanced: true
     fields:
     - id: xsoar-jamf-v2_integrationLogLevel
       title: Log Level
@@ -70,7 +72,8 @@ general_configurations:
 configurations:
 - id: fetch-assets-and-vulnerabilities_jamf-protect-event-collector
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: assetsFetchInterval
       field_type: duration
       title: Fetch Computer Assets Interval
@@ -90,7 +93,8 @@ configurations:
   view_group: jamf-protect-event-collector
 - id: log-collection_jamf-protect-event-collector
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: eventFetchInterval
       title: Events Fetch Interval
       field_type: duration
@@ -106,7 +110,8 @@ configurations:
           hidden: false
         edit_modifiers:
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: max_fetch_alerts
       field_type: input
       title: Max alert events per fetch
@@ -119,7 +124,8 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: max_fetch_audits
       field_type: input
       title: Max audit events per fetch
@@ -136,7 +142,8 @@ configurations:
 - id: automation-and-remediation_jamf-v2
   view_group: jamf-v2
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: defaultIgnore
       title: Do not use in CLI by default
       field_type: checkbox

@@ -9,6 +9,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: awake-security
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -36,6 +37,7 @@ general_configurations:
           required: false
           hidden: false
   - view_group: awake-security
+    advanced: true
     fields:
     - id: feedExpirationPolicy
       field_type: select
@@ -60,6 +62,7 @@ general_configurations:
           hidden: false
       title: Feed expiration policy
   - view_group: awake-security
+    advanced: true
     fields:
     - id: feedExpirationInterval
       field_type: input
@@ -76,7 +79,8 @@ general_configurations:
 configurations:
 - id: automation-and-remediation_awake-security
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: defaultIgnore
       title: Do not use in CLI by default
       field_type: checkbox
@@ -91,7 +95,8 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: integrationReliability
       field_type: select
       options:
@@ -236,7 +241,8 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: fetch_interval
       field_type: input
       title: Period between incident fetch interval (in minutes)
@@ -248,7 +254,8 @@ configurations:
         edit_modifiers:
           required: true
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: threat_behaviors
       field_type: input
       title: 'Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"'

@@ -1,2 +1,3 @@
 Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
 Jamf Protect Event Collector,Packs/JamfProtect/Integrations/JamfProtectEventCollector/JamfProtectEventCollector.yml,Jamf,connectors/jamf,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"
+jamf v2,Packs/Jamf/Integrations/jamfV2/jamfV2.yml,Jamf,connectors/jamf,xsoar,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key""}]}"

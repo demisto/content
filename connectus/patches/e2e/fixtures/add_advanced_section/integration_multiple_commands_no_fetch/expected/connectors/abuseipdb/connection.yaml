@@ -90,7 +90,8 @@ profiles:
       metadata:
         event:
           publish: true
-  - fields:
+  - advanced: true
+    fields:
     - id: proxy
       title: Use system proxy settings
       field_type: checkbox
@@ -108,7 +109,8 @@ profiles:
           required: false
           hidden: false
           read_only: true
-  - fields:
+  - advanced: true
+    fields:
     - id: insecure
       title: Trust any certificate (not secure)
       field_type: checkbox

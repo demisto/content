@@ -7,6 +7,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: gamma
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -36,7 +37,8 @@ general_configurations:
 configurations:
 - id: automation-and-remediation_gamma
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: defaultIgnore
       title: Do not use in CLI by default
       field_type: checkbox

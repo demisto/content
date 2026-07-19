@@ -9,6 +9,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: abnormal-security-event-collector
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -50,7 +51,8 @@ configurations:
           required: true
           hidden: false
         default_value: 1 day
-  - fields:
+  - advanced: true
+    fields:
     - id: eventFetchInterval
       title: Events Fetch Interval
       field_type: duration

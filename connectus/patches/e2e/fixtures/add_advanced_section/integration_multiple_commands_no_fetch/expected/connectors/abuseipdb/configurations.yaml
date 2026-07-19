@@ -17,6 +17,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: abuseipdb
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -46,7 +47,8 @@ general_configurations:
 configurations:
 - id: automation-and-remediation_abuseipdb
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: defaultIgnore
       title: Do not use in CLI by default
       field_type: checkbox
@@ -61,7 +63,8 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  - fields:
+  - advanced: true
+    fields:
     - id: days
       field_type: input
       title: Maximum reports age (in days)
@@ -86,7 +89,8 @@ configurations:
           required: false
           hidden: false
       title: Disable reputation lookups for private IP addresses
-  - fields:
+  - advanced: true
+    fields:
     - id: disregard_quota
       field_type: checkbox
       options:
@@ -127,7 +131,8 @@ configurations:
           required: false
           hidden: false
       title: Source Reliability
-  - fields:
+  - advanced: true
+    fields:
     - id: threshold
       field_type: input
       title: Minimum score threshold

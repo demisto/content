@@ -9,6 +9,7 @@ view_groups:
 general_configurations:
   configurations:
   - view_group: fraudwatch
+    advanced: true
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -38,7 +39,8 @@ general_configurations:
 configurations:
 - id: automation-and-remediation_fraudwatch
   configurations:
-  - fields:
+  - advanced: true
+    fields:
     - id: defaultIgnore
       title: Do not use in CLI by default
       field_type: checkbox
