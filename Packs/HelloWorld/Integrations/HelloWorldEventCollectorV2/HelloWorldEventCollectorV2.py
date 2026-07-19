@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime, timezone
 
 import demistomock as demisto  # noqa: F401
@@ -12,6 +11,7 @@ VENDOR = "hello"
 PRODUCT = "world"
 DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 DEFAULT_GET_EVENTS_LIMIT = 50
+PAGE_SIZE = 100  # Maximum number of events to request from the API in a single page.
 
 """ CLIENT CLASS """
 
@@ -32,41 +32,52 @@ class Client(BaseClient):
         alert_status: str | None,
         limit: int,
         from_date: str | None = None,
-        default_protocol: str = "UDP",
     ) -> List[Dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request.
+
+        The API returns events in pages. This method iterates over the pages using the
+        cursor returned by the API (``next_page``) until either ``limit`` events have been
+        collected or there are no more pages to fetch.
 
         Args:
-            prev_id (int): Previous id that was fetched.
+            prev_id (int): The last event id that was fetched. Only events with a greater id are returned.
             alert_status (str | None): Status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-            limit (int): Maximum number of events to return.
+            limit (int): Maximum number of events to return across all pages.
             from_date (str | None): Get events from this date onwards.
-            default_protocol (str): The protocol to report for the mocked events.
 
         Returns:
-            List[Dict]: The next event.
+            List[Dict]: The list of events fetched from the API, ordered by id.
         """
-        demisto.debug("Starting to fetch events.")
-        # use limit & from date arguments to query the API
-        return [
-            {
-                "id": prev_id + 1,
-                "created_time": datetime.now(timezone.utc).isoformat(),
-                "description": f"This is test description {prev_id + 1}",
-                "alert_status": alert_status,
-                "protocol": default_protocol,
-                "t_port": prev_id + 1,
-                "custom_details": {
-                    "triggered_by_name": f"Name for id: {prev_id + 1}",
-                    "triggered_by_uuid": str(uuid.uuid4()),
-                    "type": "customType",
-                    "requested_limit": limit,
-                    "requested_From_date": from_date,
-                },
-            }
-        ]
+        demisto.debug(f"Starting to fetch events. prev_id={prev_id}, limit={limit}, from_date={from_date}")
+        events: List[Dict] = []
+        next_page: str | None = None
+
+        while len(events) < limit:
+            params = assign_params(
+                after_id=prev_id,
+                status=alert_status,
+                from_date=from_date,
+                limit=min(limit - len(events), PAGE_SIZE),
+                page=next_page,
+            )
+            demisto.debug(f"Requesting events page with params: {params}")
+            response = self._http_request(
+                method="GET",
+                url_suffix="/get_alerts",
+                params=params,
+            )
+
+            page_events = response.get("alerts", [])
+            events.extend(page_events)
+            demisto.debug(f"Fetched {len(page_events)} events in this page (total so far: {len(events)}).")
+
+            next_page = response.get("next_page")
+            if not next_page or not page_events:
+                break
+
+        # Trim to the requested limit in case the last page returned more than needed.
+        return events[:limit]
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
@@ -135,27 +146,62 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
     )
 
 
+def deduplicate_events(events: List[Dict], last_fetched_ids: List[str]) -> List[Dict]:
+    """
+    Removes already-processed events based on the IDs fetched in the previous run.
+
+    Args:
+        events (List[Dict]): The events returned from the API in the current fetch.
+        last_fetched_ids (List[str]): The event IDs that were already fetched in the previous run.
+
+    Returns:
+        List[Dict]: The events that were not fetched in the previous run.
+    """
+    if not last_fetched_ids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs).")
+        return events
+
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs.")
+
+    # Convert to a set for O(1) lookups.
+    fetched_ids_set = set(last_fetched_ids)
+    new_events = [event for event in events if str(event.get("id")) not in fetched_ids_set]
+
+    skipped_count = len(events) - len(new_events)
+    if skipped_count:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
+
+    return new_events
+
+
 def fetch_events(
     client: Client,
-    last_run: dict[str, int],
+    last_run: dict,
     first_fetch_time: str,
     alert_status: str | None,
     max_events_per_fetch: int,
 ) -> tuple[Dict, List[Dict]]:
     """
+    Fetches events from the API, deduplicates them against the previous run, and computes the next run.
+
     Args:
         client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time (str): If last_run is empty (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
+        last_run (dict): A dict holding the last fetched id (``prev_id``) and the ids fetched in the
+            previous run (``fetched_ids``) used for deduplication.
+        first_fetch_time (str): If last_run is empty (first time we are fetching), it contains the timestamp
+            on when to start fetching events.
         alert_status (str | None): Status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
         max_events_per_fetch (int): Number of events per fetch.
 
     Returns:
-        dict: Next run dictionary containing the last id that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        dict: Next run dictionary containing the last fetched id (``prev_id``) and the ids fetched in this
+            run (``fetched_ids``) that will be used in ``last_run`` on the next fetch.
+        list: List of new (deduplicated) events that will be created in XSIAM.
     """
     prev_id = last_run.get("prev_id") or 0
+    last_fetched_ids = last_run.get("fetched_ids", [])
 
     events = client.search_events(
         prev_id=prev_id,
@@ -163,10 +209,19 @@ def fetch_events(
         limit=max_events_per_fetch,
         from_date=first_fetch_time,
     )
-    demisto.debug(f"Fetched event with id: {prev_id + 1}.")
+    demisto.debug(f"Fetched {len(events)} events (before deduplication).")
 
-    # Save the next_run as a dict with the prev_id key to be stored
-    next_run = {"prev_id": prev_id + 1}
+    # Remove events that were already fetched in the previous run.
+    events = deduplicate_events(events, last_fetched_ids)
+
+    # Compute the next run: the highest fetched id and the ids fetched in this run (for the next dedup).
+    fetched_ids = [str(event.get("id")) for event in events if event.get("id") is not None]
+    max_fetched_id = max((int(event["id"]) for event in events if event.get("id") is not None), default=prev_id)
+    next_run = {
+        "prev_id": max_fetched_id if events else prev_id + 1,
+        "fetched_ids": fetched_ids or last_fetched_ids,
+    }
+    demisto.debug(f"Setting next run to {next_run}.")
     return next_run, events
 
 
