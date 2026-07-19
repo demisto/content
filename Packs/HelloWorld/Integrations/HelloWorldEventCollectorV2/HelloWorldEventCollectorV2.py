@@ -1,17 +1,17 @@
 import uuid
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
-from typing import Any
+from datetime import datetime, timezone
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from typing import Any
 
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "hello"
 PRODUCT = "world"
+DEFAULT_MAX_EVENTS_PER_FETCH = 1000
+DEFAULT_GET_EVENTS_LIMIT = 50
 
 """ CLIENT CLASS """
 
@@ -27,30 +27,36 @@ class Client(BaseClient):
     """
 
     def search_events(
-        self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = "UDP"
-    ) -> List[Dict]:  # noqa: E501
+        self,
+        prev_id: int,
+        alert_status: str | None,
+        limit: int,
+        from_date: str | None = None,
+        default_protocol: str = "UDP",
+    ) -> List[Dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        All the parameters are passed directly to the API as HTTP POST parameters in the request.
 
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
-            limit: limit.
-            from_date: get events from from_date.
+            prev_id (int): Previous id that was fetched.
+            alert_status (str | None): Status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+            limit (int): Maximum number of events to return.
+            from_date (str | None): Get events from this date onwards.
+            default_protocol (str): The protocol to report for the mocked events.
 
         Returns:
-            List[Dict]: the next event
+            List[Dict]: The next event.
         """
         demisto.debug("Starting to fetch events.")
         # use limit & from date arguments to query the API
         return [
             {
                 "id": prev_id + 1,
-                "created_time": datetime.now().isoformat(),
+                "created_time": datetime.now(timezone.utc).isoformat(),
                 "description": f"This is test description {prev_id + 1}",
                 "alert_status": alert_status,
-                "protocol": default_Protocol,
+                "protocol": default_protocol,
                 "t_port": prev_id + 1,
                 "custom_details": {
                     "triggered_by_name": f"Name for id: {prev_id + 1}",
@@ -103,15 +109,16 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
     """Gets events from API
 
     Args:
-        client (Client): The client
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        args (dict): Additional arguments
+        client (Client): The client.
+        alert_status (str): Status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        args (dict): Additional arguments (limit, from_date).
 
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        tuple[List[Dict], CommandResults]:
+            - The list of events fetched from the API.
+            - The CommandResults object with the human readable output and outputs.
     """
-    limit = args.get("limit", 50)
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
     from_date = args.get("from_date")
     events = client.search_events(
         prev_id=0,
@@ -120,27 +127,35 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
         from_date=from_date,
     )
     hr = tableToMarkdown(name="Test Event", t=events)
-    return events, CommandResults(readable_output=hr)
+    return events, CommandResults(
+        readable_output=hr,
+        outputs_prefix="HelloWorld.Event",
+        outputs_key_field="id",
+        outputs=events,
+    )
 
 
 def fetch_events(
-    client: Client, last_run: dict[str, int], first_fetch_time, alert_status: str | None, max_events_per_fetch: int
+    client: Client,
+    last_run: dict[str, int],
+    first_fetch_time: str,
+    alert_status: str | None,
+    max_events_per_fetch: int,
 ) -> tuple[Dict, List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
+        first_fetch_time (str): If last_run is empty (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        alert_status (str | None): Status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        max_events_per_fetch (int): Number of events per fetch.
+
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        dict: Next run dictionary containing the last id that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get("prev_id", None)
-    if not prev_id:
-        prev_id = 0
+    prev_id = last_run.get("prev_id") or 0
 
     events = client.search_events(
         prev_id=prev_id,
@@ -150,26 +165,31 @@ def fetch_events(
     )
     demisto.debug(f"Fetched event with id: {prev_id + 1}.")
 
-    # Save the next_run as a dict with the last_fetch key to be stored
+    # Save the next_run as a dict with the prev_id key to be stored
     next_run = {"prev_id": prev_id + 1}
     return next_run, events
 
 
-""" MAIN FUNCTION """
+""" HELPER FUNCTIONS """
 
 
-def add_time_to_events(events: List[Dict] | None):
+def add_time_to_events(events: List[Dict] | None) -> None:
     """
-    Adds the _time key to the events.
+    Adds the _time key to the events in place.
+
     Args:
-        events: List[Dict] - list of events to add the _time key to.
+        events (List[Dict] | None): List of events to add the _time key to. The list is modified in place.
+
     Returns:
-        list: The events with the _time key.
+        None: The events are modified in place.
     """
     if events:
         for event in events:
             create_time = arg_to_datetime(arg=event.get("created_time"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -184,11 +204,11 @@ def main() -> None:  # pragma: no cover
     base_url = urljoin(params.get("url"), "/api/v1")
     verify_certificate = not params.get("insecure", False)
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
+    # The first fetch starts from the current time.
+    first_fetch_time = datetime.now(timezone.utc).isoformat()
     proxy = params.get("proxy", False)
     alert_status = params.get("alert_status", "")
-    max_events_per_fetch = params.get("max_events_per_fetch", 1000)
+    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -201,8 +221,8 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "hello-world-get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
-            events, results = get_events(client, alert_status, demisto.args())
+            should_push_events = argToBoolean(args.get("should_push_events", False))
+            events, results = get_events(client, args.get("status", alert_status), args)
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
@@ -227,6 +247,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
