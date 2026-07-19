@@ -1,5 +1,6 @@
 import uuid
 from contextlib import ExitStack, contextmanager
+from http import HTTPStatus
 
 import ProofpointEmailSecurityEventCollector
 import pytest
@@ -12,12 +13,15 @@ from ProofpointEmailSecurityEventCollector import (
     EventConnection,
     datetime,
     demisto,
+    exceptions,
     fetch_events,
     json,
     long_running_execution_command,
     perform_long_running_loop,
+    time,
     timedelta,
     websocket_connections,
+    MAX_RECONNECT_ATTEMPTS,
     PING_TIMEOUT,
     CLOSE_TIMEOUT,
     OPEN_TIMEOUT,
@@ -456,6 +460,93 @@ def test_receive_events_after_disconnection(mocker, connection: MockConnection):
     assert len(events) == 2
     assert events[0]["message"] == "In-transit 1"
     assert events[1]["message"] == "In-transit 2"
+
+
+def _make_invalid_status(status_code):
+    """Build a websockets InvalidStatus exception carrying the given HTTP status code."""
+    response = type("Resp", (), {"status_code": status_code})()
+    return exceptions.InvalidStatus(response)
+
+
+def test_reconnect_success_after_conflict(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose first reconnect attempt fails with an HTTP 409 (session conflict)
+          and whose second attempt succeeds.
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the backoff sleep is applied once and the connection is re-established
+          without raising.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    conflict = _make_invalid_status(HTTPStatus.CONFLICT)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=[conflict, connection])
+    sleep_mock = mocker.patch.object(time, "sleep")
+
+    event_connection.reconnect()
+
+    assert connect_mock.call_count == 2
+    assert sleep_mock.call_count == 1  # one backoff wait before the successful retry
+    assert event_connection.connection is connection
+
+
+def test_reconnect_raises_on_non_conflict_status(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose reconnect attempt fails with a non-409 InvalidStatus (e.g. 401).
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the exception is raised immediately without retrying or sleeping.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    unauthorized = _make_invalid_status(HTTPStatus.UNAUTHORIZED)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=unauthorized)
+    sleep_mock = mocker.patch.object(time, "sleep")
+
+    with pytest.raises(exceptions.InvalidStatus):
+        event_connection.reconnect()
+
+    assert connect_mock.call_count == 1  # no retry on non-conflict status
+    assert sleep_mock.call_count == 0
+
+
+def test_reconnect_gives_up_after_max_attempts(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose reconnect attempts always fail with HTTP 409 (session conflict).
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the retry loop is bounded by MAX_RECONNECT_ATTEMPTS and does not loop forever.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    conflict = _make_invalid_status(HTTPStatus.CONFLICT)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=conflict)
+    mocker.patch.object(time, "sleep")
+
+    event_connection.reconnect()
+
+    assert connect_mock.call_count == MAX_RECONNECT_ATTEMPTS
 
 
 def test_recover_after_disconnection_with_reconnect(mocker, connection: MockConnection):
