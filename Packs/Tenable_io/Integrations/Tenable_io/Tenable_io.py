@@ -2217,7 +2217,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # the final items_count so XSIAM knows the snapshot is complete.
                 cumulative_total = assets_last_run.get("total_assets", 0)
                 demisto.debug(
-                    f"Asset fetch completed with empty assets list. Sealing snapshot with "
+                    f"[Fetch] Asset fetch completed with empty assets list. Sealing snapshot with "
                     f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
                 )
                 send_data_to_xsiam(
@@ -2239,7 +2239,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # on a previous run. Do NOT re-send an empty payload for an already-sealed
                 # snapshot - doing so overwrites the committed assets in XSIAM (XSUP-71765).
                 demisto.debug(
-                    f"No assets to send and snapshot already sealed or nothing committed "
+                    f"[Fetch] No assets to send and snapshot already sealed or nothing committed "
                     f"(snapshot_id={snapshot_id}, "
                     f"total_assets={assets_last_run.get('total_assets', 0)}, "
                     f"assets_snapshot_sealed={assets_last_run.get('assets_snapshot_sealed', False)}). "
@@ -2253,7 +2253,6 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             # vulnerabilities dataset was never created (XSUP-73037). Freeing here caps the peak
             # footprint at roughly one dataset at a time.
             del assets
-            assets = []
             gc.collect()
 
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete.
@@ -2270,7 +2269,6 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
                 # Release the vulnerabilities from memory once sent, mirroring the assets handling above.
                 del vulnerabilities
-                vulnerabilities = []
                 gc.collect()
 
             # Update module health separately to show the number of assets pulled.

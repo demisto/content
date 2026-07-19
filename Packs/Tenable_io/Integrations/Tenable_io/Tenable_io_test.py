@@ -1125,7 +1125,6 @@ def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
           large datasets are never held in memory at the same time (XSUP-73037 OOM prevention).
     """
     import Tenable_io
-    from Tenable_io import main
 
     mock_demisto(mocker, mock_args={})
     mocker.patch.object(demisto, "command", return_value="fetch-assets")
@@ -1157,7 +1156,7 @@ def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
     mocker.patch.object(Tenable_io, "send_data_to_xsiam", side_effect=fake_send_data_to_xsiam)
     mocker.patch.object(Tenable_io, "parse_vulnerabilities", side_effect=lambda vulns: vulns)
 
-    main()
+    Tenable_io.main()
 
     # Assets must be sent to XSIAM before vulnerabilities are fetched from the API.
     assert "send_assets" in call_order
