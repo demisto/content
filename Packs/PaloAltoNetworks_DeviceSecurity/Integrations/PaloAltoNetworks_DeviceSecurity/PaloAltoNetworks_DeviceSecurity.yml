@@ -394,4 +394,4 @@ script:
   dockerimage: demisto/fastapi:0.125.0.10158186
 fromversion: 6.10.0
 tests:
-- PaloAltoNetworks_DeviceSecurity-Test
+- No tests
