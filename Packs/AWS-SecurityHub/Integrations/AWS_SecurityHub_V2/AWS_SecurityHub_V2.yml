@@ -60,7 +60,7 @@ configuration:
   required: false
 - display: Timeout
   name: timeout
-  additionalinfo: The timeout interval in seconds. Can be a single integer representing the read timeout (for example 60), or two comma-separated values representing the read and connect timeouts (for example 60,10). If the connect timeout is not specified, a default of 10 seconds is used.
+  additionalinfo: The timeout interval in seconds. Can be a single integer representing the read timeout (for example 60), or two comma-separated values representing the read and connect timeouts (for example 60,10).
   defaultvalue: 60,10
   type: 0
   section: Connect
@@ -180,10 +180,10 @@ script:
     description: "Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2."
     arguments:
     - name: string_filters
-      description: 'The string field filters. Each entry must follow the format: field_name=<OCSF field>,value=<value>,comparison=<comparison_type>(separate multiple entries by semicolons). Supported comparison types are EQUALS (default), PREFIX, NOT_EQUALS, PREFIX_NOT_EQUALS, and CONTAINS_WORD. For substring matching, use CONTAINS_WORD (CONTAINS and NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
+      description: 'The string field filters. Each entry must follow the format: field_name=<OCSF field>,value=<value>,comparison=<comparison_type> (separate multiple entries by semicolons). Supported comparison types are EQUALS (default), PREFIX, NOT_EQUALS, PREFIX_NOT_EQUALS, and CONTAINS_WORD. For substring matching, use CONTAINS_WORD (CONTAINS and NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
       required: false
     - name: date_filters
-      description: 'The date field filters. Each entry must use either an absolute range format: field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601> (both start and end are required), or a relative date range format: field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison> (value is required, unit defaults to DAYS, and comparison is optional). Note that days=<number>is accepted as a shorthand for value=<number>,unit=DAYS. Multiple entries must be separated by semicolons. Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
+      description: 'The date field filters. Each entry must use either an absolute range format: field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601> (both start and end are required), or a relative date range format: field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison> (value is required, unit defaults to DAYS, and comparison is optional). Note that days=<number> is accepted as a shorthand for value=<number>,unit=DAYS. Multiple entries must be separated by semicolons. Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
       required: false
     - name: boolean_filters
       description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).'
@@ -195,7 +195,7 @@ script:
       description: 'The map field filters. Each entry must follow the format: field_name=<OCSF field>,key=<key>,value=<value>,comparison=<comparison_type> (multiple entries must be separated by semicolons).  Supported comparison types are EQUALS (default) and NOT_EQUALS.'
       required: false
     - name: ip_filters
-      description: 'The IP field filters. Each entry must follow the format: field_name=<field>,cidr=<IP address>(multiple entries must be separated by semicolons). Possible field_name values are:  evidences.src_endpoint.ip and evidences.dst_endpoint.ip. The CIDR value must be a plain IPv4 or IPv6 address (CIDR ranges such as10.0.0.0/8 are not accepted). For example, field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
+      description: 'The IP field filters. Each entry must follow the format: field_name=<field>,cidr=<IP address> (multiple entries must be separated by semicolons). Possible field_name values are:  evidences.src_endpoint.ip and evidences.dst_endpoint.ip. The CIDR value must be a plain IPv4 or IPv6 address (CIDR ranges such as 10.0.0.0/8 are not accepted). For example, field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
       required: false
     - name: filter_operator
       description: The logical operator used to combine the filter conditions within the composite filter. Possible values are AND and OR.
