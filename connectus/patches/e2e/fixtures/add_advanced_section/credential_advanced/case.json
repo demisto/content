@@ -1,0 +1,6 @@
+{
+  "description": "Integration with a type-9 credential param (identifier + password, hiddenusername:false) marked advanced:true in the yml. The patch should add advanced:true to the credential block in connection.yaml, covering both username and password fields.",
+  "connector": "acme-creds",
+  "csv": "connectus-migration-pipeline.csv",
+  "expect_modified": true
+}

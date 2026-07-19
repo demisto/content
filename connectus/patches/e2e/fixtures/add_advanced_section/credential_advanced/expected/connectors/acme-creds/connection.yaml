@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: acme-creds
+  label: Acme Creds
+profiles:
+- id: basic.acme_creds
+  type: basic
+  view_group: acme-creds
+  title: Username / Password
+  configurations:
+  - advanced: true
+    fields:
+    - id: credentials_username
+      title: Username
+      field_type: input
+      options:
+        mask: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: credentials_password
+      title: Password
+      field_type: input
+      options:
+        mask: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: url
+      title: Server URL
+      field_type: input
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false

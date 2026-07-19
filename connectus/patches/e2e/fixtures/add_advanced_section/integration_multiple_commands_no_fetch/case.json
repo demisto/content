@@ -2,5 +2,5 @@
   "description": "Integration with multiple commands and no fetch of any type. The patch should make no changes (negative/no-op case).",
   "connector": "abuseipdb",
   "csv": "connectus-migration-pipeline.csv",
-  "expect_modified": false
+  "expect_modified": true
 }

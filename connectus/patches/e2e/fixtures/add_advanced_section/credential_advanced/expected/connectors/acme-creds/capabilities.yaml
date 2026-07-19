@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=../../schema/capabilities.schema.json
+metadata:
+  title: Capabilities
+  description: Name and configure the instance capabilities
+general_configurations:
+  description: General configurations for all capabilities
+  configurations:
+  - fields:
+    - id: instance_name
+      title: Instance name
+      field_type: input
+      metadata:
+        connector:
+          parameter: instance_name
+      validations:
+      - trigger: change
+        rules:
+        - type: pattern
+          value: ^[a-zA-Z0-9 _-]+$
+          message: Only alphanumeric characters, spaces, underscores, and hyphens are allowed.
+        - type: async
+          validation_type: uniqueness
+      options:
+        placeholder: Enter a unique name for this instance
+        create_modifiers:
+          required: true
+          read_only: false
+          hidden: false
+        edit_modifiers:
+          required: true
+          read_only: false
+          hidden: false
+capabilities:
+- id: automation-and-remediation
+  title: Automation and Remediation
+  description: Run automated actions and remediation commands against the connected service.
+  default_enabled: false
+  required: false
+  sub_capabilities:
+  - id: automation-and-remediation_acme-creds
+    title: Acme Creds
+    default_enabled: false
+    required: false
+    config:
+      required_license:
+      - xsiam
+      - agentix
+  config:
+    required_license:
+    - agentix
+    - xsiam

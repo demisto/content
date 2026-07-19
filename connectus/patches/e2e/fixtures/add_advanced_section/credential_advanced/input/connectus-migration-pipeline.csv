@@ -1,0 +1,2 @@
+Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details
+Acme Creds,Packs/AcmeCreds/Integrations/AcmeCreds/AcmeCreds.yml,Acme Creds,connectors/acme-creds,xsoar,"{""auth_types"":[{""type"":""Basic"",""name"":""Username/Password""}]}"

@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-acme-creds
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Acme Creds.
+  module: xsoar
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Acme Creds
+    xsoar-pack-id: AcmeCreds
+  args: {}
+capabilities:
+- id: automation-and-remediation_acme-creds
+  auth_options:
+  - id: basic.acme_creds
+    workloads:
+    - xsoar-pod

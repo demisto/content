@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: credentials_username
+  field_name: credentials
+- id: credentials_password
+  field_name: credentials
+- id: url
+  field_name: url
