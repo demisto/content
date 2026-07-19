@@ -32,6 +32,7 @@ CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
 END_TIME_BUFFER = 30  # seconds
+MAX_API_CALLS_PER_FETCH = 20
 
 # Last run
 LAST_RUN_KEY = "last_run"
@@ -499,6 +500,8 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
 def compute_next_run(
     incident_ids_committed_timestamps: dict[str, int],
     last_run: dict[str, Any],
+    has_new_incidents: bool,
+    last_queried_end_time: int,
     look_back_minutes: int = 0,
 ) -> dict[str, Any]:
     """
@@ -508,19 +511,28 @@ def compute_next_run(
     `[max_ts - (look_back_minutes * 60 + END_TIME_BUFFER), max_ts]` so that the next
     fetch can deduplicate incidents re-queried due to lookback.
 
+    When no new incidents were fetched, advances `start_timestamp` to `last_queried_end_time`
+    so the query window always slides forward and never grows unboundedly.
+
     Args:
         incident_ids_committed_timestamps (dict[str, int]): Mapping of incident ID → committedAt
             epoch timestamp (seconds). Must include carry-over IDs from the previous last run.
-        last_run (dict[str, Any]): Previous last run state, returned unchanged when no incidents
-            were fetched.
+        last_run (dict[str, Any]): Previous last run state.
+        has_new_incidents (bool): Whether any new (non-duplicate) incidents were fetched.
+        last_queried_end_time (int): The end_time of the last queried interval. Used to advance
+            start_timestamp when no new incidents are found.
         look_back_minutes (int): Minutes of lookback configured for the integration. Determines
             how wide the ID retention window is. Defaults to 0.
 
     Returns:
         dict[str, Any]: Next run state with `start_timestamp` and `last_ids_timestamps`.
     """
-    if not incident_ids_committed_timestamps:
-        return last_run
+    if not has_new_incidents:
+        demisto.debug(
+            f"No new incidents were fetched. Advancing last run {START_TIMESTAMP_KEY} to {last_queried_end_time=} "
+            "to slide the query window forward."
+        )
+        return {**last_run, START_TIMESTAMP_KEY: last_queried_end_time}
 
     new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
 
@@ -639,15 +651,22 @@ def fetch_notifications(
     )
 
     new_incidents: list[dict] = []
+    last_queried_end_time: int = effective_start_timestamp
 
     # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
-    for start_time, end_time in get_start_end_time_intervals(effective_start_timestamp, end_timestamp, seconds_delta=180):
+    start_end_time_intervals = get_start_end_time_intervals(effective_start_timestamp, end_timestamp, seconds_delta=180)
+    for api_call_number, (start_time, end_time) in enumerate(start_end_time_intervals, start=1):
         if len(new_incidents) >= max_fetch:
             demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
             break
 
+        if api_call_number > MAX_API_CALLS_PER_FETCH:
+            demisto.debug(f"Reached or exceeded maximum number of API calls per fetch. Fetched {len(new_incidents)} incidents. ")
+            break
+
         demisto.debug(f"Getting incidents between {start_time=} and {end_time=} from {regions=}.")
         notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
+        last_queried_end_time = end_time
 
         notifications = [
             {**raw_notification, "region": region}
@@ -681,7 +700,13 @@ def fetch_notifications(
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
 
-    next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run, look_back_minutes)
+    next_run = compute_next_run(
+        fetched_incident_ids_committed_timestamps,
+        last_run=last_run,
+        look_back_minutes=look_back_minutes,
+        has_new_incidents=bool(new_incidents),
+        last_queried_end_time=last_queried_end_time,
+    )
     demisto.debug(f"Computed updated {next_run=}.")
     return next_run, new_incidents
 
