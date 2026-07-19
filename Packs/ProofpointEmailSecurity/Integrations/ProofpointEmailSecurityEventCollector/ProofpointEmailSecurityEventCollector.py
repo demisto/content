@@ -14,8 +14,8 @@ from datetime import datetime, timezone, timedelta
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
 
-
 URL = "{host}/v1/stream?cid={cluster_id}&type={type}"
+
 
 FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
