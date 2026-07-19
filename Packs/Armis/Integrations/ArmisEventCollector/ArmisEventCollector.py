@@ -1253,7 +1253,13 @@ def fetch_events(
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
         safe_debug("Skipping Devices fetch - interval not reached")
         event_types_to_fetch.remove("Devices")
-        next_run[DEVICES_LAST_FETCH] = last_run.get(DEVICES_LAST_FETCH)
+        for device_state_key in (
+            DEVICES_LAST_FETCH,
+            f"{EVENT_TYPE_DEVICES}_last_fetch_ids",
+            f"{EVENT_TYPE_DEVICES}_last_fetch_next_field",
+        ):
+            if device_state_key in last_run:
+                next_run[device_state_key] = last_run[device_state_key]
 
     safe_debug(f"Event types after filtering: {event_types_to_fetch}")
 

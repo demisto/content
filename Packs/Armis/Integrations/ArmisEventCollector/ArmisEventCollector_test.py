@@ -544,7 +544,8 @@ class TestHelperFunction:
 
         assert events == {}
         assert next_run.get("devices_last_fetch_time") == recent
-        assert next_run != {}
+        assert next_run.get("devices_last_fetch_ids") == ["dev1"]
+        assert next_run.get("devices_last_fetch_next_field") == 0
 
 
 class TestFetchFlow:
