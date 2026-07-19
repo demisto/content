@@ -1,5 +1,5 @@
-[pack]
-ignore=BA101,BA100
+#[pack]
+#ignore=BA101,BA100
 
 #[file:AWS.yml]
 #ignore=BA127,ST111,BA129
