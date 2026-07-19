@@ -13,10 +13,10 @@ The Generic Export Indicators Service is a long-running integration. For more in
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
 1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**).
-2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`.
-3. For example to test via curl with an instance with instance name: `EDL_instance_1`, XSIAM address `my-xsiam-subdomain.us.paloaltonetworks.com` and credentials test/password:
+2. You can access the External Dynamic List at the following url: `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`. You must replace the `xdr` in the URL with `crtx`. For example, if the tenant URL is `https://platform-test.xdr-qa2-uat.us.example.com/`, use `https://ext-platform-test.crtx-qa2-uat.us.example.com/`.
+3. For example to test via curl with an instance with instance name: `EDL_instance_1`, XSIAM tenant URL `https://my-xsiam-subdomain.xdr.us.paloaltonetworks.com/` and credentials test/password:
 ```
-curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
+curl -v -u test:password https://ext-my-xsiam-subdomain.crtx.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
 ```
 
 </~XSIAM>
@@ -110,5 +110,5 @@ To view logs concerning the creation of the indicator list and its current statu
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 </~XSOAR_ON_PREM>
 <~XSIAM>
-`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
 </~XSIAM>
