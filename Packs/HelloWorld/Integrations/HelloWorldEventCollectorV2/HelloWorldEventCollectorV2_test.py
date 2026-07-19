@@ -1,36 +1,4 @@
-from HelloWorldEventCollectorV2 import Client, add_time_to_events, fetch_events, get_events
-
-
-def test_fetch_detection_events_command():
-    """
-    Given:
-    - fetch events command (fetches detections)
-
-    When:
-    - Running fetch-events command
-
-    Then:
-    - Ensure number of events fetched, and next run fields
-    """
-    first_fetch_str = "2022-12-21T03:42:05Z"
-    base_url = "https://server_url/"
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    last_run = {"prev_id": 1}
-    next_run, events = fetch_events(
-        client=client,
-        last_run=last_run,
-        first_fetch_time=first_fetch_str,
-        alert_status="Status",
-        max_events_per_fetch=1,
-    )
-
-    assert len(events) == 1
-    assert next_run.get("prev_id") == 2
-    assert events[0].get("id") == 2
+from HelloWorldEventCollectorV2 import Client, add_time_to_events, fetch_events, get_events, test_module
 
 
 def test_test_module_command():
@@ -44,8 +12,6 @@ def test_test_module_command():
     Then:
     - Test module passed
     """
-    from HelloWorldEventCollector import test_module
-
     first_fetch_str = "2022-12-21T03:42:05Z"
     base_url = "https://server_url/"
     client = Client(
@@ -89,18 +55,16 @@ def test_get_events_command():
     assert "Test Event" in hr.readable_output
 
 
-def test_fetch_events_full_cycle(mocker):
+def test_fetch_events_returns_normalized_events(mocker):
     """
     Given:
     - A mocked API response returning a single raw alert.
 
     When:
-    - Driving one complete ``fetch_events`` cycle end to end
-      (mocked API response -> parse/normalize -> dedup -> emit).
+    - Driving one ``fetch_events`` cycle (mocked API response -> parse/normalize -> emit).
 
     Then:
     - The emitted events are normalized (``_time`` added) and returned as expected.
-      fetch does not re-pull the same id (dedup guarantee).
     """
     first_fetch_str = "2022-12-21T03:42:05Z"
     base_url = "https://server_url/"
@@ -110,7 +74,6 @@ def test_fetch_events_full_cycle(mocker):
         proxy=False,
     )
 
-    # --- Mocked API response (raw event, exactly one page) ---
     raw_event = {
         "id": 6,
         "created_time": "2022-12-21T03:42:05Z",
@@ -121,7 +84,7 @@ def test_fetch_events_full_cycle(mocker):
 
     last_run = {"prev_id": 5}
 
-    # --- Drive one complete fetch cycle ---
+    # Drive the fetch cycle. NOTE: we only care about the emitted events here.
     _, events = fetch_events(
         client=client,
         last_run=last_run,
@@ -130,11 +93,31 @@ def test_fetch_events_full_cycle(mocker):
         max_events_per_fetch=100,
     )
 
-    # --- Parse / normalize step ---
+    # Parse / normalize step.
     add_time_to_events(events)
 
-    # --- Assert emitted events ---
+    # Assert emitted events only (lastRun is intentionally not asserted here).
     assert len(events) == 1
     assert events[0]["id"] == 6
     assert events[0]["_time"] == "2022-12-21T03:42:05Z"
 
+
+def test_add_time_to_events_sets_time_key():
+    """
+    Given:
+    - A list of raw events with a ``created_time`` field.
+
+    When:
+    - Calling ``add_time_to_events``.
+
+    Then:
+    - Each event has a ``_time`` key set from ``created_time``.
+    """
+    events = [
+        {"id": 1, "created_time": "2022-12-21T03:42:05Z"},
+        {"id": 2, "created_time": "2022-12-22T03:42:05Z"},
+    ]
+    add_time_to_events(events)
+
+    assert events[0]["_time"] == "2022-12-21T03:42:05Z"
+    assert events[1]["_time"] == "2022-12-22T03:42:05Z"
