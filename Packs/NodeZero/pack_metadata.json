@@ -1,0 +1,35 @@
+{
+    "name": "NodeZero",
+    "description": "Horizon3.ai NodeZero autonomous pentest platform. Fetches high/critical weaknesses as incidents.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Horizon3.ai",
+    "url": "https://horizon3.ai",
+    "email": "support@horizon3.ai",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Attack",
+        "Breach Simulation"
+    ],
+    "useCases": [],
+    "keywords": [
+        "NodeZero",
+        "Horizon3",
+        "pentest",
+        "autonomous penetration testing",
+        "vulnerability management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "support@horizon3.ai"
+    ],
+    "githubUser": [
+        "h3-ryan"
+    ]
+}
