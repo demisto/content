@@ -130,7 +130,7 @@ script:
     - contextPath: NodeZero.Weakness.op_id
       description: ID of the pentest operation that discovered this weakness.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.6210924
+  dockerimage: demisto/py3-tools:1.0.0.10895515
   isfetch: true
   runonce: false
   script: '-'
