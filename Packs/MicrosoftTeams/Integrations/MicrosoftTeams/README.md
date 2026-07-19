@@ -403,6 +403,8 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
    6. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
        1. Run `openssl s_client -connect <domain.com>:443` .
        2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+   7. If removing and re-adding the bot at the team level (steps 2-3 above) still does not register the tenant ID, add the bot directly to a specific **channel** (for example the *General* channel) instead of at the team level. Note that sending a message to the bot or @mentioning it does **not** register the tenant ID - only adding the bot to a team/channel does. After re-adding, run the `microsoft-teams-integration-health` command to confirm.
+   8. On **Cortex XSOAR/XSIAM version 8**, do **not** enable **"Trust any certificate (not secure)"** - it has no effect and does not resolve a "Tenant ID is missing" error. If a certificate/connectivity error reaching Microsoft persists after re-adding the bot, this is a network trust issue between the platform and Microsoft (not a bot-configuration problem) - contact Palo Alto Networks support with the full error message.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, it means the AAD application has insufficient permissions.
 

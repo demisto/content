@@ -328,11 +328,21 @@ def handle_teams_proxy_and_ssl():
     proxies = None
     use_ssl = not PARAMS.get("insecure", False)
     if not is_demisto_version_ge("8.0.0"):
+        demisto.debug(f"Teams proxy/ssl: pre-8.0.0 server, using insecure param. proxies=None, verify={use_ssl}")
         return proxies, use_ssl
     CRTX_HTTP_PROXY = os.environ.get("CRTX_HTTP_PROXY", None)
     if CRTX_HTTP_PROXY:
         proxies = {"http": CRTX_HTTP_PROXY, "https": CRTX_HTTP_PROXY}
+        # On Cortex XSOAR/XSIAM 8, traffic is routed through the managed egress proxy and TLS trust is
+        # handled by the platform certificate bundle, so verification is forced on regardless of the
+        # "Trust any certificate" (insecure) parameter.
         use_ssl = True
+        demisto.debug(
+            f"Teams proxy/ssl: routing through managed egress proxy (CRTX_HTTP_PROXY set); "
+            f"verify forced to {use_ssl} (insecure param ignored on version 8)."
+        )
+    else:
+        demisto.debug(f"Teams proxy/ssl: version 8 without CRTX_HTTP_PROXY. proxies=None, verify={use_ssl}")
     return proxies, use_ssl
 
 
