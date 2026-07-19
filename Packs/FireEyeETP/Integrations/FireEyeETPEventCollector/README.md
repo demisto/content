@@ -21,10 +21,11 @@ We support two different authentication methods depending on the endpoint domain
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://etp.us.fireeye.com)| List of valid URLs:<br>US Instance:<br> https://etp.us.fireeye.com or https://us.etp.<br>trellix.com <br>EMEA Instance:<br> https://etp.eu.fireeye.com or https://eu.etp.trellix.com<br>APJ Instance:<br> https://etp.ap.fireeye.com or https://ap.etp.trellix.com<br>USGOV Instance: <br>https://etp.us.fireeyegov.com<br>CA Instance:<br> https://etp.ca.fireeye.com or https://ca.etp.trellix.com | True |
+| Server URL (e.g., https://etp.us.fireeye.com)| List of valid URLs:<br>US Instance:<br> https://etp.us.fireeye.com or https://us.etp.trellix.com <br>EMEA Instance:<br> https://etp.eu.fireeye.com or https://eu.etp.trellix.com<br>APJ Instance:<br> https://etp.ap.fireeye.com or https://ap.etp.trellix.com<br>USGOV Instance: <br>https://etp.us.fireeyegov.com<br>CA Instance:<br> https://etp.ca.fireeye.com or https://ca.etp.trellix.com | True |
 | Client ID | For the Trellix server URL (OAuth). | False |
 | Client Secret | For the Trellix server URL (OAuth). |  False|
 | OAuth Scopes | For the Trellix server URL (OAuth). <br> Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False |
+| Token URL | Override the OAuth 2.0 token endpoint base URL. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to `https://iam.us.trellix-gov.com`. | False |
 | API Secret Key | For the FireEye server URL. The API Key allows you to integrate with the Trellix Email Security - Cloud. | False |
 | Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch from Trellix Email Security - Cloud. |  |
 | Maximum number of Email Trace to fetch. | The maximum number of Email Trace events to fetch from Trellix Email Security - Cloud. |  |
