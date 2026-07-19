@@ -5635,6 +5635,7 @@ def splunk_configuration_stanza_list(service: client.Service, args: dict[str, An
         name=f"Stanzas in configuration file '{conf_file_name}'",
         t=stanzas,
         headers=["StanzaName", "App", "Owner", "Sharing"],
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(
