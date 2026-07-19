@@ -21,6 +21,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "PaloAltoNetworks_DeviceSecurity",
+            "playbookID": "PaloAltoNetworks_DeviceSecurity-Test",
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "qualys_fim",
             "playbookID": "QualysFIM-Playbook"
         },
@@ -6115,8 +6120,7 @@
         "Alienvault_OTX_v2 - Test": "API reliability issues",
         "ForcepointSecurityManagementCenter_test": "No instance",
         "AnsibleTower_Test_playbook": "Instance not working",
-        "playbook_TrendmicroCAS_Test": "Authentication token not found",
-        "PaloAltoNetworks_DeviceSecurity-Test": "No instance"
+        "playbook_TrendmicroCAS_Test": "Authentication token not found"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
