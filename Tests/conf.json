@@ -21,7 +21,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "PaloAltoNetworks_DeviceSecurity",
+            "integrations": "Palo Alto Networks Device Security",
             "playbookID": "PaloAltoNetworks_DeviceSecurity-Test",
             "fromversion": "6.10.0"
         },
