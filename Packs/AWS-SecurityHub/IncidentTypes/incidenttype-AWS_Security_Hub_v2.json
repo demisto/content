@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "AWS Security Hub v2 Finding",
+    "layout": "AWS Security Hub Finding",
     "detached": false,
     "extractSettings": {
         "mode": "All",
