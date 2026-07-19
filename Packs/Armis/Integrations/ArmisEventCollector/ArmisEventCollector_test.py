@@ -510,21 +510,23 @@ class TestHelperFunction:
         from_date_datetime = handle_from_date_argument("2023-01-01T01:00:00")
         assert from_date_datetime == datetime(2023, 1, 1, 1, 0, 0)
 
+    @freeze_time("2023-01-01T01:00:00")
     def test_devices_only_skip_preserves_state(self, mocker, dummy_client):
         """
         Given:
-            - A Devices-only instance whose device-fetch interval has NOT elapsed.
+            - A Devices-only instance whose device-fetch interval has NOT elapsed
+              (last fetch 1 minute ago, interval 1 hour).
         When:
             - fetch_events runs and skips the device fetch.
         Then:
             - The returned next_run is NOT empty and retains devices_last_fetch_time, so the
-              persisted lastRun does not get wiped (regression guard for XSUP-73098).
+              persisted lastRun does not get wiped.
         """
         from ArmisEventCollector import fetch_events
 
         fetch_start_time = arg_to_datetime("2023-01-01T01:00:00")
-        # last_fetch just 1 minute ago -> interval (1h) not reached -> skip.
-        recent = (datetime.now() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%S")
+        # Frozen now is 01:00:00; last_fetch 1 minute earlier -> interval (1h) not reached -> skip.
+        recent = "2023-01-01T00:59:00"
         last_run = {"devices_last_fetch_time": recent, "devices_last_fetch_ids": ["dev1"], "devices_last_fetch_next_field": 0}
         device_fetch_interval = timedelta(hours=1)
 
@@ -1707,9 +1709,7 @@ class TestStreamPageToXsiam:
             ``dataset_name`` is plural "activities").
         When: Callback ships a page.
         Then: send_events_to_xsiam is called with product == "<PRODUCT>_activities"
-            (plural), so events land in ``armis_security_activities_raw`` and not the
-            singular ``armis_security_activity_raw``. Regression guard for XSUP-73098.
-        """
+            (plural), so events land in ``armis_security_activities_raw``
         from ArmisEventCollector import PRODUCT
 
         mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
