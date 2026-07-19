@@ -90,6 +90,7 @@ Retrieves HIGH and CRITICAL weaknesses discovered by NodeZero pentests.
 #### Human Readable Output
 
 >### NodeZero Weaknesses
+>
 >|uuid|severity|vuln_name|ip|score|has_proof|
 >|---|---|---|---|---|---|
 >| abc-123 | CRITICAL | Example Vuln | 10.0.0.1 | 9.8 | true |
