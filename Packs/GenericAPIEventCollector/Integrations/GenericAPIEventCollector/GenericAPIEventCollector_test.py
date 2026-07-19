@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from unittest.mock import patch
 
 import pytest
@@ -775,3 +775,94 @@ def test_generate_login_url_command_missing_redirect_uri(mock_return_error):
     with pytest.raises(SystemExit):
         generate_login_url_command(params)
     mock_return_error.assert_called_once_with("Redirect uri is required to generate the login url.")
+
+
+# ---------------------------------------------------------------------------
+# TEXT_AREA_ENCRYPTED (parameter type 14) credential delivery
+#
+# NOTE: `oauth_client_secret` and `authorization_code` are declared as
+# TEXT_AREA_ENCRYPTED (parameter type 14) in the yml. Per the demisto-sdk
+# parameter type enum, this type is an encrypted text area that is delivered to
+# the integration as a plain string - unlike the AUTH type (9), which is
+# delivered as a credentials dict `{"identifier": ..., "password": ...}`. The
+# tests below therefore mock these values as plain strings, matching real XSOAR
+# behavior for TEXT_AREA_ENCRYPTED parameters.
+# ---------------------------------------------------------------------------
+
+
+def test_get_oauth2_auth_handler_secret_is_passed_unwrapped_as_plain_string():
+    """
+    Given: OAuth 2.0 params where oauth_client_secret is a plain string
+           (real XSOAR delivery for a type: 14 / TEXT_AREA_ENCRYPTED parameter).
+    When: get_oauth2_auth_handler is called.
+    Then: The client secret is forwarded to the handler unchanged as a plain
+          string (not wrapped in / read from a credentials dict).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.client_secret == "my-secret"
+
+
+def test_get_oauth2_auth_handler_authorization_code_is_plain_string():
+    """
+    Given: OAuth 2.0 params where authorization_code is a plain string
+           (real XSOAR delivery for a type: 14 / TEXT_AREA_ENCRYPTED parameter).
+    When: get_oauth2_auth_handler is called with a redirect uri present.
+    Then: The authorization_code grant auth_params carry the plain-string code
+          verbatim (not a stringified credentials dict).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "authorization_code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.auth_params["code"] == "the-auth-code"
+
+
+@patch("GenericAPIEventCollector.add_sensitive_log_strs")
+def test_generate_authentication_headers_oauth2_masks_unwrapped_secret(mock_add_sensitive):
+    """
+    Given: OAuth 2.0 params where oauth_client_secret is a plain string
+           (type: 14 / TEXT_AREA_ENCRYPTED delivery).
+    When: generate_authentication_headers is called.
+    Then: add_sensitive_log_strs is called with the plain-string secret so it is
+          masked in the logs (and an empty headers dict is returned, since the
+          token is applied dynamically by the auth handler).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    headers = generate_authentication_headers(params)
+    assert headers == {}
+    mock_add_sensitive.assert_called_once_with("my-secret")
+
+
+@patch("GenericAPIEventCollector.demisto.error")
+def test_timestamp_format_to_datetime_unparseable_falls_back_to_now(mock_error):
+    """
+    Given: a timestamp string that cannot be parsed by arg_to_datetime.
+    When: timestamp_format_to_datetime is called.
+    Then: demisto.error is logged and a naive current-time datetime is returned
+          (proving the timezone fallback resolves and does not raise).
+    """
+    before = datetime.now(UTC).replace(tzinfo=None)
+    result = timestamp_format_to_datetime("not-a-real-timestamp", "%Y-%m-%dT%H:%M:%SZ")
+    after = datetime.now(UTC).replace(tzinfo=None)
+
+    assert result.tzinfo is None
+    assert before <= result <= after
+    mock_error.assert_called_once()

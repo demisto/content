@@ -3,6 +3,7 @@ import enum
 import secrets
 from base64 import b64encode
 from collections import namedtuple
+from datetime import UTC
 from json import JSONDecodeError
 from urllib.parse import urlencode, urlparse, urlunparse
 
@@ -93,13 +94,19 @@ def convert_epoch_to_timestamp(dt: str) -> datetime:
 
 
 def timestamp_format_to_datetime(dt: str, timestamp_format: str) -> datetime:
-    demisto.debug(f"converting {dt} using format:{timestamp_format}")
+    demisto.debug(f"[time] converting {dt} using format: {timestamp_format}")
     if timestamp_format == "epoch":
         return convert_epoch_to_timestamp(dt)
-    parsed = arg_to_datetime(dt)
+    # arg_to_datetime raises a ValueError (it does not return None) when the value
+    # cannot be parsed, so both the None result and the exception are handled here
+    # to guarantee the current-time fallback and avoid crashing the collector.
+    try:
+        parsed = arg_to_datetime(dt)
+    except ValueError:
+        parsed = None
     if parsed is None:
-        demisto.error(f"time data {dt!r} could not be parsed, falling back to current time")
-        return datetime.now(timezone.utc)
+        demisto.error(f"[time] time data {dt!r} could not be parsed, falling back to current time")
+        return datetime.now(UTC).replace(tzinfo=None)
     return parsed.replace(tzinfo=None)
 
 
