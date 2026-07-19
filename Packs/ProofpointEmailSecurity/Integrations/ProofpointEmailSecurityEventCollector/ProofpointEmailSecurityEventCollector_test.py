@@ -501,7 +501,7 @@ def test_recover_after_disconnection_with_reconnect(mocker, connection: MockConn
     assert existing_events[2]["message"] == "In-transit 2"
     assert "2" in existing_event_ids
     assert "3" in existing_event_ids
-    assert reconnect_mock.call_count == 1  # Should not be called because reconnect=False
+    assert reconnect_mock.call_count == 1  # Should be called once because reconnect=True
 
 
 def test_recover_after_disconnection_without_reconnect(mocker, connection: MockConnection):
@@ -538,3 +538,45 @@ def test_recover_after_disconnection_without_reconnect(mocker, connection: MockC
     assert len(existing_events) == 1
     assert 1 in existing_event_ids
     assert reconnect_mock.call_count == 0  # Should not be called because reconnect=False
+
+
+def test_recover_after_disconnection_reconnect_failure(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection that has been disconnected
+        - No in-transit events to receive
+        - reconnect() raises an exception (e.g. the Proofpoint server is unreachable)
+
+    When:
+        - Calling recover_after_disconnection with reconnect=True
+
+    Then:
+        - Ensure the exception is re-raised so the long-running loop can restart the connection
+        - Ensure the reconnection failure is logged via demisto.error
+    """
+    existing_events: list[dict] = []
+    existing_event_ids: set[str] = set()
+
+    mocker.patch.object(
+        ProofpointEmailSecurityEventCollector,
+        "receive_events_after_disconnection",
+        return_value=[],
+    )
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    reconnect_mock = mocker.patch.object(
+        EventConnection, "reconnect", side_effect=DemistoException("[Errno 104] Connection reset by peer")
+    )
+    error_mock = mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={})
+
+    with pytest.raises(DemistoException, match="Connection reset by peer"):
+        ProofpointEmailSecurityEventCollector.recover_after_disconnection(
+            connection=event_connection,
+            events=existing_events,
+            event_ids=existing_event_ids,
+            reconnect=True,
+        )
+
+    assert reconnect_mock.call_count == 1
+    assert error_mock.called
+    assert "Failed to reconnect after disconnection" in error_mock.call_args[0][0]
