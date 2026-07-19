@@ -38,6 +38,44 @@ To use **Bearer Authentication**:
 
 For more info see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-get-token.html#security-api-get-token-prereqs)
 
+## Kibana Integration
+
+This integration includes a set of **`es-kibana-*` commands** that let you interact with Kibana directly from Cortex XSOAR — no separate Kibana integration required.
+
+### What you can do with Kibana commands
+
+- **Case Management** — Create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
+- **Alerting & Rules** — List rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
+- **Detection Alerts** — Bulk-update the status of security detection alerts (open, acknowledged, closed).
+- **Exception Lists & Items** — Manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
+- **Value Lists** — Create, update, delete, and import/export value lists used in detection rules.
+
+### Kibana URL
+
+The Kibana URL is derived automatically from the **Server URL** you already configured for Elasticsearch. No additional URL field is needed.
+
+> **Requirement:** Your Elasticsearch Server URL must be an Elastic Cloud URL containing `.es.` in the hostname (e.g. `https://my-deployment.es.us-central1.gcp.cloud.es.io`). The integration replaces `.es.` with `.kb.` to reach Kibana. Self-managed deployments with a custom Kibana URL are not supported by the automatic derivation.
+
+### Required Kibana Privileges
+
+Kibana API endpoints are gated by **feature privileges**. The level required depends on the operation:
+
+| Privilege level | Operations covered |
+|---|---|
+| **Read** | GET / list / view (`es-kibana-*-list`, `es-kibana-*-get`, `es-kibana-alerting-health-get`) |
+| **All** | POST / PUT / PATCH / DELETE — create, update, delete, and change-state commands |
+
+For **Cases** and **Rules**, the required privilege is also scoped to the feature that owns the object:
+
+- Objects owned by **Security** (e.g. SIEM detection rules, Security cases) require the **Security** feature privilege.
+- Objects owned by **Observability** require the **Observability** feature privilege.
+- Objects owned by **Stack / Management** (e.g. Stack Rules) require the **Stack Rules** / **Management** feature privilege.
+
+
+### Kibana Spaces (optional)
+
+If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) to separate your data, set the **Space ID** parameter in the instance configuration. All `es-kibana-*` commands will then operate within that space by default. You can also override the space per-command using the `space_id` argument.
+
 ## Notes
 
 * Not all fields can be used for sorting in Elasticsearch. Sorting is only supported for fields of the following types: **boolean**, **numeric**, **date**, and **keyword**.
