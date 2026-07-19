@@ -6115,7 +6115,8 @@
         "Alienvault_OTX_v2 - Test": "API reliability issues",
         "ForcepointSecurityManagementCenter_test": "No instance",
         "AnsibleTower_Test_playbook": "Instance not working",
-        "playbook_TrendmicroCAS_Test": "Authentication token not found"
+        "playbook_TrendmicroCAS_Test": "Authentication token not found",
+        "PaloAltoNetworks_DeviceSecurity-Test": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
