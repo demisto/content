@@ -58,19 +58,19 @@ configuration:
     additionalinfo: Username & Password to use for basic authentication.
   - name: oauth_token_url
     section: Connect
-    display: Oauth token url
+    display: Oauth token URL
     type: 0
     required: false
-    additionalinfo: 'OAuth 2.0 token endpoint URL. Possible value: https://YOUR_AUTH0_DOMAIN/oauth/token'
+    additionalinfo: 'OAuth 2.0 token endpoint URL. Format example: https://YOUR_AUTH0_DOMAIN/oauth/token'
   - name: oauth_client_id
     section: Connect
-    display: Oauth client id
+    display: Oauth client ID
     type: 0
     required: false
     additionalinfo: OAuth Client ID issued by the IdP.
   - name: oauth_client_secret
     section: Connect
-    display: Oauth client secret
+    display: OAuth Client Secret
     type: 14
     required: false
     additionalinfo: OAuth Client Secret.
@@ -82,10 +82,10 @@ configuration:
     additionalinfo: The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code.
   - name: redirect_uri
     section: Connect
-    display: Redirect uri
+    display: Redirect URI
     type: 0
     required: false
-    additionalinfo: Used by Idp to provide an authorization code.
+    additionalinfo: Used by IdP to provide an authorization code.
   - name: oauth_scopes
     section: Connect
     display: Oauth scopes
@@ -200,7 +200,7 @@ configuration:
     display: Pagination flag
     type: 0
     required: false
-    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
+    additionalinfo: 'JSON response key indicating whether a next page exists, e.g., "has_more", "next".'
   - name: timestamp_format
     section: Collect
     display: 'Timestamp format of the event creation time or "epoch".'

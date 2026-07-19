@@ -19,7 +19,7 @@ To successfully set up the Generic API Event Collector, you need to provide the 
    - Bearer Token (API key)
    - Raw Token (for custom token-based authentication)
    - No Authorization (for publicly accessible data)
-   - Api-Key (API key sent in a request header)
+   - Api-Key (sent in a request header)
    - OAuth 2.0 (Client Credentials and Authorization Code flows)
 
     For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
