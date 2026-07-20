@@ -1062,10 +1062,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cdacsiemtopattackersiocs",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_cmd",
                         "isVisible": true
                     },
@@ -1335,14 +1331,6 @@
                     },
                     {
                         "fieldId": "incident_externalsystemid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_extrahopmitretechniques",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_extrahopdetectiondevices",
                         "isVisible": true
                     },
                     {
@@ -1738,15 +1726,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_rubriktotalhits",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_rulename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_rurik",
                         "isVisible": true
                     },
                     {
@@ -1767,122 +1747,6 @@
                     },
                     {
                         "fieldId": "incident_selectedindicators",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentaccountid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentaccountname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentdomain",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentexternalticketexists",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentfailedactions",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentgroupid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentgroupname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentinfected",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentisactive",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentmachinetype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentscanstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentsiteid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneagentsitename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneanalystverdict",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonecommandlinearguments",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonedeviceostype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonedevicerebootrequired",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonedevicestatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneincidentstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneindicators",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonemitigatedpreemptively",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonemitigationaction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonemitigationstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentineloneprocessuser",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonethreatclassification",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonethreatclassificationsource",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonethreatconfidencelevel",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonethreatcount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sentinelonethreatinitiatedby",
                         "isVisible": true
                     },
                     {
@@ -2102,94 +1966,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_vectracloudentityaccounttype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentassignedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentassigneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentdetails",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentoutcome",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentresolvedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityassignmentresolveddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityattackprofile",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityattackrating",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentitydetectiondetails",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityhosttype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityimportance",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentitynotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityprioritystatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentitystate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentitytype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityurgencyscore",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_vectracloudentityvelocity",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_verdict",
                         "isVisible": true
                     },
@@ -2211,10 +1987,6 @@
                     },
                     {
                         "fieldId": "incident_useraccountcontrol",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xyz",
                         "isVisible": true
                     }
                 ],
