@@ -5,10 +5,11 @@ BRAND = "CTIX v3"
 
 # Script argument name -> TIM indicator field (cliName) populated by the CTIX v3 feed.
 FLAG_ARG_TO_FIELD = {
-    "delete_deprecated": "isdeprecated",
-    "delete_revoked": "isrevoked",
-    "delete_false_positive": "isfalsepositive",
-    "delete_whitelisted": "iswhitelisted",
+    "delete_deprecated": "ctixisdeprecated",
+    "delete_revoked": "ctixisrevoked",
+    "delete_false_positive": "ctixisfalsepositive",
+    "delete_whitelisted": "ctixiswhitelisted",
+    "delete_reviewed": "ctixisreviewed",
 }
 
 

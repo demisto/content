@@ -1,9 +1,9 @@
 {
-    "id": "indicator_isdeprecated",
+    "id": "indicator_ctixisrevoked",
     "version": -1,
-    "name": "Is Deprecated",
+    "name": "Is Revoked",
     "ownerOnly": false,
-    "cliName": "isdeprecated",
+    "cliName": "ctixisrevoked",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,
@@ -52,5 +52,5 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.10.0",
-    "description": "Whether the indicator is marked as deprecated in Cyware Intel Exchange (CTIX)."
+    "description": "Whether the source revoked the indicator in Cyware Intel Exchange (CTIX)."
 }

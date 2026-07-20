@@ -1,9 +1,9 @@
 {
-    "id": "indicator_iswhitelisted",
+    "id": "indicator_ctixisdeprecated",
     "version": -1,
-    "name": "Is Whitelisted",
+    "name": "Is Deprecated",
     "ownerOnly": false,
-    "cliName": "iswhitelisted",
+    "cliName": "ctixisdeprecated",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,
@@ -52,5 +52,5 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.10.0",
-    "description": "Whether the indicator is allow-listed in Cyware Intel Exchange (CTIX)."
+    "description": "Whether the indicator is marked as deprecated in Cyware Intel Exchange (CTIX)."
 }

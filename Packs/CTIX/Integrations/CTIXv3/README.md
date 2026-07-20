@@ -9,23 +9,23 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Secret Key | Enter the Secret Key from the Cyware Intel Exchange application. | True |
 | Trust any certificate (not secure) | Specify whether to trust any certificate (not secure). | False |
 | Use system proxy settings | Specify whether to use system proxy settings. | False |
-| Timeout | Enter the maximum time in seconds that Cortex XSOAR should wait for a response from Cyware Intel Exchange. Default is 180 seconds. | False |
+| Timeout | The connection timeout, in seconds. Default is 180 seconds. | False |
 | Fetch incidents | Enable to fetch CTIX reports as Cortex XSOAR incidents. | False |
 | Incident type | The incident type to assign to fetched CTIX reports. Default is "CTIX Intel". | False |
-| Source Reliability | Reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands — not to indicators fetched via the indicator feed (see the separate Source Reliability parameter below). Default is "C - Fairly reliable". | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, URL, IP, file, and CVE reputation commands — not to indicators fetched via the indicator feed (see the separate Source Reliability parameter below). Default is "C - Fairly reliable". | False |
 | First fetch time | How far back to fetch on the first run (e.g., 3 days, 7 days, 1 month). Used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. Default is "3 days". | False |
-| Max Fetch | Maximum number of incidents to return per fetch run. Allowed Range is 1-200. Default is 10. | False |
-| Incident Fetch CQL Query | Custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90". | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to return per fetch run. Allowed range is 1-200. Default is 10. | False |
+| Incident Fetch CQL Query | The custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90". | False |
 | Fetch indicators | Enable to fetch CTIX indicators from Saved Result Sets. | False |
 | Saved Result Set Label | The label name of the Saved Result Set to pull indicators from. | False |
 | Saved Result Set Version | The version of Saved Result Set to use. Possible values are: v2, v3. | False |
-| Retrieve Enriched Data | If enabled, indicators will be enriched via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
-| Feed Fetch Interval | How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence. Default is "12 hours". | False |
+| Retrieve Enriched Data | Whether to enrich indicators via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
+| Feed Fetch Interval | The frequency at which the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the Cortex XSOAR feed scheduler cadence. Default is "12 hours". | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed — not to fetched incidents or reputation commands (see the separate Source Reliability parameter above). Default is "A - Completely reliable". | True |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Possible values are: RED, AMBER, GREEN, WHITE. | False |
-| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Tags | Tags to apply to indicators fetched via the indicator feed. Supports CSV values. | False |
+| Bypass exclusion list | Whether to ignore the exclusion list for indicators from this feed. If enabled, an indicator from this feed that is on the exclusion list might still be added to the system. | False |
+| Tags | A comma-separated list of tags to apply to indicators fetched via the indicator feed. | False |
 
 ## Commands
 

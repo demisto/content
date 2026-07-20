@@ -1,9 +1,9 @@
 {
-    "id": "indicator_isfalsepositive",
+    "id": "indicator_ctixisfalsepositive",
     "version": -1,
     "name": "Is False Positive",
     "ownerOnly": false,
-    "cliName": "isfalsepositive",
+    "cliName": "ctixisfalsepositive",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,

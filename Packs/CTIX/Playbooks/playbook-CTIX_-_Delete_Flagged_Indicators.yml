@@ -1,7 +1,7 @@
 id: CTIX - Delete Flagged Indicators
 version: -1
 name: CTIX - Delete Flagged Indicators
-description: Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, or whitelisted, by running the CTIXDeleteFlaggedIndicators script. All delete flags default to false - enable the ones you want via the playbook inputs. Intended to run on a schedule via the bundled 'CTIX - Delete Flagged Indicators' job.
+description: Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, reviewed, or whitelisted, by running the CTIXDeleteFlaggedIndicators script. All delete flags default to false - enable the ones you want via the playbook inputs. Intended to run on a schedule via the bundled 'CTIX - Delete Flagged Indicators' job.
 fromversion: 6.10.0
 tags:
 - Threat Intelligence Management
@@ -38,7 +38,7 @@ tasks:
       id: dc2e29e4-90a1-44c2-b088-9b43ac4217e9
       version: -1
       name: Delete flagged CTIX indicators
-      description: Runs CTIXDeleteFlaggedIndicators, which deletes CTIX v3-sourced indicators whose enabled flag fields (isdeprecated, isrevoked, isfalsepositive, iswhitelisted) are set. Does nothing when no delete flag is enabled.
+      description: Runs CTIXDeleteFlaggedIndicators, which deletes CTIX v3-sourced indicators whose enabled flag fields (ctixisdeprecated, ctixisrevoked, ctixisfalsepositive, ctixiswhitelisted, ctixisreviewed) are set. Does nothing when no delete flag is enabled.
       type: regular
       iscommand: false
       brand: ''
@@ -52,6 +52,8 @@ tasks:
         simple: ${inputs.delete_false_positive}
       delete_whitelisted:
         simple: ${inputs.delete_whitelisted}
+      delete_reviewed:
+        simple: ${inputs.delete_reviewed}
       exclude:
         simple: ${inputs.exclude}
       reason:
@@ -112,6 +114,12 @@ inputs:
     simple: 'false'
   required: false
   description: Whether to delete indicators allow-listed in Cyware Intel Exchange (CTIX).
+  playbookInputQuery:
+- key: delete_reviewed
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to delete indicators that have been reviewed in Cyware Intel Exchange (CTIX).
   playbookInputQuery:
 - key: exclude
   value:

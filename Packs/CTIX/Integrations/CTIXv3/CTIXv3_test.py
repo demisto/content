@@ -1532,11 +1532,11 @@ class TestMapCtixIndicatorToXsoar:
         }
         result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
 
-        assert result["fields"]["isfalsepositive"] is True
-        assert result["fields"]["isdeprecated"] is True
-        assert result["fields"]["isreviewed"] is True
-        assert result["fields"]["iswhitelisted"] is True
-        assert result["fields"]["isrevoked"] is True
+        assert result["fields"]["ctixisfalsepositive"] is True
+        assert result["fields"]["ctixisdeprecated"] is True
+        assert result["fields"]["ctixisreviewed"] is True
+        assert result["fields"]["ctixiswhitelisted"] is True
+        assert result["fields"]["ctixisrevoked"] is True
 
     def test_flag_fields_false_are_kept(self):
         """False flags are still mapped (assign_params only drops None/empty),
@@ -1551,7 +1551,7 @@ class TestMapCtixIndicatorToXsoar:
         }
         result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
 
-        assert result["fields"]["isrevoked"] is False
+        assert result["fields"]["ctixisrevoked"] is False
 
     def test_flag_fields_absent_are_omitted(self):
         """Indicators without flag keys don't get flag fields (None is dropped)."""
@@ -1564,8 +1564,8 @@ class TestMapCtixIndicatorToXsoar:
         }
         result = map_ctix_indicator_to_xsoar(indicator, "B - Usually reliable")
 
-        assert "isrevoked" not in result["fields"]
-        assert "isdeprecated" not in result["fields"]
+        assert "ctixisrevoked" not in result["fields"]
+        assert "ctixisdeprecated" not in result["fields"]
 
     def test_domain_indicator_with_dict_ioc_type(self):
         indicator = {

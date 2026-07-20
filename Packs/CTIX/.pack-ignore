@@ -10,19 +10,19 @@ ignore=IF113
 [file:incidentfield-ctixcustomscores.json]
 ignore=IF113
 
-[file:indicatorfield-isrevoked.json]
+[file:indicatorfield-ctixisrevoked.json]
 ignore=IF113,IF115
 
-[file:indicatorfield-isfalsepositive.json]
+[file:indicatorfield-ctixisfalsepositive.json]
 ignore=IF113,IF115
 
-[file:indicatorfield-isdeprecated.json]
+[file:indicatorfield-ctixisdeprecated.json]
 ignore=IF113,IF115
 
-[file:indicatorfield-isreviewed.json]
+[file:indicatorfield-ctixisreviewed.json]
 ignore=IF113,IF115
 
-[file:indicatorfield-iswhitelisted.json]
+[file:indicatorfield-ctixiswhitelisted.json]
 ignore=IF113,IF115
 
 [known_words]

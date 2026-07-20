@@ -46,7 +46,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-  additionalinfo: Connection timeout in seconds (default is 15).
+  additionalinfo: The connection timeout, in seconds.
 - display: Fetch incidents
   name: isFetch
   section: Collect
@@ -58,7 +58,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: CTIX Intel
-- additionalinfo: Reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands. Does not affect indicators fetched via the indicator feed (see the separate Source Reliability param under Connect).
+- additionalinfo: The reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands. Does not affect indicators fetched via the indicator feed (see the separate Source Reliability param under Connect).
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
@@ -79,9 +79,9 @@ configuration:
   defaultvalue: "4320"
   section: Collect
   required: false
-  additionalinfo: 'The date and time from which to start fetching on the first run, used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. If left empty, defaults to 3 days ago. For example, 10 days or P10D'
+  additionalinfo: 'The date and time from which to start fetching on the first run, used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. If left empty, defaults to 3 days ago. For example, 10 days or P10D.'
 - display: Maximum number of incidents per fetch
-  additionalinfo: Allowed Range is 1-200. Default is 10
+  additionalinfo: Allowed range is 1-200.
   name: max_fetch
   type: 0
   section: Collect
@@ -92,7 +92,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: Custom CQL query used when fetching incidents. Updates the default CQL query.For example, type = "report" AND confidence_score = "90"
+  additionalinfo: The custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90"
 - defaultvalue: "true"
   display: Fetch indicators
   name: feed
@@ -119,15 +119,15 @@ configuration:
   type: 8
   section: Connect
   required: false
-  additionalinfo: If enabled, indicators will be enriched via bulk IOC lookup (with relations and enrichment data) before ingestion.
+  additionalinfo: Whether to enrich indicators via bulk IOC lookup (with relations and enrichment data) before ingestion.
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   section: Connect
   required: false
   defaultvalue: "12 hours"
-  additionalinfo: How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence.
-- additionalinfo: Reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed (see the separate Source Reliability param under Collect, which governs incident fetch and reputation commands instead).
+  additionalinfo: The frequency at which the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the Cortex XSOAR feed scheduler cadence.
+- additionalinfo: The reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed (see the separate Source Reliability param under Collect, which governs incident fetch and reputation commands instead).
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -185,8 +185,8 @@ configuration:
   required: false
   section: Connect
   advanced: true
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-- additionalinfo: Tags to apply to indicators fetched via the indicator feed. Supports CSV values.
+  additionalinfo: Whether to ignore the exclusion list for indicators from this feed. If enabled, an indicator from this feed that is on the exclusion list might still be added to the system.
+- additionalinfo: A comma-separated list of tags to apply to indicators fetched via the indicator feed.
   display: Tags
   name: feedTags
   required: false

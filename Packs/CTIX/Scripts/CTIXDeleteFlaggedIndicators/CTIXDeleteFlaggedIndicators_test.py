@@ -14,16 +14,19 @@ class TestBuildQuery:
 
     def test_single_flag(self):
         query = build_query({"delete_deprecated": "true"})
-        assert query == 'sourceBrands:"CTIX v3" and (isdeprecated:T)'
+        assert query == 'sourceBrands:"CTIX v3" and (ctixisdeprecated:T)'
 
     def test_multiple_flags_or_combined(self):
-        query = build_query({"delete_deprecated": "true", "delete_revoked": "true", "delete_whitelisted": "true"})
+        query = build_query(
+            {"delete_deprecated": "true", "delete_revoked": "true", "delete_whitelisted": "true", "delete_reviewed": "true"}
+        )
         assert query.startswith('sourceBrands:"CTIX v3" and (')
-        assert "isdeprecated:T" in query
-        assert "isrevoked:T" in query
-        assert "iswhitelisted:T" in query
-        assert "isfalsepositive" not in query
-        assert query.count(" or ") == 2
+        assert "ctixisdeprecated:T" in query
+        assert "ctixisrevoked:T" in query
+        assert "ctixiswhitelisted:T" in query
+        assert "ctixisreviewed:T" in query
+        assert "ctixisfalsepositive" not in query
+        assert query.count(" or ") == 3
 
     def test_all_flags(self):
         query = build_query(
@@ -32,9 +35,10 @@ class TestBuildQuery:
                 "delete_revoked": "true",
                 "delete_false_positive": "true",
                 "delete_whitelisted": "true",
+                "delete_reviewed": "true",
             }
         )
-        for field in ("isdeprecated", "isrevoked", "isfalsepositive", "iswhitelisted"):
+        for field in ("ctixisdeprecated", "ctixisrevoked", "ctixisfalsepositive", "ctixiswhitelisted", "ctixisreviewed"):
             assert f"{field}:T" in query
 
 
@@ -60,7 +64,7 @@ class TestMain:
 
         command, command_args = execute_mock.call_args[0][0], execute_mock.call_args[0][1]
         assert command == "deleteIndicators"
-        assert command_args["query"] == 'sourceBrands:"CTIX v3" and (isdeprecated:T)'
+        assert command_args["query"] == 'sourceBrands:"CTIX v3" and (ctixisdeprecated:T)'
         assert command_args["doNotWhitelist"] is True
         assert command_args["reason"] == "Deleted by CTIXDeleteFlaggedIndicators job"
 

@@ -1,9 +1,9 @@
 {
-    "id": "indicator_isreviewed",
+    "id": "indicator_ctixiswhitelisted",
     "version": -1,
-    "name": "Is Reviewed",
+    "name": "Is Whitelisted",
     "ownerOnly": false,
-    "cliName": "isreviewed",
+    "cliName": "ctixiswhitelisted",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,
@@ -52,5 +52,5 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.10.0",
-    "description": "Whether the indicator has been reviewed in Cyware Intel Exchange (CTIX)."
+    "description": "Whether the indicator is allow-listed in Cyware Intel Exchange (CTIX)."
 }

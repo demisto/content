@@ -1513,11 +1513,11 @@ def parse_cyware_indicator(
         ctixid=cyware_data.get("id") or None,
         # Flags arriving as False are kept (assign_params only drops None/empty),
         # so un-flagging in CTIX clears a previously-True TIM field on next fetch.
-        isfalsepositive=cyware_data.get("is_false_positive"),
-        isdeprecated=cyware_data.get("is_deprecated"),
-        isreviewed=cyware_data.get("is_reviewed"),
-        iswhitelisted=cyware_data.get("is_whitelist"),
-        isrevoked=cyware_data.get("is_revoked"),
+        ctixisfalsepositive=cyware_data.get("is_false_positive"),
+        ctixisdeprecated=cyware_data.get("is_deprecated"),
+        ctixisreviewed=cyware_data.get("is_reviewed"),
+        ctixiswhitelisted=cyware_data.get("is_whitelist"),
+        ctixisrevoked=cyware_data.get("is_revoked"),
     )
     if hash_fields:
         fields.update(hash_fields)

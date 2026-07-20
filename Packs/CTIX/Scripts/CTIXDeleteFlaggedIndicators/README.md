@@ -1,4 +1,4 @@
-Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, or whitelisted.
+Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, reviewed, or whitelisted.
 
 The script builds a Threat Intel query scoped to indicators from the **CTIX v3** integration (`sourceBrands:"CTIX v3"`) with any of the enabled flag fields set, and runs the built-in `deleteIndicators` command on the matches. All delete flags are disabled by default — the script does nothing until at least one flag is explicitly enabled, so it can never issue an unscoped delete.
 
@@ -25,6 +25,7 @@ Note: an indicator flagged in CTIX is only picked up after the feed re-fetches i
 | delete_revoked | Whether to delete indicators revoked by their source in Cyware Intel Exchange \(CTIX\). Default is false. |
 | delete_false_positive | Whether to delete indicators marked as false positive in Cyware Intel Exchange \(CTIX\). Default is false. |
 | delete_whitelisted | Whether to delete indicators allow-listed in Cyware Intel Exchange \(CTIX\). Default is false. |
+| delete_reviewed | Whether to delete indicators that have been reviewed in Cyware Intel Exchange \(CTIX\). Default is false. |
 | exclude | Whether to also add the deleted indicators to the Exclusion List. When false \(default\), indicators are purely deleted and can be re-created if they reappear un-flagged. |
 | reason | Reason recorded for the deletion \(and exclusion, if enabled\). |
 

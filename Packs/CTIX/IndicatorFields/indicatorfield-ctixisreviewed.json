@@ -1,9 +1,9 @@
 {
-    "id": "indicator_isrevoked",
+    "id": "indicator_ctixisreviewed",
     "version": -1,
-    "name": "Is Revoked",
+    "name": "Is Reviewed",
     "ownerOnly": false,
-    "cliName": "isrevoked",
+    "cliName": "ctixisreviewed",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,
@@ -52,5 +52,5 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.10.0",
-    "description": "Whether the source revoked the indicator in Cyware Intel Exchange (CTIX)."
+    "description": "Whether the indicator has been reviewed in Cyware Intel Exchange (CTIX)."
 }
