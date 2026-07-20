@@ -2284,67 +2284,6 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 | PrismaAIRs.DlpFilteringProfileReplace.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpFilteringProfileReplace.updated_by | String | User who last updated the profile. |
 
-### prisma-airs-runtime-scan-content-get
-
-***
-Retrieve the captured prompt and response content for a scan by its scan ID.
-
-#### Base Command
-
-`prisma-airs-runtime-scan-content-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| scan_id | The scan ID to retrieve the prompt/response content for. | Required |
-| scan_sub_req_id | Sub scan request ID (for batched/async scans). Defaults to 0. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaAIRs.RuntimeScanContent.scan_id | String | Scan ID. |
-| PrismaAIRs.RuntimeScanContent.report_id | String | Report ID associated with the scan. |
-| PrismaAIRs.RuntimeScanContent.sub_scan_req_id | String | Sub scan request ID. |
-| PrismaAIRs.RuntimeScanContent.transaction_id | String | Transaction ID correlating prompt and response. |
-| PrismaAIRs.RuntimeScanContent.scan_contents.prompt | String | The captured prompt content that was scanned. |
-| PrismaAIRs.RuntimeScanContent.scan_contents.response | String | The captured response content that was scanned. |
-
-#### Command example
-
-```
-!prisma-airs-runtime-scan-content-get scan_id="11111111-1111-1111-1111-111111111111"
-```
-
-#### Context Example
-
-```json
-{
-    "scan_id": "11111111-1111-1111-1111-111111111111",
-    "report_id": "R11111111-1111-1111-1111-111111111111",
-    "sub_scan_req_id": 0,
-    "transaction_id": "pan_00000000-0000-0000-0000-000000000000",
-    "scan_contents": {
-        "prompt": "example prompt content"
-    }
-}
-```
-
-#### Human Readable Output
-
->### Prisma AIRs Scan Content
->
->|Scan Id|Report Id|Sub Scan Req Id|Transaction Id|
->|---|---|---|---|
->| 11111111-1111-1111-1111-111111111111 | R11111111-1111-1111-1111-111111111111 | 0 | pan_00000000-0000-0000-0000-000000000000 |
->
->### Scanned Content
->
->|Type|Content|
->|---|---|
->| Prompt | example prompt content |
-
 ### prisma-airs-runtime-topics-list
 
 ***

@@ -2102,35 +2102,6 @@ script:
     - contextPath: PrismaAIRs.DlpFilteringProfileReplace.updated_by
       description: User who last updated the profile.
       type: String
-  - name: prisma-airs-runtime-scan-content-get
-    description: Retrieve the captured prompt and response content for a scan by its scan ID.
-    arguments:
-    - name: scan_id
-      required: true
-      description: The scan ID to retrieve the prompt/response content for.
-    - name: scan_sub_req_id
-      required: false
-      description: Sub scan request ID (for batched/async scans). Defaults to 0.
-      defaultValue: '0'
-    outputs:
-    - contextPath: PrismaAIRs.RuntimeScanContent.scan_id
-      description: Scan ID.
-      type: String
-    - contextPath: PrismaAIRs.RuntimeScanContent.report_id
-      description: Report ID associated with the scan.
-      type: String
-    - contextPath: PrismaAIRs.RuntimeScanContent.sub_scan_req_id
-      description: Sub scan request ID.
-      type: String
-    - contextPath: PrismaAIRs.RuntimeScanContent.transaction_id
-      description: Transaction ID correlating prompt and response.
-      type: String
-    - contextPath: PrismaAIRs.RuntimeScanContent.scan_contents.prompt
-      description: The captured prompt content that was scanned.
-      type: String
-    - contextPath: PrismaAIRs.RuntimeScanContent.scan_contents.response
-      description: The captured response content that was scanned.
-      type: String
   - name: prisma-airs-runtime-topics-list
     description: List custom topic guardrails.
     arguments:

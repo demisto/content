@@ -6367,67 +6367,6 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     )
 
 
-def runtime_scan_content_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Get the captured prompt/response content for a scan.
-
-    Retrieves the stored prompt and response payloads for a scan_id from the SCM
-    reports API so analysts can review exactly what content was scanned.
-
-    Args:
-        client: Prisma AIRs API client.
-        args: Command arguments from XSOAR.
-
-    Returns:
-        CommandResults: Results to return to XSOAR.
-    """
-    scan_id = args.get("scan_id")
-    if not scan_id:
-        raise ValueError("scan_id is required")
-    scan_sub_req_id = arg_to_number(args.get("scan_sub_req_id")) or 0
-
-    # SCM reports API: GET /aisec/v1/mgmt/reports/scancontent (use_mgmt_base adds the /aisec prefix).
-    params: dict[str, Any] = {"scan_id": scan_id, "scan_sub_req_id": scan_sub_req_id}
-    response = client.http_request(
-        method="GET",
-        url_suffix=f"{MGMT_API_V1_PREFIX}/reports/scancontent",
-        params=params,
-        use_mgmt_base=True,
-    )
-
-    # The response carries scan metadata plus the captured prompt/response content.
-    metadata = {
-        "scan_id": response.get("scan_id", scan_id),
-        "report_id": response.get("report_id"),
-        "sub_scan_req_id": response.get("sub_scan_req_id"),
-        "transaction_id": response.get("transaction_id"),
-    }
-    metadata_table = tableToMarkdown(
-        "Prisma AIRs Scan Content",
-        metadata,
-        headers=["scan_id", "report_id", "sub_scan_req_id", "transaction_id"],
-        headerTransform=lambda h: h.replace("_", " ").title(),
-        removeNull=True,
-    )
-
-    scan_contents = response.get("scan_contents") or {}
-    content_rows = []
-    if isinstance(scan_contents, dict):
-        if scan_contents.get("prompt") is not None:
-            content_rows.append({"Type": "Prompt", "Content": scan_contents.get("prompt")})
-        if scan_contents.get("response") is not None:
-            content_rows.append({"Type": "Response", "Content": scan_contents.get("response")})
-    content_table = tableToMarkdown("Scanned Content", content_rows, headers=["Type", "Content"]) if content_rows else ""
-    readable_output = f"{metadata_table}\n{content_table}" if content_table else metadata_table
-
-    return CommandResults(
-        outputs_prefix=f"{PA_OUTPUT_PREFIX}RuntimeScanContent",
-        outputs_key_field="scan_id",
-        outputs=response,
-        readable_output=readable_output,
-        raw_response=response,
-    )
-
-
 def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List custom topics.
 
@@ -8433,9 +8372,6 @@ def main() -> None:
 
         elif command == "prisma-airs-runtime-dlp-filtering-profiles-replace":
             return_results(runtime_dlp_filtering_profiles_replace_command(client, args))
-
-        elif command == "prisma-airs-runtime-scan-content-get":
-            return_results(runtime_scan_content_get_command(client, args))
 
         elif command == "prisma-airs-runtime-topics-list":
             return_results(runtime_topics_list_command(client, args))

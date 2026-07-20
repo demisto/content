@@ -7,7 +7,6 @@ from PaloAltoNetworks_Prisma_AIRs import (
     test_module as run_test_module,
     runtime_scan_command,
     runtime_bulk_scan_command,
-    runtime_scan_content_get_command,
     runtime_api_keys_list_command,
     runtime_api_keys_create_command,
     runtime_api_keys_regenerate_command,
@@ -2313,46 +2312,6 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="profile_name and prompts_csv are required"):
             runtime_bulk_scan_command(mock_client, {"profile_name": "default"})
-
-    @patch.object(Client, "http_request")
-    def test_runtime_scan_content_get_command(self, mock_http: Mock, mock_client: Client) -> None:
-        """runtime-scan-content-get returns the captured prompt/response under RuntimeScanContent.
-
-        Args:
-            mock_http: Mocked http_request method.
-            mock_client: Mock client fixture.
-        """
-        mock_http.return_value = {
-            "scan_id": "sc-1",
-            "report_id": "r-1",
-            "sub_scan_req_id": 0,
-            "transaction_id": "t-1",
-            "scan_contents": {"prompt": "hello", "response": "world"},
-        }
-
-        result = runtime_scan_content_get_command(mock_client, {"scan_id": "sc-1"})
-
-        # Verify it GETs the reports/scancontent endpoint with the scan_id + sub-req params.
-        _, kwargs = mock_http.call_args
-        assert kwargs["method"] == "GET"
-        assert kwargs["url_suffix"] == "/v1/mgmt/reports/scancontent"
-        assert kwargs["params"]["scan_id"] == "sc-1"
-        assert kwargs["params"]["scan_sub_req_id"] == 0
-        assert kwargs["use_mgmt_base"] is True
-
-        assert result.outputs_prefix == "PrismaAIRs.RuntimeScanContent"
-        assert result.outputs_key_field == "scan_id"
-        assert result.outputs["scan_id"] == "sc-1"
-        assert result.outputs["scan_contents"]["prompt"] == "hello"
-
-    def test_runtime_scan_content_get_command_requires_scan_id(self, mock_client: Client) -> None:
-        """runtime-scan-content-get raises when scan_id is missing.
-
-        Args:
-            mock_client: Mock client fixture.
-        """
-        with pytest.raises(ValueError, match="scan_id is required"):
-            runtime_scan_content_get_command(mock_client, {})
 
     # ----- DLP patterns: create/patch/replace (coverage) -----
     @patch.object(Client, "http_request")
