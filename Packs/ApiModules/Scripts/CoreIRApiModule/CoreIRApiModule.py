@@ -1445,6 +1445,14 @@ class CoreClient(BaseClient):
             json_data=request_data,
         )
 
+    def get_health_check(self) -> dict[str, Any]:
+        """Perform a health check against the public_api/v1/healthcheck endpoint.
+
+        Returns:
+            dict[str, Any]: The raw API reply from the health check endpoint.
+        """
+        return self._http_request(method="GET", url_suffix="/healthcheck")
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
@@ -4476,7 +4484,12 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
             custom_filter = json.loads(fixed_json_str)
 
         except Exception as e:
-            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+            raise CortexInvalidArgError(
+                "custom_filter",
+                value=custom_filter_str,
+                reason=str(e),
+                override_message=f"custom_filter format is not valid. got: {str(e)}",
+            )
 
     if custom_filter:  # if exists, add custom filter to the built filter
         if not filter_dict:
