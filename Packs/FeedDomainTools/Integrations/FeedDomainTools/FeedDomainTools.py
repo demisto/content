@@ -79,7 +79,10 @@ class DomainToolsClient:
         before: str | None = None,
         top: int | None = None,
     ) -> list[str]:
-        method_name = self.FEED_METHOD_MAP[feed_type]
+        feed_type = feed_type.lower()
+        method_name = self.FEED_METHOD_MAP.get(feed_type)
+        if not method_name:
+            raise DemistoException(f"Unsupported feed type: '{feed_type}'. Valid types: {list(self.FEED_METHOD_MAP)}")
         api_method = getattr(self._api, method_name)
 
         kwargs: dict[str, Any] = {

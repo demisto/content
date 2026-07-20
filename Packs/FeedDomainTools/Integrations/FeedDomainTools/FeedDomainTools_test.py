@@ -272,6 +272,22 @@ class TestGetDtFeeds:
 
         assert result == lines
 
+    def test_invalid_feed_type_raises(self, dt_feeds_client):
+        """_get_dt_feeds raises DemistoException for unknown feed types."""
+        with pytest.raises(DemistoException, match="Unsupported feed type"):
+            dt_feeds_client._get_dt_feeds(feed_type="invalidfeed")
+
+    def test_feed_type_lowercased(self, mocker, dt_feeds_client):
+        """_get_dt_feeds normalizes feed_type to lowercase before lookup."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="NOD")
+
+        mock_method.assert_called_once()
+
 
 def test_missing_credentials():
     """DomainToolsClient raises DemistoException when credentials are empty."""
