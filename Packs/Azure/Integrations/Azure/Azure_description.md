@@ -78,10 +78,9 @@ For authentication using a system-assigned managed identity:
 
 For authentication using a user-assigned managed identity:
 
-1. Go to the Azure Portal > **Managed Identities**.
+1. Go to the [**Azure Portal**](https://portal.azure.com/) > **Managed Identities**.
 2. Select your user-assigned managed identity, then copy the client ID and paste it in the **Azure Managed Identities Client ID** field in the instance configuration.
 3. In the **Authentication Type** drop-down list, select *Azure Managed Identities*.
 4. Click **Test** to validate the connection.
-Click **Test** to validate the connection.
 
-More about Microsoft Integrations - Authentication Flows, See here: https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows
+For more information, see [Microsoft Integrations - Authentication Flows](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows).

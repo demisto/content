@@ -640,7 +640,9 @@ class AzureClient:
                 # while the scope/resource point to a national cloud, which Microsoft rejects with
                 # "Confidential Client is not supported in Cross Cloud request".
                 token_retrieval_url = (
-                    None if is_managed_identities else urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_id}/oauth2/v2.0/token")
+                    None
+                    if is_managed_identities
+                    else urllib.parse.urljoin(azure_ad_endpoint, f"{tenant_id or ''}/oauth2/v2.0/token")
                 )
                 ms_scope = scope
                 # The Client Credentials and Authorization Code flows use the v2.0 token endpoint, which
