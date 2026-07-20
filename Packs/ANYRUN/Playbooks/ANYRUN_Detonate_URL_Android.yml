@@ -20,7 +20,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -28,6 +28,171 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2ce35103-7b64-4f0c-8131-2c0a0ec8fa97
+    type: condition
+    task:
+      id: 2ce35103-7b64-4f0c-8131-2c0a0ec8fa97
+      version: -1
+      name: Is a specific ANY.RUN instance provided?
+      description: Checks whether the "Using" playbook input was provided, to
+        determine which ANY.RUN Cloud Sandbox instance to run commands
+        against.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Using
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e9e71303-7a33-4d84-b4a0-e078440e1537
+    type: regular
+    task:
+      id: e9e71303-7a33-4d84-b4a0-e078440e1537
+      version: -1
+      name: Set instance to use (from input)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        simple: ${inputs.Using}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a268c589-48e0-462e-97bd-55a2dffe1577
+    type: regular
+    task:
+      id: a268c589-48e0-462e-97bd-55a2dffe1577
+      version: -1
+      name: Get active ANY.RUN Cloud Sandbox instances
+      description: Returns integration instances configured in Cortex XSOAR.
+        You can filter by instance status and/or brand name (vendor).
+      scriptName: GetInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      brand:
+        simple: ANY.RUN Cloud Sandbox
+      instance_status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2adb296f-b132-4a8e-a2e0-b2a79e251565
+    type: regular
+    task:
+      id: 2adb296f-b132-4a8e-a2e0-b2a79e251565
+      version: -1
+      name: Set instance to use (first active instance)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        complex:
+          root: Modules
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 495
         }
       }
     note: false
@@ -54,6 +219,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       env_locale:
         simple: ${inputs.env_locale}
       obj_url:
@@ -82,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 560
+          "y": 1000
         }
       }
     note: false
@@ -109,6 +276,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: html
       task_uuid:
@@ -119,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1085
+          "y": 1525
         }
       }
     note: false
@@ -147,7 +316,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1785
+          "y": 2225
         }
       }
     note: false
@@ -191,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 385
+          "y": 825
         }
       }
     note: false
@@ -229,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
+          "y": 650
         }
       }
     note: false
@@ -274,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 910
+          "y": 1350
         }
       }
     note: false
@@ -302,6 +471,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       task_uuid:
         simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
@@ -310,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 735
+          "y": 1175
         }
       }
     note: false
@@ -337,6 +508,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
       task_uuid:
@@ -347,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1260
+          "y": 1700
         }
       }
     note: false
@@ -393,7 +566,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1435
+          "y": 1875
         }
       }
     note: false
@@ -432,7 +605,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 1620
+          "y": 2060
         }
       }
     note: false
@@ -450,14 +623,21 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1795,
-        "width": 960,
+        "height": 2235,
+        "width": 1260,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
+- key: Using
+  value: {}
+  required: false
+  description: |-
+    The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running the commands on every enabled instance.
+  playbookInputQuery:
 - key: obj_url
   value:
     simple: ${URL.Data}
@@ -528,6 +708,7 @@ inputs:
 inputSections:
 - inputs:
   - obj_url
+  - Using
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
