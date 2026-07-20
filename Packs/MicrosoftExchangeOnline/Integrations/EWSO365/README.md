@@ -12,7 +12,7 @@ As part of this transition, Microsoft is moving away from unrestricted EWS acces
 
 Customers are responsible for updating their tenant configuration before the October 2026 enforcement takes effect. To ensure this integration continues to function without disruption, you must add the Entra Application (Client) ID used by this integration to your Exchange Online tenant's allow list.
 
-**Note:** For customers using the **Cortex XSOAR Application** (admin consent flow) authentication method, Palo Alto Networks will take the necessary steps to align with Microsoft's requirements for the shared Application ID used by this integration. That said, since this change is enforced and controlled entirely by Microsoft, we recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect. This step is only required for customers using a **Self-Deployed Application**.
+**Note:** For customers using the **Cortex Application** authentication method, Palo Alto Networks will take the necessary steps to align with Microsoft's requirements for the shared Application ID used by this integration. That said, since this change is enforced and controlled entirely by Microsoft, we recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect. This step is only required for customers using a **Self-Deployed Application**.
 
 1. Connect to Exchange Online PowerShell and add the Application ID.
 
