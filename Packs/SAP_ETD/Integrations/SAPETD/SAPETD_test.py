@@ -30,6 +30,7 @@ from SAPETD import (
     add_time_to_events,
     deduplicate_events,
     fetch_alerts_with_pagination,
+    filter_new_alerts,
     fetch_events_command,
     get_events_command,
     main,
@@ -37,6 +38,7 @@ from SAPETD import (
     parse_integration_params,
     test_module as _test_module,
 )
+
 
 # region Test data helpers
 # =================================
@@ -579,6 +581,125 @@ class TestFetchAlertsWithPagination:
         assert client.get_alerts.call_args_list[0].kwargs["batch_size"] == 50
         assert client.get_alerts.call_count == 1
 
+    def test_pagination_no_duplicate_ids_on_boundary_timestamp(self, client: SAPETDClient) -> None:
+        """Boundary overlap: alerts sharing the cursor timestamp across pages must not be duplicated.
+
+        The API filter uses 'ge' (>=) and the next-page cursor is the last alert's timestamp,
+        so an alert whose timestamp equals the boundary is re-returned on the following page.
+        The function must dedup by AlertId across pages so no duplicate reaches the caller.
+        """
+        # batch1 is a full page (MAX_PAGE_SIZE); its LAST alert shares a timestamp with
+        # the FIRST alert of batch2 (the classic 'ge' overlap).
+        boundary_ts = "2022-04-29T15:00:00.000Z"
+        batch1 = [
+            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
+            for i in range(1, Config.MAX_PAGE_SIZE)
+        ]
+        batch1.append({"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts})
+
+        # batch2 re-includes the boundary alert (same AlertId + timestamp) then a new one.
+        batch2 = [
+            {"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts},
+            {"AlertId": Config.MAX_PAGE_SIZE + 1, "AlertCreationTimestamp": "2022-04-29T15:01:00.000Z"},
+        ]
+
+        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
+
+        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1500)
+
+        returned_ids = [event["AlertId"] for event in result]
+        assert len(returned_ids) == len(set(returned_ids)), "Duplicate AlertIds returned across page boundary"
+        # The boundary alert must appear exactly once.
+        assert returned_ids.count(Config.MAX_PAGE_SIZE) == 1
+
+    def test_pagination_stops_when_cursor_stalls_on_uniform_timestamp(self, client: SAPETDClient) -> None:
+        """Stalled cursor: a full page whose alerts all share one timestamp must not re-fetch forever.
+
+        With 'ge' and a timestamp-only cursor, if an entire MAX_PAGE_SIZE page shares one
+        AlertCreationTimestamp, the cursor never advances. The loop must detect the stall and
+        stop instead of re-paging the same records up to max_alerts.
+        """
+        uniform_ts = "2022-04-29T15:30:00.000Z"
+        uniform_page = [{"AlertId": i, "AlertCreationTimestamp": uniform_ts} for i in range(1, Config.MAX_PAGE_SIZE + 1)]
+
+        # Always return the same uniform page. A correct implementation must stop early.
+        client.get_alerts = MagicMock(return_value=uniform_page)
+
+        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10000)
+
+        # No duplicates and no runaway paging: exactly MAX_PAGE_SIZE unique alerts.
+        returned_ids = [event["AlertId"] for event in result]
+        assert len(returned_ids) == Config.MAX_PAGE_SIZE
+        assert len(returned_ids) == len(set(returned_ids)), "Stalled cursor produced duplicate AlertIds"
+        # Guard against runaway re-fetching of the identical page.
+        assert client.get_alerts.call_count <= 2
+
+
+class TestFilterNewAlerts:
+    """Tests for the filter_new_alerts helper function."""
+
+    def test_all_new_alerts_kept_and_ids_tracked(self) -> None:
+        """Happy path: when nothing has been seen, every alert is returned and recorded."""
+        seen_ids: set = set()
+        batch = [
+            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},
+            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
+        ]
+
+        result = filter_new_alerts(batch, seen_ids)
+
+        assert [alert["AlertId"] for alert in result] == [1, 2]
+        assert seen_ids == {1, 2}
+
+    def test_already_seen_alerts_filtered_out(self) -> None:
+        """Boundary overlap: alerts whose AlertId was already collected are dropped."""
+        seen_ids: set = {1, 2}
+        batch = [
+            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},  # duplicate
+            {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T14:02:00.000Z"},  # new
+        ]
+
+        result = filter_new_alerts(batch, seen_ids)
+
+        assert [alert["AlertId"] for alert in result] == [3]
+        assert seen_ids == {1, 2, 3}
+
+    def test_all_duplicates_returns_empty(self) -> None:
+        """Bad path: a page fully made of already-seen alerts returns nothing."""
+        seen_ids: set = {1, 2}
+        batch = [
+            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},
+            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
+        ]
+
+        result = filter_new_alerts(batch, seen_ids)
+
+        assert result == []
+        assert seen_ids == {1, 2}
+
+    def test_empty_batch_returns_empty(self) -> None:
+        """Bad path: an empty page returns an empty list and leaves seen_ids untouched."""
+        seen_ids: set = {1}
+
+        result = filter_new_alerts([], seen_ids)
+
+        assert result == []
+        assert seen_ids == {1}
+
+    def test_alert_missing_id_is_kept_but_not_tracked(self) -> None:
+        """Bad path: an alert without an AlertId is not tracked (None is never added to seen_ids)."""
+        seen_ids: set = set()
+        batch: list[dict[str, Any]] = [
+            {"AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},  # no AlertId
+            {"AlertId": 5, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
+        ]
+
+        result = filter_new_alerts(batch, seen_ids)
+
+        assert len(result) == 2
+        # None must not pollute the seen set; only the real id is tracked.
+        assert seen_ids == {5}
+
 
 # endregion
 
@@ -842,6 +963,37 @@ class TestFetchEventsCommand:
         # Alerts 6102 and 6103 both have timestamp "2022-04-29T15:30:00.000Z"
         assert new_last_run["last_fetch"] == "2022-04-29T15:30:00.000Z"
         assert set(new_last_run["last_fetched_alert_ids"]) == {6102, 6103}
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_boundary_overlap_events_not_sent_twice_in_one_cycle(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """End-to-end: a boundary-overlap alert must not be sent to XSIAM twice within one fetch cycle.
+
+        Simulates the 'ge' page overlap where a full first page ends on a timestamp that the
+        second page repeats. Even without a previous run to dedup against, no AlertId may be
+        sent more than once in a single cycle.
+        """
+        boundary_ts = "2022-04-29T15:00:00.000Z"
+        batch1 = [
+            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
+            for i in range(1, Config.MAX_PAGE_SIZE)
+        ]
+        batch1.append({"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts})
+        batch2 = [
+            {"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts},  # boundary duplicate
+            {"AlertId": Config.MAX_PAGE_SIZE + 1, "AlertCreationTimestamp": "2022-04-29T15:01:00.000Z"},
+        ]
+        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
+
+        with (
+            patch.object(demisto, "getLastRun", return_value={}),
+            patch.object(demisto, "setLastRun"),
+        ):
+            fetch_events_command(client, max_fetch=1500)
+
+        mock_send.assert_called_once()
+        sent_ids = [event["AlertId"] for event in mock_send.call_args.kwargs["events"]]
+        assert len(sent_ids) == len(set(sent_ids)), "Boundary-overlap alert sent to XSIAM more than once"
+        assert sent_ids.count(Config.MAX_PAGE_SIZE) == 1
 
 
 # endregion
@@ -1364,6 +1516,42 @@ class TestEdgeCases:
         mock_client.get_diagnostic_report.assert_called_once()
         # Verify error was reported
         mock_return_error.assert_called_once()
+
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_main_finally_diagnostic_report_failure_is_swallowed(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test that a failure while generating the diagnostic report does not crash main()."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client = MagicMock()
+        mock_client.get_alerts.return_value = []
+        # The diagnostic report itself raises inside the finally block.
+        mock_client.get_diagnostic_report.side_effect = Exception("Diagnostic failure")
+        mock_client_cls.return_value = mock_client
+
+        with (
+            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "params", return_value=mock_params),
+            patch("SAPETD.return_results"),
+            patch.object(demisto, "debug") as mock_debug,
+        ):
+            # Must not raise even though get_diagnostic_report failed.
+            main()
+
+        mock_client.get_diagnostic_report.assert_called_once()
+        # The failure is logged via demisto.debug rather than propagated.
+        assert any("Failed to generate diagnostic report" in str(call.args[0]) for call in mock_debug.call_args_list)
 
 
 # endregion

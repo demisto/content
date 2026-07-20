@@ -266,6 +266,28 @@ class SAPETDClient(ContentClient):
 # =================================
 
 
+def filter_new_alerts(batch: list[dict[str, Any]], seen_ids: set[Any]) -> list[dict[str, Any]]:
+    """Return only the alerts from a page that have not been collected yet this fetch cycle.
+
+    The Alerts API filters with 'ge' (AlertCreationTimestamp >= from_timestamp) and the next
+    page starts from the last alert's timestamp. When a single timestamp holds more alerts than
+    one page can carry, the alert(s) on the page boundary are returned again at the start of the
+    following page. This filter drops those already-collected alerts so no duplicate is kept.
+
+    Args:
+        batch: Alerts returned for the current page.
+        seen_ids: AlertIds already collected in this fetch cycle. Updated in place with new ids.
+
+    Returns:
+        The subset of batch whose AlertId was not seen before.
+    """
+    new_alerts = [alert for alert in batch if alert.get("AlertId") not in seen_ids]
+    for alert in new_alerts:
+        if (alert_id := alert.get("AlertId")) is not None:
+            seen_ids.add(alert_id)
+    return new_alerts
+
+
 def fetch_alerts_with_pagination(
     client: SAPETDClient,
     from_timestamp: str,
@@ -285,7 +307,9 @@ def fetch_alerts_with_pagination(
         List of alert dicts sorted by AlertCreationTimestamp ascending, limited to max_alerts.
     """
     events: list[dict[str, Any]] = []
+    seen_ids: set[Any] = set()
     page_count = 0
+    previous_cursor: str | None = None
 
     demisto.debug(f"[Pagination Loop] Start. Goal: {max_alerts}. From: {from_timestamp}")
 
@@ -300,8 +324,13 @@ def fetch_alerts_with_pagination(
             demisto.debug(f"[Pagination Loop] Page {page_count}: Empty. Stopping.")
             break
 
-        events.extend(batch)
-        demisto.debug(f"[Pagination Loop] Page {page_count}: +{len(batch)} alerts. Total accumulated: {len(events)}")
+        # Drop alerts already collected on a previous page (boundary overlap from the 'ge' filter).
+        new_alerts = filter_new_alerts(batch, seen_ids)
+        events.extend(new_alerts)
+        demisto.debug(
+            f"[Pagination Loop] Page {page_count}: +{len(new_alerts)} new alerts "
+            f"({len(batch) - len(new_alerts)} boundary duplicates skipped). Total accumulated: {len(events)}"
+        )
 
         if len(batch) < batch_size:
             demisto.debug("[Pagination Loop] No more alerts available. Stopping.")
@@ -311,13 +340,20 @@ def fetch_alerts_with_pagination(
             demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_alerts}). Stopping.")
             break
 
-        # Update from_timestamp to the last alert's timestamp for the next batch
         last_alert_timestamp = batch[-1].get("AlertCreationTimestamp")
-        if last_alert_timestamp:
-            from_timestamp = last_alert_timestamp
-        else:
+        if not last_alert_timestamp:
             demisto.debug(f"[Pagination Loop] Page {page_count}: Last alert missing timestamp. Stopping.")
             break
+
+        # If a whole page shares one timestamp, the cursor cannot advance and the next request
+        # would return the same page again. Stop once the cursor repeats with nothing new.
+        if last_alert_timestamp == previous_cursor and not new_alerts:
+            demisto.debug("[Pagination Loop] Cursor did not advance and no new alerts returned. Stopping.")
+            break
+
+        # Move the cursor to the last alert's timestamp for the next page.
+        previous_cursor = last_alert_timestamp
+        from_timestamp = last_alert_timestamp
 
     if not events:
         demisto.debug("[Pagination Result] No alerts found.")
