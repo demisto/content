@@ -1,10 +1,12 @@
-## Microsoft EWS Retirement and EwsAllowedAppIds
+## EWS O365
+
+### Microsoft EWS Retirement and EwsAllowedAppIds
 
 Microsoft has announced the final phase of Exchange Web Services (EWS) retirement in Exchange Online, with phased disablement beginning in October 2026.
 
 As part of this transition, Microsoft is moving away from unrestricted EWS access and has introduced a new tenant-level allow list called `EwsAllowedAppIds`. Starting in October 2026, Microsoft will block all EWS traffic by default. Applications will only be able to access EWS if their specific Application (Client) ID is explicitly added to this allow list by the tenant administrator.
 
-### Action Required
+#### Action Required
 
 Customers are responsible for updating their tenant configuration before the October 2026 enforcement takes effect. To ensure this integration continues to function without disruption, you must add the Entra Application (Client) ID used by this integration to your Exchange Online tenant's allow list.
 
