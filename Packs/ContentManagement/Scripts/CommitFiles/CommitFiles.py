@@ -8,7 +8,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.tools import find_type
-
 from demisto_sdk.commands.split_yml.extractor import Extractor as YmlSplitter
 
 PR_TEMPLATE = (

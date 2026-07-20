@@ -161,36 +161,70 @@ def _make_test_zip(tmp_dir, nested=True):
 
 
 # ---------------------------------------------------------------------------
-# ContentClient._set_sdk_env (covers the prior _set_sdk_env tests)
+# upload_pack_as_system_content
 # ---------------------------------------------------------------------------
 
 
-def test_set_sdk_env_uses_api_prefix():
+def test_upload_pack_as_system_content_success(monkeypatch):
+    """Given a valid pack path, upload_pack_as_system_content should configure
+    demisto_client with the correct credentials and call upload_content_packs."""
     mod, _ = load_integration()
-    client = mod.ContentClient(
-        base_url="https://tenant.xdr.us.paloaltonetworks.com",
-        api_id="3",
-        api_key="my-key",
-        verify=True,
-        proxy=False,
-    )
-    client._set_sdk_env()
-    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
-    assert os.environ["DEMISTO_API_KEY"] == "my-key"
-    assert os.environ["XSIAM_AUTH_ID"] == "3"
+    client = _make_client(mod)
+
+    # Track calls to demisto_client.configure and upload_content_packs
+    configure_calls = []
+    upload_calls = []
+
+    class _MockDemistoClient:
+        def __init__(self, **kwargs):
+            configure_calls.append(kwargs)
+
+        def upload_content_packs(self, file):
+            upload_calls.append(file)
+            return {"status": "ok"}
+
+    def _mock_configure(**kwargs):
+        inst = _MockDemistoClient(**kwargs)
+        return inst
+
+    # Patch demisto_client in the module's import scope
+    import types as _types
+    fake_dc = _types.ModuleType("demisto_client")
+    fake_dc.configure = _mock_configure
+    monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
+
+    result = client.upload_pack_as_system_content("/tmp/TestPack.zip")
+
+    assert result == {"success": True, "message": "Uploaded /tmp/TestPack.zip"}
+    assert len(configure_calls) == 1
+    assert configure_calls[0]["base_url"] == client._api_base_url
+    assert configure_calls[0]["api_key"] == "my-key"
+    assert configure_calls[0]["auth_id"] == "3"
+    assert configure_calls[0]["verify_ssl"] is True
+    assert len(upload_calls) == 1
+    assert upload_calls[0] == "/tmp/TestPack.zip"
 
 
-def test_set_sdk_env_preserves_existing_api_prefix():
+def test_upload_pack_as_system_content_failure(monkeypatch):
+    """Given a failing upload, upload_pack_as_system_content should raise
+    DemistoException wrapping the original error."""
     mod, _ = load_integration()
-    client = mod.ContentClient(
-        base_url="https://api-tenant.xdr.us.paloaltonetworks.com",
-        api_id="5",
-        api_key="k",
-        verify=True,
-        proxy=False,
-    )
-    client._set_sdk_env()
-    assert os.environ["DEMISTO_BASE_URL"] == "https://api-tenant.xdr.us.paloaltonetworks.com"
+    client = _make_client(mod)
+
+    class _MockDemistoClient:
+        def upload_content_packs(self, file):
+            raise ConnectionError("connection refused")
+
+    def _mock_configure(**kwargs):
+        return _MockDemistoClient()
+
+    import types as _types
+    fake_dc = _types.ModuleType("demisto_client")
+    fake_dc.configure = _mock_configure
+    monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
+
+    with pytest.raises(mod.DemistoException, match="Failed to upload pack"):
+        client.upload_pack_as_system_content("/tmp/BadPack.zip")
 
 
 # ---------------------------------------------------------------------------

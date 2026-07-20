@@ -127,51 +127,28 @@ class ContentClient(BaseClient):
         return written
 
     def upload_pack_as_system_content(self, pack_path: str) -> dict:
-        """Upload a pack directory as system content via demisto-sdk.
+        """Upload a pack ZIP as system content via demisto_client.
 
-        ``upload_content_entity(xsiam=True, zip=True)`` is the documented path
-        for installing a pack as system content. Credentials and TLS verify
-        flow in via process env so the SDK call sees the same configuration
-        as ContentClient itself.
+        Uses the ``upload_content_packs`` API endpoint directly to upload
+        a zipped pack to the tenant.
         """
-        self._set_sdk_env()
+        # Lazy import: demisto_client is only needed for uploads and pulls in
+        # heavyweight transitive dependencies that slow down module load.
+        import demisto_client
 
-        # Imported lazily because demisto-sdk is heavy and only needed here.
-        from demisto_sdk.commands.common.logger import logging_setup
-        from demisto_sdk.commands.upload.upload import upload_content_entity
-
-        logging_setup(INTEGRATION_NAME, console_threshold="CRITICAL", propagate=True)
+        client = demisto_client.configure(
+            base_url=self._api_base_url,
+            api_key=self._api_key,
+            auth_id=self._api_id,
+            verify_ssl=self._verify,
+        )
 
         try:
-            upload_content_entity(
-                input=pack_path,
-                zip=True,
-                xsiam=True,
-                insecure=(not self._verify),
-            )
+            result = client.upload_content_packs(file=pack_path)
+            demisto.debug(f"upload_content_packs result: {result}")
             return {"success": True, "message": f"Uploaded {pack_path}"}
-        except BaseException as exc:
-            # demisto-sdk raises SystemExit (or its own Exit class) on
-            # completion. Exit code 0 / None is success.
-            code = getattr(exc, "code", getattr(exc, "exit_code", None))
-            if code is None:
-                raise
-            if str(code) not in ("0", "None"):
-                raise DemistoException(f"demisto-sdk upload failed with exit code {code}: {exc}") from exc
-            return {"success": True, "message": f"Uploaded {pack_path}"}
-
-    # -- internals ----------------------------------------------------------
-
-    def _set_sdk_env(self) -> None:
-        """Set env vars required by ``demisto-sdk upload_content_entity``."""
-        os.environ["DEMISTO_API_KEY"] = self._api_key
-        os.environ["XSIAM_AUTH_ID"] = self._api_id
-        os.environ["DEMISTO_BASE_URL"] = self._api_base_url
-        os.environ["DEMISTO_SDK_IGNORE_CONTENT_WARNING"] = "1"
-        os.environ["DEMISTO_SDK_SKIP_LOGGER_SETUP"] = "yes"
-        os.environ["DEMISTO_SDK_OFFLINE_ENV"] = "False"
-        os.environ["ARTIFACTS_FOLDER"] = "/tmp/artifacts"
-        os.environ["DEMISTO_SDK_LOG_NO_COLORS"] = "true"
+        except Exception as exc:
+            raise DemistoException(f"Failed to upload pack {pack_path}: {exc}") from exc
 
 
 # ---------------------------------------------------------------------------

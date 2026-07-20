@@ -9,9 +9,37 @@ from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
-from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_file, get_file_displayed_name
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_file, get_json, get_yaml
 
 from CommonServerUserPython import *
+
+
+def get_file_displayed_name(file_path: str) -> str:
+    """Gets the file name displayed in the UI by the file's path.
+
+    If there is no displayed name, returns the file name.
+    """
+    file_type = find_type(file_path)
+    if FileType.INTEGRATION == file_type:
+        return get_yaml(file_path).get("display", "")
+    elif file_type in (FileType.SCRIPT, FileType.TEST_SCRIPT, FileType.PLAYBOOK, FileType.TEST_PLAYBOOK):
+        return get_yaml(file_path).get("name", "")
+    elif file_type in (
+        FileType.MAPPER, FileType.CLASSIFIER, FileType.INCIDENT_FIELD,
+        FileType.INCIDENT_TYPE, FileType.INDICATOR_FIELD, FileType.LAYOUTS_CONTAINER,
+        FileType.DASHBOARD, FileType.WIDGET, FileType.REPORT,
+    ):
+        res = get_json(file_path)
+        return res.get("name", "") if isinstance(res, dict) else res[0].get("name", "")
+    elif file_type == FileType.OLD_CLASSIFIER:
+        return get_json(file_path).get("brandName", "")
+    elif file_type == FileType.LAYOUT:
+        return get_json(file_path).get("TypeName", "")
+    elif file_type == FileType.REPUTATION:
+        return get_json(file_path).get("id", "")
+    else:
+        return Path(file_path).name
 
 
 def update_file_prefix(file_name: str) -> str:
