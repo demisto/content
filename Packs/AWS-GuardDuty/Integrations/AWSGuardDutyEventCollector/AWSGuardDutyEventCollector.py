@@ -252,7 +252,7 @@ def get_events(
             if truncated_by_limit:
                 # Find the latest second strictly older than the last (partial) second.
                 distinct_seconds = {_event_updated_at(ev) for ev in detector_events}
-                fully_drained = sorted(s for s in distinct_seconds if s != last_cursor_ts)
+                fully_drained = sorted((s for s in distinct_seconds if s != last_cursor_ts), key=parse_date_string)
                 if fully_drained:
                     cursor_ts = fully_drained[-1]
                     demisto.debug(
@@ -274,10 +274,6 @@ def get_events(
             # so we never forget same-second siblings across runs.
             if seen_ids and parse_date_string(cursor_ts) == updated_at:
                 cursor_sibling_ids |= seen_ids
-            # When we kept the cursor on a single truncated second, also remember the ids we just
-            # processed so they are deduped (not re-ingested) on the next run.
-            if truncated_by_limit and cursor_ts == last_cursor_ts:
-                cursor_sibling_ids |= {ev.get("Id") for ev in detector_events if ev.get("Id")}
             # Stored as list so demisto.setLastRun can JSON-serialize it; round-trips via
             # _normalize_last_ids_entry on the next call.
             new_last_ids[detector_id] = sorted(cursor_sibling_ids)

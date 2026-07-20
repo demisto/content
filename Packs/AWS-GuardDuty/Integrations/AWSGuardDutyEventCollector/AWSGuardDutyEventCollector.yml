@@ -1,3 +1,5 @@
+name: AWS - GuardDuty Event Collector
+display: AWS - GuardDuty Event Collector
 category: Analytics & SIEM
 provider: Amazon
 commonfields:
@@ -83,12 +85,6 @@ configuration:
   - 'Medium'
   - 'High'
   defaultvalue: 'Low'
-- display: Exclude archived/suppressed findings
-  name: exclude_archived
-  type: 8
-  required: false
-  defaultvalue: 'false'
-  additionalinfo: 'When enabled, findings that have been archived in GuardDuty (including those archived by suppression rules) are not fetched. Default is disabled (all findings are fetched).'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -97,9 +93,13 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Exclude archived/suppressed findings
+  name: exclude_archived
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: When selected, findings that have been archived in GuardDuty (including those archived by suppression rules) are not fetched.
 description: Amazon Web Services Guard Duty Service (gd) event collector integration for Cortex XSIAM.
-display: AWS - GuardDuty Event Collector
-name: AWS - GuardDuty Event Collector
 script:
   script: ""
   type: python

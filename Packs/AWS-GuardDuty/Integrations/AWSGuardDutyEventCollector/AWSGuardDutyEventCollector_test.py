@@ -687,9 +687,7 @@ def test_same_second_sibling_loss_xsup_67097(mocker):
     )
 
     run1_ids = sorted(e["Id"] for e in events_run1)
-    assert run1_ids == ["finding_A", "finding_B"], (
-        f"Sanity check failed: run 1 should ingest A and B, got {run1_ids}"
-    )
+    assert run1_ids == ["finding_A", "finding_B"], f"Sanity check failed: run 1 should ingest A and B, got {run1_ids}"
     # Cursor state after run 1: with the XSUP-67097 fix, last_ids stores ALL ids
     # whose UpdatedAt equals the cursor (the same-second siblings), not just one.
     # Both A and B share the cursor second so both must be remembered.
