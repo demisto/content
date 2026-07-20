@@ -1504,7 +1504,6 @@ def fetch_incidents_lookback(
     lookback_start_time: str,
     min_severity: str,
     statuses_to_fetch: list,
-    statuses_to_not_fetch: list = [],
     titles_to_not_fetch: list = [],
     alert_product_names_to_not_fetch: list = [],
 ) -> list:
@@ -1518,7 +1517,6 @@ def fetch_incidents_lookback(
         lookback_start_time: The start time of the lookback window.
         min_severity: Minimum severity to filter by.
         statuses_to_fetch: List of statuses to filter by.
-        statuses_to_not_fetch: A list of statuses to not fetch.
         titles_to_not_fetch: A list of titles to not fetch.
         alert_product_names_to_not_fetch: A list of alert product names to not fetch.
 
@@ -1532,8 +1530,6 @@ def fetch_incidents_lookback(
         f" {severity_filter(min_severity)}"
         f" {status_filter(statuses_to_fetch)}".strip()
     )
-    if statuses_to_not_fetch:
-        filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
     if alert_product_names_to_not_fetch:
         filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
     if titles_to_not_fetch:
@@ -1615,7 +1611,6 @@ def fetch_incidents(
     first_fetch_time: str,
     min_severity: str,
     statuses_to_fetch: list = [],
-    statuses_to_not_fetch: list = [],
     titles_to_not_fetch: list = [],
     alert_product_names_to_not_fetch: list = [],
     look_back: int = 0,
@@ -1627,7 +1622,6 @@ def fetch_incidents(
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
         statuses_to_fetch: A list of statuses to fetch.
-        statuses_to_not_fetch: A list of statuses to not fetch.
         titles_to_not_fetch: A list of titles to not fetch.
         alert_product_names_to_not_fetch: A list of alert product names to not fetch.
         look_back: Lookback time in minutes. When > 0, also fetches incidents
@@ -1662,8 +1656,6 @@ def fetch_incidents(
             f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
             f" {status_filter(statuses_to_fetch)}".strip()
         )
-        if statuses_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
         if alert_product_names_to_not_fetch:
             filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
         if titles_to_not_fetch:
@@ -1684,8 +1676,6 @@ def fetch_incidents(
             f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
             f" {status_filter(statuses_to_fetch)}".strip()
         )
-        if statuses_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter('status', statuses_to_not_fetch)}"
         if alert_product_names_to_not_fetch:
             filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
         if titles_to_not_fetch:
@@ -1724,7 +1714,6 @@ def fetch_incidents(
                 lookback_start_time=lookback_start_time,
                 min_severity=min_severity,
                 statuses_to_fetch=statuses_to_fetch,
-                statuses_to_not_fetch=statuses_to_not_fetch,
                 titles_to_not_fetch=titles_to_not_fetch,
                 alert_product_names_to_not_fetch=alert_product_names_to_not_fetch,
             )
@@ -1767,7 +1756,6 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
     statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
-    statuses_to_not_fetch = argToList(params.get("statuses_to_not_fetch", []))
     titles_to_not_fetch = argToList(params.get("titles_to_not_fetch", []))
     alert_product_names_to_not_fetch = argToList(params.get("alert_product_names_to_not_fetch", []))
     look_back = arg_to_number(params.get("look_back")) or 0
@@ -1780,7 +1768,6 @@ def fetch_incidents_command(client, params):
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
         statuses_to_fetch=statuses_to_fetch,
-        statuses_to_not_fetch=statuses_to_not_fetch,
         titles_to_not_fetch=titles_to_not_fetch,
         alert_product_names_to_not_fetch=alert_product_names_to_not_fetch,
         look_back=look_back,

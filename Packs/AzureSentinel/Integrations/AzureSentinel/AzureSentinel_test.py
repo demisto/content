@@ -2467,7 +2467,7 @@ def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
     }
 
 
-def test_odata_filter_parameteres(mocker):
+def test_odata_filter_parameters(mocker):
     """
     Given:
         - Multiple filter parameters.
@@ -2485,7 +2485,6 @@ def test_odata_filter_parameteres(mocker):
     mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     params = {
-        "statuses_to_not_fetch": ["New", "Active"],
         "titles_to_not_fetch": ["test_title"],
         "alert_product_names_to_not_fetch": ["test_alert_product_name"],
     }
@@ -2496,7 +2495,6 @@ def test_odata_filter_parameteres(mocker):
     # validate
     expected_filter = (
         "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and "
-        "(properties/status ne 'New' or properties/status ne 'Active') and "
         "(properties/productName ne 'test_alert_product_name') and "
         "((contains(properties/title, 'test_title') ne true))"
     )
