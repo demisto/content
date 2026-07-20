@@ -1,5 +1,5 @@
 [MODEL: dataset="slack_slack_raw"]
-filter action IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //Authentication events mapping
+filter action IN("user_login", "user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //Authentication events mapping
 // Extract actor and context fields
 | alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
@@ -20,6 +20,7 @@ filter action IN("user_login*", "user_logout_compromised", "user_logout_non_comp
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.event.id = id,
     xdm.event.outcome = if(
+        action = "user_login_failed", XDM_CONST.OUTCOME_FAILED,
         action IN("user_logout_compromised", "user_logout_non_compliant_mobile_app_version"), XDM_CONST.OUTCOME_FAILED,
         action IN("user_login","cli_login") ,XDM_CONST.OUTCOME_SUCCESS
         ),
@@ -95,7 +96,7 @@ filter action IN("user_login*", "user_logout_compromised", "user_logout_non_comp
     xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
     xdm.alert.source_url = json_extract_scalar(details, "$['url_private']");
 
-filter action NOT IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //SaaS Audit Mapping
+filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //SaaS Audit Mapping
 // Extract actor and context fields
 | alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
