@@ -1,0 +1,1539 @@
+{
+	"id": "HackerView Deep Scan Dashboard",
+	"description": "Dashboard for HackerView Deep Scan module metrics",
+	"isPredefined": true,
+	"version": -1,
+	"fromVersion": "6.10.0",
+	"fromDate": "0001-01-01T00:00:00Z",
+	"toDate": "0001-01-01T00:00:00Z",
+	"period": {
+		"by": "",
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 7,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "HackerView Deep Scan Dashboard",
+	"layout": [
+		{
+			"id": "82290230-9808-11ee-be91-bd9f71ef874f",
+			"forceRange": false,
+			"x": 0,
+			"y": 6,
+			"i": "82290230-9808-11ee-be91-bd9f71ef874f",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2023-12-10T11:20:59.026314772+03:00",
+				"created": "2023-12-10T11:20:52.129395461+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.39",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Incidents - Line chart",
+				"prevName": "Active Incidents - Line chart",
+				"dataType": "incidents",
+				"widgetType": "line",
+				"query": "-category:job and -status:archived and -status:closed type:\"HackerView Incident\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"rawType"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "db208da0-aec8-11ee-82fa-dd707358474c",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "db208da0-aec8-11ee-82fa-dd707358474c",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Incidents - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed and type:\"HackerView Incident\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"ctm360hackerviewscantype"
+					],
+					"showGraphValues": false
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "32d91b60-aeca-11ee-82fa-dd707358474c",
+			"forceRange": false,
+			"x": 0,
+			"y": 4,
+			"i": "32d91b60-aeca-11ee-82fa-dd707358474c",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Incidents Pending Action - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						{
+							"New": {
+								"conditions": [
+									[
+										{
+											"field": "externalstatus",
+											"operator": "isEqualCaseString",
+											"right": "New",
+											"type": "string"
+										}
+									]
+								],
+								"name": "New"
+							},
+							"Other": {
+								"name": "Other"
+							}
+						}
+					],
+					"groupBy": [
+						"externalstatus"
+					],
+					"showGraphValues": false,
+					"showOthers": true
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
+			"forceRange": false,
+			"x": 0,
+			"y": 2,
+			"i": "e6f69960-aef7-11ee-ac47-ef32c7f05a79",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Active",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
+			"forceRange": false,
+			"x": 0,
+			"y": 3,
+			"i": "4a71f9d0-aef8-11ee-ac47-ef32c7f05a79",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.273909715+03:00",
+				"created": "2024-01-07T08:36:16.821190202+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Running playbooks",
+				"prevName": "Running playbooks",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "runStatus:running playbook:\"HackerView Incident Management\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 5
+							},
+							"#FF1B15": {
+								"value": 20
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
+			"forceRange": false,
+			"x": 6,
+			"y": 2,
+			"i": "7d10a7b0-aef8-11ee-ac47-ef32c7f05a79",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Closed Light Scan Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Closed and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "8c864490-af78-11ee-9dec-eb27c047d071",
+			"forceRange": false,
+			"x": 4,
+			"y": 9,
+			"i": "8c864490-af78-11ee-9dec-eb27c047d071",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.27343997+03:00",
+				"created": "2024-01-07T08:36:16.820119695+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"size": 5,
+				"Cache": null,
+				"name": "Top Active Light Scan Playbooks (Past Week)",
+				"prevName": "Top Active Playbooks",
+				"dataType": "incidents",
+				"widgetType": "column",
+				"query": "status:active -category:job and type:\"HackerView Incident\" and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"playbookId"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
+			"forceRange": false,
+			"x": 2,
+			"y": 3,
+			"i": "0a967ed0-af7a-11ee-9dec-eb27c047d071",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274785325+03:00",
+				"created": "2024-01-07T08:36:16.823354842+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "6.2.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Avg. runtime for Playbooks (Past Week)",
+				"prevName": "Average runtime for Playbooks",
+				"dataType": "metrics",
+				"widgetType": "duration",
+				"query": "type:playbook and incidentType:\"HackerView Incident\"",
+				"isPredefined": false,
+				"description": "Average runtime for Playbooks",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|duration"
+					],
+					"tableColumns": [],
+					"valuesFormat": "minutes"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "1ec8eff0-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 4,
+			"i": "1ec8eff0-5c20-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Deep Scan Incidents Pending Action - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						{
+							"New": {
+								"conditions": [
+									[
+										{
+											"field": "externalstatus",
+											"operator": "isEqualCaseString",
+											"right": "New",
+											"type": "string"
+										}
+									]
+								],
+								"name": "New"
+							},
+							"Other": {
+								"name": "Other"
+							}
+						}
+					],
+					"groupBy": [
+						"externalstatus"
+					],
+					"showGraphValues": false,
+					"showOthers": true
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "251618b0-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 0,
+			"i": "251618b0-5c20-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Deep Scan Incidents - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed and type:\"HackerView Incident\" and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"severity"
+					],
+					"showGraphValues": false
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "27662330-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 9,
+			"i": "27662330-5c20-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.27343997+03:00",
+				"created": "2024-01-07T08:36:16.820119695+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"size": 5,
+				"Cache": null,
+				"name": "Top DeepScan Active Playbooks (Past Week)",
+				"prevName": "Top Active Playbooks",
+				"dataType": "incidents",
+				"widgetType": "column",
+				"query": "status:active -category:job and type:\"HackerView Incident\" and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"playbookId"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "2a09f300-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 4,
+			"y": 6,
+			"i": "2a09f300-5c20-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2023-12-10T11:20:59.026314772+03:00",
+				"created": "2023-12-10T11:20:52.129395461+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.39",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Light Scan Incidents - Line chart",
+				"prevName": "Active Incidents - Line chart",
+				"dataType": "incidents",
+				"widgetType": "line",
+				"query": "-category:job and -status:archived and -status:closed type:\"HackerView Incident\" and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"rawType"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "36810510-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 4,
+			"y": 2,
+			"i": "36810510-5c20-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Light Scan Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Active and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "3aaa1550-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 4,
+			"y": 3,
+			"i": "3aaa1550-5c20-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.273909715+03:00",
+				"created": "2024-01-07T08:36:16.821190202+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Running Light Scan playbooks",
+				"prevName": "Running playbooks",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "runStatus:running playbook:\"HackerView Incident Management\" and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 5
+							},
+							"#FF1B15": {
+								"value": 20
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "3db50b60-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 2,
+			"y": 2,
+			"i": "3db50b60-5c20-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Closed Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Closed",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "407feb30-5c20-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 6,
+			"y": 3,
+			"i": "407feb30-5c20-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274785325+03:00",
+				"created": "2024-01-07T08:36:16.823354842+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "6.2.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Avg. runtime for Light Scan Playbooks (Past Week)",
+				"prevName": "Average runtime for Playbooks",
+				"dataType": "metrics",
+				"widgetType": "duration",
+				"query": "type:playbook and incidentType:\"HackerView Incident\" and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"description": "Average runtime for Playbooks",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|duration"
+					],
+					"tableColumns": [],
+					"valuesFormat": "minutes"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "ee7139f0-5c21-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 2,
+			"i": "ee7139f0-5c21-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Deep Scan Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Active and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "1230d670-5c22-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 10,
+			"y": 2,
+			"i": "1230d670-5c22-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274656973+03:00",
+				"created": "2024-01-07T08:36:16.823054025+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Closed Deep Scan Incidents (Past Week)",
+				"prevName": "Incidents in Error Run Status",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-runStatus:error type:\"HackerView Incident\" and status:Closed and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 10
+							},
+							"#FAC100": {
+								"value": 20
+							},
+							"#FF1B15": {
+								"value": 40
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "344b7580-5c22-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 3,
+			"i": "344b7580-5c22-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.273909715+03:00",
+				"created": "2024-01-07T08:36:16.821190202+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Running Deep Scan playbooks",
+				"prevName": "Running playbooks",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "runStatus:running playbook:\"HackerView Incident Management\" and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {
+							"#00CD33": {
+								"value": 0
+							},
+							"#FAC100": {
+								"value": 5
+							},
+							"#FF1B15": {
+								"value": 20
+							}
+						},
+						"type": "above"
+					}
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "619f7680-5c22-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 10,
+			"y": 3,
+			"i": "619f7680-5c22-11f1-8ce8-df797597718e",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274785325+03:00",
+				"created": "2024-01-07T08:36:16.823354842+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "6.2.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Avg. runtime for Deep Scan Playbooks (Past Week)",
+				"prevName": "Average runtime for Playbooks",
+				"dataType": "metrics",
+				"widgetType": "duration",
+				"query": "type:playbook and incidentType:\"HackerView Incident\" and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"description": "Average runtime for Playbooks",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|duration"
+					],
+					"tableColumns": [],
+					"valuesFormat": "minutes"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "846f0db0-5c22-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 4,
+			"y": 4,
+			"i": "846f0db0-5c22-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Light Scan Incidents Pending Action - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						{
+							"New": {
+								"conditions": [
+									[
+										{
+											"field": "externalstatus",
+											"operator": "isEqualCaseString",
+											"right": "New",
+											"type": "string"
+										}
+									]
+								],
+								"name": "New"
+							},
+							"Other": {
+								"name": "Other"
+							}
+						}
+					],
+					"groupBy": [
+						"externalstatus"
+					],
+					"showGraphValues": false,
+					"showOthers": true
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "93e7c700-5c22-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 4,
+			"y": 0,
+			"i": "93e7c700-5c22-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.274425938+03:00",
+				"created": "2024-01-07T08:36:16.822326133+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Light Scan Incidents - Pie chart",
+				"prevName": "Active Incidents - Pie chart",
+				"dataType": "incidents",
+				"widgetType": "pie",
+				"query": "-category:job and -status:archived and -status:closed and type:\"HackerView Incident\" and -ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"severity"
+					],
+					"showGraphValues": false
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "4c6a6920-5c2a-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 8,
+			"y": 6,
+			"i": "4c6a6920-5c2a-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2023-12-10T11:20:59.026314772+03:00",
+				"created": "2023-12-10T11:20:52.129395461+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.39",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"Cache": null,
+				"name": "Active Deep Scan Incidents - Line chart",
+				"prevName": "Active Incidents - Line chart",
+				"dataType": "incidents",
+				"widgetType": "line",
+				"query": "-category:job and -status:archived and -status:closed type:\"HackerView Incident\" and ctm360hackerviewscantype:deepscan",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"rawType"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "5235b7b0-5c2a-11f1-8ce8-df797597718e",
+			"forceRange": false,
+			"x": 0,
+			"y": 9,
+			"i": "5235b7b0-5c2a-11f1-8ce8-df797597718e",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "2024-01-07T08:36:21.27343997+03:00",
+				"created": "2024-01-07T08:36:16.820119695+03:00",
+				"sizeInBytes": 0,
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"itemVersion": "1.2.44",
+				"fromServerVersion": "5.0.0",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"packPropagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"size": 5,
+				"Cache": null,
+				"name": "Top Active Playbooks (Past Week)",
+				"prevName": "Top Active Playbooks",
+				"dataType": "incidents",
+				"widgetType": "column",
+				"query": "status:active -category:job and type:\"HackerView Incident\"",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"playbookId"
+					]
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		}
+	],
+	"system": false,
+	"isCommon": false,
+	"locked": false,
+	"hidePivot": false,
+	"hideSearch": false,
+	"modulePage": false
+}
