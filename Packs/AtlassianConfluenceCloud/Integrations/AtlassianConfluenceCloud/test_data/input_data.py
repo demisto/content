@@ -30,6 +30,20 @@ MESSAGES = {
     "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
     "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters " "only.",
     "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space.",
+    "INVALID_BODY_REPRESENTATION_V2": "Invalid value for body_representation. Body representation must be one of "
+    "'storage', 'atlas_doc_format' or 'wiki'.",
+    "INVALID_COMMENT_BODY_REPRESENTATION_V2": "Invalid value for body_representation. Body representation must be "
+    "one of 'storage' or 'atlas_doc_format'.",
+    "INVALID_STATUS_CREATE_V2": "Invalid value for status. Status must be one of 'current' or 'draft'.",
+    "INVALID_PAGE_STATUS_LIST_V2": "Invalid value for status. Status must be one of 'current', 'archived', "
+    "'deleted' or 'trashed'.",
+    "INVALID_SUBTYPE_FILTER_V2": "Invalid value for subtype. Subtype must be one of 'page' or 'live'.",
+    "MISSING_COMMENT_CONTAINER_V2": "One of the following arguments is required: 'page_id', 'blogpost_id', "
+    "'parent_comment_id', 'attachment_id' or 'custom_content_id'.",
+    "INVALID_SPACE_TYPE_V2": "Invalid value for type. Type must be one of 'global' or 'personal'.",
+    "INVALID_DESCRIPTION_FORMAT_V2": "Invalid value for description_format. Description format must be one of "
+    "'plain' or 'view'.",
+    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be between 1 and 250.",
 }
 
 exception_handler_params = [
@@ -201,4 +215,35 @@ content_update_invalid_arg_value = [
     ),
     ({"content_id": "", "title": "dummy", "type": "page", "version": 2}, MESSAGES["REQUIRED_ARGUMENT"].format("content_id")),
     ({"content_id": "2097159", "title": "dummy", "type": "page", "version": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("version")),
+]
+
+# --- REST API v2 invalid argument test data ---
+content_create_v2_invalid_args = [
+    ({"space_id": "", "title": "abc"}, MESSAGES["REQUIRED_ARGUMENT"].format("space_id")),
+    ({"space_id": "123", "title": "abc", "status": "invalid"}, MESSAGES["INVALID_STATUS_CREATE_V2"]),
+    ({"space_id": "123", "title": "abc", "body_representation": "invalid"}, MESSAGES["INVALID_BODY_REPRESENTATION_V2"]),
+]
+
+content_list_v2_invalid_args = [
+    ({"limit": 0}, MESSAGES["INVALID_LIMIT_V2"].format(0)),
+    ({"limit": 251}, MESSAGES["INVALID_LIMIT_V2"].format(251)),
+    ({"status": "invalid"}, MESSAGES["INVALID_PAGE_STATUS_LIST_V2"]),
+    ({"subtype": "invalid"}, MESSAGES["INVALID_SUBTYPE_FILTER_V2"]),
+]
+
+comment_create_v2_invalid_args = [
+    ({"body_value": "", "page_id": "123"}, MESSAGES["REQUIRED_ARGUMENT"].format("body_value")),
+    ({"body_value": "test", "body_representation": "wiki", "page_id": "123"}, MESSAGES["INVALID_COMMENT_BODY_REPRESENTATION_V2"]),
+    ({"body_value": "test"}, MESSAGES["MISSING_COMMENT_CONTAINER_V2"]),
+]
+
+space_list_v2_invalid_args = [
+    ({"limit": 0}, MESSAGES["INVALID_LIMIT_V2"].format(0)),
+    ({"type": "invalid"}, MESSAGES["INVALID_SPACE_TYPE_V2"]),
+]
+
+space_create_v2_invalid_args = [
+    ({"name": "", "key": "XSOAR"}, MESSAGES["REQUIRED_ARGUMENT"].format("name")),
+    ({"name": "XSOAR", "key": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("key")),
+    ({"name": "XSOAR", "key": "XSOAR", "description_format": "invalid"}, MESSAGES["INVALID_DESCRIPTION_FORMAT_V2"]),
 ]

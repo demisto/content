@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 
 ## Configure Atlassian Confluence Cloud in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
@@ -19,7 +18,6 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | Events Fetch Interval |  | False |
 | Max number of events per fetch |  | False |
 | Fetch Events |  | False |
-
 
 ## Authentication Methods
 
@@ -4538,6 +4536,7 @@ There is no context output for this command.
 ```bash
 !confluence-cloud-oauth-test
 ```
+
 ### confluence-cloud-space-listv2
 
 ***
@@ -4551,25 +4550,25 @@ Returns a list of spaces from Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of space IDs to filter by. | Optional | 
-| keys | A comma-separated list of space keys to filter by. | Optional | 
-| type | The type of spaces to filter by. Possible values are: global, personal. | Optional | 
-| status | The status of spaces to filter by. Possible values are: current, archived. | Optional | 
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+| ids | A comma-separated list of space IDs to filter by. | Optional |
+| keys | A comma-separated list of space keys to filter by. | Optional |
+| type | The type of spaces to filter by. Possible values are: global, personal. | Optional |
+| status | The status of spaces to filter by. Possible values are: current, archived. | Optional |
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. | 
-| ConfluenceCloud.Space.key | String | The key of the space. | 
-| ConfluenceCloud.Space.name | String | The name of the space. | 
-| ConfluenceCloud.Space.type | String | The type of the space. | 
-| ConfluenceCloud.Space.status | String | The status of the space. | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Space.id | String | The ID of the space. |
+| ConfluenceCloud.Space.key | String | The key of the space. |
+| ConfluenceCloud.Space.name | String | The name of the space. |
+| ConfluenceCloud.Space.type | String | The type of the space. |
+| ConfluenceCloud.Space.status | String | The status of the space. |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
 
 ### confluence-cloud-blogpost-update
 
@@ -4584,23 +4583,23 @@ Updates an existing blog post in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blogpost_id | The ID of the blog post to update. | Required | 
-| version_number | The new version number for the blog post. Must be one greater than the current version. | Required | 
-| title | The title of the blog post. | Optional | 
-| status | The status of the blog post. Possible values are: current, draft. Default is current. | Optional | 
-| body_value | The content body value of the blog post. | Optional | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
-| version_message | A message describing the update for the version history. | Optional | 
+| blogpost_id | The ID of the blog post to update. | Required |
+| version_number | The new version number for the blog post. Must be one greater than the current version. | Required |
+| title | The title of the blog post. | Optional |
+| status | The status of the blog post. Possible values are: current, draft. Default is current. | Optional |
+| body_value | The content body value of the blog post. | Optional |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
+| version_message | A message describing the update for the version history. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
 
 ### confluence-cloud-blogpost-create
 
@@ -4615,23 +4614,23 @@ Creates a new blog post in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| space_id | The ID of the space where the blog post is created. Retrieve using the confluence-cloud-space-listv2 command. | Required | 
-| title | The title of the blog post. | Optional | 
-| status | The status of the blog post to be created. Possible values are: current, draft. Default is current. | Optional | 
-| body_value | The content body value of the blog post. | Optional | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
+| space_id | The ID of the space where the blog post is created. Retrieve using the confluence-cloud-space-listv2 command. | Required |
+| title | The title of the blog post. | Optional |
+| status | The status of the blog post to be created. Possible values are: current, draft. Default is current. | Optional |
+| body_value | The content body value of the blog post. | Optional |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
-| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. | 
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
+| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. |
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. |
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
 
 ### confluence-cloud-inline-comment-create
 
@@ -4646,27 +4645,27 @@ Creates an inline comment in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| body_value | The content body value of the comment. | Required | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional | 
-| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional | 
-| blogpost_id | The ID of the blog post to attach the comment to. | Optional | 
-| parent_comment_id | The ID of the parent comment to reply to. | Optional | 
-| attachment_id | The ID of the attachment to attach the comment to. | Optional | 
-| custom_content_id | The ID of the custom content to attach the comment to. | Optional | 
-| text_selection | The text to highlight for the inline comment. | Optional | 
-| text_selection_match_count | The total number of matches of the text selection in the content. | Optional | 
-| text_selection_match_index | The zero-based index of the match to attach the inline comment to. | Optional | 
+| body_value | The content body value of the comment. | Required |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional |
+| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional |
+| blogpost_id | The ID of the blog post to attach the comment to. | Optional |
+| parent_comment_id | The ID of the parent comment to reply to. | Optional |
+| attachment_id | The ID of the attachment to attach the comment to. | Optional |
+| custom_content_id | The ID of the custom content to attach the comment to. | Optional |
+| text_selection | The text to highlight for the inline comment. | Optional |
+| text_selection_match_count | The total number of matches of the text selection in the content. | Optional |
+| text_selection_match_index | The zero-based index of the match to attach the inline comment to. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Comment.id | String | The ID of the comment. | 
-| ConfluenceCloud.Comment.status | String | The status of the comment. | 
-| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. | 
-| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. | 
-| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. | 
-| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. | 
+| ConfluenceCloud.Comment.id | String | The ID of the comment. |
+| ConfluenceCloud.Comment.status | String | The status of the comment. |
+| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. |
+| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. |
+| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. |
+| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. |
 
 ### confluence-cloud-blogpost-list
 
@@ -4681,26 +4680,26 @@ Returns a list of blog posts from Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | A comma-separated list of blog post IDs to filter by. | Optional | 
-| space_id | A comma-separated list of space IDs to filter by. | Optional | 
-| status | The status of blog posts to filter by. Possible values are: current, deleted, trashed. | Optional | 
-| title | The title of blog posts to filter by. | Optional | 
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+| id | A comma-separated list of blog post IDs to filter by. | Optional |
+| space_id | A comma-separated list of space IDs to filter by. | Optional |
+| status | The status of blog posts to filter by. Possible values are: current, deleted, trashed. | Optional |
+| title | The title of blog posts to filter by. | Optional |
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
-| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
+| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. |
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
 
 ### confluence-cloud-space-createv2
 
@@ -4715,21 +4714,21 @@ Creates a new space in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the new space. The maximum length is 200 characters. | Required | 
-| key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters. | Required | 
-| description_value | The description text of the new space. | Optional | 
-| description_format | The format of the space description. Possible values are: plain, view. Default is plain. | Optional | 
-| role_assignments | A JSON array of role assignments granting access to principals. For example: [{"principal": {"type": "user", "id": "&lt;accountId&gt;"}, "roleId": "&lt;roleId&gt;"}]. | Optional | 
+| name | The name of the new space. The maximum length is 200 characters. | Required |
+| key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters. | Required |
+| description_value | The description text of the new space. | Optional |
+| description_format | The format of the space description. Possible values are: plain, view. Default is plain. | Optional |
+| role_assignments | A JSON array of role assignments granting access to principals. For example: [{"principal": {"type": "user", "id": "&lt;accountId&gt;"}, "roleId": "&lt;roleId&gt;"}]. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. | 
-| ConfluenceCloud.Space.key | String | The key of the space. | 
-| ConfluenceCloud.Space.name | String | The name of the space. | 
-| ConfluenceCloud.Space.type | String | The type of the space. | 
-| ConfluenceCloud.Space.status | String | The status of the space. | 
+| ConfluenceCloud.Space.id | String | The ID of the space. |
+| ConfluenceCloud.Space.key | String | The key of the space. |
+| ConfluenceCloud.Space.name | String | The name of the space. |
+| ConfluenceCloud.Space.type | String | The type of the space. |
+| ConfluenceCloud.Space.status | String | The status of the space. |
 
 ### confluence-cloud-footer-comment-create
 
@@ -4744,24 +4743,24 @@ Creates a footer comment in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| body_value | The content body value of the comment. | Required | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional | 
-| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional | 
-| blogpost_id | The ID of the blog post to attach the comment to. | Optional | 
-| parent_comment_id | The ID of the parent comment to reply to. | Optional | 
-| attachment_id | The ID of the attachment to attach the comment to. | Optional | 
-| custom_content_id | The ID of the custom content to attach the comment to. | Optional | 
+| body_value | The content body value of the comment. | Required |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional |
+| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional |
+| blogpost_id | The ID of the blog post to attach the comment to. | Optional |
+| parent_comment_id | The ID of the parent comment to reply to. | Optional |
+| attachment_id | The ID of the attachment to attach the comment to. | Optional |
+| custom_content_id | The ID of the custom content to attach the comment to. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Comment.id | String | The ID of the comment. | 
-| ConfluenceCloud.Comment.status | String | The status of the comment. | 
-| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. | 
-| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. | 
-| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. | 
-| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. | 
+| ConfluenceCloud.Comment.id | String | The ID of the comment. |
+| ConfluenceCloud.Comment.status | String | The status of the comment. |
+| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. |
+| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. |
+| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. |
+| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. |
 
 ### confluence-cloud-blogpost-delete
 
@@ -4776,12 +4775,13 @@ Deletes a blog post in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blogpost_id | The ID of the blog post to delete. | Required | 
-| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+| blogpost_id | The ID of the blog post to delete. | Required |
+| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### confluence-cloud-page-delete
 
 ***
@@ -4795,12 +4795,13 @@ Deletes a page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_id | The ID of the page to delete. | Required | 
-| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+| page_id | The ID of the page to delete. | Required |
+| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### confluence-cloud-page-list
 
 ***
@@ -4814,27 +4815,27 @@ Returns a list of pages from Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | A comma-separated list of page IDs to filter by. | Optional | 
-| space_id | A comma-separated list of space IDs to filter by. | Optional | 
-| status | The status of pages to filter by. Possible values are: current, archived, deleted, trashed. | Optional | 
-| title | The title of pages to filter by. | Optional | 
-| subtype | The subtype of pages to filter by. Possible values are: page, live. | Optional | 
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+| id | A comma-separated list of page IDs to filter by. | Optional |
+| space_id | A comma-separated list of space IDs to filter by. | Optional |
+| status | The status of pages to filter by. Possible values are: current, archived, deleted, trashed. | Optional |
+| title | The title of pages to filter by. | Optional |
+| subtype | The subtype of pages to filter by. Possible values are: page, live. | Optional |
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. | 
-| ConfluenceCloud.Page.status | String | The status of the page. | 
-| ConfluenceCloud.Page.title | String | The title of the page. | 
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Page.id | String | The ID of the page. |
+| ConfluenceCloud.Page.status | String | The status of the page. |
+| ConfluenceCloud.Page.title | String | The title of the page. |
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
 
 ### confluence-cloud-page-update
 
@@ -4849,24 +4850,24 @@ Updates an existing page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_id | The ID of the page to update. | Required | 
-| version_number | The new version number for the page. Must be one greater than the current version. | Required | 
-| title | The title of the page. | Optional | 
-| status | The status of the page. Possible values are: current, draft. Default is current. | Optional | 
-| body_value | The content body value of the page. | Optional | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
-| space_id | The ID of the space to move the page to. | Optional | 
-| version_message | A message describing the update for the version history. | Optional | 
+| page_id | The ID of the page to update. | Required |
+| version_number | The new version number for the page. Must be one greater than the current version. | Required |
+| title | The title of the page. | Optional |
+| status | The status of the page. Possible values are: current, draft. Default is current. | Optional |
+| body_value | The content body value of the page. | Optional |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
+| space_id | The ID of the space to move the page to. | Optional |
+| version_message | A message describing the update for the version history. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. | 
-| ConfluenceCloud.Page.status | String | The status of the page. | 
-| ConfluenceCloud.Page.title | String | The title of the page. | 
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
+| ConfluenceCloud.Page.id | String | The ID of the page. |
+| ConfluenceCloud.Page.status | String | The status of the page. |
+| ConfluenceCloud.Page.title | String | The title of the page. |
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. |
 
 ### confluence-cloud-page-create
 
@@ -4881,23 +4882,22 @@ Creates a new page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| space_id | The ID of the space where the page is created. Retrieve using the confluence-cloud-space-listv2 command. | Required | 
-| title | The title of the page. | Optional | 
-| status | The status of the page to be created. Possible values are: current, draft. Default is current. | Optional | 
-| body_value | The content body value of the page. | Optional | 
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
-| parent_id | The ID of the parent page under which the new page is created. | Optional | 
+| space_id | The ID of the space where the page is created. Retrieve using the confluence-cloud-space-listv2 command. | Required |
+| title | The title of the page. | Optional |
+| status | The status of the page to be created. Possible values are: current, draft. Default is current. | Optional |
+| body_value | The content body value of the page. | Optional |
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
+| parent_id | The ID of the parent page under which the new page is created. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. | 
-| ConfluenceCloud.Page.status | String | The status of the page. | 
-| ConfluenceCloud.Page.title | String | The title of the page. | 
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.parentId | String | The ID of the parent page. | 
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. | 
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
-
+| ConfluenceCloud.Page.id | String | The ID of the page. |
+| ConfluenceCloud.Page.status | String | The status of the page. |
+| ConfluenceCloud.Page.title | String | The title of the page. |
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
+| ConfluenceCloud.Page.parentId | String | The ID of the parent page. |
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. |
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. |

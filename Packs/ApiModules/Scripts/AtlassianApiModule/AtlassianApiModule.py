@@ -238,17 +238,37 @@ class ConfluenceCloudOAuthClient(AtlassianOAuthClient):
         """
         Return the OAuth scopes required for Confluence Cloud.
 
+        This is the full granular scope set required to authorize both the v2
+        page/blogpost/space/comment commands and the retained v1 search/user/group/audit
+        commands with a single access token. Granular scopes must not be mixed with
+        classic scopes in the same authorize request.
+
         Returns:
             List of required OAuth scopes
         """
         return [
+            "read:content:confluence",
+            "write:content:confluence",
+            "read:content-details:confluence",
+            "read:space-details:confluence",
+            "delete:content:confluence",
             "read:audit-log:confluence",
-            "read:confluence-content.all",
-            "read:confluence-space.summary",
-            "read:confluence-user",
-            "read:confluence-groups",
-            "write:confluence-content",
-            "write:confluence-space",
+            "read:page:confluence",
+            "write:page:confluence",
+            "delete:page:confluence",
+            "read:blogpost:confluence",
+            "write:blogpost:confluence",
+            "delete:blogpost:confluence",
+            "read:custom-content:confluence",
+            "write:custom-content:confluence",
+            "delete:custom-content:confluence",
+            "read:comment:confluence",
+            "write:comment:confluence",
+            "write:template:confluence",
+            "read:space:confluence",
+            "write:space:confluence",
+            "delete:space:confluence",
+            "read:group:confluence",
             "offline_access",  # For refresh token
         ]
 

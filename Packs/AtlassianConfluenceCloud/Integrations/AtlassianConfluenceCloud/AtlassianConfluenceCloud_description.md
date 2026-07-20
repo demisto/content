@@ -23,14 +23,18 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
 1. Go to the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/)
 2. Click "Create" and select "OAuth 2.0 integration"
 3. Enter a name for your app and click "Create"
-4. Navigate to "Permissions" and add the required Confluence API scopes:
+4. Navigate to "Permissions" and add the required Confluence API scopes. The integration uses the Confluence REST API v2 and requires the following granular scopes:
    - `read:audit-log:confluence` — **Required for event fetching** (audit log access)
-   - `read:confluence-content.all` — Read all Confluence content
-   - `read:confluence-space.summary` — Read space summaries
-   - `read:confluence-user` — Read user information
-   - `read:confluence-groups` — Read group information
-   - `write:confluence-content` — Write content
-   - `write:confluence-space` — Write space data
+   - `read:content:confluence`, `write:content:confluence`, `delete:content:confluence` — Read, write, and delete content
+   - `read:content-details:confluence` — Read content details
+   - `read:page:confluence`, `write:page:confluence`, `delete:page:confluence` — Read, write, and delete pages
+   - `read:blogpost:confluence`, `write:blogpost:confluence`, `delete:blogpost:confluence` — Read, write, and delete blog posts
+   - `read:custom-content:confluence`, `write:custom-content:confluence`, `delete:custom-content:confluence` — Manage custom content
+   - `read:comment:confluence`, `write:comment:confluence` — Read and write footer and inline comments
+   - `write:template:confluence` — Manage templates
+   - `read:space:confluence`, `write:space:confluence`, `delete:space:confluence` — Read, write, and delete spaces
+   - `read:space-details:confluence` — Read space details
+   - `read:group:confluence` — Read group information
    - `offline_access` — Enables refresh token for unattended access
 5. Navigate to "Authorization" and configure the callback URL
 6. Navigate to "Settings" to find your Client ID and Client Secret
@@ -46,3 +50,5 @@ Your Cloud ID can be found by:
 2. Enter your Client ID
 3. Enter your Client Secret
 4. Enter your Cloud ID
+
+> **Note:** If you are upgrading from a previous version, the new Confluence REST API v2 commands (pages, blog posts, footer/inline comments, and spaces) require additional granular OAuth scopes. After adding the scopes listed above to your OAuth 2.0 app in the Atlassian Developer Console, you must re-authenticate by running `!confluence-cloud-oauth-start` and `!confluence-cloud-oauth-complete` again so the access token is reissued with the new permissions.

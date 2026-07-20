@@ -250,13 +250,28 @@ class TestConfluenceCloudOAuthClient:
     def test_get_oauth_scopes(self, oauth_client):
         """Test that correct Confluence OAuth scopes are returned."""
         scopes = oauth_client.get_oauth_scopes()
+        assert "read:content:confluence" in scopes
+        assert "write:content:confluence" in scopes
+        assert "read:content-details:confluence" in scopes
+        assert "read:space-details:confluence" in scopes
+        assert "delete:content:confluence" in scopes
         assert "read:audit-log:confluence" in scopes
-        assert "read:confluence-content.all" in scopes
-        assert "read:confluence-space.summary" in scopes
-        assert "read:confluence-user" in scopes
-        assert "read:confluence-groups" in scopes
-        assert "write:confluence-content" in scopes
-        assert "write:confluence-space" in scopes
+        assert "read:page:confluence" in scopes
+        assert "write:page:confluence" in scopes
+        assert "delete:page:confluence" in scopes
+        assert "read:blogpost:confluence" in scopes
+        assert "write:blogpost:confluence" in scopes
+        assert "delete:blogpost:confluence" in scopes
+        assert "read:custom-content:confluence" in scopes
+        assert "write:custom-content:confluence" in scopes
+        assert "delete:custom-content:confluence" in scopes
+        assert "read:comment:confluence" in scopes
+        assert "write:comment:confluence" in scopes
+        assert "write:template:confluence" in scopes
+        assert "read:space:confluence" in scopes
+        assert "write:space:confluence" in scopes
+        assert "delete:space:confluence" in scopes
+        assert "read:group:confluence" in scopes
         assert "offline_access" in scopes
 
     @patch("AtlassianApiModule.get_integration_context")

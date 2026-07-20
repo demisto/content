@@ -36,6 +36,14 @@ URL_SUFFIX = {
     "BASE": "/wiki",
     "NEXT_LINK_TEMPLATE": "/rest/api/audit/?end_date={}&next=true&limit={}&start={}&startDate={}",
 }
+# Confluence Cloud REST API v2 (/wiki/api/v2) URL suffixes.
+URL_SUFFIX_V2 = {
+    "PAGES": "/wiki/api/v2/pages",
+    "BLOGPOSTS": "/wiki/api/v2/blogposts",
+    "SPACES": "/wiki/api/v2/spaces",
+    "FOOTER_COMMENTS": "/wiki/api/v2/footer-comments",
+    "INLINE_COMMENTS": "/wiki/api/v2/inline-comments",
+}
 
 MESSAGES = {
     "REQUIRED_URL_FIELD": "Site Name can not be empty.",
@@ -71,6 +79,38 @@ MESSAGES = {
     "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters only.",
     "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space.",
     "MISSING_CONTENT_ID": "Argument 'content_id' is required for this command.",
+    "INVALID_BODY_REPRESENTATION_V2": "Invalid value for body_representation. Body representation must be one of "
+    "'storage', 'atlas_doc_format' or 'wiki'.",
+    "INVALID_COMMENT_BODY_REPRESENTATION_V2": "Invalid value for body_representation. Body representation must be "
+    "one of 'storage' or 'atlas_doc_format'.",
+    "INVALID_BODY_FORMAT_V2": "Invalid value for body_format. Body format must be one of 'storage', "
+    "'atlas_doc_format' or 'view'.",
+    "INVALID_STATUS_CREATE_V2": "Invalid value for status. Status must be one of 'current' or 'draft'.",
+    "INVALID_PAGE_STATUS_LIST_V2": "Invalid value for status. Status must be one of 'current', 'archived', "
+    "'deleted' or 'trashed'.",
+    "INVALID_PAGE_STATUS_SINGLE_V2": "Invalid value for status. Status must be one of 'current', 'archived', "
+    "'deleted', 'trashed', 'historical' or 'draft'.",
+    "INVALID_BLOGPOST_STATUS_LIST_V2": "Invalid value for status. Status must be one of 'current', 'deleted' " "or 'trashed'.",
+    "INVALID_BLOGPOST_STATUS_SINGLE_V2": "Invalid value for status. Status must be one of 'current', 'deleted', "
+    "'trashed', 'historical' or 'draft'.",
+    "INVALID_SUBTYPE_FILTER_V2": "Invalid value for subtype. Subtype must be one of 'page' or 'live'.",
+    "MUTUALLY_EXCLUSIVE_PARENT_ROOT_LEVEL": "Arguments 'parent_id' and 'root_level' are mutually exclusive.",
+    "MISSING_COMMENT_CONTAINER_V2": "One of the following arguments is required: 'page_id', 'blogpost_id', "
+    "'parent_comment_id', 'attachment_id' or 'custom_content_id'.",
+    "INVALID_SPACE_TYPE_V2": "Invalid value for type. Type must be one of 'global' or 'personal'.",
+    "INVALID_SPACE_STATUS_V2": "Invalid value for status. Status must be one of 'current' or 'archived'.",
+    "INVALID_DESCRIPTION_FORMAT_V2": "Invalid value for description_format. Description format must be one of "
+    "'plain' or 'view'.",
+    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be between 1 and 250.",
+    "HR_PAGE_CREATE": "Page with ID {} was created successfully.",
+    "HR_PAGE_UPDATE": "Page with ID {} was updated successfully.",
+    "HR_PAGE_DELETE": "Page with ID {} was deleted successfully.",
+    "HR_BLOGPOST_CREATE": "Blog post with ID {} was created successfully.",
+    "HR_BLOGPOST_UPDATE": "Blog post with ID {} was updated successfully.",
+    "HR_BLOGPOST_DELETE": "Blog post with ID {} was deleted successfully.",
+    "HR_FOOTER_COMMENT_CREATE": "Footer comment with ID {} was created successfully.",
+    "HR_INLINE_COMMENT_CREATE": "Inline comment with ID {} was created successfully.",
+    "HR_SPACE_CREATE_V2": "Space with ID {} was created successfully.",
 }
 OUTPUT_PREFIX = {
     "GROUP": "ConfluenceCloud.Group",
@@ -80,6 +120,8 @@ OUTPUT_PREFIX = {
     "SPACE": "ConfluenceCloud.Space",
     "PAGETOKEN": "ConfluenceCloud.PageToken.Content",
     "EVENT": "ConfluenceCloud.Event",
+    "PAGE": "ConfluenceCloud.Page",
+    "BLOGPOST": "ConfluenceCloud.Blogpost",
 }
 DEFAULT_LIMIT = "50"
 DEFAULT_START = "0"
@@ -99,6 +141,53 @@ DEFAULT_GET_EVENTS_LIMIT = "50"
 ONE_MINUTE_IN_MILL_SECONDS = 60000
 ONE_WEEK_IN_MILL_SECONDS = 604800000
 _last_run_cache = None
+
+# --- Confluence Cloud REST API v2 constants ---
+LEGAL_BODY_REPRESENTATION_V2 = ["storage", "atlas_doc_format", "wiki"]
+LEGAL_COMMENT_BODY_REPRESENTATION_V2 = ["storage", "atlas_doc_format"]
+LEGAL_BODY_FORMAT_V2 = ["storage", "atlas_doc_format", "view"]
+LEGAL_STATUS_CREATE_V2 = ["current", "draft"]
+LEGAL_STATUS_UPDATE_V2 = ["current", "draft"]
+LEGAL_PAGE_SUBTYPE_FILTER_V2 = ["page", "live"]
+LEGAL_PAGE_LIST_STATUS_V2 = ["current", "archived", "deleted", "trashed"]
+LEGAL_PAGE_SINGLE_STATUS_V2 = [*LEGAL_PAGE_LIST_STATUS_V2, "historical", "draft"]
+LEGAL_BLOGPOST_LIST_STATUS_V2 = ["current", "deleted", "trashed"]
+LEGAL_BLOGPOST_SINGLE_STATUS_V2 = [*LEGAL_BLOGPOST_LIST_STATUS_V2, "historical", "draft"]
+LEGAL_SPACE_TYPE_V2 = ["global", "personal"]
+LEGAL_SPACE_STATUS_V2 = ["current", "archived"]
+LEGAL_DESCRIPTION_FORMAT_V2 = ["plain", "view"]
+DEFAULT_LIMIT_V2 = 50
+MIN_LIMIT_V2 = 1
+MAX_LIMIT_V2 = 250
+
+# Configuration shared between the page and blogpost v2 commands (they are near-identical
+# typed resources split from the polymorphic v1 'content' object).
+CONTENT_V2_CONFIG: dict[str, dict[str, Any]] = {
+    "page": {
+        "url_suffix": URL_SUFFIX_V2["PAGES"],
+        "output_prefix": OUTPUT_PREFIX["PAGE"],
+        "id_arg": "page_id",
+        "list_status": LEGAL_PAGE_LIST_STATUS_V2,
+        "single_status": LEGAL_PAGE_SINGLE_STATUS_V2,
+        "list_status_message": "INVALID_PAGE_STATUS_LIST_V2",
+        "single_status_message": "INVALID_PAGE_STATUS_SINGLE_V2",
+        "supports_subtype_filter": True,
+        "supports_direct_children": True,
+        "label": "Page",
+    },
+    "blogpost": {
+        "url_suffix": URL_SUFFIX_V2["BLOGPOSTS"],
+        "output_prefix": OUTPUT_PREFIX["BLOGPOST"],
+        "id_arg": "blogpost_id",
+        "list_status": LEGAL_BLOGPOST_LIST_STATUS_V2,
+        "single_status": LEGAL_BLOGPOST_SINGLE_STATUS_V2,
+        "list_status_message": "INVALID_BLOGPOST_STATUS_LIST_V2",
+        "single_status_message": "INVALID_BLOGPOST_STATUS_SINGLE_V2",
+        "supports_subtype_filter": False,
+        "supports_direct_children": False,
+        "label": "Blog post",
+    },
+}
 """ CLIENT CLASS """
 
 
@@ -969,6 +1058,529 @@ def validate_update_content_args(args: dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version"))
 
 
+""" HELPER FUNCTIONS (REST API v2) """
+
+
+def prepare_cursor_from_link_header(response: requests.Response) -> str:
+    """
+    Extract the pagination cursor from a v2 API response's ``Link`` header.
+
+    The Confluence REST API v2 returns pagination information in the ``Link`` HTTP response
+    header (RFC 5988), e.g. ``<https://.../wiki/api/v2/pages?cursor=abc123>; rel="next"``.
+    This function parses that header, isolates the URL marked with ``rel="next"`` and returns
+    the value of the ``cursor`` query parameter.
+
+    :type response: ``requests.Response``
+    :param response: The raw API response object.
+
+    :return: Next page cursor (empty string when there is no next page).
+    :rtype: ``str``
+    """
+    link_header = response.headers.get("Link", "")
+    if not link_header:
+        return ""
+
+    for part in link_header.split(","):
+        section = part.split(";")
+        if len(section) < 2:
+            continue
+        rel = section[1].strip()
+        if rel not in ('rel="next"', "rel=next"):
+            continue
+        url = section[0].strip().strip("<>")
+        query = urllib.parse.urlparse(url).query
+        cursor_values = urllib.parse.parse_qs(query).get("cursor", [])
+        if cursor_values:
+            return cursor_values[0]
+
+    return ""
+
+
+def validate_limit_v2(args: dict[str, str]) -> Optional[int]:
+    """
+    Validate and normalize the ``limit`` argument for v2 list commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: The validated limit or ``None`` when not provided.
+    :rtype: ``Optional[int]``
+    """
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    if limit is None:
+        return None
+    if limit < MIN_LIMIT_V2 or limit > MAX_LIMIT_V2:
+        raise ValueError(MESSAGES["INVALID_LIMIT_V2"].format(limit))
+    return limit
+
+
+def prepare_content_body_v2(args: dict[str, str], legal_representations: list[str], message_key: str) -> dict[str, Any]:
+    """
+    Build the v2 ``body`` object for page/blogpost/comment create and update requests.
+
+    The v2 body format differs from v1 and is shaped as
+    ``{"representation": "storage", "value": "<p>...</p>"}``.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type legal_representations: ``list[str]``
+    :param legal_representations: The allowed body representation values for the resource.
+    :type message_key: ``str``
+    :param message_key: The MESSAGES key to use when the representation is invalid.
+
+    :return: The v2 body object (empty dict when no body value is provided).
+    :rtype: ``Dict[str, Any]``
+    """
+    body_value = args.get("body_value")
+    if not body_value:
+        return {}
+
+    representation = args.get("body_representation", "storage").lower()
+    if representation not in legal_representations:
+        raise ValueError(MESSAGES[message_key])
+
+    return {"representation": representation, "value": body_value}
+
+
+def validate_content_create_args_v2(args: dict[str, str]) -> None:
+    """
+    Validate arguments shared by page-create and blogpost-create v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    if not args.get("space_id"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("space_id"))
+
+    status = args.get("status", "current").lower()
+    if status not in LEGAL_STATUS_CREATE_V2:
+        raise ValueError(MESSAGES["INVALID_STATUS_CREATE_V2"])
+
+    representation = args.get("body_representation", "storage").lower()
+    if representation not in LEGAL_BODY_REPRESENTATION_V2:
+        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION_V2"])
+
+
+def prepare_content_create_params_v2(args: dict[str, str]) -> dict[str, Any]:
+    """
+    Build the request body for page-create and blogpost-create v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: The request body object.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_content_create_args_v2(args)
+
+    body = prepare_content_body_v2(args, LEGAL_BODY_REPRESENTATION_V2, "INVALID_BODY_REPRESENTATION_V2")
+    params = {
+        "spaceId": args["space_id"],
+        "status": args.get("status", "current").lower(),
+        "title": args.get("title"),
+        "body": body or None,
+    }
+
+    parent_id = args.get("parent_id")
+    if parent_id:
+        params["parentId"] = parent_id
+
+    return assign_params(**params)
+
+
+def validate_content_update_args_v2(args: dict[str, str], config: dict[str, Any]) -> None:
+    """
+    Validate arguments shared by page-update and blogpost-update v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type config: ``Dict[str, Any]``
+    :param config: The resource configuration from ``CONTENT_V2_CONFIG``.
+
+    :return: None
+    """
+    id_arg = config["id_arg"]
+    if not args.get(id_arg):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format(id_arg))
+
+    if not args.get("version_number"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version_number"))
+
+    status = args.get("status", "current").lower()
+    if status not in LEGAL_STATUS_UPDATE_V2:
+        raise ValueError(MESSAGES["INVALID_STATUS_CREATE_V2"])
+
+    representation = args.get("body_representation", "storage").lower()
+    if representation not in LEGAL_BODY_REPRESENTATION_V2:
+        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION_V2"])
+
+
+def prepare_content_update_params_v2(args: dict[str, str], config: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build the request body for page-update and blogpost-update v2 commands.
+
+    v2 update requires an explicit ``version.number`` increment supplied by the caller.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type config: ``Dict[str, Any]``
+    :param config: The resource configuration from ``CONTENT_V2_CONFIG``.
+
+    :return: The request body object.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_content_update_args_v2(args, config)
+
+    content_id = args[config["id_arg"]]
+    version_number = arg_to_number(args.get("version_number"), arg_name="version_number")
+    body = prepare_content_body_v2(args, LEGAL_BODY_REPRESENTATION_V2, "INVALID_BODY_REPRESENTATION_V2")
+
+    params = {
+        "id": content_id,
+        "status": args.get("status", "current").lower(),
+        "title": args.get("title"),
+        "body": body or None,
+        "version": {"number": version_number, "message": args.get("version_message")},
+    }
+
+    if config["label"] == "Page" and args.get("space_id"):
+        params["spaceId"] = args["space_id"]
+
+    return assign_params(**params)
+
+
+def validate_content_list_args_v2(args: dict[str, str], config: dict[str, Any]) -> None:
+    """
+    Validate arguments for page-list and blogpost-list v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type config: ``Dict[str, Any]``
+    :param config: The resource configuration from ``CONTENT_V2_CONFIG``.
+
+    :return: None
+    """
+    validate_limit_v2(args)
+
+    status = args.get("status", "").lower()
+    if status and status not in config["list_status"]:
+        raise ValueError(MESSAGES[config["list_status_message"]])
+
+    if config["supports_subtype_filter"]:
+        subtype = args.get("subtype", "").lower()
+        if subtype and subtype not in LEGAL_PAGE_SUBTYPE_FILTER_V2:
+            raise ValueError(MESSAGES["INVALID_SUBTYPE_FILTER_V2"])
+
+
+def prepare_content_list_params_v2(args: dict[str, str], config: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build the query parameters for page-list and blogpost-list v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type config: ``Dict[str, Any]``
+    :param config: The resource configuration from ``CONTENT_V2_CONFIG``.
+
+    :return: The query parameters.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_content_list_args_v2(args, config)
+    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
+
+    params: dict[str, Any] = {
+        "limit": limit,
+        "id": argToList(args.get("id")),
+        "space-id": argToList(args.get("space_id")),
+        "status": argToList(args.get("status")),
+        "title": args.get("title"),
+        "sort": args.get("sort"),
+        "cursor": args.get("cursor"),
+    }
+
+    if config["supports_subtype_filter"] and args.get("subtype"):
+        params["subtype"] = args["subtype"].lower()
+
+    return assign_params(**params)
+
+
+def prepare_hr_for_content_v2(content: dict[str, Any], label: str) -> str:
+    """
+    Prepare human-readable output for a single v2 page/blogpost.
+
+    :type content: ``Dict[str, Any]``
+    :param content: The page or blogpost data.
+    :type label: ``str``
+    :param label: The resource label (e.g. ``Page`` or ``Blog post``).
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    hr_record = {
+        "ID": content.get("id", ""),
+        "Title": content.get("title", ""),
+        "Status": content.get("status", ""),
+        "Space ID": content.get("spaceId", ""),
+        "Author ID": content.get("authorId", ""),
+        "Created At": content.get("createdAt", ""),
+        "Version": content.get("version", {}).get("number", ""),
+    }
+    return tableToMarkdown(
+        label, hr_record, ["ID", "Title", "Status", "Space ID", "Author ID", "Created At", "Version"], removeNull=True
+    )
+
+
+def prepare_hr_for_content_list_v2(contents: list[dict[str, Any]], label: str) -> str:
+    """
+    Prepare human-readable output for a list of v2 pages/blogposts.
+
+    :type contents: ``list[Dict[str, Any]]``
+    :param contents: The page or blogpost data.
+    :type label: ``str``
+    :param label: The resource label (e.g. ``Page`` or ``Blog post``).
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    hr_list = []
+    for content in contents:
+        hr_list.append(
+            {
+                "ID": content.get("id", ""),
+                "Title": content.get("title", ""),
+                "Status": content.get("status", ""),
+                "Space ID": content.get("spaceId", ""),
+                "Author ID": content.get("authorId", ""),
+                "Created At": content.get("createdAt", ""),
+            }
+        )
+    return tableToMarkdown(
+        f"{label}(s)", hr_list, ["ID", "Title", "Status", "Space ID", "Author ID", "Created At"], removeNull=True
+    )
+
+
+def validate_comment_create_args_v2(args: dict[str, str], is_inline: bool) -> None:
+    """
+    Validate arguments for footer-comment-create and inline-comment-create v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type is_inline: ``bool``
+    :param is_inline: Whether the comment is an inline comment.
+
+    :return: None
+    """
+    if not args.get("body_value"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("body_value"))
+
+    representation = args.get("body_representation", "storage").lower()
+    if representation not in LEGAL_COMMENT_BODY_REPRESENTATION_V2:
+        raise ValueError(MESSAGES["INVALID_COMMENT_BODY_REPRESENTATION_V2"])
+
+    container_args = ("page_id", "blogpost_id", "parent_comment_id", "attachment_id", "custom_content_id")
+    if not any(args.get(arg) for arg in container_args):
+        raise ValueError(MESSAGES["MISSING_COMMENT_CONTAINER_V2"])
+
+
+def prepare_comment_create_params_v2(args: dict[str, str], is_inline: bool) -> dict[str, Any]:
+    """
+    Build the request body for footer-comment-create and inline-comment-create v2 commands.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type is_inline: ``bool``
+    :param is_inline: Whether the comment is an inline comment.
+
+    :return: The request body object.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_comment_create_args_v2(args, is_inline)
+
+    body = prepare_content_body_v2(args, LEGAL_COMMENT_BODY_REPRESENTATION_V2, "INVALID_COMMENT_BODY_REPRESENTATION_V2")
+    params: dict[str, Any] = {
+        "body": body,
+        "pageId": args.get("page_id"),
+        "blogPostId": args.get("blogpost_id"),
+        "parentCommentId": args.get("parent_comment_id"),
+        "attachmentId": args.get("attachment_id"),
+        "customContentId": args.get("custom_content_id"),
+    }
+
+    if is_inline:
+        inline_properties = assign_params(
+            textSelection=args.get("text_selection"),
+            textSelectionMatchCount=arg_to_number(args.get("text_selection_match_count"), arg_name="text_selection_match_count"),
+            textSelectionMatchIndex=arg_to_number(args.get("text_selection_match_index"), arg_name="text_selection_match_index"),
+        )
+        if inline_properties:
+            params["inlineCommentProperties"] = inline_properties
+
+    return assign_params(**params)
+
+
+def prepare_hr_for_comment_v2(comment: dict[str, Any], label: str) -> str:
+    """
+    Prepare human-readable output for a created v2 footer/inline comment.
+
+    :type comment: ``Dict[str, Any]``
+    :param comment: The comment data.
+    :type label: ``str``
+    :param label: The comment label (e.g. ``Footer Comment``).
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    hr_record = {
+        "ID": comment.get("id", ""),
+        "Status": comment.get("status", ""),
+        "Page ID": comment.get("pageId", ""),
+        "Blog Post ID": comment.get("blogPostId", ""),
+        "Parent Comment ID": comment.get("parentCommentId", ""),
+        "Version": comment.get("version", {}).get("number", ""),
+    }
+    return tableToMarkdown(
+        label, hr_record, ["ID", "Status", "Page ID", "Blog Post ID", "Parent Comment ID", "Version"], removeNull=True
+    )
+
+
+def validate_space_list_args_v2(args: dict[str, str]) -> None:
+    """
+    Validate arguments for space-listv2 command.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    validate_limit_v2(args)
+
+    space_type = args.get("type", "").lower()
+    if space_type and space_type not in LEGAL_SPACE_TYPE_V2:
+        raise ValueError(MESSAGES["INVALID_SPACE_TYPE_V2"])
+
+    status = args.get("status", "").lower()
+    if status and status not in LEGAL_SPACE_STATUS_V2:
+        raise ValueError(MESSAGES["INVALID_SPACE_STATUS_V2"])
+
+
+def prepare_space_list_params_v2(args: dict[str, str]) -> dict[str, Any]:
+    """
+    Build the query parameters for space-listv2 command.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: The query parameters.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_space_list_args_v2(args)
+    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
+
+    params = {
+        "limit": limit,
+        "ids": argToList(args.get("ids")),
+        "keys": argToList(args.get("keys")),
+        "type": args.get("type"),
+        "status": args.get("status"),
+        "sort": args.get("sort"),
+        "cursor": args.get("cursor"),
+    }
+    return assign_params(**params)
+
+
+def validate_space_create_args_v2(args: dict[str, str]) -> None:
+    """
+    Validate arguments for space-createv2 command.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    if not args.get("name"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("name"))
+    if not args.get("key"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("key"))
+
+    description_format = args.get("description_format", "plain").lower()
+    if description_format not in LEGAL_DESCRIPTION_FORMAT_V2:
+        raise ValueError(MESSAGES["INVALID_DESCRIPTION_FORMAT_V2"])
+
+
+def prepare_space_create_params_v2(args: dict[str, str]) -> dict[str, Any]:
+    """
+    Build the request body for space-createv2 command.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: The request body object.
+    :rtype: ``Dict[str, Any]``
+    """
+    validate_space_create_args_v2(args)
+
+    params: dict[str, Any] = {"name": args["name"], "key": args["key"]}
+
+    description_value = args.get("description_value")
+    if description_value:
+        description_format = args.get("description_format", "plain").lower()
+        params["description"] = {description_format: {"value": description_value, "representation": description_format}}
+
+    role_assignments = args.get("role_assignments")
+    if role_assignments:
+        try:
+            params["roleAssignments"] = json.loads(role_assignments)
+        except (json.JSONDecodeError, TypeError):
+            raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
+
+    return assign_params(**params)
+
+
+def prepare_hr_for_space_create_v2(space: dict[str, Any]) -> str:
+    """
+    Prepare human-readable output for a created v2 space.
+
+    :type space: ``Dict[str, Any]``
+    :param space: The space data.
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    hr_record = {
+        "ID": space.get("id", ""),
+        "Key": space.get("key", ""),
+        "Name": space.get("name", ""),
+        "Type": space.get("type", ""),
+        "Status": space.get("status", ""),
+    }
+    return tableToMarkdown("Space", hr_record, ["ID", "Key", "Name", "Type", "Status"], removeNull=True)
+
+
+def prepare_hr_for_space_list_v2(spaces: list[dict[str, Any]]) -> str:
+    """
+    Prepare human-readable output for a list of v2 spaces.
+
+    :type spaces: ``list[Dict[str, Any]]``
+    :param spaces: The space data.
+
+    :rtype: ``str``
+    :return: Human readable.
+    """
+    hr_list = []
+    for space in spaces:
+        hr_list.append(
+            {
+                "ID": space.get("id", ""),
+                "Key": space.get("key", ""),
+                "Name": space.get("name", ""),
+                "Type": space.get("type", ""),
+                "Status": space.get("status", ""),
+            }
+        )
+    return tableToMarkdown("Space(s)", hr_list, ["ID", "Key", "Name", "Type", "Status"], removeNull=True)
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1403,6 +2015,305 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     )
 
 
+""" COMMAND FUNCTIONS (REST API v2) """
+
+
+def confluence_cloud_content_create_command_v2(client: Client, args: dict[str, str], content_type: str) -> CommandResults:
+    """
+    Create a page or blogpost using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type content_type: ``str``
+    :param content_type: Either ``page`` or ``blogpost``.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    config = CONTENT_V2_CONFIG[content_type]
+    params = prepare_content_create_params_v2(args)
+
+    response = client.http_request(method="POST", url_suffix=config["url_suffix"], json_data=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_content_v2(response_json, config["label"])
+
+    return CommandResults(
+        outputs_prefix=config["output_prefix"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
+def confluence_cloud_content_list_command_v2(client: Client, args: dict[str, str], content_type: str) -> CommandResults:
+    """
+    List pages or blogposts using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type content_type: ``str``
+    :param content_type: Either ``page`` or ``blogpost``.
+
+    :return: Standard command result or no records found message.
+    :rtype: ``CommandResults``
+    """
+    config = CONTENT_V2_CONFIG[content_type]
+    params = prepare_content_list_params_v2(args, config)
+
+    response = client.http_request(method="GET", url_suffix=config["url_suffix"], params=params)
+    response_json = response.json()
+    total_records = response_json.get("results", [])
+
+    if not total_records:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format(f"{config['label'].lower()}(s)"))
+
+    context = remove_empty_elements_for_context(total_records)
+    next_cursor = prepare_cursor_from_link_header(response)
+
+    outputs: dict[str, Any] = {f"{config['output_prefix']}(val.id == obj.id)": context}
+    if next_cursor:
+        next_page_context = {"next_page_token": next_cursor, "name": f"confluence-cloud-{content_type}-list"}
+        outputs[f"{OUTPUT_PREFIX['PAGETOKEN']}(val.name == obj.name)"] = next_page_context
+
+    readable_hr = prepare_hr_for_content_list_v2(total_records, config["label"])
+    if next_cursor:
+        readable_hr += f"\nRun the command with argument cursor={next_cursor} to see the next set of records.\n"
+
+    return CommandResults(outputs=outputs, readable_output=readable_hr, raw_response=response_json)
+
+
+def confluence_cloud_content_update_command_v2(client: Client, args: dict[str, str], content_type: str) -> CommandResults:
+    """
+    Update a page or blogpost using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type content_type: ``str``
+    :param content_type: Either ``page`` or ``blogpost``.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    config = CONTENT_V2_CONFIG[content_type]
+    content_id = args[config["id_arg"]]
+    params = prepare_content_update_params_v2(args, config)
+    request_url = urljoin(config["url_suffix"], content_id)
+
+    response = client.http_request(method="PUT", url_suffix=request_url, json_data=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_content_v2(response_json, config["label"])
+
+    return CommandResults(
+        outputs_prefix=config["output_prefix"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
+def confluence_cloud_content_delete_command_v2(client: Client, args: dict[str, str], content_type: str) -> CommandResults:
+    """
+    Delete a page or blogpost using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    :type content_type: ``str``
+    :param content_type: Either ``page`` or ``blogpost``.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    config = CONTENT_V2_CONFIG[content_type]
+    content_id = args.get(config["id_arg"])
+    if not content_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format(config["id_arg"]))
+
+    params = assign_params(purge=argToBoolean(args["purge"]) if args.get("purge") else None)
+    request_url = urljoin(config["url_suffix"], content_id)
+
+    client.http_request(method="DELETE", url_suffix=request_url, params=params)
+
+    hr_key = "HR_PAGE_DELETE" if content_type == "page" else "HR_BLOGPOST_DELETE"
+    return CommandResults(readable_output=MESSAGES[hr_key].format(content_id))
+
+
+def confluence_cloud_page_create_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Create a page (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_create_command_v2(client, args, "page")
+
+
+def confluence_cloud_page_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """List pages (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_list_command_v2(client, args, "page")
+
+
+def confluence_cloud_page_update_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Update a page (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_update_command_v2(client, args, "page")
+
+
+def confluence_cloud_page_delete_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Delete a page (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_delete_command_v2(client, args, "page")
+
+
+def confluence_cloud_blogpost_create_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Create a blogpost (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_create_command_v2(client, args, "blogpost")
+
+
+def confluence_cloud_blogpost_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """List blogposts (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_list_command_v2(client, args, "blogpost")
+
+
+def confluence_cloud_blogpost_update_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Update a blogpost (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_update_command_v2(client, args, "blogpost")
+
+
+def confluence_cloud_blogpost_delete_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """Delete a blogpost (Confluence Cloud REST API v2)."""
+    return confluence_cloud_content_delete_command_v2(client, args, "blogpost")
+
+
+def confluence_cloud_footer_comment_create_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Create a footer comment using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    params = prepare_comment_create_params_v2(args, is_inline=False)
+
+    response = client.http_request(method="POST", url_suffix=URL_SUFFIX_V2["FOOTER_COMMENTS"], json_data=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_comment_v2(response_json, "Footer Comment")
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["COMMENT"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
+def confluence_cloud_inline_comment_create_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Create an inline comment using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    params = prepare_comment_create_params_v2(args, is_inline=True)
+
+    response = client.http_request(method="POST", url_suffix=URL_SUFFIX_V2["INLINE_COMMENTS"], json_data=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_comment_v2(response_json, "Inline Comment")
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["COMMENT"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
+def confluence_cloud_space_list_command_v2(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    List spaces using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result or no records found message.
+    :rtype: ``CommandResults``
+    """
+    params = prepare_space_list_params_v2(args)
+
+    response = client.http_request(method="GET", url_suffix=URL_SUFFIX_V2["SPACES"], params=params)
+    response_json = response.json()
+    total_records = response_json.get("results", [])
+
+    if not total_records:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("space(s)"))
+
+    context = remove_empty_elements_for_context(total_records)
+    next_cursor = prepare_cursor_from_link_header(response)
+
+    outputs: dict[str, Any] = {f"{OUTPUT_PREFIX['SPACE']}(val.id == obj.id)": context}
+    if next_cursor:
+        next_page_context = {"next_page_token": next_cursor, "name": "confluence-cloud-space-listv2"}
+        outputs[f"{OUTPUT_PREFIX['PAGETOKEN']}(val.name == obj.name)"] = next_page_context
+
+    readable_hr = prepare_hr_for_space_list_v2(total_records)
+    if next_cursor:
+        readable_hr += f"\nRun the command with argument cursor={next_cursor} to see the next set of records.\n"
+
+    return CommandResults(outputs=outputs, readable_output=readable_hr, raw_response=response_json)
+
+
+def confluence_cloud_space_create_command_v2(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Create a space using the Confluence Cloud REST API v2.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    params = prepare_space_create_params_v2(args)
+
+    response = client.http_request(method="POST", url_suffix=URL_SUFFIX_V2["SPACES"], json_data=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_space_create_v2(response_json)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["SPACE"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
 def oauth_start_command(oauth_client) -> CommandResults:
     """Start OAuth authentication flow."""
     url = oauth_client.oauth_start()
@@ -1618,6 +2529,19 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-content-create": confluence_cloud_content_create_command,
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
             "confluence-cloud-content-get": confluence_cloud_content_get_command,
+            # --- REST API v2 commands ---
+            "confluence-cloud-page-create": confluence_cloud_page_create_command,
+            "confluence-cloud-page-list": confluence_cloud_page_list_command,
+            "confluence-cloud-page-update": confluence_cloud_page_update_command,
+            "confluence-cloud-page-delete": confluence_cloud_page_delete_command,
+            "confluence-cloud-blogpost-create": confluence_cloud_blogpost_create_command,
+            "confluence-cloud-blogpost-list": confluence_cloud_blogpost_list_command,
+            "confluence-cloud-blogpost-update": confluence_cloud_blogpost_update_command,
+            "confluence-cloud-blogpost-delete": confluence_cloud_blogpost_delete_command,
+            "confluence-cloud-footer-comment-create": confluence_cloud_footer_comment_create_command,
+            "confluence-cloud-inline-comment-create": confluence_cloud_inline_comment_create_command,
+            "confluence-cloud-space-listv2": confluence_cloud_space_list_command_v2,
+            "confluence-cloud-space-createv2": confluence_cloud_space_create_command_v2,
         }
 
         strip_args(args)

@@ -68,8 +68,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 - defaultvalue: 10000
   section: Collect
   display: Max number of events per fetch
@@ -78,8 +76,6 @@ configuration:
   type: 0
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 - display: Fetch Events
   defaultvalue: 'false'
   name: isFetchEvents
@@ -88,13 +84,555 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
 script:
   commands:
+  - arguments:
+    - description: |-
+        The ID of the space where the page is created. Retrieve using the confluence-cloud-space-listv2 command.
+      name: space_id
+      required: true
+    - description: The title of the page.
+      name: title
+    - description: The status of the page to be created.
+      name: status
+      auto: PREDEFINED
+      defaultValue: current
+      predefined:
+      - current
+      - draft
+    - description: |-
+        The content body value of the page.
+      name: body_value
+    - description: |-
+        The content format type of the body value.
+      name: body_representation
+      auto: PREDEFINED
+      defaultValue: storage
+      predefined:
+      - storage
+      - atlas_doc_format
+      - wiki
+    - description: |-
+        The ID of the parent page under which the new page is created.
+      name: parent_id
+    description: |-
+      Creates a new page in Confluence Cloud (REST API v2).
+    name: confluence-cloud-page-create
+    outputs:
+    - contextPath: ConfluenceCloud.Page.id
+      description: The ID of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.status
+      description: The status of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.title
+      description: The title of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.spaceId
+      description: The ID of the space the page belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Page.parentId
+      description: The ID of the parent page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.authorId
+      description: The account ID of the page author.
+      type: String
+    - contextPath: ConfluenceCloud.Page.createdAt
+      description: Date and time, in ISO 8601 format, when the page was created.
+      type: Date
+    - contextPath: ConfluenceCloud.Page.version.number
+      description: The version number of the page.
+      type: Number
+  - arguments:
+    - description: |-
+        A comma-separated list of page IDs to filter by.
+      name: id
+      isArray: true
+    - description: "A comma-separated list of space IDs to filter by."
+      name: space_id
+      isArray: true
+    - description: The status of pages to filter by.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - current
+      - archived
+      - deleted
+      - trashed
+    - description: |-
+        The title of pages to filter by.
+      name: title
+    - description: |-
+        The subtype of pages to filter by.
+      name: subtype
+      auto: PREDEFINED
+      predefined:
+      - page
+      - live
+    - description: |-
+        Ordering of the results by a particular field. Prefix with '-' for descending order.
+      name: sort
+    - description: |-
+        The maximum number of records to return. Value must be between 1 and 250.
+      name: limit
+      defaultValue: '50'
+    - description: The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output).
+      name: cursor
+    description: |-
+      Returns a list of pages from Confluence Cloud (REST API v2).
+    name: confluence-cloud-page-list
+    outputs:
+    - contextPath: ConfluenceCloud.Page.id
+      description: The ID of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.status
+      description: The status of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.title
+      description: The title of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.spaceId
+      description: The ID of the space the page belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Page.authorId
+      description: The account ID of the page author.
+      type: String
+    - contextPath: ConfluenceCloud.Page.createdAt
+      description: Date and time, in ISO 8601 format, when the page was created.
+      type: Date
+    - contextPath: ConfluenceCloud.PageToken.Content.next_page_token
+      description: The cursor to use for fetching the next page of results.
+      type: String
+    - contextPath: ConfluenceCloud.PageToken.Content.name
+      description: The name of the command that produced the page token.
+      type: String
+  - arguments:
+    - description: |-
+        The ID of the page to update.
+      name: page_id
+      required: true
+    - description: |-
+        The new version number for the page. Must be one greater than the current version.
+      name: version_number
+      required: true
+    - description: |-
+        The title of the page.
+      name: title
+    - description: |-
+        The status of the page.
+      name: status
+      auto: PREDEFINED
+      defaultValue: current
+      predefined:
+      - current
+      - draft
+    - description: |-
+        The content body value of the page.
+      name: body_value
+    - auto: PREDEFINED
+      description: |-
+        The content format type of the body value.
+      name: body_representation
+      predefined:
+      - storage
+      - atlas_doc_format
+      - wiki
+      defaultValue: storage
+    - description: The ID of the space to move the page to.
+      name: space_id
+    - description: A message describing the update for the version history.
+      name: version_message
+    description: |-
+      Updates an existing page in Confluence Cloud (REST API v2).
+    name: confluence-cloud-page-update
+    outputs:
+    - contextPath: ConfluenceCloud.Page.id
+      description: The ID of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.status
+      description: The status of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.title
+      description: The title of the page.
+      type: String
+    - contextPath: ConfluenceCloud.Page.spaceId
+      description: The ID of the space the page belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Page.version.number
+      description: The version number of the page.
+      type: Number
+  - arguments:
+    - description: |-
+        The ID of the page to delete.
+      name: page_id
+      required: true
+    - defaultValue: 'false'
+      description: |-
+        Whether to permanently purge the page from the trash. Requires the page to already be in the trash.
+      name: purge
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Deletes a page in Confluence Cloud (REST API v2).
+    name: confluence-cloud-page-delete
+    outputs: []
+  - arguments:
+    - description: |-
+        The ID of the space where the blog post is created. Retrieve using the confluence-cloud-space-listv2 command.
+      name: space_id
+      required: true
+    - description: |-
+        The title of the blog post.
+      name: title
+    - description: The status of the blog post to be created.
+      name: status
+      auto: PREDEFINED
+      defaultValue: current
+      predefined:
+      - current
+      - draft
+    - description: "The content body value of the blog post."
+      name: body_value
+    - auto: PREDEFINED
+      description: |-
+        The content format type of the body value.
+      name: body_representation
+      predefined:
+      - storage
+      - atlas_doc_format
+      - wiki
+      defaultValue: storage
+    description: Creates a new blog post in Confluence Cloud (REST API v2).
+    name: confluence-cloud-blogpost-create
+    outputs:
+    - contextPath: ConfluenceCloud.Blogpost.id
+      description: The ID of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.status
+      description: The status of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.title
+      description: The title of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.spaceId
+      description: The ID of the space the blog post belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.authorId
+      description: The account ID of the blog post author.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.createdAt
+      description: Date and time, in ISO 8601 format, when the blog post was created.
+      type: Date
+    - contextPath: ConfluenceCloud.Blogpost.version.number
+      description: The version number of the blog post.
+      type: Number
+  - arguments:
+    - description: A comma-separated list of blog post IDs to filter by.
+      name: id
+      isArray: true
+    - description: |-
+        A comma-separated list of space IDs to filter by.
+      name: space_id
+      isArray: true
+    - auto: PREDEFINED
+      description: The status of blog posts to filter by.
+      name: status
+      predefined:
+      - current
+      - deleted
+      - trashed
+    - description: The title of blog posts to filter by.
+      name: title
+    - description: Ordering of the results by a particular field. Prefix with '-' for descending order.
+      name: sort
+    - defaultValue: '50'
+      description: The maximum number of records to return. Value must be between 1 and 250.
+      name: limit
+    - description: The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output).
+      name: cursor
+    description: |-
+      Returns a list of blog posts from Confluence Cloud (REST API v2).
+    name: confluence-cloud-blogpost-list
+    outputs:
+    - contextPath: ConfluenceCloud.Blogpost.id
+      description: The ID of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.status
+      description: The status of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.title
+      description: The title of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.spaceId
+      description: The ID of the space the blog post belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.authorId
+      description: The account ID of the blog post author.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.createdAt
+      description: Date and time, in ISO 8601 format, when the blog post was created.
+      type: Date
+    - contextPath: ConfluenceCloud.PageToken.Content.next_page_token
+      description: The cursor to use for fetching the next page of results.
+      type: String
+    - contextPath: ConfluenceCloud.PageToken.Content.name
+      description: The name of the command that produced the page token.
+      type: String
+  - arguments:
+    - description: The ID of the blog post to update.
+      name: blogpost_id
+      required: true
+    - description: |-
+        The new version number for the blog post. Must be one greater than the current version.
+      name: version_number
+      required: true
+    - description: |-
+        The title of the blog post.
+      name: title
+    - description: |-
+        The status of the blog post.
+      name: status
+      auto: PREDEFINED
+      defaultValue: current
+      predefined:
+      - current
+      - draft
+    - description: |-
+        The content body value of the blog post.
+      name: body_value
+    - description: |-
+        The content format type of the body value.
+      name: body_representation
+      auto: PREDEFINED
+      defaultValue: storage
+      predefined:
+      - storage
+      - atlas_doc_format
+      - wiki
+    - description: |-
+        A message describing the update for the version history.
+      name: version_message
+    description: |-
+      Updates an existing blog post in Confluence Cloud (REST API v2).
+    name: confluence-cloud-blogpost-update
+    outputs:
+    - contextPath: ConfluenceCloud.Blogpost.id
+      description: The ID of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.status
+      description: The status of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.title
+      description: The title of the blog post.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.spaceId
+      description: The ID of the space the blog post belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Blogpost.version.number
+      description: The version number of the blog post.
+      type: Number
+  - arguments:
+    - description: The ID of the blog post to delete.
+      name: blogpost_id
+      required: true
+    - defaultValue: 'false'
+      description: |-
+        Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash.
+      name: purge
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: |-
+      Deletes a blog post in Confluence Cloud (REST API v2).
+    name: confluence-cloud-blogpost-delete
+    outputs: []
+  - arguments:
+    - description: |-
+        The content body value of the comment.
+      name: body_value
+      required: true
+    - defaultValue: 'storage'
+      description: |-
+        The content format type of the body value.
+      name: body_representation
+      auto: PREDEFINED
+      predefined:
+      - storage
+      - atlas_doc_format
+    - description: The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required.
+      name: page_id
+    - description: The ID of the blog post to attach the comment to.
+      name: blogpost_id
+    - description: The ID of the parent comment to reply to.
+      name: parent_comment_id
+    - description: The ID of the attachment to attach the comment to.
+      name: attachment_id
+    - description: The ID of the custom content to attach the comment to.
+      name: custom_content_id
+    description: Creates a footer comment in Confluence Cloud (REST API v2).
+    name: confluence-cloud-footer-comment-create
+    outputs:
+    - contextPath: ConfluenceCloud.Comment.id
+      description: The ID of the comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.status
+      description: The status of the comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.pageId
+      description: The ID of the page the comment belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.blogPostId
+      description: The ID of the blog post the comment belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.parentCommentId
+      description: The ID of the parent comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.version.number
+      description: The version number of the comment.
+      type: Number
+  - arguments:
+    - description: |-
+        The content body value of the comment.
+      name: body_value
+      required: true
+    - defaultValue: 'storage'
+      description: |-
+        The content format type of the body value.
+      name: body_representation
+      auto: PREDEFINED
+      predefined:
+      - storage
+      - atlas_doc_format
+    - description: |-
+        The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required.
+      name: page_id
+    - description: The ID of the blog post to attach the comment to.
+      name: blogpost_id
+    - description: The ID of the parent comment to reply to.
+      name: parent_comment_id
+    - description: The ID of the attachment to attach the comment to.
+      name: attachment_id
+    - description: The ID of the custom content to attach the comment to.
+      name: custom_content_id
+    - description: The text to highlight for the inline comment.
+      name: text_selection
+    - description: The total number of matches of the text selection in the content.
+      name: text_selection_match_count
+    - description: The zero-based index of the match to attach the inline comment to.
+      name: text_selection_match_index
+    description: Creates an inline comment in Confluence Cloud (REST API v2).
+    name: confluence-cloud-inline-comment-create
+    outputs:
+    - contextPath: ConfluenceCloud.Comment.id
+      description: The ID of the comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.status
+      description: The status of the comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.pageId
+      description: The ID of the page the comment belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.blogPostId
+      description: The ID of the blog post the comment belongs to.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.parentCommentId
+      description: The ID of the parent comment.
+      type: String
+    - contextPath: ConfluenceCloud.Comment.version.number
+      description: The version number of the comment.
+      type: Number
+  - arguments:
+    - name: ids
+      description: A comma-separated list of space IDs to filter by.
+      isArray: true
+    - name: keys
+      description: A comma-separated list of space keys to filter by.
+      isArray: true
+    - name: type
+      description: The type of spaces to filter by.
+      auto: PREDEFINED
+      predefined:
+      - global
+      - personal
+    - auto: PREDEFINED
+      description: The status of spaces to filter by.
+      name: status
+      predefined:
+      - current
+      - archived
+    - description: Ordering of the results by a particular field. Prefix with '-' for descending order.
+      name: sort
+    - defaultValue: '50'
+      description: The maximum number of records to return. Value must be between 1 and 250.
+      name: limit
+    - description: The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output).
+      name: cursor
+    name: confluence-cloud-space-listv2
+    description: Returns a list of spaces from Confluence Cloud (REST API v2).
+    outputs:
+    - contextPath: ConfluenceCloud.Space.id
+      description: The ID of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.key
+      description: The key of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.name
+      description: The name of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.type
+      description: The type of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.status
+      description: The status of the space.
+      type: String
+    - contextPath: ConfluenceCloud.PageToken.Content.next_page_token
+      description: The cursor to use for fetching the next page of results.
+      type: String
+    - contextPath: ConfluenceCloud.PageToken.Content.name
+      description: The name of the command that produced the page token.
+      type: String
+  - arguments:
+    - description: The name of the new space. The maximum length is 200 characters.
+      name: name
+      required: true
+    - description: The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters.
+      name: key
+      required: true
+    - description: The description text of the new space.
+      name: description_value
+    - auto: PREDEFINED
+      defaultValue: plain
+      description: The format of the space description.
+      name: description_format
+      predefined:
+      - plain
+      - view
+    - description: |-
+        A JSON array of role assignments granting access to principals. For example: [{"principal": {"type": "user", "id": "<accountId>"}, "roleId": "<roleId>"}].
+      name: role_assignments
+    description: Creates a new space in Confluence Cloud (REST API v2).
+    name: confluence-cloud-space-createv2
+    outputs:
+    - contextPath: ConfluenceCloud.Space.id
+      description: The ID of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.key
+      description: The key of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.name
+      description: The name of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.type
+      description: The type of the space.
+      type: String
+    - contextPath: ConfluenceCloud.Space.status
+      description: The status of the space.
+      type: String
   - arguments:
     - description: |-
         The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters.
@@ -344,10 +882,10 @@ script:
 
         Note: Supported for content type page only. To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=page" argument.
       name: ancestor_id
+    name: confluence-cloud-content-create
     description: |-
       Creates a page or blogpost for a given space.
       Note: To view the expansion of content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
-    name: confluence-cloud-content-create
     outputs:
     - contextPath: ConfluenceCloud.Content.id
       description: The ID of the content.
@@ -584,14 +1122,14 @@ script:
       description: Base link to the content.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: current
-      description: |-
+    - description: |-
         The status of the new content.
         Possible values: current, trashed, draft.
 
         Note: The term 'current' refers to the comment that is currently active.
       name: status
+      auto: PREDEFINED
+      defaultValue: current
       predefined:
       - current
       - trashed
@@ -631,10 +1169,10 @@ script:
       predefined:
       - page
       - blogpost
+    name: confluence-cloud-comment-create
     description: |-
       Creates a comment for the given content.
       Note: To view the expansion of the content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
-    name: confluence-cloud-comment-create
     outputs:
     - contextPath: ConfluenceCloud.Comment.id
       description: The ID of the comment.
@@ -918,8 +1456,8 @@ script:
     - description: "Indicates which properties to expand. \nFor reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.\n\nNote: To separate multiple values, use commas. Expanded properties will be populated in context data only."
       isArray: true
       name: expand
-    description: Returns a list of all Confluence spaces.
     name: confluence-cloud-space-list
+    description: Returns a list of all Confluence spaces.
     outputs:
     - contextPath: ConfluenceCloud.Space.id
       description: ID of the space.
@@ -1984,17 +2522,17 @@ script:
       description: Link to the group.
       type: String
   - arguments:
-      - name: should_push_events
-        description: Set this argument to True in order to create events, otherwise the command will only display them.
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        defaultValue: "false"
-      - name: start_date
-        description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
-      - name: limit
-        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    - name: should_push_events
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    - name: start_date
+      description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
+    - name: limit
+      description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: confluence-cloud-get-events
     description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
     outputs:
@@ -2081,7 +2619,7 @@ script:
       name: content_id
       required: true
     description: Retrieves a Content Item by its Content ID.
-    name: confluence-cloud-content-get   
+    name: confluence-cloud-content-get
     outputs:
     - contextPath: ConfluenceCloud.Content.id
       description: The content ID.
