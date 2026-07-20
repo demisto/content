@@ -274,6 +274,13 @@
                 },
                 "Cyberint Alert URL": {
                     "simple": "alert_data.url"
+                },
+                "CyberInt CVEs": {
+                    "complex": {
+                        "root": "alert_data.cves",
+                        "accessor": "name",
+                        "transformers": []
+                    }
                 }
             }
         },

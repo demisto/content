@@ -26,6 +26,11 @@
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
     "extractIndicatorTypesIDs": []
+   },
+   "cyberintcves": {
+    "extractAsIsIndicatorTypeId": "",
+    "isExtractingAllIndicatorTypes": true,
+    "extractIndicatorTypesIDs": []
    }
   }
  },
