@@ -447,14 +447,30 @@ def fetch_and_send_events_concurrently(
             with ThreadPoolExecutor(max_workers=workers) as executor:
                 # Each task gets its OWN client (own session) - required for thread safety.
                 futures = [executor.submit(get_events_batch, build_client(params)) for _ in range(workers)]
+                round_error: Exception | None = None
                 for future in as_completed(futures):
-                    batch_events, drained = future.result()
+                    # A single worker failing must NOT discard its sibling batches: /log_events_bulk is a
+                    # destructive-read (pop) queue, so every sibling that completed already dequeued its
+                    # events server-side. Harvest all successful siblings first, remember the first error,
+                    # and re-raise it only after the whole round is collected so those events are stashed
+                    # (via the outer except) instead of silently lost.
+                    try:
+                        batch_events, drained = future.result()
+                    except Exception as worker_exc:  # noqa: BLE001
+                        demisto.error(f"A concurrent fetch worker failed; preserving sibling batches. error: {worker_exc}")
+                        if round_error is None:
+                            round_error = worker_exc
+                        continue
                     # Keep events even from a round that also observed a 204: those batches were already
                     # popped off the server queue, so discarding them would lose data.
                     buffer.extend(batch_events)
                     fetched_count += len(batch_events)
                     if drained:
                         queue_drained = True
+                if round_error is not None:
+                    # Sibling events are now safely in ``buffer``; propagate so the caller stashes everything
+                    # not yet acknowledged and retries next cycle.
+                    raise round_error
             flush(force=False)
 
         # Final flush of whatever remains once the queue is drained or the budget is exhausted.
@@ -479,6 +495,103 @@ def fetch_and_send_events_concurrently(
     return fetched_count, sent_count, queue_drained, buffer, None
 
 
+def handle_fetch_events(
+    params: dict,
+    max_iterations: int,
+    concurrency: int,
+    pass_over_empty_response: bool,
+) -> dict:
+    """fetch-events orchestration: drains the queue, persists any unsent events, manages the backlog
+    signal, and returns the ``last_run`` dict to persist.
+
+    Extracted from ``main`` so the stash -> nextTrigger, clean-drain, and consecutive_backlog_cycles /
+    warn-threshold branches are reachable by unit tests (``main`` itself stays ``# pragma: no cover``).
+
+    Side effects (via the ``demisto`` object):
+      * ``setIntegrationContext`` - stashes unsent events on a send failure, or clears the stash.
+      * emits the per-cycle ingestion metrics line and the backlog warning.
+
+    Returns the ``last_run`` dict for the caller to pass to ``demisto.setLastRun``.
+    """
+    last_run = demisto.getLastRun()
+    integration_context = demisto.getIntegrationContext()
+    from_context = bool(integration_context.get("events"))
+    # Events popped in a previous execution but not yet acknowledged into XSIAM are restored and
+    # flushed first, so a prior push failure never loses data on this destructive-read queue.
+    pending_events = integration_context.get("events") or []
+    if from_context:
+        demisto.info(f"Restoring {len(pending_events)} pending events from integration context before fetching.")
+
+    fetched_count, sent_count, queue_drained, unsent_events, exception = fetch_and_send_events_concurrently(
+        params=params,
+        max_iterations=max_iterations,
+        concurrency=concurrency,
+        pending_events=pending_events,
+        pass_over_empty_response=pass_over_empty_response,
+    )
+
+    if unsent_events:
+        # A send failed mid-drain: persist everything not yet acknowledged into XSIAM so it is
+        # retried on the next execution, and force an immediate retry via nextTrigger. Because sends
+        # are chunked and the sent chunks were removed, this stash is strictly smaller than before.
+        # Capture the actual XSIAM response body for the failure so the log shows what the platform
+        # sent back (empty/blank/truncated body vs. a real error).
+        xsiam_response = describe_xsiam_response_failure(exception)[0] if exception else "response_body=<none>"
+        demisto.error(
+            f"Received error when sending events to XSIAM; stashing {len(unsent_events)} unsent events. "
+            f"[{exception}] xsiam_response: {xsiam_response}"
+        )
+        demisto.setIntegrationContext({"events": unsent_events})
+        queue_drained = False
+    else:
+        demisto.setIntegrationContext({})
+        if exception:
+            demisto.info(f"got exception during fetch (all fetched events were sent): [{exception}]")
+
+    # If the queue has not been fully drained (backlog remaining, or a stash to retry), trigger the
+    # next fetch in 1 second so the collector keeps draining back-to-back instead of waiting the full
+    # fetch interval.
+    if not queue_drained:
+        last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
+        # Track how many consecutive cycles the queue has not drained, so sustained backlog
+        # (= growing ingestion lag) is observable instead of failing silently.
+        consecutive_backlog_cycles = int(last_run.get("consecutive_backlog_cycles", 0)) + 1
+        last_run["consecutive_backlog_cycles"] = consecutive_backlog_cycles
+        # Only surface the high-visibility error at the threshold and then periodically (every
+        # BACKLOG_WARNING_INTERVAL cycles) so a sustained backlog does not flood the logs with an
+        # identical error on every back-to-back cycle.
+        should_warn = (
+            consecutive_backlog_cycles >= BACKLOG_WARNING_THRESHOLD
+            and (consecutive_backlog_cycles - BACKLOG_WARNING_THRESHOLD) % BACKLOG_WARNING_INTERVAL == 0
+        )
+        if should_warn:
+            demisto.error(
+                f"[Fetch] SaaS Security ingestion backlog: the event queue has not fully drained for "
+                f"{consecutive_backlog_cycles} consecutive fetch cycles. The upstream event rate may "
+                f"exceed the collector throughput, which can cause ingestion lag. Consider increasing "
+                f"'The maximum number of iterations to retrieve events' or distributing the load across "
+                f"multiple instances."
+            )
+        else:
+            demisto.debug("[Fetch] Batching in progress. Next run will be triggered in 1 second.")
+    else:
+        consecutive_backlog_cycles = 0
+        last_run.pop("nextTrigger", None)
+        last_run.pop("consecutive_backlog_cycles", None)
+        demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
+
+    # Emit a single, machine-parseable ingestion-metrics line per cycle. This is the completeness
+    # audit record: 'sent' can be summed over a time window and reconciled against the dataset row
+    # count for the same window, and 'queue_drained=true' is the positive signal that the collector
+    # has caught up (no events currently waiting in the SaaS Security queue).
+    demisto.info(
+        f"{METRICS_LOG_PREFIX} fetched={fetched_count} sent={sent_count} "
+        f"queue_drained={str(queue_drained).lower()} from_context={str(from_context).lower()} "
+        f"max_iterations={max_iterations} consecutive_backlog_cycles={consecutive_backlog_cycles}"
+    )
+    return last_run
+
+
 def main() -> None:  # pragma: no cover
     # The concurrent drain issues GET calls from worker threads that touch the demisto object (e.g. the
     # cached OAuth token in the integration context). support_multithreading() serializes those server
@@ -499,81 +612,11 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-events":
-            last_run = demisto.getLastRun()
-            integration_context = demisto.getIntegrationContext()
-            from_context = bool(integration_context.get("events"))
-            # Events popped in a previous execution but not yet acknowledged into XSIAM are restored and
-            # flushed first, so a prior push failure never loses data on this destructive-read queue.
-            pending_events = integration_context.get("events") or []
-            if from_context:
-                demisto.info(f"Restoring {len(pending_events)} pending events from integration context before fetching.")
-
-            fetched_count, sent_count, queue_drained, unsent_events, exception = fetch_and_send_events_concurrently(
+            last_run = handle_fetch_events(
                 params=params,
                 max_iterations=max_iterations,
                 concurrency=concurrency,
-                pending_events=pending_events,
                 pass_over_empty_response=pass_over_empty_response,
-            )
-
-            if unsent_events:
-                # A send failed mid-drain: persist everything not yet acknowledged into XSIAM so it is
-                # retried on the next execution, and force an immediate retry via nextTrigger. Because sends
-                # are chunked and the sent chunks were removed, this stash is strictly smaller than before.
-                # Capture the actual XSIAM response body for the failure so the log shows what the platform
-                # sent back (empty/blank/truncated body vs. a real error).
-                xsiam_response = describe_xsiam_response_failure(exception)[0] if exception else "response_body=<none>"
-                demisto.error(
-                    f"Received error when sending events to XSIAM; stashing {len(unsent_events)} unsent events. "
-                    f"[{exception}] xsiam_response: {xsiam_response}"
-                )
-                demisto.setIntegrationContext({"events": unsent_events})
-                queue_drained = False
-            else:
-                demisto.setIntegrationContext({})
-                if exception:
-                    demisto.info(f"got exception during fetch (all fetched events were sent): [{exception}]")
-
-            # If the queue has not been fully drained (backlog remaining, or a stash to retry), trigger the
-            # next fetch in 1 second so the collector keeps draining back-to-back instead of waiting the full
-            # fetch interval.
-            if not queue_drained:
-                last_run["nextTrigger"] = NEXT_TRIGGER_VALUE
-                # Track how many consecutive cycles the queue has not drained, so sustained backlog
-                # (= growing ingestion lag) is observable instead of failing silently.
-                consecutive_backlog_cycles = int(last_run.get("consecutive_backlog_cycles", 0)) + 1
-                last_run["consecutive_backlog_cycles"] = consecutive_backlog_cycles
-                # Only surface the high-visibility error at the threshold and then periodically (every
-                # BACKLOG_WARNING_INTERVAL cycles) so a sustained backlog does not flood the logs with an
-                # identical error on every back-to-back cycle.
-                should_warn = (
-                    consecutive_backlog_cycles >= BACKLOG_WARNING_THRESHOLD
-                    and (consecutive_backlog_cycles - BACKLOG_WARNING_THRESHOLD) % BACKLOG_WARNING_INTERVAL == 0
-                )
-                if should_warn:
-                    demisto.error(
-                        f"[Fetch] SaaS Security ingestion backlog: the event queue has not fully drained for "
-                        f"{consecutive_backlog_cycles} consecutive fetch cycles. The upstream event rate may "
-                        f"exceed the collector throughput, which can cause ingestion lag. Consider increasing "
-                        f"'The maximum number of iterations to retrieve events' or distributing the load across "
-                        f"multiple instances."
-                    )
-                else:
-                    demisto.debug("[Fetch] Batching in progress. Next run will be triggered in 1 second.")
-            else:
-                consecutive_backlog_cycles = 0
-                last_run.pop("nextTrigger", None)
-                last_run.pop("consecutive_backlog_cycles", None)
-                demisto.debug("All events finished batching. Next run will be triggered based on fetch interval.")
-
-            # Emit a single, machine-parseable ingestion-metrics line per cycle. This is the completeness
-            # audit record: 'sent' can be summed over a time window and reconciled against the dataset row
-            # count for the same window, and 'queue_drained=true' is the positive signal that the collector
-            # has caught up (no events currently waiting in the SaaS Security queue).
-            demisto.info(
-                f"{METRICS_LOG_PREFIX} fetched={fetched_count} sent={sent_count} "
-                f"queue_drained={str(queue_drained).lower()} from_context={str(from_context).lower()} "
-                f"max_iterations={max_iterations} consecutive_backlog_cycles={consecutive_backlog_cycles}"
             )
             demisto.setLastRun(last_run)
         elif command == "saas-security-get-events":

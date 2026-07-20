@@ -378,6 +378,203 @@ def test_concurrent_fetch_stops_at_max_iterations(mocker):
     assert exc is None
 
 
+def test_concurrent_fetch_keeps_sibling_batches_when_one_worker_raises(mocker):
+    """
+    Given a round where one worker's ``get_events_batch`` raises while its siblings return already-dequeued
+    batches, when running the concurrent drain, then the siblings' batches are NOT lost - they are preserved
+    (returned as unsent so the caller stashes and retries them).
+
+    /log_events_bulk is a destructive-read (pop) queue: a sibling batch that a completed worker already
+    popped off the server queue is gone from the server. If a peer worker in the same round fails, the
+    function must still carry those sibling events out (buffered, then stashed) instead of discarding them
+    when the worker exception propagates - otherwise those events are lost forever (data-loss bug guard).
+    """
+    mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    mocker.patch.object(SaasSecurityEventCollector, "send_events_to_xsiam")
+
+    # In the first round one worker raises while the two siblings return real, already-dequeued batches.
+    outcomes = [
+        RuntimeError("worker network blip"),
+        ([{"id": "sibling-a"}], False),
+        ([{"id": "sibling-b"}], False),
+    ]
+
+    def flaky_batch(client):
+        outcome = outcomes.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    mocker.patch.object(SaasSecurityEventCollector, "get_events_batch", side_effect=flaky_batch)
+
+    fetched, sent, drained, unsent, exc = SaasSecurityEventCollector.fetch_and_send_events_concurrently(
+        params=BASE_PARAMS, max_iterations=3, concurrency=3, send_batch_size=1000
+    )
+
+    # The worker error propagated (so the caller will stash-and-retry)...
+    assert isinstance(exc, RuntimeError)
+    # ...but the sibling batches that were already popped off the queue survived in the returned unsent list.
+    preserved_ids = {event["id"] for event in unsent}
+    assert "sibling-a" in preserved_ids
+    assert "sibling-b" in preserved_ids
+    assert fetched == 2  # both sibling batches were counted as fetched, not dropped
+
+
+# ---------------------------------------------------------------------------
+# handle_fetch_events - fetch-events orchestration (extracted from main for coverage)
+# ---------------------------------------------------------------------------
+
+
+def _patch_fetch_result(mocker, *, fetched=0, sent=0, queue_drained=True, unsent=None, exception=None):
+    """Patch fetch_and_send_events_concurrently to return a canned result tuple."""
+    return mocker.patch.object(
+        SaasSecurityEventCollector,
+        "fetch_and_send_events_concurrently",
+        return_value=(fetched, sent, queue_drained, unsent or [], exception),
+    )
+
+
+def test_handle_fetch_events_clean_drain_clears_backlog_state(mocker):
+    """
+    Given a fully drained queue and a prior backlog carried in last_run,
+    when handling fetch-events,
+    then nextTrigger and consecutive_backlog_cycles are cleared and the stash is emptied.
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    demisto_mock.getLastRun.return_value = {"nextTrigger": "1", "consecutive_backlog_cycles": 7}
+    demisto_mock.getIntegrationContext.return_value = {}
+    _patch_fetch_result(mocker, fetched=100, sent=100, queue_drained=True)
+
+    last_run = SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    assert "nextTrigger" not in last_run
+    assert "consecutive_backlog_cycles" not in last_run
+    demisto_mock.setIntegrationContext.assert_called_once_with({})
+
+
+def test_handle_fetch_events_backlog_sets_next_trigger_and_increments_counter(mocker):
+    """
+    Given a queue that did not drain (backlog) with no prior backlog state,
+    when handling fetch-events,
+    then nextTrigger is set and consecutive_backlog_cycles is incremented to 1.
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    demisto_mock.getLastRun.return_value = {}
+    demisto_mock.getIntegrationContext.return_value = {}
+    _patch_fetch_result(mocker, fetched=5000, sent=5000, queue_drained=False)
+
+    last_run = SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    assert last_run["nextTrigger"] == SaasSecurityEventCollector.NEXT_TRIGGER_VALUE
+    assert last_run["consecutive_backlog_cycles"] == 1
+
+
+def test_handle_fetch_events_backlog_counter_accumulates(mocker):
+    """
+    Given a backlog and a prior consecutive_backlog_cycles in last_run,
+    when handling fetch-events,
+    then the counter is incremented (accumulates across back-to-back cycles).
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    demisto_mock.getLastRun.return_value = {"consecutive_backlog_cycles": 3}
+    demisto_mock.getIntegrationContext.return_value = {}
+    _patch_fetch_result(mocker, queue_drained=False)
+
+    last_run = SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    assert last_run["consecutive_backlog_cycles"] == 4
+
+
+@pytest.mark.parametrize(
+    "prior_cycles, expect_warning",
+    [
+        (SaasSecurityEventCollector.BACKLOG_WARNING_THRESHOLD - 2, False),  # below threshold -> silent
+        (SaasSecurityEventCollector.BACKLOG_WARNING_THRESHOLD - 1, True),  # reaches threshold -> warn
+        (SaasSecurityEventCollector.BACKLOG_WARNING_THRESHOLD, False),  # one past threshold -> silent
+        (
+            SaasSecurityEventCollector.BACKLOG_WARNING_THRESHOLD + SaasSecurityEventCollector.BACKLOG_WARNING_INTERVAL - 1,
+            True,
+        ),  # exactly one interval later -> re-warn
+    ],
+)
+def test_handle_fetch_events_backlog_warning_threshold_and_interval(mocker, prior_cycles, expect_warning):
+    """
+    Given a sustained backlog, when handling fetch-events,
+    then demisto.error (the high-visibility backlog warning) fires exactly at BACKLOG_WARNING_THRESHOLD and
+    then only every BACKLOG_WARNING_INTERVAL cycles, and stays silent otherwise (no log flooding).
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    demisto_mock.getLastRun.return_value = {"consecutive_backlog_cycles": prior_cycles}
+    demisto_mock.getIntegrationContext.return_value = {}
+    _patch_fetch_result(mocker, queue_drained=False)
+
+    SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    backlog_warning_emitted = any(
+        "ingestion backlog" in str(call.args[0]) for call in demisto_mock.error.call_args_list if call.args
+    )
+    assert backlog_warning_emitted is expect_warning
+
+
+def test_handle_fetch_events_send_failure_stashes_unsent_and_forces_retry(mocker):
+    """
+    Given a send failure mid-drain that returns unsent events,
+    when handling fetch-events,
+    then the unsent events are persisted via setIntegrationContext and an immediate retry is forced
+    (nextTrigger set), even though the concurrent drain reported queue_drained=True.
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    demisto_mock.getLastRun.return_value = {}
+    demisto_mock.getIntegrationContext.return_value = {}
+    unsent = [{"id": i} for i in range(500)]
+    _patch_fetch_result(mocker, fetched=2500, sent=2000, queue_drained=True, unsent=unsent, exception=ValueError("send failed"))
+
+    last_run = SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    demisto_mock.setIntegrationContext.assert_called_once_with({"events": unsent})
+    assert last_run["nextTrigger"] == SaasSecurityEventCollector.NEXT_TRIGGER_VALUE
+    assert last_run["consecutive_backlog_cycles"] == 1
+
+
+def test_handle_fetch_events_stash_flushed_first_and_shrinks_next_cycle(mocker):
+    """
+    Given a stash of unsent events persisted from a prior failed cycle,
+    when the next fetch-events cycle runs,
+    then the stash is passed to the drain as pending_events (flushed first) and, on partial success, the
+    re-stashed remainder is strictly smaller than the original stash (self-heals over cycles).
+    """
+    demisto_mock = mocker.patch.object(SaasSecurityEventCollector, "demisto")
+    original_stash = [{"id": i} for i in range(1000)]
+    demisto_mock.getLastRun.return_value = {}
+    demisto_mock.getIntegrationContext.return_value = {"events": original_stash}
+
+    # The drain flushes part of the stash, then fails again leaving a smaller remainder.
+    shrunk_remainder = [{"id": i} for i in range(400)]
+    fetch_mock = _patch_fetch_result(
+        mocker, fetched=1000, sent=600, queue_drained=True, unsent=shrunk_remainder, exception=ValueError("boom")
+    )
+
+    SaasSecurityEventCollector.handle_fetch_events(
+        params=BASE_PARAMS, max_iterations=900, concurrency=10, pass_over_empty_response=True
+    )
+
+    # The prior stash was handed to the drain to be flushed first.
+    assert fetch_mock.call_args.kwargs["pending_events"] == original_stash
+    # The re-stashed remainder shrank -> the stash self-heals instead of replaying forever.
+    persisted = demisto_mock.setIntegrationContext.call_args.args[0]
+    assert 0 < len(persisted["events"]) < len(original_stash)
+
+
 # ---------------------------------------------------------------------------
 # get_max_fetch (unchanged behavior, kept for coverage)
 # ---------------------------------------------------------------------------
