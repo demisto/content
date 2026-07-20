@@ -46,7 +46,7 @@ Create a new tag in the Cyware Intel Exchange platform
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_name | Enter the tag name. | Required |
-| color_code | Enter the tag’s hex color code. For example, #111111. | Required |
+| color | New tag's name for the defined colour. If no colour selected, colour grey will be given. Possible values are: blue, purple, orange, red, green, yellow, turquoise, pink, light-red, grey. | Required |
 
 #### Context Output
 
@@ -61,7 +61,7 @@ Create a new tag in the Cyware Intel Exchange platform
 
 #### Command Example
 
-```!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1```
+```!ctix-create-tag tag_name=xsoar_test_trial color=blue```
 
 #### Context Example
 
@@ -1501,7 +1501,6 @@ Get or create threat data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | Type of the object. | Optional |
 | object_names | Will contain the SDO values. For example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Required |
 | page_size | Page size for pagination. Default value is 10. | Optional |
 | source | The source of the threat data. | Optional |
@@ -2951,12 +2950,14 @@ Performs a bulk lookup for threat data objects in Cyware Intel Exchange and retr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The SDO object type to look up (e.g. indicator, malware, threat-actor). | Required |
-| value | Comma-separated list of up to 100 threat data object values to look up. | Optional |
-| object_id | Comma-separated list of up to 100 threat data object IDs to look up. | Optional |
+| values | Comma-separated list of up to 100 threat data object values to look up. | Optional |
+| object_ids | Comma-separated list of up to 100 threat data object IDs to look up. | Optional |
 | enrichment_data | Pass true to retrieve the latest five enrichment data objects. Default is false. Possible values are: true, false. | Optional |
 | relation_data | Pass true to retrieve the latest 100 relation details. Default is false. Possible values are: true, false. | Optional |
 | enrichment_tools | Comma-separated list of up to five enrichment tool names to filter enrichment data. | Optional |
 | fields | Comma-separated list of field names to retrieve specific details. By default all fields are retrieved. | Optional |
+| page | Enter the Page number for pagination. | Optional |
+| page_size | Enter the Page Size for pagination. | Optional |
 
 #### Context Output
 
