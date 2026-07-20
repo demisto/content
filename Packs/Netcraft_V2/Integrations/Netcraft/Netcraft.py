@@ -689,13 +689,19 @@ def takedown_note_list_command(args: dict, client: Client) -> CommandResults:
         }
         return tableToMarkdown("Takedown Notes", response, list(header_map), headerTransform=header_map.get, removeNull=True)
 
-    response = client.takedown_note_list({"takedown_id": args.get("takedown_id"), "author": args.get("author_mail")})
-    response = response if argToBoolean(args["all_results"]) else response[:50]
+    all_results = argToBoolean(args["all_results"])
+    limit = arg_to_number(args.get("limit")) or 50
+    # The API has a small default page size. Pass max_results explicitly to retrieve all matching notes.
+    # For all_results=true we use a large cap; for all_results=false we request exactly `limit` notes.
+    max_results = TAKEDOWN_API_LIMIT if all_results else limit
+    base_params = {"takedown_id": args.get("takedown_id"), "author": args.get("author_mail")}
+    notes = client.takedown_note_list(base_params | {"max_results": max_results})
+
     return CommandResults(
         outputs_prefix="Netcraft.TakedownNote",
-        outputs=response,
+        outputs=notes,
         outputs_key_field="note_id",
-        readable_output=response_to_readable(response),
+        readable_output=response_to_readable(notes),
     )
 
 

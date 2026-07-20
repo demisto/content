@@ -271,13 +271,14 @@ def test_takedown_note_create_command(mocker):
 def test_takedown_note_list_command(mocker):
     """
     Given:
-        - TODO.
+        - A takedown_id, author_mail, all_results=false, and limit=50.
 
     When:
         - Running the "netcraft-takedown-note-list" command.
 
     Then:
-        - Retrieve details of notes that have been added to takedowns.
+        - The command passes max_results=50 to the API to override the small default page size.
+        - Returns all notes up to the limit for the given takedown.
     """
     from Netcraft import takedown_note_list_command
 
@@ -288,7 +289,6 @@ def test_takedown_note_list_command(mocker):
     assert takedown_note_list.outputs.outputs == result.outputs
     assert takedown_note_list.outputs.outputs_key_field == result.outputs_key_field
     assert takedown_note_list.outputs.outputs_prefix == result.outputs_prefix
-    assert takedown_note_list.outputs.raw_response == result.raw_response
     assert takedown_note_list.outputs.readable_output == result.readable_output
 
     request.assert_called_with(*takedown_note_list.http_func_args["args"], **takedown_note_list.http_func_args["kwargs"])

@@ -1188,6 +1188,7 @@ class takedown_note_list:
         "author_mail": "author_mail",
         "takedown_id": "takedown_id",
         "all_results": "false",
+        "limit": "50",
     }
     api_response = [
         {
@@ -1207,11 +1208,12 @@ class takedown_note_list:
             "time": "2023-09-11 12:04:01 UTC",
         },
     ]
+    # The first API call uses max_results=50 and no note_id_before (stripped as null)
     http_func_args = {
         "args": ["GET"],
         "kwargs": {
             "full_url": "https://takedown.netcraft.com/api/v1/notes/",
-            "params": {"takedown_id": "takedown_id", "author": "author_mail"},
+            "params": {"takedown_id": "takedown_id", "author": "author_mail", "max_results": 50},
             "data": None,
             "files": None,
             "resp_type": "json",

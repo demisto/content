@@ -629,9 +629,12 @@ script:
         Filter to notes that were created by the user with the given username.
         Notes that were created by Netcraft can be found by filtering to "Netcraft".
       name: author_mail
+    - description: The maximum number of notes to return. Default is 50. Ignored when all_results is true.
+      name: limit
+      defaultValue: '50'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to retrieve all notes that match the filters. If set to false, only 50 will be returned.
+      description: Whether to retrieve all notes that match the filters. If set to false, the number of notes returned is limited by the "limit" argument.
       name: all_results
       predefined:
       - 'false'
