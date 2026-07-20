@@ -2,8 +2,9 @@ from contextlib import nullcontext as does_not_raise
 from datetime import datetime
 from unittest.mock import call
 
+import demistomock as demisto
 import pytest
-from AWSGuardDutyEventCollector import get_events
+from AWSGuardDutyEventCollector import _event_updated_at, _normalize_last_ids_entry, get_events
 from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
 LIST_DETECTORS_RESPONSE = {"DetectorIds": ["detector_id1"]}
@@ -1022,3 +1023,333 @@ def test_same_id_same_second_still_deduped_xsup_72455(mocker):
     # Cursor unchanged; finding_X remembered for the next same-second re-query.
     assert new_collect_from == {"det1": t1}
     assert new_last_ids == {"det1": ["finding_X"]}
+
+
+# ---------------------------------------------------------------------------
+# _normalize_last_ids_entry — bad-path coercion.
+#
+# The helper must never propagate a malformed cache entry into the fetch loop.
+# Unexpected value types (dict, int, etc.) fall back to an empty set() and a
+# log line is emitted so operators can see a bad cache entry was ignored.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("bad_value", [{"unexpected": "dict"}, 42])
+def test_normalize_last_ids_entry_bad_path_returns_empty_set_and_logs(mocker, bad_value):
+    """
+    Given:
+        A stored last_ids entry of an unexpected type (a dict and an int).
+
+    When:
+        _normalize_last_ids_entry is asked to coerce it into a set of ids.
+
+    Then:
+        The result is an empty set() (a single bad cache entry never blocks a
+        fetch), and a log line is emitted noting the unexpected type so the
+        silent fallback is observable.
+
+    Reference:
+        AWSGuardDutyEventCollector._normalize_last_ids_entry — bad-path branch.
+    """
+    # The helper logs via demisto's logging channel on the bad path. Patch it so
+    # we can assert the fallback was recorded rather than silently swallowed.
+    log_mock = mocker.patch.object(demisto, "debug")
+
+    result = _normalize_last_ids_entry(bad_value)
+
+    assert result == set()
+    assert isinstance(result, set)
+    # A log line must be emitted so the ignored bad cache entry is observable.
+    assert log_mock.called, "Expected a log line to be emitted for the unexpected last_ids value type."
+    logged_message = log_mock.call_args.args[0]
+    assert type(bad_value).__name__ in logged_message
+
+
+# ---------------------------------------------------------------------------
+# Multi-detector truncation — detectors advance their cursors independently.
+#
+# detector_A is truncated by `limit` mid-boundary (rolls its cursor back to the
+# last fully-drained second) while detector_B drains fully (advances normally).
+# Each detector's new_collect_from and new_last_ids must be computed in
+# isolation — one detector's truncation must not affect the other's cursor.
+# ---------------------------------------------------------------------------
+
+
+def test_multi_detector_truncation_advances_cursors_independently(mocker):
+    """
+    Given:
+        Two detectors whose fetches end differently:
+          - detector_A returns findings across two seconds (A_t1 fully drained,
+            A_t2 partial) and the finding-ids loop exits with a pending
+            NextToken because it hit `limit` mid-boundary at A_t2.
+          - detector_B returns a single finding on one second and NO pending
+            NextToken => fully drained, advancing its cursor normally.
+
+    When:
+        get_events processes both detectors in the same run (the finding-ids
+        loop shares one `limit` budget, so det_A must reach the limit on its
+        own page for its truncation to be attributable to the limit while
+        det_B still has budget to drain).
+
+    Then:
+        detector_A's cursor rolls back to its last fully-drained second (A_t1)
+        and its last_ids holds only A_t1's sibling, while detector_B advances
+        normally to its finding's second with its own last_ids. Each detector's
+        new_collect_from and new_last_ids are computed independently — det_A's
+        rollback does not touch det_B's forward advance.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — per-detector cursor bookkeeping
+        (XSUP-71079 truncation rollback applied per detector).
+    """
+    a_t1 = "2026-04-10T01:35:08.000000"
+    a_t2 = "2026-04-10T01:35:09.000000"
+    b_t1 = "2026-04-10T02:00:00.000000"
+
+    finding_a1 = update_finding_id(FINDING.copy(), "finding_A1", updated_at=a_t1)
+    finding_a2 = update_finding_id(FINDING.copy(), "finding_A2", updated_at=a_t2)
+    finding_b1 = update_finding_id(FINDING.copy(), "finding_B1", updated_at=b_t1)
+
+    # limit=3: det_A returns 3 finding ids on one page (reaching the limit so its
+    # loop exits by limit) but one id is a duplicate, so it ingests only 2 events
+    # (A1, A2) and leaves budget for det_B to drain its single finding.
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det_A", "det_B"]}],
+        list_finding_ids_res=[
+            # det_A: 3 ids fill the limit => loop exits by limit; NextToken still
+            # pending => truncated mid-boundary at the partial second A_t2.
+            {"FindingIds": ["finding_A1", "finding_A2", "finding_A2"], "NextToken": "more"},
+            # det_B: no NextToken => fully drained.
+            {"FindingIds": ["finding_B1"]},
+        ],
+        get_findings_res=[
+            {"Findings": [finding_a1, finding_a2]},
+            {"Findings": [finding_b1]},
+        ],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 0, 0),
+        last_ids={},
+        severity="Low",
+        limit=3,
+    )
+
+    # All distinct fetched findings are still returned this run (nothing dropped).
+    assert sorted(e["Id"] for e in events) == ["finding_A1", "finding_A2", "finding_B1"]
+
+    # detector_A: truncated mid-boundary => cursor rolls back to the last
+    # fully-drained second (A_t1), NOT the partial A_t2. last_ids holds A_t1's
+    # sibling so it is not re-ingested next run.
+    assert new_collect_from["det_A"] == a_t1
+    assert new_last_ids["det_A"] == ["finding_A1"]
+
+    # detector_B: fully drained => cursor advances normally to its finding's
+    # second with its own independent last_ids.
+    assert new_collect_from["det_B"] == b_t1
+    assert new_last_ids["det_B"] == ["finding_B1"]
+
+
+# ---------------------------------------------------------------------------
+# Single-boundary-cannot-drain — an entire truncated page shares one UpdatedAt.
+#
+# When every fetched finding falls on the SAME second and the page is truncated
+# by `limit` (NextToken set), there is no earlier second to roll back to. The
+# cursor must stay pinned on that second and seen_ids must accumulate every id
+# on it, so the next run makes progress via same-second dedup rather than
+# skipping the un-fetched siblings.
+# ---------------------------------------------------------------------------
+
+
+def test_single_boundary_cannot_drain_keeps_cursor_and_accumulates_seen_ids(mocker):
+    """
+    Given:
+        A single detector whose truncated page (NextToken set) contains two
+        findings that all share ONE UpdatedAt second — there is no earlier,
+        fully-drained second to roll the cursor back to.
+
+    When:
+        get_events runs and the loop exits due to limit with a pending token.
+
+    Then:
+        The cursor stays put on that single second and last_ids (seen_ids)
+        accumulates every id observed on that second, so the next run dedups
+        them and ingests the remaining siblings instead of skipping them.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — single-second truncation branch
+        (fully_drained is empty; keep cursor and accumulate seen ids).
+    """
+    ts = "2026-04-10T01:35:09.000000"
+    finding_1 = update_finding_id(FINDING.copy(), "finding_1", updated_at=ts)
+    finding_2 = update_finding_id(FINDING.copy(), "finding_2", updated_at=ts)
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # NextToken set => truncated by limit; every finding shares the same second.
+        list_finding_ids_res=[{"FindingIds": ["finding_1", "finding_2"], "NextToken": "more"}],
+        get_findings_res=[{"Findings": [finding_1, finding_2]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids={},
+        severity="Low",
+        limit=2,
+    )
+
+    # Both fetched findings are returned this run.
+    assert sorted(e["Id"] for e in events) == ["finding_1", "finding_2"]
+    # No earlier second to roll back to => the cursor stays on the single second.
+    assert new_collect_from == {"det1": ts}
+    # seen_ids accumulates EVERY id on the pinned second so the next run dedups
+    # them and can make forward progress via same-second dedup.
+    assert new_last_ids == {"det1": ["finding_1", "finding_2"]}
+
+
+# ---------------------------------------------------------------------------
+# Cursor-pin regression guard — a finding re-updated at the SAME boundary every
+# run must not freeze the fetch forever. Ingestion must resume when a
+# later-boundary update finally arrives.
+# ---------------------------------------------------------------------------
+
+
+def test_same_boundary_reupdate_does_not_freeze_fetch_forever(mocker):
+    """
+    Given:
+        finding_X keeps being re-returned at the SAME cursor second T1 across
+        several runs (an already-ingested finding re-read by the inclusive Gte
+        query). The cursor stays pinned at T1 during those runs — that is
+        correct, because nothing new has actually happened.
+
+    When:
+        On a later run GuardDuty finally moves finding_X's UpdatedAt to a
+        strictly-later second T2 (a genuine new occurrence).
+
+    Then:
+        Ingestion resumes: finding_X is ingested and the cursor advances to T2.
+        This proves the same-boundary pinning is a bounded, correct pause — not
+        a permanent freeze — and guards against a regression where a
+        perpetually same-second finding would block the fetch indefinitely.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — dedup is scoped to the cursor
+        second, so a later-boundary update always resumes forward progress.
+    """
+    t1 = "2026-07-03T15:48:55.563000"
+    t2 = "2026-07-04T08:04:55.843000"
+
+    # ---- Runs that keep re-reading finding_X at the SAME second T1 ----------
+    for run_number in range(3):
+        same_second_again = update_finding_id(FINDING.copy(), "finding_X", updated_at=t1)
+        mocker.resetall()
+        client, _, _, _ = create_mocked_client(
+            mocker=mocker,
+            list_detectors_res=[{"DetectorIds": ["det1"]}],
+            list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+            get_findings_res=[{"Findings": [same_second_again]}],
+        )
+        events, new_last_ids, new_collect_from = get_events(
+            aws_client=client,
+            collect_from={"det1": t1},
+            collect_from_default=datetime(2026, 7, 3, 7, 0, 0),
+            last_ids={"det1": ["finding_X"]},
+            severity="Low",
+            limit=10,
+        )
+        # Nothing new happened this run: no re-ingestion, cursor pinned at T1.
+        assert events == [], f"run {run_number}: same-second re-read must not re-ingest finding_X"
+        assert new_collect_from == {"det1": t1}, f"run {run_number}: cursor must stay pinned while only T1 re-reads arrive"
+        assert new_last_ids == {"det1": ["finding_X"]}
+
+    # ---- Later run: a genuine later-boundary update finally arrives ---------
+    reupdated = update_finding_id(FINDING.copy(), "finding_X", updated_at=t2)
+    mocker.resetall()
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [reupdated]}],
+    )
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t1},
+        collect_from_default=datetime(2026, 7, 3, 7, 0, 0),
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # Ingestion resumes the moment a later-boundary update arrives — the pin was
+    # a bounded pause, never a permanent freeze.
+    assert [e["Id"] for e in events] == ["finding_X"], (
+        "Cursor-pin regression: a finding re-updated to a later boundary must "
+        "resume ingestion, but nothing was ingested (fetch frozen)."
+    )
+    assert new_collect_from == {"det1": t2}, "Cursor must advance to the later boundary once a real update arrives."
+    assert new_last_ids == {"det1": ["finding_X"]}
+
+
+# ---------------------------------------------------------------------------
+# _time / timestamp mapping — every emitted event must expose a field XSIAM can
+# map to _time. XSIAM derives _time from the finding's UpdatedAt, which the
+# fetch cursor is also built from, so every event must carry a string UpdatedAt.
+# ---------------------------------------------------------------------------
+
+
+def test_emitted_events_expose_updated_at_for_time_mapping(mocker):
+    """
+    Given:
+        A detector returning findings with distinct UpdatedAt timestamps.
+
+    When:
+        get_events fetches and normalizes them for emission to XSIAM.
+
+    Then:
+        Every emitted event exposes an UpdatedAt field (the source XSIAM maps to
+        _time), it is a string (datetime fields are stringified before emission
+        so JSON serialization succeeds), and it matches the value the fetch
+        cursor is derived from via _event_updated_at.
+
+    Reference:
+        AWSGuardDutyEventCollector.convert_events_with_datetime_to_str and
+        _event_updated_at — the cursor/_time source field.
+    """
+    ts_1 = "2026-04-10T01:35:08.000000"
+    ts_2 = "2026-04-10T01:35:09.000000"
+    finding_1 = update_finding_id(FINDING.copy(), "finding_1", updated_at=ts_1)
+    finding_2 = update_finding_id(FINDING.copy(), "finding_2", updated_at=ts_2)
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_1", "finding_2"]}],
+        get_findings_res=[{"Findings": [finding_1, finding_2]}],
+    )
+
+    events, _, _ = get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 0, 0),
+        last_ids={},
+        severity="Low",
+        limit=10,
+    )
+
+    assert len(events) == 2
+    for event in events:
+        # XSIAM maps _time from UpdatedAt — it must be present on every event.
+        assert "UpdatedAt" in event, "Every emitted event must expose UpdatedAt for XSIAM _time mapping."
+        # Stringified before emission so setLastRun / send_events_to_xsiam can serialize it.
+        assert isinstance(event["UpdatedAt"], str)
+        # The _time source must equal the field the fetch cursor is derived from.
+        assert _event_updated_at(event) == event["UpdatedAt"]
+
+    # Each event's _time source is the expected, distinct UpdatedAt value.
+    assert sorted(_event_updated_at(e) for e in events) == [ts_1, ts_2]
