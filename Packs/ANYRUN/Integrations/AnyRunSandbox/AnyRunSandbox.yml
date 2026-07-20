@@ -27,6 +27,7 @@ configuration:
   required: false
   section: Connect
   defaultvalue: any.run
+  additionalinfo: Base domain for the ANY.RUN connection. Enter only the domain (e.g. any.run), without a scheme or trailing slash. By default, the domain is any.run.
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox

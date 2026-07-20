@@ -5,7 +5,7 @@ from CommonServerPython import *
 from anyrun.connectors import LookupConnector
 from anyrun import RunTimeException
 
-VERSION = "PA-XSOAR:2.3.4"
+VERSION = "PA-XSOAR:2.4.0"
 
 DBOT_SCORE_TYPE_RESOLVER = {
     "destination_ip": DBotScoreType.IP,

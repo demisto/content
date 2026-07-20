@@ -12,7 +12,7 @@ from anyrun.connectors.sandbox.operation_systems import (
 )
 
 
-VERSION = "PA-XSOAR:2.3.4"
+VERSION = "PA-XSOAR:2.4.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 
