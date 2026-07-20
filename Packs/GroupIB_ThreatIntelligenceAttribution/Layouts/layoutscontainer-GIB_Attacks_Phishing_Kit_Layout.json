@@ -431,7 +431,7 @@
                                 "fieldId": "gibreliability",
                                 "height": 22,
                                 "id": "f7864130-71a8-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -441,6 +441,15 @@
                                 "height": 22,
                                 "id": "fa52a7a0-71a8-11ef-8c49-f9d8b5e80cf6",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "c55d3170-ed24-11f0-9509-45873decf476",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -487,7 +496,6 @@
     "group": "incident",
     "id": "GIB Attacks Phishing Kit Layout",
     "name": "GIB Attacks Phishing Kit Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

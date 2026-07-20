@@ -144,7 +144,7 @@ configuration:
   type: 19
   section: Collect
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -156,6 +156,9 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -1479,6 +1482,12 @@ script:
       - "Suspicious"
       - UNDEFINED
       description: The treatAsThreat type.
+    - name: query_lang
+      auto: PREDEFINED
+      predefined:
+      - "1.0"
+      - "2.0"
+      description: The query language version. Supported values are "1.0" and "2.0".
     description: Creates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-create-star-rule
     outputs:
@@ -1517,6 +1526,9 @@ script:
       type: String
     - contextPath: SentinelOne.StarRule.UpdatedAt
       description: The updated time for the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.QueryLanguage
+      description: The query language version for the STAR rule.
       type: String
   - arguments:
     - name: status
@@ -1646,6 +1658,12 @@ script:
       - Suspicious
       - UNDEFINED
       description: The treatAsThreat.
+    - name: query_lang
+      auto: PREDEFINED
+      predefined:
+      - "1.0"
+      - "2.0"
+      description: The query language version. Supported values are "1.0" and "2.0".
     description: Updates a custom STAR rule. Relevant for API version 2.1.
     name: sentinelone-update-star-rule
     outputs:
@@ -1684,6 +1702,9 @@ script:
       type: String
     - contextPath: SentinelOne.StarRule.UpdatedAt
       description: The updated time for the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.QueryLanguage
+      description: The query language version for the STAR rule.
       type: String
   - arguments:
     - name: rule_ids
@@ -3106,6 +3127,35 @@ script:
     - contextPath: SentinelOne.Threat.ZippedFile
       description: Details of the zipped folder.
       type: String
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    - name: limit
+      required: false
+      description: "The max number of timeline entries to return, default is 5000."
+    name: sentinelone-export-full-threat-timeline
+    description: Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
+    outputs:
+    - contextPath: SentinelOne.Export.Timeline.ThreatId
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Export.Timeline.Filename
+      description: The name of the file containing the Timeline.
+      type: Boolean
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    name: sentinelone-export-threat-events
+    description: Exports the threat's events as a JSON File. Relevant for API version 2.1.
+    outputs:
+    - contextPath: SentinelOne.Export.Events.ThreatId
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Export.Events.Filename
+      description: The name of the file containing the Timeline.
+      type: Boolean
   dockerimage: demisto/python3:3.12.13.8428455
   isfetch: true
   ismappable: true

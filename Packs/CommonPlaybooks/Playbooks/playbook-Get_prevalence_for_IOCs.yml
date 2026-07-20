@@ -10,6 +10,7 @@ supportedModules:
 - cloud_runtime_security
 - xsiam
 - edr
+- agentix
 description: |+
   The playbook queries the analytics module to receive the prevalence of an IOC.
 

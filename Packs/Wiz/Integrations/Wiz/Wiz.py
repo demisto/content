@@ -6,13 +6,13 @@ import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
+API_REQUEST_TIMEOUT = 115  # seconds; keep under the upstream gateway timeout to avoid hangs
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.5.0"
+WIZ_VERSION = "1.7.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -1569,6 +1569,9 @@ class WizInputParam:
     NATIVE_TYPES = "native_types"
     UPDATED_AT_BEFORE = "updated_at_before"
     UPDATED_AT_AFTER = "updated_at_after"
+    CREATED_AFTER = "created_after"
+    CREATED_BEFORE = "created_before"
+    LIMIT = "limit"
     STATUS = "status"
 
 
@@ -1745,7 +1748,12 @@ def get_token():
     auth_payload = parse.urlencode(
         {"grant_type": "client_credentials", "audience": audience, "client_id": said, "client_secret": sasecret}
     )
-    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
+    try:
+        response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload, timeout=API_REQUEST_TIMEOUT)
+    except requests.Timeout:
+        raise Exception(
+            f"Wiz authentication request timed out after {API_REQUEST_TIMEOUT}s. Check Wiz API availability and retry."
+        )
 
     if response.status_code != requests.codes.ok:
         raise Exception(f"Error authenticating to Wiz [{response.status_code}] - {response.text}")
@@ -1772,7 +1780,13 @@ def checkAPIerrors(query, variables):
 
     demisto.info(f"Invoking the API with {json.dumps(data)}")
 
-    response = requests.post(url=URL, json=data, headers=HEADERS)
+    try:
+        response = requests.post(url=URL, json=data, headers=HEADERS, timeout=API_REQUEST_TIMEOUT)
+    except requests.Timeout:
+        raise Exception(
+            f"Wiz API request timed out after {API_REQUEST_TIMEOUT}s. "
+            "Heavy queries (e.g., TOXIC_COMBINATION issue_type) may need a narrower filter."
+        )
     response_json = response.json()
 
     demisto.info(f"Wiz API response status code is {response.status_code}")
@@ -1795,7 +1809,7 @@ def checkAPIerrors(query, variables):
 FETCH_ALL_ISSUES_BUDGET_SECONDS = 240  # 5-min Docker timeout - 60s safety margin
 
 
-def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_BUDGET_SECONDS):
+def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_BUDGET_SECONDS, max_records=None):
     """
     Fetch all issue nodes from a paginated issues query.
 
@@ -1805,6 +1819,11 @@ def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_B
     require completeness should narrow their filter; callers that tolerate
     partial results (mirror is the exception — it has its own single-page
     code path) get an actionable signal instead of a script crash.
+
+    When `max_records` is set, pagination stops once that many nodes are
+    accumulated and the result is truncated to exactly `max_records`. This
+    gives callers a deterministic ceiling regardless of how many issues match,
+    independent of the time budget. `None` keeps the fetch-everything behavior.
     """
     variables = dict(variables)
     started = time.monotonic()
@@ -1813,6 +1832,8 @@ def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_B
     nodes = list(response_json.get("data", {}).get("issues", {}).get("nodes", []))
 
     while response_json.get("data", {}).get("issues", {}).get("pageInfo", {}).get("hasNextPage"):
+        if max_records is not None and len(nodes) >= max_records:
+            break
         if time.monotonic() - started > deadline_seconds:
             demisto.info(
                 f"_fetch_all_issue_nodes: hit {deadline_seconds}s budget after {len(nodes)} nodes; "
@@ -1824,6 +1845,9 @@ def _fetch_all_issue_nodes(query, variables, deadline_seconds=FETCH_ALL_ISSUES_B
         page_nodes = response_json.get("data", {}).get("issues", {}).get("nodes", [])
         if page_nodes:
             nodes += page_nodes
+
+    if max_records is not None and len(nodes) > max_records:
+        nodes = nodes[:max_records]
 
     return nodes
 
@@ -2159,37 +2183,52 @@ def get_issue(issue_id):
     return issues
 
 
-def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
+def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit, created_after=None, created_before=None):
     """
     Retrieves Filtered Issues
+
+    `limit` caps the total number of issues returned. When None, all matching
+    issues are fetched (bounded only by the time budget in _fetch_all_issue_nodes).
+    `created_after` / `created_before` are ISO 8601 timestamps mapped to the Wiz
+    `createdAt` filter, letting callers bound heavy queries (e.g. TOXIC_COMBINATION)
+    up front instead of relying on the time-budget safety net.
     """
     demisto.info(
         f"Entity type is {entity_type}\n"
         f"Resource ID is {resource_id}\n"
         f"Severity is {severity}\n"
-        f"Issue type is {issue_type}"
+        f"Issue type is {issue_type}\n"
+        f"Created after is {created_after}\n"
+        f"Created before is {created_before}\n"
+        f"Limit is {limit}"
     )
     error_msg = ""
 
-    if not severity and not entity_type and not resource_id and not issue_type:
+    if not severity and not entity_type and not resource_id and not issue_type and not created_after and not created_before:
         error_msg = (
             "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id"
-            "\n\tseverity\n\tissue_type\n"
+            "\n\tseverity\n\tissue_type\n\tcreated_after\n\tcreated_before\n"
         )
 
     if entity_type and resource_id:
         error_msg = f"{error_msg}You cannot pass entity_type and resource_id together\n"
 
+    if limit is not None and limit < 1:
+        error_msg = f"{error_msg}limit must be a positive integer\n"
+
     if error_msg:
         demisto.error(error_msg)
         return error_msg
 
-    issue_variables = {}
+    # `first` is the per-page size (API max WIZ_API_LIMIT); `limit` is the total cap.
+    page_size = WIZ_API_LIMIT if limit is None else min(limit, WIZ_API_LIMIT)
+
+    issue_variables: Dict[str, Any] = {}
     query = PULL_ISSUES_QUERY
 
     if entity_type:
         issue_variables = {
-            "first": limit,
+            "first": page_size,
             "filterBy": {
                 "status": ["OPEN", "IN_PROGRESS"],
                 "relatedEntity": {"type": [entity_type]},
@@ -2223,7 +2262,7 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
         if graph_resource_response_json["data"]["graphSearch"]["nodes"] != []:
             graph_resource_id = graph_resource_response_json["data"]["graphSearch"]["nodes"][0]["entities"][0]["id"]
             issue_variables = {
-                "first": limit,
+                "first": page_size,
                 "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"id": graph_resource_id}},
                 "orderBy": {"field": "SEVERITY", "direction": "DESC"},
             }
@@ -2234,7 +2273,7 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     if severity:
         if "filterBy" not in issue_variables:
             issue_variables["filterBy"] = {"severity": []}
-            issue_variables["first"] = limit
+            issue_variables["first"] = page_size
         if severity.upper() == "CRITICAL":
             issue_variables["filterBy"]["severity"] = ["CRITICAL"]
         elif severity.upper() == "HIGH":
@@ -2258,14 +2297,28 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     if issue_type:
         if "filterBy" not in issue_variables:
             issue_variables["filterBy"] = {}
-            issue_variables["first"] = limit
+            issue_variables["first"] = page_size
 
         issue_variables["filterBy"]["type"] = [issue_type]
+
+    if created_after or created_before:
+        if "filterBy" not in issue_variables:
+            issue_variables["filterBy"] = {}
+            issue_variables["first"] = page_size
+        created_at: Dict[str, str] = {}
+        if created_after:
+            created_at["after"] = created_after
+        if created_before:
+            created_at["before"] = created_before
+        issue_variables["filterBy"]["createdAt"] = created_at
+
+    # Order by severity so a `limit` truncation keeps the most severe issues, not an arbitrary page.
+    issue_variables.setdefault("orderBy", {"field": "SEVERITY", "direction": "DESC"})
 
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
 
-    issues = _fetch_all_issue_nodes(query, issue_variables)
+    issues = _fetch_all_issue_nodes(query, issue_variables, max_records=limit)
     return issues
 
 
@@ -2407,15 +2460,11 @@ def resolve_issue(issue_id, resolution_reason, resolution_note):
     if not is_valid_id:
         return message
 
-    issue_object = _get_issue(issue_id, is_evidence=False)
-
-    nodes = (issue_object or {}).get("data", {}).get("issues", {}).get("nodes") or []
-    if not nodes:
+    issue_type = _get_issue_type(issue_id)
+    if issue_type is None:
         return f"Issue not found: {issue_id}"
 
-    issue_type = nodes[0].get("type")
-
-    if issue_type != "THREAT_DETECTION":
+    if issue_type != WizIssueType.THREAT_DETECTION:
         msg = (
             f"Only a Threat Detection Issue can be resolved.\n"
             f"Received an Issue of type {issue_type}.\n"
@@ -2521,6 +2570,42 @@ def _get_issue(issue_id, is_evidence=False):
     issue_response = checkAPIerrors(issue_query, issue_variables)
 
     return issue_response
+
+
+def _get_issue_type(issue_id):
+    """
+    Return the Wiz Issue `type` (e.g. THREAT_DETECTION, TOXIC_COMBINATION) for an
+    issue id, or None if the issue can't be found / has no type. Used to guard
+    status mutations that are only valid for certain issue types.
+    """
+    issue_object = _get_issue(issue_id, is_evidence=False)
+    if not isinstance(issue_object, dict):
+        return None
+    nodes = issue_object.get("data", {}).get("issues", {}).get("nodes") or []
+    if not nodes:
+        return None
+    return nodes[0].get("type")
+
+
+def _can_resolve_issue(issue_id):
+    """
+    Return True only when the issue may be manually set to RESOLVED in Wiz.
+
+    Only Threat Detection issues can be manually resolved; all other types
+    (Toxic Combination, Cloud Configuration, Attack Surface) auto-resolve when
+    the underlying problem is remediated, and the backend rejects an explicit
+    RESOLVED for them. The outgoing-mirror paths use this to skip the RESOLVED
+    push for non-Threat-Detection issues (letting Wiz auto-resolve) instead of
+    firing a mutation the backend will reject and silently swallowing the error.
+    """
+    issue_type = _get_issue_type(issue_id)
+    if issue_type != WizIssueType.THREAT_DETECTION:
+        demisto.info(
+            f"Skipping RESOLVED mirror for issue {issue_id}: type {issue_type} cannot be manually resolved "
+            f"(only Threat Detection issues can; other types auto-resolve when remediated)."
+        )
+        return False
+    return True
 
 
 def truncate_note(text):
@@ -2990,6 +3075,8 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
 
     try:
         if status_lower in ("resolved", "done", "closed"):
+            if not _can_resolve_issue(issue_id):
+                return
             resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
             reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
         elif status_lower in ("rejected",):
@@ -3010,6 +3097,8 @@ def _handle_incident_closed(remote_id, resolution_reason=None):
     reason = resolution_reason or DEFAULT_RESOLUTION_REASON
     demisto.debug(f"_handle_incident_closed: resolving {remote_id} with reason={reason}")
     try:
+        if not _can_resolve_issue(remote_id):
+            return
         reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
     except Exception as e:
         demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")
@@ -3093,12 +3182,19 @@ def main():
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             severity = demisto_args.get(WizInputParam.SEVERITY)
             entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
+            created_after = demisto_args.get(WizInputParam.CREATED_AFTER)
+            created_before = demisto_args.get(WizInputParam.CREATED_BEFORE)
+            # No limit arg => None => fetch all (preserves prior behavior, where the
+            # passed value only sized pages and pagination drained every match).
+            limit = arg_to_number(demisto_args.get(WizInputParam.LIMIT), arg_name=WizInputParam.LIMIT)
             issues = get_filtered_issues(
                 issue_type=issue_type,
                 resource_id=resource_id,
                 severity=severity,
                 entity_type=entity_type,
-                limit=WIZ_API_LIMIT,
+                limit=limit,
+                created_after=created_after,
+                created_before=created_before,
             )
             if isinstance(issues, str):
                 #  this means the Issue is an error

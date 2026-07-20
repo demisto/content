@@ -244,7 +244,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -290,7 +290,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -741,7 +741,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -787,7 +787,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -1163,13 +1163,15 @@ def test_confluence_cloud_content_get_command_when_valid_response_is_returned(re
     from AtlassianConfluenceCloud import confluence_cloud_content_get_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
-    requests_mock.get("https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage", json=expected_response)
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/test-page-id?expand=body.storage", json=expected_response
+    )
     expected_context_output = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
 
     with open(os.path.join("test_data", "content_get/content_get_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159"}
+    args = {"content_id": "test-page-id"}
 
     response = confluence_cloud_content_get_command(client, args)
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -1257,7 +1259,7 @@ class TestOAuthFunctions:
 
     @patch("AtlassianApiModule.get_integration_context")
     def test_create_client_oauth(self, mock_get_ctx):
-        """Test create_client with OAuth 2.0 authentication."""
+        """Test create_client with OAuth 2.0 uses the correct API gateway base URL."""
         mock_get_ctx.return_value = {
             "token": "test-access-token",
             "valid_until": time.time() + 3600,
@@ -1265,6 +1267,7 @@ class TestOAuthFunctions:
         }
         mock_oauth_client = MagicMock()
         mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = "test-cloud-id-123"
         mock_oauth_client.verify = True
 
         params = {
@@ -1275,6 +1278,58 @@ class TestOAuthFunctions:
         }
         result = create_client(params, oauth_client=mock_oauth_client)
         assert isinstance(result, Client)
+        # Verify the base URL uses the Atlassian API gateway with cloud_id
+        assert result._base_url == "https://api.atlassian.com/ex/confluence/test-cloud-id-123"
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_create_client_oauth_no_cloud_id_raises(self, mock_get_ctx):
+        """Test create_client with OAuth 2.0 raises DemistoException when cloud_id is empty."""
+        mock_get_ctx.return_value = {
+            "token": "test-access-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "test-refresh-token",
+        }
+        mock_oauth_client = MagicMock()
+        mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.cloud_id = ""
+        mock_oauth_client.verify = True
+
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "OAuth 2.0",
+            "insecure": False,
+            "proxy": False,
+        }
+        with pytest.raises(DemistoException, match="Cloud ID is required for OAuth 2.0 authentication"):
+            create_client(params, oauth_client=mock_oauth_client)
+
+    def test_create_client_oauth_request_url(self, requests_mock):
+        """Test that OAuth client builds request URLs correctly with the /ex/confluence/{cloud_id} prefix.
+
+        This validates that the XSOAR urljoin correctly appends url_suffix to the OAuth base URL
+        (which contains a path component) without dropping the /ex/confluence/{cloud_id} segment.
+        """
+        cloud_id = "test-cloud-id-123"
+        oauth_base_url = f"https://api.atlassian.com/ex/confluence/{cloud_id}"
+
+        # Create a Client directly with the OAuth base URL (as create_client does for OAuth)
+        oauth_client_obj = Client(
+            base_url=oauth_base_url,
+            verify=False,
+            proxy=False,
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+        # Register a mock for the expected full URL including /ex/confluence/{cloud_id}
+        expected_url = f"{oauth_base_url}{URL_SUFFIX['CONTENT_SEARCH']}"
+        requests_mock.get(expected_url, json={"results": []}, status_code=200)
+
+        # Make the request
+        oauth_client_obj.http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT_SEARCH"])
+
+        # Verify the request was sent to the correct URL, including the /ex/confluence/{cloud_id} path
+        assert requests_mock.called
+        assert f"/ex/confluence/{cloud_id}/wiki/" in requests_mock.last_request.url
 
     @patch("AtlassianApiModule.get_integration_context", return_value={})
     @patch("AtlassianApiModule.set_integration_context")
@@ -1387,3 +1442,84 @@ class TestOAuthFunctions:
         }
         result = create_client(params)
         assert isinstance(result, Client)
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://mysite.atlassian.net/wiki/spaces/TEST/pages/2097159/My+Page", "2097159"),
+        ("https://mysite.atlassian.net/wiki/rest/api/content/12345", "12345"),
+        ("https://mysite.atlassian.net/wiki/pages/viewpage.action?pageId=99999", "99999"),
+        ("https://mysite.atlassian.net/wiki/spaces/DEV/pages/111222/Some+Title?extra=param", "111222"),
+    ],
+)
+def test_extract_content_id_from_url(url: str, expected_id: str):
+    """
+    Given:
+        A Confluence page URL in various supported formats.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        The correct content ID is extracted from the URL.
+    """
+    from AtlassianConfluenceCloud import _extract_content_id_from_url
+
+    assert _extract_content_id_from_url(url) == expected_id
+
+
+def test_extract_content_id_from_url_invalid():
+    """
+    Given:
+        An unsupported URL format that does not contain a Confluence content ID.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        A ValueError is raised with a descriptive error message.
+    """
+    from AtlassianConfluenceCloud import _extract_content_id_from_url
+
+    with pytest.raises(ValueError, match="Could not extract content ID from URL"):
+        _extract_content_id_from_url("https://example.com/not-a-confluence-url")
+
+
+def test_generic_file_get_command_success(requests_mock):
+    """
+    Given:
+        A valid Confluence page URL pointing to an existing page.
+    When:
+        Calling the generic-file-get command with the URL.
+    Then:
+        The command returns a FileContent output with the correct title, type, content, and ID.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_generic_file_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/generic_file_get_response.json"))
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage",
+        json=expected_response,
+    )
+
+    args = {"url": "https://dummy.atlassian.net/wiki/spaces/TEST/pages/2097159/test_page"}
+    result = confluence_cloud_generic_file_get_command(client, args)
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs["Id"] == "2097159"
+    assert result.outputs["Title"] == "test_page"
+    assert result.outputs["Type"] == "text/html"
+    assert result.outputs["Content"] == "<p>This is the page content</p>"
+    assert result.outputs["Url"] == args["url"]
+
+
+def test_generic_file_get_command_missing_url():
+    """
+    Given:
+        No URL argument provided to the generic-file-get command.
+    When:
+        Calling the generic-file-get command without a URL.
+    Then:
+        A ValueError is raised indicating the url argument is required.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_generic_file_get_command
+
+    with pytest.raises(ValueError, match="'url' argument is required"):
+        confluence_cloud_generic_file_get_command(client, {})
