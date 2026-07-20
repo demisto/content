@@ -30,19 +30,19 @@ Submits a sample to ThreatZone for sandbox analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64, macos, linux, android. Default is w7_x64. | Optional |
-| private | Privacy of the submission. Possible values are: true, false. Default is true. | Optional |
-| extension_check | Enforce MIME-based extension correction before sandbox execution. Possible values are: true, false. Default is true. | Optional |
-| auto | When true, automatically selects a sandbox environment based on the uploaded file type. Possible values are: true, false. Default is false. | Optional |
-| modules | Optional modules to enable (enter a comma-separated list or JSON array, for example ["cdr"]). | Optional |
+| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64, linux-ubuntu_2204, macos-ventura, android9. Default is w7_x64. | Optional |
+| private | Privacy of the submission. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| extension_check | Enforce MIME-based extension correction before sandbox execution. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| auto | When true, automatically selects a sandbox environment based on the uploaded file type and ignores the environment argument. Possible values are: true, false. Default is false. | Optional |
+| modules | Legacy compatibility argument. ThreatZone v3.2 does not support per-submission module selection, so this value is validated but not forwarded. | Optional |
 | analyze_config | Provide raw analyzeConfig JSON to override/add sandbox metafields. | Optional |
-| timeout | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60. | Optional |
-| work_path | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop. | Optional |
-| mouse_simulation | Enable mouse simulation. Possible values are: true, false. Default is false. | Optional |
-| https_inspection | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false. | Optional |
-| internet_connection | Enable internet connection. Possible values are: true, false. Default is false. | Optional |
-| raw_logs | Raw logs. Possible values are: true, false. Default is false. | Optional |
-| snapshot | Snapshot. Possible values are: true, false. Default is false. | Optional |
+| timeout | Duration of the submission analysis. If omitted, the current ThreatZone API-provided default is used. Possible values are: 60, 120, 180, 300. | Optional |
+| work_path | The working path of the submission. If omitted, the current ThreatZone API-provided default is used. Possible values are: desktop, root, appdata, windows, temp. | Optional |
+| mouse_simulation | Enable mouse simulation. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| https_inspection | Https inspection to read encrypted traffic. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| internet_connection | Enable internet connection. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| raw_logs | Legacy compatibility argument. ThreatZone v3.2 does not accept this metafield, so it is not forwarded. Possible values are: true, false. | Optional |
+| snapshot | Enable Fast Bootup. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
 | entrypoint | For archives, specify the filename inside the archive to execute. | Optional |
 | password | Password for password-protected archives. | Optional |
 
@@ -70,7 +70,7 @@ Submits a sample to ThreatZone for static analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional |
+| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional |
 | extension_check | Enforce MIME-based extension correction before static scan. Possible values are: true, false. Default is false. | Optional |
 | entrypoint | For archives, specify the filename inside the archive to analyse. | Optional |
 | password | Password for password-protected archives. | Optional |
@@ -99,8 +99,8 @@ Submits a sample to ThreatZone for CDR.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional |
-| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional |
+| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional |
+| extension_check | Enforce MIME-based extension correction before sanitization. Possible values are: true, false. Default is true. | Optional |
 | entrypoint | For archives, specify the filename inside the archive to sanitize. | Optional |
 | password | Password for password-protected archives. | Optional |
 
@@ -136,8 +136,8 @@ Retrive the analysis result from ThreatZone. This command returns the raw submis
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatZone.Submission | Unknown | Raw submission data returned by ThreatZone. |
-| ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. |
-| ThreatZone.Analysis.LEVEL | String | Threat Level of the submission. |
+| ThreatZone.Analysis.STATUS | Number | The status of the submission scanning process. |
+| ThreatZone.Analysis.LEVEL | Number | Threat Level of the submission. |
 | ThreatZone.Analysis.INFO | String | Submission metadata such as file name/URL and privacy status. |
 | ThreatZone.Analysis.REPORT | String | The analysis report of the submission. |
 | ThreatZone.Analysis.URL | String | The result page url of the submission. |
@@ -340,7 +340,7 @@ Submits a URL to ThreatZone for analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to analyse. | Required |
-| private | Mark the submission as workspace-private. Possible values are: true, false. Default is false. | Optional |
+| private | Mark the submission as workspace-private. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 

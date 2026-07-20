@@ -1,695 +1,638 @@
+"""ThreatZone integration for Cortex XSOAR / XSIAM.
+
+API interaction is delegated to the official `threatzone` Python SDK.
+"""
+
 import json
-import shutil
-from contextlib import closing
-from typing import Any
+import re
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, BinaryIO, cast
 
 import demistomock as demisto  # noqa: F401
-import urllib3
-from CommonServerPython import *  # noqa: F401
-
-# Disable insecure warnings
-urllib3.disable_warnings()
-
-
-""" CONSTANTS """
-
-ARCHIVE_SUFFIXES = (
-    ".zip",
-    ".rar",
-    ".7z",
-    ".tar",
-    ".gz",
-    ".tgz",
-    ".tar.gz",
-    ".tar.bz2",
-    ".tar.xz",
+import httpx
+from CommonServerPython import *  # noqa: F401,F403
+from threatzone import (
+    AnalysisTimeoutError,
+    APIError,
+    AuthenticationError,
+    BadRequestError,
+    DownloadResponse,
+    NotFoundError,
+    PaymentRequiredError,
+    PermissionDeniedError,
+    RateLimitError,
+    ReportUnavailableError,
+    ThreatZoneError,
+    YaraRulePendingError,
 )
+from threatzone import ThreatZone as ThreatZoneSDK
+from threatzone.types.config import MetafieldOption
 
-SECTION_METADATA: dict[str, dict[str, Any]] = {
-    "include_indicators": {
-        "endpoint": "indicators",
-        "prefix": "ThreatZone.Submission.Indicators",
-        "title": "Dynamic Indicators",
-        "response_key": "indicators",
-    },
-    "include_iocs": {
-        "endpoint": "iocs",
-        "prefix": "ThreatZone.Submission.IOCs",
-        "title": "Indicators of Compromise",
-        "response_key": "iocs",
-    },
-    "include_yara": {
-        "endpoint": "matched-yara-rules",
-        "prefix": "ThreatZone.Submission.YaraMatches",
-        "title": "Matched YARA Rules",
-        "response_key": "yaraRules",
-    },
-    "include_artifacts": {
-        "endpoint": "analysis-artifacts",
-        "prefix": "ThreatZone.Submission.Artifacts",
-        "title": "Analysis Artifacts",
-        "response_key": "artifacts",
-    },
-    "include_config": {
-        "endpoint": "config-extractor-results",
-        "prefix": "ThreatZone.Submission.Config",
-        "title": "Configuration Extractor Results",
-        "response_key": "configExtractorResults",
-    },
+INTEGRATION_NAME = "ThreatZone"
+DEFAULT_BASE_URL = "https://app.threat.zone"
+PUBLIC_API_SUFFIX = "/public-api"
+SDK_REQUEST_TIMEOUT_SECONDS = 60.0
+REPORT_FINDINGS_PAGE_SIZE = 100
+
+# Old integration used integer codes for level/status. Preserved for backward
+# compatibility with playbooks that branch on these numbers.
+LEVEL_LABEL_TO_INT = {"unknown": 0, "benign": 1, "suspicious": 2, "malicious": 3}
+LEVEL_INT_TO_LABEL = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
+STATUS_LABEL_TO_INT = {
+    "not_started": 1,
+    "accepted": 2,
+    "in_progress": 3,
+    "clean_up": 4,
+    "completed": 5,
+    "error": 0,
+}
+STATUS_INT_TO_READABLE = {
+    0: "Declined",
+    1: "File received",
+    2: "Submission is accepted",
+    3: "Submission is running",
+    4: "Submission VM is ready",
+    5: "Submission is finished",
+}
+REPORT_TYPE_LABEL = {
+    "dynamic": "dynamic",
+    "static": "static",
+    "cdr": "cdr",
+    "url_analysis": "urlAnalysis",
+    "open_in_browser": "openInBrowser",
 }
 
-DETAIL_SECTIONS = (
-    ("Indicators", "indicators", "indicators"),
-    ("Indicators of Compromise", "iocs", "ioc"),
-    ("Matched YARA Rules", "matchedYARARules", "matched_yara_rules"),
-    ("Analysis Artifacts", "artifacts", "additionalFiles"),
-    ("Extracted Configurations", "extractedConfigs", "extractedConfigs"),
-)
+
+def normalize_sdk_base_url(base_url: str) -> str:
+    normalized_base_url = base_url.rstrip("/")
+    if normalized_base_url.endswith(PUBLIC_API_SUFFIX):
+        return normalized_base_url
+    return normalized_base_url + PUBLIC_API_SUFFIX
 
 
-def is_archive_filename(filename: str) -> bool:
-    """Returns True when filename extension suggests an archive."""
-    lower_name = filename.lower()
-    return any(lower_name.endswith(suffix) for suffix in ARCHIVE_SUFFIXES)
+class Client(BaseClient):  # noqa: F405 - BaseClient from CommonServerPython
+    """Thin wrapper over the ThreatZone SDK."""
+
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool) -> None:
+        sdk_base_url = normalize_sdk_base_url(base_url)
+        super().__init__(  # noqa: F405
+            base_url=sdk_base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        http_client = httpx.Client(
+            verify=verify,
+            trust_env=bool(proxy),
+            timeout=httpx.Timeout(SDK_REQUEST_TIMEOUT_SECONDS),
+            follow_redirects=True,
+        )
+        self.sdk = ThreatZoneSDK(
+            api_key=api_key,
+            base_url=sdk_base_url,
+            verify_ssl=verify,
+            http_client=http_client,
+        )
+        self._http_client = http_client
+
+    def close(self) -> None:
+        try:
+            self.sdk.close()
+        finally:
+            self._http_client.close()
 
 
-def as_api_bool(value: bool) -> str:
-    """Return lowercase string that ThreatZone API accepts for boolean fields."""
-    return "true" if value else "false"
+class _OriginalNameFile:
+    """Proxy a file handle while exposing its original War Room filename."""
+
+    def __init__(self, file_handle: BinaryIO, original_name: str) -> None:
+        self._file_handle = file_handle
+        self.name = original_name
+
+    def __getattr__(self, attribute: str) -> Any:
+        return getattr(self._file_handle, attribute)
 
 
-def parse_modules_argument(modules_arg: str | None) -> list[str] | None:
-    """Parse modules argument supporting JSON array or comma-separated string."""
-    if not modules_arg:
-        return None
+@contextmanager
+def open_file_for_upload(file_path: Path, original_name: str) -> Iterator[BinaryIO]:
+    """Open a local War Room file for streaming upload under its original name."""
+    with file_path.open("rb") as file_handle:
+        yield cast(BinaryIO, _OriginalNameFile(file_handle, original_name))
 
+
+def translate_score(score: int | None) -> int:
+    if score is None or isinstance(score, bool):
+        return Common.DBotScore.NONE  # noqa: F405
     try:
-        parsed = json.loads(modules_arg)
-    except ValueError:
-        parsed = None
-
-    modules: list[str] = []
-    if isinstance(parsed, list):
-        modules = [str(module).strip() for module in parsed if str(module).strip()]
-    elif isinstance(parsed, str):
-        modules = [parsed.strip()]
-    elif parsed is None:
-        modules = [mod.strip() for mod in modules_arg.split(",") if mod.strip()]
-    else:
-        raise DemistoException("modules argument must be a JSON array or comma-separated string.")
-
-    return modules or None
+        score_int = int(score)
+    except (TypeError, ValueError):
+        return Common.DBotScore.NONE  # noqa: F405
+    if score_int <= 0:
+        return Common.DBotScore.NONE  # noqa: F405
+    if score_int == 1:
+        return Common.DBotScore.GOOD  # noqa: F405
+    if score_int == 2:
+        return Common.DBotScore.SUSPICIOUS  # noqa: F405
+    return Common.DBotScore.BAD  # noqa: F405
 
 
-def parse_analyze_config_argument(analyze_arg: str | None) -> list[dict[str, Any]]:
-    """Parse analyze_config argument and validate schema."""
-    if not analyze_arg:
-        return []
+def get_reputation_reliability(reliability: str | None) -> str | None:
+    mapping = {
+        "A+ - 3rd party enrichment": DBotScoreReliability.A_PLUS,  # noqa: F405
+        "A - Completely reliable": DBotScoreReliability.A,  # noqa: F405
+        "B - Usually reliable": DBotScoreReliability.B,  # noqa: F405
+        "C - Fairly reliable": DBotScoreReliability.C,  # noqa: F405
+        "D - Not usually reliable": DBotScoreReliability.D,  # noqa: F405
+        "E - Unreliable": DBotScoreReliability.E,  # noqa: F405
+        "F - Reliability cannot be judged": DBotScoreReliability.F,  # noqa: F405
+    }
+    return mapping.get(reliability or "")
 
-    try:
-        parsed = json.loads(analyze_arg)
-    except ValueError as exc:
-        raise DemistoException("Invalid JSON provided for analyze_config argument.") from exc
 
-    if isinstance(parsed, dict):
-        parsed = [parsed]
-
-    if not isinstance(parsed, list):
-        raise DemistoException("analyze_config argument must be a JSON object or array of objects.")
-
-    validated: list[dict[str, Any]] = []
-    for entry in parsed:
-        if not isinstance(entry, dict):
-            raise DemistoException("analyze_config entries must be JSON objects.")
-        metafield_id = entry.get("metafieldId")
-        if not metafield_id:
-            raise DemistoException("analyze_config entries must include 'metafieldId'.")
-        if "value" not in entry:
-            raise DemistoException("analyze_config entries must include 'value'.")
-        validated.append({"metafieldId": metafield_id, "value": entry.get("value")})
-
-    return validated
+def build_dbot_score(
+    indicator: str,
+    level_int: int | None,
+    indicator_type: str,
+    reliability: str | None,
+) -> Common.DBotScore:  # noqa: F405
+    type_map = {
+        "file": DBotScoreType.FILE,  # noqa: F405
+        "ip": DBotScoreType.IP,  # noqa: F405
+        "domain": DBotScoreType.DOMAIN,  # noqa: F405
+        "url": DBotScoreType.URL,  # noqa: F405
+        "email": DBotScoreType.EMAIL,  # noqa: F405
+    }
+    return Common.DBotScore(  # noqa: F405
+        indicator=indicator,
+        indicator_type=type_map.get(indicator_type, DBotScoreType.CUSTOM),  # noqa: F405
+        integration_name=INTEGRATION_NAME,
+        score=translate_score(level_int),
+        reliability=get_reputation_reliability(reliability),
+    )
 
 
 def parse_int_argument(arg_value: str | None, argument_name: str) -> int | None:
-    """Convert CLI argument to int with validation."""
     if arg_value is None or arg_value == "":
         return None
     try:
         return int(arg_value)
     except (TypeError, ValueError) as exc:
-        raise DemistoException(f"{argument_name} argument must be an integer.") from exc
+        raise DemistoException(f"{argument_name} argument must be an integer.") from exc  # noqa: F405
 
 
-def resolve_private_flag(private_arg: str | None) -> bool:
-    """Return the privacy flag, defaulting to True when it is not provided."""
+def resolve_private_flag(private_arg: str | None, default: bool = True) -> bool:
     if private_arg is None:
-        return True
-    return argToBoolean(private_arg)
+        return default
+    return argToBoolean(private_arg)  # noqa: F405
 
 
-def resolve_extension_check(scan_type: str, extension_check_arg: str | None) -> bool:
-    """Return the extensionCheck flag with deterministic defaults per scan type."""
-    if extension_check_arg is not None:
-        return argToBoolean(extension_check_arg)
-    return scan_type != "static-scan"
+def parse_modules_argument(modules_arg: str | None) -> list[str] | None:
+    if not modules_arg:
+        return None
+    try:
+        parsed = json.loads(modules_arg)
+    except ValueError:
+        parsed = None
+    if isinstance(parsed, list):
+        modules = [str(m).strip() for m in parsed if str(m).strip()]
+    elif isinstance(parsed, str):
+        modules = [parsed.strip()]
+    elif parsed is None:
+        modules = [m.strip() for m in modules_arg.split(",") if m.strip()]
+    else:
+        raise DemistoException("modules argument must be a JSON array or comma-separated string.")  # noqa: F405
+    return modules or None
 
 
-""" CLIENT CLASS """
+def parse_analyze_config_argument(analyze_arg: str | None) -> list[dict[str, Any]]:
+    if not analyze_arg:
+        return []
+    try:
+        parsed = json.loads(analyze_arg)
+    except ValueError as exc:
+        raise DemistoException("Invalid JSON provided for analyze_config argument.") from exc  # noqa: F405
+    if isinstance(parsed, dict):
+        parsed = [parsed]
+    if not isinstance(parsed, list):
+        raise DemistoException("analyze_config argument must be a JSON object or array of objects.")  # noqa: F405
+    validated: list[dict[str, Any]] = []
+    for entry in parsed:
+        if not isinstance(entry, dict):
+            raise DemistoException("analyze_config entries must be JSON objects.")  # noqa: F405
+        metafield_id = entry.get("metafieldId")
+        if not metafield_id:
+            raise DemistoException("analyze_config entries must include 'metafieldId'.")  # noqa: F405
+        if "value" not in entry:
+            raise DemistoException("analyze_config entries must include 'value'.")  # noqa: F405
+        validated.append({"metafieldId": metafield_id, "value": entry["value"]})
+    return validated
 
 
-class Client(BaseClient):
-    """Client class to interact with the service API
+def sandbox_api_defaults(client: Client) -> dict[str, Any]:
+    """Return active, accessible sandbox defaults advertised by ThreatZone."""
+    try:
+        definitions = cast(list[MetafieldOption], client.sdk.get_metafields("sandbox"))
+    except ThreatZoneError as exc:
+        demisto.debug(f"Could not retrieve ThreatZone sandbox metafield defaults: {exc}")
+        return {}
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    def threatzone_add(
-        self,
-        *,
-        scan_type: str,
-        data: dict[str, Any],
-        files: list[tuple],
-        params: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Submit a scan request to ThreatZone via the /public-api/scan/ endpoints."""
-        request_kwargs: dict[str, Any] = {
-            "method": "POST",
-            "url_suffix": f"/public-api/scan/{scan_type}",
-            "data": data,
-            "files": files,
-        }
-        if params:
-            request_kwargs["params"] = params
-        return self._http_request(**request_kwargs)
-
-    def threatzone_submit_url(self, payload: dict[str, Any]) -> dict[str, Any]:
-        """Submit a URL analysis request to ThreatZone."""
-        return self._http_request(
-            method="POST",
-            url_suffix="/public-api/scan/url-analysis",
-            json_data=payload,
-        )
-
-    def threatzone_get_section(self, submission_uuid: str, section: str) -> Any:
-        """Fetch a nested submission resource (e.g. indicators, artifacts)."""
-        return self._http_request(
-            method="GET",
-            url_suffix=f"/public-api/get/submission/{submission_uuid}/{section}",
-        )
-
-    def _download_submission_asset(self, url_suffix: str, filename: str) -> dict:
-        """Download a submission-related asset (HTML report, sanitized archive) and upload to War Room."""
-        with closing(
-            self._http_request(
-                method="GET",
-                url_suffix=url_suffix,
-                resp_type="response",
-                stream=True,
+    defaults: dict[str, Any] = {}
+    for definition in definitions:
+        if not definition.active or not definition.accessible:
+            continue
+        if definition.options:
+            default_option = next(
+                (option for option in definition.options if option.value == definition.default),
+                None,
             )
-        ) as response:
-            if not response.ok:
-                raise DemistoException(f"Bad HTTP response [{response.status_code}] - {response.text}")
+            if default_option is not None and not default_option.accessible:
+                continue
+        defaults[definition.key] = definition.default
+    return defaults
 
-            with open(filename, "wb") as file_handle:
-                response.raw.decode_content = True
-                shutil.copyfileobj(response.raw, file_handle)
-        return file_result_existing_file(filename)
 
-    def threatzone_get(self, param: dict) -> dict[str, Any]:
-        """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
+def metafields_from_legacy_args(args: dict[str, Any], api_defaults: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Map historical sandbox arguments to SDK `metafields` dict.
 
-        :return: dict containing the sample scan results as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-        return self._http_request(method="GET", url_suffix="/public-api/get/submission/" + param["uuid"])
+    The legacy v2 integration accepted dedicated YAML arguments (timeout,
+    work_path, mouse_simulation, etc.) and serialized them into an
+    `analyzeConfig` envelope. The SDK now accepts a flat dict.
+    """
+    fields = {key: value for key, value in (api_defaults or {}).items() if key not in {"private", "raw_logs"}}
+    if (timeout := parse_int_argument(args.get("timeout"), "timeout")) is not None:
+        fields["timeout"] = timeout
+    if work_path := args.get("work_path"):
+        fields["work_path"] = work_path
+    # Threat.Zone v3.2 rejects the legacy `raw_logs` metafield for dynamic
+    # reports even when its value is false. Keep accepting the XSOAR argument
+    # for command compatibility, but do not forward the unsupported key.
+    for arg_name in ("mouse_simulation", "https_inspection", "internet_connection", "snapshot"):
+        if args.get(arg_name) is not None:
+            fields[arg_name] = argToBoolean(args[arg_name])  # noqa: F405
+    if args.get("extension_check") is not None:
+        fields["dynamic_mimetype_check"] = argToBoolean(args["extension_check"])  # noqa: F405
+    if parse_modules_argument(args.get("modules")) is not None:
+        demisto.debug(
+            "The legacy modules argument is ignored because ThreatZone v3.2 "
+            "does not expose a supported submission field for module selection."
+        )
+    user_overrides = parse_analyze_config_argument(args.get("analyze_config"))
+    for entry in user_overrides:
+        fields[str(entry["metafieldId"])] = entry["value"]
+    return fields
 
-    def threatzone_get_sanitized(self, submission_uuid) -> dict:
-        filename = f"sanitized-{submission_uuid}.zip"
-        return self._download_submission_asset(f"/public-api/download/cdr/{submission_uuid}", filename)
 
-    def threatzone_get_html_report(self, submission_uuid: str) -> dict:
-        filename = f"threatzone-report-{submission_uuid}.html"
-        return self._download_submission_asset(f"/public-api/download/html-report/{submission_uuid}", filename)
+def submission_to_dict(submission: Any) -> dict[str, Any]:
+    """Render any SDK pydantic model into a JSON-compatible dict (camelCase keys)."""
+    if submission is None:
+        return {}
+    if hasattr(submission, "model_dump"):
+        return submission.model_dump(by_alias=True, exclude_none=True, mode="json")
+    if isinstance(submission, dict):
+        return submission
+    if isinstance(submission, list):
+        return {"items": [submission_to_dict(item) for item in submission]}
+    return {"value": submission}
 
-    def threatzone_me(self):
-        """
-        :return: dict containing limit data returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-        return self._http_request(method="GET", url_suffix="/public-api/me")
 
-    def threatzone_check_limits(self, scan_category):
-        """Checks limits using the '/public-api/me' API endpoint
-        :return: dict containing limit data returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-        api_me = self.threatzone_me()
-        user_info = api_me.get("userInfo", {})
-        plan_info = api_me.get("plan", {})
-        acc_email = user_info.get("email")
-        limits_count = user_info.get("limitsCount", {})
-        submission_limits = plan_info.get("submissionLimits", {}) or {}
+def models_to_dicts(items: Any) -> list[dict[str, Any]]:
+    if items is None:
+        return []
+    if hasattr(items, "items") and not isinstance(items, dict):
+        # `IndicatorsResponse`, `IoCsResponse`, etc.
+        return [submission_to_dict(item) for item in items.items]
+    if isinstance(items, list):
+        return [submission_to_dict(item) for item in items]
+    return [submission_to_dict(items)]
 
-        def _remaining(total: int | None, used: int | None) -> int | None:
-            if total is None or used is None:
-                return None
-            return total - used
 
-        available_api = _remaining(submission_limits.get("apiLimit"), limits_count.get("apiRequestCount"))
-        available_submission = _remaining(submission_limits.get("dailyLimit"), limits_count.get("dailySubmissionCount"))
-        available_concurrent = _remaining(submission_limits.get("concurrentLimit"), limits_count.get("concurrentSubmissionCount"))
-        daily_used = limits_count.get("dailySubmissionCount", "?")
-        daily_total = submission_limits.get("dailyLimit", "?")
-        concurrent_used = limits_count.get("concurrentSubmissionCount", "?")
-        concurrent_total = submission_limits.get("concurrentLimit", "?")
-        api_used = limits_count.get("apiRequestCount", "?")
-        api_total = submission_limits.get("apiLimit", "?")
-        limits = {
-            "E_Mail": f"{acc_email}",
-            "Daily_Submission_Limit": f"{daily_used}/{daily_total}",
-            "Concurrent_Limit": f"{concurrent_used}/{concurrent_total}",
-            "API_Limit": f"{api_used}/{api_total}",
-        }
-        file_limits = plan_info.get("fileLimits", {})
-        plan_details = {
-            "File_Size_Limit_MiB": file_limits.get("fileSize"),
-            "Allowed_Extensions": file_limits.get("extensions"),
-            "Modules": [module.get("name") for module in api_me.get("modules", []) if module.get("name")],
-        }
-        metadata = {
-            "Full_Name": user_info.get("fullName"),
-            "Workspace": user_info.get("workspaceName"),
-            "Plan_Name": plan_info.get("name"),
-            "Plan_Status": plan_info.get("status"),
-        }
-        if available_api is not None and available_api < 1:
-            return {
-                "available": False,
-                "Limits": limits,
-                "PlanDetails": plan_details,
-                "Metadata": metadata,
-                "Reason": f"API request limit ({submission_limits.get('apiLimit', '?')}) exceeded",
-                "Suggestion": "Upgrade your plan or contact us.",
-            }
-        elif available_submission is not None and available_submission < 1:
-            return {
-                "available": False,
-                "Limits": limits,
-                "PlanDetails": plan_details,
-                "Metadata": metadata,
-                "Reason": f"Daily submission limit ({submission_limits.get('dailyLimit', '?')}) exceeded",
-                "Suggestion": "Upgrade your plan or contact us.",
-            }
-        elif available_concurrent is not None and available_concurrent < 1 and scan_category in ("sandbox", "static-scan", "cdr"):
-            return {
-                "available": False,
-                "Limits": limits,
-                "PlanDetails": plan_details,
-                "Metadata": metadata,
-                "Reason": f"Concurrent analysis limit ({submission_limits.get('concurrentLimit', '?')}) exceeded.",
-                "Suggestion": "Upgrade your plan or wait for previous sandbox analyzes to finish.",
-            }
-        else:
-            return {
-                "available": True,
-                "Limits": limits,
-                "PlanDetails": plan_details,
-                "Metadata": metadata,
-            }
+def get_all_report_items(fetch_page: Callable[..., Any], uuid: str) -> list[Any]:
+    """Fetch every page from an SDK report endpoint that exposes an item total."""
+    items: list[Any] = []
+    page = 1
+    while True:
+        response = fetch_page(uuid, page=page, limit=REPORT_FINDINGS_PAGE_SIZE)
+        page_items = list(response.items)
+        items.extend(page_items)
+        if not page_items or len(items) >= response.total:
+            return items
+        page += 1
+
+
+def parse_file_size_mib(file_size: Any) -> int | float | None:
+    if isinstance(file_size, bool) or file_size is None:
+        return None
+    if isinstance(file_size, int | float):
+        numeric_size = float(file_size)
+    else:
+        match = re.search(r"\d+(?:\.\d+)?", str(file_size))
+        if not match:
+            return None
+        numeric_size = float(match.group(0))
+    return int(numeric_size) if numeric_size.is_integer() else numeric_size
+
+
+def submission_level_int(level: str | None) -> int | None:
+    if level is None:
+        return None
+    return LEVEL_LABEL_TO_INT.get(level)
+
+
+def report_status_int(status: str | None) -> int | None:
+    if status is None:
+        return None
+    return STATUS_LABEL_TO_INT.get(status)
+
+
+def legacy_report_to_dict(report: Any) -> dict[str, Any]:
+    report_dict = submission_to_dict(report)
+    status_int = report_status_int(getattr(report, "status", None))
+    if status_int is not None:
+        report_dict["status"] = status_int
+    return report_dict
+
+
+def select_primary_report(submission: Any) -> Any:
+    """Pick the most relevant report for legacy summary output.
+
+    Preference order matches the legacy code: dynamic, static, cdr,
+    url_analysis, open_in_browser.
+    """
+    if not submission or not getattr(submission, "reports", None):
+        return None
+    by_type = {report.type: report for report in submission.reports}
+    for preferred in ("dynamic", "static", "cdr", "url_analysis", "open_in_browser"):
+        if preferred in by_type:
+            return by_type[preferred]
+    return submission.reports[0]
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'"
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
     try:
-        client.threatzone_me()
-    except DemistoException as e:
-        message = str(e)
-        if any(err in message for err in ("Unauthorized", "401", "403")):
-            return "Authorization Error: make sure API Key is correctly set"
-        raise
-    except Exception as e:
-        raise e
+        client.sdk.get_user_info()
+    except AuthenticationError:
+        return "Authorization Error: make sure API Key is correctly set"
+    except PermissionDeniedError as exc:
+        return f"Authorization Error: {exc}"
     return "ok"
 
 
-def encode_file_name(file_name: str) -> str:
-    """
-    encodes the file name - i.e ignoring non ASCII chars and removing backslashes
-    Args:
-        file_name (str): name of the file
-    Returns: encoded file name
-    """
-    return file_name.encode("ascii", "ignore").decode("ascii", "ignore")
+def threatzone_check_limits(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    user_info = client.sdk.get_user_info()
+    details = user_info.user_info
+    limits_count = details.limits_count
+    plan = user_info.plan
+    submission_limits = plan.submission_limits
+
+    limits = {
+        "E_Mail": details.email,
+        "Daily_Submission_Limit": f"{limits_count.daily_submission_count}/{submission_limits.daily_limit}",
+        "Concurrent_Limit": f"{limits_count.concurrent_submission_count}/{submission_limits.concurrent_limit}",
+        "API_Limit": f"{limits_count.api_request_count}/{submission_limits.api_limit}",
+    }
+    results: list[CommandResults] = [  # noqa: F405
+        CommandResults(  # noqa: F405
+            outputs_prefix="ThreatZone.Limits",
+            outputs_key_field="E_Mail",
+            outputs=limits,
+            readable_output=tableToMarkdown("LIMITS", limits, removeNull=True),  # noqa: F405
+        )
+    ]
+    if argToBoolean(args.get("detailed", "false")):  # noqa: F405
+        plan_details = {
+            "File_Size_Limit_MiB": parse_file_size_mib(plan.file_limits.file_size),
+            "Allowed_Extensions": plan.file_limits.extensions,
+            "Modules": [module.module_name for module in user_info.modules],
+        }
+        results.append(
+            CommandResults(  # noqa: F405
+                outputs_prefix="ThreatZone.Plan",
+                outputs=plan_details,
+                readable_output=tableToMarkdown("PLAN DETAILS", plan_details, removeNull=True),  # noqa: F405
+            )
+        )
+        metadata = {
+            "Full_Name": details.full_name,
+            "Workspace": details.workspace.name,
+            "Plan_Name": plan.plan_name,
+        }
+        filtered_metadata = {k: v for k, v in metadata.items() if v not in (None, "", [])}
+        if filtered_metadata:
+            results.append(
+                CommandResults(  # noqa: F405
+                    outputs_prefix="ThreatZone.Metadata",
+                    outputs=filtered_metadata,
+                    readable_output=tableToMarkdown("ACCOUNT METADATA", filtered_metadata, removeNull=True),  # noqa: F405
+                )
+            )
+    return results
 
 
-def translate_score(
-    score: int | None,
-) -> int:
-    """Translate ThreatZone threat level to DBot score enum."""
-    if score is None or isinstance(score, bool):
-        return Common.DBotScore.NONE
-    if not isinstance(score, int):
-        try:
-            score = int(score)
-        except (TypeError, ValueError):
-            return Common.DBotScore.NONE
-    if score == 0:
-        return Common.DBotScore.NONE
-    if score == 1:
-        return Common.DBotScore.GOOD
-    if score == 2:
-        return Common.DBotScore.SUSPICIOUS
-    if score >= 3:
-        return Common.DBotScore.BAD
-    return Common.DBotScore.NONE
+def _verify_plan_capacity(client: Client, *, requires_concurrent: bool) -> None:
+    """Raise DemistoException when the plan has no remaining quota for an upload."""
+    info = client.sdk.get_user_info()
+    counts = info.user_info.limits_count
+    limits = info.plan.submission_limits
+    if counts.api_request_count >= limits.api_limit > 0:
+        raise DemistoException(  # noqa: F405
+            f"API request limit ({limits.api_limit}) exceeded. Upgrade your plan or contact us."
+        )
+    if counts.daily_submission_count >= limits.daily_limit > 0:
+        raise DemistoException(  # noqa: F405
+            f"Daily submission limit ({limits.daily_limit}) exceeded. Upgrade your plan or contact us."
+        )
+    if requires_concurrent and counts.concurrent_submission_count >= limits.concurrent_limit > 0:
+        raise DemistoException(  # noqa: F405
+            f"Concurrent analysis limit ({limits.concurrent_limit}) exceeded. Wait for in-flight analyses to finish."
+        )
 
 
-def normalize_level_value(level_value: Any) -> tuple[int | None, str]:
-    """Return numeric threat level and human-readable label."""
-    level_map = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
-    level_int: int | None = None
-    if level_value is not None and not isinstance(level_value, bool):
-        try:
-            level_int = int(level_value)
-        except (TypeError, ValueError):
-            level_int = None
-    label = level_map.get(level_int) if level_int is not None else None
-    if not label:
-        if level_value is None:
-            label = "Unknown"
+def _file_from_entry(args: dict[str, Any]) -> tuple[Path, str]:
+    entry_id = args.get("entry_id")
+    if not entry_id:
+        raise DemistoException("entry_id argument is required.")  # noqa: F405
+    try:
+        file_info = demisto.getFilePath(entry_id)
+    except Exception as exc:
+        raise DemistoException(f"Failed to retrieve file for entry ID {entry_id}.") from exc  # noqa: F405
+    return Path(file_info["path"]), file_info["name"]
+
+
+def _build_limits_payload(client: Client) -> dict[str, Any]:
+    """Build the current plan limits payload returned with upload results."""
+    info = client.sdk.get_user_info()
+    counts = info.user_info.limits_count
+    limits = info.plan.submission_limits
+    return {
+        "E_Mail": info.user_info.email,
+        "Daily_Submission_Limit": f"{counts.daily_submission_count}/{limits.daily_limit}",
+        "Concurrent_Limit": f"{counts.concurrent_submission_count}/{limits.concurrent_limit}",
+        "API_Limit": f"{counts.api_request_count}/{limits.api_limit}",
+    }
+
+
+def _submission_result(scan_prefix: str, payload: dict[str, Any], readable: str, limits: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    filtered = {k: v for k, v in payload.items() if v not in (None, "", [])}
+    return [
+        CommandResults(  # noqa: F405
+            outputs_prefix=f"ThreatZone.Submission.{scan_prefix}",
+            outputs_key_field="UUID",
+            outputs=filtered,
+            readable_output=readable,
+        ),
+        CommandResults(  # noqa: F405
+            outputs_prefix="ThreatZone.Limits",
+            outputs_key_field="E_Mail",
+            outputs=limits,
+        ),
+    ]
+
+
+def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    _verify_plan_capacity(client, requires_concurrent=True)
+    file_path, original_name = _file_from_entry(args)
+
+    auto_select_environment = argToBoolean(args.get("auto", "false"))  # noqa: F405
+    environment = None if auto_select_environment else args.get("environment")
+    api_defaults = sandbox_api_defaults(client)
+    private = resolve_private_flag(args.get("private"), bool(api_defaults.get("private", True)))
+    entrypoint = args.get("entrypoint")
+    password = args.get("password")
+    metafields = metafields_from_legacy_args(args, api_defaults)
+
+    with open_file_for_upload(file_path, original_name) as upload_file:
+        submission = client.sdk.create_sandbox_submission(
+            upload_file,
+            environment=environment,
+            auto_select_environment=auto_select_environment,
+            metafields=metafields or None,
+            private=private,
+            entrypoint=entrypoint,
+            password=password,
+        )
+    message = submission.message
+    submission_uuid = submission.uuid
+    payload = {
+        "Message": message,
+        "UUID": submission_uuid,
+        "FileName": original_name,
+    }
+    readable = tableToMarkdown("SAMPLE UPLOADED", payload)  # noqa: F405
+    return _submission_result("Sandbox", payload, readable, _build_limits_payload(client))
+
+
+def threatzone_static_or_cdr_upload(client: Client, args: dict[str, Any], scan_type: str) -> list[CommandResults]:  # noqa: F405
+    if scan_type not in ("static", "cdr"):
+        raise DemistoException(f"Unsupported scan_type '{scan_type}'.")  # noqa: F405
+    _verify_plan_capacity(client, requires_concurrent=True)
+    file_path, original_name = _file_from_entry(args)
+    private = resolve_private_flag(args.get("private"))
+    entrypoint = args.get("entrypoint")
+    password = args.get("password")
+    extension_check = args.get("extension_check")
+    dynamic_mimetype_check = argToBoolean(extension_check) if extension_check is not None else None  # noqa: F405
+
+    with open_file_for_upload(file_path, original_name) as upload_file:
+        if scan_type == "static":
+            submission = client.sdk.create_static_submission(
+                upload_file,
+                private=private,
+                entrypoint=entrypoint,
+                password=password,
+                dynamic_mimetype_check=dynamic_mimetype_check,
+            )
+            prefix = "Static"
         else:
-            label = str(level_value)
-    return level_int, label
+            submission = client.sdk.create_cdr_submission(
+                upload_file,
+                private=private,
+                entrypoint=entrypoint,
+                password=password,
+                dynamic_mimetype_check=dynamic_mimetype_check,
+            )
+            prefix = "CDR"
+    payload = {
+        "Message": submission.message,
+        "UUID": submission.uuid,
+        "FileName": original_name,
+    }
+    readable = tableToMarkdown("SAMPLE UPLOADED", payload)  # noqa: F405
+    return _submission_result(prefix, payload, readable, _build_limits_payload(client))
 
 
-def get_reputation_reliability(reliability):
-    if reliability == "A+ - 3rd party enrichment":
-        return DBotScoreReliability.A_PLUS
-    if reliability == "A - Completely reliable":
-        return DBotScoreReliability.A
-    if reliability == "B - Usually reliable":
-        return DBotScoreReliability.B
-    if reliability == "C - Fairly reliable":
-        return DBotScoreReliability.C
-    if reliability == "D - Not usually reliable":
-        return DBotScoreReliability.D
-    if reliability == "E - Unreliable":
-        return DBotScoreReliability.E
-    if reliability == "F - Reliability cannot be judged":
-        return DBotScoreReliability.F
+def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    _verify_plan_capacity(client, requires_concurrent=False)
+    url_value = args.get("url")
+    if not url_value:
+        raise DemistoException("url argument is required.")  # noqa: F405
+    private = resolve_private_flag(args.get("private"))
+    submission = client.sdk.create_url_submission(url_value, private=private)
+    payload = {
+        "Message": submission.message,
+        "UUID": submission.uuid,
+        "URL": url_value,
+    }
+    readable = tableToMarkdown("URL SUBMITTED", payload)  # noqa: F405
+    return _submission_result("URL", payload, readable, _build_limits_payload(client))
+
+
+def _build_indicator_object(submission: Any, level_int: int | None) -> Any:
+    hashes = getattr(submission, "hashes", None)
+    sha256 = getattr(hashes, "sha256", None) if hashes else None
+    md5 = getattr(hashes, "md5", None) if hashes else None
+    sha1 = getattr(hashes, "sha1", None) if hashes else None
+    url_value = getattr(submission, "url", None)
+    reliability = demisto.params().get("integrationReliability")
+
+    if sha256:
+        dbot = build_dbot_score(sha256, level_int, "file", reliability)
+        return Common.File(dbot, md5=md5, sha1=sha1, sha256=sha256)  # noqa: F405
+    if url_value:
+        dbot = build_dbot_score(url_value, level_int, "url", reliability)
+        return Common.URL(url=url_value, dbot_score=dbot)  # noqa: F405
     return None
 
 
-def generate_dbotscore(indicator, score, type_of_indicator=None):
-    """Creates DBotScore object based on the content of 'indicator' argument
-    :type indicator: ``str``
-    :param indicator: The value of the indicator
-
-    :type report: ``dict``
-    :param report: The readable report dict
-
-    :return: A DBotScore object.
-    :rtype: dict
-    """
-
-    def _type_selector(_type):
-        types = {
-            "ip": DBotScoreType.IP,
-            "file": DBotScoreType.FILE,
-            "domain": DBotScoreType.DOMAIN,
-            "url": DBotScoreType.URL,
-            "email": DBotScoreType.EMAIL,
-            "custom": DBotScoreType.CUSTOM,
-        }
-        if not _type:
-            return types["custom"]
-        return types[_type]
-
-    return Common.DBotScore(
-        indicator=indicator,
-        indicator_type=_type_selector(type_of_indicator),
-        integration_name="ThreatZone",
-        score=translate_score(score),
-        reliability=get_reputation_reliability(demisto.params().get("integrationReliability")),
-    )
-
-
-def generate_indicator(indicator, report, type_of_indicator, score=None):
-    """Creates Indicator object based on the content of 'indicator' argument
-
-    :type indicator: ``str``
-    :param indicator: The value of the indicator
-
-    :type report: ``dict``
-    :param report: The readable report dict
-
-    :return: A Indicator object.
-    :rtype: dict
-    """
-    if score is not None:
-        dbot_score = generate_dbotscore(indicator, score, type_of_indicator=type_of_indicator)
-    else:
-        dbot_score = generate_dbotscore(indicator, report.get("LEVEL"), type_of_indicator=type_of_indicator)
-    if type_of_indicator == "file":
-        return Common.File(
-            dbot_score,
-            md5=report.get("MD5"),
-            sha1=report.get("SHA1"),
-            sha256=report.get("SHA256"),
-        )
-    elif type_of_indicator == "ip":
-        return Common.IP(ip=indicator, dbot_score=dbot_score)
-    elif type_of_indicator == "url":
-        return Common.URL(url=indicator, dbot_score=dbot_score)
-    elif type_of_indicator == "domain":
-        return Common.Domain(domain=indicator, dbot_score=dbot_score)
-    elif type_of_indicator == "email":
-        return Common.EMAIL(address=indicator, dbot_score=dbot_score)
-    raise DemistoException(f"{type_of_indicator} does not supported")
-
-
-def render_section_markdown(title: str, data: Any) -> str:
-    """Safely render integration data as markdown, falling back to JSON when needed."""
-    if data in (None, [], {}):
-        return f"{title}\nNo data returned."
-
-    try:
-        return tableToMarkdown(title, data, removeNull=True)
-    except Exception as exc:  # pragma: no cover - defensive, tableToMarkdown rarely fails
-        demisto.debug(f"tableToMarkdown failed for section '{title}': {exc}")
-        serialized = json.dumps(data, indent=2, default=str)
-        return f"{title}\n```json\n{serialized}\n```"
-
-
-def select_report_section(reports: dict[str, Any]) -> tuple[str, dict[str, Any]]:
-    """Return the enabled report type and its section from the submission payload."""
-    for name in ("dynamic", "static", "cdr", "urlAnalysis"):
-        section = reports.get(name) or {}
-        if section.get("enabled"):
-            return name, section
-    raise DemistoException("No enabled report found for the submission.")
-
-
-def build_submission_info(
-    report_type: str,
-    report_section: dict[str, Any],
-    private_flag: Any,
-    file_name: str | None,
-    analyzed_url: str | None,
-) -> dict[str, Any]:
-    """Assemble the INFO structure for the summary output."""
-    submission_info: dict[str, Any] = {"private": private_flag}
-    if file_name:
-        submission_info["file_name"] = file_name
-    if analyzed_url:
-        submission_info["url"] = analyzed_url
-    if report_type == "urlAnalysis":
-        general_info = report_section.get("generalInfo") or {}
-        if general_info.get("domain"):
-            submission_info["domain"] = general_info.get("domain")
-        if general_info.get("websiteTitle"):
-            submission_info["website_title"] = general_info.get("websiteTitle")
-    return submission_info
-
-
-def build_detail_markdown(result: dict[str, Any], report_section: dict[str, Any]) -> str:
-    """Create an inline detail table (single table, no per-section headings)."""
-
-    def _summarize_section_data(section_title: str, section_data: Any) -> str | None:
-        if section_data in (None, "", [], {}):
-            return None
-
-        if section_title == "Indicators":
-            if isinstance(section_data, list):
-                names = [str(item.get("name")).strip() for item in section_data if isinstance(item, dict) and item.get("name")]
-                return ", ".join(names) if names else None
-            return str(section_data)
-
-        if section_title == "Indicators of Compromise":
-            if isinstance(section_data, dict):
-                preferred_keys = ("url", "domain", "email", "ip", "URL", "DOMAIN", "EMAIL", "IP")
-                ordered_keys = [key for key in preferred_keys if key in section_data]
-                ordered_keys.extend(sorted((key for key in section_data if key not in ordered_keys), key=str))
-
-                entries: list[str] = []
-                seen_normalized: set[str] = set()
-                for key in ordered_keys:
-                    raw_value = section_data.get(key)
-                    if raw_value in (None, "", [], {}):
-                        continue
-                    normalized_key = str(key).lower()
-                    if normalized_key in seen_normalized:
-                        continue
-                    seen_normalized.add(normalized_key)
-
-                    value_items = raw_value if isinstance(raw_value, list) else [raw_value]
-                    values = [str(item).strip() for item in value_items if item not in (None, "")]
-                    if values:
-                        entries.append(f"{normalized_key}: {', '.join(values)}")
-
-                return ", ".join(entries) if entries else None
-
-            return str(section_data)
-
-        if section_title == "Matched YARA Rules":
-            if isinstance(section_data, list):
-                rules = [str(item.get("rule")).strip() for item in section_data if isinstance(item, dict) and item.get("rule")]
-                return ", ".join(rules) if rules else None
-            return str(section_data)
-
-        if section_title == "Analysis Artifacts":
-            if isinstance(section_data, list):
-                paths = [
-                    str(item.get("path") or item.get("name")).strip()
-                    for item in section_data
-                    if isinstance(item, dict) and (item.get("path") or item.get("name"))
-                ]
-                return ", ".join(paths) if paths else None
-            return str(section_data)
-
-        if section_title == "Extracted Configurations":
-            if isinstance(section_data, list):
-                rendered: list[str] = []
-                for item in section_data:
-                    if isinstance(item, dict):
-                        parts = [f"{key}: {value}" for key, value in item.items()]
-                        if parts:
-                            rendered.append(", ".join(parts))
-                    elif item not in (None, ""):
-                        rendered.append(str(item))
-                return "; ".join(rendered) if rendered else None
-            if isinstance(section_data, dict):
-                parts = [f"{key}: {value}" for key, value in section_data.items()]
-                return ", ".join(parts) if parts else None
-            return str(section_data)
-
-        return str(section_data)
-
-    detail_rows: list[dict[str, str]] = []
-    for title, top_level_key, report_key in DETAIL_SECTIONS:
-        section_data = result.get(top_level_key)
-        if section_data is None and isinstance(report_section, dict):
-            section_data = report_section.get(report_key)
-        summary = _summarize_section_data(title, section_data)
-        if summary:
-            detail_rows.append({"DETAILS": title.upper(), "VALUE": summary})
-
-    if not detail_rows:
-        return ""
-
-    return tableToMarkdown("Details", detail_rows, headers=["DETAILS", "VALUE"], removeNull=True)
-
-
-def build_section_command_results(uuid: str, prefix: str, title: str, data: Any) -> CommandResults:
-    """Build a CommandResults object for a submission section."""
-    readable_output = render_section_markdown(title, data)
-    outputs: dict[str, Any] | None = None
-    outputs_key_field: str | None = None
-    if data not in (None, [], {}):
-        outputs = {"UUID": uuid, "Data": data}
-        outputs_key_field = "UUID"
-    return CommandResults(
-        outputs_prefix=prefix,
-        outputs_key_field=outputs_key_field,
-        outputs=outputs,
-        readable_output=readable_output,
-    )
-
-
-def fetch_section_data(client: "Client", uuid: str, endpoint: str, response_key: str | None) -> Any:
-    """Fetch a submission section, returning the nested payload when possible."""
-    raw_section = client.threatzone_get_section(uuid, endpoint)
-    if response_key and isinstance(raw_section, dict) and response_key in raw_section:
-        return raw_section.get(response_key)
-    return raw_section
-
-
-def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandResults | dict]:
-    """Get the sample scan result from ThreatZone with optional detailed sections."""
+def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandResults | dict]:  # noqa: F405
     uuid = args.get("uuid")
     if not uuid:
-        raise DemistoException("uuid argument is required.")
+        raise DemistoException("uuid argument is required.")  # noqa: F405
 
-    result = client.threatzone_get({"uuid": uuid})
-    status_labels = {
-        1: "File received",
-        2: "Submission is accepted",
-        3: "Submission is running",
-        4: "Submission VM is ready",
-        5: "Submission is finished",
-    }
+    submission = client.sdk.get_submission(uuid)
+    submission_dict = submission_to_dict(submission)
+    primary_report = select_primary_report(submission)
 
-    reports = result.get("reports") or {}
-    report_type, report_section = select_report_section(reports)
-    status_value = report_section.get("status")
-    if status_value == 0:
-        raise DemistoException(
-            "Submission is declined by the scanner. "
-            "The file may be corrupted or the analyzer encountered an unrecoverable error."
+    level_int = submission_level_int(submission.level)
+    level_label = LEVEL_INT_TO_LABEL.get(level_int) if level_int is not None else "Unknown"
+
+    status_label = primary_report.status if primary_report else None
+    status_int = report_status_int(status_label)
+    if status_int == 0:
+        raise DemistoException(  # noqa: F405
+            "Submission is declined by the scanner. The file may be corrupted or the analyzer encountered an unrecoverable error."
         )
+    status_readable = STATUS_INT_TO_READABLE.get(status_int, status_label or "Unknown") if status_int is not None else "Unknown"
+    legacy_report = legacy_report_to_dict(primary_report)
 
-    submission_uuid = result.get("uuid", uuid)
-    download_sanitized = argToBoolean(args.get("download_sanitized", "false"))
+    report_type_label = REPORT_TYPE_LABEL.get(primary_report.type, primary_report.type) if primary_report else None
+    analysis_type_label = "URL Analysis" if report_type_label == "urlAnalysis" else (report_type_label or "")
 
-    file_info = result.get("fileInfo") or {}
-    file_hashes = file_info.get("hashes") or {}
-    md5 = file_hashes.get("md5")
-    sha1 = file_hashes.get("sha1")
-    sha256 = file_hashes.get("sha256")
-    file_name = file_info.get("name")
-    analyzed_url = result.get("url")
-    if not analyzed_url and report_type == "urlAnalysis":
-        general_info = report_section.get("generalInfo") or {}
-        analyzed_url = general_info.get("url") or general_info.get("URL")
+    hashes = submission.hashes
+    md5 = hashes.md5 if hashes else None
+    sha1 = hashes.sha1 if hashes else None
+    sha256 = hashes.sha256 if hashes else None
+    analyzed_url = submission.url
+    file_name = submission.filename or (submission.file.name if submission.file else None)
+    private_flag = submission.private
 
-    level_int, level_label = normalize_level_value(result.get("level"))
-    private_flag = result.get("private")
+    summary_info: dict[str, Any] = {"private": private_flag}
+    if file_name:
+        summary_info["file_name"] = file_name
+    if analyzed_url:
+        summary_info["url"] = analyzed_url
 
-    status_key: int | None = None
-    if status_value is not None and not isinstance(status_value, bool):
-        try:
-            status_key = int(status_value)
-        except (TypeError, ValueError):
-            status_key = None
-
-    if status_key is None:
-        status_readable = "Unknown"
-    else:
-        status_readable = status_labels.get(status_key, f"Status {status_key}")
-    analysis_type_label = "URL Analysis" if report_type == "urlAnalysis" else report_type
-
-    summary_info = build_submission_info(report_type, report_section, private_flag, file_name, analyzed_url)
     summary_output: dict[str, Any] = {
         "TYPE": analysis_type_label,
         "STATUS": status_readable,
@@ -699,47 +642,33 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
         "LEVEL": level_int,
         "LEVEL_LABEL": level_label,
         "INFO": summary_info,
-        "UUID": submission_uuid,
-        "REPORT": report_section,
+        "UUID": submission.uuid,
+        "REPORT": dict(legacy_report),
     }
-    result["Summary"] = summary_output
+    submission_dict["Summary"] = summary_output
 
-    include_details = argToBoolean(args.get("details", "false"))
+    download_sanitized = argToBoolean(args.get("download_sanitized", "false"))  # noqa: F405
+    include_details = argToBoolean(args.get("details", "false"))  # noqa: F405
+
     warnings: list[str] = []
-    if status_key is not None and status_key != 5:
-        warnings.append(
-            f"Submission status is '{status_labels.get(status_key, status_key)}'; some sections may not yet be available."
-        )
+    if status_int is not None and status_int != 5:
+        warnings.append(f"Submission status is '{status_readable}'; some sections may not yet be available.")
 
-    indicator_value = sha256 or analyzed_url
-    indicator_type = "file" if sha256 else "url"
-    indicator_obj = None
-    if indicator_value:
-        try:
-            indicator_obj = generate_indicator(
-                indicator_value,
-                summary_output,
-                indicator_type,
-                score=level_int,
-            )
-        except DemistoException as exc:
-            warnings.append(f"indicator-generation: {exc}")
-            demisto.debug(f"ThreatZone indicator generation failed: {exc}")
+    indicator_obj = _build_indicator_object(submission, level_int)
 
     sanitized_file: dict | None = None
-    if report_type == "cdr" and status_value == 5 and download_sanitized:
+    if primary_report and primary_report.type == "cdr" and status_int == 5 and download_sanitized:
         try:
-            sanitized_file = threatzone_get_sanitized_file(client, {"uuid": submission_uuid})
-        except DemistoException as exc:
+            sanitized_file = threatzone_get_sanitized_file(client, {"uuid": submission.uuid})
+        except (ThreatZoneError, DemistoException) as exc:  # noqa: F405
             warnings.append(f"sanitized-download: {exc}")
-            demisto.debug(f"ThreatZone sanitized download failed: {exc}")
 
     readable_summary: dict[str, Any] = {
         "ANALYSIS TYPE": analysis_type_label,
         "STATUS": status_readable,
         "THREAT_LEVEL": level_label,
         "PRIVATE": private_flag,
-        "UUID": submission_uuid,
+        "UUID": submission.uuid,
     }
     if file_name:
         readable_summary["FILE_NAME"] = file_name
@@ -752,477 +681,254 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
     if sha256:
         readable_summary["SHA256"] = sha256
 
-    summary_table = tableToMarkdown("Submission Result", readable_summary, removeNull=True)
-    detail_markdown = build_detail_markdown(result, report_section) if include_details else ""
-    readable_output = summary_table
-    if detail_markdown:
-        readable_output = f"{readable_output}\n{detail_markdown}"
+    readable_output = tableToMarkdown("Submission Result", readable_summary, removeNull=True)  # noqa: F405
+
+    detail_extras: list[CommandResults] = []  # noqa: F405
+    ioc_items: list[Any] = []
+    ioc_fetch_attempted = False
+    if include_details:
+        try:
+            indicators_data = models_to_dicts(get_all_report_items(client.sdk.get_indicators, submission.uuid))
+            detail_extras.append(
+                _section_result(submission.uuid, "ThreatZone.Submission.Indicators", "Dynamic Indicators", indicators_data)
+            )
+        except ReportUnavailableError as exc:
+            warnings.append(f"indicators-unavailable: {exc}")
+        ioc_fetch_attempted = True
+        try:
+            ioc_items = get_all_report_items(client.sdk.get_iocs, submission.uuid)
+            iocs_data = models_to_dicts(ioc_items)
+            detail_extras.append(
+                _section_result(submission.uuid, "ThreatZone.Submission.IOCs", "Indicators of Compromise", iocs_data)
+            )
+        except ReportUnavailableError as exc:
+            warnings.append(f"iocs-unavailable: {exc}")
+        try:
+            yara_data = models_to_dicts(get_all_report_items(client.sdk.get_yara_rules, submission.uuid))
+            detail_extras.append(
+                _section_result(submission.uuid, "ThreatZone.Submission.YaraMatches", "Matched YARA Rules", yara_data)
+            )
+        except ReportUnavailableError as exc:
+            warnings.append(f"yara-unavailable: {exc}")
+        try:
+            artifacts_data = models_to_dicts(client.sdk.get_artifacts(submission.uuid))
+            detail_extras.append(
+                _section_result(submission.uuid, "ThreatZone.Submission.Artifacts", "Analysis Artifacts", artifacts_data)
+            )
+        except ReportUnavailableError as exc:
+            warnings.append(f"artifacts-unavailable: {exc}")
+        try:
+            configs_data = models_to_dicts(client.sdk.get_extracted_configs(submission.uuid))
+            detail_extras.append(
+                _section_result(submission.uuid, "ThreatZone.Submission.Config", "Configuration Extractor Results", configs_data)
+            )
+        except ReportUnavailableError as exc:
+            warnings.append(f"config-unavailable: {exc}")
+
     if warnings:
         warning_lines = "\n".join(f"- {warning}" for warning in warnings)
         readable_output = f"{readable_output}\n\n### Additional Data Notes\n{warning_lines}"
 
-    command_results: list[CommandResults | dict] = [
-        CommandResults(
-            outputs_prefix="ThreatZone.Submission",
-            readable_output=readable_output,
-            outputs_key_field="uuid",
-            outputs=result,
-            raw_response=result,
-            indicator=indicator_obj,
-        )
-    ]
-
-    # Backward compatible outputs (legacy context keys)
-    # These are preserved to avoid breaking existing customer playbooks/workflows that rely on ThreatZone.Analysis.*
-    # and ThreatZone.IOC.* paths.
-    legacy_status: int = -1
-    if status_value is not None and not isinstance(status_value, bool):
-        try:
-            legacy_status = int(status_value)
-        except (TypeError, ValueError):
-            legacy_status = -1
-
-    legacy_info: dict[str, Any] = {"private": private_flag}
-    if file_name:
-        legacy_info["file_name"] = file_name
-    if analyzed_url:
-        legacy_info["url"] = analyzed_url
-    if report_type == "urlAnalysis":
-        general_info = report_section.get("generalInfo") or {}
-        if general_info.get("domain"):
-            legacy_info["domain"] = general_info.get("domain")
-        if general_info.get("websiteTitle"):
-            legacy_info["website_title"] = general_info.get("websiteTitle")
-
     legacy_analysis: dict[str, Any] = {
-        "TYPE": report_type,
-        "STATUS": legacy_status,
+        "TYPE": report_type_label,
+        "STATUS": status_int if status_int is not None else -1,
         "MD5": md5,
         "SHA1": sha1,
         "SHA256": sha256,
         "LEVEL": level_int,
-        "INFO": legacy_info,
-        "UUID": submission_uuid,
-        "REPORT": report_section,
+        "INFO": dict(summary_info),
+        "UUID": submission.uuid,
+        "REPORT": dict(legacy_report),
+        "URL": analyzed_url,
+        "SANITIZED": sanitized_file.get("EntryID") if isinstance(sanitized_file, dict) else None,
     }
 
-    legacy_url: str | None = None
-    if isinstance(report_section, dict):
-        legacy_url = (
-            report_section.get("vnc")
-            or report_section.get("url")
-            or (report_section.get("generalInfo") or {}).get("url")
-            or (report_section.get("generalInfo") or {}).get("URL")
-        )
-    if not legacy_url and analyzed_url:
-        legacy_url = analyzed_url
-    legacy_analysis["URL"] = legacy_url
+    legacy_iocs: dict[str, list[Any]] = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
+    if not ioc_fetch_attempted:
+        try:
+            ioc_items = get_all_report_items(client.sdk.get_iocs, submission.uuid)
+        except (ReportUnavailableError, APIError) as exc:
+            demisto.debug(f"Could not retrieve ThreatZone IOCs for legacy output: {exc}")
+    for item in ioc_items:
+        bucket = item.type.upper()
+        if bucket in legacy_iocs:
+            legacy_iocs[bucket].append(item.value)
 
-    legacy_sanitized: str | None = None
-    if isinstance(sanitized_file, dict):
-        legacy_sanitized = sanitized_file.get("EntryID")
-    legacy_analysis["SANITIZED"] = legacy_sanitized
-
-    def _ensure_list(value: Any) -> list[Any]:
-        if value in (None, "", {}):
-            return []
-        if isinstance(value, list):
-            return value
-        return [value]
-
-    def extract_legacy_iocs() -> dict[str, list[Any]]:
-        indicators: dict[str, list[Any]] = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
-
-        ioc_source: Any = None
-        if isinstance(report_section, dict):
-            ioc_source = report_section.get("ioc") or report_section.get("iocs")
-        if not ioc_source and isinstance(result, dict):
-            ioc_source = result.get("iocs") or result.get("ioc")
-
-        if isinstance(ioc_source, dict):
-            indicators["URL"] = _ensure_list(ioc_source.get("url") or ioc_source.get("URL"))
-            indicators["DOMAIN"] = _ensure_list(ioc_source.get("domain") or ioc_source.get("DOMAIN"))
-            indicators["EMAIL"] = _ensure_list(ioc_source.get("email") or ioc_source.get("EMAIL"))
-            indicators["IP"] = _ensure_list(ioc_source.get("ip") or ioc_source.get("IP"))
-
-        return indicators
-
-    legacy_iocs = extract_legacy_iocs()
-    command_results.append(
-        CommandResults(
+    command_results: list[CommandResults | dict] = [  # noqa: F405
+        CommandResults(  # noqa: F405
+            outputs_prefix="ThreatZone.Submission",
+            outputs_key_field="uuid",
+            outputs=submission_dict,
+            raw_response=submission_dict,
+            readable_output=readable_output,
+            indicator=indicator_obj,
+        ),
+        CommandResults(  # noqa: F405
             outputs_prefix="ThreatZone.Analysis",
             outputs_key_field="UUID",
             outputs=legacy_analysis,
-        )
-    )
-    command_results.append(
-        CommandResults(
+        ),
+        CommandResults(  # noqa: F405
             outputs_prefix="ThreatZone.IOC",
             outputs=legacy_iocs,
-        )
-    )
-
+        ),
+    ]
+    command_results.extend(detail_extras)
     if sanitized_file:
         command_results.append(sanitized_file)
-
     return command_results
 
 
-def threatzone_get_section_result(client: Client, args: dict[str, Any], flag_name: str) -> list[CommandResults]:
-    """Generic handler to retrieve a submission section using its dedicated endpoint."""
-    metadata = SECTION_METADATA[flag_name]
+def _section_result(uuid: str, prefix: str, title: str, data: list[dict[str, Any]]) -> CommandResults:  # noqa: F405
+    readable = tableToMarkdown(title, data, removeNull=True) if data else f"{title}\nNo data returned."  # noqa: F405
+    outputs: dict[str, Any] | None = {"UUID": uuid, "Data": data} if data else None
+    return CommandResults(  # noqa: F405
+        outputs_prefix=prefix,
+        outputs_key_field="UUID" if outputs else None,
+        outputs=outputs,
+        readable_output=readable,
+    )
+
+
+def _require_uuid(args: dict[str, Any]) -> str:
     uuid = args.get("uuid")
     if not uuid:
-        raise DemistoException("uuid argument is required.")
-
-    endpoint = metadata.get("endpoint")
-    if not endpoint:
-        raise DemistoException("This section cannot be retrieved via a dedicated endpoint.")
-
-    section_data = fetch_section_data(client, uuid, endpoint, metadata.get("response_key"))
-    return [
-        build_section_command_results(
-            uuid,
-            metadata["prefix"],
-            metadata["title"],
-            section_data,
-        )
-    ]
+        raise DemistoException("uuid argument is required.")  # noqa: F405
+    return uuid
 
 
-def threatzone_get_indicator_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Fetch dynamic behaviour indicators using the dedicated endpoint."""
-    return threatzone_get_section_result(client, args, "include_indicators")
+def threatzone_get_indicator_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = models_to_dicts(get_all_report_items(client.sdk.get_indicators, uuid))
+    return [_section_result(uuid, "ThreatZone.Submission.Indicators", "Dynamic Indicators", data)]
 
 
-def threatzone_get_ioc_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Fetch Indicators of Compromise using the dedicated endpoint."""
-    return threatzone_get_section_result(client, args, "include_iocs")
+def threatzone_get_ioc_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = models_to_dicts(get_all_report_items(client.sdk.get_iocs, uuid))
+    return [_section_result(uuid, "ThreatZone.Submission.IOCs", "Indicators of Compromise", data)]
 
 
-def threatzone_get_yara_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Fetch matched YARA rules using the dedicated endpoint."""
-    return threatzone_get_section_result(client, args, "include_yara")
+def threatzone_get_yara_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = models_to_dicts(get_all_report_items(client.sdk.get_yara_rules, uuid))
+    return [_section_result(uuid, "ThreatZone.Submission.YaraMatches", "Matched YARA Rules", data)]
 
 
-def threatzone_get_artifact_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Fetch analysis artifacts using the dedicated endpoint."""
-    return threatzone_get_section_result(client, args, "include_artifacts")
+def threatzone_get_artifact_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = models_to_dicts(client.sdk.get_artifacts(uuid))
+    return [_section_result(uuid, "ThreatZone.Submission.Artifacts", "Analysis Artifacts", data)]
 
 
-def threatzone_get_config_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Fetch configuration extractor results using the dedicated endpoint."""
-    return threatzone_get_section_result(client, args, "include_config")
+def threatzone_get_config_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = models_to_dicts(client.sdk.get_extracted_configs(uuid))
+    return [_section_result(uuid, "ThreatZone.Submission.Config", "Configuration Extractor Results", data)]
 
 
-def threatzone_check_limits(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Checks and prints remaining limits and current quota"""
-    availability = client.threatzone_check_limits(None)
-    readable_output = tableToMarkdown("LIMITS", availability["Limits"], removeNull=True)
-    results: list[CommandResults] = [
-        CommandResults(
-            outputs_prefix="ThreatZone.Limits",
-            outputs_key_field="E_Mail",
-            readable_output=readable_output,
-            outputs=availability["Limits"],
-        )
-    ]
-
-    include_details = argToBoolean(args.get("detailed", "false"))
-
-    plan_details = availability.get("PlanDetails")
-    if include_details and plan_details:
-        plan_readable = tableToMarkdown("PLAN DETAILS", plan_details, removeNull=True)
-        results.append(
-            CommandResults(
-                outputs_prefix="ThreatZone.Plan",
-                readable_output=plan_readable,
-                outputs=plan_details,
-            )
-        )
-
-    metadata = availability.get("Metadata")
-    if include_details and metadata:
-        filtered_metadata = {k: v for k, v in metadata.items() if v not in (None, "", [])}
-        if filtered_metadata:
-            metadata_readable = tableToMarkdown("ACCOUNT METADATA", filtered_metadata, removeNull=True)
-            results.append(
-                CommandResults(
-                    outputs_prefix="ThreatZone.Metadata",
-                    readable_output=metadata_readable,
-                    outputs=filtered_metadata,
-                )
-            )
-
-    return results
-
-
-def threatzone_return_results(
-    scan_type: str, submission_data: str | dict[str, Any], readable_output: str, availability: dict[str, Any]
-) -> list[CommandResults]:
-    """Helper function for returning results with limits."""
-    scan_prefix = ""
-    if scan_type == "static-scan":
-        scan_prefix = "Static"
-    elif scan_type == "cdr":
-        scan_prefix = "CDR"
-    elif scan_type == "url-analysis":
-        scan_prefix = "URL"
-    else:
-        scan_prefix = "Sandbox"
-
-    if isinstance(submission_data, str):
-        submission_data = {"UUID": submission_data}
-    filtered_submission = {k: v for k, v in submission_data.items() if v not in (None, "", [])}
-    uuid = filtered_submission.get("UUID")
-    if not uuid:
-        raise DemistoException("Submission UUID is missing from the response.")
-    return [
-        CommandResults(
-            outputs_prefix=f"ThreatZone.Submission.{scan_prefix}",
-            readable_output=readable_output,
-            outputs_key_field="UUID",
-            outputs=filtered_submission,
-        ),
-        CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", outputs=availability["Limits"]),
-    ]
-
-
-def threatzone_get_sanitized_file(client: Client, args: dict[str, Any]) -> dict:
-    """Downloads and uploads sanitized file to WarRoom & Context Data."""
-    submission_uuid = args.get("uuid")
-    if not submission_uuid:
-        raise DemistoException("uuid argument is required.")
-    return client.threatzone_get_sanitized(submission_uuid)
-
-
-def threatzone_get_html_report_file(client: Client, args: dict[str, Any]) -> dict:
-    """Downloads the HTML report for a submission and uploads it to the War Room."""
-    submission_uuid = args.get("uuid")
-    if not submission_uuid:
-        raise DemistoException("uuid argument is required.")
-    return client.threatzone_get_html_report(submission_uuid)
-
-
-def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
-    availability = client.threatzone_check_limits("sandbox")
-    if not availability["available"]:
-        raise DemistoException(
-            f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}"
-        )
-
-    file_id = args.get("entry_id")
-    if not file_id:
-        raise DemistoException("entry_id argument is required.")
+def _save_download(download: DownloadResponse, fallback_filename: str) -> dict[str, Any]:
     try:
-        file_obj = demisto.getFilePath(file_id)
-    except Exception as exc:
-        raise DemistoException(f"Failed to retrieve file for entry ID {file_id}.") from exc
-    original_file_name = file_obj["name"]
-    file_name = encode_file_name(original_file_name)
-    file_path = file_obj["path"]
-
-    timeout_value = parse_int_argument(args.get("timeout"), "timeout")
-    environment = args.get("environment")
-    work_path = args.get("work_path")
-    private_value = resolve_private_flag(args.get("private"))
-
-    default_analyze_config: list[dict[str, Any]] = []
-    if environment:
-        default_analyze_config.append({"metafieldId": "environment", "value": environment})
-    default_analyze_config.append({"metafieldId": "private", "value": private_value})
-    if timeout_value is not None:
-        default_analyze_config.append({"metafieldId": "timeout", "value": timeout_value})
-    if work_path:
-        default_analyze_config.append({"metafieldId": "work_path", "value": work_path})
-
-    bool_metafields = (
-        ("mouse_simulation", "mouse_simulation"),
-        ("https_inspection", "https_inspection"),
-        ("internet_connection", "internet_connection"),
-        ("raw_logs", "raw_logs"),
-        ("snapshot", "snapshot"),
-    )
-    for arg_name, metafield_id in bool_metafields:
-        bool_value = argToBoolean(args.get(arg_name, "false"))
-        default_analyze_config.append({"metafieldId": metafield_id, "value": bool_value})
-
-    user_analyze_config = parse_analyze_config_argument(args.get("analyze_config"))
-    merged_config: dict[str, dict[str, Any]] = {entry["metafieldId"]: entry for entry in default_analyze_config}
-    for entry in user_analyze_config:
-        merged_config[entry["metafieldId"]] = entry
-
-    analyze_config_payload = list(merged_config.values())
-    payload: dict[str, Any] = {}
-    if analyze_config_payload:
-        payload["analyzeConfig"] = json.dumps(analyze_config_payload)
-
-    modules_list = parse_modules_argument(args.get("modules"))
-    if modules_list:
-        payload["modules"] = json.dumps(modules_list)
-
-    extension_check = argToBoolean(args.get("extension_check", "true"))
-    payload["extensionCheck"] = as_api_bool(extension_check)
-
-    if entrypoint := args.get("entrypoint"):
-        payload["entrypoint"] = entrypoint
-    if password := args.get("password"):
-        payload["password"] = password
-
-    auto_param = args.get("auto")
-    url_params = None
-    if auto_param is not None:
-        auto_bool = argToBoolean(auto_param)
-        url_params = {"auto": as_api_bool(auto_bool)}
-
-    with open(file_path, "rb") as file_handle:
-        files = [("file", (file_name, file_handle, "application/octet-stream"))]
-        result = client.threatzone_add(
-            scan_type="sandbox",
-            data=payload,
-            files=files,
-            params=url_params,
-        )
-
-    custom_result = {
-        "Message": result.get("message"),
-        "UUID": result.get("uuid"),
-        "FileName": original_file_name,
-    }
-    readable_output = tableToMarkdown("SAMPLE UPLOADED", custom_result)
-    updated_availability = client.threatzone_check_limits("sandbox")
-    return threatzone_return_results("sandbox", custom_result, readable_output, updated_availability)
+        download_filename = Path(download.filename).name if download.filename else ""
+        filename = fallback_filename if download_filename in ("", "download") else download_filename
+        saved_path = download.save(filename)
+    finally:
+        download.close()
+    return file_result_existing_file(str(saved_path), filename)  # noqa: F405
 
 
-def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
-    scan_type = args.get("scan_type")
-    if not isinstance(scan_type, str):
-        raise DemistoException("scan_type must be provided as a string.")
-    if scan_type not in ("static-scan", "cdr"):
-        raise DemistoException(f"Unsupported scan_type '{scan_type}'.")
-    availability = client.threatzone_check_limits(scan_type)
-    if not availability["available"]:
-        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
-
-    file_id = args.get("entry_id")
-    if not file_id:
-        raise DemistoException("entry_id argument is required.")
-    try:
-        file_obj = demisto.getFilePath(file_id)
-    except Exception as exc:
-        raise DemistoException(f"Failed to retrieve file for entry ID {file_id}.") from exc
-    original_file_name = file_obj["name"]
-    file_name = encode_file_name(original_file_name)
-    file_path = file_obj["path"]
-
-    private_flag = resolve_private_flag(args.get("private"))
-    is_public = not private_flag
-    payload: dict[str, Any] = {"isPublic": as_api_bool(is_public)}
-    extension_check = resolve_extension_check(scan_type, args.get("extension_check"))
-    payload["extensionCheck"] = as_api_bool(extension_check)
-
-    if entrypoint := args.get("entrypoint"):
-        payload["entrypoint"] = entrypoint
-    if password := args.get("password"):
-        payload["password"] = password
-
-    with open(file_path, "rb") as file_handle:
-        files = [("file", (file_name, file_handle, "application/octet-stream"))]
-        result = client.threatzone_add(scan_type=scan_type, data=payload, files=files)
-
-    readable = {"Message": result.get("message"), "UUID": result.get("uuid"), "FileName": original_file_name}
-    readable_output = tableToMarkdown("SAMPLE UPLOADED", readable)
-    updated_availability = client.threatzone_check_limits(scan_type)
-    return threatzone_return_results(scan_type, readable, readable_output, updated_availability)
+def threatzone_get_sanitized_file(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    download = client.sdk.download_cdr_result(uuid)
+    return _save_download(download, f"sanitized-{uuid}.zip")
 
 
-def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """Submit a URL for analysis via the ThreatZone public API."""
-    availability = client.threatzone_check_limits("url-analysis")
-    if not availability["available"]:
-        raise DemistoException(
-            f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}"
-        )
-
-    analyzed_url = args.get("url")
-    if not analyzed_url:
-        raise DemistoException("url argument is required.")
-
-    payload: dict[str, Any] = {"url": analyzed_url}
-    payload["private"] = resolve_private_flag(args.get("private"))
-
-    result = client.threatzone_submit_url(payload)
-    readable = {"Message": result.get("message"), "UUID": result.get("uuid"), "URL": analyzed_url}
-    readable_output = tableToMarkdown("URL SUBMITTED", readable)
-    updated_availability = client.threatzone_check_limits("url-analysis")
-    return threatzone_return_results("url-analysis", readable, readable_output, updated_availability)
+def threatzone_get_html_report_file(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    download = client.sdk.download_html_report(uuid)
+    return _save_download(download, f"threatzone-report-{uuid}.html")
 
 
-""" MAIN FUNCTION """
+def _format_sdk_exception(exc: Exception) -> str:
+    if isinstance(exc, AuthenticationError):
+        return f"Authorization error: {exc}. Verify the API key is correct and active."
+    if isinstance(exc, PermissionDeniedError):
+        return f"Permission denied: {exc}"
+    if isinstance(exc, PaymentRequiredError):
+        return f"Plan limit reached: {exc}"
+    if isinstance(exc, NotFoundError):
+        return f"Resource not found: {exc}"
+    if isinstance(exc, BadRequestError):
+        return f"Bad request: {exc}"
+    if isinstance(exc, RateLimitError):
+        return f"Rate limited: {exc}"
+    if isinstance(exc, ReportUnavailableError):
+        return f"Report not yet available: {exc}"
+    if isinstance(exc, YaraRulePendingError):
+        return f"YARA rule still being generated: {exc}"
+    if isinstance(exc, AnalysisTimeoutError):
+        return f"Analysis timed out: {exc}"
+    if isinstance(exc, APIError):
+        return f"ThreatZone API error: {exc}"
+    return str(exc)
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
-    base_url = params["url"].rstrip("/")
-    verify_certificate = not params.get("insecure", False)
+    base_url = (params.get("url") or DEFAULT_BASE_URL).rstrip("/")
+    verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    api_key = str(params.get("apikey") or "")
+    handle_proxy()  # noqa: F405 - propagates HTTPS_PROXY env vars when proxy enabled
 
-    """ EXECUTION """
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     args = demisto.args()
+
+    client: Client | None = None
     try:
-        credentials: str = str(params.get("apikey"))
-        creds = "Bearer " + credentials
-        headers = {"Authorization": creds}
-        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
-
+        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client))  # noqa: F405
         elif command == "tz-check-limits":
-            return_results(threatzone_check_limits(client, args))
+            return_results(threatzone_check_limits(client, args))  # noqa: F405
         elif command == "tz-sandbox-upload-sample":
-            return_results(threatzone_sandbox_upload_sample(client, args))
+            return_results(threatzone_sandbox_upload_sample(client, args))  # noqa: F405
         elif command == "tz-static-upload-sample":
-            args["scan_type"] = "static-scan"
-            return_results(threatzone_static_cdr_upload_sample(client, args))
+            return_results(threatzone_static_or_cdr_upload(client, args, "static"))  # noqa: F405
         elif command == "tz-cdr-upload-sample":
-            args["scan_type"] = "cdr"
-            return_results(threatzone_static_cdr_upload_sample(client, args))
+            return_results(threatzone_static_or_cdr_upload(client, args, "cdr"))  # noqa: F405
         elif command == "tz-url-analysis":
-            return_results(threatzone_submit_url_analysis(client, args))
+            return_results(threatzone_submit_url_analysis(client, args))  # noqa: F405
         elif command == "tz-download-html-report":
-            return_results(threatzone_get_html_report_file(client, args))
+            return_results(threatzone_get_html_report_file(client, args))  # noqa: F405
         elif command == "tz-get-result":
-            return_results(threatzone_get_result(client, args))
+            return_results(threatzone_get_result(client, args))  # noqa: F405
         elif command == "tz-get-indicator-result":
-            return_results(threatzone_get_indicator_result(client, args))
+            return_results(threatzone_get_indicator_result(client, args))  # noqa: F405
         elif command == "tz-get-ioc-result":
-            return_results(threatzone_get_ioc_result(client, args))
+            return_results(threatzone_get_ioc_result(client, args))  # noqa: F405
         elif command == "tz-get-yara-result":
-            return_results(threatzone_get_yara_result(client, args))
+            return_results(threatzone_get_yara_result(client, args))  # noqa: F405
         elif command == "tz-get-artifact-result":
-            return_results(threatzone_get_artifact_result(client, args))
+            return_results(threatzone_get_artifact_result(client, args))  # noqa: F405
         elif command == "tz-get-config-result":
-            return_results(threatzone_get_config_result(client, args))
+            return_results(threatzone_get_config_result(client, args))  # noqa: F405
         elif command == "tz-get-sanitized":
-            return_results(threatzone_get_sanitized_file(client, args))
+            return_results(threatzone_get_sanitized_file(client, args))  # noqa: F405
         else:
-            return_error(f"Command '{command}' is not implemented.")
+            return_error(f"Command '{command}' is not implemented.")  # noqa: F405
+    except ThreatZoneError as exc:
+        return_error(f"Failed to execute {command} command.\nError:\n{_format_sdk_exception(exc)}")  # noqa: F405
+    except Exception as exc:
+        return_error(f"Failed to execute {command} command.\nError:\n{exc!s}")  # noqa: F405
+    finally:
+        if client is not None:
+            try:
+                client.close()
+            except Exception:  # pragma: no cover - cleanup best-effort
+                pass
 
-    # Log exceptions and return errors
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
-
-
-""" ENTRY POINT """
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

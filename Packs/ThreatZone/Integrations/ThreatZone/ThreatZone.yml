@@ -4,7 +4,6 @@ commonfields:
 name: ThreatZone
 display: ThreatZone
 category: Forensics & Malware Analysis
-provider: MCT
 description: ThreatZone malware analysis sandboxing.
 configuration:
 - display: Server URL (e.g. https://app.threat.zone)
@@ -61,9 +60,9 @@ script:
       - w7_x64
       - w10_x64
       - w11_x64
-      - macos
-      - linux
-      - android
+      - linux-ubuntu_2204
+      - macos-ventura
+      - android9
       description: Choose what environment you want to run your submission.
       defaultValue: w7_x64
     - name: private
@@ -72,26 +71,24 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Privacy of the submission.
-      defaultValue: "true"
+      description: Privacy of the submission. If omitted, the current ThreatZone API-provided default is used.
     - name: extension_check
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enforce MIME-based extension correction before sandbox execution.
-      defaultValue: "true"
+      description: Enforce MIME-based extension correction before sandbox execution. If omitted, the current ThreatZone API-provided default is used.
       required: false
     - name: auto
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: When true, automatically selects a sandbox environment based on the uploaded file type.
+      description: When true, automatically selects a sandbox environment based on the uploaded file type and ignores the environment argument.
       defaultValue: "false"
       required: false
     - name: modules
-      description: Optional modules to enable (enter a comma-separated list or JSON array, e.g. ["cdr"]).
+      description: Legacy compatibility argument. ThreatZone v3.2 does not support per-submission module selection, so this value is validated but not forwarded.
       required: false
     - name: analyze_config
       description: Provide raw analyzeConfig JSON to override/add sandbox metafields.
@@ -103,8 +100,7 @@ script:
       - "120"
       - "180"
       - "300"
-      description: Duration of the submission analysis.
-      defaultValue: "60"
+      description: Duration of the submission analysis. If omitted, the current ThreatZone API-provided default is used.
     - name: work_path
       auto: PREDEFINED
       predefined:
@@ -113,43 +109,37 @@ script:
       - appdata
       - windows
       - temp
-      description: The working path of the submission.
-      defaultValue: "desktop"
+      description: The working path of the submission. If omitted, the current ThreatZone API-provided default is used.
     - name: mouse_simulation
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable mouse simulation.
-      defaultValue: "false"
+      description: Enable mouse simulation. If omitted, the current ThreatZone API-provided default is used.
     - name: https_inspection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Https inspection to read encrypted traffic.
-      defaultValue: "false"
+      description: Https inspection to read encrypted traffic. If omitted, the current ThreatZone API-provided default is used.
     - name: internet_connection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable internet connection.
-      defaultValue: "false"
+      description: Enable internet connection. If omitted, the current ThreatZone API-provided default is used.
     - name: raw_logs
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Raw logs.
-      defaultValue: "false"
+      description: Legacy compatibility argument. ThreatZone v3.2 does not accept this metafield, so it is not forwarded.
     - name: snapshot
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Snapshot.
-      defaultValue: "false"
+      description: Enable Fast Bootup. If omitted, the current ThreatZone API-provided default is used.
     - name: entrypoint
       required: false
       description: For archives, specify the filename inside the archive to execute.
@@ -263,7 +253,7 @@ script:
     description: Submits a sample to ThreatZone for CDR.
   - name: tz-url-analysis
     compliantpolicies:
-      - Domain Blockage
+    - Domain Blockage
     arguments:
     - name: url
       required: true
@@ -323,10 +313,10 @@ script:
       type: Unknown
       description: Raw submission data returned by ThreatZone.
     - contextPath: ThreatZone.Analysis.STATUS
-      type: String
+      type: Number
       description: The status of the submission scanning process.
     - contextPath: ThreatZone.Analysis.LEVEL
-      type: String
+      type: Number
       description: Threat Level of the scanned file. (malicious, suspicious or informative).
     - contextPath: ThreatZone.Analysis.INFO
       type: String
@@ -557,7 +547,7 @@ script:
     - contextPath: ThreatZone.Metadata.Plan_Status
       description: Status of the active ThreatZone plan.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: devdemisto/threatzone-sdk:1.1.0.10645661
   runonce: false
   subtype: python3
 fromversion: 6.9.0
