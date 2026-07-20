@@ -234,6 +234,7 @@ tasks:
       url:
         simple: https://hashlookup.circl.lu/lookup/sha256/${inputs.FileSHA256}
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -327,7 +328,8 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: NSRLCheckResults
+              complex:
+                root: NSRLCheckResults
             iscontext: true
     view: |-
       {

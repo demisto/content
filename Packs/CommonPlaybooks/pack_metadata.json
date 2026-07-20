@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Cortex"],
     "dependencies": {
         "Threat_Crowd": {
             "mandatory": false,
