@@ -16095,22 +16095,51 @@ def fetch_incidents_request(
     return entries
 
 
-def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
+def parse_occurred_to_utc(time_str: str, firewall_timezone: str) -> Optional[str]:
+    """Convert a naive firewall-local log timestamp to a true-UTC ``occurred`` string.
+
+    Firewall/Panorama log timestamps (e.g. ``time_generated``, ``match_time``) are emitted as
+    naive strings in the firewall's configured local time. To set the incident ``occurred`` time
+    correctly (which XSOAR compares against the real-UTC ``created`` time), the naive string is
+    interpreted as ``firewall_timezone`` and converted to UTC.
+
+    Args:
+        time_str (str): naive firewall-local timestamp string.
+        firewall_timezone (str): IANA time zone configured on the firewall/Panorama (e.g. "Asia/Jakarta").
+            Defaults to "UTC" behavior when set to "UTC".
+
+    Returns:
+        Optional[str]: the timestamp converted to UTC and formatted with ``DATE_FORMAT``, or None if
+            the input could not be parsed.
+    """
+    occurred_datetime = dateparser.parse(
+        time_str,
+        settings={
+            "TIMEZONE": firewall_timezone,
+            "RETURN_AS_TIMEZONE_AWARE": True,
+            "TO_TIMEZONE": "UTC",
+        },
+    )
+    if not occurred_datetime:
+        demisto.debug(f"Could not parse occurred time from {time_str=} with {firewall_timezone=}.")
+        return None
+    return occurred_datetime.strftime(DATE_FORMAT)
+
+
+def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any], firewall_timezone: str = "UTC") -> Dict[str, Any]:
     """convert correlation incident entry to basic cortex incident format.
 
     Args:
         incident_entry (Dict[str, Any]): raw correlation incident entry represented by a dictionary
+        firewall_timezone (str): IANA time zone configured on the firewall/Panorama, used to convert
+            the naive ``match_time`` to a true-UTC ``occurred`` time. Defaults to "UTC".
 
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
     incident_entry["type"] = "CORRELATION"
     match_time = incident_entry.get("match_time", "")
-    occurred = (
-        occurred_datetime.strftime(DATE_FORMAT)
-        if (occurred_datetime := dateparser.parse(match_time, settings={"TIMEZONE": "UTC"}))
-        else None
-    )
+    occurred = parse_occurred_to_utc(match_time, firewall_timezone)
 
     return {
         "name": f"Correlation {incident_entry.get('@logid')}",
@@ -16119,21 +16148,19 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     }
 
 
-def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
+def incident_entry_to_incident_context(incident_entry: Dict[str, Any], firewall_timezone: str = "UTC") -> Dict[str, Any]:
     """convert raw incident entry to basic cortex incident format.
 
     Args:
         incident_entry (Dict[str, Any]): raw incident entry represented by a dictionary
+        firewall_timezone (str): IANA time zone configured on the firewall/Panorama, used to convert
+            the naive ``time_generated`` to a true-UTC ``occurred`` time. Defaults to "UTC".
 
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
     time_generated = incident_entry.get("time_generated", "")
-    occurred = (
-        occurred_datetime.strftime(DATE_FORMAT)
-        if (occurred_datetime := dateparser.parse(time_generated, settings={"TIMEZONE": "UTC"}))
-        else None
-    )
+    occurred = parse_occurred_to_utc(time_generated, firewall_timezone)
 
     return {
         "name": f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
@@ -16208,7 +16235,10 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
 
 
 def get_parsed_incident_entries(
-    incident_entries_dict: dict[str, list[dict[str, Any]]], last_fetch_dict: LastFetchTimes, last_id_dict: LastIDs
+    incident_entries_dict: dict[str, list[dict[str, Any]]],
+    last_fetch_dict: LastFetchTimes,
+    last_id_dict: LastIDs,
+    firewall_timezone: str = "UTC",
 ) -> list[dict[str, Any]]:
     """for each log type incident entries array, parse the raw incidents into context incidents.
     if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
@@ -16217,6 +16247,9 @@ def get_parsed_incident_entries(
         incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
         last_fetch_dict (Dict[str, str]): last fetch dictionary
         last_id_dict (Dict[str, Dict]): last id dictionary
+        firewall_timezone (str): IANA time zone configured on the firewall/Panorama, used to convert the naive
+            log timestamps to a true-UTC ``occurred`` time. Defaults to "UTC". Note: the ``last_fetch_dict`` and
+            query time filters intentionally remain in firewall-local time and are NOT affected by this value.
 
     Returns:
         Dict[str,Any]: parsed context incident dictionary
@@ -16226,7 +16259,9 @@ def get_parsed_incident_entries(
         if incident_entries:
             if log_type == "Correlation":
                 last_id_dict["Correlation"] = int(incident_entries_dict["Correlation"][-1]["@logid"])
-                parsed_incident_entries += list(map(corr_incident_entry_to_incident_context, incident_entries))
+                parsed_incident_entries += [
+                    corr_incident_entry_to_incident_context(entry, firewall_timezone) for entry in incident_entries
+                ]
                 last_fetch_string = max({entry.get("match_time", "") for entry in incident_entries})
                 demisto.debug(f"{last_fetch_string=}")
             else:
@@ -16235,7 +16270,9 @@ def get_parsed_incident_entries(
                     last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(  # type: ignore[literal-required]
                         log_type
                     ) else last_id_dict.update({log_type: updated_last_id})  # type: ignore[misc]
-                parsed_incident_entries += list(map(incident_entry_to_incident_context, incident_entries))
+                parsed_incident_entries += [
+                    incident_entry_to_incident_context(entry, firewall_timezone) for entry in incident_entries
+                ]
                 last_fetch_string = max({entry.get("time_generated", "") for entry in incident_entries})
 
             updated_last_fetch = dateparser.parse(last_fetch_string, settings={"TIMEZONE": "UTC"})
@@ -16280,7 +16317,12 @@ def update_offset_dict(
 
 
 def fetch_incidents(
-    last_run: LastRun, first_fetch: str, queries_dict: QueryMap, max_fetch_dict: MaxFetch, fetch_job_polling_max_num_attempts: int
+    last_run: LastRun,
+    first_fetch: str,
+    queries_dict: QueryMap,
+    max_fetch_dict: MaxFetch,
+    fetch_job_polling_max_num_attempts: int,
+    firewall_timezone: str = "UTC",
 ) -> tuple[LastRun, list[dict[str, list]]]:
     """run one cycle of fetch incidents.
 
@@ -16290,6 +16332,8 @@ def fetch_incidents(
         queries_dict (QueryMap): queries per log type dictionary
         max_fetch_dict (MaxFetch): max incidents per fetch parameter per log type dictionary
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
+        firewall_timezone (str): IANA time zone configured on the firewall/Panorama, used to convert the naive
+            log timestamps to a true-UTC ``occurred`` time. Defaults to "UTC".
 
     Returns:
         (LastRun, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
@@ -16317,7 +16361,9 @@ def fetch_incidents(
         entries_dict=incident_entries_dict, id_dict=last_id_dict, last_fetch_dict=last_fetch_dict
     )  # type: ignore[arg-type]
 
-    parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
+    parsed_incident_entries_list = get_parsed_incident_entries(
+        unique_incident_entries_dict, last_fetch_dict, last_id_dict, firewall_timezone
+    )  # type: ignore[arg-type]
 
     new_last_run = LastRun(
         last_fetch_dict=last_fetch_dict,
@@ -16381,8 +16427,11 @@ def main():  # pragma: no cover
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params.get("fetch_job_polling_max_num_attempts") or "10")
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
+            firewall_timezone = params.get("firewall_timezone") or "UTC"
 
-            new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
+            new_last_run, incident_entries = fetch_incidents(
+                last_run, first_fetch, queries, max_fetch, fetch_max_attempts, firewall_timezone
+            )
 
             demisto.setLastRun(new_last_run)
             demisto.incidents(incident_entries)

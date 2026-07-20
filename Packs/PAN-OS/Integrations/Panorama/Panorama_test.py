@@ -6967,6 +6967,131 @@ class TestFetchIncidentsHelperFunctions:
             }
         assert incident_entry_to_incident_context(raw_entry) == context_entry
 
+    def test_parse_occurred_to_utc_non_utc_timezone(self):
+        """
+        Given:
+        - a naive firewall-local timestamp and a non-UTC firewall time zone (Asia/Jakarta, UTC+7).
+
+        When:
+        - parse_occurred_to_utc is called.
+
+        Then:
+        - the returned occurred string is converted to true UTC (7 hours earlier).
+        """
+        from Panorama import parse_occurred_to_utc
+
+        assert parse_occurred_to_utc("2026/07/09 00:51:45", "Asia/Jakarta") == "2026-07-08T17:51:45Z"
+
+    def test_parse_occurred_to_utc_default_utc(self):
+        """
+        Given:
+        - a naive firewall-local timestamp and the default UTC firewall time zone.
+
+        When:
+        - parse_occurred_to_utc is called.
+
+        Then:
+        - the returned occurred string is unchanged (backward compatible behavior).
+        """
+        from Panorama import parse_occurred_to_utc
+
+        assert parse_occurred_to_utc("2026/07/09 00:51:45", "UTC") == "2026-07-09T00:51:45Z"
+
+    def test_parse_occurred_to_utc_dst_zone(self):
+        """
+        Given:
+        - a naive summer-time timestamp for a DST-observing zone (America/New_York, EDT = UTC-4 in July).
+
+        When:
+        - parse_occurred_to_utc is called.
+
+        Then:
+        - the returned occurred string is the correct UTC instant accounting for DST (+4 hours).
+        """
+        from Panorama import parse_occurred_to_utc
+
+        assert parse_occurred_to_utc("2026/07/09 00:51:45", "America/New_York") == "2026-07-09T04:51:45Z"
+
+    def test_parse_occurred_to_utc_invalid_input(self):
+        """
+        Given:
+        - an unparseable timestamp string.
+
+        When:
+        - parse_occurred_to_utc is called.
+
+        Then:
+        - None is returned gracefully (no exception raised).
+        """
+        from Panorama import parse_occurred_to_utc
+
+        assert parse_occurred_to_utc("", "Asia/Jakarta") is None
+
+    def test_incident_entry_to_incident_context_with_timezone(self):
+        """
+        Given:
+        - a raw incident entry with a naive time_generated and a non-UTC firewall time zone (Asia/Jakarta).
+
+        When:
+        - incident_entry_to_incident_context is called with firewall_timezone.
+
+        Then:
+        - the occurred time is converted to true UTC, while rawJSON retains the original local timestamp.
+        """
+        from Panorama import incident_entry_to_incident_context
+
+        raw_entry = {"seqno": "1", "time_generated": "2026/07/09 00:51:45", "type": "TYPE", "device_name": "dummy_device"}
+        result = incident_entry_to_incident_context(raw_entry, "Asia/Jakarta")
+        assert result["occurred"] == "2026-07-08T17:51:45Z"
+        assert result["name"] == "dummy_device 1"
+        # rawJSON must keep the original firewall-local timestamp, unshifted.
+        assert "2026/07/09 00:51:45" in result["rawJSON"]
+
+    def test_corr_incident_entry_to_incident_context_with_timezone(self):
+        """
+        Given:
+        - a raw correlation incident entry with a naive match_time and a non-UTC firewall time zone (Asia/Jakarta).
+
+        When:
+        - corr_incident_entry_to_incident_context is called with firewall_timezone.
+
+        Then:
+        - the occurred time is converted to true UTC and the entry type is CORRELATION.
+        """
+        from Panorama import corr_incident_entry_to_incident_context
+
+        raw_entry = {"@logid": "999", "match_time": "2026/07/09 00:51:45"}
+        result = corr_incident_entry_to_incident_context(raw_entry, "Asia/Jakarta")
+        assert result["occurred"] == "2026-07-08T17:51:45Z"
+        assert result["name"] == "Correlation 999"
+
+    def test_get_parsed_incident_entries_timezone_conversion(self):
+        """
+        Given:
+        - Url log entries with naive time_generated timestamps and a non-UTC firewall time zone (Asia/Jakarta).
+
+        When:
+        - get_parsed_incident_entries is called with firewall_timezone.
+
+        Then:
+        - the parsed occurred times are converted to true UTC, AND
+        - the last_fetch_dict remains in firewall-local time (the query/fetch window is NOT shifted).
+        """
+        from Panorama import LastFetchTimes, LastIDs, get_parsed_incident_entries
+
+        last_id_dict = LastIDs()
+        last_fetch_dict = LastFetchTimes(Url="2026/07/09 00:00:00")
+        incident_entries = [
+            {"seqno": "5", "time_generated": "2026/07/09 00:51:45", "type": "TYPE", "device_name": "dummy_device"}
+        ]
+
+        res = get_parsed_incident_entries({"Url": incident_entries}, last_fetch_dict, last_id_dict, "Asia/Jakarta")
+
+        # occurred is converted to UTC (firewall-local 00:51:45 +07:00 -> 17:51:45Z the previous day)
+        assert res[0]["occurred"] == "2026-07-08T17:51:45Z"
+        # last_fetch_dict must stay firewall-local (naive, unshifted) so Panorama query filters remain correct.
+        assert last_fetch_dict["Url"] == "2026-07-09 00:51:45"  # type: ignore
+
     @pytest.mark.parametrize(
         "last_fetch_dict, first_fetch, queries_dict, expected_result",
         fetch_incidents_input.test_get_fetch_start_datetime_dict_args,
