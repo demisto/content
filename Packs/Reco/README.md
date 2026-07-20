@@ -2,7 +2,7 @@
 
 Reco is the leader in SaaS & AI Security — the only approach that secures AI sprawl across SaaS apps and agents. Our platform provides complete visibility and control across your entire SaaS ecosystem, from core applications to the latest AI agents, enabling security teams to keep pace with the speed of AI adoption while maintaining robust security and reducing risk.
 
-The Reco and Palo Alto Networks Cortex XSOAR integration brings Reco's SaaS & AI intelligence directly into your SOC workflows — surfacing threats, enriching investigations, and automating remediation across 985+ Cortex XSOAR content packs.
+The Reco integration for Cortex XSOAR and Cortex XSIAM brings Reco's SaaS & AI intelligence directly into your SOC workflows — surfacing threats, enriching investigations, and automating remediation across the broader Cortex content ecosystem.
 
 ## What does this pack do?
 
@@ -20,7 +20,7 @@ The Reco and Palo Alto Networks Cortex XSOAR integration brings Reco's SaaS & AI
 Five types of sprawl are widening the gap between what you can and cannot protect:
 
 - **App Sprawl** — Apps constantly multiply, update, and form SaaS-to-SaaS connections, making it impossible to keep up
-- **AI Sprawl** — The infusion of GenAI into SaaS apps, and the surge of AI Agents, undermines AI security readiness
+- **AI Sprawl** — The infusion of GenAI into SaaS apps, and the surge of AI agents, undermines AI security readiness
 - **Identity Sprawl** — Keeping accounts secure while minimizing access privileges is unfeasible with the relentless proliferation of human and machine identities
 - **Configuration Sprawl** — The security posture of apps and users is critical yet utterly impractical to continuously update and maintain
 - **Data Sprawl** — More entities — including AI agents — access your data through more pathways, making breaches and insider threats harder to spot
@@ -50,7 +50,7 @@ Five types of sprawl are widening the gap between what you can and cannot protec
 
 ### Threat Detection & Response (ITDR)
 
-- Fetch incidents with a minimum-severity filter (e.g. `MEDIUM` fetches medium severity and higher)
+- Fetch incidents with a minimum-severity filter (e.g., `MEDIUM` fetches medium severity and higher)
 - Get full alert details including policy violation evidence
 - Add comments to alerts and update incident timelines
 - Change alert status and resolve visibility events

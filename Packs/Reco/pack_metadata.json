@@ -2,10 +2,13 @@
     "name": "Reco",
     "description": "Reco is the leader in Dynamic SaaS Security \u2014 the only approach that eliminates the SaaS Security Gap (the growing gap between what you can protect and what\u2019s outpacing your security).",
     "support": "partner",
-    "currentVersion": "1.8.0",
+    "currentVersion": "2.0.0",
     "author": "Reco",
     "url": "https://reco.ai",
     "email": "support@reco.ai",
+    "githubUser": [
+        "yanivblumReco"
+    ],
     "created": "2020-01-09T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -16,6 +19,7 @@
         "Breach Notification"
     ],
     "keywords": [
+        "Reco",
         "data leakage",
         "misconfiguration",
         "SSPM",

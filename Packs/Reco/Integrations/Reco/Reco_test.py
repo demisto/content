@@ -31,6 +31,20 @@ from Reco import (
     set_app_authorization_status_command,
     parse_alerts_to_incidents,
     parse_minimum_risk_level,
+    list_events_command,
+    list_posture_issues_command,
+    list_accounts_command,
+    list_devices_command,
+    list_ai_agents_command,
+    list_groups_command,
+    list_saas_to_saas_command,
+    list_ip_addresses_command,
+    list_business_units_command,
+    list_audit_logs_command,
+    list_posture_checks_command,
+    list_threat_detection_policies_command,
+    list_exclusions_command,
+    list_app_instances_command,
 )
 
 from test_data.structs import (
@@ -729,3 +743,183 @@ def test_set_app_authorization_status_error_2(capfd, requests_mock, reco_client:
 
     with capfd.disabled(), pytest.raises(Exception):
         reco_client.set_app_authorization_status(app_id, authorization_status)
+
+
+def test_list_events_command(requests_mock, reco_client: RecoClient) -> None:
+    events = [
+        {
+            "id": "event-1",
+            "eventType": "login",
+            "formattedEventType": "Login",
+            "application": "Slack",
+            "eventTime": "2024-01-01T00:00:00Z",
+            "outcomeString": "success",
+            "actor": {"email": "test@acme.com", "name": "User"},
+        }
+    ]
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/events/list", json={"events": events, "totalResults": len(events)})
+    result = list_events_command(reco_client)
+    assert result.outputs_prefix == "Reco.Events"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Events" in result.readable_output
+
+
+def test_list_posture_issues_command(requests_mock, reco_client: RecoClient) -> None:
+    issues = [{"id": "issue-1", "name": "MFA not enforced", "severity": "HIGH", "checkStatus": "ALERT_STATUS_TO_REVIEW"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/posture-issues/list",
+        json={"issues": issues, "totalResults": len(issues)},
+    )
+    result = list_posture_issues_command(reco_client)
+    assert result.outputs_prefix == "Reco.PostureIssues"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Posture Issues" in result.readable_output
+
+
+def test_list_accounts_command(requests_mock, reco_client: RecoClient) -> None:
+    accounts = [{"id": "acc-1", "name": "John Doe", "accountEmail": "john@acme.com", "isAdmin": False}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/accounts/list",
+        json={"accounts": accounts, "totalResults": len(accounts)},
+    )
+    result = list_accounts_command(reco_client)
+    assert result.outputs_prefix == "Reco.Accounts"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Accounts" in result.readable_output
+
+
+def test_list_devices_command(requests_mock, reco_client: RecoClient) -> None:
+    devices = [{"id": "dev-1", "name": "MacBook Pro", "devicePlatform": "macOS", "isUnmanaged": False}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/devices/list", json={"devices": devices, "totalResults": len(devices)}
+    )
+    result = list_devices_command(reco_client)
+    assert result.outputs_prefix == "Reco.Devices"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Devices" in result.readable_output
+
+
+def test_list_ai_agents_command(requests_mock, reco_client: RecoClient) -> None:
+    agents = [{"id": "agent-1", "name": "Copilot", "vendor": "Microsoft", "authorization": "AUTH_STATUS_SANCTIONED"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/ai-agents/list", json={"aiAgents": agents, "totalResults": len(agents)}
+    )
+    result = list_ai_agents_command(reco_client)
+    assert result.outputs_prefix == "Reco.AiAgents"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "AI Agents" in result.readable_output
+
+
+def test_list_groups_command(requests_mock, reco_client: RecoClient) -> None:
+    groups = [{"id": "group-1", "name": "Engineering", "email": "test@acme.com", "membersCount": 10}]
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/groups/list", json={"groups": groups, "totalResults": len(groups)})
+    result = list_groups_command(reco_client)
+    assert result.outputs_prefix == "Reco.Groups"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Groups" in result.readable_output
+
+
+def test_list_saas_to_saas_command(requests_mock, reco_client: RecoClient) -> None:
+    grants = [{"id": "grant-1", "plugin": "Zoom for Slack", "authorization": "AUTH_STATUS_TO_REVIEW"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/saas-to-saas/list",
+        json={"saasToSaas": grants, "totalResults": len(grants)},
+    )
+    result = list_saas_to_saas_command(reco_client)
+    assert result.outputs_prefix == "Reco.SaasToSaas"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "SaaS-to-SaaS Grants" in result.readable_output
+
+
+def test_list_ip_addresses_command(requests_mock, reco_client: RecoClient) -> None:
+    ips = [{"ipAddress": "1.2.3.4", "country": "US", "hasVpn": False, "hasProxy": False}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/ip-addresses/list", json={"ipAddresses": ips, "totalResults": len(ips)}
+    )
+    result = list_ip_addresses_command(reco_client)
+    assert result.outputs_prefix == "Reco.IpAddresses"
+    assert result.outputs_key_field == "ipAddress"
+    assert len(result.outputs) == 1
+    assert "IP Addresses" in result.readable_output
+
+
+def test_list_business_units_command(requests_mock, reco_client: RecoClient) -> None:
+    bus = [{"id": "bu-1", "name": "R&D", "manager": "jane@acme.com"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/business-units/list", json={"businessUnits": bus, "totalResults": len(bus)}
+    )
+    result = list_business_units_command(reco_client)
+    assert result.outputs_prefix == "Reco.BusinessUnits"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Business Units" in result.readable_output
+
+
+def test_list_audit_logs_command(requests_mock, reco_client: RecoClient) -> None:
+    logs = [{"id": "log-1", "userEmail": "admin@acme.com", "module": "auth", "action": "login"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/audit-logs/list", json={"auditLogs": logs, "totalResults": len(logs)}
+    )
+    result = list_audit_logs_command(reco_client)
+    assert result.outputs_prefix == "Reco.AuditLogs"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Audit Logs" in result.readable_output
+
+
+def test_list_posture_checks_command(requests_mock, reco_client: RecoClient) -> None:
+    checks = [{"id": "check-1", "name": "MFA Enforced", "severity": "HIGH", "policyType": "SECURITY"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/posture-checks/list",
+        json={"postureChecks": checks, "totalResults": len(checks)},
+    )
+    result = list_posture_checks_command(reco_client)
+    assert result.outputs_prefix == "Reco.PostureChecks"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Posture Checks" in result.readable_output
+
+
+def test_list_threat_detection_policies_command(requests_mock, reco_client: RecoClient) -> None:
+    policies = [{"id": "policy-1", "name": "Impossible Travel", "severity": "CRITICAL", "status": "ALERT_STATUS_ACTIVE"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/policies/list", json={"policies": policies, "totalResults": len(policies)}
+    )
+    result = list_threat_detection_policies_command(reco_client)
+    assert result.outputs_prefix == "Reco.ThreatDetectionPolicies"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Threat Detection Policies" in result.readable_output
+
+
+def test_list_exclusions_command(requests_mock, reco_client: RecoClient) -> None:
+    exclusions = [{"id": "excl-1", "name": "Trusted IP range", "policyName": "Impossible Travel"}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/exclusions/list",
+        json={"exclusions": exclusions, "totalResults": len(exclusions)},
+    )
+    result = list_exclusions_command(reco_client)
+    assert result.outputs_prefix == "Reco.Exclusions"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "Exclusions" in result.readable_output
+
+
+def test_list_app_instances_command(requests_mock, reco_client: RecoClient) -> None:
+    instances = [{"id": "instance-1", "name": "Slack (Prod)", "instanceType": "PRODUCTION", "isUsingAi": False}]
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/app-instances/list",
+        json={"appInstances": instances, "totalResults": len(instances)},
+    )
+    result = list_app_instances_command(reco_client)
+    assert result.outputs_prefix == "Reco.AppInstances"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    assert "App Instances" in result.readable_output
