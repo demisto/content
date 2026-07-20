@@ -1,5 +1,5 @@
 from CommonServerPython import DemistoException
-from HPEArubaCentralEventCollector import main, Client
+from HPEArubaCentralEventCollector import main, Client, NUM_OF_RETRIES, RATE_LIMIT_STATUS_CODE, BACKOFF_FACTOR
 import pytest
 import demistomock as demisto
 from CommonServerPython import date_to_timestamp
@@ -457,3 +457,153 @@ def test_get_events_command(mocker, requests_mock, fetch_networking, should_push
         send_events_to_xsiam_mock.assert_called_once_with(expected_events, vendor=VENDOR, product=PRODUCT)
     else:
         send_events_to_xsiam_mock.assert_not_called()
+
+
+def _make_client() -> Client:
+    """Helper to create a Client instance for http_request tests."""
+    return Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name=USER_NAME,
+        user_password=USER_PASSWORD,
+        customer_id=CUSTOMER_ID,
+        verify=False,
+        proxy=False,
+    )
+
+
+@freeze_time(FETCH_DATE)
+def test_http_request_retry_on_429_then_success(mocker):
+    """
+    Given:
+    - _http_request succeeds (simulating that the internal urllib3 retry handled a transient 429).
+
+    When:
+    - Calling client.http_request (which passes retry params to _http_request).
+
+    Then:
+    - The call succeeds and returns the expected data.
+    - The retry-related params (retries, status_list_to_retry, backoff_factor) are passed
+      to _http_request, proving the retry configuration is wired correctly.
+    """
+    client = _make_client()
+    mocker.patch.object(client, "get_access_token", return_value=TEST_TOKEN)
+
+    expected_response = {"events": [{"id": 1}]}
+
+    mock_http = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=expected_response,
+    )
+
+    result = client.http_request("GET", url_suffix="/test/endpoint", params={"limit": 10})
+
+    assert result == expected_response
+    mock_http.assert_called_once_with(
+        method="GET",
+        url_suffix="/test/endpoint",
+        params={"limit": 10},
+        headers={
+            "accept": "application/json",
+            "authorization": f"Bearer {TEST_TOKEN}",
+        },
+        retries=NUM_OF_RETRIES,
+        status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+        backoff_factor=BACKOFF_FACTOR,
+    )
+
+
+@freeze_time(FETCH_DATE)
+def test_http_request_repeated_429_raises_demisto_exception(mocker):
+    """
+    Given:
+    - _http_request always raises a DemistoException wrapping a 429 (rate-limit) response,
+      exceeding NUM_OF_RETRIES attempts.
+
+    When:
+    - Calling client.http_request.
+
+    Then:
+    - A DemistoException is raised and is NOT absorbed by the "access token is invalid" branch.
+    """
+    client = _make_client()
+    mocker.patch.object(client, "get_access_token", return_value=TEST_TOKEN)
+
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=DemistoException("Rate limit exceeded", res=mocker.MagicMock(status_code=429)),
+    )
+
+    with pytest.raises(DemistoException, match="Rate limit exceeded"):
+        client.http_request("GET", url_suffix="/test/endpoint")
+
+
+@freeze_time(FETCH_DATE)
+def test_http_request_passes_retry_params_on_initial_and_refresh(mocker):
+    """
+    Given:
+    - The first _http_request call raises a DemistoException containing "access token is invalid"
+      (triggering the token-refresh branch).
+    - The second _http_request call (after token refresh) succeeds.
+
+    When:
+    - Calling client.http_request.
+
+    Then:
+    - Both the initial and the post-refresh _http_request calls include
+      retries=NUM_OF_RETRIES, status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+      and backoff_factor=BACKOFF_FACTOR.
+    """
+    import copy
+
+    client = _make_client()
+    refreshed_token = "refreshed_token"
+    mocker.patch.object(client, "get_access_token", side_effect=[TEST_TOKEN, refreshed_token])
+
+    expected_response = {"events": [{"id": 2}]}
+
+    # Capture deep copies of kwargs at call time, because http_request mutates the
+    # headers dict in-place when refreshing the token, which would make both
+    # call_args_list entries point to the same (mutated) dict object.
+    captured_kwargs: list[dict] = []
+    original_side_effects = iter(
+        [
+            DemistoException("access token is invalid"),
+            expected_response,
+        ]
+    )
+
+    def capture_and_delegate(**kwargs):
+        captured_kwargs.append(copy.deepcopy(kwargs))
+        result = next(original_side_effects)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    mocker.patch.object(client, "_http_request", side_effect=capture_and_delegate)
+
+    result = client.http_request("GET", url_suffix="/test/endpoint", params={"key": "val"})
+
+    assert result == expected_response
+    assert len(captured_kwargs) == 2
+
+    expected_retry_kwargs = {
+        "retries": NUM_OF_RETRIES,
+        "status_list_to_retry": [RATE_LIMIT_STATUS_CODE],
+        "backoff_factor": BACKOFF_FACTOR,
+    }
+
+    # Verify initial request (with original token) includes retry params
+    first_kwargs = captured_kwargs[0]
+    assert first_kwargs["headers"]["authorization"] == f"Bearer {TEST_TOKEN}"
+    for key, value in expected_retry_kwargs.items():
+        assert first_kwargs[key] == value, f"Initial request missing or wrong retry param '{key}': {first_kwargs.get(key)}"
+
+    # Verify post-refresh retry request (with refreshed token) includes retry params
+    second_kwargs = captured_kwargs[1]
+    assert second_kwargs["headers"]["authorization"] == f"Bearer {refreshed_token}"
+    for key, value in expected_retry_kwargs.items():
+        assert second_kwargs[key] == value, f"Retry request missing or wrong retry param '{key}': {second_kwargs.get(key)}"
