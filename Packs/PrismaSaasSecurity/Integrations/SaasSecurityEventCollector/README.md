@@ -20,7 +20,7 @@ This is the default integration for this content pack when configured by the Dat
     | Client Secret | The SaaS Security Secret ID. | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | The maximum number of events per fetch. | Applies only to the manual `saas-security-get-events` command. During scheduled **Fetch Events**, the collector drains as much of the queue as possible per cycle (bounded by **The maximum number of iterations to retrieve events**), so this value does not throttle live ingestion. Must be divisible by 100 due to SaaS Security API limitations. Default is 1000. | False |
+    | The maximum number of events per fetch. | Applies only to the manual `saas-security-get-events` command. During scheduled **Fetch Events**, the collector drains as much of the queue as possible per cycle (bounded by **The maximum number of iterations to retrieve events**), so this value does not throttle live ingestion. Must be divisible by 10 due to SaaS Security API limitations. Default is 1000. | False |
     | The maximum number of iterations to retrieve events. | Each iteration retrieves up to 100 events from the SaaS Security queue (the API's per-request limit). This parameter caps the number of iterations per fetch execution to prevent timeouts; the collector keeps draining across consecutive executions until the queue is empty. Increase this value if ingestion lag builds up under a high event rate. Default is 900. | False |
     | Number of concurrent fetch requests | The number of GET requests sent in parallel each iteration to drain the SaaS Security queue faster under high event rates. Maximum is 30. This is an advanced parameter. Default is 10. | False |
     | Treat an empty Cortex XSIAM response as delivered | Whether to treat a success (200) response from Cortex XSIAM that has an empty body as a successful delivery instead of retrying it indefinitely. Truncated or otherwise invalid responses are still retried. This is an advanced parameter. | False |
@@ -186,7 +186,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### saas-security-get-events
 
 ***
-Manual command to fetch events and display them.
+Manual command to fetch events and display them. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
@@ -196,7 +196,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Overrides the max-fetch parameter of the integration. | Optional |
+| limit | The maximum number of events to get. Must be divisible by 10 due to SaaS Security API limitations. Overrides the max-fetch parameter of the integration. | Optional |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.* Possible values are: True, False. Default is False. | Required |
 
 #### Context Output
