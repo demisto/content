@@ -32,20 +32,22 @@ def extract_keys_with_values(obj, parent_key=""):
 
 def escape_for_html_table(value):
     """Escape value for safe insertion into HTML table cells."""
-    escaped = html_module.escape(str(value))
-    return escaped.replace("|", "&#124;")
+    return html_module.escape(str(value))
 
 
 def format_data_to_rows(items):
     """
-    Formats the extracted data into rows and escapes pipes.
+    Formats the extracted data into (key, value) rows.
+
+    Each row is kept as a tuple rather than a pipe-delimited string so that values
+    that themselves contain the pipe character are never split into extra table columns.
     """
     rows = []
     for key, value in items:
         if isinstance(value, list):
-            # If the value is a list, join the items with a separator and escape the result
-            value = "|".join(map(str, value))
-        rows.append(f"{escape_for_html_table(key)}|{escape_for_html_table(str(value))}")
+            # If the value is a list, join the items with a comma for display
+            value = ", ".join(map(str, value))
+        rows.append((str(key), str(value)))
     return rows
 
 
@@ -53,21 +55,20 @@ def convert_to_html(rows):
     html = [
         """<table style="border-collapse:collapse;"><tbody style="font-family:Lato,Assistant,sans-serif;font-weight:600;font-size:12px;text-align:left;padding: 1px 0px 0px;margin:0px 5px 0px 0px;contrast:4.95">"""  # noqa: E501
     ]  # noqa: E501
-    for row in rows:
+    for key, value in rows:
         html.append("<tr>")
-        columns = row.split("|")
-        for i, column in enumerate(map(str.strip, columns)):
+        for i, column in enumerate((key.strip(), value.strip())):
             if column:
                 style = "color:var(--xdr-on-background-secondary)" if i == 0 else "color:var(--xdr-on-background)"
-                html.append(f'<td style="{style}">{column}</td>')
+                html.append(f'<td style="{style}">{escape_for_html_table(column)}</td>')
         html.append("</tr>")
     html.append("</tbody></table>")
     return "".join(html)
 
 
 def remove_empty_rows(rows):
-    # Filter out the rows that contain empty dictionaries
-    return [row for row in rows if not any(empty_value in row for empty_value in EMPTY_VALUES)]
+    # Filter out rows whose value is exactly an empty marker (not merely containing one)
+    return [(key, value) for key, value in rows if value.strip() not in EMPTY_VALUES]
 
 
 def main():
