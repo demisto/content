@@ -27,6 +27,8 @@ from Vega import (
     _format_bullet_list,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
+    _format_recommended_actions_for_grid,
+    VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY,
     _format_timeline_events_html,
     _format_vega_comments_html,
     _is_empty_vega_comment_text,
@@ -1096,6 +1098,32 @@ def test_format_bullet_list():
     assert _format_bullet_list([]) == []
     assert _format_bullet_list(None) is None
     assert _format_bullet_list("already formatted") == "already formatted"
+
+
+def test_format_recommended_actions_for_grid_empty_shows_placeholder():
+    assert _format_recommended_actions_for_grid([]) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+    assert _format_recommended_actions_for_grid(None) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+
+
+def test_format_recommended_actions_for_grid_adds_description_newline():
+    actions = [
+        {"name": "Revoke sessions", "description": "Revoke active sessions", "actionKey": "revoke_user_sessions"},
+        {"name": "Reset password", "description": "Reset the user password\n", "actionKey": "reset_user_password"},
+    ]
+    formatted = _format_recommended_actions_for_grid(actions)
+
+    assert formatted[0]["description"] == "Revoke active sessions\n"
+    assert formatted[1]["description"] == "Reset the user password\n"
+
+
+def test_format_raw_entity_for_xsoar_empty_recommended_actions():
+    incident = {
+        "vegaEntityType": "Vega Incident",
+        "recommendedActions": [],
+    }
+    _format_raw_entity_for_xsoar(incident)
+
+    assert incident["recommendedActions"] == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
 
 
 def test_format_key_findings_html_dark_theme_layout():

@@ -1731,12 +1731,21 @@ def _ensure_recommended_action_description_newline(description: Any) -> str:
     return text
 
 
+VEGA_EMPTY_FIELD_DISPLAY = "N/A"
+VEGA_NO_ASSETS_DISPLAY = "No assets present."
+VEGA_NO_OBSERVABLES_DISPLAY = "No observables present."
+VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY = "No recommended Actions found"
+
+
 def _format_recommended_actions_for_grid(actions: Any) -> Any:
     """Normalize recommendedActions for the Vega Recommended Actions grid field.
 
-    XSOAR longText grid cells truncate single-line values; a trailing newline forces wrap
-    so the full description is visible.
+    Empty lists show a placeholder row in the incident layout. XSOAR longText grid cells
+    truncate single-line values; a trailing newline forces wrap so the full description
+    is visible.
     """
+    if actions is None or (isinstance(actions, list) and not actions):
+        return [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
     if not isinstance(actions, list):
         return actions
 
@@ -1752,11 +1761,6 @@ def _format_recommended_actions_for_grid(actions: Any) -> Any:
             formatted_action["description"] = formatted_description
         formatted_actions.append(formatted_action)
     return formatted_actions
-
-
-VEGA_EMPTY_FIELD_DISPLAY = "N/A"
-VEGA_NO_ASSETS_DISPLAY = "No assets present."
-VEGA_NO_OBSERVABLES_DISPLAY = "No observables present."
 
 
 def _empty_to_na(value: Any) -> str:

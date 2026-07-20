@@ -40,3 +40,5 @@ When Vega incidents are ingested, the integration maps the API `recommendedActio
 - **Target Params**: The action parameters returned by Vega (for example, `user_id` or `ip`).
 
 The integration normalizes recommended action descriptions during ingestion by ensuring each description ends with a trailing newline. This prevents long descriptions from being truncated in the XSOAR grid UI and allows the full text to wrap and display correctly.
+
+When `recommendedActions` is empty (`[]`) or missing, the grid shows a single row with **No recommended Actions found**.
