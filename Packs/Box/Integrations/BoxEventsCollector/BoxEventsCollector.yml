@@ -31,7 +31,7 @@ configuration:
   type: 0
   defaultvalue: 500
   required: false
-  additionalinfo: "The maximum amount of events to fetch for each API request (page). Max 500. This is the per-request page size only; it does NOT limit the total number of events per fetch."
+  additionalinfo: "The maximum amount of events to fetch for each API request (page). Max 500."
 - display: Maximum number of events per fetch
   name: max_events_per_fetch
   type: 0
