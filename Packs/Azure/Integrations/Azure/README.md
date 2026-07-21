@@ -1322,18 +1322,18 @@ Returns cost forecast for a subscription over a given time range. Required permi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                    | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
-| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
-| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
-| granularity | The granularity of the forecast. Default is Daily. | Optional |
-| start_date | Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z. | Optional |
-| end_date | End date for the forecast. Default value 7 days from current time(UTC). e.g. 2022-01-01T00:00:00Z. | Optional |
-| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
-| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false. | Optional |
-| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false. | Optional |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost.                                                                                                                                                                   | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost.                                                                                                                                     | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum.                                                                                                                                                                                       | Optional |
+| granularity | The granularity of the forecast. Default is Daily.                                                                                                                                                                                                 | Optional |
+| start_date | Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z.                                                                                                                                                          | Optional |
+| end_date | End date for the forecast.                                                                                                                                                                                                                         | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'.                | Optional |
+| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false.                                                                                                                                                                      | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false.                                                                                                                                                               | Optional |
 
 #### Context Output
 
@@ -2252,7 +2252,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
 | source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
 | description | A description to add to the rule. | Optional |
 
 #### Context Output
@@ -2661,7 +2661,7 @@ Updates the tags for the specified Blob. The command can replace the entire tags
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
-| append | Whether to append tags to the existing tags or not. Default is false. Possible values are: true, false. Default is false. | Optional |
+| append | Whether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
 
 #### Context Output
 

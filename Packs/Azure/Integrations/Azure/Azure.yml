@@ -1220,7 +1220,7 @@ script:
       name: account_name
       required: true
     - auto: PREDEFINED
-      description: Whether to append tags to the existing tags or not. Default is false.
+      description: Whether to append tags to the existing tags or not.
       name: append
       defaultValue: 'false'
       predefined:
@@ -7397,7 +7397,7 @@ script:
         required: false
         type: String
       - name: end_date
-        description: End date for the forecast. Default value 7 days from current time(UTC). e.g. 2022-01-01T00:00:00Z.
+        description: End date for the forecast.
         required: false
         type: String
       - name: filter

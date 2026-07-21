@@ -5985,6 +5985,62 @@ def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
     assert captured.get("token_retrieval_url") is None
 
 
+def test_azure_client_client_credentials_empty_tenant_builds_token_url_without_none(mocker):
+    """
+    Given: A non-device-code client (Client Credentials) with no tenant_id configured.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url is built with an empty tenant segment (no literal "None" in the URL).
+          Regression test for None stringification in the token URL.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id=None,
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert "None" not in captured["token_retrieval_url"]
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com//oauth2/v2.0/token"
+
+
+def test_azure_client_managed_identities_storage_resource_derives_storage_uri(mocker):
+    """
+    Given: A Managed Identities client for a storage-container command (per-command resource is the
+           storage resource).
+    When: AzureClient builds the MicrosoftClient.
+    Then: managed_identities_resource_uri is the storage resource (not the management default), so the
+          MI token is storage-scoped. Regression test for storage commands failing with 401/403 under
+          MI auth because the token was always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        resource=STORAGE_RESOURCE,
+    )
+
+    assert captured["managed_identities_resource_uri"] == STORAGE_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://storage.azure.com"
+
+
 def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_params):
     """
     Given: Marketplace path (no connector) with auth_type "Azure Managed Identities" and a configured

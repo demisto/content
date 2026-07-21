@@ -666,7 +666,9 @@ class AzureClient:
                 auth_code=auth_code,
                 redirect_uri=redirect_uri,
                 managed_identities_client_id=managed_identities_client_id,
-                managed_identities_resource_uri=ms_resource or Resources.management_azure,
+                managed_identities_resource_uri=(resource or DEFAULT_RESOURCE).rstrip("/")
+                if is_managed_identities
+                else (ms_resource or Resources.management_azure),
                 command_prefix="azure",
                 ok_codes=(200, 201, 202, 204),
             )
