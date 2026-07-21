@@ -1,5 +1,8 @@
 category: Analytics & SIEM
 provider: Box
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: BoxEventsCollector
   version: -1
@@ -9,6 +12,7 @@ configuration:
   type: 0
   required: true
   defaultvalue: 'https://api.box.com'
+  section: Connect
   additionalinfo: "The url of the box api"
 - display: ""
   name: credentials_json
@@ -16,36 +20,43 @@ configuration:
   required: true
   displaypassword: Credentials JSON
   hiddenusername: true
+  section: Connect
 - display: Fetch Events
   name: isFetchEvents
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 1 days
   display: |-
     First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
   type: 0
   required: false
+  section: Collect
 - display: Maximum number of events per page
   name: page_size
   type: 0
   defaultvalue: 500
   required: false
+  section: Collect
   additionalinfo: "The maximum amount of events to fetch for each API request (page). Max 500."
 - display: Maximum number of events per fetch
   name: max_events_per_fetch
   type: 0
   defaultvalue: '2500'
   required: false
+  section: Collect
   additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector
@@ -61,7 +72,7 @@ script:
     - description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).
       name: created_after
       defaultValue: 3 days
-    description: Get events.
+    description: Gets events from Box. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: box-get-events
   dockerimage: demisto/auth-utils:1.0.0.11195141
   runonce: false
