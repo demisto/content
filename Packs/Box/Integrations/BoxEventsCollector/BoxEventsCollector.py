@@ -11,6 +11,9 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic import ConfigDict, Field, parse_obj_as
 from SiemApiModule import *  # noqa: E402
 
+DEFAULT_MAX_EVENTS_PER_FETCH = 2500
+MAX_EVENTS_PER_FETCH_LIMIT = 5000
+
 
 class Claims(BaseModel):
     iss: str = Field(alias="client_id")
@@ -217,6 +220,17 @@ def main(command: str, demisto_params: dict):
             get_events.run()
             demisto.results("ok")
             return
+        if command == "fetch-events":
+            # Cap total events per fetch so a single run can't chase the whole backlog and time out.
+            max_events_per_fetch = arg_to_number(demisto_params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
+            if max_events_per_fetch > MAX_EVENTS_PER_FETCH_LIMIT:
+                demisto.info(
+                    f"'Maximum number of events per fetch' ({max_events_per_fetch}) exceeds the allowed maximum; "
+                    f"capping it to {MAX_EVENTS_PER_FETCH_LIMIT}."
+                )
+                max_events_per_fetch = MAX_EVENTS_PER_FETCH_LIMIT
+            get_events.client.options.limit = max_events_per_fetch
+            demisto.debug(f"fetch-events total cap set to {max_events_per_fetch=}")
         demisto.debug("not in test module, running box-get-events")
         events = get_events.run()
         demisto.debug(f"got {len(events)=} from api")

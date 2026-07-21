@@ -139,9 +139,9 @@ class IntegrationGetEvents(ABC):
             stored.extend(logs)
             if self.options.limit:
                 demisto.debug(
-                    f"{self.options.limit=} reached. \
-                    slicing from {len(logs)=}. \
-                    limit must be presented ONLY in commands and not in fetch-events."
+                    f"A total-event limit is configured ({self.options.limit=}); \
+                    checking it against the running total {len(stored)=}. \
+                    Used by commands, and by fetch-events for collectors that need a per-fetch cap."
                 )
                 if len(stored) >= self.options.limit:
                     return stored[: self.options.limit]

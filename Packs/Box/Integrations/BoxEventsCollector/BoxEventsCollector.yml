@@ -26,13 +26,18 @@ configuration:
   name: created_after
   type: 0
   required: false
-- display: |
-    The maximum amount of events to fetch for each page. 
-    If you're encountering timeouts, consider decrease this value. range 500.
+- display: Maximum number of events per page
   name: page_size
   type: 0
   defaultvalue: 500
   required: false
+  additionalinfo: "The maximum amount of events to fetch for each API request (page). Max 500. This is the per-request page size only; it does NOT limit the total number of events per fetch."
+- display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  type: 0
+  defaultvalue: 2500
+  required: false
+  additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -47,7 +52,7 @@ name: BoxEventsCollector
 script:
   commands:
   - arguments:
-    - description: Maximum events to fetch.
+    - description: The maximum number of events to fetch per API request (page). Max 500.
       name: page_size
       defaultValue: 10
     - description: Should push events.
