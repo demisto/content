@@ -4484,7 +4484,12 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
             custom_filter = json.loads(fixed_json_str)
 
         except Exception as e:
-            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+            raise CortexInvalidArgError(
+                "custom_filter",
+                value=custom_filter_str,
+                reason=str(e),
+                override_message=f"custom_filter format is not valid. got: {str(e)}",
+            )
 
     if custom_filter:  # if exists, add custom filter to the built filter
         if not filter_dict:
