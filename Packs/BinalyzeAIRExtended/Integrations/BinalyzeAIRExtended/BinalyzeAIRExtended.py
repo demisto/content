@@ -18,6 +18,8 @@ PRESET_PROFILES = [
 
 TERMINAL_TASK_STATES = {"completed", "complete", "failed", "failure", "cancelled", "canceled", "error"}
 SUCCESS_TASK_STATES = {"completed", "complete", "success", "succeeded"}
+DEFAULT_PAGE = 1
+DEFAULT_LIMIT = 50
 
 
 def remove_empty_values(value: Any) -> Any:
@@ -82,6 +84,13 @@ def optional_int_arg(args: dict[str, Any], name: str) -> Optional[int]:
         return int(str(value))
     except (TypeError, ValueError):
         raise DemistoException(f"The {name} argument must be an integer. Invalid value: {value}")
+
+
+def pagination_params(args: dict[str, Any]) -> dict[str, int]:
+    return {
+        "page": optional_int_arg(args, "page") or DEFAULT_PAGE,
+        "limit": optional_int_arg(args, "limit") or DEFAULT_LIMIT,
+    }
 
 
 def required_int_arg(args: dict[str, Any], name: str) -> int:
@@ -209,8 +218,7 @@ class Client(ContentClient):
             params=clean_params({
                 "filter[name]": args.get("name"),
                 "filter[organizationIds]": args.get("organization_ids") or args.get("organization_id"),
-                "page": args.get("page"),
-                "limit": args.get("limit"),
+                **pagination_params(args),
             }),
         )
 
@@ -218,7 +226,7 @@ class Client(ContentClient):
         return self._http_request(
             method="GET",
             url_suffix=url_path("api", "public", "cases", case_id, relation),
-            params=clean_params({"taskId": args.get("task_id"), "page": args.get("page"), "limit": args.get("limit")}),
+            params=clean_params({"taskId": args.get("task_id"), **pagination_params(args)}),
         )
 
     def close_case(self, case_id: str, reason: str = "") -> dict[str, Any]:
@@ -238,8 +246,7 @@ class Client(ContentClient):
                 "filter[onlineStatus]": args.get("online_status"),
                 "filter[isolationStatus]": args.get("isolation_status"),
                 "filter[platform]": args.get("platform"),
-                "page": args.get("page"),
-                "limit": args.get("limit"),
+                **pagination_params(args),
             }),
         )
 
@@ -257,7 +264,7 @@ class Client(ContentClient):
         return self._http_request(
             method="GET",
             url_suffix=url_path("api", "public", "endpoints", asset_id, "tasks"),
-            params=clean_params({"page": args.get("page"), "limit": args.get("limit")}),
+            params=clean_params(pagination_params(args)),
         )
 
     def get_task(self, task_id: str) -> dict[str, Any]:
@@ -272,8 +279,7 @@ class Client(ContentClient):
                 "filter[organizationIds]": args.get("organization_ids") or args.get("organization_id"),
                 "filter[status]": args.get("status"),
                 "filter[type]": args.get("task_type"),
-                "page": args.get("page"),
-                "limit": args.get("limit"),
+                **pagination_params(args),
             }),
         )
 
@@ -281,7 +287,7 @@ class Client(ContentClient):
         return self._http_request(
             method="GET",
             url_suffix=url_path("api", "public", "tasks", task_id, "assignments"),
-            params=clean_params({"page": args.get("page"), "limit": args.get("limit")}),
+            params=clean_params(pagination_params(args)),
         )
 
     def create_triage_rule(self, description: str, rule: str, search_in: str, engine: str, organization_ids: list[int]) -> dict[str, Any]:
@@ -299,8 +305,7 @@ class Client(ContentClient):
                 "filter[engine]": args.get("engine"),
                 "filter[searchIn]": args.get("search_in"),
                 "filter[description]": args.get("description"),
-                "page": args.get("page"),
-                "limit": args.get("limit"),
+                **pagination_params(args),
             }),
         )
 
@@ -353,8 +358,7 @@ class Client(ContentClient):
             params=clean_params({
                 "filter[name]": args.get("name"),
                 "filter[organizationIds]": args.get("organization_ids") or args.get("organization_id"),
-                "page": args.get("page"),
-                "limit": args.get("limit"),
+                **pagination_params(args),
             }),
         )
 
@@ -362,7 +366,7 @@ class Client(ContentClient):
         return self._http_request(method="GET", url_suffix=url_path("api", "public", "acquisitions", "profiles", profile_id))
 
     def list_repositories(self, args: dict[str, Any]) -> dict[str, Any]:
-        return self._http_request(method="GET", url_suffix="/api/public/repositories", params=clean_params({"page": args.get("page"), "limit": args.get("limit")}))
+        return self._http_request(method="GET", url_suffix="/api/public/repositories", params=clean_params(pagination_params(args)))
 
     def get_repository(self, repository_id: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=url_path("api", "public", "repositories", repository_id))

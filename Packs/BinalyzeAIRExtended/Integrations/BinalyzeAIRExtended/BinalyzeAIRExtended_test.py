@@ -197,8 +197,8 @@ def test_list_cases_uses_params():
         {
             "name": "Case",
             "organization_ids": "0,1",
-            "page": "1",
-            "limit": "50",
+            "page": 1,
+            "limit": 50,
         }
     )
 
@@ -208,8 +208,8 @@ def test_list_cases_uses_params():
         params={
             "filter[name]": "Case",
             "filter[organizationIds]": "0,1",
-            "page": "1",
-            "limit": "50",
+            "page": 1,
+            "limit": 50,
         },
     )
 
@@ -225,4 +225,260 @@ def test_download_file_uses_params():
         url_suffix="/api/public/interact/library/download",
         params={"filename": "evidence.zip"},
         resp_type="response",
+    )
+
+
+def test_air_isolate_sets_enabled_payload():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.air_isolate("HOST123", 0, "enable")
+
+    client._http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/api/public/endpoints/tasks/isolation",
+        json_data={"enabled": True, "filter": {"name": "HOST123", "organizationIds": [0]}},
+    )
+
+
+def test_get_case_uses_case_id_path():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"_id": "CASE-1"})
+
+    client.get_case("CASE-1")
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/cases/CASE-1",
+    )
+
+
+def test_close_case_posts_reason():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.close_case("CASE-1", "Resolved")
+
+    client._http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/api/public/cases/CASE-1/close",
+        json_data={"reason": "Resolved"},
+    )
+
+
+@pytest.mark.parametrize(
+    "relation",
+    [
+        "tasks",
+        "endpoints",
+        "activities",
+    ],
+)
+def test_get_case_related_uses_standard_pagination(relation):
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.get_case_related("CASE-1", relation, {"page": "2", "limit": "25"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix=f"/api/public/cases/CASE-1/{relation}",
+        params={"page": 2, "limit": 25},
+    )
+
+
+def test_get_case_tasks_can_filter_by_task_id():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.get_case_related("CASE-1", "tasks", {"task_id": "TASK-1"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/cases/CASE-1/tasks",
+        params={"taskId": "TASK-1", "page": 1, "limit": 50},
+    )
+
+
+def test_list_assets_uses_standard_pagination_and_filters():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.list_assets(
+        {
+            "hostname": "HOST123",
+            "organization_id": "0",
+            "online_status": "online",
+            "page": "2",
+            "limit": "25",
+        }
+    )
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/endpoints",
+        params={
+            "filter[name]": "HOST123",
+            "filter[organizationIds]": "0",
+            "filter[onlineStatus]": "online",
+            "page": 2,
+            "limit": 25,
+        },
+    )
+
+
+def test_get_asset_uses_asset_id_path():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"_id": "ASSET-1"})
+
+    client.get_asset("ASSET-1")
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/endpoints/ASSET-1",
+    )
+
+
+def test_get_asset_tasks_uses_standard_pagination():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.get_asset_tasks("ASSET-1", {"page": "2", "limit": "25"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/endpoints/ASSET-1/tasks",
+        params={"page": 2, "limit": 25},
+    )
+
+
+def test_list_tasks_uses_standard_pagination_and_filters():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.list_tasks(
+        {
+            "case_id": "CASE-1",
+            "organization_id": "0",
+            "status": "completed",
+            "task_type": "acquisition",
+            "page": "3",
+            "limit": "10",
+        }
+    )
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/tasks",
+        params={
+            "filter[caseIds]": "CASE-1",
+            "filter[organizationIds]": "0",
+            "filter[status]": "completed",
+            "filter[type]": "acquisition",
+            "page": 3,
+            "limit": 10,
+        },
+    )
+
+
+def test_get_task_assignments_uses_standard_pagination():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.get_task_assignments("TASK-1", {"page": "2", "limit": "25"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/tasks/TASK-1/assignments",
+        params={"page": 2, "limit": 25},
+    )
+
+
+def test_update_triage_rule_payload_is_cleaned():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.update_triage_rule(
+        description="Suspicious PowerShell",
+        rule="rule content",
+        search_in="system",
+        rule_id="RULE-1",
+        organization_ids=[],
+    )
+
+    client._http_request.assert_called_once_with(
+        method="PUT",
+        url_suffix="/api/public/triages/rules/RULE-1",
+        json_data={
+            "description": "Suspicious PowerShell",
+            "rule": "rule content",
+            "searchIn": "system",
+        },
+    )
+
+
+def test_delete_triage_rule_uses_delete_method():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"success": True})
+
+    client.delete_triage_rule("RULE-1")
+
+    client._http_request.assert_called_once_with(
+        method="DELETE",
+        url_suffix="/api/public/triages/rules/RULE-1",
+    )
+
+
+def test_get_acquisition_profile_uses_profile_id_path():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"_id": "PROFILE-1"})
+
+    client.get_acquisition_profile("PROFILE-1")
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/acquisitions/profiles/PROFILE-1",
+    )
+
+
+def test_list_acquisition_profiles_uses_standard_pagination_and_filters():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.list_acquisition_profiles({"name": "Quick", "organization_id": "0", "page": "2", "limit": "25"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/acquisitions/profiles",
+        params={
+            "filter[name]": "Quick",
+            "filter[organizationIds]": "0",
+            "page": 2,
+            "limit": 25,
+        },
+    )
+
+
+def test_get_repository_uses_repository_id_path():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"_id": "REPO-1"})
+
+    client.get_repository("REPO-1")
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/repositories/REPO-1",
+    )
+
+
+def test_list_repositories_uses_standard_pagination():
+    client = Client(base_url="https://air.example.com", verify=False, headers={}, proxy=False)
+    client._http_request = MagicMock(return_value={"result": {"entities": []}})
+
+    client.list_repositories({"page": "2", "limit": "25"})
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="/api/public/repositories",
+        params={"page": 2, "limit": 25},
     )

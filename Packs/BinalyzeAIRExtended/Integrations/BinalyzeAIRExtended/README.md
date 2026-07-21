@@ -687,3 +687,10 @@ Download a file from the Binalyze AIR InterACT library into the Cortex XSOAR War
 #### Context Output
 
 There is no context output for this command.
+---
+
+## Command Examples
+
+The command examples for all integration commands are maintained in the `command_examples.txt` file and were used with `demisto-sdk generate-docs`.
+
+The examples are grouped logically by operation type, including assets, tasks, acquisition, cases, triage rules, acquisition profiles, repositories, file download, and endpoint response.
