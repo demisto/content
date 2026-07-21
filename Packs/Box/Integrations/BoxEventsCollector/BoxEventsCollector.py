@@ -224,13 +224,13 @@ def main(command: str, demisto_params: dict):
             # Cap total events per fetch so a single run can't chase the whole backlog and time out.
             max_events_per_fetch = arg_to_number(demisto_params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
             if max_events_per_fetch > MAX_EVENTS_PER_FETCH_LIMIT:
-                demisto.info(
-                    f"'Maximum number of events per fetch' ({max_events_per_fetch}) exceeds the allowed maximum; "
-                    f"capping it to {MAX_EVENTS_PER_FETCH_LIMIT}."
+                demisto.debug(
+                    f"[Fetch Events] 'Maximum number of events per fetch' ({max_events_per_fetch}) exceeds the "
+                    f"allowed maximum; capping it to {MAX_EVENTS_PER_FETCH_LIMIT}."
                 )
                 max_events_per_fetch = MAX_EVENTS_PER_FETCH_LIMIT
             get_events.client.options.limit = max_events_per_fetch
-            demisto.debug(f"fetch-events total cap set to {max_events_per_fetch=}")
+            demisto.debug(f"[Fetch Events] total cap set to {max_events_per_fetch=}")
         demisto.debug("not in test module, running box-get-events")
         events = get_events.run()
         demisto.debug(f"got {len(events)=} from api")

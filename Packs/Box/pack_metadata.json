@@ -1,6 +1,6 @@
 {
     "name": "Box",
-    "description": "Manage Box users",
+    "description": "Manage Box users and collect events.",
     "support": "xsoar",
     "currentVersion": "3.2.20",
     "author": "Cortex XSOAR",

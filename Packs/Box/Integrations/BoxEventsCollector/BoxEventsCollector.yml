@@ -35,7 +35,7 @@ configuration:
 - display: Maximum number of events per fetch
   name: max_events_per_fetch
   type: 0
-  defaultvalue: 2500
+  defaultvalue: '2500'
   required: false
   additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
 - display: Trust any certificate (not secure)
@@ -63,7 +63,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.11195141
   runonce: false
   script: '-'
   subtype: python3
