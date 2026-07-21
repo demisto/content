@@ -474,6 +474,13 @@
                         "root": "ai_summary",
                         "transformers": []
                     }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "trigger_time",
+                        "transformers": []
+                    }
                 }
             }
         }

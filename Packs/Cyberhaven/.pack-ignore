@@ -1,13 +1,7 @@
 [file:incidentfield-Cyberhaven-Lineage-End-ID.json]
 ignore=IF115
 
-[file:incidentfield-Cyberhaven-User-Custom-Data.json]
-ignore=IF115
-
 [file:incidentfield-Cyberhaven-End-Content-Filename.json]
-ignore=IF115
-
-[file:incidentfield-Cyberhaven-End-Event-JSON.json]
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-Last-Modified.json]
@@ -23,9 +17,6 @@ ignore=IF115
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-Policy-Name.json]
-ignore=IF115
-
-[file:incidentfield-Cyberhaven-Incident-Custom-Data.json]
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-Close-Reason.json]
@@ -79,13 +70,7 @@ ignore=IF115
 [file:incidentfield-Cyberhaven-Username.json]
 ignore=IF115
 
-[file:incidentfield-Cyberhaven-Policy-Custom-Data.json]
-ignore=IF115
-
 [file:incidentfield-Cyberhaven-Start-Action-Hostname.json]
-ignore=IF115
-
-[file:incidentfield-Cyberhaven-User-Reactions.json]
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-Warning-Status.json]
@@ -97,9 +82,6 @@ ignore=IF115
 [file:incidentfield-Cyberhaven-Trigger-Time.json]
 ignore=IF115
 
-[file:incidentfield-Cyberhaven-User-Local-ID.json]
-ignore=IF115
-
 [file:incidentfield-Cyberhaven-Blocked.json]
 ignore=IF115
 
@@ -109,12 +91,6 @@ ignore=IF115
 [file:incidentfield-Cyberhaven-Resolution-Time.json]
 ignore=IF115
 
-[file:incidentfield-Cyberhaven-User-Reaction-Message.json]
-ignore=IF115
-
-[file:incidentfield-Cyberhaven-Start-Event-JSON.json]
-ignore=IF115
-
 [file:incidentfield-Cyberhaven-Dataset-Sensitivity.json]
 ignore=IF115
 
@@ -122,9 +98,6 @@ ignore=IF115
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-Status.json]
-ignore=IF115
-
-[file:incidentfield-Cyberhaven-Dataset-Custom-Data.json]
 ignore=IF115
 
 [file:incidentfield-Cyberhaven-AI-Summary.json]
