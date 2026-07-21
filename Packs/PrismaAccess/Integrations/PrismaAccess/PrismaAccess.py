@@ -30,7 +30,7 @@ if USERNAME and PASSWORD and SSHPORT:
     panos = {"device_type": "paloalto_panos", "ip": HOSTNAME, "username": USERNAME, "password": PASSWORD, "port": SSHPORT}
 
 
-def panos_connect(net_connect: Netmiko = None):
+def panos_connect(net_connect: Netmiko = None):  # type: ignore[valid-type]
     try:
         if not net_connect:
             net_connect = Netmiko(**panos)
@@ -41,7 +41,7 @@ def panos_connect(net_connect: Netmiko = None):
     return prompt
 
 
-def panos_ssh(cmd: str, net_connect: Netmiko = None):
+def panos_ssh(cmd: str, net_connect: Netmiko = None):  # type: ignore[valid-type]
     result_cmd = ""
     if sshConfigured:
         """
@@ -53,10 +53,10 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
             if not net_connect:
                 net_connect = Netmiko(**panos)
                 # Sometimes returns "debug", and will not wait for results
-                result_cmd = net_connect.send_command_timing(cmd)
+                result_cmd = net_connect.send_command_timing(cmd)  # type: ignore[assignment]
 
                 # This command ensures the first has finished
-                result_cmd += net_connect.send_command_timing("\n")
+                result_cmd += net_connect.send_command_timing("\n")  # type: ignore[operator]
         finally:
             if net_connect:
                 net_connect.disconnect()
