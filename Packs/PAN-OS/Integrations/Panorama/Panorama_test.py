@@ -3708,6 +3708,85 @@ class TestUniversalCommand:
         assert result
         assert not result.up
 
+    def test_system_status_command_polling_device_up(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is already up (operational_mode == 'normal').
+        When:
+            - Running system_status_command.
+        Then:
+            - Polling stops immediately (no scheduled_command) and the SystemStatus context is returned.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=True),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": True}
+
+    def test_system_status_command_polling_device_down(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is not yet available (up=False).
+        When:
+            - Running system_status_command.
+        Then:
+            - A scheduled_command is returned so polling continues.
+            - A "waiting" message is shown.
+            - The last known status (up=False) is still written to context so that on
+              polling timeout the war-room shows the final PANOS.SystemStatus entry.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is not None
+        assert "Waiting for device" in (result.readable_output or "")
+        # Last-known status must still be in context so a polling timeout leaves the
+        # war-room with a meaningful final entry rather than only a waiting message.
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
+
+    def test_system_status_command_no_polling(self, mocker, mock_topology):
+        """
+        Given:
+            - polling not provided (default false) even if the device is not up.
+        When:
+            - Running system_status_command.
+        Then:
+            - The command does not poll (no scheduled_command) and returns the current status as-is.
+        """
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+
+        args = {"target": MOCK_PANORAMA_SERIAL}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
