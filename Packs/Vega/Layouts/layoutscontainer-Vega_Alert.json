@@ -1,12 +1,8 @@
+
 {
-	"cacheVersn": 0,
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -590,26 +586,10 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"fromVersion": "6.10.0",
 	"group": "incident",
 	"id": "Vega Alert",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"isOverridable": false,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Vega Alert",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }

@@ -22,9 +22,9 @@ tasks:
       id: 612562a0-7351-4055-8d27-82a291a2377d
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       "#none#":
         - "2"

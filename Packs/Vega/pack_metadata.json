@@ -14,7 +14,9 @@
         "Analytics & SIEM"
     ],
     "useCases": [
-        "Incident Management"
+        "Hunting",
+        "Incident Response",
+        "Vulnerability Management"
     ],
     "keywords": [
         "Alerts",
@@ -28,10 +30,12 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Vega Platform",
+    "defaultDataSource": "Vega",
     "supportedModules": [
-        "SAM"
+        "agentix",
+        "xsiam"
     ]
 }

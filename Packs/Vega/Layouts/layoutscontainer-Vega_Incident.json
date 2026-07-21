@@ -34,10 +34,7 @@
     },
     "definitionId": "",
     "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -801,22 +798,10 @@
             }
         ]
     },
-    "fromServerVersion": "",
     "fromVersion": "6.10.0",
     "group": "incident",
     "id": "Vega Incident",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "isOverridable": false,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
     "name": "Vega Incident",
-    "packID": "",
-    "packName": "",
-    "propagationLabels": [
-        "all"
-    ],
     "quickView": {
         "sections": [
             {
@@ -1007,8 +992,6 @@
             }
         ]
     },
-    "quickViewV2": null,
     "system": false,
-    "toServerVersion": "",
     "version": -1
 }
