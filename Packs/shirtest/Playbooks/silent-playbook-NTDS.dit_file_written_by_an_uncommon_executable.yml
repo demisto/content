@@ -1,10 +1,10 @@
-id: silent-NTDS.dit file written by an uncommon executable
+id: silent-shirtestname
 version: -1
-name: silent-NTDS.dit file written by an uncommon executable
+name: silent-shirtestname
 description: |-
   This playbook addresses the following alerts:
   - NTDS.dit file written by an uncommon executable
-  - NTDS.dit file written by a rare executable to a suspicious path
+  - shirtestname to a suspicious path
 
   Playbook Stages:
 
@@ -736,7 +736,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "NTDS.dit file written by a rare executable to a suspicious path\t"
+              simple: "shirtestname to a suspicious path\t"
           ignorecase: true
     continueonerrortype: ""
     view: |-

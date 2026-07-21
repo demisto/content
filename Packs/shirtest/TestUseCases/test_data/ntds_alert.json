@@ -7,7 +7,7 @@
   "alert_full_description": "The Active Directory's database file was written by explorer.exe to \\\\172.16.4.52\\c$\\ifm\\Active Directory\\ntds.dit. This is a highly sensitive and protected file, rarely written to such a non-default location",
   "alert_generated_time": "2025-06-09T08:18:18+00:00",
   "alert_layouts": null,
-  "alert_name": "NTDS.dit file written by a rare executable",
+  "alert_name": "shirtestname",
   "alert_source": "ANALYTICS_BIOC",
   "association_strength": null,
   "content_version": "2025.05.21.000080",
