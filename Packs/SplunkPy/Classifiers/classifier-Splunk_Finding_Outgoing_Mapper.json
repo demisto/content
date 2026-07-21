@@ -17,6 +17,10 @@
                 "disposition": {
                     "complex": null,
                     "simple": "splunkdisposition"
+                },
+                "notable_time": {
+                    "complex": null,
+                    "simple": "occurred"
                 }
             }
         },

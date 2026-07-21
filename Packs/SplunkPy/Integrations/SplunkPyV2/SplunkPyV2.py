@@ -16,6 +16,7 @@ import dateparser
 
 import pytz
 import requests
+from packaging.version import InvalidVersion, Version
 
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
@@ -3300,6 +3301,75 @@ def get_modified_remote_data_command(
     return_results(res)
 
 
+ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
+
+
+def get_enterprise_security_version(service: client.Service) -> str:
+    """Retrieves the installed Splunk Enterprise Security (ES) app version.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+
+    Returns:
+        str: The ES app version (e.g. "8.2.0"), or "unknown" if it could not be determined.
+    """
+    try:
+        es_app = service.apps[ES_APP_NAME]
+        return es_app.content.get("version", "unknown")
+    except Exception as e:
+        demisto.debug(f"Could not determine Enterprise Security version: {e!s}")
+        return "unknown"
+
+
+def is_es_version_8_2(version: str) -> bool:
+    """Return True when ``version`` is an ES 8.2.x release.
+
+    Uses ``packaging.version.Version`` for robust semantic comparison and
+    checks that the major/minor is exactly ``8.2`` (so ``8.2``, ``8.2.0``,
+    ``8.2.5`` all match, while ``8.3.0`` does not). Returns False when the
+    version is unparseable (e.g. "unknown"). Used to gate the finding_time
+    (notable_time) behaviour to ES ``8.2.x``.
+    """
+    try:
+        return Version(version).release[:2] == (8, 2)
+    except InvalidVersion:
+        return False
+
+
+def get_finding_time_for_es_notable_time(service: client.Service, data: dict[str, Any] | None) -> str | None:
+    """Return the finding's event time to use as ``notable_time`` on ES ``>=8.2 <8.3``.
+
+    On ES 8.2.x the v2 investigations update endpoint requires the finding's
+    original event time (``notable_time``). On 8.3+ this is not needed. The
+    finding's time is mirrored into the incident as the ``notable_time`` field
+    (mapped from the incident's ``occurred`` in the outgoing mapper), so no
+    extra Splunk query is required.
+
+    Args:
+        service: Splunk service object (used only to read the ES version).
+        data: The mirrored incident data from ``UpdateRemoteSystemArgs.data``.
+
+    Returns:
+        The finding time string to pass as ``finding_time``, or ``None`` when the
+        ES version is out of range or no time is available in the data.
+    """
+    es_version = get_enterprise_security_version(service)
+    if not is_es_version_8_2(es_version):
+        demisto.debug(f"mirror-out: ES version {es_version} is not 8.2.x; not sending finding_time.")
+        return None
+
+    finding_time = (data or {}).get("notable_time")
+    if not finding_time:
+        demisto.debug(
+            f"mirror-out: ES version {es_version} is 8.2.x but no 'time' field found in "
+            "the mirrored data; proceeding without finding_time."
+        )
+        return None
+
+    demisto.debug(f"mirror-out: ES version {es_version} is 8.2.x; using finding_time={finding_time}.")
+    return str(finding_time)
+
+
 def update_remote_system_command(
     args: dict[str, Any], params: dict[str, Any], service: client.Service, mapper: UserMappingObject
 ) -> str:
@@ -3323,6 +3393,11 @@ def update_remote_system_command(
     entity_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
+    # On ES >=8.2 <8.3 the v2 investigations update endpoint requires the finding's
+    # original event time (notable_time). The finding time is mirrored into the
+    # incident as the `time` field, so no extra Splunk query is needed. Returns
+    # None on ES 8.3+ (or when unavailable), preserving the existing behaviour.
+    finding_time = get_finding_time_for_es_notable_time(service, parsed_args.data)
     if parsed_args.incident_changed and delta:
         demisto.debug(f"Got the following delta keys {list(delta.keys())} to update incident corresponding to entity {entity_id}")
 
@@ -3354,6 +3429,7 @@ def update_remote_system_command(
                     urgency=changed_data.get("urgency"),
                     status=changed_data.get("status"),
                     disposition=changed_data.get("disposition"),
+                    finding_time=finding_time,
                 )
                 demisto.debug(f"update-remote-system for entity {entity_id} via v2 API: {response_info}")
 
