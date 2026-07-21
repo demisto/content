@@ -5,6 +5,7 @@ API interaction is delegated to the official `threatzone` Python SDK.
 
 import json
 import re
+import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -31,15 +32,20 @@ from threatzone import ThreatZone as ThreatZoneSDK
 from threatzone.types.config import MetafieldOption
 
 INTEGRATION_NAME = "ThreatZone"
-DEFAULT_BASE_URL = "https://app.threat.zone"
 PUBLIC_API_SUFFIX = "/public-api"
 SDK_REQUEST_TIMEOUT_SECONDS = 60.0
 REPORT_FINDINGS_PAGE_SIZE = 100
+YARA_POLL_INTERVAL_SECONDS = 5.0
 
 # Old integration used integer codes for level/status. Preserved for backward
 # compatibility with playbooks that branch on these numbers.
 LEVEL_LABEL_TO_INT = {"unknown": 0, "benign": 1, "suspicious": 2, "malicious": 3}
-LEVEL_INT_TO_LABEL = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
+LEVEL_INT_TO_LABEL = {
+    0: "Not Measured",
+    1: "Informative",
+    2: "Suspicious",
+    3: "Malicious",
+}
 STATUS_LABEL_TO_INT = {
     "not_started": 1,
     "accepted": 2,
@@ -66,7 +72,9 @@ REPORT_TYPE_LABEL = {
 
 
 def normalize_sdk_base_url(base_url: str) -> str:
-    normalized_base_url = base_url.rstrip("/")
+    normalized_base_url = base_url.strip().rstrip("/")
+    if not normalized_base_url:
+        raise DemistoException("Server URL is required.")  # noqa: F405
     if normalized_base_url.endswith(PUBLIC_API_SUFFIX):
         return normalized_base_url
     return normalized_base_url + PUBLIC_API_SUFFIX
@@ -182,6 +190,46 @@ def parse_int_argument(arg_value: str | None, argument_name: str) -> int | None:
         raise DemistoException(f"{argument_name} argument must be an integer.") from exc  # noqa: F405
 
 
+def parse_bounded_int_argument(
+    arg_value: str | None,
+    argument_name: str,
+    *,
+    minimum: int,
+    maximum: int,
+    default: int | None = None,
+) -> int | None:
+    """Parse an optional integer and enforce the API-supported range."""
+    value = default if arg_value in (None, "") else parse_int_argument(arg_value, argument_name)
+    if value is None:
+        return None
+    if not minimum <= value <= maximum:
+        raise DemistoException(  # noqa: F405
+            f"{argument_name} argument must be between {minimum} and {maximum}."
+        )
+    return value
+
+
+def parse_json_object_argument(arg_value: str | None, argument_name: str) -> dict[str, Any] | None:
+    """Parse a JSON-object command argument."""
+    if not arg_value:
+        return None
+    try:
+        parsed = json.loads(arg_value)
+    except (TypeError, ValueError) as exc:
+        raise DemistoException(f"{argument_name} argument must be a valid JSON object.") from exc  # noqa: F405
+    if not isinstance(parsed, dict):
+        raise DemistoException(f"{argument_name} argument must be a JSON object.")  # noqa: F405
+    return parsed
+
+
+def parse_csv_list_argument(arg_value: str | None) -> list[str] | None:
+    """Parse a comma-separated command argument, omitting empty values."""
+    if not arg_value:
+        return None
+    values = [value.strip() for value in arg_value.split(",") if value.strip()]
+    return values or None
+
+
 def resolve_private_flag(private_arg: str | None, default: bool = True) -> bool:
     if private_arg is None:
         return default
@@ -268,7 +316,12 @@ def metafields_from_legacy_args(args: dict[str, Any], api_defaults: dict[str, An
     # Threat.Zone v3.2 rejects the legacy `raw_logs` metafield for dynamic
     # reports even when its value is false. Keep accepting the XSOAR argument
     # for command compatibility, but do not forward the unsupported key.
-    for arg_name in ("mouse_simulation", "https_inspection", "internet_connection", "snapshot"):
+    for arg_name in (
+        "mouse_simulation",
+        "https_inspection",
+        "internet_connection",
+        "snapshot",
+    ):
         if args.get(arg_name) is not None:
             fields[arg_name] = argToBoolean(args[arg_name])  # noqa: F405
     if args.get("extension_check") is not None:
@@ -297,6 +350,17 @@ def submission_to_dict(submission: Any) -> dict[str, Any]:
     return {"value": submission}
 
 
+def serialize_sdk_data(value: Any) -> Any:
+    """Render SDK models and collections into JSON-compatible values."""
+    if hasattr(value, "model_dump"):
+        return value.model_dump(by_alias=True, exclude_none=True, mode="json")
+    if isinstance(value, dict):
+        return {key: serialize_sdk_data(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [serialize_sdk_data(item) for item in value]
+    return value
+
+
 def models_to_dicts(items: Any) -> list[dict[str, Any]]:
     if items is None:
         return []
@@ -308,12 +372,12 @@ def models_to_dicts(items: Any) -> list[dict[str, Any]]:
     return [submission_to_dict(items)]
 
 
-def get_all_report_items(fetch_page: Callable[..., Any], uuid: str) -> list[Any]:
+def get_all_report_items(fetch_page: Callable[..., Any], uuid: str, **filters: Any) -> list[Any]:
     """Fetch every page from an SDK report endpoint that exposes an item total."""
     items: list[Any] = []
     page = 1
     while True:
-        response = fetch_page(uuid, page=page, limit=REPORT_FINDINGS_PAGE_SIZE)
+        response = fetch_page(uuid, page=page, limit=REPORT_FINDINGS_PAGE_SIZE, **filters)
         page_items = list(response.items)
         items.extend(page_items)
         if not page_items or len(items) >= response.total:
@@ -501,6 +565,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> li
     entrypoint = args.get("entrypoint")
     password = args.get("password")
     metafields = metafields_from_legacy_args(args, api_defaults)
+    configurations = parse_json_object_argument(args.get("configurations"), "configurations")
 
     with open_file_for_upload(file_path, original_name) as upload_file:
         submission = client.sdk.create_sandbox_submission(
@@ -511,6 +576,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> li
             private=private,
             entrypoint=entrypoint,
             password=password,
+            configurations=configurations,
         )
     message = submission.message
     submission_uuid = submission.uuid
@@ -568,7 +634,8 @@ def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> list
     if not url_value:
         raise DemistoException("url argument is required.")  # noqa: F405
     private = resolve_private_flag(args.get("private"))
-    submission = client.sdk.create_url_submission(url_value, private=private)
+    safe_browsing = argToBoolean(args.get("safe_browsing", "false"))  # noqa: F405
+    submission = client.sdk.create_url_submission(url_value, private=private, safe_browsing=safe_browsing)
     payload = {
         "Message": submission.message,
         "UUID": submission.uuid,
@@ -690,7 +757,12 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
         try:
             indicators_data = models_to_dicts(get_all_report_items(client.sdk.get_indicators, submission.uuid))
             detail_extras.append(
-                _section_result(submission.uuid, "ThreatZone.Submission.Indicators", "Dynamic Indicators", indicators_data)
+                _section_result(
+                    submission.uuid,
+                    "ThreatZone.Submission.Indicators",
+                    "Dynamic Indicators",
+                    indicators_data,
+                )
             )
         except ReportUnavailableError as exc:
             warnings.append(f"indicators-unavailable: {exc}")
@@ -699,28 +771,48 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
             ioc_items = get_all_report_items(client.sdk.get_iocs, submission.uuid)
             iocs_data = models_to_dicts(ioc_items)
             detail_extras.append(
-                _section_result(submission.uuid, "ThreatZone.Submission.IOCs", "Indicators of Compromise", iocs_data)
+                _section_result(
+                    submission.uuid,
+                    "ThreatZone.Submission.IOCs",
+                    "Indicators of Compromise",
+                    iocs_data,
+                )
             )
         except ReportUnavailableError as exc:
             warnings.append(f"iocs-unavailable: {exc}")
         try:
             yara_data = models_to_dicts(get_all_report_items(client.sdk.get_yara_rules, submission.uuid))
             detail_extras.append(
-                _section_result(submission.uuid, "ThreatZone.Submission.YaraMatches", "Matched YARA Rules", yara_data)
+                _section_result(
+                    submission.uuid,
+                    "ThreatZone.Submission.YaraMatches",
+                    "Matched YARA Rules",
+                    yara_data,
+                )
             )
         except ReportUnavailableError as exc:
             warnings.append(f"yara-unavailable: {exc}")
         try:
             artifacts_data = models_to_dicts(client.sdk.get_artifacts(submission.uuid))
             detail_extras.append(
-                _section_result(submission.uuid, "ThreatZone.Submission.Artifacts", "Analysis Artifacts", artifacts_data)
+                _section_result(
+                    submission.uuid,
+                    "ThreatZone.Submission.Artifacts",
+                    "Analysis Artifacts",
+                    artifacts_data,
+                )
             )
         except ReportUnavailableError as exc:
             warnings.append(f"artifacts-unavailable: {exc}")
         try:
             configs_data = models_to_dicts(client.sdk.get_extracted_configs(submission.uuid))
             detail_extras.append(
-                _section_result(submission.uuid, "ThreatZone.Submission.Config", "Configuration Extractor Results", configs_data)
+                _section_result(
+                    submission.uuid,
+                    "ThreatZone.Submission.Config",
+                    "Configuration Extractor Results",
+                    configs_data,
+                )
             )
         except ReportUnavailableError as exc:
             warnings.append(f"config-unavailable: {exc}")
@@ -799,19 +891,33 @@ def _require_uuid(args: dict[str, Any]) -> str:
 
 def threatzone_get_indicator_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
     uuid = _require_uuid(args)
-    data = models_to_dicts(get_all_report_items(client.sdk.get_indicators, uuid))
+    filters = {
+        "level": args.get("level"),
+        "category": args.get("category"),
+        "pid": parse_int_argument(args.get("pid"), "pid"),
+        "attack_code": args.get("attack_code"),
+    }
+    data = models_to_dicts(
+        get_all_report_items(
+            client.sdk.get_indicators,
+            uuid,
+            **{key: value for key, value in filters.items() if value is not None},
+        )
+    )
     return [_section_result(uuid, "ThreatZone.Submission.Indicators", "Dynamic Indicators", data)]
 
 
 def threatzone_get_ioc_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
     uuid = _require_uuid(args)
-    data = models_to_dicts(get_all_report_items(client.sdk.get_iocs, uuid))
+    filters = {"type": args.get("type")} if args.get("type") else {}
+    data = models_to_dicts(get_all_report_items(client.sdk.get_iocs, uuid, **filters))
     return [_section_result(uuid, "ThreatZone.Submission.IOCs", "Indicators of Compromise", data)]
 
 
 def threatzone_get_yara_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
     uuid = _require_uuid(args)
-    data = models_to_dicts(get_all_report_items(client.sdk.get_yara_rules, uuid))
+    filters = {"category": args.get("category")} if args.get("category") else {}
+    data = models_to_dicts(get_all_report_items(client.sdk.get_yara_rules, uuid, **filters))
     return [_section_result(uuid, "ThreatZone.Submission.YaraMatches", "Matched YARA Rules", data)]
 
 
@@ -824,17 +930,303 @@ def threatzone_get_artifact_result(client: Client, args: dict[str, Any]) -> list
 def threatzone_get_config_result(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
     uuid = _require_uuid(args)
     data = models_to_dicts(client.sdk.get_extracted_configs(uuid))
-    return [_section_result(uuid, "ThreatZone.Submission.Config", "Configuration Extractor Results", data)]
+    return [
+        _section_result(
+            uuid,
+            "ThreatZone.Submission.Config",
+            "Configuration Extractor Results",
+            data,
+        )
+    ]
+
+
+def _structured_result(
+    prefix: str,
+    title: str,
+    data: Any,
+    *,
+    uuid: str | None = None,
+    scan_type: str | None = None,
+) -> CommandResults:  # noqa: F405
+    """Build a predictable Data envelope for SDK-native command results."""
+    serialized_data = serialize_sdk_data(data)
+    outputs: dict[str, Any] = {"Data": serialized_data}
+    if uuid is not None:
+        outputs["UUID"] = uuid
+    if scan_type is not None:
+        outputs["ScanType"] = scan_type
+    readable = (
+        tableToMarkdown(title, serialized_data, removeNull=True)  # noqa: F405
+        if serialized_data
+        else f"{title}\nNo data returned."
+    )
+    return CommandResults(  # noqa: F405
+        outputs_prefix=prefix,
+        outputs_key_field="UUID" if uuid is not None else None,
+        outputs=outputs,
+        readable_output=readable,
+    )
+
+
+def threatzone_get_metafields(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    scan_type = args.get("scan_type")
+    allowed_scan_types = {"sandbox", "static", "cdr", "url", "open_in_browser"}
+    if scan_type and scan_type not in allowed_scan_types:
+        raise DemistoException(  # noqa: F405
+            "scan_type must be one of sandbox, static, cdr, url, or open_in_browser."
+        )
+    data = client.sdk.get_metafields(scan_type) if scan_type else client.sdk.get_metafields()
+    return [
+        _structured_result(
+            "ThreatZone.Configuration.Metafields",
+            "ThreatZone Metafields",
+            data,
+            scan_type=scan_type,
+        )
+    ]
+
+
+def threatzone_get_environments(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    return [
+        _structured_result(
+            "ThreatZone.Configuration.Environments",
+            "ThreatZone Environments",
+            client.sdk.get_environments(),
+        )
+    ]
+
+
+def threatzone_list_network_configs(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    return [
+        _structured_result(
+            "ThreatZone.Configuration.NetworkConfigurations",
+            "ThreatZone Network Configurations",
+            client.sdk.list_network_configs(),
+        )
+    ]
+
+
+def threatzone_open_in_browser(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    _verify_plan_capacity(client, requires_concurrent=True)
+    url_value = args.get("url")
+    if not url_value:
+        raise DemistoException("url argument is required.")  # noqa: F405
+    auto_select_environment = argToBoolean(args.get("auto", "false"))  # noqa: F405
+    environment = None if auto_select_environment else args.get("environment")
+    submission = client.sdk.create_open_in_browser_submission(
+        url_value,
+        environment=environment,
+        auto_select_environment=auto_select_environment,
+        metafields=parse_json_object_argument(args.get("metafields"), "metafields"),
+        private=resolve_private_flag(args.get("private")),
+        configurations=parse_json_object_argument(args.get("configurations"), "configurations"),
+    )
+    payload = {"Message": submission.message, "UUID": submission.uuid, "URL": url_value}
+    readable = tableToMarkdown("OPEN IN BROWSER SUBMITTED", payload)  # noqa: F405
+    return _submission_result("OpenInBrowser", payload, readable, _build_limits_payload(client))
+
+
+def threatzone_list_submissions(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    page = cast(
+        int,
+        parse_bounded_int_argument(args.get("page"), "page", minimum=1, maximum=2_147_483_647, default=1),
+    )
+    limit = cast(
+        int,
+        parse_bounded_int_argument(args.get("limit"), "limit", minimum=1, maximum=100, default=20),
+    )
+    private = argToBoolean(args["private"]) if args.get("private") is not None else None  # noqa: F405
+    response = client.sdk.list_submissions(
+        page=page,
+        limit=limit,
+        level=parse_csv_list_argument(args.get("level")),
+        type=args.get("type"),
+        sha256=args.get("sha256"),
+        filename=args.get("filename"),
+        start_date=args.get("start_date"),
+        end_date=args.get("end_date"),
+        private=private,
+        tags=parse_csv_list_argument(args.get("tags")),
+        sort=args.get("sort"),
+        order=args.get("order"),
+    )
+    serialized = serialize_sdk_data(response)
+    return [
+        CommandResults(  # noqa: F405
+            outputs_prefix="ThreatZone.SubmissionList",
+            outputs=serialized,
+            readable_output=tableToMarkdown("ThreatZone Submissions", serialized.get("items", []), removeNull=True),  # noqa: F405
+        )
+    ]
+
+
+def threatzone_search_submissions(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    sha256 = args.get("sha256")
+    if not sha256:
+        raise DemistoException("sha256 argument is required.")  # noqa: F405
+    return [
+        _structured_result(
+            "ThreatZone.SubmissionSearch",
+            "ThreatZone Submission Search",
+            client.sdk.search_by_sha256(sha256),
+        )
+    ]
+
+
+def threatzone_get_uuid_section(
+    client: Client,
+    args: dict[str, Any],
+    sdk_method: str,
+    section: str,
+    title: str,
+) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    data = getattr(client.sdk, sdk_method)(uuid)
+    return [_structured_result(f"ThreatZone.Submission.{section}", title, data, uuid=uuid)]
+
+
+def threatzone_get_behaviours(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    os_value = args.get("os")
+    if not os_value:
+        raise DemistoException("os argument is required.")  # noqa: F405
+    page = cast(
+        int,
+        parse_bounded_int_argument(args.get("page"), "page", minimum=1, maximum=2_147_483_647, default=1),
+    )
+    limit = cast(
+        int,
+        parse_bounded_int_argument(args.get("limit"), "limit", minimum=1, maximum=500, default=100),
+    )
+    data = client.sdk.get_behaviours(
+        uuid,
+        os=os_value,
+        type=args.get("type"),
+        pid=parse_int_argument(args.get("pid"), "pid"),
+        operation=args.get("operation"),
+        process_name=args.get("process_name"),
+        page=page,
+        limit=limit,
+    )
+    return [_structured_result("ThreatZone.Submission.Behaviours", "ThreatZone Behaviours", data, uuid=uuid)]
+
+
+def threatzone_get_syscalls(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    page = cast(
+        int,
+        parse_bounded_int_argument(args.get("page"), "page", minimum=1, maximum=2_147_483_647, default=1),
+    )
+    limit = cast(
+        int,
+        parse_bounded_int_argument(args.get("limit"), "limit", minimum=1, maximum=2000, default=500),
+    )
+    data = client.sdk.get_syscalls(uuid, page=page, limit=limit)
+    return [_structured_result("ThreatZone.Submission.Syscalls", "ThreatZone Syscalls", data, uuid=uuid)]
+
+
+def threatzone_get_network_data(
+    client: Client,
+    args: dict[str, Any],
+    sdk_method: str,
+    section: str,
+    title: str,
+) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    limit = parse_bounded_int_argument(args.get("limit"), "limit", minimum=0, maximum=1000)
+    skip = parse_bounded_int_argument(args.get("skip"), "skip", minimum=0, maximum=1000)
+    window = {"limit": limit, "skip": skip}
+    data = getattr(client.sdk, sdk_method)(uuid, **{key: value for key, value in window.items() if value is not None})
+    return [_structured_result(f"ThreatZone.Submission.{section}", title, data, uuid=uuid)]
 
 
 def _save_download(download: DownloadResponse, fallback_filename: str) -> dict[str, Any]:
     try:
-        download_filename = Path(download.filename).name if download.filename else ""
+        download_filename = Path(download.filename.replace("\\", "/")).name if download.filename else ""
         filename = fallback_filename if download_filename in ("", "download") else download_filename
         saved_path = download.save(filename)
     finally:
         download.close()
     return file_result_existing_file(str(saved_path), filename)  # noqa: F405
+
+
+def _safe_media_filename(filename: str, fallback_filename: str) -> str:
+    """Reject unsafe API-provided media names instead of writing outside the War Room."""
+    if not filename:
+        return fallback_filename
+    if filename in {".", ".."} or "\x00" in filename or "/" in filename or "\\" in filename:
+        raise DemistoException("ThreatZone returned an unsafe media filename.")  # noqa: F405
+    return filename
+
+
+def threatzone_download_sdk_file(
+    client: Client,
+    args: dict[str, Any],
+    sdk_method: str,
+    fallback_pattern: str,
+    *,
+    id_argument: str | None = None,
+) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    if id_argument:
+        resource_id = args.get(id_argument)
+        if not resource_id:
+            raise DemistoException(f"{id_argument} argument is required.")  # noqa: F405
+        download = getattr(client.sdk, sdk_method)(uuid, resource_id)
+    else:
+        download = getattr(client.sdk, sdk_method)(uuid)
+    return _save_download(download, fallback_pattern.format(uuid=uuid))
+
+
+def threatzone_download_yara_rule(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    timeout = cast(
+        int,
+        parse_bounded_int_argument(args.get("timeout"), "timeout", minimum=1, maximum=3600, default=120),
+    )
+    started_at = time.monotonic()
+    while True:
+        try:
+            download = client.sdk.download_yara_rule(uuid)
+            return _save_download(download, f"{uuid}.yar")
+        except YaraRulePendingError as exc:
+            elapsed = time.monotonic() - started_at
+            retry_after = max(0.0, exc.retry_after) if exc.retry_after is not None else YARA_POLL_INTERVAL_SECONDS
+            if elapsed >= timeout or retry_after > timeout - elapsed:
+                raise DemistoException(  # noqa: F405
+                    f"Timed out after {timeout} seconds waiting for the generated YARA rule."
+                ) from exc
+            demisto.executeCommand("Sleep", {"seconds": str(retry_after)})
+
+
+def threatzone_download_url_screenshot(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    return fileResult(f"threatzone-url-screenshot-{uuid}.png", client.sdk.get_screenshot(uuid))  # noqa: F405
+
+
+def threatzone_list_media_files(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
+    uuid = _require_uuid(args)
+    return [
+        _structured_result(
+            "ThreatZone.Submission.MediaFiles",
+            "ThreatZone Media Files",
+            client.sdk.list_media_files(uuid),
+            uuid=uuid,
+        )
+    ]
+
+
+def threatzone_download_media_file(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    uuid = _require_uuid(args)
+    file_id = args.get("file_id")
+    if not file_id:
+        raise DemistoException("file_id argument is required.")  # noqa: F405
+    media_files = client.sdk.list_media_files(uuid)
+    media_file = next((item for item in media_files if item.id == file_id), None)
+    if media_file is None:
+        raise DemistoException(f"Media file '{file_id}' was not found for submission '{uuid}'.")  # noqa: F405
+    filename = _safe_media_filename(media_file.name, f"threatzone-media-{uuid}-{file_id}")
+    return fileResult(filename, client.sdk.get_media_file(uuid, file_id))  # noqa: F405
 
 
 def threatzone_get_sanitized_file(client: Client, args: dict[str, Any]) -> dict[str, Any]:
@@ -873,9 +1265,77 @@ def _format_sdk_exception(exc: Exception) -> str:
     return str(exc)
 
 
+CommandHandler = Callable[[Client, dict[str, Any]], Any]
+
+
+def _uuid_section_handler(sdk_method: str, section: str, title: str) -> CommandHandler:
+    return lambda client, args: threatzone_get_uuid_section(client, args, sdk_method, section, title)
+
+
+def _network_handler(sdk_method: str, section: str, title: str) -> CommandHandler:
+    return lambda client, args: threatzone_get_network_data(client, args, sdk_method, section, title)
+
+
+COMMAND_HANDLERS: dict[str, CommandHandler] = {
+    "test-module": lambda client, args: test_module(client),
+    "tz-check-limits": threatzone_check_limits,
+    "tz-sandbox-upload-sample": threatzone_sandbox_upload_sample,
+    "tz-static-upload-sample": lambda client, args: threatzone_static_or_cdr_upload(client, args, "static"),
+    "tz-cdr-upload-sample": lambda client, args: threatzone_static_or_cdr_upload(client, args, "cdr"),
+    "tz-url-analysis": threatzone_submit_url_analysis,
+    "tz-open-in-browser": threatzone_open_in_browser,
+    "tz-list-submissions": threatzone_list_submissions,
+    "tz-search-submissions-by-sha256": threatzone_search_submissions,
+    "tz-get-metafields": threatzone_get_metafields,
+    "tz-get-environments": threatzone_get_environments,
+    "tz-list-network-configs": threatzone_list_network_configs,
+    "tz-get-result": threatzone_get_result,
+    "tz-get-indicator-result": threatzone_get_indicator_result,
+    "tz-get-ioc-result": threatzone_get_ioc_result,
+    "tz-get-yara-result": threatzone_get_yara_result,
+    "tz-get-artifact-result": threatzone_get_artifact_result,
+    "tz-get-config-result": threatzone_get_config_result,
+    "tz-get-overview-summary": _uuid_section_handler("get_overview_summary", "OverviewSummary", "ThreatZone Overview Summary"),
+    "tz-get-eml-analysis": _uuid_section_handler("get_eml_analysis", "EMLAnalysis", "ThreatZone EML Analysis"),
+    "tz-get-mitre-techniques": _uuid_section_handler("get_mitre_techniques", "MITRE", "ThreatZone MITRE ATT&CK Techniques"),
+    "tz-get-static-scan-result": _uuid_section_handler("get_static_scan_results", "StaticScan", "ThreatZone Static Scan"),
+    "tz-get-cdr-result": _uuid_section_handler("get_cdr_results", "CDRResult", "ThreatZone CDR Result"),
+    "tz-get-signature-check-result": _uuid_section_handler(
+        "get_signature_check_results", "SignatureCheck", "ThreatZone Signature Check"
+    ),
+    "tz-get-processes": _uuid_section_handler("get_processes", "Processes", "ThreatZone Processes"),
+    "tz-get-process-tree": _uuid_section_handler("get_process_tree", "ProcessTree", "ThreatZone Process Tree"),
+    "tz-get-behaviours": threatzone_get_behaviours,
+    "tz-get-syscalls": threatzone_get_syscalls,
+    "tz-get-url-analysis-result": _uuid_section_handler("get_url_analysis", "URLAnalysis", "ThreatZone URL Analysis"),
+    "tz-get-network-summary": _uuid_section_handler("get_network_summary", "NetworkSummary", "ThreatZone Network Summary"),
+    "tz-get-dns-queries": _network_handler("get_dns_queries", "DNSQueries", "ThreatZone DNS Queries"),
+    "tz-get-http-requests": _network_handler("get_http_requests", "HTTPRequests", "ThreatZone HTTP Requests"),
+    "tz-get-tcp-connections": _network_handler("get_tcp_connections", "TCPConnections", "ThreatZone TCP Connections"),
+    "tz-get-udp-connections": _network_handler("get_udp_connections", "UDPConnections", "ThreatZone UDP Connections"),
+    "tz-get-network-threats": _network_handler("get_network_threats", "NetworkThreats", "ThreatZone Network Threats"),
+    "tz-get-sanitized": threatzone_get_sanitized_file,
+    "tz-download-html-report": threatzone_get_html_report_file,
+    "tz-download-static-scan-strings": lambda client, args: (
+        threatzone_download_sdk_file(client, args, "get_static_scan_strings", "{uuid}_strings.json")
+    ),
+    "tz-download-sample": lambda client, args: threatzone_download_sdk_file(client, args, "download_sample", "sample-{uuid}"),
+    "tz-download-artifact": lambda client, args: threatzone_download_sdk_file(
+        client, args, "download_artifact", "artifact-{uuid}", id_argument="artifact_id"
+    ),
+    "tz-download-pcap": lambda client, args: threatzone_download_sdk_file(
+        client, args, "download_pcap", "threatzone-{uuid}.pcap"
+    ),
+    "tz-download-yara-rule": threatzone_download_yara_rule,
+    "tz-download-url-screenshot": threatzone_download_url_screenshot,
+    "tz-list-media-files": threatzone_list_media_files,
+    "tz-download-media-file": threatzone_download_media_file,
+}
+
+
 def main() -> None:
     params = demisto.params()
-    base_url = (params.get("url") or DEFAULT_BASE_URL).rstrip("/")
+    base_url = str(params.get("url") or "")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     api_key = str(params.get("apikey") or "")
@@ -888,40 +1348,13 @@ def main() -> None:
     client: Client | None = None
     try:
         client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
-        if command == "test-module":
-            return_results(test_module(client))  # noqa: F405
-        elif command == "tz-check-limits":
-            return_results(threatzone_check_limits(client, args))  # noqa: F405
-        elif command == "tz-sandbox-upload-sample":
-            return_results(threatzone_sandbox_upload_sample(client, args))  # noqa: F405
-        elif command == "tz-static-upload-sample":
-            return_results(threatzone_static_or_cdr_upload(client, args, "static"))  # noqa: F405
-        elif command == "tz-cdr-upload-sample":
-            return_results(threatzone_static_or_cdr_upload(client, args, "cdr"))  # noqa: F405
-        elif command == "tz-url-analysis":
-            return_results(threatzone_submit_url_analysis(client, args))  # noqa: F405
-        elif command == "tz-download-html-report":
-            return_results(threatzone_get_html_report_file(client, args))  # noqa: F405
-        elif command == "tz-get-result":
-            return_results(threatzone_get_result(client, args))  # noqa: F405
-        elif command == "tz-get-indicator-result":
-            return_results(threatzone_get_indicator_result(client, args))  # noqa: F405
-        elif command == "tz-get-ioc-result":
-            return_results(threatzone_get_ioc_result(client, args))  # noqa: F405
-        elif command == "tz-get-yara-result":
-            return_results(threatzone_get_yara_result(client, args))  # noqa: F405
-        elif command == "tz-get-artifact-result":
-            return_results(threatzone_get_artifact_result(client, args))  # noqa: F405
-        elif command == "tz-get-config-result":
-            return_results(threatzone_get_config_result(client, args))  # noqa: F405
-        elif command == "tz-get-sanitized":
-            return_results(threatzone_get_sanitized_file(client, args))  # noqa: F405
-        else:
-            return_error(f"Command '{command}' is not implemented.")  # noqa: F405
-    except ThreatZoneError as exc:
-        return_error(f"Failed to execute {command} command.\nError:\n{_format_sdk_exception(exc)}")  # noqa: F405
+        handler = COMMAND_HANDLERS.get(command)
+        if handler is None:
+            raise DemistoException(f"Command '{command}' is not implemented.")  # noqa: F405
+        return_results(handler(client, args))  # noqa: F405
     except Exception as exc:
-        return_error(f"Failed to execute {command} command.\nError:\n{exc!s}")  # noqa: F405
+        error_message = _format_sdk_exception(exc) if isinstance(exc, ThreatZoneError) else str(exc)
+        return_error(f"Failed to execute {command} command.\nError:\n{error_message}")  # noqa: F405
     finally:
         if client is not None:
             try:

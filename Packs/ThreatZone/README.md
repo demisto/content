@@ -1,24 +1,17 @@
 # ThreatZone Cortex XSOAR Integration Pack
 
-Threat.Zone enrichments are adaptable and can seamlessly integrate into various playbooks, such as sandbox, static-scan, and CDR playbooks, along with incidents and related files marked as indicators for threat intelligence. The integration now supports URL submissions, granular report retrieval, and richer plan metadata coverage.
+Threat.Zone enrichments integrate into sandbox, static-scan, CDR, URL-analysis, and open-in-browser workflows. The integration uses the official ThreatZone Python SDK for configuration discovery, submissions, granular report and bounded telemetry retrieval, and streamed file downloads.
 
 ## Supported commands
 
-- `tz-sandbox-upload-sample` — submit files for dynamic analysis with optional module toggles and execution controls.
-- `tz-static-upload-sample` — perform static analysis of files without executing them in the sandbox.
-- `tz-cdr-upload-sample` — sanitize files using ThreatZone CDR workflows.
-- `tz-url-analysis` — submit URLs for detonation and reputation assessment.
-- `tz-get-result` — retrieve the submission verdict alongside the raw ThreatZone response payload.
-- `tz-get-indicator-result` — retrieve dynamic behaviour indicators via the dedicated endpoint.
-- `tz-get-ioc-result` — retrieve Indicators of Compromise for a submission using the dedicated API endpoint.
-- `tz-get-yara-result` — retrieve matched YARA rules using the dedicated API endpoint.
-- `tz-get-artifact-result` — retrieve analysis artifacts generated during execution.
-- `tz-get-config-result` — retrieve configuration extractor results exposed by ThreatZone.
-- `tz-get-sanitized` — download the sanitized artifact generated during CDR processing.
-- `tz-download-html-report` — fetch the rendered HTML report for a submission.
-- `tz-check-limits` — inspect current plan quotas, enabled modules, and workspace metadata.
+- Configuration: discover metafields, sandbox environments, and workspace network configurations.
+- Submission: submit sandbox, static, CDR, URL-analysis, and open-in-browser jobs; list submissions or search by SHA256.
+- Results: retain the existing summary, indicator, IOC, matched-YARA, artifact, and extracted-config commands, plus dedicated SDK report sections for overview, EML, MITRE ATT&CK, static scan, CDR, signatures, processes, process tree, and URL analysis.
+- Telemetry: retrieve bounded behaviour and syscall pages, network summaries, and bounded DNS, HTTP, TCP, UDP, and network-threat windows.
+- Files: stream HTML, CDR, strings, original sample, artifact, PCAP, and generated-YARA downloads; retrieve URL screenshots and analysis media.
+- Account: inspect current plan quotas, enabled modules, and workspace metadata.
 
-Use `tz-get-result details=true` to embed inline sections in the readable output, or call the dedicated commands when you need the enriched objects in context.
+Use `tz-get-result details=true` for the existing inline sections, or call the dedicated commands for the additional SDK reports and telemetry. Existing command names, polling semantics, and context paths remain compatible.
 
 ## Ready-to-Use Playbooks
 

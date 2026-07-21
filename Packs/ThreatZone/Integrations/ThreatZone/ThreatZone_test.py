@@ -21,6 +21,7 @@ from threatzone import (
     AuthenticationError,
     NotFoundError,
     ReportUnavailableError,
+    YaraRulePendingError,
 )
 from threatzone import ThreatZone as ThreatZoneSDK
 from threatzone.testing import FakeThreatZoneAPI, scenarios
@@ -66,11 +67,25 @@ def _user_info(api_used: int = 5, daily_used: int = 5, concurrent_used: int = 1)
                 "endTime": "2026-01-01",
                 "subsTime": "yearly",
                 "fileLimits": {"extensions": ["exe", "dll"], "fileSize": "256 MiB"},
-                "submissionLimits": {"apiLimit": 9999, "dailyLimit": 999, "concurrentLimit": 2},
+                "submissionLimits": {
+                    "apiLimit": 9999,
+                    "dailyLimit": 999,
+                    "concurrentLimit": 2,
+                },
             },
             "modules": [
-                {"moduleId": "m1", "moduleName": "Sandbox", "startTime": "2025-01-01", "endTime": "2026-01-01"},
-                {"moduleId": "m2", "moduleName": "CDR", "startTime": "2025-01-01", "endTime": "2026-01-01"},
+                {
+                    "moduleId": "m1",
+                    "moduleName": "Sandbox",
+                    "startTime": "2025-01-01",
+                    "endTime": "2026-01-01",
+                },
+                {
+                    "moduleId": "m2",
+                    "moduleName": "CDR",
+                    "startTime": "2025-01-01",
+                    "endTime": "2026-01-01",
+                },
             ],
         }
     )
@@ -94,7 +109,10 @@ def _submission(level: str = "malicious", status: str = "completed", report_type
         "tags": [],
         "reports": [{"type": report_type, "status": status, "level": level}],
         "overview": {"status": "completed"},
-        "indicators": {"levels": {"malicious": 1, "suspicious": 0, "benign": 0}, "artifactCount": 0},
+        "indicators": {
+            "levels": {"malicious": 1, "suspicious": 0, "benign": 0},
+            "artifactCount": 0,
+        },
         "mitreTechniques": [],
         "createdAt": "2025-01-01T00:00:00Z",
         "updatedAt": "2025-01-01T00:00:00Z",
@@ -104,7 +122,10 @@ def _submission(level: str = "malicious", status: str = "completed", report_type
 
 def _make_client() -> integration.Client:
     """Build a Client without spinning up the real httpx session."""
-    with patch.object(integration, "httpx") as mock_httpx, patch.object(integration, "ThreatZoneSDK") as mock_sdk:
+    with (
+        patch.object(integration, "httpx") as mock_httpx,
+        patch.object(integration, "ThreatZoneSDK") as mock_sdk,
+    ):
         mock_httpx.Client.return_value = MagicMock()
         mock_sdk.return_value = MagicMock()
         return integration.Client(base_url="https://app.threat.zone", api_key="key", verify=True, proxy=False)
@@ -140,6 +161,24 @@ class TestPureHelpers(unittest.TestCase):
     def test_normalize_sdk_base_url(self):
         assert integration.normalize_sdk_base_url("https://app.threat.zone") == "https://app.threat.zone/public-api"
         assert integration.normalize_sdk_base_url("https://app.threat.zone/public-api/") == "https://app.threat.zone/public-api"
+
+    def test_normalize_sdk_base_url_rejects_missing_url(self):
+        with pytest.raises(DemistoException, match="Server URL is required"):
+            integration.normalize_sdk_base_url("  ")
+
+    def test_parse_json_object_argument(self):
+        assert integration.parse_json_object_argument('{"networkConfig":"id"}', "configurations") == {"networkConfig": "id"}
+        with pytest.raises(DemistoException, match="JSON object"):
+            integration.parse_json_object_argument("[]", "configurations")
+
+    def test_parse_csv_and_bounded_integer_arguments(self):
+        assert integration.parse_csv_list_argument(" malicious, suspicious, ") == [
+            "malicious",
+            "suspicious",
+        ]
+        assert integration.parse_bounded_int_argument("500", "limit", minimum=1, maximum=500) == 500
+        with pytest.raises(DemistoException, match="between 1 and 500"):
+            integration.parse_bounded_int_argument("501", "limit", minimum=1, maximum=500)
 
     def test_translate_score_levels(self):
         assert integration.translate_score(None) == 0
@@ -310,7 +349,15 @@ class TestUrlSubmission(unittest.TestCase):
         primary = results[0]
         assert primary.outputs["UUID"] == "abc"
         assert primary.outputs["URL"] == "https://example.com"
-        self.client.sdk.create_url_submission.assert_called_once_with("https://example.com", private=True)
+        self.client.sdk.create_url_submission.assert_called_once_with("https://example.com", private=True, safe_browsing=False)
+
+    def test_url_submission_forwards_safe_browsing(self):
+        self.client.sdk.create_url_submission.return_value = SubmissionCreated(uuid="abc", message="ok")
+        integration.threatzone_submit_url_analysis(
+            self.client,
+            {"url": "https://example.com", "safe_browsing": "true"},
+        )
+        assert self.client.sdk.create_url_submission.call_args.kwargs["safe_browsing"] is True
 
     def test_url_submission_requires_url(self):
         with pytest.raises(DemistoException):
@@ -333,7 +380,13 @@ class TestSandboxUpload(unittest.TestCase):
         with patch.object(integration.Path, "open", mock_open(read_data=b"sample")):
             results = integration.threatzone_sandbox_upload_sample(
                 self.client,
-                {"entry_id": "1", "environment": "w10_x64", "private": "true", "timeout": "120"},
+                {
+                    "entry_id": "1",
+                    "environment": "w10_x64",
+                    "private": "true",
+                    "timeout": "120",
+                    "configurations": '{"startArguments":"--safe"}',
+                },
             )
         assert results[0].outputs["UUID"] == "sb-uuid"
         assert results[0].outputs["FileName"] == "original sample.exe"
@@ -344,10 +397,14 @@ class TestSandboxUpload(unittest.TestCase):
         assert call_kwargs["auto_select_environment"] is False
         assert call_kwargs["private"] is True
         assert call_kwargs["metafields"]["timeout"] == 120
+        assert call_kwargs["configurations"] == {"startArguments": "--safe"}
 
     @patch.object(integration, "demisto")
     def test_sandbox_auto_environment_ignores_explicit_default(self, mock_demisto):
-        mock_demisto.getFilePath.return_value = {"path": "/tmp/sample.exe", "name": "sample.exe"}
+        mock_demisto.getFilePath.return_value = {
+            "path": "/tmp/sample.exe",
+            "name": "sample.exe",
+        }
         with patch.object(integration.Path, "open", mock_open(read_data=b"sample")):
             integration.threatzone_sandbox_upload_sample(
                 self.client,
@@ -359,7 +416,10 @@ class TestSandboxUpload(unittest.TestCase):
 
     @patch.object(integration, "demisto")
     def test_bat_sandbox_uses_sdk_with_api_defaults(self, mock_demisto):
-        mock_demisto.getFilePath.return_value = {"path": "/tmp/sample.bat", "name": "sample.bat"}
+        mock_demisto.getFilePath.return_value = {
+            "path": "/tmp/sample.bat",
+            "name": "sample.bat",
+        }
         self.client.sdk.get_metafields.return_value = [
             _metafield("private", True),
             _metafield("snapshot", True),
@@ -450,10 +510,27 @@ class TestSectionHandlers(unittest.TestCase):
             total=1,
             levels=IndicatorLevels(malicious=0, suspicious=1, benign=0),
         )
-        result = integration.threatzone_get_indicator_result(self.client, {"uuid": "u"})[0]
+        result = integration.threatzone_get_indicator_result(
+            self.client,
+            {
+                "uuid": "u",
+                "level": "suspicious",
+                "category": "cat",
+                "pid": "7",
+                "attack_code": "T1055",
+            },
+        )[0]
         assert result.outputs["UUID"] == "u"
         assert result.outputs["Data"][0]["name"] == "Suspicious behavior"
-        self.client.sdk.get_indicators.assert_called_once_with("u", page=1, limit=integration.REPORT_FINDINGS_PAGE_SIZE)
+        self.client.sdk.get_indicators.assert_called_once_with(
+            "u",
+            page=1,
+            limit=integration.REPORT_FINDINGS_PAGE_SIZE,
+            level="suspicious",
+            category="cat",
+            pid=7,
+            attack_code="T1055",
+        )
 
     def test_get_ioc_result_fetches_every_page(self):
         self.client.sdk.get_iocs.side_effect = [
@@ -466,12 +543,12 @@ class TestSectionHandlers(unittest.TestCase):
                 total=2,
             ),
         ]
-        result = integration.threatzone_get_ioc_result(self.client, {"uuid": "u"})[0]
+        result = integration.threatzone_get_ioc_result(self.client, {"uuid": "u", "type": "domain"})[0]
         assert result.outputs["Data"][0]["value"] == "evil.example"
         assert result.outputs["Data"][1]["value"] == "192.0.2.1"
         assert self.client.sdk.get_iocs.call_args_list == [
-            call("u", page=1, limit=integration.REPORT_FINDINGS_PAGE_SIZE),
-            call("u", page=2, limit=integration.REPORT_FINDINGS_PAGE_SIZE),
+            call("u", page=1, limit=integration.REPORT_FINDINGS_PAGE_SIZE, type="domain"),
+            call("u", page=2, limit=integration.REPORT_FINDINGS_PAGE_SIZE, type="domain"),
         ]
 
     def test_get_yara_result(self):
@@ -479,9 +556,14 @@ class TestSectionHandlers(unittest.TestCase):
             items=[YaraRule(rule="EvilRule", category="malicious", artifacts=[])],
             total=1,
         )
-        result = integration.threatzone_get_yara_result(self.client, {"uuid": "u"})[0]
+        result = integration.threatzone_get_yara_result(self.client, {"uuid": "u", "category": "malicious"})[0]
         assert result.outputs["Data"][0]["rule"] == "EvilRule"
-        self.client.sdk.get_yara_rules.assert_called_once_with("u", page=1, limit=integration.REPORT_FINDINGS_PAGE_SIZE)
+        self.client.sdk.get_yara_rules.assert_called_once_with(
+            "u",
+            page=1,
+            limit=integration.REPORT_FINDINGS_PAGE_SIZE,
+            category="malicious",
+        )
 
     def test_get_artifact_result(self):
         self.client.sdk.get_artifacts.return_value = ArtifactsResponse(
@@ -516,6 +598,193 @@ class TestSectionHandlers(unittest.TestCase):
         ):
             with pytest.raises(DemistoException):
                 handler(self.client, {})
+
+
+class TestConfigurationAndSubmissionCommands(unittest.TestCase):
+    def setUp(self):
+        self.client = _make_client()
+
+    def test_configuration_commands(self):
+        metafield = _metafield("timeout", 120)
+        self.client.sdk.get_metafields.return_value = [metafield]
+        self.client.sdk.get_environments.return_value = []
+        self.client.sdk.list_network_configs.return_value = []
+
+        metafields = integration.threatzone_get_metafields(self.client, {"scan_type": "sandbox"})[0]
+        environments = integration.threatzone_get_environments(self.client, {})[0]
+        network_configs = integration.threatzone_list_network_configs(self.client, {})[0]
+
+        assert metafields.outputs == {
+            "Data": [metafield.model_dump(by_alias=True, exclude_none=True, mode="json")],
+            "ScanType": "sandbox",
+        }
+        assert environments.outputs == {"Data": []}
+        assert network_configs.outputs == {"Data": []}
+        self.client.sdk.get_metafields.assert_called_once_with("sandbox")
+        self.client.sdk.get_environments.assert_called_once_with()
+        self.client.sdk.list_network_configs.assert_called_once_with()
+
+    def test_get_all_metafields_omits_filter(self):
+        self.client.sdk.get_metafields.return_value = MagicMock()
+        integration.threatzone_get_metafields(self.client, {})
+        self.client.sdk.get_metafields.assert_called_once_with()
+
+    def test_get_metafields_rejects_unknown_scan_type(self):
+        with pytest.raises(DemistoException, match="scan_type"):
+            integration.threatzone_get_metafields(self.client, {"scan_type": "unknown"})
+
+    def test_open_in_browser_maps_sdk_arguments(self):
+        self.client.sdk.get_user_info.return_value = _user_info()
+        self.client.sdk.create_open_in_browser_submission.return_value = SubmissionCreated(uuid="browser-u", message="ok")
+
+        result = integration.threatzone_open_in_browser(
+            self.client,
+            {
+                "url": "https://example.com",
+                "environment": "w11_x64",
+                "auto": "false",
+                "metafields": '{"timeout":120}',
+                "private": "false",
+                "configurations": '{"networkConfig":"config-id"}',
+            },
+        )[0]
+
+        assert result.outputs["UUID"] == "browser-u"
+        self.client.sdk.create_open_in_browser_submission.assert_called_once_with(
+            "https://example.com",
+            environment="w11_x64",
+            auto_select_environment=False,
+            metafields={"timeout": 120},
+            private=False,
+            configurations={"networkConfig": "config-id"},
+        )
+
+    def test_list_submissions_maps_filters(self):
+        response = MagicMock()
+        response.model_dump.return_value = {
+            "items": [],
+            "total": 0,
+            "page": 2,
+            "limit": 50,
+            "totalPages": 0,
+        }
+        self.client.sdk.list_submissions.return_value = response
+
+        result = integration.threatzone_list_submissions(
+            self.client,
+            {
+                "page": "2",
+                "limit": "50",
+                "level": "malicious,suspicious",
+                "tags": "tag-1,tag-2",
+                "private": "true",
+                "type": "file",
+            },
+        )[0]
+
+        assert result.outputs["page"] == 2
+        call_kwargs = self.client.sdk.list_submissions.call_args.kwargs
+        assert call_kwargs["level"] == ["malicious", "suspicious"]
+        assert call_kwargs["tags"] == ["tag-1", "tag-2"]
+        assert call_kwargs["private"] is True
+        assert call_kwargs["type"] == "file"
+
+    def test_search_submissions_serializes_empty_result(self):
+        self.client.sdk.search_by_sha256.return_value = []
+        result = integration.threatzone_search_submissions(self.client, {"sha256": "a" * 64})[0]
+        assert result.outputs == {"Data": []}
+        self.client.sdk.search_by_sha256.assert_called_once_with("a" * 64)
+
+
+@pytest.mark.parametrize(
+    ("sdk_method", "section"),
+    [
+        ("get_overview_summary", "OverviewSummary"),
+        ("get_eml_analysis", "EMLAnalysis"),
+        ("get_mitre_techniques", "MITRE"),
+        ("get_static_scan_results", "StaticScan"),
+        ("get_cdr_results", "CDRResult"),
+        ("get_signature_check_results", "SignatureCheck"),
+        ("get_processes", "Processes"),
+        ("get_process_tree", "ProcessTree"),
+        ("get_url_analysis", "URLAnalysis"),
+        ("get_network_summary", "NetworkSummary"),
+    ],
+)
+def test_uuid_section_sdk_mappings(sdk_method, section):
+    client = _make_client()
+    getattr(client.sdk, sdk_method).return_value = {"value": sdk_method}
+
+    result = integration.threatzone_get_uuid_section(client, {"uuid": "u"}, sdk_method, section, "Title")[0]
+
+    assert result.outputs == {"UUID": "u", "Data": {"value": sdk_method}}
+    getattr(client.sdk, sdk_method).assert_called_once_with("u")
+
+
+class TestTelemetryCommands(unittest.TestCase):
+    def setUp(self):
+        self.client = _make_client()
+
+    def test_behaviours_defaults_and_filters(self):
+        self.client.sdk.get_behaviours.return_value = {"items": [], "total": 0}
+        result = integration.threatzone_get_behaviours(
+            self.client,
+            {"uuid": "u", "os": "windows", "pid": "42", "process_name": "sample.exe"},
+        )[0]
+        assert result.outputs["UUID"] == "u"
+        self.client.sdk.get_behaviours.assert_called_once_with(
+            "u",
+            os="windows",
+            type=None,
+            pid=42,
+            operation=None,
+            process_name="sample.exe",
+            page=1,
+            limit=100,
+        )
+
+    def test_behaviours_requires_os_and_bounds_limit(self):
+        with pytest.raises(DemistoException, match="os argument is required"):
+            integration.threatzone_get_behaviours(self.client, {"uuid": "u"})
+        with pytest.raises(DemistoException, match="between 1 and 500"):
+            integration.threatzone_get_behaviours(self.client, {"uuid": "u", "os": "linux", "limit": "501"})
+
+    def test_syscalls_defaults_and_limit_bound(self):
+        self.client.sdk.get_syscalls.return_value = {"items": [], "total": 0}
+        integration.threatzone_get_syscalls(self.client, {"uuid": "u"})
+        self.client.sdk.get_syscalls.assert_called_once_with("u", page=1, limit=500)
+        with pytest.raises(DemistoException, match="between 1 and 2000"):
+            integration.threatzone_get_syscalls(self.client, {"uuid": "u", "limit": "2001"})
+
+    def test_network_window_mappings(self):
+        for sdk_method in (
+            "get_dns_queries",
+            "get_http_requests",
+            "get_tcp_connections",
+            "get_udp_connections",
+            "get_network_threats",
+        ):
+            sdk_mock = getattr(self.client.sdk, sdk_method)
+            sdk_mock.return_value = []
+            result = integration.threatzone_get_network_data(
+                self.client,
+                {"uuid": "u", "limit": "1000", "skip": "0"},
+                sdk_method,
+                "Section",
+                "Title",
+            )[0]
+            assert result.outputs == {"UUID": "u", "Data": []}
+            sdk_mock.assert_called_once_with("u", limit=1000, skip=0)
+
+    def test_network_window_rejects_out_of_range(self):
+        with pytest.raises(DemistoException, match="between 0 and 1000"):
+            integration.threatzone_get_network_data(
+                self.client,
+                {"uuid": "u", "skip": "1001"},
+                "get_dns_queries",
+                "DNSQueries",
+                "DNS Queries",
+            )
 
 
 class TestGetResult(unittest.TestCase):
@@ -630,6 +899,105 @@ class TestDownloads(unittest.TestCase):
         download.close.assert_called_once_with()
         existing_file_result_mock.assert_called_once_with("fallback.html", "fallback.html")
 
+    @patch.object(integration, "_save_download", return_value={"EntryID": "entry"})
+    def test_sdk_stream_download_mappings(self, save_download_mock):
+        mappings = (
+            ("get_static_scan_strings", "{uuid}_strings.json", None),
+            ("download_sample", "sample-{uuid}", None),
+            ("download_artifact", "artifact-{uuid}", "artifact_id"),
+            ("download_pcap", "threatzone-{uuid}.pcap", None),
+        )
+        for sdk_method, fallback, id_argument in mappings:
+            save_download_mock.reset_mock()
+            download = MagicMock()
+            getattr(self.client.sdk, sdk_method).return_value = download
+            args = {"uuid": "u", "artifact_id": "artifact-1"}
+
+            integration.threatzone_download_sdk_file(
+                self.client,
+                args,
+                sdk_method,
+                fallback,
+                id_argument=id_argument,
+            )
+
+            expected_args = ("u", "artifact-1") if id_argument else ("u",)
+            getattr(self.client.sdk, sdk_method).assert_called_once_with(*expected_args)
+            save_download_mock.assert_called_once_with(download, fallback.format(uuid="u"))
+
+    @patch.object(integration, "_save_download", return_value={"EntryID": "yara-entry"})
+    def test_generated_yara_immediate_success(self, save_download_mock):
+        download = MagicMock()
+        self.client.sdk.download_yara_rule.return_value = download
+
+        result = integration.threatzone_download_yara_rule(self.client, {"uuid": "u"})
+
+        assert result == {"EntryID": "yara-entry"}
+        save_download_mock.assert_called_once_with(download, "u.yar")
+
+    @patch.object(integration, "_save_download", return_value={"EntryID": "yara-entry"})
+    @patch.object(integration.demisto, "executeCommand")
+    @patch.object(integration.time, "monotonic", side_effect=[0.0, 1.0, 4.0])
+    def test_generated_yara_polls_with_server_retry(self, monotonic_mock, execute_command_mock, save_download_mock):
+        download = MagicMock()
+        self.client.sdk.download_yara_rule.side_effect = [
+            YaraRulePendingError("pending", retry_after=2.5),
+            YaraRulePendingError("pending"),
+            download,
+        ]
+
+        integration.threatzone_download_yara_rule(self.client, {"uuid": "u", "timeout": "120"})
+
+        assert execute_command_mock.call_args_list == [
+            call("Sleep", {"seconds": "2.5"}),
+            call("Sleep", {"seconds": str(integration.YARA_POLL_INTERVAL_SECONDS)}),
+        ]
+        save_download_mock.assert_called_once_with(download, "u.yar")
+
+    @patch.object(integration.demisto, "executeCommand")
+    @patch.object(integration.time, "monotonic", side_effect=[0.0, 119.0])
+    def test_generated_yara_timeout(self, monotonic_mock, execute_command_mock):
+        self.client.sdk.download_yara_rule.side_effect = YaraRulePendingError("pending", retry_after=2.0)
+
+        with pytest.raises(DemistoException, match="Timed out after 120 seconds"):
+            integration.threatzone_download_yara_rule(self.client, {"uuid": "u"})
+
+        execute_command_mock.assert_not_called()
+
+    @patch.object(integration, "fileResult", return_value={"EntryID": "screenshot"})
+    def test_screenshot_bytes_become_war_room_file(self, file_result_mock):
+        self.client.sdk.get_screenshot.return_value = b"png"
+        result = integration.threatzone_download_url_screenshot(self.client, {"uuid": "u"})
+        assert result == {"EntryID": "screenshot"}
+        file_result_mock.assert_called_once_with("threatzone-url-screenshot-u.png", b"png")
+
+    @patch.object(integration, "fileResult", return_value={"EntryID": "media"})
+    def test_media_file_uses_validated_server_filename(self, file_result_mock):
+        media = MagicMock()
+        media.id = "media-1"
+        media.name = "screen.png"
+        self.client.sdk.list_media_files.return_value = [media]
+        self.client.sdk.get_media_file.return_value = b"png"
+
+        result = integration.threatzone_download_media_file(
+            self.client,
+            {"uuid": "u", "file_id": "media-1"},
+        )
+
+        assert result == {"EntryID": "media"}
+        file_result_mock.assert_called_once_with("screen.png", b"png")
+
+    def test_media_file_rejects_unsafe_server_filename(self):
+        media = MagicMock()
+        media.id = "media-1"
+        media.name = "../screen.png"
+        self.client.sdk.list_media_files.return_value = [media]
+        with pytest.raises(DemistoException, match="unsafe media filename"):
+            integration.threatzone_download_media_file(
+                self.client,
+                {"uuid": "u", "file_id": "media-1"},
+            )
+
 
 class TestSdkExceptionFormatting(unittest.TestCase):
     def test_known_exceptions(self):
@@ -675,6 +1043,49 @@ class TestSdkConsumerContract(unittest.TestCase):
         assert analysis.outputs["STATUS"] == 5
         assert analysis.outputs["LEVEL"] == 3
         assert analysis.outputs["REPORT"]["status"] == 5
+
+    @patch.object(integration, "_save_download", return_value={"EntryID": "fake-download"})
+    def test_extended_commands_through_fake_api(self, save_download_mock):
+        fake_api = FakeThreatZoneAPI()
+        scenarios.seed_malicious_pe(fake_api)
+        sdk = ThreatZoneSDK(
+            api_key="test-key",
+            base_url="https://fake.threat.zone/public-api",
+            http_client=fake_api.as_httpx_client(),
+        )
+        created = sdk.create_sandbox_submission(b"sample", private=True)
+        sdk.get_submission(created.uuid)
+        sdk.get_submission(created.uuid)
+        client = _make_client()
+        client.sdk = sdk
+
+        assert integration.threatzone_get_metafields(client, {"scan_type": "sandbox"})[0].outputs["Data"]
+        assert integration.threatzone_list_submissions(client, {})[0].outputs["items"]
+        assert integration.threatzone_get_uuid_section(
+            client,
+            {"uuid": created.uuid},
+            "get_overview_summary",
+            "OverviewSummary",
+            "Overview",
+        )[0].outputs["Data"]
+        assert integration.threatzone_get_network_data(
+            client,
+            {"uuid": created.uuid},
+            "get_network_threats",
+            "NetworkThreats",
+            "Network Threats",
+        )[0].outputs["Data"]
+
+        integration.threatzone_download_sdk_file(
+            client,
+            {"uuid": created.uuid},
+            "download_sample",
+            "sample-{uuid}",
+        )
+        integration.threatzone_download_yara_rule(client, {"uuid": created.uuid})
+        assert save_download_mock.call_count == 2
+        for download_call in save_download_mock.call_args_list:
+            download_call.args[0].close()
 
 
 if __name__ == "__main__":
