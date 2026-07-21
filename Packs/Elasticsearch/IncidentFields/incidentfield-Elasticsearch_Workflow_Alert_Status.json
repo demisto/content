@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Elasticsearch Security Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "elasticsearchworkflowalertstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_elasticsearchworkflowalertstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Elasticsearch Workflow Alert Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "open",
+        "acknowledged",
+        "in-progress",
+        "closed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "description": "Maps incoming Elasticsearch Security Alert fields to XSOAR incident fields.",
+    "feed": false,
+    "id": "Elasticsearch Security Alert - Incoming Mapper",
+    "mapping": {
+        "Elasticsearch Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Elasticsearch Workflow Alert Status": {
+                    "simple": "kibana.alert.workflow_status"
+                },
+                "Elasticsearch Workflow Alert Status Reason": {
+                    "simple": "kibana.alert.workflow_reason"
+                },
+                "Elasticsearch Alert Reason": {
+                    "simple": "kibana.alert.reason"
+                },
+                "Severity": {
+                    "simple": "kibana.alert.severity"
+                },
+                "Elasticsearch Status Update Date": {
+                    "simple": "kibana.alert.workflow_status_updated_at"
+                },
+                "Elasticsearch Timestamp": {
+                    "simple": "@timestamp"
+                },
+                "Tags": {
+                    "simple": "kibana.alert.workflow_tags"
+                },
+                "Risk Score": {
+                    "simple": "kibana.alert.risk_score"
+                },
+                "Elasticsearch index": {
+                    "simple": "_index"
+                },
+                "Event ID": {
+                    "simple": "kibana.alert.uuid"
+                }
+            }
+        }
+    },
+    "name": "Elasticsearch Security Alert - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

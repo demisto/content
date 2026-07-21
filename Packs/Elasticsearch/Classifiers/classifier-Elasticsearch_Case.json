@@ -1,0 +1,16 @@
+{
+    "description": "Classifies Elasticsearch Cases.",
+    "feed": false,
+    "id": "Elasticsearch Case - Classifier",
+    "keyTypeMap": {
+        "Elasticsearch Case": "Elasticsearch Case"
+    },
+    "name": "Elasticsearch Case - Classifier",
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

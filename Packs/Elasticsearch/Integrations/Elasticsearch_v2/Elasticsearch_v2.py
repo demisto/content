@@ -95,6 +95,34 @@ FIELDS_LIST = argToList(PARAMS.get("fetch_fields", ""))
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
+"""VARIABLES FOR MIRRORING"""
+MIRROR_DIRECTION = PARAMS.get("mirror_direction", "None")
+FETCH_SEVERITY = argToList(PARAMS.get("fetch_severity", ""))
+FETCH_STATUS = argToList(PARAMS.get("fetch_status", "open,in-progress"))
+FETCH_ALERTS_FOR_CASE = PARAMS.get("fetch_alerts_for_case", False)
+CLOSE_INCIDENT = PARAMS.get("close_incident", False)
+CLOSE_ELASTIC_INCIDENT = PARAMS.get("close_elastic_incident", False)
+
+MIRROR_DIRECTION_MAP = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
+INCIDENT_TYPE_SECURITY_ALERT = "Elasticsearch Security Alert"
+INCIDENT_TYPE_CASE = "Elasticsearch Case"
+
+# Elasticsearch alert status → XSOAR close reason mapping
+ELASTIC_CLOSE_REASON_TO_XSOAR: Dict[str, str] = {
+    "false_positive": "false_positive",
+    "duplicate": "duplicate",
+    "true_positive": "resolved",
+    "benign_positive": "resolved",
+    "automated_closure": "resolved",
+    "other": "other",
+}
+
 """VARIABLES FOR KIBANA COMMANDS (es-kibana-*)"""
 DEFAULT_SPACE_ID = PARAMS.get("space_id", "")
 KIBANA_XSRF_HEADER = {"kbn-xsrf": "true"}
@@ -3166,6 +3194,569 @@ def es_kibana_value_list_item_import_command(args: Dict[str, Any], proxies) -> C
     )
 
 
+"""MIRRORING FUNCTIONS"""
+
+SECURITY_ALERT_INDEX_PATTERNS = (
+    ".internal.alerts-security.alerts-",
+    ".alerts-security.alerts-",
+    ".siem-signals-",
+)
+
+
+def _is_security_alert_index(index: str) -> bool:
+    """Returns True if the given index matches a known Elasticsearch security alert index pattern."""
+    return any(index.startswith(pat) or pat.rstrip("-") in index for pat in SECURITY_ALERT_INDEX_PATTERNS)
+
+
+def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
+    """Fetches Elasticsearch Security Alerts via the Kibana detection alerts search API.
+
+    Uses the existing Elasticsearch search mechanism (RAW_QUERY or index-based query)
+    to retrieve alerts from security alert indices.
+
+    Returns:
+        List of alert hit dicts (each hit contains _id, _index, _source, etc.)
+    """
+    es = elasticsearch_builder(proxies)
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get("alert_time") or FETCH_TIME
+    time_range_dict = get_time_range(time_range_start=last_fetch)
+
+    if RAW_QUERY:
+        response = execute_raw_query(es, RAW_QUERY)
+    else:
+        query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*") if FETCH_QUERY else QueryString(query="*")
+        search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
+        search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
+        search = search.extra(fields=FIELDS_LIST, _source=True)
+
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
+            response = search.execute().to_dict()
+        else:
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
+    hits = response.get("hits", {}).get("hits", [])
+    incidents = []
+    new_last_fetch = last_fetch
+
+    for hit in hits:
+        source = hit.get("_source", {})
+        index = hit.get("_index", "")
+        hit_id = hit.get("_id", "")
+        alert_uuid = get_value_by_dot_notation(source, "kibana.alert.uuid") or hit_id
+
+        time_val = get_value_by_dot_notation(source, "@timestamp") or get_value_by_dot_notation(source, str(TIME_FIELD))
+        occurred = format_to_iso(parse(str(time_val)).isoformat()) if time_val else None
+
+        severity_str = get_value_by_dot_notation(source, "kibana.alert.severity") or "low"
+        severity_map = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+        severity = severity_map.get(str(severity_str).lower(), 0)
+
+        mirror_direction = MIRROR_DIRECTION_MAP.get(MIRROR_DIRECTION)
+
+        inc: Dict[str, Any] = {
+            "name": f"Elasticsearch: {index} {alert_uuid}",
+            "rawJSON": json.dumps(hit),
+            "type": INCIDENT_TYPE_SECURITY_ALERT,
+            "severity": severity,
+            "dbotMirrorId": alert_uuid,
+            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorDirection": mirror_direction,
+        }
+        if occurred:
+            inc["occurred"] = occurred
+            if occurred > str(new_last_fetch):
+                new_last_fetch = occurred
+
+        if MAP_LABELS:
+            inc["labels"] = incident_label_maker(source)
+
+        incidents.append(inc)
+
+    last_run["alert_time"] = str(new_last_fetch)
+    demisto.setLastRun(last_run)
+    return incidents
+
+
+def fetch_cases(proxies) -> List[Dict[str, Any]]:
+    """Fetches Elasticsearch Cases via the Kibana Cases API.
+
+    Filters by FETCH_SEVERITY and FETCH_STATUS configuration parameters.
+    Optionally fetches associated alerts per case when FETCH_ALERTS_FOR_CASE is True.
+
+    Returns:
+        List of XSOAR incident dicts.
+    """
+    last_run = demisto.getLastRun()
+    last_fetch_str = last_run.get("case_time") or FETCH_TIME
+    last_fetch_dt = dateparser.parse(last_fetch_str)
+
+    params: Dict[str, Any] = {"perPage": FETCH_SIZE, "sortField": "updatedAt", "sortOrder": "asc"}
+
+    if FETCH_STATUS:
+        # Kibana API accepts a single status value; we iterate per status
+        pass  # handled below via multiple calls
+    if FETCH_SEVERITY:
+        params["severity"] = FETCH_SEVERITY[0] if len(FETCH_SEVERITY) == 1 else FETCH_SEVERITY
+
+    all_cases: List[Dict[str, Any]] = []
+    statuses_to_fetch = FETCH_STATUS if FETCH_STATUS else ["open", "in-progress"]
+
+    for status in statuses_to_fetch:
+        status_params = dict(params)
+        status_params["status"] = status
+        if FETCH_SEVERITY:
+            for sev in FETCH_SEVERITY:
+                sev_params = dict(status_params)
+                sev_params["severity"] = sev
+                response = kibana_http_request("GET", "/api/cases/_find", params=sev_params, proxies=proxies)
+                all_cases.extend(response.get("cases", []) if isinstance(response, dict) else [])
+        else:
+            response = kibana_http_request("GET", "/api/cases/_find", params=status_params, proxies=proxies)
+            all_cases.extend(response.get("cases", []) if isinstance(response, dict) else [])
+
+    incidents = []
+    new_last_fetch = last_fetch_dt
+
+    for case in all_cases:
+        updated_at_str = case.get("updated_at") or case.get("created_at", "")
+        try:
+            updated_at = dateparser.parse(updated_at_str)
+        except Exception:
+            updated_at = None
+
+        if updated_at and last_fetch_dt and updated_at <= last_fetch_dt:
+            continue
+
+        case_id = case.get("id", "")
+        alerts_data: List[Dict[str, Any]] = []
+        if FETCH_ALERTS_FOR_CASE and case_id:
+            try:
+                alerts_resp = kibana_http_request(
+                    "GET", f"/api/cases/{case_id}/alerts", proxies=proxies, allow_not_found=True
+                )
+                alerts_data = alerts_resp if isinstance(alerts_resp, list) else []
+            except Exception as e:
+                demisto.debug(f"Failed to fetch alerts for case {case_id}: {e}")
+
+        severity_str = case.get("severity", "low")
+        severity_map = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+        severity = severity_map.get(str(severity_str).lower(), 0)
+
+        mirror_direction = MIRROR_DIRECTION_MAP.get(MIRROR_DIRECTION)
+
+        raw_data = dict(case)
+        if alerts_data:
+            raw_data["_alerts"] = alerts_data
+
+        inc: Dict[str, Any] = {
+            "name": f"Elasticsearch: {case.get('title', case_id)}",
+            "rawJSON": json.dumps(raw_data),
+            "type": INCIDENT_TYPE_CASE,
+            "severity": severity,
+            "dbotMirrorId": case_id,
+            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorDirection": mirror_direction,
+        }
+        if updated_at_str:
+            inc["occurred"] = format_to_iso(updated_at_str)
+
+        incidents.append(inc)
+
+        if updated_at and (new_last_fetch is None or updated_at > new_last_fetch):
+            new_last_fetch = updated_at
+
+    if new_last_fetch:
+        last_run["case_time"] = new_last_fetch.isoformat()
+        demisto.setLastRun(last_run)
+
+    return incidents
+
+
+def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataResponse:
+    """Implements the get-remote-data command for mirroring-in.
+
+    Fetches the latest state of an Elasticsearch Security Alert or Case from Elasticsearch/Kibana
+    and returns it as a GetRemoteDataResponse so XSOAR can update the local incident.
+
+    Args:
+        args: Command arguments containing 'id' (the mirror ID) and 'lastUpdate'.
+        proxies: Proxy configuration.
+
+    Returns:
+        GetRemoteDataResponse with updated incident fields and any entries.
+    """
+    remote_id = args.get("id", "")
+    last_update = args.get("lastUpdate", "")
+    incident_type = demisto.incident().get("type", "")
+
+    demisto.debug(f"get-remote-data called for id={remote_id}, type={incident_type}, lastUpdate={last_update}")
+
+    updated_incident: Dict[str, Any] = {}
+    entries: List[Dict[str, Any]] = []
+
+    if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
+        # Fetch the alert by UUID from the security alert index
+        try:
+            body = {"query": {"term": {"kibana.alert.uuid": remote_id}}, "size": 1}
+            response = kibana_http_request(
+                "POST",
+                "/api/detection_engine/signals/search",
+                json_data=body,
+                proxies=proxies,
+                allow_not_found=True,
+            )
+            hits = (response or {}).get("hits", {}).get("hits", []) if isinstance(response, dict) else []
+            if hits:
+                hit = hits[0]
+                source = hit.get("_source", {})
+                workflow_status = get_value_by_dot_notation(source, "kibana.alert.workflow_status") or "open"
+                updated_incident = {
+                    "elasticsearchworkflowalertstatus": workflow_status,
+                    "elasticsearchworkflowalertstatusreason": get_value_by_dot_notation(
+                        source, "kibana.alert.workflow_reason"
+                    ),
+                    "elasticsearchalertreason": get_value_by_dot_notation(source, "kibana.alert.reason"),
+                    "elasticsearchstatusupdatedate": get_value_by_dot_notation(
+                        source, "kibana.alert.workflow_status_updated_at"
+                    ),
+                    "tags": get_value_by_dot_notation(source, "kibana.alert.workflow_tags"),
+                    "rawJSON": json.dumps(hit),
+                }
+
+                # Close XSOAR incident if Elasticsearch alert is closed and close_incident is enabled
+                if CLOSE_INCIDENT and workflow_status == "closed":
+                    reason = get_value_by_dot_notation(source, "kibana.alert.workflow_reason") or "other"
+                    xsoar_reason = ELASTIC_CLOSE_REASON_TO_XSOAR.get(reason, "other")
+                    entries.append(
+                        {
+                            "Type": EntryType.NOTE,
+                            "Contents": {
+                                "dbotIncidentClose": True,
+                                "closeReason": xsoar_reason,
+                                "closeNotes": f"Closed by Elasticsearch mirroring. Reason: {reason}",
+                            },
+                            "ContentsFormat": EntryFormat.JSON,
+                        }
+                    )
+        except Exception as e:
+            demisto.debug(f"Failed to fetch security alert {remote_id}: {e}")
+
+    elif incident_type == INCIDENT_TYPE_CASE:
+        # Fetch the case by ID
+        try:
+            response = kibana_http_request(
+                "GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True
+            )
+            if response:
+                case_status = response.get("status", "open")
+                updated_incident = {
+                    "elasticsearchcasestatus": case_status,
+                    "elasticsearchcaseid": remote_id,
+                    "name": f"Elasticsearch: {response.get('title', remote_id)}",
+                    "description": response.get("description"),
+                    "severity": response.get("severity"),
+                    "tags": response.get("tags"),
+                    "rawJSON": json.dumps(response),
+                }
+
+                # Fetch alerts for case if enabled
+                if FETCH_ALERTS_FOR_CASE:
+                    try:
+                        alerts_resp = kibana_http_request(
+                            "GET", f"/api/cases/{remote_id}/alerts", proxies=proxies, allow_not_found=True
+                        )
+                        if alerts_resp:
+                            updated_incident["_alerts"] = alerts_resp
+                    except Exception as e:
+                        demisto.debug(f"Failed to fetch alerts for case {remote_id}: {e}")
+
+                # Close XSOAR incident if Elasticsearch case is closed and close_incident is enabled
+                if CLOSE_INCIDENT and case_status == "closed":
+                    close_reason = response.get("closeReason") or "other"
+                    xsoar_reason = ELASTIC_CLOSE_REASON_TO_XSOAR.get(close_reason, "other")
+                    entries.append(
+                        {
+                            "Type": EntryType.NOTE,
+                            "Contents": {
+                                "dbotIncidentClose": True,
+                                "closeReason": xsoar_reason,
+                                "closeNotes": f"Closed by Elasticsearch mirroring. Reason: {close_reason}",
+                            },
+                            "ContentsFormat": EntryFormat.JSON,
+                        }
+                    )
+        except Exception as e:
+            demisto.debug(f"Failed to fetch case {remote_id}: {e}")
+
+    return GetRemoteDataResponse(mirrored_object=updated_incident, entries=entries)
+
+
+def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
+    """Implements the update-remote-system command for mirroring-out.
+
+    Pushes local XSOAR incident changes back to Elasticsearch/Kibana.
+
+    Args:
+        args: Command arguments with delta, incidentChanged, remoteId, status, data, entries.
+        proxies: Proxy configuration.
+
+    Returns:
+        The remote ID (str) of the updated object.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    remote_id = parsed_args.remote_incident_id
+    incident_type = (parsed_args.data or {}).get("type", "")
+    delta = parsed_args.delta or {}
+    inc_status = parsed_args.inc_status
+
+    demisto.debug(f"update-remote-system called for id={remote_id}, type={incident_type}, status={inc_status}")
+
+    if not remote_id:
+        demisto.debug("No remote_id provided, skipping update.")
+        return remote_id or ""
+
+    if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
+        _mirror_out_security_alert(remote_id, delta, inc_status, proxies)
+
+    elif incident_type == INCIDENT_TYPE_CASE:
+        _mirror_out_case(remote_id, delta, inc_status, proxies, parsed_args.data or {})
+
+    return remote_id
+
+
+def _mirror_out_security_alert(
+    remote_id: str,
+    delta: Dict[str, Any],
+    inc_status: Optional[int],
+    proxies,
+) -> None:
+    """Pushes changes from a XSOAR Elasticsearch Security Alert incident back to Kibana.
+
+    Handles:
+    - Updating workflow status via the detection signals status API.
+    - Updating tags via the alert tags API.
+    - Closing the Elasticsearch alert when the XSOAR incident is closed and
+      CLOSE_ELASTIC_INCIDENT is enabled.
+    """
+    # Determine new status
+    new_status = delta.get("elasticsearchworkflowalertstatus")
+    new_reason = delta.get("elasticsearchworkflowalertstatusreason")
+    new_tags = delta.get("tags")
+
+    # If XSOAR incident is being closed and close_elastic_incident is enabled
+    if CLOSE_ELASTIC_INCIDENT and inc_status == IncidentStatus.DONE:
+        new_status = new_status or "closed"
+        new_reason = new_reason or "other"
+
+    if new_status:
+        try:
+            body: Dict[str, Any] = {"signal_ids": [remote_id], "status": new_status}
+            if new_reason:
+                body["reason"] = new_reason
+            kibana_http_request(
+                "POST",
+                "/api/detection_engine/signals/status",
+                json_data=body,
+                proxies=proxies,
+            )
+            demisto.debug(f"Updated alert {remote_id} status to {new_status}")
+        except Exception as e:
+            demisto.error(f"Failed to update alert status for {remote_id}: {e}")
+
+    if new_tags is not None:
+        try:
+            # Fetch current tags to compute diff
+            search_body = {"query": {"term": {"kibana.alert.uuid": remote_id}}, "size": 1}
+            search_resp = kibana_http_request(
+                "POST",
+                "/api/detection_engine/signals/search",
+                json_data=search_body,
+                proxies=proxies,
+                allow_not_found=True,
+            )
+            hits = (search_resp or {}).get("hits", {}).get("hits", []) if isinstance(search_resp, dict) else []
+            current_tags: List[str] = []
+            if hits:
+                current_tags = get_value_by_dot_notation(hits[0].get("_source", {}), "kibana.alert.workflow_tags") or []
+
+            new_tags_list = argToList(new_tags)
+            tags_to_add = [t for t in new_tags_list if t not in current_tags]
+            tags_to_remove = [t for t in current_tags if t not in new_tags_list]
+
+            if tags_to_add or tags_to_remove:
+                tags_body: Dict[str, Any] = {"ids": [remote_id]}
+                if tags_to_add:
+                    tags_body["tags_to_add"] = tags_to_add
+                if tags_to_remove:
+                    tags_body["tags_to_remove"] = tags_to_remove
+                kibana_http_request(
+                    "POST",
+                    "/api/detection_engine/signals/tags",
+                    json_data=tags_body,
+                    proxies=proxies,
+                )
+                demisto.debug(f"Updated tags for alert {remote_id}: add={tags_to_add}, remove={tags_to_remove}")
+        except Exception as e:
+            demisto.error(f"Failed to update tags for alert {remote_id}: {e}")
+
+
+def _mirror_out_case(
+    remote_id: str,
+    delta: Dict[str, Any],
+    inc_status: Optional[int],
+    proxies,
+    incident_data: Dict[str, Any],
+) -> None:
+    """Pushes changes from a XSOAR Elasticsearch Case incident back to Kibana.
+
+    Handles:
+    - Updating case fields (title, description, severity, status, tags) via the Cases PATCH API.
+    - Closing the Elasticsearch case when the XSOAR incident is closed and
+      CLOSE_ELASTIC_INCIDENT is enabled.
+    - Closing related alerts when the case is closed.
+    """
+    # Fetch current case to get version (required for PATCH)
+    try:
+        current_case = kibana_http_request("GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True)
+    except Exception as e:
+        demisto.error(f"Failed to fetch case {remote_id} for update: {e}")
+        return
+
+    if not current_case:
+        demisto.debug(f"Case {remote_id} not found in Elasticsearch, skipping update.")
+        return
+
+    version = current_case.get("version")
+    if not version:
+        demisto.debug(f"No version found for case {remote_id}, skipping update.")
+        return
+
+    case_fields: Dict[str, Any] = {"id": remote_id, "version": version}
+
+    # Map delta fields to Kibana case fields
+    field_map = {
+        "name": "title",
+        "description": "description",
+        "severity": "severity",
+        "elasticsearchcasestatus": "status",
+        "tags": "tags",
+    }
+    for xsoar_field, kibana_field in field_map.items():
+        if xsoar_field in delta:
+            case_fields[kibana_field] = delta[xsoar_field]
+
+    # Handle close
+    if CLOSE_ELASTIC_INCIDENT and inc_status == IncidentStatus.DONE:
+        case_fields["status"] = "closed"
+        close_reason = delta.get("elasticsearchcaseclosereason") or incident_data.get("elasticsearchcaseclosereason") or "other"
+        case_fields["closeReason"] = close_reason
+
+    if len(case_fields) > 2:  # more than just id + version
+        try:
+            kibana_http_request(
+                "PATCH",
+                "/api/cases",
+                json_data={"cases": [case_fields]},
+                proxies=proxies,
+            )
+            demisto.debug(f"Updated case {remote_id} with fields: {list(case_fields.keys())}")
+        except Exception as e:
+            demisto.error(f"Failed to update case {remote_id}: {e}")
+
+    # Close related alerts if case is being closed
+    if CLOSE_ELASTIC_INCIDENT and inc_status == IncidentStatus.DONE:
+        try:
+            alerts_resp = kibana_http_request(
+                "GET", f"/api/cases/{remote_id}/alerts", proxies=proxies, allow_not_found=True
+            )
+            alert_ids = [a.get("id") for a in (alerts_resp or []) if a.get("id")]
+            if alert_ids:
+                kibana_http_request(
+                    "POST",
+                    "/api/detection_engine/signals/status",
+                    json_data={"signal_ids": alert_ids, "status": "closed"},
+                    proxies=proxies,
+                )
+                demisto.debug(f"Closed {len(alert_ids)} alerts related to case {remote_id}")
+        except Exception as e:
+            demisto.debug(f"Failed to close alerts for case {remote_id}: {e}")
+
+
+def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifiedRemoteDataResponse:
+    """Implements the get-modified-remote-data command.
+
+    Returns a list of remote IDs that have been modified since the last check,
+    so XSOAR knows which incidents to pull updates for.
+
+    Args:
+        args: Command arguments containing 'lastUpdate' (ISO timestamp).
+        proxies: Proxy configuration.
+
+    Returns:
+        GetModifiedRemoteDataResponse with a list of modified remote IDs.
+    """
+    last_update = args.get("lastUpdate", "")
+    demisto.debug(f"get-modified-remote-data called with lastUpdate={last_update}")
+
+    modified_ids: List[str] = []
+
+    # Check for modified security alerts
+    try:
+        body: Dict[str, Any] = {
+            "query": {
+                "range": {
+                    "kibana.alert.workflow_status_updated_at": {
+                        "gte": last_update,
+                    }
+                }
+            },
+            "size": 100,
+            "_source": ["kibana.alert.uuid"],
+        }
+        response = kibana_http_request(
+            "POST",
+            "/api/detection_engine/signals/search",
+            json_data=body,
+            proxies=proxies,
+            allow_not_found=True,
+        )
+        hits = (response or {}).get("hits", {}).get("hits", []) if isinstance(response, dict) else []
+        for hit in hits:
+            alert_uuid = get_value_by_dot_notation(hit.get("_source", {}), "kibana.alert.uuid")
+            if alert_uuid:
+                modified_ids.append(str(alert_uuid))
+    except Exception as e:
+        demisto.debug(f"Failed to fetch modified security alerts: {e}")
+
+    # Check for modified cases
+    try:
+        last_update_dt = dateparser.parse(last_update) if last_update else None
+        if last_update_dt:
+            params: Dict[str, Any] = {
+                "perPage": 100,
+                "sortField": "updatedAt",
+                "sortOrder": "desc",
+            }
+            response = kibana_http_request("GET", "/api/cases/_find", params=params, proxies=proxies)
+            cases = (response or {}).get("cases", []) if isinstance(response, dict) else []
+            for case in cases:
+                updated_at_str = case.get("updated_at", "")
+                try:
+                    updated_at = dateparser.parse(updated_at_str)
+                    if updated_at and updated_at > last_update_dt:
+                        case_id = case.get("id")
+                        if case_id:
+                            modified_ids.append(str(case_id))
+                except Exception:
+                    pass
+    except Exception as e:
+        demisto.debug(f"Failed to fetch modified cases: {e}")
+
+    demisto.debug(f"get-modified-remote-data returning {len(modified_ids)} modified IDs")
+    return GetModifiedRemoteDataResponse(modified_ids)
+
+
 def main():  # pragma: no cover
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -3175,7 +3766,19 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             return_results(test_func(proxies))
         elif demisto.command() == "fetch-incidents":
-            fetch_incidents(proxies)
+            incident_type = PARAMS.get("incidentType", "")
+            if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
+                demisto.incidents(fetch_security_alerts(proxies))
+            elif incident_type == INCIDENT_TYPE_CASE:
+                demisto.incidents(fetch_cases(proxies))
+            else:
+                fetch_incidents(proxies)
+        elif demisto.command() == "get-remote-data":
+            return_results(get_remote_data_command(args, proxies))
+        elif demisto.command() == "update-remote-system":
+            return_results(update_remote_system_command(args, proxies))
+        elif demisto.command() == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(args, proxies))
         elif demisto.command() in ["search", "es-search"]:
             search_command(proxies)
         elif demisto.command() == "get-mapping-fields":
