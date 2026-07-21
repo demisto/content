@@ -75,7 +75,7 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 | Incidents Fetch Interval |  | False |
 | Minutes to look back when fetching | The lookback time window for incidents/issues created before the last run time that did not initially match the query. Small values \(for example, 1-5 minutes\) are recommended to avoid performance issues. | False |
 | Incident Titles to not Fetch | The case-sensitive titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched. | False |
-| Alert Product Names to not Fetch | The alert product names of the incidents that will not be fetched. For example If no alert product name is provided then incidents will be fetched normally. | False |
+| Alert Product Names to not Fetch | The alert product names of the incidents that will not be fetched. For example: &lt;Microsoft Entra ID Protection&gt;, &lt;Microsoft Sentinel&gt;. If no alert product name is provided then incidents will be fetched normally. | False |
 
 4. Azure cloud options
 
