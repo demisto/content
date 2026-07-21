@@ -24,36 +24,6 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 - Note: After successfully configuring an instance, clicking the 'Test' button again may display a failure because the system incorrectly assumes the port is in use. Despite this message, the instance continues to function correctly.
 - When the integration is configured with ***Update list on demand only***, the indicator list refreshes based on the value set in the ***Refresh Rate*** parameter.
 
-## Troubleshooting
-
-### 504 Gateway error
-
-1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
-2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
-
-### 429 Too Many Requests error
-
-NGINX builds each cache entry only once at a time. If a request arrives while the same cache entry (same request URL and parameters, such as the *q* inline argument) is still being built for the first time, it is rejected with an HTTP `429 Too Many Requests` instead of being queued. Different requests build separate cache entries and are still served in parallel. During a refresh of an already-cached entry, the previous data is served (HTTP `200`) with no `429`.
-
-This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
-
-### Deleted or expired indicators showing in EDL export
-
-Append `expirationStatus:active` to the end of the query.
-
-### EDL Log
-
-To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
-
-For Cortex XSOAR Cloud -
-`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
-
-For Cortex XSOAR On-prem -
-`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
-
-For Cortex XSIAM -
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
-
 ## Use Cases
 
 ---
@@ -305,3 +275,33 @@ In 5 minutes (the default timeout of the integration) the integration can export
 depending on the load of the server, the existing indicators in the server, and the query used.
 
 The *NGINX Read Timeout* can be set to increase the timeout.
+
+## Troubleshooting
+
+### 504 Gateway error
+
+1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
+2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
+
+### 429 Too Many Requests error
+
+NGINX builds each cache entry only once at a time. If a request arrives while the same cache entry (same request URL and parameters, such as the *q* inline argument) is still being built for the first time, it is rejected with an HTTP `429 Too Many Requests` instead of being queued. Different requests build separate cache entries and are still served in parallel. During a refresh of an already-cached entry, the previous data is served (HTTP `200`) with no `429`.
+
+This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
+
+### Deleted or expired indicators showing in EDL export
+
+Append `expirationStatus:active` to the end of the query.
+
+### EDL Log
+
+To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
+
+For Cortex XSOAR Cloud -
+`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
+
+For Cortex XSOAR On-prem -
+`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+
+For Cortex XSIAM -
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
