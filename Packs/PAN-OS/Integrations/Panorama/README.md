@@ -6525,7 +6525,7 @@ will immediately reboot.
 ### pan-os-platform-get-system-status
 
 ***
-Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
 
 #### Base Command
 
@@ -6536,6 +6536,9 @@ Checks the status of the given device, checking whether it's up or down and if t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | ID of host (serial or hostname) to check. | Required |
+| polling | Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached. Possible values are: true, false. Default is false. | Optional |
+| interval_in_seconds | The interval (in seconds) between polling attempts. Default is 30. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 1200. | Optional |
 
 #### Context Output
 
