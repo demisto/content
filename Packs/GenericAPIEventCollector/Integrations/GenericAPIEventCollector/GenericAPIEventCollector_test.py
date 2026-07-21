@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -493,7 +493,8 @@ def test_fetch_events_pagination_does_not_crash(mock_error, mock_debug):
 
     client = Client(base_url="https://api.example.com", verify=False, headers={}, proxy=False)
 
-    with patch.object(client, "search_events", side_effect=[page1, page2]):
+    mock_search = MagicMock(side_effect=[page1, page2])
+    with patch.object(client, "search_events", mock_search):
         params = {
             "pagination_needed": "true",
             "pagination_field_name": "nextPageToken",
@@ -522,7 +523,7 @@ def test_fetch_events_pagination_does_not_crash(mock_error, mock_debug):
     assert events[0]["id"] == "uuid-1"
     assert events[1]["id"] == "uuid-2"
     # Verify the second page was requested with the token as a plain string key
-    second_call_kwargs = client.search_events.call_args_list[1]  # type: ignore[attr-defined]
+    second_call_kwargs = mock_search.call_args_list[1]
     request_json = second_call_kwargs.kwargs["request_data"].request_json
     assert "nextPageToken" in request_json
     assert request_json["nextPageToken"] == "token-abc"
