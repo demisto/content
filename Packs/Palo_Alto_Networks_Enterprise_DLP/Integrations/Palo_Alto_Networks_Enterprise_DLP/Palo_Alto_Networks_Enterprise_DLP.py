@@ -32,7 +32,7 @@ CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
 END_TIME_BUFFER = 30  # seconds
-MAX_API_CALLS_PER_FETCH = 20
+MAX_API_CALLS_PER_FETCH = 100
 
 # Last run
 LAST_RUN_KEY = "last_run"
