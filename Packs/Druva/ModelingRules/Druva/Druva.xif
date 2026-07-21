@@ -1,4 +1,3 @@
-// Mapping and extraction of fields for all event types.
 [RULE: druva_common_fields]
 alter
     src_username = arrayindex(regextract(initiator, "(\S+)\@"),0),
@@ -34,7 +33,6 @@ alter
     xdm.event.log_level = if(severity_str = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity_str = "1", XDM_CONST.LOG_LEVEL_ALERT, severity_str = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity_str = "3", XDM_CONST.LOG_LEVEL_ERROR, severity_str = "4", XDM_CONST.LOG_LEVEL_WARNING, severity_str = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity_str = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity_str = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity_str);
 
 [RULE:druva_alert_specific_fields]
-//Extraction of fields from 'eventDetails' that are relevant to 'Alert' event types.
 alter
     alert_name = arrayindex(regextract(eventDetails, "Alert\:(.+?)\,"),0),
     alert_desc = arrayindex(regextract(eventDetails, "Alert\sDescription\:(.+?)\,"),0)
@@ -43,15 +41,11 @@ alter
     xdm.alert.description = if(alert_desc = "NA.", null, alert_desc);
 
 [RULE:druva_backup_specific_fields]
-//Extraction of fields from 'eventDetails' that are relevant to 'Backup' event types.
 alter
     bytes_sent = arrayindex(regextract(eventDetails, "Total\sBytes\sTransferred\:(\d+)"), 0)
 | alter
     xdm.target.sent_bytes = to_integer(bytes_sent);
 
-// ── Druva security / admin-event feed (nested 'details{}' envelope) ──
-// These records carry Druva fields under details{} and use top-level 'type'/'feature'
-// as the discriminator (not the top-level 'eventType' column the legacy blocks filter on).
 [RULE: druva_security_common_fields]
 alter
     det = to_json_string(details)
@@ -102,14 +96,11 @@ filter eventType = "Backup"
 | call druva_common_fields
 | call druva_backup_specific_fields;
 
-// Druva cybersecurity events records (nested details{} envelope, no top-level eventType).
 filter category = "EVENT" 
 | call druva_security_common_fields;
 
-// Fallback filter to capture and process unhandled inSync events.
 filter eventType not in ("Alert", "Backup") and details = null
 | call druva_common_fields;
 
-// Fallback filter to capture and process unhandled security events.
 filter category = "EVENT" and feature not in ("Admin Event","Alerts And Notifications") and eventType = null
 | call druva_security_common_fields;
