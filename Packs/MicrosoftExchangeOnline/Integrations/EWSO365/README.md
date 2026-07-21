@@ -10,9 +10,9 @@ As part of this transition, Microsoft is moving away from unrestricted EWS acces
 
 ### Action Required
 
-Customers are responsible for updating their tenant configuration before the October 2026 enforcement takes effect. To ensure this integration continues to function without disruption, you must add the Entra Application (Client) ID used by this integration to your Exchange Online tenant's allow list.
+#### For customers using a Self-Deployed Application
 
-**Note:** For customers using the **Cortex Application** authentication method, Palo Alto Networks will take the necessary steps to align with Microsoft's requirements for the shared Application ID used by this integration. That said, since this change is enforced and controlled entirely by Microsoft, we recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect. This step is only required for customers using a **Self-Deployed Application**.
+You are responsible for updating your tenant configuration before the October 2026 enforcement takes effect. To ensure this integration continues to function without disruption, you must add the Entra Application (Client) ID used by this integration to your Exchange Online tenant's allow list.
 
 1. Connect to Exchange Online PowerShell and add the Application ID.
 
@@ -30,8 +30,11 @@ Customers are responsible for updating their tenant configuration before the Oct
     Set-OrganizationConfig -EwsEnabled $true
     ```
 
-For full details, complete timelines, and PowerShell scripts for safely appending to an existing allow list, refer to the official Microsoft documentation:
-[Introducing EWSAllowedAppIDs: Preparing for the Final Phase of EWS Retirement](https://techcommunity.microsoft.com/blog/exchange/introducing-ewsallowedappids-preparing-for-the-final-phase-of-ews-retirement/4529471)
+    (For full details, complete timelines, and PowerShell scripts for safely appending to an existing allow list, refer to the official Microsoft documentation: [Introducing EWSAllowedAppIDs: Preparing for the Final Phase of EWS Retirement](https://techcommunity.microsoft.com/blog/exchange/introducing-ewsallowedappids-preparing-for-the-final-phase-of-ews-retirement/4529471))
+
+#### For customers using the Cortex Application authentication method
+
+Palo Alto Networks is making the necessary updates to align our shared Application ID with Microsoft's new requirements, so you do not need to run the steps above. However, because this change is enforced and controlled entirely by Microsoft, we cannot validate the changes in advance or guarantee uninterrupted functionality. Palo Alto Networks is not responsible for any disruptions resulting from this rollout. We recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect.
 
 ## Retirement of RBAC Application Impersonation
 
