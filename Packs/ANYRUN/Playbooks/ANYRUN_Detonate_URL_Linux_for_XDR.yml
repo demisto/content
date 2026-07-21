@@ -1,0 +1,671 @@
+id: ANYRUN Detonate URL Linux for XDR
+version: 4
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: ANYRUN Detonate URL Linux for XDR
+description: This playbook submits a URL from a Cortex XDR issue to the ANY.RUN Cloud
+  Sandbox for dynamic analysis in a Linux environment. It helps to automate malware
+  detonation and behavior observation on Linux OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dcb8fc97-7163-40aa-8c61-38ad1ee59db9
+    type: start
+    task:
+      id: dcb8fc97-7163-40aa-8c61-38ad1ee59db9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f99a0135-524f-431f-8e35-3566c31943e7
+    type: regular
+    task:
+      id: f99a0135-524f-431f-8e35-3566c31943e7
+      version: -1
+      name: '[ANY.RUN] Detonate URL Linux'
+      description: Performs URL analysis using a Linux VM in ANY.RUN Cloud Sandbox.
+      script: '|||anyrun-detonate-url-linux'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      env_locale:
+        simple: ${inputs.env_locale}
+      env_os:
+        simple: ${inputs.env_os}
+      obj_ext_browser:
+        simple: ${inputs.obj_ext_browser}
+      obj_ext_extension:
+        simple: ${inputs.obj_ext_extension}
+      obj_url:
+        simple: ${inputs.obj_url}
+      opt_network_connect:
+        simple: ${inputs.opt_network_connect}
+      opt_network_fakenet:
+        simple: ${inputs.opt_network_fakenet}
+      opt_network_geo:
+        simple: ${inputs.opt_network_geo}
+      opt_network_mitm:
+        simple: ${inputs.opt_network_mitm}
+      opt_network_residential_proxy:
+        simple: ${inputs.opt_network_residential_proxy}
+      opt_network_residential_proxy_geo:
+        simple: ${inputs.opt_network_residential_proxy_geo}
+      opt_network_tor:
+        simple: ${inputs.opt_network_tor}
+      opt_privacy_type:
+        simple: ${inputs.opt_privacy_type}
+      opt_timeout:
+        simple: ${inputs.opt_timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 43c5ab5b-c736-4541-8ccf-c227014f70d9
+    type: regular
+    task:
+      id: 43c5ab5b-c736-4541-8ccf-c227014f70d9
+      version: -1
+      name: '[ANY.RUN] Get analysis summary'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      report_format:
+        simple: html
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: bfc16810-0c3c-4521-8306-701cd919b061
+    type: title
+    task:
+      id: bfc16810-0c3c-4521-8306-701cd919b061
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5838f61a-6fbc-4cd5-89ce-a7acd2307933
+    type: condition
+    task:
+      id: 5838f61a-6fbc-4cd5-89ce-a7acd2307933
+      version: -1
+      name: Is there any URL to detonate?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.obj_url
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 84e9536d-ff9f-488d-8ab4-33d1a866c0a7
+    type: condition
+    task:
+      id: 84e9536d-ff9f-488d-8ab4-33d1a866c0a7
+      version: -1
+      name: Is there an active ANY.RUN instance?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN Cloud Sandbox
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c7811551-1a86-4b37-8870-f8b4f6a844d7
+    type: condition
+    task:
+      id: c7811551-1a86-4b37-8870-f8b4f6a844d7
+      version: -1
+      name: Was a malicious or suspicious verdict received?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: ANYRUN.SandboxAnalysisReportVerdict
+            iscontext: true
+          right:
+            value:
+              simple: No threats detected
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 477c6c46-c168-4479-8b38-3c9c20f1f9f6
+    type: regular
+    task:
+      id: 477c6c46-c168-4479-8b38-3c9c20f1f9f6
+      version: -1
+      name: '[ANY.RUN] Get analysis verdict'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
+      script: '|||anyrun-get-analysis-verdict'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f002d3a8-ab08-4b3e-854c-05ffe9963c6c
+    type: regular
+    task:
+      id: f002d3a8-ab08-4b3e-854c-05ffe9963c6c
+      version: -1
+      name: '[ANY.RUN] Load IOCs to Threat Intel'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      report_format:
+        simple: ioc
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6afed61e-6414-417a-8c49-897f6fe0bc9d
+    type: regular
+    task:
+      id: 6afed61e-6414-417a-8c49-897f6fe0bc9d
+      version: -1
+      name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
+      description: Upload the IOC rules to XSIAM. When the ioc_object is defined,
+        disregard any other provided arguments, as the ioc_object takes precedence.
+        Validate the indicator parameters when ioc_object is used. If `vendor_name`,
+        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
+        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
+        Adding a rule with the same indicator, but with different parameters, will
+        update the existing rule.
+      script: Cortex Core - IR|||core-add-indicator-rule
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input_format:
+        simple: JSON
+      ioc_object:
+        simple: ${ANYRUN.IOCDetails.ioc_object}
+      vendor_reliability:
+        simple: A - Completely reliable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7d30195f-0c63-433d-846d-cb0496a74660
+    type: condition
+    task:
+      id: 7d30195f-0c63-433d-846d-cb0496a74660
+      version: -1
+      name: Is ANY.RUN IOC object available?
+      description: Checks whether the ANY.RUN IOC report returned an ioc_object that
+        can be uploaded to Cortex XDR IOC rules.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCDetails.ioc_object
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: dae25d70-2c13-479c-8e12-06a2a2357ebf
+    type: condition
+    task:
+      id: dae25d70-2c13-479c-8e12-06a2a2357ebf
+      version: -1
+      name: Is Cortex Core - IR available?
+      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_5_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2080,
+        "width": 942.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: obj_url
+  value:
+    simple: ${issue.xdmtargeturl}
+  required: false
+  description: 'Target URL to submit to ANY.RUN. By default, this playbook uses the
+    Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}).
+    If your issue uses another URL field, such as xdm.network.http.url, override this
+    input accordingly. Size range 5-512. Example: (http/https)://(your-link)'
+  playbookInputQuery: null
+- key: env_locale
+  value:
+    simple: en-US
+  required: false
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery: null
+- key: env_os
+  value:
+    simple: ubuntu
+  required: false
+  description: Operation system. Possible values - ubuntu, debian
+  playbookInputQuery: null
+- key: opt_network_connect
+  value:
+    simple: "True"
+  required: false
+  description: Network connection state.
+  playbookInputQuery: null
+- key: opt_network_fakenet
+  value:
+    simple: "False"
+  required: false
+  description: FakeNet feature status.
+  playbookInputQuery: null
+- key: opt_network_tor
+  value:
+    simple: "False"
+  required: false
+  description: TOR using.
+  playbookInputQuery: null
+- key: opt_network_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Tor geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_network_mitm
+  value:
+    simple: "False"
+  required: false
+  description: HTTPS MITM proxy option.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy
+  value:
+    simple: "False"
+  required: false
+  description: Residential proxy using.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Residential proxy geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_privacy_type
+  value:
+    simple: bylink
+  required: false
+  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  playbookInputQuery: null
+- key: opt_timeout
+  value:
+    simple: "60"
+  required: false
+  description: 'Timeout option. Size range: 10-660.'
+  playbookInputQuery: null
+- key: obj_ext_browser
+  value:
+    simple: Google Chrome
+  required: false
+  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
+  playbookInputQuery: null
+- key: obj_ext_extension
+  value:
+    simple: "True"
+  required: false
+  description: Change extension to valid
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - obj_url
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - env_locale
+  - env_os
+  name: Environment
+  description: ""
+- inputs:
+  - opt_network_connect
+  - opt_network_fakenet
+  - opt_network_tor
+  - opt_network_geo
+  - opt_network_mitm
+  - opt_network_residential_proxy
+  - opt_network_residential_proxy_geo
+  - opt_privacy_type
+  - opt_timeout
+  name: Options
+  description: ""
+- inputs:
+  - obj_ext_browser
+  - obj_ext_extension
+  name: Object
+  description: ""
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: ANYRUN_DetonateUrlLinux.TaskID
+  description: ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: IOCs extracted from ANY.RUN report.
+  type: Unknown
+- contextPath: ANYRUN.IOCDetails
+  description: Detailed IOC objects prepared for Cortex XDR indicator rules.
+  type: Unknown
+quiet: true
+dirtyInputs: true
+adopted: true
+possibleresponses: []

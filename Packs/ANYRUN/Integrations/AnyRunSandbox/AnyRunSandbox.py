@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime, timedelta
 
 from anyrun import RunTimeException
 from anyrun.connectors import SandboxConnector
@@ -12,18 +13,45 @@ from anyrun.connectors.sandbox.operation_systems import (
 import demistomock as demisto
 from CommonServerPython import *
 
-VERSION = "PA-XSOAR:2.4.0"
+VERSION = "PA-XSOAR:2.5.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
+XDR_REPUTATION = {0: "UNKNOWN", 1: "SUSPICIOUS", 2: "BAD"}
+XDR_SEVERITY = {0: "INFO", 1: "MEDIUM", 2: "HIGH"}
+
+SCORE_BY_REPUTATION = {
+    0: Common.DBotScore.NONE,
+    1: Common.DBotScore.SUSPICIOUS,
+    2: Common.DBotScore.BAD,
+}
 
 ANYRUN_TO_SOAR_INDICATOR = {
     "ip": "IP",
     "url": "URL",
     "domain": "Domain",
+    "md5": "File MD5",
+    "sha1": "File SHA-1",
     "sha256": "File SHA-256",
 }
 
+ANYRUN_TO_XDR_INDICATOR = {
+    "ip": "IP",
+    "url": "URL",
+    "domain": "DOMAIN_NAME",
+    "md5": "HASH",
+    "sha1": "HASH",
+    "sha256": "HASH",
+}
+
+XDR_INDICATOR_CLASS = {
+    "IP": "IP",
+    "URL": "URL",
+    "DOMAIN_NAME": "Domain",
+    "HASH": "Malware",
+}
+
 DEFAULT_ROOT_URL = "any.run"
+IOC_EXPIRATION_DAYS = 30
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
@@ -154,11 +182,11 @@ def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> Non
         start_analyse(params, args, analysis_type, connector)
 
 
-def detonate_file_widows(params: dict, args: dict) -> None:  # pragma: no cover
+def detonate_file_windows(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_windows(params, args, "file")
 
 
-def detonate_url_widows(params: dict, args: dict) -> None:  # pragma: no cover
+def detonate_url_windows(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_windows(params, args, "url")
 
 
@@ -276,28 +304,36 @@ def create_indicators(report: dict, task_uuid: str, root_url: str) -> None:  # p
     Excludes IOCs from the analysis report. Sends them to Threat Intel
 
     :param report: Analysis report
+    :param task_uuid: ANY.RUN task UUID
+    :return XDR IOCDetails, readable output, comma-separated IOC values
     """
     output: list[dict[str, str]] = []
     indicators: list[dict] = []
+    ioc_details: list[dict] = []
+    ioc_values: list[str] = []
+
+    expiration_date = int((datetime.now(UTC) + timedelta(days=IOC_EXPIRATION_DAYS)).timestamp() * 1000)
 
     for indicator in report:
         reputation = indicator.get("reputation")
+        indicator_value = indicator.get("ioc")
+        anyrun_indicator_type = indicator.get("type")
+        xsoar_indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(anyrun_indicator_type)
+        verdict = SCORE_TO_VERDICT.get(reputation)
+        score = SCORE_BY_REPUTATION.get(reputation)
 
-        if reputation == 0:
-            score = Common.DBotScore.NONE
-        elif reputation == 1:
-            score = Common.DBotScore.SUSPICIOUS
-        elif reputation == 2:
-            score = Common.DBotScore.BAD
-        else:
+        xdr_indicator_type = ANYRUN_TO_XDR_INDICATOR.get(anyrun_indicator_type, "")
+        xdr_severity = XDR_SEVERITY.get(reputation, "HIGH")
+        xdr_reputation = XDR_REPUTATION.get(reputation, "UNKNOWN")
+        _xdr_indicator_class = XDR_INDICATOR_CLASS.get(xdr_indicator_type)
+
+        if reputation is None or not indicator_value or not xsoar_indicator_type or score is None or verdict is None:
             continue
-
-        indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(indicator.get("type"), "")
 
         indicators.append(
             {
-                "type": indicator_type,
-                "value": indicator.get("ioc"),
+                "type": xsoar_indicator_type,
+                "value": indicator_value,
                 "score": score,
                 "fields": {
                     "vendor": "ANY.RUN",
@@ -309,30 +345,59 @@ def create_indicators(report: dict, task_uuid: str, root_url: str) -> None:  # p
 
         output.append(
             {
-                "type": indicator_type,
-                "value": indicator.get("ioc"),
-                "verdict": SCORE_TO_VERDICT.get(reputation, ""),
+                "type": xsoar_indicator_type,
+                "value": indicator_value,
+                "verdict": verdict,
             }
         )
 
-    demisto.createIndicators(indicators)
+        ioc_values.append(indicator_value)
 
-    return_results(
-        CommandResults(
-            readable_output=tableToMarkdown(
-                "Indicators from ANY.RUN Cloud Sandbox",
-                output,
-                headers=["type", "value", "verdict"],
-                headerTransform=string_to_table_header,
-            ),
-            ignore_auto_extract=True,
+        if not xdr_indicator_type or not _xdr_indicator_class:
+            continue
+
+        ioc_object = {
+            "indicator": indicator_value,
+            "type": xdr_indicator_type,
+            "severity": xdr_severity,
+            "expiration_date": expiration_date,
+            "comment": f"ANY.RUN Cloud Sandbox | https://app.{root_url}/tasks/{task_uuid}",
+            "reputation": xdr_reputation,
+            "reliability": "A - Completely reliable",
+            "class": _xdr_indicator_class,
+            "vendors": [
+                {
+                    "vendor_name": "ANY.RUN",
+                    "reputation": "GOOD",
+                    "reliability": "A - Completely reliable",
+                }
+            ],
+        }
+
+        ioc_details.append(
+            {
+                "ioc_object": json.dumps(ioc_object),
+            }
         )
+
+    if indicators:
+        demisto.createIndicators(indicators)
+
+    readable_output = tableToMarkdown(
+        "Indicators from ANY.RUN Cloud Sandbox",
+        output,
+        headers=["type", "value", "verdict"],
+        headerTransform=string_to_table_header,
     )
+
+    ioc_values = ",".join(ioc_values)
+
+    return ioc_details, readable_output, ioc_values
 
 
 def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid", "")
-    report_format = args.get("report_format")
+    report_format = args.get("report_format", "summary")
     root_url = params.get("root_url") or DEFAULT_ROOT_URL
 
     with SandboxConnector.windows(
@@ -352,12 +417,24 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
         elif report_format == "json":
             return_results(fileResult(f"anyrun_report_{task_uuid}.json", json.dumps(report)))
         elif report_format == "ioc" and report:
-            create_indicators(report, task_uuid, root_url)
+            ioc_details, readable_output, ioc_values = create_indicators(report, task_uuid, root_url)
 
             return_results(
                 CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix="ANYRUN",
+                    outputs={
+                        "IOCDetails": ioc_details,
+                    },
+                    ignore_auto_extract=True,
+                )
+            )
+
+            return_results(
+                CommandResults(
+                    readable_output=ioc_values,
                     outputs_prefix="ANYRUN.IOCs",
-                    outputs=",".join(indicator.get("ioc") for indicator in report) if report else "",
+                    outputs=ioc_values,
                     ignore_auto_extract=True,
                 )
             )
@@ -385,9 +462,9 @@ def main():  # pragma: no cover
         elif demisto.command() == "anyrun-get-analysis-history":
             get_analysis_history(params, args)
         elif demisto.command() == "anyrun-detonate-file-windows":
-            detonate_file_widows(params, args)
+            detonate_file_windows(params, args)
         elif demisto.command() == "anyrun-detonate-url-windows":
-            detonate_url_widows(params, args)
+            detonate_url_windows(params, args)
         elif demisto.command() == "anyrun-detonate-file-linux":
             detonate_file_linux(params, args)
         elif demisto.command() == "anyrun-detonate-url-linux":

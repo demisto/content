@@ -8,7 +8,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.4.0"
+VERSION = "PA-XSOAR:2.5.0"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover

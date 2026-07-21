@@ -1,0 +1,648 @@
+id: ANYRUN Detonate File Android for XDR
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: ANYRUN Detonate File Android for XDR
+description: This playbook submits a file from a Cortex XDR issue to the ANY.RUN Cloud
+  Sandbox for dynamic analysis in an Android environment. It helps to automate malware
+  detonation and behavior observation on Android OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3fe739c2-23a1-42fb-8396-8731168bb188
+    type: start
+    task:
+      id: 3fe739c2-23a1-42fb-8396-8731168bb188
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6b554c8f-a691-4cb4-8192-9c298f0c1fc8
+    type: regular
+    task:
+      id: 6b554c8f-a691-4cb4-8192-9c298f0c1fc8
+      version: -1
+      name: '[ANY.RUN] Detonate File Android'
+      description: Performs file analysis using an Android VM in ANY.RUN Sandbox.
+      script: '|||anyrun-detonate-file-android'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      env_locale:
+        simple: ${inputs.env_locale}
+      file:
+        simple: ${inputs.file_entry_id}
+      obj_ext_cmd:
+        simple: ${inputs.obj_ext_cmd}
+      opt_network_connect:
+        simple: ${inputs.opt_network_connect}
+      opt_network_fakenet:
+        simple: ${inputs.opt_network_fakenet}
+      opt_network_geo:
+        simple: ${inputs.opt_network_geo}
+      opt_network_mitm:
+        simple: ${inputs.opt_network_mitm}
+      opt_network_residential_proxy:
+        simple: ${inputs.opt_network_residential_proxy}
+      opt_network_residential_proxy_geo:
+        simple: ${inputs.opt_network_residential_proxy_geo}
+      opt_network_tor:
+        simple: ${inputs.opt_network_tor}
+      opt_privacy_type:
+        simple: ${inputs.opt_privacy_type}
+      opt_timeout:
+        simple: ${inputs.opt_timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f21f8d77-be2f-4dc4-80f5-dddbb0720d6c
+    type: regular
+    task:
+      id: f21f8d77-be2f-4dc4-80f5-dddbb0720d6c
+      version: -1
+      name: '[ANY.RUN] Get analysis summary'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      report_format:
+        simple: html
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a6d40dc3-ccce-4d4d-8f30-6393afc17935
+    type: title
+    task:
+      id: a6d40dc3-ccce-4d4d-8f30-6393afc17935
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a5d3003b-562a-4e95-8858-8d82dcbda09d
+    type: condition
+    task:
+      id: a5d3003b-562a-4e95-8858-8d82dcbda09d
+      version: -1
+      name: Is there any File EntryID to detonate?
+      description: Checks whether a War Room file EntryID was provided.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_entry_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ec34746f-8722-40fe-878c-58c7ec28cd0a
+    type: condition
+    task:
+      id: ec34746f-8722-40fe-878c-58c7ec28cd0a
+      version: -1
+      name: Is there an active ANY.RUN instance?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN Cloud Sandbox
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 96c2eacd-6290-4d96-8f21-97cbad7ac85b
+    type: condition
+    task:
+      id: 96c2eacd-6290-4d96-8f21-97cbad7ac85b
+      version: -1
+      name: Was a malicious or suspicious verdict received?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: ANYRUN.SandboxAnalysisReportVerdict
+            iscontext: true
+          right:
+            value:
+              simple: No threats detected
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 944ac489-9f60-4881-89ec-5da70f167ab1
+    type: regular
+    task:
+      id: 944ac489-9f60-4881-89ec-5da70f167ab1
+      version: -1
+      name: '[ANY.RUN] Get analysis verdict'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity'
+      script: '|||anyrun-get-analysis-verdict'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 718ee57c-0c82-421a-8ea0-256e3890ba59
+    type: regular
+    task:
+      id: 718ee57c-0c82-421a-8ea0-256e3890ba59
+      version: -1
+      name: '[ANY.RUN] Load IOCs to Threat Intel'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ANY.RUN Cloud Sandbox
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      report_format:
+        simple: ioc
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileAndroid.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ffa693e3-dc2c-4452-8705-4b74ddd3cf5d
+    type: regular
+    task:
+      id: ffa693e3-dc2c-4452-8705-4b74ddd3cf5d
+      version: -1
+      name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
+      description: Upload the IOC rules to XSIAM. When the ioc_object is defined,
+        disregard any other provided arguments, as the ioc_object takes precedence.
+        Validate the indicator parameters when ioc_object is used. If `vendor_name`,
+        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
+        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
+        Adding a rule with the same indicator, but with different parameters, will
+        update the existing rule.
+      script: Cortex Core - IR|||core-add-indicator-rule
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input_format:
+        simple: JSON
+      ioc_object:
+        simple: ${ANYRUN.IOCDetails.ioc_object}
+      vendor_reliability:
+        simple: A - Completely reliable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b7be7c2b-ad87-46bc-8d84-5bede2a22632
+    type: condition
+    task:
+      id: b7be7c2b-ad87-46bc-8d84-5bede2a22632
+      version: -1
+      name: Is ANY.RUN IOC object available?
+      description: Checks whether the ANY.RUN IOC report returned an ioc_object that
+        can be uploaded to Cortex XDR IOC rules.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCDetails.ioc_object
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 041bcbfa-99e9-4be4-8cc3-e7c4bfa88b58
+    type: condition
+    task:
+      id: 041bcbfa-99e9-4be4-8cc3-e7c4bfa88b58
+      version: -1
+      name: Is Cortex Core - IR available?
+      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_5_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2080,
+        "width": 942.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: file_entry_id
+  value: {}
+  required: false
+  description: Existing War Room file EntryID to submit to ANY.RUN Android analysis.
+  playbookInputQuery: null
+- key: env_locale
+  value:
+    simple: en-US
+  required: false
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery: null
+- key: opt_network_connect
+  value:
+    simple: "True"
+  required: false
+  description: Network connection state.
+  playbookInputQuery: null
+- key: opt_network_fakenet
+  value:
+    simple: "False"
+  required: false
+  description: FakeNet feature status.
+  playbookInputQuery: null
+- key: opt_network_tor
+  value:
+    simple: "False"
+  required: false
+  description: TOR using.
+  playbookInputQuery: null
+- key: opt_network_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Tor geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_network_mitm
+  value:
+    simple: "False"
+  required: false
+  description: HTTPS MITM proxy option.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy
+  value:
+    simple: "False"
+  required: false
+  description: Residential proxy using.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Residential proxy geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_privacy_type
+  value:
+    simple: bylink
+  required: false
+  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  playbookInputQuery: null
+- key: opt_timeout
+  value:
+    simple: "60"
+  required: false
+  description: 'Timeout option. Size range: 10-660.'
+  playbookInputQuery: null
+- key: obj_ext_cmd
+  value: {}
+  required: false
+  description: Optional command line.
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - file_entry_id
+  name: Sample Selection
+  description: Provide an existing War Room file EntryID. Cortex endpoint file retrieval
+    is not used for Android analysis.
+- inputs:
+  - env_locale
+  name: ANY.RUN Environment
+  description: ""
+- inputs:
+  - opt_network_connect
+  - opt_network_fakenet
+  - opt_network_tor
+  - opt_network_geo
+  - opt_network_mitm
+  - opt_network_residential_proxy
+  - opt_network_residential_proxy_geo
+  - opt_privacy_type
+  - opt_timeout
+  name: ANY.RUN Options
+  description: ""
+- inputs:
+  - obj_ext_cmd
+  name: ANY.RUN Object
+  description: ""
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: ANYRUN_DetonateFileAndroid.TaskID
+  description: ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: IOCs extracted from ANY.RUN report.
+  type: Unknown
+- contextPath: ANYRUN.IOCDetails
+  description: Detailed IOC objects prepared for Cortex XDR indicator rules.
+  type: Unknown
+quiet: true
+dirtyInputs: true
+adopted: true
+possibleresponses: []
