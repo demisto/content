@@ -13,6 +13,7 @@ from SiemApiModule import *  # noqa: E402
 
 DEFAULT_MAX_EVENTS_PER_FETCH = 2500
 MAX_EVENTS_PER_FETCH_LIMIT = 5000
+PAGE_SIZE = 500
 
 
 class Claims(BaseModel):
@@ -59,7 +60,8 @@ def get_box_events_timestamp_format(value):
 
 class BoxEventsParams(BaseModel):
     event_type: Optional[str] = None
-    limit: int = Field(500, alias="page_size", gt=0, le=500)
+    # `limit` is the Box /events `limit` query param (page size). Fixed at PAGE_SIZE; not user-configurable.
+    limit: int = PAGE_SIZE
     stream_position: Optional[str] = None
     stream_type: str = "admin_logs"
     created_after: Optional[str]

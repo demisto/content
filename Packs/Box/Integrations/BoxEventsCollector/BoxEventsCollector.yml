@@ -33,13 +33,6 @@ configuration:
   type: 0
   required: false
   section: Collect
-- display: Maximum number of events per page
-  name: page_size
-  type: 0
-  defaultvalue: 500
-  required: false
-  section: Collect
-  additionalinfo: "The maximum amount of events to fetch for each API request (page). Max 500."
 - display: Maximum number of events per fetch
   name: max_events_per_fetch
   type: 0
@@ -63,8 +56,8 @@ name: BoxEventsCollector
 script:
   commands:
   - arguments:
-    - description: The maximum number of events to fetch per API request (page). Max 500.
-      name: page_size
+    - description: The maximum total number of events to fetch.
+      name: limit
       defaultValue: 10
     - description: Should push events.
       name: should_push_events

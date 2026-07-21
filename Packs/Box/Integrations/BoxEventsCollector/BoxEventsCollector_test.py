@@ -70,7 +70,6 @@ class TestBoxCollectEvents:
         It must also still persist the stream position via setLastRun.
         """
         params = self.params.copy()
-        params["page_size"] = 1
         params["max_events_per_fetch"] = 3
         # Every page returns one event and a new stream position -> never-empty backlog.
         requests_mock.get(
@@ -114,11 +113,13 @@ class TestBoxCollectEvents:
         assert len(send_events_to_xsiam.call_args_list[0].args[0]) == 2
         assert last_run.call_args_list[0].args[0] == {"stream_position": "2"}
 
-    def test_page_size_and_max_events_per_fetch_are_independent(self, mocker, requests_mock):
-        """`page_size` is sent to the API as the per-request `limit` query param, while
-        `max_events_per_fetch` caps the total. They must not be conflated (root cause of XSUP-72996)."""
+    def test_page_size_is_fixed_and_independent_of_max_events_per_fetch(self, mocker, requests_mock):
+        """The per-request page size is fixed at PAGE_SIZE and sent to the API as the `limit`
+        query param, while `max_events_per_fetch` caps the total. They must not be conflated
+        (root cause of XSUP-72996)."""
+        from BoxEventsCollector import PAGE_SIZE
+
         params = self.params.copy()
-        params["page_size"] = 250
         params["max_events_per_fetch"] = 1
         mocked_request = requests_mock.get(
             "https://api.box.com/2.0/events",
@@ -131,10 +132,10 @@ class TestBoxCollectEvents:
         send_events_to_xsiam = mocker.patch("BoxEventsCollector.send_events_to_xsiam")
         main("fetch-events", params)
 
-        # Total capped at max_events_per_fetch (1), independent of the 250 page size.
+        # Total capped at max_events_per_fetch (1), independent of the fixed page size.
         assert len(send_events_to_xsiam.call_args_list[0].args[0]) == 1
-        # page_size was sent to the API as the `limit` query param, not overridden by the total cap.
-        assert mocked_request.last_request.qs["limit"] == ["250"]
+        # The fixed page size was sent to the API as the `limit` query param, not the total cap.
+        assert mocked_request.last_request.qs["limit"] == [str(PAGE_SIZE)]
 
     def test_max_events_per_fetch_is_capped_at_the_allowed_maximum(self, mocker, requests_mock):
         """A max_events_per_fetch above MAX_EVENTS_PER_FETCH_LIMIT is clamped to the maximum,
