@@ -26,6 +26,12 @@ configuration:
   name: created_after
   type: 0
   required: false
+- display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  type: 0
+  defaultvalue: '2500'
+  required: false
+  additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -34,12 +40,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Maximum number of events per fetch
-  name: max_events_per_fetch
-  type: 0
-  defaultvalue: '2500'
-  required: false
-  additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector
