@@ -556,7 +556,8 @@ def test_install_pack_uploads_zip_file_not_directory(monkeypatch, tmp_path):
             "Pack-v1.0.0/pack_metadata.json",
             json.dumps({"name": "Pack", "currentVersion": "1.0.0"}),
         )
-    zip_bytes = open(src_zip, "rb").read()
+    with open(src_zip, "rb") as f:
+        zip_bytes = f.read()
 
     client = _make_client(mod, verify=True)
     client._http_request = lambda **kw: _StreamingResponse(zip_bytes, headers={"Content-Length": str(len(zip_bytes))})
