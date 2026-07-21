@@ -69,6 +69,10 @@ class Modules:
         Returns:
             bool: True if the brand is available and in the list of brands to run, False otherwise.
         """
+        # Builtin commands are injected by the server on the unified platform,
+        # so they are always available there and are not tied to an installed integration brand.
+        if command.brand == "Builtin":
+            return is_platform()
         is_available = command.brand in self._enabled_brands
         if not is_available:
             demisto.debug(f"Skipping command '{command.name}' since the brand '{command.brand}' is not available.")
@@ -292,7 +296,8 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     errors_command_results = []
     human_readable_list = []
     entry_context_list = []
-    for entry in res:
+    # Built-in commands may return no entries (None) on a not-found result, guard against 'NoneType' object is not iterable
+    for entry in res or []:
         entry_context_list.append((entry.get("EntryContext") or {}) | {"instance": entry.get("ModuleName")})
         if is_error(entry):
             errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
@@ -1294,9 +1299,9 @@ def main():
         #################################
         readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
             modules=modules,
-            brand_name="Cortex Core - IR",
-            first_command="core-list-risky-users",
-            second_command="core-list-users",
+            brand_name="Builtin" if is_platform() else "Cortex Core - IR",
+            first_command="getRiskyUsers" if is_platform() else "core-list-risky-users",
+            second_command="getSystemUsers" if is_platform() else "core-list-users",
             user_names=users_names,
             additional_fields=additional_fields,
             list_non_risky_users=list_non_risky_users,
