@@ -23,5 +23,7 @@
         "cloud_runtime_security",
         "agentix",
         "xsiam"
-    ]
+    ],
+    "source": "cooc",
+    "managed": true
 }
