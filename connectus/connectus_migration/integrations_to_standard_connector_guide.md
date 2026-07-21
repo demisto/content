@@ -1,6 +1,6 @@
 # Standard Connector Migration Guide
 
-> **Purpose**: This document briefs an LLM tasked with migrating XSOAR integrations into a **Standard (non-grouped) Connector**. Given a set of integration YMLs (not necessarily from the same pack), scope the migration, identify gaps, flag decisions, and produce the connector YAML files.
+> **Purpose**: This document briefs an LLM tasked with migrating XSOAR integrations into a **Standard Connector**. Given a set of integration YMLs (not necessarily from the same pack), scope the migration, identify gaps, flag decisions, and produce the connector YAML files.
 >
 > **Output**: A complete connector (all YAML files).
 
@@ -23,7 +23,7 @@
 
 A **Standard Connector** is a declarative, YAML-based framework that consolidates one or more of a vendor's integrations into **one** connector. Authentication and shared connection configuration are defined once and shared, allowing multiple modules (XSOAR, SaaS) to contribute integrations for the same vendor.
 
-A Standard connector is **non-grouped**: it does **not** set `settings.grouped`, and it declares **no** `view_groups` registries anywhere. When more than one integration lives under a single connector, **capabilities** (not view_groups) organize them — each integration's features map onto capabilities, and the connection page is a single implicit screen shared by all capabilities.
+A Standard connector is **non-grouped**: it does **not** set `settings.grouped` in the connector.yaml, and it declares **no** `view_groups` registries anywhere. When more than one integration lives under a single connector, **capabilities** (not view_groups) organize them — each integration's features map onto capabilities, and the connection page is a single implicit screen shared by all capabilities.
 
 **The migration model:**
 
@@ -62,22 +62,22 @@ connectors/<vendor>/
 
 ## Section 2: Connector Specification Reference
 
-> **Source of truth**: [`README.md`](../README.md) and [`schema/*.schema.json`](../schema/). 
+> **Source of truth**: [`README.md`](../../../unified-connectors-content/README.md) and [`schema/*.schema.json`](../../../unified-connectors-content/schema/).
 ### 2.1 connector.yaml
 
-Defines the connector identity. Schema: [`connector.schema.json`](schema/connector.schema.json).
+Defines the connector identity. Schema: [`connector.schema.json`](../../../unified-connectors-content/schema/connector.schema.json).
 
 > **Standard connectors do NOT set `settings.grouped`.** The `grouped` key stays **absent** (it defaults to `false`). Setting `grouped: true` opts into the Grouped model (top-level `view_groups` registries, per-row `view_group` tags), which is **not** used here. Keep only `allow_skip_verification` and `skip_cut_off_check` under `settings`.
 
 ### 2.2 connection.yaml
 
-Defines shared connection config and authentication profiles. Schema: [`connection.schema.json`](schema/connection.schema.json).
+Defines shared connection config and authentication profiles. Schema: [`connection.schema.json`](../../../unified-connectors-content/schema/connection.schema.json).
 
 **Profile types (framework):** See the schema for the types
 
 > **Mass-migration note:** the automated XSOAR mass migration most often emits **`plain`**, **`api_key`**, and **`passthrough`** profiles, but the full framework list — including the `oauth2_*` types — is available and should be used when the vendor's auth is a proper OAuth2 flow (as Salesforce is).
 
-> **VaultMapping shape** ([`VaultMapping`](../schema/connection.schema.json)): each entry has a `id` (stable, unique-within-profile — the platform derives the vault-selector control ids and its display label from it) and a `map` object binding the selected credential's `user`/`password`/`sshkey` onto passthrough auth parameter names (**at least one** of the three must be set). Each mapped name must resolve to a field's `metadata.auth.parameter` (or field id) in the profile's effective scope.
+> **VaultMapping shape** ([`VaultMapping`](../../../unified-connectors-content/schema/connection.schema.json)): each entry has a `id` (stable, unique-within-profile — the platform derives the vault-selector control ids and its display label from it) and a `map` object binding the selected credential's `user`/`password`/`sshkey` onto passthrough auth parameter names (**at least one** of the three must be set). Each mapped name must resolve to a field's `metadata.auth.parameter` (or field id) in the profile's effective scope.
 
 #### 2.2.1 Passthrough Profile
 
@@ -153,7 +153,7 @@ Handlers reference it like any other profile: `auth_options: [{ id: "passthrough
 
 Profiles may carry an optional, **module-namespaced** `metadata` object (`profiles[].metadata`, keyed by handler module — `xsoar`, etc.) holding profile-scoped **non-secret** runtime context. The platform flattens the matching module's namespace into the connector lifecycle event (same channel as `metadata.event.publish`, §2.17 — **not** get-credentials). The `auth` namespace and secrets are **forbidden** here.
 
-> **Schema constraints** ([`ProfileMetadata`](../schema/connection.schema.json)): the object must have **≥1 property** (`minProperties: 1`), the `auth` key is **forbidden**, and each top-level key must be a **known handler-module name** (matching a handler's `metadata.module` under `components/handlers/`, enforced by OPA xref Check 23). Each module value is a free-form object (strings/numbers/booleans/nested objects) — the list-of-single-key-maps form is rejected.
+> **Schema constraints** ([`ProfileMetadata`](../../../unified-connectors-content/schema/connection.schema.json)): the object must have **≥1 property** (`minProperties: 1`), the `auth` key is **forbidden**, and each top-level key must be a **known handler-module name** (matching a handler's `metadata.module` under `components/handlers/`, enforced by OPA xref Check 23). Each module value is a free-form object (strings/numbers/booleans/nested objects) — the list-of-single-key-maps form is rejected.
 
 **`interpolation_mapping` — run unmodified integration code in UCP.** When the mass migration does **not** rewrite integration code, a migrated profile carries `metadata.xsoar.interpolation_mapping`. At runtime the XSOAR runtime injects each credential value into `demisto.params()` at the mapped path, so the legacy code runs unchanged.
 
@@ -192,7 +192,7 @@ profiles:
 
 ### 2.3 capabilities.yaml
 
-Defines connector capabilities. Schema: [`capabilities.schema.json`](schema/capabilities.schema.json).
+Defines connector capabilities. Schema: [`capabilities.schema.json`](../../../unified-connectors-content/schema/capabilities.schema.json).
 
 **MANDATORY:** exactly one field with `metadata.connector.parameter: "instance_name"` under `general_configurations` (see §3.4 for the verbatim block).
 
@@ -205,24 +205,24 @@ Defines connector capabilities. Schema: [`capabilities.schema.json`](schema/capa
 
 ### 2.4 configurations.yaml
 
-Per-capability config fields. Schema: [`configurations.schema.json`](schema/configurations.schema.json).
+Per-capability config fields. Schema: [`configurations.schema.json`](../../../unified-connectors-content/schema/configurations.schema.json).
 
 ### 2.5 handler.yaml
 
-How a handler uses the connector. Schema: [`handler.schema.json`](schema/handler.schema.json).
+How a handler uses the connector. Schema: [`handler.schema.json`](../../../unified-connectors-content/schema/handler.schema.json).
 
 > **`test_connection` is not waived by an auth id.** There is **no** `"none"` profile id — `test_connection` (and `test_connection_metro`) are schema-**required on every handler**, and mass migration always emits them. Anonymous capabilities (below) do not waive `test_connection`; they only change the `capabilities[]` entry shape.
 
 ### 2.6 serializer.yaml
 
-Field name/value transforms. Schema: [`serializer.schema.json`](schema/serializer.schema.json). Two optional sections (at least one required):
+Field name/value transforms. Schema: [`serializer.schema.json`](../../../unified-connectors-content/schema/serializer.schema.json). Two optional sections (at least one required):
 
 1. **`field_mappings`** — rename fields and/or transform values (processed first). Each entry: `id` (✅, must match a defined field), `field_name` (rename target), `field_value` (transform function). At least one of `field_name`/`field_value` required.
 2. **`computed_fields`** — synthetic output fields (processed second). Each rule has `output` (fields to emit) and `any_of` (condition groups: AND within a group, OR across groups). Condition `type` is `capability` (`{capability_id, value: on|off}`) or `field` (`{field_id, op, value}`). Evaluated against **original** field IDs (before `field_mappings`). This is the mechanism used to emit the **BE fetch flags** for every collection capability (§3.9.1).
 
 ### 2.7 triggers.yaml
 
-Conditional field/capability behavior — show/hide, enable/disable, require, lock — driven by field values and/or capability state. Schema: [`triggers.schema.json`](schema/triggers.schema.json). **Optional**; omit or ship `triggers: []` when not needed. Triggers live in a flat root array; each has a recursive `conditions` tree and one or more reversible `effects`.
+Conditional field/capability behavior — show/hide, enable/disable, require, lock — driven by field values and/or capability state. Schema: [`triggers.schema.json`](../../../unified-connectors-content/schema/triggers.schema.json). **Optional**; omit or ship `triggers: []` when not needed. Triggers live in a flat root array; each has a recursive `conditions` tree and one or more reversible `effects`.
 
 **Condition node variants** (discriminated **structurally** — there is no `type` field): a **field-condition leaf** is identified by `behavior: value` (scalar fields) or `behavior: values` (collection fields), with a sibling `value:` literal to compare against; a **capability-condition leaf** is identified by `behavior: selected`, with a boolean `value:` (`true`/`false`); a **group** is any object carrying an `operator` (`AND`/`OR`) plus a `children[]` array. Groups may mix field and capability leaves and nest to any depth.
 
@@ -232,11 +232,11 @@ Conditional field/capability behavior — show/hide, enable/disable, require, lo
 
 ### 2.8 summary.yaml
 
-Schema: [`summary.schema.json`](schema/summary.schema.json). Fields: `metadata.title` (✅), `metadata.description` (✅), `metadata.link` (❌, docs URL), `metadata.next_steps` (❌, Markdown).
+Schema: [`summary.schema.json`](../../../unified-connectors-content/schema/summary.schema.json). Fields: `metadata.title` (✅), `metadata.description` (✅), `metadata.link` (❌, docs URL), `metadata.next_steps` (❌, Markdown).
 
 ### 2.9 availability.yaml
 
-Controls visibility per region/tenant **in production only** (dev/staging show all). Schema: [`availability.schema.json`](schema/availability.schema.json). Absent → GA. Present → `tenants` map restricts: region key = valid GCP region; value = array of tenant IDs or `null`; empty/`null` = all tenants in that region; region not listed = not visible there.
+Controls visibility per region/tenant **in production only** (dev/staging show all). Schema: [`availability.schema.json`](../../../unified-connectors-content/schema/availability.schema.json). Absent → GA. Present → `tenants` map restricts: region key = valid GCP region; value = array of tenant IDs or `null`; empty/`null` = all tenants in that region; region not listed = not visible there.
 
 ### 2.10 Connector Icon
 
@@ -245,7 +245,7 @@ Lives in the connector root, referenced by filename via `metadata.author_image`.
 
 ### 2.11 Field Options
 
-Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.json). Highlights:
+Schema: [`field-options.schema.json`](../../../unified-connectors-content/schema/definitions/field-options.schema.json). Highlights:
 
 #### Duration field — integration contract
 
@@ -414,7 +414,7 @@ If they did not give it, then prompt them to do so and suggest the following map
 3. Multiple integrations may share a capability. In a Standard connector they are **not** split into per-integration sub-capabilities by default — they contribute to the same capability. Add a sub-capability only when a genuinely distinct sub-feature warrants it. When two integrations both contribute config fields to the same capability, resolve any field-id collisions via Appendix C.
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
 5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param if there is a dedicated capability for that feature — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, incidentType, etc.). If there is no dedicated capability for the feature, then the corresponding checkbox must still be kept. 
-6. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) via [`triggers.yaml`](README.md:833) (§3.5).
+6. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) via [`triggers.yaml`](../../../unified-connectors-content/README.md#triggersyaml) (§3.5).
 
 #### Metadata & general_configurations
 
@@ -463,7 +463,7 @@ Mandatory `instance_name` field (verbatim):
 
 ### 3.5 triggers.yaml
 
-Optional connector-root file defining reactive, reversible UI behavior. See [`README.md`](README.md:833), [`schema/triggers.schema.json`](schema/triggers.schema.json:1), and [`plans/triggers-v2.md`](plans/triggers-v2.md:1) for the full spec. Common migration patterns:
+Optional connector-root file defining reactive, reversible UI behavior. See [`README.md`](../../../unified-connectors-content/README.md), [`schema/triggers.schema.json`](../../../unified-connectors-content/schema/triggers.schema.json), and [`plans/triggers.md`](../../../unified-connectors-content/plans/triggers.md) for the full spec. Common migration patterns:
 
 - **Capability → capability gating** (§3.5.2) — lock one capability until another is enabled (e.g. Salesforce's Data Security requires Identity).
 - **Capability → field gating** — reveal/require a field only when a capability is on (e.g. show `feedExpirationInterval` only when `threat-intelligence-and-enrichment` is on AND `feedExpirationPolicy == "interval"`).
@@ -563,7 +563,7 @@ A `type: 9` credential renders as two leaves — an identifier (`<id>.identifier
 
 **Standard connectors USE `connection.yaml general_configurations`.** Shared, **non-secret** connection parameters — the server URL/domain and (when applicable) other params shown for all profiles — are declared **once** in `general_configurations.configurations[].fields[]`. **Auth secrets** (`client_key`, `client_secret`, `username`, `password`, `api_key`, type-9 credential leaves, etc.) live inside `profiles[].configurations[].fields[]`, keyed by `metadata.auth.parameter`.
 
-> **`options.mask` is mandatory on EVERY `connection.yaml` field** (§2.2) — both `general_configurations` fields and `profiles[].configurations[]` fields. Set `mask: true` for secrets, `mask: false` for non-secret fields (`domain`, `engine`, `proxy`, `insecure`, etc.). Omitting `mask` on a connection field fails schema validation ([`ConnectionFieldGroup`](../schema/connection.schema.json)).
+> **`options.mask` is mandatory on EVERY `connection.yaml` field** (§2.2) — both `general_configurations` fields and `profiles[].configurations[]` fields. Set `mask: true` for secrets, `mask: false` for non-secret fields (`domain`, `engine`, `proxy`, `insecure`, etc.). Omitting `mask` on a connection field fails schema validation ([`ConnectionFieldGroup`](../../../unified-connectors-content/schema/connection.schema.json)).
 
 This mirrors the real Salesforce connector exactly:
 
@@ -647,7 +647,7 @@ This should be best effort, and a deep analysis of the code and integration YAML
 
 #### Connector-wide connection fields via `general_configurations` + `required_for_capabilities`
 
-**Standard-connector rule (supersedes any conflicting general-mode instruction).** The engine 3-field pattern (`engine_mode`, `engine`, `engineGroup`), `insecure`, and `proxy` are **non-secret, connector-wide** connection fields. In a Standard connector they are declared **once** at the connector level in [`connection.yaml`](../schema/connection.schema.json) `general_configurations.configurations[]` — **NOT** repeated inside each profile. Auth **secrets** continue to live in `profiles[].configurations[].fields[]`, keyed by `metadata.auth.parameter`.
+**Standard-connector rule (supersedes any conflicting general-mode instruction).** The engine 3-field pattern (`engine_mode`, `engine`, `engineGroup`), `insecure`, and `proxy` are **non-secret, connector-wide** connection fields. In a Standard connector they are declared **once** at the connector level in [`connection.yaml`](../../../unified-connectors-content/schema/connection.schema.json) `general_configurations.configurations[]` — **NOT** repeated inside each profile. Auth **secrets** continue to live in `profiles[].configurations[].fields[]`, keyed by `metadata.auth.parameter`.
 
 **What moves to `general_configurations`.**
 
@@ -657,11 +657,11 @@ This should be best effort, and a deep analysis of the code and integration YAML
 
 These are per-connector, not per-profile: a handler still binds to exactly one profile for its **secrets**, but the engine/proxy/insecure choices are shared connection settings surfaced once for the whole connector.
 
-**`required_for_capabilities` gating.** Each `general_configurations.configurations[]` field group carries a `required_for_capabilities: ["<capability-id>", ...]` list so the FE knows which capabilities to render these fields for when showing general configurations. `required_for_capabilities` is a valid key on a `general_configurations` FieldGroup — it is defined on the `FieldGroup` `$def` in [`field.schema.json`](../schema/definitions/field.schema.json) ("Only valid on FieldGroup rows inside `general_configurations` sections… When present, the platform shows this field group only when at least one of the listed capabilities/sub-capabilities is enabled") and referenced by `general_configurations` in [`connection.schema.json`](../schema/connection.schema.json). Each field group is its **own** entry in `configurations[]` — the engine group, `insecure`, and `proxy` are **three separate field groups**, each with its own `required_for_capabilities`.
+**`required_for_capabilities` gating.** Each `general_configurations.configurations[]` field group carries a `required_for_capabilities: ["<capability-id>", ...]` list so the FE knows which capabilities to render these fields for when showing general configurations. `required_for_capabilities` is a valid key on a `general_configurations` FieldGroup — it is defined on the `FieldGroup` `$def` in [`field.schema.json`](../../../unified-connectors-content/schema/definitions/field.schema.json) ("Only valid on FieldGroup rows inside `general_configurations` sections… When present, the platform shows this field group only when at least one of the listed capabilities/sub-capabilities is enabled") and referenced by `general_configurations` in [`connection.schema.json`](../../../unified-connectors-content/schema/connection.schema.json). Each field group is its **own** entry in `configurations[]` — the engine group, `insecure`, and `proxy` are **three separate field groups**, each with its own `required_for_capabilities`.
 
-**No `metadata.event` on these fields.** `general_configurations` FieldGroups **cannot** carry `metadata.event` — the schema explicitly forbids it ("metadata.event is only valid on fields inside `profiles[].configurations[].fields[]` — not on `connection.yaml general_configurations` fields", [`connection.schema.json`](../schema/connection.schema.json) `GeneralConfigurations`). So when engine/proxy/insecure live in `general_configurations` (the Standard rule), they are **NOT** `event.publish`ed. This changes the earlier "publish engine/proxy/insecure" guidance (§2.13): that rule applied only while these fields lived inside a profile. In `general_configurations` they are not event-published; their values reach handlers via the connector lifecycle event for the general-config section instead.
+**No `metadata.event` on these fields.** `general_configurations` FieldGroups **cannot** carry `metadata.event` — the schema explicitly forbids it ("metadata.event is only valid on fields inside `profiles[].configurations[].fields[]` — not on `connection.yaml general_configurations` fields", [`connection.schema.json`](../../../unified-connectors-content/schema/connection.schema.json) `GeneralConfigurations`). So when engine/proxy/insecure live in `general_configurations` (the Standard rule), they are **NOT** `event.publish`ed. This changes the earlier "publish engine/proxy/insecure" guidance (§2.13): that rule applied only while these fields lived inside a profile. In `general_configurations` they are not event-published; their values reach handlers via the connector lifecycle event for the general-config section instead.
 
-**`proxy` ships locked by default.** `proxy` carries `read_only: true` in **both** `create_modifiers` and `edit_modifiers` — i.e. it is locked (default-off) until an engine or engine group is selected, at which point it is unlocked via a reversible [`triggers.yaml`](../schema/triggers.schema.json) effect (see "Proxy field — conditional read-only" below in this §3.6 section). Keep the existing proxy trigger guidance consistent: the trigger UNLOCKS `proxy` when an engine/engine group is chosen; the locked state is the default that applies when `engine_mode == "no_engine"`.
+**`proxy` ships locked by default.** `proxy` carries `read_only: true` in **both** `create_modifiers` and `edit_modifiers` — i.e. it is locked (default-off) until an engine or engine group is selected, at which point it is unlocked via a reversible [`triggers.yaml`](../../../unified-connectors-content/schema/triggers.schema.json) effect (see "Proxy field — conditional read-only" below in this §3.6 section). Keep the existing proxy trigger guidance consistent: the trigger UNLOCKS `proxy` when an engine/engine group is chosen; the locked state is the default that applies when `engine_mode == "no_engine"`.
 
 **`options.mask` is still mandatory** on every field (`general_configurations` included) — `mask: false` for these non-secret fields. `engine`/`engineGroup` remain `select` + `dynamic_values` with `metadata.xsoar.config_type: "backend"`, `empty_values_message`, `searchable`/`clearable`; `engine_mode` is a horizontal `radio`.
 
@@ -773,7 +773,7 @@ These are per-connector, not per-profile: a handler still binds to exactly one p
 
 ##### Engine handling — 3-field pattern
 
-Replaces legacy `engine`/`engineGroup`. **For Standard connectors the three engine fields live ONCE in [`connection.yaml`](../schema/connection.schema.json) `general_configurations.configurations[]`** as a single field group gated via `required_for_capabilities` (the canonical block is the "Canonical example" above) — **NOT** repeated inside each profile. **Shape, IDs, options, and visibility are locked.** Because they live in `general_configurations`, these fields do **NOT** carry `metadata.event` (the schema forbids `metadata.event` on general-config fields — see §2.13 / §3.6).
+Replaces legacy `engine`/`engineGroup`. **For Standard connectors the three engine fields live ONCE in [`connection.yaml`](../../../unified-connectors-content/schema/connection.schema.json) `general_configurations.configurations[]`** as a single field group gated via `required_for_capabilities` (the canonical block is the "Canonical example" above) — **NOT** repeated inside each profile. **Shape, IDs, options, and visibility are locked.** Because they live in `general_configurations`, these fields do **NOT** carry `metadata.event` (the schema forbids `metadata.event` on general-config fields — see §2.13 / §3.6).
 
 | ID | Type | Default | `event.publish` | `config_type` |
 |---|---|---|---|---|
@@ -857,7 +857,7 @@ The `proxy` field (a `checkbox`) lives **in `general_configurations.configuratio
 - A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
 - proxy is only emitted if the integration YML has this field defined
 
-The lock is enforced via a reversible [`triggers.yaml`](../schema/triggers.schema.json) effect: the default `read_only: true` (shipped in both modifiers) is automatically reversed to `read_only: false` when an engine/engine group is selected.
+The lock is enforced via a reversible [`triggers.yaml`](../../../unified-connectors-content/schema/triggers.schema.json) effect: the default `read_only: true` (shipped in both modifiers) is automatically reversed to `read_only: false` when an engine/engine group is selected.
 
 | ID | Type | Title | Default | `read_only` (default) | `event.publish` | `config_type` |
 |---|---|---|---|---|---|---|
@@ -1198,7 +1198,7 @@ The XSOAR BE runtime is **capability-agnostic**: it does not understand UCP capa
 
 In legacy XSOAR a checkbox in the instance form let the user opt in to fetching (e.g. "Fetches incidents"). In UCP we have dedicated fetch capabilities, so the checkbox is removed (§3.4 note 5) — **choosing the fetch capability IS the opt-in**. We still must send the corresponding flag to the BE.
 
-**Rule:** for **every collection capability the handler subscribes to**, the handler's [`serializer.yaml`](README.md:1381) MUST emit a `computed_fields` block that sends the matching flag (value `true`) **only when that capability is enabled** (`value: "on"`). This is required on **every** handler that subscribes to one or more of the five fetch capabilities — even when no other serializer entry is needed.
+**Rule:** for **every collection capability the handler subscribes to**, the handler's [`serializer.yaml`](../../../unified-connectors-content/README.md#serializeryaml) MUST emit a `computed_fields` block that sends the matching flag (value `true`) **only when that capability is enabled** (`value: "on"`). This is required on **every** handler that subscribes to one or more of the five fetch capabilities — even when no other serializer entry is needed.
 
 **Flag mapping** (capability → flag emitted):
 
@@ -1258,7 +1258,7 @@ Required at repo root. GitLab evaluates bottom-to-top — connector overrides go
 ## Appendix A: XSOAR Parameter Type → Manifest Type Mapping
 
 XSOAR types in use (if you come across another type when migrating, fail and raise a flag).
-Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md) for special-param details.
+Also see [`plans/integration-parameter-and-types-overrides.md`](../../../unified-connectors-content/plans/integration-parameter-and-types-overrides.md) for special-param details.
 
 | XSOAR Type | Description | UCP `field_type` | `options.mask` | Notes |
 |---|---|---|---|---|
@@ -1271,10 +1271,10 @@ Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integratio
 | 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** |
 | 14 | Encrypted Text Area | `text_area` | `true` | Masked input. Example: SSHKey. |
 | 15 | Single Select / Dropdown | `select` | `false` | Options from YML `options` array as `{key, label}` pairs. |
-| 16 | Multi Select | `multi_select` | `false` | Native UCP field type. Items in `values` use `{key, label}`; `default_value` is an array of keys. See README [Multi-Select Example](README.md:1681). |
+| 16 | Multi Select | `multi_select` | `false` | Native UCP field type. Items in `values` use `{key, label}`; `default_value` is an array of keys. See README [Multi-Select Example](../../../unified-connectors-content/README.md#field-types-reference). |
 | 17 | Feed Expiration Policy | `select` | `false` | Hardcoded display labels: `Indicator Type` / `Time Interval` / `Never Expire` / `When removed from the feed`. Only added when `script.Feed: true`. |
 | 18 | Indicator / Feed Reputation | `select` | `false` | New mapped values: `Unknown` / `Benign` / `Suspicious` / `Malicious` (not the legacy None/Good/Suspicious/Bad). Only added when `script.Feed: true`. |
-| 19 | Feed Fetch Interval | `duration` | `false` | Multi-unit duration field — `units: ["days","hours","minutes"]`, `output_format: "minutes"`. Convert the YML minutes-string default to a per-unit `default_value` (§2.15). Use [`triggers.yaml`](README.md:833) for conditional visibility (§3.5). |
+| 19 | Feed Fetch Interval | `duration` | `false` | Multi-unit duration field — `units: ["days","hours","minutes"]`, `output_format: "minutes"`. Convert the YML minutes-string default to a per-unit `default_value` (§2.15). Use [`triggers.yaml`](../../../unified-connectors-content/README.md#triggersyaml) for conditional visibility (§3.5). |
 
 **Important Notes:**
 
@@ -1291,7 +1291,7 @@ When the platform transforms `handler.yaml` auth configurations for the frontend
 
 ## Appendix C: Field ID Uniqueness Rule
 
-All field IDs must be globally unique across the entire connector directory — across [`connection.yaml`](README.md:162) (including `general_configurations` and profile fields), [`capabilities.yaml`](README.md:509), and [`configurations.yaml`](README.md:719) (including `checkbox_group` item IDs). This is enforced by OPA validation (xref Check covering field_entries).
+All field IDs must be globally unique across the entire connector directory — across [`connection.yaml`](../../../unified-connectors-content/README.md#connectionyaml) (including `general_configurations` and profile fields), [`capabilities.yaml`](../../../unified-connectors-content/README.md#capabilitiesyaml), and [`configurations.yaml`](../../../unified-connectors-content/README.md#configurationsyaml) (including `checkbox_group` item IDs). This is enforced by OPA validation (xref Check covering field_entries).
 
 **Default: keep the original id.** Each field's `id` is the original integration param `name`. Do **not** proactively prefix/suffix — keep the original name whenever it is already unique across the connector. A field that keeps its original id needs **no** serializer entry. This minimizes serializer work.
 
@@ -1305,7 +1305,7 @@ A **collision** is when two or more fields anywhere in the connector would other
 2. LLM would suggest which params we can re-use across multiple integrations to reduce redundancy. 
 3. **Sort** those integrations by their **normalized integration id** (the `commonfields.id` lowercased, spaces → dashes — the same normalization as the handler-folder name, §3.8) in ascending lexicographic order.
 4. **The first integration in that sorted order KEEPS the original id** (no prefix, no serializer entry).
-5. **Every OTHER colliding integration prefixes its field** with `<normalized-integration-id>_<original-id>` and adds a [`serializer.yaml`](README.md:1381) `field_mappings` entry mapping the prefixed id back to the original param name (`field_name: "<original-id>"`).
+5. **Every OTHER colliding integration prefixes its field** with `<normalized-integration-id>_<original-id>` and adds a [`serializer.yaml`](../../../unified-connectors-content/README.md#serializeryaml) `field_mappings` entry mapping the prefixed id back to the original param name (`field_name: "<original-id>"`).
 
 So for `proxy` appearing in `Salesforce`, `Salesforce IAM` can be defined once, and the field will be used across both integrations.
 
@@ -1340,7 +1340,7 @@ triggering:
     xsoar-long-running-credentials-profile-id: <profile_id>
 ```
 
-- **`<profile_id>`** is the `id` of the profile under [`connection.yaml`](../README.md) `profiles[]` that contains the migrated `credentials` (type-9) field.
+- **`<profile_id>`** is the `id` of the profile under [`connection.yaml`](../../../unified-connectors-content/README.md#connectionyaml) `profiles[]` that contains the migrated `credentials` (type-9) field.
 - **If the integration's YML has no `type: 9` parameter named `credentials`, that is a bug in the source integration** — flag it as a blocker; do NOT silently emit a label pointing to an arbitrary profile. 
 - Get the user approval that this integration is indeed server style where the server does the auth, and that this is the right profile.
 the maintainer MUST analyze it against the server-style criteria below and update this appendix accordingly:
