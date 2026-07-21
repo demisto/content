@@ -4,7 +4,7 @@ The script builds a Threat Intel query scoped to indicators from the **CTIX v3**
 
 It is intended to be run on a schedule via the bundled **CTIX - Delete Flagged Indicators** job (which triggers the playbook of the same name), but can also be run manually from the War Room or Playground.
 
-Note: an indicator flagged in CTIX is only picked up after the feed re-fetches it (the fetch updates the indicator's flag fields in the Threat Intel Module; the next script run then finds and deletes it).
+Note: this script only deletes indicators whose flag fields are already up to date in the Threat Intel Module — run the CTIX feed fetch first so it can update those fields, then run this script (or the bundled job/playbook) to pick up the changes.
 
 ## Script Data
 
@@ -27,7 +27,15 @@ Note: an indicator flagged in CTIX is only picked up after the feed re-fetches i
 | delete_whitelisted | Whether to delete indicators allow-listed in Cyware Intel Exchange \(CTIX\). Default is false. |
 | delete_reviewed | Whether to delete indicators that have been reviewed in Cyware Intel Exchange \(CTIX\). Default is false. |
 | exclude | Whether to also add the deleted indicators to the Exclusion List. When false \(default\), indicators are purely deleted and can be re-created if they reappear un-flagged. |
-| reason | Reason recorded for the deletion \(and exclusion, if enabled\). |
+| reason | The reason recorded for the deletion \(and exclusion, if enabled\). |
+
+## Command Example
+
+```!CTIXDeleteFlaggedIndicators delete_false_positive=true exclude=true reason="Not malicious and used internally"```
+
+## Human Readable Output
+
+>done
 
 ## Outputs
 

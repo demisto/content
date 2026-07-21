@@ -36,12 +36,12 @@ args:
   - "false"
 - auto: PREDEFINED
   defaultValue: "false"
-  description: Whether to also add the deleted indicators to the Exclusion List. When false (default), indicators are purely deleted and can be re-created if they reappear un-flagged.
+  description: Whether to also add the deleted indicators to the Exclusion List. When false, indicators are purely deleted and can be re-created if they reappear un-flagged.
   name: exclude
   predefined:
   - "true"
   - "false"
-- description: Reason recorded for the deletion (and exclusion, if enabled).
+- description: The reason recorded for the deletion (and exclusion, if enabled).
   name: reason
 comment: Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, reviewed, or whitelisted. All delete flags are disabled by default; the script does nothing until at least one flag is enabled.
 commonfields:

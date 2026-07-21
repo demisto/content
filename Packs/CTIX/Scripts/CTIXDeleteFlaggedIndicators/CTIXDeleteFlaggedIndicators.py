@@ -26,7 +26,7 @@ def build_query(args: dict) -> str:
     return f'sourceBrands:"{BRAND}" and ({flag_conditions})'
 
 
-def main():
+def main() -> None:
     try:
         args = demisto.args()
         query = build_query(args)
@@ -42,8 +42,7 @@ def main():
         return_results(res)
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute CTIXDeleteFlaggedIndicators. Error: {str(ex)}")
+        return_error(f"Failed to execute CTIXDeleteFlaggedIndicators. Error: {ex}", error=ex)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
