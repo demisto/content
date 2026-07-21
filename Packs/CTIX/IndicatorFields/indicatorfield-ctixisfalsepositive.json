@@ -1,7 +1,7 @@
 {
     "id": "indicator_ctixisfalsepositive",
     "version": -1,
-    "name": "Is False Positive",
+    "name": "CTIX - Is False Positive",
     "ownerOnly": false,
     "cliName": "ctixisfalsepositive",
     "type": "boolean",

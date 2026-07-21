@@ -1,7 +1,7 @@
 {
     "id": "indicator_ctixisrevoked",
     "version": -1,
-    "name": "Is Revoked",
+    "name": "CTIX - Is Revoked",
     "ownerOnly": false,
     "cliName": "ctixisrevoked",
     "type": "boolean",

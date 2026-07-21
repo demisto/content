@@ -1,7 +1,7 @@
 {
     "id": "indicator_ctixiswhitelisted",
     "version": -1,
-    "name": "Is Whitelisted",
+    "name": "CTIX - Is Whitelisted",
     "ownerOnly": false,
     "cliName": "ctixiswhitelisted",
     "type": "boolean",

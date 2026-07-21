@@ -1,7 +1,7 @@
 {
     "id": "indicator_ctixisdeprecated",
     "version": -1,
-    "name": "Is Deprecated",
+    "name": "CTIX - Is Deprecated",
     "ownerOnly": false,
     "cliName": "ctixisdeprecated",
     "type": "boolean",
