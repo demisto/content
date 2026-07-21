@@ -8,6 +8,8 @@ Microsoft has announced the final phase of Exchange Web Services (EWS) retiremen
 
 As part of this transition, Microsoft is moving away from unrestricted EWS access and has introduced a new tenant-level allow list called `EwsAllowedAppIds`. Starting in October 2026, Microsoft will block all EWS traffic by default. Applications will only be able to access EWS if their specific Application (Client) ID is explicitly added to this allow list by the tenant administrator.
 
+We highly recommend using the [Microsoft Graph Mail](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail) integration for mailbox operations such as reading, searching, and managing emails and attachments, as Microsoft itself recommends transitioning from EWS to Graph-based APIs.
+
 ### Action Required
 
 #### For customers using a Self-Deployed Application
