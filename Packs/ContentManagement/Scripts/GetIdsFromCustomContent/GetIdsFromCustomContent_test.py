@@ -1,6 +1,7 @@
 import demistomock as demisto
 import pytest
-from GetIdsFromCustomContent import get_included_ids_command
+from demisto_sdk.commands.common.constants import FileType
+from GetIdsFromCustomContent import get_file_displayed_name, get_included_ids_command
 
 EXAMPLE_CUSTOM_CONTENT_PATH = "test_data/content-bundle-for-test.tar.gz"
 EXAMPLE_CUSTOM_CONTENT_NAME = "content-bundle-for-test.tar.gz"
@@ -158,3 +159,83 @@ def test_get_included_ids_with_bad_excluded_ids():
     with pytest.raises(ValueError) as err:
         get_included_ids_command(args)
     assert "Failed decoding excluded_ids_list as json" in str(err.value)
+
+
+@pytest.mark.parametrize(
+    "file_type, parse_func",
+    [
+        pytest.param(FileType.INTEGRATION, "get_yaml", id="integration-yaml-none"),
+        pytest.param(FileType.SCRIPT, "get_yaml", id="script-yaml-none"),
+        pytest.param(FileType.PLAYBOOK, "get_yaml", id="playbook-yaml-none"),
+        pytest.param(FileType.MAPPER, "get_json", id="mapper-json-none"),
+        pytest.param(FileType.OLD_CLASSIFIER, "get_json", id="old-classifier-json-none"),
+        pytest.param(FileType.LAYOUT, "get_json", id="layout-json-none"),
+        pytest.param(FileType.REPUTATION, "get_json", id="reputation-json-none"),
+    ],
+)
+def test_get_file_displayed_name_handles_none_parse(mocker, file_type, parse_func):
+    """
+    Given:
+        A file whose YAML/JSON parser returns None (empty/unparseable content).
+
+    When:
+        Running get_file_displayed_name.
+
+    Then:
+        An empty string is returned instead of raising AttributeError on None.
+    """
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=file_type)
+    mocker.patch(f"GetIdsFromCustomContent.{parse_func}", return_value=None)
+
+    assert get_file_displayed_name("some/path") == ""
+
+
+def test_get_file_displayed_name_json_list_none_first_element(mocker):
+    """
+    Given:
+        A JSON file that parses to a list whose first element is not a dict.
+
+    When:
+        Running get_file_displayed_name.
+
+    Then:
+        An empty string is returned instead of raising on res[0].get(...).
+    """
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=FileType.MAPPER)
+    mocker.patch("GetIdsFromCustomContent.get_json", return_value=[None])
+
+    assert get_file_displayed_name("some/path") == ""
+
+
+def test_get_file_displayed_name_json_empty_list(mocker):
+    """
+    Given:
+        A JSON file that parses to an empty list.
+
+    When:
+        Running get_file_displayed_name.
+
+    Then:
+        An empty string is returned instead of raising IndexError on res[0].
+    """
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=FileType.MAPPER)
+    mocker.patch("GetIdsFromCustomContent.get_json", return_value=[])
+
+    assert get_file_displayed_name("some/path") == ""
+
+
+def test_get_file_displayed_name_json_list_of_dicts(mocker):
+    """
+    Given:
+        A JSON file that parses to a list of dicts.
+
+    When:
+        Running get_file_displayed_name.
+
+    Then:
+        The name from the first element is returned (existing behavior preserved).
+    """
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=FileType.MAPPER)
+    mocker.patch("GetIdsFromCustomContent.get_json", return_value=[{"name": "MyMapper"}])
+
+    assert get_file_displayed_name("some/path") == "MyMapper"

@@ -21,23 +21,33 @@ def get_file_displayed_name(file_path: str) -> str:
     If there is no displayed name, returns the file name.
     """
     file_type = find_type(file_path)
-    if FileType.INTEGRATION == file_type:
-        return get_yaml(file_path).get("display", "")
+    if file_type == FileType.INTEGRATION:
+        return (get_yaml(file_path) or {}).get("display", "")
     elif file_type in (FileType.SCRIPT, FileType.TEST_SCRIPT, FileType.PLAYBOOK, FileType.TEST_PLAYBOOK):
-        return get_yaml(file_path).get("name", "")
+        return (get_yaml(file_path) or {}).get("name", "")
     elif file_type in (
-        FileType.MAPPER, FileType.CLASSIFIER, FileType.INCIDENT_FIELD,
-        FileType.INCIDENT_TYPE, FileType.INDICATOR_FIELD, FileType.LAYOUTS_CONTAINER,
-        FileType.DASHBOARD, FileType.WIDGET, FileType.REPORT,
+        FileType.MAPPER,
+        FileType.CLASSIFIER,
+        FileType.INCIDENT_FIELD,
+        FileType.INCIDENT_TYPE,
+        FileType.INDICATOR_FIELD,
+        FileType.LAYOUTS_CONTAINER,
+        FileType.DASHBOARD,
+        FileType.WIDGET,
+        FileType.REPORT,
     ):
         res = get_json(file_path)
-        return res.get("name", "") if isinstance(res, dict) else res[0].get("name", "")
+        if isinstance(res, dict):
+            return res.get("name", "")
+        if isinstance(res, list) and res and isinstance(res[0], dict):
+            return res[0].get("name", "")
+        return ""
     elif file_type == FileType.OLD_CLASSIFIER:
-        return get_json(file_path).get("brandName", "")
+        return (get_json(file_path) or {}).get("brandName", "")
     elif file_type == FileType.LAYOUT:
-        return get_json(file_path).get("TypeName", "")
+        return (get_json(file_path) or {}).get("TypeName", "")
     elif file_type == FileType.REPUTATION:
-        return get_json(file_path).get("id", "")
+        return (get_json(file_path) or {}).get("id", "")
     else:
         return Path(file_path).name
 
