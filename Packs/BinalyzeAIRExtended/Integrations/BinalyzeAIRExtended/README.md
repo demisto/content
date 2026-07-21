@@ -130,8 +130,8 @@ List Binalyze AIR cases.
 | name | The optional case name filter. | Optional | 
 | organization_id | The optional organization ID filter. | Optional | 
 | organization_ids | A comma-separated list of organization IDs. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -176,8 +176,8 @@ Get tasks associated with a Binalyze AIR case.
 | --- | --- | --- |
 | case_id | The case ID. | Required | 
 | task_id | The optional task ID filter. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -199,8 +199,8 @@ Get endpoints associated with a Binalyze AIR case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -222,8 +222,8 @@ Get activity history associated with a Binalyze AIR case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -247,11 +247,11 @@ List Binalyze AIR endpoints/assets with optional filters.
 | hostname | The optional endpoint hostname filter. | Optional | 
 | organization_id | The optional organization ID filter. | Optional | 
 | organization_ids | A comma-separated list of organization IDs. | Optional | 
-| online_status | The optional online status filter. | Optional | 
-| isolation_status | The optional isolation status filter. | Optional | 
-| platform | The optional platform filter. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| online_status | A comma-separated list of values. | Optional | 
+| isolation_status | A comma-separated list of values. | Optional | 
+| platform | A comma-separated list of values. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -316,8 +316,8 @@ Get tasks associated with an endpoint/asset.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_id | The asset ID. | Required | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -367,8 +367,8 @@ List Binalyze AIR tasks.
 | organization_ids | A comma-separated list of organization IDs. | Optional | 
 | status | The optional status filter. | Optional | 
 | task_type | The optional task type filter. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -390,8 +390,8 @@ Get task assignment details for a Binalyze AIR task.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | task_id | The task ID. | Required | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -490,8 +490,8 @@ List triage rules.
 | engine | The optional rule engine filter. Possible values are: yara, sigma, osquery. | Optional | 
 | search_in | The optional search scope filter. Possible values are: system, memory, both, event-records. | Optional | 
 | description | The optional description filter. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -596,8 +596,8 @@ List acquisition profiles.
 | name | The optional profile name filter. | Optional | 
 | organization_id | The optional organization ID filter. | Optional | 
 | organization_ids | A comma-separated list of organization IDs. | Optional | 
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -639,8 +639,8 @@ List Binalyze AIR repositories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | The page number. | Optional | 
-| limit | The page size. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 #### Context Output
 

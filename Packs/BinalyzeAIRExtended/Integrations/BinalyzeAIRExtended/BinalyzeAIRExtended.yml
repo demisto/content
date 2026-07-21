@@ -11,20 +11,26 @@ configuration:
   required: true
   type: 0
   additionalinfo: The Binalyze AIR Server URL, for example https://air.example.com.
+  section: Connect
 - displaypassword: API Key
   name: api_key
   required: true
   type: 9
   hiddenusername: true
   additionalinfo: The Binalyze AIR API token, for example api_1234567890abcdef1234567890abcdef.
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+sectionorder:
+- Connect
 script:
   script: ''
   type: python
@@ -55,6 +61,7 @@ script:
     - contextPath: BinalyzeAIR.Isolate.Result.OrganizationID
       description: The endpoint organization ID.
       type: number
+    execution: true
   - name: binalyze-air-acquire
     description: Start forensic evidence acquisition from an endpoint.
     arguments:
@@ -88,6 +95,7 @@ script:
     - contextPath: BinalyzeAIR.Acquire.Result.OrganizationID
       description: The endpoint organization ID.
       type: number
+    execution: true
   - name: binalyze-air-create-case
     description: Create a Binalyze AIR case.
     arguments:
@@ -118,6 +126,7 @@ script:
     - contextPath: BinalyzeAIR.Case.Result.Name
       description: The case name.
       type: string
+    execution: true
   - name: binalyze-air-get-case
     description: Get a Binalyze AIR case by ID.
     arguments:
@@ -138,9 +147,11 @@ script:
     - name: organization_ids
       description: A comma-separated list of organization IDs.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.Cases
       description: The case list response.
@@ -157,6 +168,7 @@ script:
     - contextPath: BinalyzeAIR.CloseCase
       description: The close case response.
       type: unknown
+    execution: true
   - name: binalyze-air-get-case-tasks
     description: Get tasks associated with a Binalyze AIR case.
     arguments:
@@ -166,9 +178,11 @@ script:
     - name: task_id
       description: The optional task ID filter.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.CaseTask
       description: The case task response.
@@ -180,9 +194,11 @@ script:
       description: The case ID.
       required: true
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.CaseEndpoint
       description: The case endpoint response.
@@ -194,9 +210,11 @@ script:
       description: The case ID.
       required: true
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.CaseActivity
       description: The case activity response.
@@ -211,15 +229,17 @@ script:
     - name: organization_ids
       description: A comma-separated list of organization IDs.
     - name: online_status
-      description: The optional online status filter.
+      description: A comma-separated list of values.
     - name: isolation_status
-      description: The optional isolation status filter.
+      description: A comma-separated list of values.
     - name: platform
-      description: The optional platform filter.
+      description: A comma-separated list of values.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.Asset
       description: The asset list response.
@@ -254,9 +274,11 @@ script:
       description: The asset ID.
       required: true
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.AssetTask
       description: The asset task response.
@@ -294,9 +316,11 @@ script:
     - name: task_type
       description: The optional task type filter.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.Task
       description: The task list response.
@@ -308,9 +332,11 @@ script:
       description: The task ID.
       required: true
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.TaskAssignment
       description: The task assignment response.
@@ -345,6 +371,7 @@ script:
     - contextPath: BinalyzeAIR.TriageRule
       description: The created triage rule response.
       type: unknown
+    execution: true
   - name: binalyze-air-update-triage-rule
     description: Update an existing triage rule.
     arguments:
@@ -369,6 +396,7 @@ script:
     - contextPath: BinalyzeAIR.TriageRule
       description: The updated triage rule response.
       type: unknown
+    execution: true
   - name: binalyze-air-validate-triage-rule
     description: Validate a YARA, Sigma, or osquery triage rule before assignment.
     arguments:
@@ -415,9 +443,11 @@ script:
     - name: description
       description: The optional description filter.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.TriageRule
       description: The triage rule list response.
@@ -442,6 +472,7 @@ script:
     - contextPath: BinalyzeAIR.DeleteTriageRule
       description: The delete triage rule response.
       type: unknown
+    execution: true
   - name: binalyze-air-assign-triage-task
     description: Assign one or more triage rules to endpoints by filter.
     arguments:
@@ -502,6 +533,7 @@ script:
     - contextPath: BinalyzeAIR.TriageTask
       description: The assign triage task response.
       type: unknown
+    execution: true
   - name: binalyze-air-list-acquisition-profiles
     description: List acquisition profiles.
     arguments:
@@ -512,9 +544,11 @@ script:
     - name: organization_ids
       description: A comma-separated list of organization IDs.
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.AcquisitionProfile
       description: The acquisition profile list response.
@@ -533,9 +567,11 @@ script:
     description: List Binalyze AIR repositories.
     arguments:
     - name: page
-      description: The page number.
+      description: The page number from which to start pagination.
+      defaultValue: '1'
     - name: limit
-      description: The page size.
+      description: The maximum number of results to return.
+      defaultValue: '50'
     outputs:
     - contextPath: BinalyzeAIR.Repository
       description: The repository list response.

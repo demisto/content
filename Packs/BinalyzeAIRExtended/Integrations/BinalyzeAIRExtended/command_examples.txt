@@ -1,14 +1,77 @@
-!binalyze-air-list-assets organization_id=0 limit=5
-!binalyze-air-get-asset-by-hostname hostname=HOST123 organization_id=0
-!binalyze-air-create-case name="INC-0001 - Suspicious PowerShell" organization_id=0 owner_user_id=USER_ID visibility=public-to-organization
-!binalyze-air-acquire hostname=HOST123 profile=quick case_id=CASE_ID organization_id=0
-!binalyze-air-get-task task_id=TASK_ID
-!binalyze-air-get-task-assignments task_id=TASK_ID
-!binalyze-air-create-triage-rule engine=yara search_in=system organization_ids=0 description="Test rule" rule="rule Test { condition: true }"
-!binalyze-air-validate-triage-rule engine=yara rule="rule Test { condition: true }"
-!binalyze-air-list-triage-rules organization_id=0 limit=10
-!binalyze-air-get-triage-rule rule_id=RULE_ID
-!binalyze-air-assign-triage-task case_id=CASE_ID triage_rule_ids=RULE_ID hostname=HOST123 organization_id=0 mitre_attack=False
-!binalyze-air-list-acquisition-profiles organization_id=0 limit=10
-!binalyze-air-list-repositories limit=10
-!binalyze-air-download-file file_name=report.zip
+# Connectivity
+
+!binalyze-air-list-assets hostname="WIN-IR-001" organization_id="1" page="1" limit="50"
+
+# Assets
+
+!binalyze-air-list-assets hostname="WIN-IR-001" organization_id="1" online_status="online" isolation_status="none" platform="windows" page="1" limit="50"
+
+!binalyze-air-get-asset asset_id="12345"
+
+!binalyze-air-get-asset-by-hostname hostname="WIN-IR-001" organization_id="1"
+
+!binalyze-air-get-asset-tasks asset_id="12345" page="1" limit="50"
+
+# Tasks
+
+!binalyze-air-get-task task_id="9001"
+
+!binalyze-air-list-tasks case_id="1001" organization_id="1" status="completed" task_type="acquisition" page="1" limit="50"
+
+!binalyze-air-get-task-assignments task_id="9001" page="1" limit="50"
+
+# Acquisition
+
+!binalyze-air-acquire hostname="WIN-IR-001" profile="quick" case_id="1001" organization_id="1"
+
+# Cases
+
+!binalyze-air-create-case name="Suspicious Endpoint Investigation" organization_id="1" owner_user_id="42" visibility="public-to-organization" assigned_user_ids="42,43"
+
+!binalyze-air-get-case case_id="1001"
+
+!binalyze-air-list-cases organization_id="1" name="Suspicious Endpoint Investigation" page="1" limit="50"
+
+!binalyze-air-close-case case_id="1001" reason="Investigation completed"
+
+!binalyze-air-get-case-tasks case_id="1001" page="1" limit="50"
+
+!binalyze-air-get-case-endpoints case_id="1001" page="1" limit="50"
+
+!binalyze-air-get-case-activities case_id="1001" page="1" limit="50"
+
+# Triage Rules
+
+!binalyze-air-create-triage-rule engine="yara" search_in="system" organization_ids="1" rule="rule Suspicious_File { condition: true }" description="Suspicious file triage rule"
+
+!binalyze-air-update-triage-rule rule_id="2001" search_in="system" organization_ids="1" rule="rule Suspicious_File_Updated { condition: true }" description="Updated suspicious file triage rule"
+
+!binalyze-air-validate-triage-rule engine="yara" rule="rule Suspicious_File { condition: true }"
+
+!binalyze-air-list-triage-rules organization_id="1" engine="yara" search_in="system" description="Suspicious" page="1" limit="50"
+
+!binalyze-air-get-triage-rule rule_id="2001"
+
+!binalyze-air-delete-triage-rule rule_id="2001"
+
+!binalyze-air-assign-triage-task case_id="1001" triage_rule_ids="2001,2002" organization_id="1" task_config_choice="use-policy" task_config_cpu_limit="8" hostname="WIN-IR-001" mitre_attack="False" when="now"
+
+# Acquisition Profiles
+
+!binalyze-air-list-acquisition-profiles organization_id="1" name="quick" page="1" limit="50"
+
+!binalyze-air-get-acquisition-profile profile_id="3001"
+
+# Repositories
+
+!binalyze-air-list-repositories page="1" limit="50"
+
+!binalyze-air-get-repository repository_id="4001"
+
+# File Download
+
+!binalyze-air-download-file file_name="case-1001/evidence.zip"
+
+# Endpoint Response
+
+!binalyze-air-isolate hostname="WIN-IR-001" organization_id="1" isolation="enable"
