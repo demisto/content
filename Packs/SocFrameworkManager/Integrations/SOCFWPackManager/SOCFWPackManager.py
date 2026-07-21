@@ -296,8 +296,11 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
     zip_path = os.path.join(tmp_dir, filename)
     try:
         client.stream_download_zip(url, zip_path)
-        pack_path = _prepare_pack_dir(zip_path, filename)
-        result = client.upload_pack_as_system_content(pack_path)
+        # Validate the downloaded archive (valid zip + pack_metadata.json) and
+        # prepare the on-disk layout. The upload API expects the ZIP file itself,
+        # so we upload `zip_path` rather than the extracted directory.
+        _prepare_pack_dir(zip_path, filename)
+        result = client.upload_pack_as_system_content(zip_path)
 
         return CommandResults(
             outputs_prefix="SOCFramework.PackInstall",

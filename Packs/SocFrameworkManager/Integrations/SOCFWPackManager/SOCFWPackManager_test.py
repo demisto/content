@@ -189,6 +189,7 @@ def test_upload_pack_as_system_content_success(monkeypatch):
 
     # Patch demisto_client in the module's import scope
     import types as _types
+
     fake_dc = _types.ModuleType("demisto_client")
     fake_dc.configure = _mock_configure
     monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
@@ -219,6 +220,7 @@ def test_upload_pack_as_system_content_failure(monkeypatch):
         return _MockDemistoClient()
 
     import types as _types
+
     fake_dc = _types.ModuleType("demisto_client")
     fake_dc.configure = _mock_configure
     monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
@@ -528,3 +530,62 @@ def test_command_install_pack_appends_zip_if_missing(monkeypatch):
 
     assert derived
     assert derived[0].endswith(".zip")
+
+
+def test_install_pack_uploads_zip_file_not_directory(monkeypatch, tmp_path):
+    """Given a valid downloaded pack, install_pack_command must pass a real ZIP
+    file path (not the extracted directory) to demisto_client.upload_content_packs."""
+    mod, _ = load_integration()
+
+    # Build a real valid zip that stream_download_zip will "download".
+    src_zip = str(tmp_path / "Pack-v1.0.0.zip")
+    with zipfile.ZipFile(src_zip, "w") as zf:
+        zf.writestr(
+            "Pack-v1.0.0/pack_metadata.json",
+            json.dumps({"name": "Pack", "currentVersion": "1.0.0"}),
+        )
+    zip_bytes = open(src_zip, "rb").read()
+
+    client = _make_client(mod, verify=True)
+    client._http_request = lambda **kw: _StreamingResponse(zip_bytes, headers={"Content-Length": str(len(zip_bytes))})
+
+    # Capture what reaches upload_content_packs and validate it there, while the
+    # file still exists (install_pack_command deletes it in its finally block).
+    upload_calls = []
+
+    class _MockDemistoClient:
+        def upload_content_packs(self, file):
+            upload_calls.append(
+                {
+                    "file": file,
+                    "is_file": os.path.isfile(file),
+                    "is_zip": zipfile.is_zipfile(file),
+                }
+            )
+            return {"status": "ok"}
+
+    def _mock_configure(**kwargs):
+        return _MockDemistoClient()
+
+    fake_dc = types.ModuleType("demisto_client")
+    fake_dc.configure = _mock_configure
+    monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        mod.install_pack_command(
+            client,
+            args={
+                "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
+                "filename": "Pack-v1.0.0.zip",
+            },
+        )
+    finally:
+        os.chdir(orig)
+
+    assert len(upload_calls) == 1, "upload_content_packs should be called exactly once"
+    call = upload_calls[0]
+    assert call["is_file"], f"upload target must be a file, got: {call['file']}"
+    assert call["is_zip"], f"upload target must be a valid ZIP archive, got: {call['file']}"
+    assert not os.path.isdir(call["file"]), "upload target must not be a directory"
