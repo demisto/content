@@ -1,5 +1,4 @@
 from CommitFiles import commit_git
-import os
 from pathlib import Path
 
 import demistomock as demisto
@@ -250,24 +249,23 @@ def test_main(mocker):
     }
     mocker.patch.object(demisto, "getFilePath", return_value=mock_file)
     mocker.patch.object(demisto, "executeCommand")
+    # Mock the yml split so the test does not shell out to the demisto-sdk YmlSplitter,
+    # which invokes docker (unavailable in the unit-test environment) during extraction.
+    split_yml_file = ContentFile()
+    split_yml_file.file_name = "NewBranchName.yml"
+    split_yml_file.file_text = "yml content"
+    split_yml_file.path_to_file = "Packs/BranchNameScript/Scripts/NewBranchName"
+    split_py_file = ContentFile()
+    split_py_file.file_name = "NewBranchName.py"
+    split_py_file.file_text = "py content"
+    split_py_file.path_to_file = "Packs/BranchNameScript/Scripts/NewBranchName"
+    mocker.patch("CommitFiles.split_yml_file", return_value=[split_yml_file, split_py_file])
+    # Treat the committed files as new so they populate the "New files" section of the PR body.
+    mocker.patch("CommitFiles.does_file_exist", return_value=False)
     moc = mocker.patch.object(demisto, "results")
     main()
     pr_body = moc.call_args.args[0].get("HumanReadable")
     assert expected_pr_body == pr_body
-    delete_files()
-
-
-def delete_files():
-    unified_yml_path = os.path.abspath("automation-NewBranchName.yml")
-    # new_dir_path = os.path.abspath('CommitFiles/NewBranchName')
-    script_path = os.path.abspath("NewBranchName/NewBranchName.py")
-    yml_path = os.path.abspath("NewBranchName/NewBranchName.yml")
-    if unified_yml_path:
-        os.remove(unified_yml_path)
-    if script_path:
-        os.remove(script_path)
-    if yml_path:
-        os.remove(yml_path)
 
 
 def test_commit_new_content_item_gitlab(mocker):
