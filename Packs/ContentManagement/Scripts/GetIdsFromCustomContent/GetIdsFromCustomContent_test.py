@@ -1,7 +1,14 @@
 import demistomock as demisto
 import pytest
 from demisto_sdk.commands.common.constants import FileType
-from GetIdsFromCustomContent import get_file_displayed_name, get_included_ids_command
+from GetIdsFromCustomContent import (
+    filter_lists,
+    get_content_details,
+    get_custom_content_ids,
+    get_file_displayed_name,
+    get_included_ids_command,
+    update_file_prefix,
+)
 
 EXAMPLE_CUSTOM_CONTENT_PATH = "test_data/content-bundle-for-test.tar.gz"
 EXAMPLE_CUSTOM_CONTENT_NAME = "content-bundle-for-test.tar.gz"
@@ -239,3 +246,188 @@ def test_get_file_displayed_name_json_list_of_dicts(mocker):
     mocker.patch("GetIdsFromCustomContent.get_json", return_value=[{"name": "MyMapper"}])
 
     assert get_file_displayed_name("some/path") == "MyMapper"
+
+
+@pytest.mark.parametrize(
+    "file_type, parse_func, parsed_value, expected_name",
+    [
+        pytest.param(FileType.INTEGRATION, "get_yaml", {"display": "My Integration"}, "My Integration", id="integration-display"),
+        pytest.param(FileType.SCRIPT, "get_yaml", {"name": "My Script"}, "My Script", id="script-name"),
+        pytest.param(FileType.MAPPER, "get_json", {"name": "My Mapper"}, "My Mapper", id="mapper-dict-name"),
+        pytest.param(FileType.OLD_CLASSIFIER, "get_json", {"brandName": "Old Brand"}, "Old Brand", id="old-classifier-brand"),
+        pytest.param(FileType.LAYOUT, "get_json", {"TypeName": "My Layout"}, "My Layout", id="layout-typename"),
+        pytest.param(FileType.REPUTATION, "get_json", {"id": "reputation-id"}, "reputation-id", id="reputation-id"),
+    ],
+)
+def test_get_file_displayed_name_returns_expected_name(mocker, file_type, parse_func, parsed_value, expected_name):
+    """
+    Given:
+        - A file of a specific content type whose parser returns a populated dict.
+    When:
+        - Running get_file_displayed_name.
+    Then:
+        - The displayed name is extracted from the type-appropriate field.
+    """
+    # Given: a detected file type and a mocked parser returning a populated dict
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=file_type)
+    mocker.patch(f"GetIdsFromCustomContent.{parse_func}", return_value=parsed_value)
+
+    # When: resolving the displayed name
+    result = get_file_displayed_name("some/path.json")
+
+    # Then: the expected name is returned
+    assert result == expected_name
+
+
+def test_get_file_displayed_name_unknown_type_returns_file_name(mocker):
+    """
+    Given:
+        - A file whose type is not recognized by find_type (returns None).
+    When:
+        - Running get_file_displayed_name.
+    Then:
+        - The file name (basename) is returned as a fallback.
+    """
+    # Given: find_type cannot classify the file
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=None)
+
+    # When: resolving the displayed name for a nested path
+    result = get_file_displayed_name("some/nested/dir/my_file.json")
+
+    # Then: the basename is returned
+    assert result == "my_file.json"
+
+
+@pytest.mark.parametrize(
+    "input_name, expected_name",
+    [
+        pytest.param("playbook-MyPlaybook.yml", "MyPlaybook.yml", id="strip-playbook-prefix"),
+        pytest.param("automation-MyScript.yml", "script-MyScript.yml", id="automation-to-script-prefix"),
+        pytest.param("integration-MyIntegration.yml", "integration-MyIntegration.yml", id="no-change"),
+    ],
+)
+def test_update_file_prefix(input_name, expected_name):
+    """
+    Given:
+        - A custom-content file name with a specific export prefix.
+    When:
+        - Running update_file_prefix.
+    Then:
+        - The prefix is normalized to the on-disk content convention.
+    """
+    # Given / When: normalizing the prefix
+    result = update_file_prefix(input_name)
+
+    # Then: the expected normalized name is returned
+    assert result == expected_name
+
+
+def test_filter_lists_excludes_matching_ids():
+    """
+    Given:
+        - An include list of id/name dicts and a list of ids to exclude.
+    When:
+        - Running filter_lists.
+    Then:
+        - Only items whose id is not in the exclude list remain.
+    """
+    # Given: an include list and ids to exclude
+    include = [{"id": "a", "name": "A"}, {"id": "b", "name": "B"}, {"id": "c", "name": "C"}]
+    exclude = ["b"]
+
+    # When: filtering
+    result = filter_lists(include=include, exclude=exclude)
+
+    # Then: the excluded id is removed, others remain
+    assert result == [{"id": "a", "name": "A"}, {"id": "c", "name": "C"}]
+
+
+def test_get_content_details_uses_detected_type_and_id(mocker, tmp_path):
+    """
+    Given:
+        - A tar member whose file is detected by find_type and parsed to a dict with an id.
+    When:
+        - Running get_content_details.
+    Then:
+        - The detected entity type and the resolved id/name are returned.
+    """
+    # Given: a member that extracts to a small yaml file, with mocked SDK helpers
+    member = mocker.Mock()
+    member.name = "integration-pff.yml"
+
+    extracted = mocker.Mock()
+    extracted.read.return_value = b"id: pff\nname: pff"
+    tar_handler = mocker.Mock()
+    tar_handler.extractfile.return_value = extracted
+
+    mocker.patch("GetIdsFromCustomContent.find_type", return_value=FileType.INTEGRATION)
+    mocker.patch("GetIdsFromCustomContent.get_yaml", return_value={"id": "pff", "name": "pff"})
+    mocker.patch("GetIdsFromCustomContent._get_file_id", return_value="pff")
+    mocker.patch("GetIdsFromCustomContent.get_file_displayed_name", return_value="pff")
+
+    # When: extracting the content details
+    entity, id_name = get_content_details(tar_handler, member)
+
+    # Then: the detected type and resolved id/name are returned
+    assert entity == "integration"
+    assert id_name == {"id": "pff", "name": "pff"}
+
+
+def test_get_content_details_raises_when_extraction_fails(mocker):
+    """
+    Given:
+        - A tar member whose extractfile returns None (cannot be extracted).
+    When:
+        - Running get_content_details.
+    Then:
+        - An exception is raised indicating the file could not be extracted.
+    """
+    # Given: a tar handler that fails to extract the member
+    member = mocker.Mock()
+    member.name = "integration-pff.yml"
+    tar_handler = mocker.Mock()
+    tar_handler.extractfile.return_value = None
+
+    # When / Then: extraction failure raises
+    with pytest.raises(Exception, match="Could not extract file"):
+        get_content_details(tar_handler, member)
+
+
+def test_get_custom_content_ids_raises_when_no_file_path(mocker):
+    """
+    Given:
+        - demisto.getFilePath returns a result without a 'path'.
+    When:
+        - Running get_custom_content_ids.
+    Then:
+        - A ValueError is raised indicating the file path could not be found.
+    """
+    # Given: no path returned for the entry id
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": ""})
+
+    # When / Then: a ValueError is raised
+    with pytest.raises(ValueError, match="Could not find file path for entry id"):
+        get_custom_content_ids("missing_entry_id")
+
+
+def test_get_custom_content_ids_raises_when_entity_unparsable(mocker):
+    """
+    Given:
+        - A tar with a member whose content type and id cannot be resolved.
+    When:
+        - Running get_custom_content_ids.
+    Then:
+        - An exception is raised naming the unparsable member.
+    """
+    # Given: a tar with a single member, and get_content_details yielding no entity/id
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "some.tar.gz"})
+    member = mocker.Mock()
+    member.name = "unknown-file.json"
+    tar_handler = mocker.Mock()
+    tar_handler.getmembers.return_value = [member]
+    mocker.patch("GetIdsFromCustomContent.tarfile.open", return_value=tar_handler)
+    mocker.patch("GetIdsFromCustomContent.get_content_details", return_value=("", {"id": None, "name": ""}))
+
+    # When / Then: the unparsable member triggers an exception
+    with pytest.raises(Exception, match="Could not parse content type and id from file name unknown-file.json"):
+        get_custom_content_ids("some_entry_id")

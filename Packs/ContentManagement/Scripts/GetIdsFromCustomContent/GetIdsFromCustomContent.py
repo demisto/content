@@ -10,7 +10,7 @@ from typing import Any
 import demistomock as demisto
 from CommonServerPython import *
 from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_file, get_json, get_yaml
+from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_json, get_yaml
 
 from CommonServerUserPython import *
 
@@ -93,8 +93,17 @@ def get_content_details(tar_file_handler: Any, member_file: Any) -> tuple[str, d
         if file_type_str == "automation":
             file_type_str = "script"
 
-        file_type_str = "list" if not file_type_str and file_name.startswith("list-") else file_type_str
-        file_dict = get_file(file_path, Path(file_name).suffix[1:])
+        # find_type cannot detect some content types (e.g. lists, pre-process rules),
+        # so fall back to deriving the entity from the exported file-name prefix.
+        if not file_type_str:
+            if file_name.startswith("list-"):
+                file_type_str = "list"
+            elif file_name.startswith("preprocessrule-"):
+                file_type_str = "pre-process-rule"
+        # Use the stable get_yaml/get_json wrappers (which take only a file path) instead of calling
+        # get_file directly, since get_file's signature differs between demisto-sdk versions.
+        file_suffix = Path(file_name).suffix.lower()
+        file_dict = get_yaml(file_path) if file_suffix in (".yml", ".yaml") else get_json(file_path)
         file_id = _get_file_id(file_type_str, file_dict)
         file_id = file_id if file_id else file_dict.get("id")
         file_name = get_file_displayed_name(file_path)
