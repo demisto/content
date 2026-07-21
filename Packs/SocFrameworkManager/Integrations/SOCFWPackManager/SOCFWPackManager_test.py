@@ -165,11 +165,21 @@ def _make_test_zip(tmp_dir, nested=True):
 # ---------------------------------------------------------------------------
 
 
-def test_upload_pack_as_system_content_success(monkeypatch):
-    """Given a valid pack path, upload_pack_as_system_content should configure
-    demisto_client with the correct credentials and call upload_content_packs."""
+def test_upload_pack_as_system_content_success(monkeypatch, tmp_path):
+    """Given a valid pack ZIP path, upload_pack_as_system_content should configure
+    demisto_client with the correct credentials and call upload_content_packs.
+
+    Uses a real ZIP file on disk (not an arbitrary string) and asserts the
+    forwarded path is an actual ZIP file — a bare string pass-through assertion
+    would mask a caller handing over a directory instead of a ZIP.
+    """
     mod, _ = load_integration()
     client = _make_client(mod)
+
+    # A real ZIP file on disk so the assertion below can verify file-ness.
+    zip_path = str(tmp_path / "TestPack.zip")
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("pack_metadata.json", json.dumps({"name": "TestPack", "currentVersion": "1.0.0"}))
 
     # Track calls to demisto_client.configure and upload_content_packs
     configure_calls = []
@@ -188,22 +198,24 @@ def test_upload_pack_as_system_content_success(monkeypatch):
         return inst
 
     # Patch demisto_client in the module's import scope
-    import types as _types
-
-    fake_dc = _types.ModuleType("demisto_client")
+    fake_dc = types.ModuleType("demisto_client")
     fake_dc.configure = _mock_configure
     monkeypatch.setitem(sys.modules, "demisto_client", fake_dc)
 
-    result = client.upload_pack_as_system_content("/tmp/TestPack.zip")
+    result = client.upload_pack_as_system_content(zip_path)
 
-    assert result == {"success": True, "message": "Uploaded /tmp/TestPack.zip"}
+    assert result == {"success": True, "message": f"Uploaded {zip_path}"}
     assert len(configure_calls) == 1
     assert configure_calls[0]["base_url"] == client._api_base_url
     assert configure_calls[0]["api_key"] == "my-key"
     assert configure_calls[0]["auth_id"] == "3"
     assert configure_calls[0]["verify_ssl"] is True
     assert len(upload_calls) == 1
-    assert upload_calls[0] == "/tmp/TestPack.zip"
+    # Assert the forwarded target is a real ZIP file, not a directory — a bare
+    # string equality check would not catch a directory being passed.
+    assert upload_calls[0] == zip_path
+    assert os.path.isfile(upload_calls[0])
+    assert zipfile.is_zipfile(upload_calls[0])
 
 
 def test_upload_pack_as_system_content_failure(monkeypatch):
