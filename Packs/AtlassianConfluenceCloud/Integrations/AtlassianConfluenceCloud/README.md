@@ -4632,41 +4632,6 @@ Creates a new blog post in Confluence Cloud (REST API v2).
 | ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. |
 | ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
 
-### confluence-cloud-inline-comment-create
-
-***
-Creates an inline comment in Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-inline-comment-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| body_value | The content body value of the comment. | Required |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional |
-| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional |
-| blogpost_id | The ID of the blog post to attach the comment to. | Optional |
-| parent_comment_id | The ID of the parent comment to reply to. | Optional |
-| attachment_id | The ID of the attachment to attach the comment to. | Optional |
-| custom_content_id | The ID of the custom content to attach the comment to. | Optional |
-| text_selection | The text to highlight for the inline comment. | Optional |
-| text_selection_match_count | The total number of matches of the text selection in the content. | Optional |
-| text_selection_match_index | The zero-based index of the match to attach the inline comment to. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ConfluenceCloud.Comment.id | String | The ID of the comment. |
-| ConfluenceCloud.Comment.status | String | The status of the comment. |
-| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. |
-| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. |
-| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. |
-| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. |
-
 ### confluence-cloud-blogpost-list
 
 ***

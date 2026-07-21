@@ -42,7 +42,6 @@ URL_SUFFIX_V2 = {
     "BLOGPOSTS": "/wiki/api/v2/blogposts",
     "SPACES": "/wiki/api/v2/spaces",
     "FOOTER_COMMENTS": "/wiki/api/v2/footer-comments",
-    "INLINE_COMMENTS": "/wiki/api/v2/inline-comments",
 }
 
 MESSAGES = {
@@ -109,7 +108,6 @@ MESSAGES = {
     "HR_BLOGPOST_UPDATE": "Blog post with ID {} was updated successfully.",
     "HR_BLOGPOST_DELETE": "Blog post with ID {} was deleted successfully.",
     "HR_FOOTER_COMMENT_CREATE": "Footer comment with ID {} was created successfully.",
-    "HR_INLINE_COMMENT_CREATE": "Inline comment with ID {} was created successfully.",
     "HR_SPACE_CREATE_V2": "Space with ID {} was created successfully.",
 }
 OUTPUT_PREFIX = {
@@ -1360,14 +1358,12 @@ def prepare_hr_for_content_list_v2(contents: list[dict[str, Any]], label: str) -
     )
 
 
-def validate_comment_create_args_v2(args: dict[str, str], is_inline: bool) -> None:
+def validate_comment_create_args_v2(args: dict[str, str]) -> None:
     """
-    Validate arguments for footer-comment-create and inline-comment-create v2 commands.
+    Validate arguments for footer-comment-create v2 command.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
-    :type is_inline: ``bool``
-    :param is_inline: Whether the comment is an inline comment.
 
     :return: None
     """
@@ -1383,19 +1379,17 @@ def validate_comment_create_args_v2(args: dict[str, str], is_inline: bool) -> No
         raise ValueError(MESSAGES["MISSING_COMMENT_CONTAINER_V2"])
 
 
-def prepare_comment_create_params_v2(args: dict[str, str], is_inline: bool) -> dict[str, Any]:
+def prepare_comment_create_params_v2(args: dict[str, str]) -> dict[str, Any]:
     """
-    Build the request body for footer-comment-create and inline-comment-create v2 commands.
+    Build the request body for footer-comment-create v2 command.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
-    :type is_inline: ``bool``
-    :param is_inline: Whether the comment is an inline comment.
 
     :return: The request body object.
     :rtype: ``Dict[str, Any]``
     """
-    validate_comment_create_args_v2(args, is_inline)
+    validate_comment_create_args_v2(args)
 
     body = prepare_content_body_v2(args, LEGAL_COMMENT_BODY_REPRESENTATION_V2, "INVALID_COMMENT_BODY_REPRESENTATION_V2")
     params: dict[str, Any] = {
@@ -1407,21 +1401,12 @@ def prepare_comment_create_params_v2(args: dict[str, str], is_inline: bool) -> d
         "customContentId": args.get("custom_content_id"),
     }
 
-    if is_inline:
-        inline_properties = assign_params(
-            textSelection=args.get("text_selection"),
-            textSelectionMatchCount=arg_to_number(args.get("text_selection_match_count"), arg_name="text_selection_match_count"),
-            textSelectionMatchIndex=arg_to_number(args.get("text_selection_match_index"), arg_name="text_selection_match_index"),
-        )
-        if inline_properties:
-            params["inlineCommentProperties"] = inline_properties
-
     return assign_params(**params)
 
 
 def prepare_hr_for_comment_v2(comment: dict[str, Any], label: str) -> str:
     """
-    Prepare human-readable output for a created v2 footer/inline comment.
+    Prepare human-readable output for a created v2 footer comment.
 
     :type comment: ``Dict[str, Any]``
     :param comment: The comment data.
@@ -2203,42 +2188,13 @@ def confluence_cloud_footer_comment_create_command(client: Client, args: dict[st
     :return: Standard command result.
     :rtype: ``CommandResults``
     """
-    params = prepare_comment_create_params_v2(args, is_inline=False)
+    params = prepare_comment_create_params_v2(args)
 
     response = client.http_request(method="POST", url_suffix=URL_SUFFIX_V2["FOOTER_COMMENTS"], json_data=params)
     response_json = response.json()
 
     context = remove_empty_elements_for_context(response_json)
     readable_hr = prepare_hr_for_comment_v2(response_json, "Footer Comment")
-
-    return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX["COMMENT"],
-        outputs_key_field="id",
-        outputs=context,
-        readable_output=readable_hr,
-        raw_response=response_json,
-    )
-
-
-def confluence_cloud_inline_comment_create_command(client: Client, args: dict[str, str]) -> CommandResults:
-    """
-    Create an inline comment using the Confluence Cloud REST API v2.
-
-    :type client: ``Client``
-    :param client: Client object to be used.
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Standard command result.
-    :rtype: ``CommandResults``
-    """
-    params = prepare_comment_create_params_v2(args, is_inline=True)
-
-    response = client.http_request(method="POST", url_suffix=URL_SUFFIX_V2["INLINE_COMMENTS"], json_data=params)
-    response_json = response.json()
-
-    context = remove_empty_elements_for_context(response_json)
-    readable_hr = prepare_hr_for_comment_v2(response_json, "Inline Comment")
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["COMMENT"],
@@ -2539,7 +2495,6 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-blogpost-update": confluence_cloud_blogpost_update_command,
             "confluence-cloud-blogpost-delete": confluence_cloud_blogpost_delete_command,
             "confluence-cloud-footer-comment-create": confluence_cloud_footer_comment_create_command,
-            "confluence-cloud-inline-comment-create": confluence_cloud_inline_comment_create_command,
             "confluence-cloud-space-listv2": confluence_cloud_space_list_command_v2,
             "confluence-cloud-space-createv2": confluence_cloud_space_create_command_v2,
         }

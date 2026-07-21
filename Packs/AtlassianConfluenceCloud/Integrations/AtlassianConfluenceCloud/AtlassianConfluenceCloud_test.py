@@ -1617,26 +1617,6 @@ def test_confluence_cloud_footer_comment_create_command(requests_mock):
     assert response.readable_output == expected_readable_output
 
 
-def test_confluence_cloud_inline_comment_create_command(requests_mock):
-    """
-    Given: Command arguments for the inline-comment-create command.
-    When: Calling `confluence-cloud-inline-comment-create`.
-    Then: The response data is returned in the ConfluenceCloud.Comment context.
-    """
-    from AtlassianConfluenceCloud import confluence_cloud_inline_comment_create_command
-
-    expected_response = util_load_json(
-        os.path.join("test_data", "footer_comment_create/footer_comment_create_command_response.json")
-    )
-    requests_mock.post(BASE_URL + URL_SUFFIX_V2["INLINE_COMMENTS"], json=expected_response)
-
-    args = {"body_value": "<p>Inline</p>", "page_id": "12345", "text_selection": "hello", "text_selection_match_count": "1"}
-    response = confluence_cloud_inline_comment_create_command(client, args)
-
-    assert response.outputs_prefix == "ConfluenceCloud.Comment"
-    assert response.outputs_key_field == "id"
-
-
 @pytest.mark.parametrize("args, err_msg", input_data.comment_create_v2_invalid_args)
 def test_confluence_cloud_comment_create_command_invalid_args(args, err_msg):
     """
@@ -1647,7 +1627,7 @@ def test_confluence_cloud_comment_create_command_invalid_args(args, err_msg):
     from AtlassianConfluenceCloud import validate_comment_create_args_v2
 
     with pytest.raises(ValueError) as de:
-        validate_comment_create_args_v2(args, is_inline=False)
+        validate_comment_create_args_v2(args)
     assert str(de.value) == err_msg
 
 

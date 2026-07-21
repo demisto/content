@@ -96,6 +96,7 @@ script:
       required: true
     - description: The title of the page.
       name: title
+      required: true
     - description: The status of the page to be created.
       name: status
       auto: PREDEFINED
@@ -106,6 +107,7 @@ script:
     - description: |-
         The content body value of the page.
       name: body_value
+      required: true
     - description: |-
         The content format type of the body value.
       name: body_representation
@@ -221,9 +223,11 @@ script:
     - description: |-
         The title of the page.
       name: title
+      required: true
     - description: |-
         The status of the page.
       name: status
+      required: true
       auto: PREDEFINED
       defaultValue: current
       predefined:
@@ -232,6 +236,7 @@ script:
     - description: |-
         The content body value of the page.
       name: body_value
+      required: true
     - auto: PREDEFINED
       description: |-
         The content format type of the body value.
@@ -288,6 +293,7 @@ script:
     - description: |-
         The title of the blog post.
       name: title
+      required: true
     - description: The status of the blog post to be created.
       name: status
       auto: PREDEFINED
@@ -297,6 +303,7 @@ script:
       - draft
     - description: "The content body value of the blog post."
       name: body_value
+      required: true
     - auto: PREDEFINED
       description: |-
         The content format type of the body value.
@@ -393,6 +400,7 @@ script:
     - description: |-
         The title of the blog post.
       name: title
+      required: true
     - description: |-
         The status of the blog post.
       name: status
@@ -404,6 +412,7 @@ script:
     - description: |-
         The content body value of the blog post.
       name: body_value
+      required: true
     - description: |-
         The content format type of the body value.
       name: body_representation
@@ -476,57 +485,6 @@ script:
       name: custom_content_id
     description: Creates a footer comment in Confluence Cloud (REST API v2).
     name: confluence-cloud-footer-comment-create
-    outputs:
-    - contextPath: ConfluenceCloud.Comment.id
-      description: The ID of the comment.
-      type: String
-    - contextPath: ConfluenceCloud.Comment.status
-      description: The status of the comment.
-      type: String
-    - contextPath: ConfluenceCloud.Comment.pageId
-      description: The ID of the page the comment belongs to.
-      type: String
-    - contextPath: ConfluenceCloud.Comment.blogPostId
-      description: The ID of the blog post the comment belongs to.
-      type: String
-    - contextPath: ConfluenceCloud.Comment.parentCommentId
-      description: The ID of the parent comment.
-      type: String
-    - contextPath: ConfluenceCloud.Comment.version.number
-      description: The version number of the comment.
-      type: Number
-  - arguments:
-    - description: |-
-        The content body value of the comment.
-      name: body_value
-      required: true
-    - defaultValue: 'storage'
-      description: |-
-        The content format type of the body value.
-      name: body_representation
-      auto: PREDEFINED
-      predefined:
-      - storage
-      - atlas_doc_format
-    - description: |-
-        The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required.
-      name: page_id
-    - description: The ID of the blog post to attach the comment to.
-      name: blogpost_id
-    - description: The ID of the parent comment to reply to.
-      name: parent_comment_id
-    - description: The ID of the attachment to attach the comment to.
-      name: attachment_id
-    - description: The ID of the custom content to attach the comment to.
-      name: custom_content_id
-    - description: The text to highlight for the inline comment.
-      name: text_selection
-    - description: The total number of matches of the text selection in the content.
-      name: text_selection_match_count
-    - description: The zero-based index of the match to attach the inline comment to.
-      name: text_selection_match_index
-    description: Creates an inline comment in Confluence Cloud (REST API v2).
-    name: confluence-cloud-inline-comment-create
     outputs:
     - contextPath: ConfluenceCloud.Comment.id
       description: The ID of the comment.
