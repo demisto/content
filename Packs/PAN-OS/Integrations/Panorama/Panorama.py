@@ -12638,9 +12638,7 @@ def system_status_command(args: dict) -> PollResult:
     # the final one when the polling timeout is hit.
     command_result = dataclasses_to_command_results(status, empty_result_message="No system status.")
     if not is_up:
-        command_result.readable_output = (
-            f"Waiting for device {target} to become available (current status: up={is_up})..."
-        )
+        command_result.readable_output = f"Waiting for device {target} to become available (current status: up={is_up})..."
 
     return PollResult(
         response=command_result,
