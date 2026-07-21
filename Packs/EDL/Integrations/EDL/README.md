@@ -31,6 +31,12 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
 2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
 
+### 429 Too Many Requests error
+
+NGINX builds each cache entry only once at a time. If a request arrives while the same cache entry (same request URL and parameters, such as the *q* inline argument) is still being built for the first time, it is rejected with an HTTP `429 Too Many Requests` instead of being queued. Different requests build separate cache entries and are still served in parallel. During a refresh of an already-cached entry, the previous data is served (HTTP `200`) with no `429`.
+
+This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
+
 ### Deleted or expired indicators showing in EDL export
 
 Append `expirationStatus:active` to the end of the query.

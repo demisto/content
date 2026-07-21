@@ -343,3 +343,11 @@ There are no input arguments for this command.
 >|api_roots|default|description|title|
 >|---|---|---|---|
 >| https:<span>//</span>foo.cooo.com/inc/threatintel/ | https:<span>//</span>foo.cooo.com/inc/threatintel/ | This integration provides TAXII Services for system indicators (Outbound feed). | Cortex XSOAR TAXII2 Server |
+
+## Troubleshooting
+
+### 429 Too Many Requests error
+
+NGINX builds each cache entry only once at a time. If a request arrives while the same cache entry (same request URL and parameters) is still being built for the first time, it is rejected with an HTTP `429 Too Many Requests` instead of being queued. Different requests build separate cache entries and are still served in parallel. During a refresh of an already-cached entry, the previous data is served (HTTP `200`) with no `429`.
+
+This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
