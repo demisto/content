@@ -373,28 +373,22 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
         int: An exit code indicating the validation status; 0 for success and non-zero for failures.
 
     """
-    # These demisto-sdk modules exist in the runtime image but not in the pinned
-    # lint image (demisto/xsoar-tools:1.0.0.11131287), so pylint cannot resolve them.
-    from demisto_sdk.commands.common.constants import ExecutionMode  # pylint: disable=no-name-in-module
-    from demisto_sdk.commands.validate.config_reader import ConfigReader  # pylint: disable=import-error,no-name-in-module
-    from demisto_sdk.commands.validate.initializer import Initializer  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.common.constants import ExecutionMode
+    from demisto_sdk.commands.validate.config_reader import ConfigReader
+    from demisto_sdk.commands.validate.initializer import Initializer
     from demisto_sdk.commands.validate.validate_manager import ValidateManager
-    from demisto_sdk.commands.validate.validation_results import ResultWriter  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.validate.validation_results import ResultWriter
 
     result_writer = ResultWriter(json_output_file)
     config_reader = ConfigReader(category=DEFAULT_CONFIG_CATEGORY)
     initializer = Initializer(
         staged=False, committed_only=False, file_path=str(path_to_validate), execution_mode=ExecutionMode.SPECIFIC_FILES
     )
-    # ValidateManager's signature/members differ between the runtime SDK and the pinned lint
-    # image, so pylint reports false E1123/E1101 for the newer API used here.
-    validate_manager = ValidateManager(  # pylint: disable=unexpected-keyword-arg
-        result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"]
-    )
-    demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")  # pylint: disable=no-member
+    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"])
+    demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")
     err_file = io.StringIO()
     with redirect_stderr(err_file):
-        exit_code: int = validate_manager.run_validations()  # pylint: disable=no-member
+        exit_code: int = validate_manager.run_validations()
     demisto.debug(f"run_validate {exit_code=}")
     return exit_code
 
@@ -500,8 +494,7 @@ def run_pre_commit(output_path: Path) -> int:
         int: An exit code indicating the validation status; 0 for success and non-zero for failures.
 
     """
-    # Not resolvable by pylint in the pinned lint image; available at runtime.
-    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
 
     os.environ["DEMISTO_SDK_DISABLE_MULTIPROCESSING"] = "true"
     demisto.debug(f"run_pre_commit | {get_skipped_hooks()=} | {PRE_COMMIT_TEMPLATE_PATH=} | {output_path=}")
@@ -785,9 +778,7 @@ def main():
             demisto.debug(f"created {tmp_dir=}")
 
             # Setup Demisto SDK's logging.
-            # logging_setup's signature differs between the runtime SDK and the pinned
-            # lint image, producing false E1120/E1123 under pylint against the old image.
-            logging_setup(  # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
+            logging_setup(
                 calling_function="ValidateContent",
                 console_threshold="DEBUG" if is_debug_mode() else "ERROR",
                 propagate=True,
