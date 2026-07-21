@@ -1,0 +1,114 @@
+[
+    {
+        "id": "HVI-23813230",
+        "ticket_id": "HVI-23813230",
+        "timestamp": 1717070113000,
+        "first_seen": 1717070113000,
+        "last_seen": 1726650534000,
+        "progress_status": "New",
+        "severity": "medium",
+        "asset": "172.17.20.4:443",
+        "ip": "172.17.20.4",
+        "port": 443,
+        "uri": "http://172.17.20.4/wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2",
+        "url": "http://172.17.20.4",
+        "issue_name": "WordPress Newspaper < 12 - Cross-Site Scripting (CVE-2022-2627)",
+        "issue_type": "Vulnerability",
+        "issue_description": "WordPress Newspaper theme before 12 is susceptible to cross-site scripting. The theme does not sanitize a parameter before outputting it back in an HTML attribute via an AJAX action.\n",
+        "cpe": "cpe:2.3:a:tagdiv:newspaper:*:*:*:*:*:wordpress:*:*",
+        "cve_id": [
+            "cve-2022-2627"
+        ],
+        "cvss_metrics": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+        "cvss_score": 6.1,
+        "epss_score": 0.00119,
+        "known_exploited": false,
+        "hackerview_link": "https://platform.ctm360.com/hackerview/deepscan/issues/resolved/HVI-23813230",
+        "evidence": {
+            "request": "POST /wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2 HTTP/1.1\r\nHost: 172.17.20.4\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 146\r\n\r\naction=td_ajax_loop&loopState[moduleId]=--><form><math><img+onerror=alert(1)+src=1><mtext></form>",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<!-- wp_booster error: reflected XSS PoC in moduleId -->",
+            "curl_command": "curl -X POST -d 'action=td_ajax_loop&loopState[moduleId]=test' -H 'Content-Type: application/x-www-form-urlencoded' 'http://172.17.20.4/wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2'"
+        },
+        "domain": "",
+        "asset_type": "services",
+        "host": [
+            "example.com",
+            "www.example.com"
+        ],
+        "brand": "REPERSEA"
+    },
+    {
+        "id": "HVI-56431595",
+        "ticket_id": "HVI-56431595",
+        "timestamp": 1776797271000,
+        "first_seen": 1769307877000,
+        "last_seen": 1776797271000,
+        "progress_status": "New",
+        "severity": "informational",
+        "asset": "some.site.tld:80",
+        "ip": "3.121.143.46",
+        "port": 80,
+        "uri": "https://some.site.tld/robots.txt",
+        "url": "http://some.site.tld",
+        "issue_name": "robots.txt file",
+        "issue_type": "Vulnerability",
+        "issue_description": "",
+        "cpe": null,
+        "cve_id": [],
+        "cvss_metrics": null,
+        "cvss_score": null,
+        "epss_score": null,
+        "known_exploited": false,
+        "hackerview_link": "https://platform.ctm360.com/hackerview/deepscan/issues/open/HVI-56431595",
+        "evidence": {
+            "request": "GET /robots.txt HTTP/1.1\r\nHost: some.site.tld\r\n\r\n",
+            "response": "HTTP/1.1 200 OK\r\n\r\n",
+            "curl_command": "curl -s 'http://some.site.tld/robots.txt'"
+        },
+        "domain": "",
+        "asset_type": "host",
+        "host": [
+            "some.site.tld",
+            "www.some.site.tld"
+        ],
+        "brand": "REPERSEA"
+    },
+    {
+        "id": "HVI-99912344",
+        "ticket_id": "HVI-99912344",
+        "timestamp": 1717067813000,
+        "first_seen": 1717067813000,
+        "last_seen": 1730279622000,
+        "progress_status": "New",
+        "severity": "medium",
+        "asset": "172.16.20.1:443",
+        "ip": "172.16.20.1",
+        "port": 443,
+        "uri": "http://172.16.20.1/wp-admin/admin-ajax.php?action=30643345fe3b00db637aaf895ca3d2f4",
+        "url": "http://172.16.20.1",
+        "issue_name": "WordPress Redux Framework <=4.2.11 - Information Disclosure (CVE-2021-38314)",
+        "issue_type": "Vulnerability",
+        "issue_description": "WordPress Redux Framework plugin through 4.2.11 is susceptible to information disclosure.",
+        "cpe": "cpe:2.3:a:redux:gutenberg_template_library_\\&_redux_framework:*:*:*:*:*:wordpress:*:*",
+        "cve_id": [
+            "cve-2021-38314"
+        ],
+        "cvss_metrics": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+        "cvss_score": 5.3,
+        "epss_score": 0.00153,
+        "known_exploited": false,
+        "hackerview_link": "https://platform.ctm360.com/hackerview/deepscan/issues/resolved/HVI-99912344",
+        "evidence": {
+            "request": "GET /wp-admin/admin-ajax.php?action=x HTTP/1.1\r\nHost: 172.16.20.1\r\n\r\n",
+            "response": "HTTP/1.1 200 OK\r\n\r\n",
+            "curl_command": "curl -X GET 'http://172.16.20.1/wp-admin/admin-ajax.php?action=x'"
+        },
+        "domain": "",
+        "asset_type": "services",
+        "host": [
+            "example.com",
+            "www.example.com"
+        ],
+        "brand": "REPERSEA"
+    }
+]
