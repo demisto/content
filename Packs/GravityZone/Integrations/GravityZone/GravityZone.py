@@ -1406,7 +1406,7 @@ def generate_endpoint_entry_from_list(device) -> dict[str, Any]:
         "FQDN": device.get("details", {}).get("fqdn"),
         "IP": device.get("details", {}).get("ip"),
         "OS": device.get("details", {}).get("operatingSystemVersion"),
-        "MAC": device.get("details", {}).get("macs", [None])[0],
+        "MAC": (device.get("details", {}).get("macs") or [None])[0],
         "Vendor": INTEGRATION_NAME,
     }
     return entry
