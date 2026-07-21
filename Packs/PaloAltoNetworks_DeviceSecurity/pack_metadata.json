@@ -1,0 +1,42 @@
+{
+    "name": "Device Security by Palo Alto Networks",
+    "description": "Collects Palo Alto Networks Device Security alerts and vulnerabilities in Cortex XSOAR, applies RACI-based triage guidance, and supports ServiceNow ticket creation and status-based incident closure workflows.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
+    "itemPrefix": [
+        "Device Security"
+    ],
+    "useCases": [
+        "Incident Response",
+        "Network Security",
+        "Vulnerability Management",
+        "Asset Management"
+    ],
+    "keywords": [
+        "Palo Alto Networks",
+        "device security",
+        "iot",
+        "ot",
+        "vulnerability",
+        "raci",
+        "servicenow"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
