@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rubrik DSPM Violation"
+        "Rubrik DSPM Violation",
+        "Rubrik IR Violation"
     ],
     "caseInsensitive": true,
     "cliName": "rubrikmediumriskhits",

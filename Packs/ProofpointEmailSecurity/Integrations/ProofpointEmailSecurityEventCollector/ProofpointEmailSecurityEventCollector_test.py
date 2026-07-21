@@ -1,5 +1,6 @@
 import uuid
 from contextlib import ExitStack, contextmanager
+from http import HTTPStatus
 
 import ProofpointEmailSecurityEventCollector
 import pytest
@@ -12,14 +13,20 @@ from ProofpointEmailSecurityEventCollector import (
     EventConnection,
     datetime,
     demisto,
+    exceptions,
     fetch_events,
     json,
     long_running_execution_command,
     perform_long_running_loop,
+    time,
     timedelta,
     websocket_connections,
+    MAX_RECONNECT_ATTEMPTS,
     PING_TIMEOUT,
     CLOSE_TIMEOUT,
+    OPEN_TIMEOUT,
+    PING_INTERVAL,
+    MAX_MESSAGE_SIZE,
 )
 
 CURRENT_TIME: datetime | None = None
@@ -144,8 +151,11 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
-            ping_timeout=PING_TIMEOUT,
+            open_timeout=OPEN_TIMEOUT,
             close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
         )
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
@@ -161,8 +171,11 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
-            ping_timeout=PING_TIMEOUT,
+            open_timeout=OPEN_TIMEOUT,
             close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
         )
 
 
@@ -449,6 +462,93 @@ def test_receive_events_after_disconnection(mocker, connection: MockConnection):
     assert events[1]["message"] == "In-transit 2"
 
 
+def _make_invalid_status(status_code):
+    """Build a websockets InvalidStatus exception carrying the given HTTP status code."""
+    response = type("Resp", (), {"status_code": status_code})()
+    return exceptions.InvalidStatus(response)
+
+
+def test_reconnect_success_after_conflict(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose first reconnect attempt fails with an HTTP 409 (session conflict)
+          and whose second attempt succeeds.
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the backoff sleep is applied once and the connection is re-established
+          without raising.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    conflict = _make_invalid_status(HTTPStatus.CONFLICT)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=[conflict, connection])
+    sleep_mock = mocker.patch.object(time, "sleep")
+
+    event_connection.reconnect()
+
+    assert connect_mock.call_count == 2
+    assert sleep_mock.call_count == 1  # one backoff wait before the successful retry
+    assert event_connection.connection is connection
+
+
+def test_reconnect_raises_on_non_conflict_status(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose reconnect attempt fails with a non-409 InvalidStatus (e.g. 401).
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the exception is raised immediately without retrying or sleeping.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    unauthorized = _make_invalid_status(HTTPStatus.UNAUTHORIZED)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=unauthorized)
+    sleep_mock = mocker.patch.object(time, "sleep")
+
+    with pytest.raises(exceptions.InvalidStatus):
+        event_connection.reconnect()
+
+    assert connect_mock.call_count == 1  # no retry on non-conflict status
+    assert sleep_mock.call_count == 0
+
+
+def test_reconnect_gives_up_after_max_attempts(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection whose reconnect attempts always fail with HTTP 409 (session conflict).
+
+    When:
+        - Calling reconnect().
+
+    Then:
+        - Ensure the retry loop is bounded by MAX_RECONNECT_ATTEMPTS and does not loop forever.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={}, check_heartbeat=False)
+
+    conflict = _make_invalid_status(HTTPStatus.CONFLICT)
+    connect_mock = mocker.patch.object(EventConnection, "connect", side_effect=conflict)
+    mocker.patch.object(time, "sleep")
+
+    event_connection.reconnect()
+
+    assert connect_mock.call_count == MAX_RECONNECT_ATTEMPTS
+
+
 def test_recover_after_disconnection_with_reconnect(mocker, connection: MockConnection):
     """
     Given:
@@ -492,7 +592,7 @@ def test_recover_after_disconnection_with_reconnect(mocker, connection: MockConn
     assert existing_events[2]["message"] == "In-transit 2"
     assert "2" in existing_event_ids
     assert "3" in existing_event_ids
-    assert reconnect_mock.call_count == 1  # Should not be called because reconnect=False
+    assert reconnect_mock.call_count == 1  # Should be called once because reconnect=True
 
 
 def test_recover_after_disconnection_without_reconnect(mocker, connection: MockConnection):
@@ -529,3 +629,45 @@ def test_recover_after_disconnection_without_reconnect(mocker, connection: MockC
     assert len(existing_events) == 1
     assert 1 in existing_event_ids
     assert reconnect_mock.call_count == 0  # Should not be called because reconnect=False
+
+
+def test_recover_after_disconnection_reconnect_failure(mocker, connection: MockConnection):
+    """
+    Given:
+        - A connection that has been disconnected
+        - No in-transit events to receive
+        - reconnect() raises an exception (e.g. the Proofpoint server is unreachable)
+
+    When:
+        - Calling recover_after_disconnection with reconnect=True
+
+    Then:
+        - Ensure the exception is re-raised so the long-running loop can restart the connection
+        - Ensure the reconnection failure is logged via demisto.error
+    """
+    existing_events: list[dict] = []
+    existing_event_ids: set[str] = set()
+
+    mocker.patch.object(
+        ProofpointEmailSecurityEventCollector,
+        "receive_events_after_disconnection",
+        return_value=[],
+    )
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    reconnect_mock = mocker.patch.object(
+        EventConnection, "reconnect", side_effect=DemistoException("[Errno 104] Connection reset by peer")
+    )
+    error_mock = mocker.patch.object(demisto, "error")
+    event_connection = EventConnection(event_type="message", url="wss://testing", headers={})
+
+    with pytest.raises(DemistoException, match="Connection reset by peer"):
+        ProofpointEmailSecurityEventCollector.recover_after_disconnection(
+            connection=event_connection,
+            events=existing_events,
+            event_ids=existing_event_ids,
+            reconnect=True,
+        )
+
+    assert reconnect_mock.call_count == 1
+    assert error_mock.called
+    assert "Failed to reconnect after disconnection" in error_mock.call_args[0][0]

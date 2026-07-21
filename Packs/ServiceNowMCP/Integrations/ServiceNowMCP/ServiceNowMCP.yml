@@ -76,7 +76,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/mcp:1.0.0.9624924
+  dockerimage: demisto/mcp:1.0.0.10120494
   mcp: true
 fromversion: 8.13.0
 tests:
