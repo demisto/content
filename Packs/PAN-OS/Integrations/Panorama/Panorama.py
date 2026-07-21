@@ -12606,6 +12606,50 @@ def system_status(topology: Topology, target: str) -> CheckSystemStatus:
     return UniversalCommand.check_system_availability(topology, hostid=target)
 
 
+@polling_function(
+    name="pan-os-platform-get-system-status",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout", 1200)),
+    requires_polling_arg=True,
+)
+def system_status_command(args: dict) -> PollResult:
+    """
+    Wraps `system_status` with polling support.
+
+    When `polling=true`, keeps polling until the target device reports operational mode
+    "normal" (i.e. `up=True`), or until the timeout is reached.
+
+    On every poll iteration the current `CheckSystemStatus` is written to context via the
+    `partial_result`. This guarantees that if the timeout is reached before the device
+    comes up, the war-room still shows the last known status (with `PANOS.SystemStatus.up`)
+    instead of only the generic "waiting" message, and no unhandled error is raised.
+    """
+    target = args.get("target")
+    if not target:
+        raise DemistoException("The 'target' argument is required.")
+
+    topology = get_topology()
+    status = system_status(topology, target=target)
+
+    is_up = bool(getattr(status, "up", False))
+
+    # Always build the full CommandResults from the current status so that
+    # `PANOS.SystemStatus` is present in context on every iteration - including
+    # the final one when the polling timeout is hit.
+    command_result = dataclasses_to_command_results(status, empty_result_message="No system status.")
+    if not is_up:
+        command_result.readable_output = (
+            f"Waiting for device {target} to become available (current status: up={is_up})..."
+        )
+
+    return PollResult(
+        response=command_result,
+        continue_to_poll=not is_up,
+        args_for_next_run=args,
+        partial_result=command_result,
+    )
+
+
 def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabilityStateStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
@@ -16927,12 +16971,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-system-status":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    system_status(topology, **demisto.args()), empty_result_message="No system status."
-                )
-            )
+            return_results(system_status_command(demisto.args()))
         elif command == "pan-os-platform-update-ha-state":
             topology = get_topology()
             return_results(
