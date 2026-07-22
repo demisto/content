@@ -2341,6 +2341,9 @@ script:
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device ID.
       type: String
+    - contextPath: JAMF.MobileDeviceCommands.management_id
+      description: The device-level management ID of the mobile device.
+      type: String
   - arguments:
     - description: 'Filter results to a specific command UUID.'
       name: command_uuid

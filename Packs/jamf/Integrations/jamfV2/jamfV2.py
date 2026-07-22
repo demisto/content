@@ -2408,10 +2408,14 @@ def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> Command
     command_uuid = response.get("commandUuid")
     device_id = response.get("deviceId")
 
+    # Preserve the management_id output by resolving it from the mobile device id.
+    management_id = client.resolve_mobile_device_management_id(str(mobile_id))
+
     outputs = {
         "name": "EraseDevice",
         "command_uuid": command_uuid,
         "id": device_id,
+        "management_id": management_id,
     }
     remove_nulls_from_dictionary(outputs)
 
@@ -2419,6 +2423,7 @@ def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> Command
         "Name": "EraseDevice",
         "ID": device_id,
         "Command UUID": command_uuid,
+        "Management ID": management_id,
     }
     return CommandResults(
         readable_output=tableToMarkdown(

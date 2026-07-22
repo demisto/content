@@ -876,6 +876,7 @@ def test_mobile_device_erase_command(mocker):
         "mobile_device_erase_request",
         return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
     )
+    mocker.patch.object(client, "resolve_mobile_device_management_id", return_value="73226fb6-d507")
 
     result = mobile_device_erase_command(client, args)
 
@@ -890,6 +891,7 @@ def test_mobile_device_erase_command(mocker):
         "name": "EraseDevice",
         "command_uuid": "b2a5b2e8-814b-461a-a406-02231c11f179",
         "id": "114",
+        "management_id": "73226fb6-d507",
     }
 
 
@@ -913,6 +915,7 @@ def test_mobile_device_erase_command_alias_only(mocker):
         "mobile_device_erase_request",
         return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
     )
+    mocker.patch.object(client, "resolve_mobile_device_management_id", return_value="73226fb6-d507")
 
     mobile_device_erase_command(client, args)
 
@@ -946,6 +949,7 @@ def test_mobile_device_erase_command_alias_precedence(mocker):
         "mobile_device_erase_request",
         return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
     )
+    mocker.patch.object(client, "resolve_mobile_device_management_id", return_value="73226fb6-d507")
 
     mobile_device_erase_command(client, args)
 
