@@ -317,10 +317,14 @@ def test_gz_endpoint_list_command_valid_name_values(mock_demisto, requests_mock,
 
 @patch("GravityZone.demisto")
 @pytest.mark.parametrize(
-    "invalid_name",
-    ["ab", "ac*b", "ac*b*d"],
+    ("invalid_name", "expected_error"),
+    [
+        ("ab", r"The 'name' argument must be at least 3 characters long\."),
+        ("ac*b", r"If using a wildcard, the 'name' argument must start with '\*'\."),
+        ("ac*b*d", r"The 'name' argument can only contain one wildcard '\*' character\."),
+    ],
 )
-def test_gz_endpoint_list_command_invalid_name_values(mock_demisto, requests_mock, invalid_name):
+def test_gz_endpoint_list_command_invalid_name_values(mock_demisto, requests_mock, invalid_name, expected_error):
     """
     Given
             An invalid `name` argument value
@@ -338,7 +342,7 @@ def test_gz_endpoint_list_command_invalid_name_values(mock_demisto, requests_moc
     client = get_client()
 
     # Execute + Assert
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match=expected_error):
         gz_endpoint_list_command(client=client, args={"name": invalid_name})
 
     # Invalid input should fail before API calls
