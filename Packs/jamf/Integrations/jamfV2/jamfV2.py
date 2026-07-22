@@ -2190,36 +2190,106 @@ def get_computers_by_app_command(client: Client, args: dict[str, Any]) -> List[C
 
 
 def mobile_device_lost_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    mobile_id = args["id"]
-    lost_mode_msg = args.get("lost_mode_message")
+    mobile_id = args.get("id")
+    management_id = args.get("management_id")
+    lost_mode_message = args.get("lost_mode_message")
+    lost_mode_phone = args.get("lost_mode_phone")
+    lost_mode_footnote = args.get("lost_mode_footnote")
 
-    mobile_response = client.mobile_device_lost_request(mobile_id, lost_mode_msg)
-    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
-    mobile_outputs["name"] = "EnableLostMode"
+    # The MDM API requires at least one of lostModeMessage / lostModePhone.
+    if not lost_mode_message and not lost_mode_phone:
+        return_error("At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.")
 
+    # If management_id is supplied use it directly, otherwise resolve it from the mobile device id.
+    resolved_management_id = management_id or client.resolve_mobile_device_management_id(str(mobile_id))
+
+    command_data: dict[str, Any] = {"commandType": "ENABLE_LOST_MODE"}
+    if lost_mode_message:
+        command_data["lostModeMessage"] = lost_mode_message
+    if lost_mode_phone:
+        command_data["lostModePhone"] = lost_mode_phone
+    if lost_mode_footnote:
+        command_data["lostModeFootnote"] = lost_mode_footnote
+
+    response = client.post_mdm_command(resolved_management_id, command_data)
+
+    first_command = response[0] if response else {}
+    command_id = first_command.get("id")
+    href = first_command.get("href")
+
+    outputs = {
+        "name": "EnableLostMode",
+        "id": command_id,
+        "href": href,
+        "management_id": resolved_management_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EnableLostMode",
+        "ID": command_id,
+        "Management ID": resolved_management_id,
+    }
     return CommandResults(
-        readable_output=tableToMarkdown(f"Computer {mobile_id} locked successfully", readable_output, removeNull=True),
+        readable_output=tableToMarkdown(
+            f"Mobile device {mobile_id or resolved_management_id} lost mode enabled successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         outputs_prefix="JAMF.MobileDeviceCommands",
         outputs_key_field="id",
-        outputs=mobile_outputs,
-        raw_response=mobile_response,
+        outputs=outputs,
+        raw_response=response,
     )
 
 
 def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mobile_id = args["id"]
-    preserve_data_plan = args.get("preserve_data_plan", False)
-    clear_activation_code = args.get("clear_activation_code", False)
+    preserve_data_plan = argToBoolean(args.get("preserve_data_plan", False))
+    disallow_proximity_setup = argToBoolean(args.get("disallow_proximity_setup", False))
+    return_to_service = argToBoolean(args.get("return_to_service", False))
 
-    mobile_response = client.mobile_device_erase_request(mobile_id, preserve_data_plan, clear_activation_code)
-    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
-    mobile_outputs["name"] = "EraseDevice"
+    # clear_activation_code is a deprecated alias of clear_activation_lock; the canonical arg wins if both supplied.
+    if "clear_activation_lock" in args:
+        clear_activation_lock = argToBoolean(args.get("clear_activation_lock"))
+    else:
+        clear_activation_lock = argToBoolean(args.get("clear_activation_code", False))
+
+    response = client.mobile_device_erase_request(
+        mobile_id,
+        preserve_data_plan=preserve_data_plan,
+        disallow_proximity_setup=disallow_proximity_setup,
+        clear_activation_lock=clear_activation_lock,
+        return_to_service=return_to_service,
+    )
+
+    command_uuid = response.get("commandUuid")
+    device_id = response.get("deviceId")
+
+    outputs = {
+        "name": "EraseDevice",
+        "command_uuid": command_uuid,
+        "id": device_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EraseDevice",
+        "ID": device_id,
+        "Command UUID": command_uuid,
+    }
     return CommandResults(
-        readable_output=tableToMarkdown(f"Mobile device {mobile_id} erased successfully", readable_output, removeNull=True),
+        readable_output=tableToMarkdown(
+            f"Mobile device {mobile_id} erased successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         outputs_prefix="JAMF.MobileDeviceCommands",
         outputs_key_field="id",
-        outputs=mobile_outputs,
-        raw_response=mobile_response,
+        outputs=outputs,
+        raw_response=response,
     )
 
 
