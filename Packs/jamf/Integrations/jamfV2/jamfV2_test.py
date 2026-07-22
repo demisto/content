@@ -171,96 +171,403 @@ def test_get_computer_general_subset_deprecated_command(mocker):
     assert computer_response.outputs == expected_response
 
 
-def test_computer_lock_command(mocker):
+def test_computer_lock_command_with_id(mocker):
     """
     Given
-    - Get computers command with no arguments.
+    - Computer lock command with a numeric computer id and passcode/lock_message.
     When
-    - Run get computers command
+    - Run computer lock command.
     Then
-    - Ensure the response matches the default limit.
+    - Ensure managementId is resolved from the id, the DEVICE_LOCK MDM command is queued,
+      and the context outputs match the preserved schema (name/command_uuid/href/computer_id).
     """
     from jamfV2 import Client, computer_lock_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": 138, "passcode": 123456, "lock_msg": "Test"}
-    mock_response = load_xml_response("test_data/computer_lock/computer_lock_raw_response.xml")
+    args = {"id": "138", "passcode": "123456", "lock_message": "Locked"}
 
-    mocker.patch.object(client, "computer_lock_request", return_value=json.loads(xml2json(mock_response)))
+    resolve_mock = mocker.patch.object(client, "resolve_computer_management_id", return_value="6bc9fc18-fa52")
+    post_mock = mocker.patch.object(
+        client,
+        "post_mdm_command",
+        return_value=[{"id": "52", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52"}],
+    )
 
-    computer_response = computer_lock_command(client, args)
-    expected_response = util_load_json("test_data/computer_lock/computer_lock_context.json")
-    assert computer_response.outputs == expected_response
+    result = computer_lock_command(client, args)
+
+    resolve_mock.assert_called_once_with("138")
+    post_mock.assert_called_once_with(
+        "6bc9fc18-fa52",
+        {"commandType": "DEVICE_LOCK", "pin": "123456", "message": "Locked"},
+    )
+    assert result.outputs == {
+        "name": "DeviceLock",
+        "command_uuid": "52",
+        "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52",
+        "computer_id": "138",
+    }
+
+
+def test_computer_lock_command_with_management_id(mocker):
+    """
+    Given
+    - Computer lock command with an explicit management_id and a phone_number.
+    When
+    - Run computer lock command.
+    Then
+    - Ensure managementId resolution is skipped, the phoneNumber is passed through,
+      and the management_id is included in the context outputs.
+    """
+    from jamfV2 import Client, computer_lock_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"management_id": "6bc9fc18-fa52", "phone_number": "123-456-7890"}
+
+    resolve_mock = mocker.patch.object(client, "resolve_computer_management_id")
+    post_mock = mocker.patch.object(
+        client,
+        "post_mdm_command",
+        return_value=[{"id": "52", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52"}],
+    )
+
+    result = computer_lock_command(client, args)
+
+    resolve_mock.assert_not_called()
+    post_mock.assert_called_once_with(
+        "6bc9fc18-fa52",
+        {"commandType": "DEVICE_LOCK", "phoneNumber": "123-456-7890"},
+    )
+    assert result.outputs == {
+        "name": "DeviceLock",
+        "command_uuid": "52",
+        "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52",
+        "management_id": "6bc9fc18-fa52",
+    }
+
+
+def test_computer_lock_command_missing_identifiers(mocker):
+    """
+    Given
+    - Computer lock command without id and without management_id.
+    When
+    - Run computer lock command.
+    Then
+    - Ensure return_error is raised (validation of at least one identifier).
+    """
+    from jamfV2 import Client, computer_lock_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    return_error_mock = mocker.patch("jamfV2.return_error", side_effect=SystemExit)
+
+    with pytest.raises(SystemExit):
+        computer_lock_command(client, {"passcode": "123456"})
+
+    return_error_mock.assert_called_once()
 
 
 def test_computer_erase_command(mocker):
     """
     Given
-    - erase computer command with id and passcode.
+    - Erase computer command with id and passcode.
     When
-    - Run erase computer command
+    - Run erase computer command.
     Then
-    - Ensure the response matches .
+    - Ensure the dedicated erase endpoint is called with {"pin": passcode} and the
+      preserved context outputs (name/command_uuid/computer_id) are emitted.
     """
     from jamfV2 import Client, computer_erase_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": 138, "passcode": 123456}
-    mock_response = load_xml_response("test_data/computer_erase/computer_erase_raw_response.xml")
+    args = {"id": "138", "passcode": "123456"}
 
-    mocker.patch.object(client, "computer_erase_request", return_value=json.loads(xml2json(mock_response)))
+    erase_mock = mocker.patch.object(
+        client,
+        "computer_erase_request",
+        return_value={"deviceId": "138", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
 
-    computer_response = computer_erase_command(client, args)
-    expected_response = util_load_json("test_data/computer_erase/computer_erase_context.json")
-    assert computer_response.outputs == expected_response
+    result = computer_erase_command(client, args)
+
+    erase_mock.assert_called_once_with("138", "123456")
+    assert result.outputs == {
+        "name": "EraseDevice",
+        "command_uuid": "b2a5b2e8-814b-461a-a406-02231c11f179",
+        "computer_id": "138",
+    }
 
 
-def test_get_users_command(mocker):
+def test_resolve_computer_management_id(mocker):
     """
     Given
-    - Get users command with no arguments.
+    - A numeric computer id.
     When
-    - Run get users command
+    - Client.resolve_computer_management_id is called.
     Then
-    - Ensure the response matches the default limit.
+    - Ensure it GETs computers-inventory GENERAL section and returns general.managementId
+      (device-level, not the per-user userManagementInfo managementId).
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"id": "138", "general": {"managementId": "6bc9fc18-fa52"}},
+    )
+
+    management_id = client.resolve_computer_management_id("138")
+
+    assert management_id == "6bc9fc18-fa52"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v3/computers-inventory/138"
+    assert http_mock.call_args.kwargs["params"] == {"section": "GENERAL"}
+
+
+def test_post_mdm_command(mocker):
+    """
+    Given
+    - A managementId and commandData payload.
+    When
+    - Client.post_mdm_command is called.
+    Then
+    - Ensure it POSTs to /api/v2/mdm/commands with the correct clientData/commandData body
+      and returns the API response list.
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=[{"id": "52", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52"}],
+    )
+
+    response = client.post_mdm_command("6bc9fc18-fa52", {"commandType": "DEVICE_LOCK", "pin": "123456"})
+
+    assert response == [{"id": "52", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/52"}]
+    assert http_mock.call_args.kwargs["method"] == "POST"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v2/mdm/commands"
+    assert http_mock.call_args.kwargs["json_data"] == {
+        "clientData": [{"managementId": "6bc9fc18-fa52"}],
+        "commandData": {"commandType": "DEVICE_LOCK", "pin": "123456"},
+    }
+
+
+def test_computer_erase_request(mocker):
+    """
+    Given
+    - A numeric computer id and passcode.
+    When
+    - Client.computer_erase_request is called.
+    Then
+    - Ensure it POSTs to the dedicated /api/v1/computer-inventory/{id}/erase endpoint with {"pin": passcode}.
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"deviceId": "138", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
+
+    response = client.computer_erase_request("138", "123456")
+
+    assert response == {"deviceId": "138", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"}
+    assert http_mock.call_args.kwargs["method"] == "POST"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v1/computer-inventory/138/erase"
+    assert http_mock.call_args.kwargs["json_data"] == {"pin": "123456"}
+
+
+def test_computer_erase_request_without_passcode(mocker):
+    """
+    Given
+    - A numeric computer id and no passcode.
+    When
+    - Client.computer_erase_request is called.
+    Then
+    - Ensure the request body omits the "pin" field entirely (sends {} rather than {"pin": None}).
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"deviceId": "138", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
+
+    response = client.computer_erase_request("138")
+
+    assert response == {"deviceId": "138", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"}
+    assert http_mock.call_args.kwargs["method"] == "POST"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v1/computer-inventory/138/erase"
+    assert http_mock.call_args.kwargs["json_data"] == {}
+    assert "pin" not in http_mock.call_args.kwargs["json_data"]
+
+
+def test_get_users_command_by_id(mocker):
+    """
+    Given
+    - get-users command with an id argument.
+    When
+    - Run get_users_command.
+    Then
+    - Ensure the Pro API by-id endpoint is called and the single user is normalized
+      (realname -> name, phone -> phone_number) with new Pro fields preserved.
     """
     from jamfV2 import Client, get_users_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {}
-    mock_response = util_load_json("test_data/get_users/get_users_raw_response.json")
 
-    mocker.patch.object(client, "get_users_request", return_value=mock_response)
+    raw_user = {
+        "id": "1",
+        "realname": "John Doe",
+        "email": "john@example.com",
+        "phone": "123-456-7890",
+        "position": "Engineer",
+        "managedAppleId": "john@managed.example.com",
+        "enableCustomPhotoUrl": False,
+        "customPhotoUrl": "",
+    }
+    by_id_mock = mocker.patch.object(client, "get_user_by_id_request", return_value=raw_user)
 
-    users_response = get_users_command(client, args)
-    expected_response = util_load_json("test_data/get_users/get_users_context.json")
-    assert users_response[0].outputs == expected_response
+    results = get_users_command(client, {"id": "1"})
+
+    by_id_mock.assert_called_once_with("1")
+    outputs = results[0].outputs
+    assert outputs == [
+        {
+            "id": "1",
+            "realname": "John Doe",
+            "email": "john@example.com",
+            "phone": "123-456-7890",
+            "position": "Engineer",
+            "managedAppleId": "john@managed.example.com",
+            "enableCustomPhotoUrl": False,
+            "customPhotoUrl": "",
+            "name": "John Doe",
+            "phone_number": "123-456-7890",
+        }
+    ]
+    assert results[1].outputs == {"total_results": 1, "page_size": 50, "current_page": 0}
 
 
-def test_get_users_limit_command(mocker):
+def test_get_users_command_by_name_filter(mocker):
     """
     Given
-    - Limit and page arguments
+    - get-users command with a name argument.
     When
-    - Run get users command
+    - Run get_users_command.
     Then
-    - Ensure the result are according to the limit and page
+    - Ensure the Pro list endpoint is called with the RSQL username filter and
+      the response is normalized.
     """
     from jamfV2 import Client, get_users_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"limit": 10, "page": 2}
-    mock_response = util_load_json("test_data/get_users/get_users_raw_response.json")
 
-    mocker.patch.object(client, "get_users_request", return_value=mock_response)
+    pro_response = {
+        "totalCount": 1,
+        "results": [{"id": "5", "realname": "Jane", "email": "jane@example.com", "phone": "555"}],
+    }
+    list_mock = mocker.patch.object(client, "get_users_pro_request", return_value=pro_response)
 
-    users_response = get_users_command(client, args)
-    expected_response = util_load_json("test_data/get_users/get_users_limit_context.json")
-    assert users_response[0].outputs == expected_response
+    results = get_users_command(client, {"name": "jane"})
+
+    list_mock.assert_called_once_with(limit=50, page=0, filter_query='username=="jane"')
+    assert results[0].outputs == [
+        {
+            "id": "5",
+            "realname": "Jane",
+            "email": "jane@example.com",
+            "phone": "555",
+            "name": "Jane",
+            "phone_number": "555",
+        }
+    ]
+
+
+def test_get_users_command_by_email_filter(mocker):
+    """
+    Given
+    - get-users command with an email argument.
+    When
+    - Run get_users_command.
+    Then
+    - Ensure the Pro list endpoint is called with the RSQL email filter.
+    """
+    from jamfV2 import Client, get_users_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    pro_response = {
+        "totalCount": 1,
+        "results": [{"id": "9", "realname": "Bob", "email": "bob@example.com", "phone": "777"}],
+    }
+    list_mock = mocker.patch.object(client, "get_users_pro_request", return_value=pro_response)
+
+    results = get_users_command(client, {"email": "bob@example.com"})
+
+    list_mock.assert_called_once_with(limit=50, page=0, filter_query='email=="bob@example.com"')
+    assert results[0].outputs == [
+        {
+            "id": "9",
+            "realname": "Bob",
+            "email": "bob@example.com",
+            "phone": "777",
+            "name": "Bob",
+            "phone_number": "777",
+        }
+    ]
+
+
+def test_get_users_command_list_with_pagination(mocker):
+    """
+    Given
+    - get-users command with limit and page arguments and no id/name/email.
+    When
+    - Run get_users_command.
+    Then
+    - Ensure server-side pagination is used (page/page-size passed through, no client-side
+      slicing) and all returned users are normalized. totalCount drives the paging output.
+    """
+    from jamfV2 import Client, get_users_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    # The API already returns only the requested page; the command must NOT slice further.
+    pro_response = {
+        "totalCount": 42,
+        "results": [
+            {"id": "1", "realname": "User One", "email": "one@example.com", "phone": "111"},
+            {"id": "2", "realname": "User Two", "email": "two@example.com", "phone": "222"},
+        ],
+    }
+    list_mock = mocker.patch.object(client, "get_users_pro_request", return_value=pro_response)
+
+    results = get_users_command(client, {"limit": 10, "page": 2})
+
+    list_mock.assert_called_once_with(limit=10, page=2, filter_query=None)
+    outputs = results[0].outputs
+    # No client-side slicing: both users from the page are returned as-is.
+    assert len(outputs) == 2
+    assert outputs[0]["name"] == "User One"
+    assert outputs[0]["phone_number"] == "111"
+    assert outputs[1]["name"] == "User Two"
+    assert outputs[1]["phone_number"] == "222"
+    assert results[1].outputs == {"total_results": 42, "page_size": 10, "current_page": 2}
 
 
 def test_get_mobile_devices_command(mocker):
@@ -401,50 +708,414 @@ def test_get_computers_by_app_command(mocker):
     assert computer_response[0].outputs == expected_response
 
 
-def test_mobile_device_lost_command(mocker):
+def test_resolve_mobile_device_management_id(mocker):
     """
     Given
-    - mobile device id and lost-mode message arguments.
+    - A numeric mobile device id.
     When
-    - Run mobile device lost command
+    - Client.resolve_mobile_device_management_id is called.
     Then
-    - Ensure the response matches.
+    - Ensure it GETs the mobile-devices detail endpoint and returns the top-level managementId.
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"id": "1", "managementId": "73226fb6-d507"},
+    )
+
+    management_id = client.resolve_mobile_device_management_id("1")
+
+    assert management_id == "73226fb6-d507"
+    assert http_mock.call_args.kwargs["method"] == "GET"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v2/mobile-devices/1/detail"
+
+
+def test_resolve_mobile_device_management_id_missing(mocker):
+    """
+    Given
+    - A mobile device detail response missing the managementId.
+    When
+    - Client.resolve_mobile_device_management_id is called.
+    Then
+    - Ensure a DemistoException is raised.
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    mocker.patch.object(client, "_http_request", return_value={"id": "1"})
+
+    with pytest.raises(DemistoException):
+        client.resolve_mobile_device_management_id("1")
+
+
+def test_mobile_device_lost_command_with_id(mocker):
+    """
+    Given
+    - Mobile device lost-mode command with a numeric id and lost_mode_message/lost_mode_phone.
+    When
+    - Run mobile device lost command.
+    Then
+    - Ensure managementId is resolved from the id, the ENABLE_LOST_MODE MDM command is queued,
+      and the context outputs match the schema (name/id/href/management_id).
     """
     from jamfV2 import Client, mobile_device_lost_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": 114, "lost_mode_message": "test"}
-    mock_response = load_xml_response("test_data/mobile_device_lost/mobile_device_lost_raw_response.xml")
+    args = {"id": "1", "lost_mode_message": "Lost", "lost_mode_phone": "123-456-7890"}
 
-    mocker.patch.object(client, "mobile_device_lost_request", return_value=json.loads(xml2json(mock_response)))
+    resolve_mock = mocker.patch.object(client, "resolve_mobile_device_management_id", return_value="73226fb6-d507")
+    post_mock = mocker.patch.object(
+        client,
+        "post_mdm_command",
+        return_value=[{"id": "53", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/53"}],
+    )
 
-    mobile_response = mobile_device_lost_command(client, args)
-    expected_response = util_load_json("test_data/mobile_device_lost/mobile_device_lost_context.json")
-    assert mobile_response.outputs == expected_response
+    result = mobile_device_lost_command(client, args)
+
+    resolve_mock.assert_called_once_with("1")
+    post_mock.assert_called_once_with(
+        "73226fb6-d507",
+        {"commandType": "ENABLE_LOST_MODE", "lostModeMessage": "Lost", "lostModePhone": "123-456-7890"},
+    )
+    assert result.outputs == {
+        "name": "EnableLostMode",
+        "id": "53",
+        "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/53",
+        "management_id": "73226fb6-d507",
+    }
+
+
+def test_mobile_device_lost_command_with_management_id(mocker):
+    """
+    Given
+    - Mobile device lost-mode command with an explicit management_id and a footnote.
+    When
+    - Run mobile device lost command.
+    Then
+    - Ensure managementId resolution is skipped and the footnote is passed through.
+    """
+    from jamfV2 import Client, mobile_device_lost_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"management_id": "73226fb6-d507", "lost_mode_message": "Lost", "lost_mode_footnote": "Reward"}
+
+    resolve_mock = mocker.patch.object(client, "resolve_mobile_device_management_id")
+    post_mock = mocker.patch.object(
+        client,
+        "post_mdm_command",
+        return_value=[{"id": "53", "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/53"}],
+    )
+
+    result = mobile_device_lost_command(client, args)
+
+    resolve_mock.assert_not_called()
+    post_mock.assert_called_once_with(
+        "73226fb6-d507",
+        {"commandType": "ENABLE_LOST_MODE", "lostModeMessage": "Lost", "lostModeFootnote": "Reward"},
+    )
+    assert result.outputs == {
+        "name": "EnableLostMode",
+        "id": "53",
+        "href": "https://yourServer.jamfcloud.com/api/v2/mdm/commands/53",
+        "management_id": "73226fb6-d507",
+    }
+
+
+def test_mobile_device_lost_command_missing_message_and_phone(mocker):
+    """
+    Given
+    - Mobile device lost-mode command without lost_mode_message and without lost_mode_phone.
+    When
+    - Run mobile device lost command.
+    Then
+    - Ensure return_error is raised (validation requires at least one of message/phone).
+    """
+    from jamfV2 import Client, mobile_device_lost_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    return_error_mock = mocker.patch("jamfV2.return_error", side_effect=SystemExit)
+
+    with pytest.raises(SystemExit):
+        mobile_device_lost_command(client, {"id": "1", "lost_mode_footnote": "Reward"})
+
+    return_error_mock.assert_called_once()
 
 
 def test_mobile_device_erase_command(mocker):
     """
     Given
-    - Mobile device id and lost-mode message arguments.
+    - Mobile device erase command with id and the new boolean options.
     When
-    - Run mobile device lost command
+    - Run mobile device erase command.
     Then
-    - Ensure the response matches.
+    - Ensure the dedicated erase request is called with the boolean fields and the
+      preserved context outputs (name/command_uuid/id) are emitted.
     """
     from jamfV2 import Client, mobile_device_erase_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": 114}
-    mock_response = load_xml_response("test_data/mobile_device_erase/mobile_device_erase_raw_response.xml")
+    args = {
+        "id": "114",
+        "preserve_data_plan": "true",
+        "disallow_proximity_setup": "true",
+        "clear_activation_lock": "true",
+        "return_to_service": "false",
+    }
 
-    mocker.patch.object(client, "mobile_device_erase_request", return_value=json.loads(xml2json(mock_response)))
+    erase_mock = mocker.patch.object(
+        client,
+        "mobile_device_erase_request",
+        return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
 
-    computer_response = mobile_device_erase_command(client, args)
-    expected_response = util_load_json("test_data/mobile_device_erase/mobile_device_erase_context.json")
-    assert computer_response.outputs == expected_response
+    result = mobile_device_erase_command(client, args)
+
+    erase_mock.assert_called_once_with(
+        "114",
+        preserve_data_plan=True,
+        disallow_proximity_setup=True,
+        clear_activation_lock=True,
+        return_to_service=False,
+    )
+    assert result.outputs == {
+        "name": "EraseDevice",
+        "command_uuid": "b2a5b2e8-814b-461a-a406-02231c11f179",
+        "id": "114",
+    }
+
+
+def test_mobile_device_erase_command_alias_only(mocker):
+    """
+    Given
+    - Mobile device erase command using only the deprecated clear_activation_code alias.
+    When
+    - Run mobile device erase command.
+    Then
+    - Ensure the alias value is used for clearActivationLock.
+    """
+    from jamfV2 import Client, mobile_device_erase_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"id": "114", "clear_activation_code": "true"}
+
+    erase_mock = mocker.patch.object(
+        client,
+        "mobile_device_erase_request",
+        return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
+
+    mobile_device_erase_command(client, args)
+
+    erase_mock.assert_called_once_with(
+        "114",
+        preserve_data_plan=False,
+        disallow_proximity_setup=False,
+        clear_activation_lock=True,
+        return_to_service=False,
+    )
+
+
+def test_mobile_device_erase_command_alias_precedence(mocker):
+    """
+    Given
+    - Mobile device erase command with both clear_activation_lock and the deprecated
+      clear_activation_code alias set to conflicting values.
+    When
+    - Run mobile device erase command.
+    Then
+    - Ensure the canonical clear_activation_lock wins over the deprecated alias.
+    """
+    from jamfV2 import Client, mobile_device_erase_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"id": "114", "clear_activation_lock": "false", "clear_activation_code": "true"}
+
+    erase_mock = mocker.patch.object(
+        client,
+        "mobile_device_erase_request",
+        return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
+
+    mobile_device_erase_command(client, args)
+
+    erase_mock.assert_called_once_with(
+        "114",
+        preserve_data_plan=False,
+        disallow_proximity_setup=False,
+        clear_activation_lock=False,
+        return_to_service=False,
+    )
+
+
+def test_mobile_device_erase_request(mocker):
+    """
+    Given
+    - A mobile device id and erase option booleans.
+    When
+    - Client.mobile_device_erase_request is called.
+    Then
+    - Ensure it POSTs to the dedicated v2 erase endpoint with the correct JSON body.
+    """
+    from jamfV2 import Client
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"},
+    )
+
+    response = client.mobile_device_erase_request(
+        "114",
+        preserve_data_plan=False,
+        disallow_proximity_setup=False,
+        clear_activation_lock=True,
+        return_to_service=False,
+    )
+
+    assert response == {"deviceId": "114", "commandUuid": "b2a5b2e8-814b-461a-a406-02231c11f179"}
+    assert http_mock.call_args.kwargs["method"] == "POST"
+    assert http_mock.call_args.kwargs["url_suffix"] == "/api/v2/mobile-devices/114/erase"
+    assert http_mock.call_args.kwargs["json_data"] == {
+        "preserveDataPlan": False,
+        "disallowProximitySetup": False,
+        "clearActivationLock": True,
+        "returnToService": False,
+    }
+
+
+def test_mdm_command_status_filter_from_individual_args(mocker):
+    """
+    Given
+    - jamf-mdm-command-status command with individual args (status, command_name).
+    When
+    - Run mdm_command_status_command.
+    Then
+    - Ensure the RSQL filter is built from the individual args (ANDed with ';'),
+      page/page-size passed through, and results/paging returned.
+    """
+    from jamfV2 import Client, mdm_command_status_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    api_response = {
+        "totalCount": 1,
+        "results": [
+            {
+                "uuid": "b2a5b2e8-814b-461a-a406-02231c11f179",
+                "commandType": "REMOVE_PROFILE",
+                "commandState": "PENDING",
+                "dateSent": "2024-01-01T00:00:00Z",
+                "dateCompleted": None,
+                "client": {"managementId": "4810a46e-2941-414e-a6c0-c1bf303e2117", "clientType": "COMPUTER"},
+            }
+        ],
+    }
+    request_mock = mocker.patch.object(client, "get_mdm_commands_request", return_value=api_response)
+
+    results = mdm_command_status_command(
+        client,
+        {
+            "management_id": "4810a46e-2941-414e-a6c0-c1bf303e2117",
+            "status": "Pending",
+            "command_name": "REMOVE_PROFILE",
+            "limit": 25,
+            "page": 1,
+        },
+    )
+
+    request_mock.assert_called_once_with(
+        filter_query="clientManagementId==4810a46e-2941-414e-a6c0-c1bf303e2117;status==Pending;command==REMOVE_PROFILE",
+        limit=25,
+        page=1,
+    )
+    assert results[0].outputs == api_response["results"]
+    assert results[1].outputs == {"total_results": 1, "page_size": 25, "current_page": 1}
+
+
+def test_mdm_command_status_management_id_filter_field(mocker):
+    """
+    Given
+    - jamf-mdm-command-status command with only the management_id arg.
+    When
+    - Run mdm_command_status_command.
+    Then
+    - Ensure the built RSQL filter uses the flat 'clientManagementId' field, not the dotted 'client.managementId' response path.
+    """
+    from jamfV2 import Client, mdm_command_status_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    request_mock = mocker.patch.object(client, "get_mdm_commands_request", return_value={"totalCount": 0, "results": []})
+
+    mdm_command_status_command(client, {"management_id": "4810a46e-2941-414e-a6c0-c1bf303e2117"})
+
+    request_mock.assert_called_once_with(
+        filter_query="clientManagementId==4810a46e-2941-414e-a6c0-c1bf303e2117",
+        limit=50,
+        page=0,
+    )
+
+
+def test_mdm_command_status_raw_filter_override(mocker):
+    """
+    Given
+    - jamf-mdm-command-status command with a raw 'filter' arg AND individual args.
+    When
+    - Run mdm_command_status_command.
+    Then
+    - Ensure the raw filter takes precedence and the individual args are ignored.
+    """
+    from jamfV2 import Client, mdm_command_status_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    request_mock = mocker.patch.object(client, "get_mdm_commands_request", return_value={"totalCount": 0, "results": []})
+
+    mdm_command_status_command(
+        client,
+        {"filter": "clientType==COMPUTER_USER", "status": "Pending", "command_uuid": "should-be-ignored"},
+    )
+
+    request_mock.assert_called_once_with(filter_query="clientType==COMPUTER_USER", limit=50, page=0)
+
+
+def test_mdm_command_status_missing_args_validation(mocker):
+    """
+    Given
+    - jamf-mdm-command-status command with no filter and no individual filter args.
+    When
+    - Run mdm_command_status_command.
+    Then
+    - Ensure return_error is raised (a filter is mandatory).
+    """
+    from jamfV2 import Client, mdm_command_status_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    request_mock = mocker.patch.object(client, "get_mdm_commands_request")
+    mocker.patch("jamfV2.return_error", side_effect=SystemExit)
+
+    with pytest.raises(SystemExit):
+        mdm_command_status_command(client, {"limit": 50, "page": 0})
+
+    request_mock.assert_not_called()
 
 
 def test_computers_endpoint_request(mocker):
