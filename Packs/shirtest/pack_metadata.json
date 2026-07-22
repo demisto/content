@@ -14,7 +14,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "firstCreated": "2026-07-20T21:59:05Z"
 }
