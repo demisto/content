@@ -1,0 +1,300 @@
+{
+    "data": {
+        "activitySeriesConnection": {
+            "edges": [
+                {
+                    "node": {
+                        "id": 46549950,
+                        "fid": "00000000-0000-0000-0000-000000000001",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000001",
+                        "startTime": "2026-05-26T11:35:19.529Z",
+                        "lastUpdated": "2026-05-26T11:35:19.848Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "Adele Vance",
+                        "objectId": "00000000-0000-0000-0000-000000000001",
+                        "objectType": "O365Onedrive",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000009",
+                                    "message": "Results available in the Objects page for the workload 'Adele Vance' on the snapshot at Monday 26-May-26 11:35 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T11:35:19.848Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000011\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 46610656,
+                        "fid": "00000000-0000-0000-0000-000000000000",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000002",
+                        "startTime": "2026-05-26T14:50:55.581Z",
+                        "lastUpdated": "2026-05-26T14:50:55.581Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "",
+                        "objectId": "00000000-0000-0000-0000-000000000000",
+                        "objectType": "PolarisAccount",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000010",
+                                    "message": "Successfully added policies to workloads for clusters or hierarchy objects.",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T14:50:55.581Z"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139367,
+                        "fid": "00000000-0000-0000-0000-000000000002",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000005",
+                        "startTime": "2026-05-27T18:58:44.538Z",
+                        "lastUpdated": "2026-05-27T18:58:44.538Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-use-cases",
+                        "objectId": "00000000-0000-0000-0000-000000000002",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-use-cases' on the snapshot at Wednesday 27-May-26 18:57 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T18:58:44.538Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000005\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139368,
+                        "fid": "00000000-0000-0000-0000-000000000002",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000005",
+                        "startTime": "2026-05-27T18:58:44.538Z",
+                        "lastUpdated": "2026-05-27T18:58:44.538Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-use-cases",
+                        "objectId": "00000000-0000-0000-0000-000000000002",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-use-cases' on the snapshot at Wednesday 27-May-26 18:57 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T18:58:44.538Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000005\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139369,
+                        "fid": "00000000-0000-0000-0000-000000000003",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000003",
+                        "startTime": "2026-05-27T18:58:44.538Z",
+                        "lastUpdated": "2026-05-27T18:58:44.538Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-data",
+                        "objectId": "00000000-0000-0000-0000-000000000003",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000007",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-data' on the snapshot at Wednesday 27-May-26 18:57 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T18:58:44.538Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000009\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139370,
+                        "fid": "00000000-0000-0000-0000-000000000004",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000008",
+                        "startTime": "2026-05-27T19:10:00.000Z",
+                        "lastUpdated": "2026-05-27T19:10:00.000Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-low-risk",
+                        "objectId": "00000000-0000-0000-0000-000000000004",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000008",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-low-risk' on the snapshot at Wednesday 27-May-26 19:10 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T19:10:00.000Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000012\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139371,
+                        "fid": "00000000-0000-0000-0000-000000000005",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000013",
+                        "startTime": "2026-05-27T19:20:00.000Z",
+                        "lastUpdated": "2026-05-27T19:20:00.000Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-azure-vm",
+                        "objectId": "00000000-0000-0000-0000-000000000005",
+                        "objectType": "AzureNativeVirtualMachine",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000015",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-azure-vm' on the snapshot at Wednesday 27-May-26 19:20 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T19:20:00.000Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000013\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139372,
+                        "fid": "00000000-0000-0000-0000-000000000006",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000014",
+                        "startTime": "2026-05-27T19:30:00.000Z",
+                        "lastUpdated": "2026-05-27T19:30:00.000Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-no-hits",
+                        "objectId": "00000000-0000-0000-0000-000000000006",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000016",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-no-hits' on the snapshot at Wednesday 27-May-26 19:30 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T19:30:00.000Z",
+                                    "activityInfo": "{\"snapshotFid\": \"00000000-0000-0000-0000-000000000014\"}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139373,
+                        "fid": "00000000-0000-0000-0000-000000000007",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000015",
+                        "startTime": "2026-05-27T19:40:00.000Z",
+                        "lastUpdated": "2026-05-27T19:40:00.000Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-bad-info",
+                        "objectId": "00000000-0000-0000-0000-000000000007",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000017",
+                                    "message": "Results available in the Objects page for the workload 'rubrik-tm-bad-info' on the snapshot at Wednesday 27-May-26 19:40 UTC.",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T19:40:00.000Z",
+                                    "activityInfo": "not-valid-json"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "pageInfo": {
+                "endCursor": "cursor_5",
+                "hasNextPage": true,
+                "hasPreviousPage": false
+            }
+        }
+    }
+}
