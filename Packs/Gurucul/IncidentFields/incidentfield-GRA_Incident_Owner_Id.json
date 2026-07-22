@@ -1,0 +1,30 @@
+{
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRAIncident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "graincidentownerid",
+    "closeForm": false,
+    "content": true,
+    "description": "GRA Incident Owner Id",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_graincidentownerid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GRA Incident Owner Id",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

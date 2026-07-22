@@ -1,0 +1,200 @@
+{
+    "defaultIncidentType": "GRAIncident",
+    "description": "",
+    "feed": false,
+    "id": "GRAIncident-Mapper",
+    "mapping": {
+        "GRAIncident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GRA Incident": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "IN-"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Anomaly Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalies",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {},
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Entity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Entity Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Entity Type Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityTypeId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Open Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "openDate",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Owner Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Owner Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Owner Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ownerType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Risk Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskDate",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Risk Score": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskScore",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Incident Weblink": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "graweblink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GRA Incident Anomaly Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalies",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {},
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "GRAIncident-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "alertId": 101,
+    "anomalyName": "Suspicious Login",
+    "entityId": 10,
+    "entityTypeId": 1,
+    "entity": "jdoe",
+    "statusName": "OPEN",
+    "incidentType": null,
+    "detectionTimestamp": "2026-07-12T08:15:00",
+    "assignee": null,
+    "assigneeType": null,
+    "severity": 70.0,
+    "classifierList": "Login",
+    "resourceName": "Okta",
+    "riskScore": 65.0,
+    "subStatusName": null,
+    "graweblink": "https://example.net/alert/101",
+    "analyticalFeatures": {
+      "feat": 1
+    },
+    "analyticalFeatureValues": {
+      "feat": [
+        "a",
+        "b"
+      ]
+    }
+  }
+]

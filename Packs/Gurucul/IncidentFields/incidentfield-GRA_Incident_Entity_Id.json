@@ -1,0 +1,30 @@
+{
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRAIncident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "graincidententityid",
+    "closeForm": false,
+    "content": true,
+    "description": "GRA Incident Entity Id",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_graincidententityid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GRA Incident Entity Id",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}
