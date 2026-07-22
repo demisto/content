@@ -156,7 +156,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 680,
           "y": 500
         }
       }
@@ -183,6 +183,8 @@ tasks:
     nexttasks:
       "yes":
         - "3"
+      "no":
+        - "5"
     scriptarguments:
       brandname:
         simple: Vega
@@ -202,14 +204,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: fee16d3e-b78e-4ac9-995f-070ab8dfe819
+    type: regular
+    task:
+      id: fee16d3e-b78e-4ac9-995f-070ab8dfe819
+      version: -1
+      name: Vega Integration Not Available
+      description: Prints text to War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: The Vega integration is not available. Skipping posting IP enrichment results back to the Vega incident. Please ensure the Vega integration instance is configured and enabled.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 595,
-        "width": 380,
-        "x": 450,
+        "width": 840,
+        "x": 220,
         "y": 40
       }
     }
