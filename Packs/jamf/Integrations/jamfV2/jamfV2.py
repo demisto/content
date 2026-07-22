@@ -1122,16 +1122,6 @@ def get_computer_subset_context_mapping(response, subset):
     return context
 
 
-def computer_commands_readable_output(response):
-    computer_response = response.get("computer_command").get("command")
-    readable_output = {
-        "Name": computer_response.get("name"),
-        "Computer ID": computer_response.get("computer_id"),
-        "Command UUID": computer_response.get("command_uuid"),
-    }
-    return readable_output
-
-
 def get_users_readable_output(users_response, user_id=None, name=None, email=None):
     if user_id or name:
         readable_output = {
@@ -1342,15 +1332,6 @@ def get_computers_by_app_readable_output(response):
         readable_output.append({"version": version.get("number"), "Total number of computers": total_computers})
 
     return readable_output
-
-
-def mobile_device_commands_readable_output(response):
-    mobile_device_response = response.get("mobile_device_command").get("mobile_devices").get("mobile_device")
-    readable_output = {
-        "ID": mobile_device_response.get("id"),
-        "Management ID": mobile_device_response.get("management_id"),
-    }
-    return mobile_device_response, readable_output
 
 
 def generate_endpoint_by_context_standard(endpoints):
@@ -1919,41 +1900,128 @@ def get_computer_id_deprecated(client: Client, response, subset_name, identifier
 
 
 def computer_lock_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    computer_id = args["id"]
-    passcode = args["passcode"]
-    lock_msg = args.get("lock_message")
+    computer_id = args.get("id")
+    management_id = args.get("management_id")
 
-    computer_response = client.computer_lock_request(computer_id, passcode, lock_msg)
-    computer_lock_hr = computer_commands_readable_output(computer_response)
-    outputs = computer_response.get("computer_command").get("command")
+    if not computer_id and not management_id:
+        return_error("Either 'id' or 'management_id' must be provided.")
+
+    # If management_id is supplied use it directly, otherwise resolve it from the computer id.
+    resolved_management_id = management_id or client.resolve_computer_management_id(str(computer_id))
+
+    command_data: dict[str, Any] = {"commandType": "DEVICE_LOCK"}
+    if passcode := args.get("passcode"):
+        command_data["pin"] = passcode
+    if lock_message := args.get("lock_message"):
+        command_data["message"] = lock_message
+    if phone_number := args.get("phone_number"):
+        command_data["phoneNumber"] = phone_number
+
+    response = client.post_mdm_command(resolved_management_id, command_data)
+
+    first_command = response[0] if response else {}
+    command_uuid = first_command.get("id")
+    href = first_command.get("href")
+
+    outputs = {
+        "name": "DeviceLock",
+        "command_uuid": command_uuid,
+        "href": href,
+        "computer_id": computer_id,
+        "management_id": management_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "DeviceLock",
+        "Computer ID": computer_id,
+        "Command UUID": command_uuid,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
-            f"Computer {computer_id} locked successfully", computer_lock_hr, removeNull=True, headerTransform=pascalToSpace
+            f"Computer {computer_id or resolved_management_id} locked successfully",
+            readable_output,
+            removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         outputs_prefix="JAMF.ComputerCommand",
-        outputs_key_field="id",
+        outputs_key_field="command_uuid",
         outputs=outputs,
-        raw_response=computer_response,
+        raw_response=response,
     )
 
 
 def computer_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     computer_id = args["id"]
-    passcode = args["passcode"]
+    passcode = args.get("passcode")
 
-    computer_response = client.computer_erase_request(computer_id, passcode)
-    computer_erase_outputs = computer_commands_readable_output(computer_response)
-    outputs = computer_response.get("computer_command").get("command")
+    response = client.computer_erase_request(computer_id, passcode)
 
+    command_uuid = response.get("commandUuid")
+    device_id = response.get("deviceId")
+
+    outputs = {
+        "name": "EraseDevice",
+        "command_uuid": command_uuid,
+        "computer_id": device_id,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_output = {
+        "Name": "EraseDevice",
+        "Computer ID": device_id,
+        "Command UUID": command_uuid,
+    }
     return CommandResults(
         readable_output=tableToMarkdown(
-            f"Computer {computer_id} erased successfully", computer_erase_outputs, removeNull=True, headerTransform=pascalToSpace
+            f"Computer {computer_id} erased successfully", readable_output, removeNull=True, headerTransform=pascalToSpace
         ),
         outputs_prefix="JAMF.ComputerCommand",
-        outputs_key_field="id",
+        outputs_key_field="command_uuid",
         outputs=outputs,
-        raw_response=computer_response,
+        raw_response=response,
     )
+
+
+def normalize_pro_user(user: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a Pro API user object so existing JAMF.User context field names are preserved.
+
+    Maps Pro API fields to the legacy context field names:
+      - realname -> name
+      - phone -> phone_number
+    Keeps id and email as-is, and includes new Pro API fields
+    (position, enableCustomPhotoUrl, customPhotoUrl, managedAppleId) additively.
+
+    Args:
+        user (dict[str, Any]): A single user object from the Pro API.
+
+    Returns:
+        dict[str, Any]: The normalized user object for the JAMF.User context.
+    """
+    normalized: dict[str, Any] = dict(user)
+    normalized["name"] = user.get("realname")
+    normalized["phone_number"] = user.get("phone")
+    return normalized
+
+
+def get_pro_users_readable_output(users: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Build the Human Readable table rows for get-users from Pro API user objects.
+
+    Args:
+        users (list[dict[str, Any]]): List of Pro API user objects.
+
+    Returns:
+        list[dict[str, Any]]: Mapped fields for the Human Readable table.
+    """
+    return [
+        {
+            "ID": user.get("id"),
+            "Name": user.get("realname"),
+            "Email": user.get("email"),
+            "Phone": user.get("phone"),
+        }
+        for user in users
+    ]
 
 
 def get_users_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
