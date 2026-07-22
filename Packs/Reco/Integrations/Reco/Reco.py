@@ -65,7 +65,7 @@ def parse_minimum_risk_level(risk_level_param: str | None) -> list[str] | None:
     """Parse a single risk_level value into the list of severity names at or above it.
 
     Accepts a numeric value (10/20/30/40) or a name (LOW/MEDIUM/HIGH/CRITICAL).
-    Example: "MEDIUM" → ["MEDIUM", "HIGH", "CRITICAL"] (fetches medium severity and higher).
+    Example: "MEDIUM" -> ["MEDIUM", "HIGH", "CRITICAL"] (fetches medium severity and higher).
     """
     if not risk_level_param:
         return None
@@ -101,7 +101,7 @@ class RecoClient(BaseClient):
             },
         )
 
-    # ── External API helpers ──────────────────────────────────────────────────
+    # --- External API helpers ---
 
     def _rate_limited_request(self, method: str, url_suffix: str, **kwargs) -> dict[str, Any]:
         """Wrap _http_request with automatic 429 retry and exponential backoff.
@@ -204,7 +204,7 @@ class RecoClient(BaseClient):
             demisto.debug(f"_paginate_all {endpoint}: reached MAX_PAGES ({MAX_PAGES}) cap, stopping")
         return all_items
 
-    # ── Alerts (external API) ─────────────────────────────────────────────────
+    # --- Alerts (external API) ---
 
     def get_alerts(
         self,
@@ -225,7 +225,7 @@ class RecoClient(BaseClient):
             if len(risk_levels) == 1:
                 filter_parts.append(f'severity eq "{risk_levels[0]}"')
             else:
-                # Use the SCIM `in` operator — cleaner than a chain of OR clauses
+                # Use the SCIM `in` operator - cleaner than a chain of OR clauses
                 vals = ", ".join(f'"{r}"' for r in risk_levels)
                 filter_parts.append(f"severity in [{vals}]")
 
@@ -262,7 +262,7 @@ class RecoClient(BaseClient):
             raise
 
     def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:  # pragma: no cover
-        """Get alert AI summary (internal API — no external equivalent yet)."""
+        """Get alert AI summary (internal API - no external equivalent yet)."""
         try:
             return self._http_request(
                 method="GET",
@@ -274,7 +274,7 @@ class RecoClient(BaseClient):
             raise
 
     def change_alert_status(self, alert_id: str, status: str) -> Any:
-        """Change alert status (internal API — no external equivalent yet)."""
+        """Change alert status (internal API - no external equivalent yet)."""
         try:
             return self._http_request(
                 method="PUT",
@@ -285,7 +285,7 @@ class RecoClient(BaseClient):
             demisto.error(f"change_alert_status error: {str(e)}")
             raise
 
-    # ── Comments (external API) ───────────────────────────────────────────────
+    # --- Comments (external API) ---
 
     def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
         """Add a comment to an alert entity via the external API."""
@@ -300,7 +300,7 @@ class RecoClient(BaseClient):
             demisto.error(f"update_reco_incident_timeline error: {str(e)}")
             raise
 
-    # ── Labels (external API) ─────────────────────────────────────────────────
+    # --- Labels (external API) ---
 
     def add_entity_label(
         self,
@@ -328,7 +328,7 @@ class RecoClient(BaseClient):
             raise
 
     def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
-        """Resolve a visibility event (internal API — no external equivalent)."""
+        """Resolve a visibility event (internal API - no external equivalent)."""
         try:
             return self._http_request(
                 method="PUT",
@@ -353,7 +353,7 @@ class RecoClient(BaseClient):
             demisto.error(f"resolve_visibility_event error: {str(e)}")
             raise
 
-    # ── Identities / Users (external API) ────────────────────────────────────
+    # --- Identities / Users (external API) ---
 
     def get_identities(self, email_address: Optional[str] = None, label: Optional[str] = None) -> list[dict[str, Any]]:
         """List identities from the external API, optionally filtered by email."""
@@ -390,7 +390,7 @@ class RecoClient(BaseClient):
             demisto.error(f"get_user_context_by_email_address error: {str(e)}")
             raise
 
-    # ── Apps (external API) ───────────────────────────────────────────────────
+    # --- Apps (external API) ---
 
     def get_app_discovery(
         self,
@@ -425,7 +425,7 @@ class RecoClient(BaseClient):
             demisto.error(f"set_app_authorization_status error: {str(e)}")
             raise
 
-    # ── Files / Assets (external API) ────────────────────────────────────────
+    # --- Files / Assets (external API) ---
 
     def get_sensitive_assets_information(
         self, asset_name: str | None, asset_id: str | None, sensitive_only: bool, regex_search: bool
@@ -446,7 +446,7 @@ class RecoClient(BaseClient):
             demisto.error(f"get_sensitive_assets_information error: {str(e)}")
             raise
 
-    # ── Internal API methods (data risk management — no external equivalent) ──
+    # --- Internal API methods (data risk management - no external equivalent) ---
 
     def get_exposed_publicly_files_at_risk(self) -> list[dict[str, Any]]:
         """Get exposed publicly files at risk (internal API)."""
@@ -755,7 +755,7 @@ class RecoClient(BaseClient):
             demisto.error(f"add_exclusion_filter error: {str(e)}")
             raise
 
-    # ── New external API list methods ─────────────────────────────────────────
+    # --- New external API list methods ---
 
     def list_events(self, filters: str = "", count: int = PAGE_SIZE) -> dict[str, Any]:
         """List SaaS events via the external API."""
@@ -821,7 +821,7 @@ class RecoClient(BaseClient):
         """List NetApp files carrying an active label via the external API."""
         return self._external_api_list("labeled-netapp-files/list", filters=filters, count=count)
 
-    # ── API key validation ────────────────────────────────────────────────────
+    # --- API key validation ---
 
     def validate_api_key(self) -> str:
         """Validate the API token by making a minimal external API call."""
@@ -833,7 +833,7 @@ class RecoClient(BaseClient):
             raise
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# --- Helpers ---
 
 
 def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
@@ -870,7 +870,7 @@ def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
     return alert_as_dict
 
 
-# ── Alert fetching ─────────────────────────────────────────────────────────────
+# --- Alert fetching ---
 
 
 def get_alerts(
@@ -915,7 +915,7 @@ def get_alerts(
     return alerts_data
 
 
-# ── Score mapping ──────────────────────────────────────────────────────────────
+# --- Score mapping ---
 
 
 def map_reco_score_to_demisto_score(reco_score: int) -> int | float:
@@ -957,7 +957,7 @@ def _reco_risk_to_demisto_severity(raw_risk: Any) -> int | float:
         return map_reco_score_to_demisto_score(10)
 
 
-# ── Incident parsing ───────────────────────────────────────────────────────────
+# --- Incident parsing ---
 
 
 def parse_alerts_to_incidents(alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -986,7 +986,7 @@ def get_max_fetch(max_fetch: int) -> int:
     return min(max_fetch, 500)
 
 
-# ── Fetch incidents ────────────────────────────────────────────────────────────
+# --- Fetch incidents ---
 
 
 def fetch_incidents(
@@ -1027,7 +1027,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-# ── Command functions ──────────────────────────────────────────────────────────
+# --- Command functions ---
 
 
 def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
@@ -1306,7 +1306,7 @@ def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, a
     )
 
 
-# ── New command functions (external API) ──────────────────────────────────────
+# --- New command functions (external API) ---
 
 
 def list_events_command(reco_client: RecoClient, filters: str = "", limit: int = PAGE_SIZE) -> CommandResults:
@@ -1554,7 +1554,7 @@ def list_app_instances_command(reco_client: RecoClient, filters: str = "", limit
     )
 
 
-# ── Main ───────────────────────────────────────────────────────────────────────
+# --- Main ---
 
 
 def main() -> None:  # pragma: no cover
