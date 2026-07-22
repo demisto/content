@@ -4767,6 +4767,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 | JAMF.MobileDeviceCommands.name | String | The mobile device command name. |
 | JAMF.MobileDeviceCommands.command_uuid | String | The mobile device command UUID. |
 | JAMF.MobileDeviceCommands.id | String | The mobile device ID. |
+| JAMF.MobileDeviceCommands.management_id | String | The device-level management ID of the mobile device. |
 
 #### Command Example
 
