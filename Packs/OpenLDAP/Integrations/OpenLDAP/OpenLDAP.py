@@ -520,7 +520,11 @@ class LdapClient:
         """
         Gets a User logon name (the username that is used for log in to XSOAR)
         and returns the Active Directory username.
+
+        Surrounding whitespace is stripped to avoid creating duplicate users when a username is
+        entered with a leading/trailing space (XSUP-73382).
         """
+        logon_name = logon_name.strip()
         ad_username = logon_name
         if "\\" in logon_name:
             ad_username = logon_name.split("\\")[1]
