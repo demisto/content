@@ -2105,6 +2105,119 @@ def get_users_by_identifier_command(client: Client, args: dict[str, Any]) -> Com
     )
 
 
+def build_mdm_command_filter(args: dict[str, Any]) -> str:
+    """Build the RSQL filter for the jamf-mdm-command-status command.
+
+    If the raw ``filter`` arg is provided it is returned as-is (overrides the individual
+    args). Otherwise an RSQL filter is constructed by ANDing (";") the individual args:
+      - command_uuid  -> uuid==<value>
+      - management_id -> clientManagementId==<value>
+      - status        -> status==<value>
+      - command_name  -> command==<value>
+
+    The API requires a filter (no filter -> 400), so at least one of the individual args
+    must be provided when no raw filter is given.
+
+    Args:
+        args (dict[str, Any]): Command arguments.
+
+    Returns:
+        str: The RSQL filter string.
+
+    Raises:
+        SystemExit: via return_error if no filter can be built.
+    """
+    raw_filter = args.get("filter")
+    if raw_filter:
+        return raw_filter
+
+    field_by_arg = {
+        "command_uuid": "uuid",
+        "management_id": "clientManagementId",
+        "status": "status",
+        "command_name": "command",
+    }
+
+    conditions = [f"{rsql_field}=={args.get(arg_name)}" for arg_name, rsql_field in field_by_arg.items() if args.get(arg_name)]
+
+    if not conditions:
+        return_error(
+            "The jamf-mdm-command-status command requires a filter. Provide the 'filter' argument, "
+            "or at least one of: command_uuid, management_id, status, command_name."
+        )
+
+    return ";".join(conditions)
+
+
+def get_mdm_commands_readable_output(commands: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Build the Human Readable table rows for jamf-mdm-command-status.
+
+    Args:
+        commands (list[dict[str, Any]]): List of MDM command objects from the Pro API.
+
+    Returns:
+        list[dict[str, Any]]: Mapped fields for the Human Readable table.
+    """
+    readable_output = []
+    for command in commands:
+        client_info = command.get("client", {})
+        readable_output.append(
+            {
+                "UUID": command.get("uuid"),
+                "Command Type": command.get("commandType"),
+                "Command State": command.get("commandState"),
+                "Date Sent": command.get("dateSent"),
+                "Date Completed": command.get("dateCompleted"),
+                "Management ID": client_info.get("managementId"),
+                "Client Type": client_info.get("clientType"),
+            }
+        )
+    return readable_output
+
+
+def mdm_command_status_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    """Get the status of MDM commands via GET /api/v2/mdm/commands.
+
+    The API requires an RSQL filter. The filter is either taken from the raw ``filter``
+    arg or built from the individual args (command_uuid / management_id / status /
+    command_name).
+
+    Args:
+        client (Client): Jamf client.
+        args (dict[str, Any]): Command arguments.
+
+    Returns:
+        List[CommandResults]: Command results.
+    """
+    limit = arg_to_number(args.get("limit", 50))
+    page = arg_to_number(args.get("page", 0))
+
+    filter_query = build_mdm_command_filter(args)
+
+    response = client.get_mdm_commands_request(filter_query=filter_query, limit=limit, page=page)  # type: ignore
+    commands = response.get("results", [])
+    total_results = response.get("totalCount", len(commands))
+
+    readable_output = get_mdm_commands_readable_output(commands)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Jamf MDM command status results", readable_output, removeNull=True),
+            outputs_prefix="JAMF.MdmCommand",
+            outputs_key_field="uuid",
+            outputs=commands,
+            raw_response=response,
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown("Paging for MDM command status", paging_readable_output, removeNull=True),
+            outputs_prefix="JAMF.MdmCommand.Paging",
+            outputs_key_field="uuid",
+            outputs=paging_outputs,
+        ),
+    ]
+
+
 def get_mobile_devices_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     match = args.get("match", False)
     limit = arg_to_number(args.get("limit", 50))
@@ -2558,6 +2671,9 @@ def main() -> None:
 
         elif demisto.command() == "jamf-mobile-device-erase":
             return_results(mobile_device_erase_command(client, demisto.args()))
+
+        elif demisto.command() == "jamf-mdm-command-status":
+            return_results(mdm_command_status_command(client, demisto.args()))
 
         elif demisto.command() == "endpoint":
             return_results(endpoint_command(client, demisto.args()))
