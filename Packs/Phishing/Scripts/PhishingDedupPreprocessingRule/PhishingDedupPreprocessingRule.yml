@@ -87,5 +87,5 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.12410
+dockerimage: demisto/sklearn:1.0.0.10866354
 fromversion: 5.0.0
