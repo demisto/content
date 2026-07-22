@@ -12633,9 +12633,7 @@ def system_status_command(args: dict) -> PollResult:
 
     is_up = bool(getattr(status, "up", False))
 
-    # Always build the full CommandResults from the current status so that
-    # `PANOS.SystemStatus` is present in context on every iteration - including
-    # the final one when the polling timeout is hit.
+    # Always include `PANOS.SystemStatus` in CommandResults, even on polling timeout.
     command_result = dataclasses_to_command_results(status, empty_result_message="No system status.")
     if not is_up:
         command_result.readable_output = f"Waiting for device {target} to become available (current status: up={is_up})..."
