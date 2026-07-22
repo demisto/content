@@ -18,7 +18,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 
 ***Important Notes:***
 
-- EDL uses three consecutive ports: the configured Listen Port, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a Listen Port within 2 of another, or an `[Errno 98] Address in use` error will occur. When running without --network=host, ports + 1 and + 2 are not exposed to the machine.
+- EDL uses three consecutive ports: the configured **Listen Port**, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a **Listen Port** within 2 of another, or an `[Errno 98] Address in use` error will occur. When running without `--network=host`, ports + 1 and + 2 are not exposed to the machine.
 - If you frequently use different queries for the same EDL instance through the *q* inline argument, use separate EDL instances (one per query) and set a default query for each to improve performance.
 - When using the *q* inline argument, the number of exported indicators is limited to 100,000 for performance reasons. To export more than 100,000 indicators, create a new integration instance with the desired Indicator Query and List Size.
 - Note: After successfully configuring an instance, clicking the 'Test' button again may display a failure because the system incorrectly assumes the port is in use. Despite this message, the instance continues to function correctly.
@@ -280,12 +280,12 @@ The *NGINX Read Timeout* can be set to increase the timeout.
 
 ### 504 Gateway error
 
-1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
-2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
+1. Increase the **NGINX Read Timeout** in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
+2. If the issue persists, try to increase the Load Balancer timeout through the Devops team. For 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depending on the indicator query).
 
 ### 429 Too Many Requests error
 
-NGINX builds each cache entry only once at a time. If a request arrives while the same cache entry (same request URL and parameters, such as the *q* inline argument) is still being built for the first time, it is rejected with an HTTP `429 Too Many Requests` instead of being queued. Different requests build separate cache entries and are still served in parallel. During a refresh of an already-cached entry, the previous data is served (HTTP `200`) with no `429`.
+NGINX prevents concurrent builds of the same cache entry. If multiple requests for the same cache entry (matching the URL and parameters, like *q*) arrive simultaneously, NGINX builds the entry for the first request and rejects the others with an HTTP `429 Too Many Requests` rather than queuing them. Requests for different entries are still processed in parallel. If a request triggers a refresh of an existing cache entry, the previous data is served (HTTP `200`) with no `429`.
 
 This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
 
@@ -295,13 +295,10 @@ Append `expirationStatus:active` to the end of the query.
 
 ### EDL Log
 
-To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
+To view logs concerning the creation of the indicator list and its current status, add the `/log` suffix to the list URL.
 
-For Cortex XSOAR Cloud -
-`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
+For Cortex XSOAR Cloud, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
 
-For Cortex XSOAR On-prem -
-`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+For Cortex XSOAR On-prem, use `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 
-For Cortex XSIAM -
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
+For Cortex XSIAM, use `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
