@@ -452,6 +452,38 @@ def parse_resource_arn_priority_field(refs_string: str | None) -> list:
     return references
 
 
+def parse_key_value_items_field(items_string: str | None, required_key: str, format_hint: str) -> list[dict]:
+    """
+    Parses a list representation of items with the form of
+    'Key1=<value>,Key2=<value>;Key1=<value>,Key2=<value>'.
+
+    Each item is separated by ';' and its fields by ','. Every field must be provided as 'Key=Value',
+    and the given required_key must be present in each item.
+
+    Args:
+        items_string: The items list string.
+        required_key: The key that must be present in each parsed item.
+        format_hint: An example of the expected format, appended to error messages.
+    Returns:
+        A list of dicts, each mapping the parsed field keys to their values.
+    """
+    items: list[dict] = []
+    for item in argToList(items_string, separator=";"):
+        fields: dict = {}
+        for field in argToList(item, separator=","):
+            key, sep, value = field.partition("=")
+            if not sep or not value:
+                raise ValueError(f"Could not parse field: {item}. Please make sure you provided like so: {format_hint}")
+            fields[key.strip()] = value.strip()
+
+        if required_key not in fields:
+            raise ValueError(f"Could not parse field: {item}. {required_key} is required for each item.")
+
+        items.append(fields)
+
+    return items
+
+
 def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
     """
     Parses a list representation of stateful rule group references with the form of
@@ -466,25 +498,14 @@ def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
         A list of dicts with the form
         {"ResourceArn": <arn>, "Priority": <priority>, "Override": {"Action": <action>}, "DeepThreatInspection": <bool>}.
     """
+    format_hint = (
+        "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
+        "ResourceArn=arn:aws2,Priority=priority2"
+    )
     references: list = []
-    list_refs = argToList(refs_string, separator=";")
-    for ref in list_refs:
-        fields = {}
-        for field in argToList(ref, separator=","):
-            key, sep, value = field.partition("=")
-            if not sep or not value:
-                raise ValueError(
-                    f"Could not parse field: {ref}. Please make sure you provided like so: "
-                    "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
-                    "ResourceArn=arn:aws2,Priority=priority2"
-                )
-            fields[key.strip()] = value.strip()
-
-        if "ResourceArn" not in fields:
-            raise ValueError(f"Could not parse field: {ref}. ResourceArn is required for each rule group reference.")
-
+    for fields in parse_key_value_items_field(refs_string, required_key="ResourceArn", format_hint=format_hint):
         if not re.match(r"^arn:aws", fields["ResourceArn"]):
-            raise ValueError(f"Could not parse field: {ref}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
+            raise ValueError(f"Could not parse field: {fields}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
 
         reference = {
             "ResourceArn": fields.get("ResourceArn"),
@@ -510,22 +531,9 @@ def parse_subnet_mappings_field(mappings_string: str | None) -> list:
     Returns:
         A list of dicts with the form {"SubnetId": <id>, "IPAddressType": <type>}.
     """
+    format_hint = "SubnetId=id1,IPAddressType=type1;SubnetId=id2,IPAddressType=type2"
     mappings: list = []
-    list_mappings = argToList(mappings_string, separator=";")
-    for mapping in list_mappings:
-        fields = {}
-        for field in argToList(mapping, separator=","):
-            key, sep, value = field.partition("=")
-            if not sep or not value:
-                raise ValueError(
-                    f"Could not parse field: {mapping}. Please make sure you provided like so: "
-                    "SubnetId=id1,IPAddressType=type1;SubnetId=id2,IPAddressType=type2"
-                )
-            fields[key.strip()] = value.strip()
-
-        if "SubnetId" not in fields:
-            raise ValueError(f"Could not parse field: {mapping}. SubnetId is required for each subnet mapping.")
-
+    for fields in parse_key_value_items_field(mappings_string, required_key="SubnetId", format_hint=format_hint):
         subnet_mapping = {
             "SubnetId": fields.get("SubnetId"),
             "IPAddressType": fields.get("IPAddressType"),
@@ -10232,6 +10240,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with a success message
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10239,9 +10248,12 @@ class NetworkFirewall:
             "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(args, "firewall")
 
-        print_debug_logs(client, f"Updating firewall subnet change protection with parameters: {kwargs.keys()}")
+        print_debug_logs(
+            client,
+            f"Updating firewall subnet change protection with parameters: "
+            f"{kwargs.keys()} and {kwargs.get('SubnetChangeProtection')=}",
+        )
         response = client.update_subnet_change_protection(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -10817,6 +10829,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with the firewall subnet mappings
         """
+        validate_network_firewall_identifier(args, "firewall")
         subnet_mappings = parse_subnet_mappings_field(args.get("subnet_mappings"))
 
         kwargs = {
@@ -10826,9 +10839,8 @@ class NetworkFirewall:
             "SubnetMappings": subnet_mappings,
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(args, "firewall")
 
-        print_debug_logs(client, f"Associating subnets with parameters: {kwargs.keys()}")
+        print_debug_logs(client, f"Associating subnets with parameters: {kwargs.keys()} and {subnet_mappings=}")
         response = client.associate_subnets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -10863,6 +10875,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with the remaining subnet mappings
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10870,7 +10883,6 @@ class NetworkFirewall:
             "SubnetIds": argToList(args.get("subnet_ids")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(args, "firewall")
 
         print_debug_logs(client, f"Disassociating subnets with parameters: {kwargs.keys()}")
         response = client.disassociate_subnets(**kwargs)

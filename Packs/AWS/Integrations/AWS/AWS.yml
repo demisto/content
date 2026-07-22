@@ -19807,6 +19807,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19819,6 +19820,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19864,6 +19866,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19876,6 +19879,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -19933,6 +19937,7 @@ script:
         - ap-northeast-2
         - ap-southeast-1
         - ap-southeast-2
+        - ap-southeast-7
         - ap-northeast-1
         - ca-central-1
         - ca-west-1
@@ -19945,6 +19950,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
