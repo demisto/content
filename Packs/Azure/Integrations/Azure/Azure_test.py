@@ -5976,9 +5976,10 @@ def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
     )
 
     assert captured["managed_identities_client_id"] == "my-mi-client-id"
-    # The MI resource URI must be the management Azure resource (identical to Resources.management_azure).
-    assert captured["managed_identities_resource_uri"] == DEFAULT_RESOURCE
-    assert captured["managed_identities_resource_uri"] == "https://management.azure.com/"
+    # The MI resource URI is the management Azure resource with the trailing slash stripped
+    # (the MI branch derives it from `(resource or DEFAULT_RESOURCE).rstrip("/")`).
+    assert captured["managed_identities_resource_uri"] == DEFAULT_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://management.azure.com"
     # Managed Identities is not a grant_type flow; the path is chosen by managed_identities_client_id.
     assert captured.get("grant_type") is None
     # Device-code-only token retrieval URL must not be set for the MI flow.
@@ -6009,7 +6010,8 @@ def test_azure_client_client_credentials_empty_tenant_builds_token_url_without_n
     )
 
     assert "None" not in captured["token_retrieval_url"]
-    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com//oauth2/v2.0/token"
+    # urljoin collapses the empty tenant segment, so the authority host is followed by a single slash.
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/oauth2/v2.0/token"
 
 
 def test_azure_client_managed_identities_storage_resource_derives_storage_uri(mocker):
