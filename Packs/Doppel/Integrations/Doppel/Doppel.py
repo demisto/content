@@ -86,7 +86,7 @@ class Client(BaseClient):
             f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
 
-    def get_alert(self, id: str, entity: str) -> dict[str, str]:
+    def get_alert(self, id: str, entity: str) -> dict[str, Any]:
         """Return the alert's details when provided the Alert ID or Entity as input
 
         :type id: ``str``
@@ -228,33 +228,36 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             A dictionary containing the updated incident details, including entries related to the alert.
     """
 
-    # Truncate to microseconds since Python's datetime only supports up to 6 digits
-    last_update_str = last_update_str[:26] + "Z"
-    last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # A never-synced incident carries "0001-01-01T00:00:00Z" (no microseconds), which the
+    # previous strict strptime call could not parse, so the first sync never completed.
+    # The timestamp is only informational here (the server already filtered this incident as
+    # modified via get-modified-remote-data), so a parse failure must not block the sync.
+    last_update = dateparser.parse(last_update_str, settings={"TIMEZONE": "UTC"})
     if not last_update:
-        demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
-        return None, []
+        demisto.debug(f"Doppel - Could not parse lastUpdate timestamp {last_update_str!r}; syncing anyway.")
 
     demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
     demisto.debug(f"Received alert data for {doppel_alert_id}")
-    audit_logs = updated_doppel_alert.get("audit_logs")
-    demisto.debug(f'The alert contains {len(audit_logs or "")} audit logs')
+    if not updated_doppel_alert:
+        demisto.debug(f"Doppel - No alert data returned for {doppel_alert_id}.")
+        return None, []
+    updated_doppel_alert["id"] = doppel_alert_id
 
-    if isinstance(audit_logs, list) and all(isinstance(log, dict) for log in audit_logs):
-        most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log["timestamp"])
+    # Attach the most recent audit-log event as a War Room note when available, but never
+    # let a missing/empty audit trail discard the field updates themselves.
+    entries: list = []
+    audit_logs = updated_doppel_alert.get("audit_logs")
+    demisto.debug(f"The alert contains {len(audit_logs) if isinstance(audit_logs, list) else 0} audit logs")
+    if isinstance(audit_logs, list) and audit_logs and all(isinstance(log, dict) for log in audit_logs):
+        # ISO-8601 timestamps sort lexicographically, so string comparison is safe and avoids
+        # strptime failures on entries without microseconds.
+        most_recent_audit_log = max(audit_logs, key=lambda audit_log: str(audit_log.get("timestamp") or ""))
         demisto.debug(f"Most recent audit log is {most_recent_audit_log}")
-        if isinstance(most_recent_audit_log, dict):
-            recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
-            recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-            demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
-            updated_doppel_alert["id"] = doppel_alert_id
-            entries: list = [
-                {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
-            ]
-            demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
-            return updated_doppel_alert, entries
-    return None, []
+        entries = [{"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}]
+
+    demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
+    return updated_doppel_alert, entries
 
 
 def _get_mirroring_fields():
@@ -696,19 +699,36 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     """
 
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
-        DOPPEL_API_DATE_FORMAT
-    )
-
-    query_params = {
-        "last_activity_timestamp": last_update,
-    }
+    last_update_datetime = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
+    if not last_update_datetime:
+        raise DemistoException(f"Doppel - Could not parse the lastUpdate timestamp: {remote_args.last_update!r}")
+    last_update = last_update_datetime.strftime(DOPPEL_API_DATE_FORMAT)
 
     try:
-        results = client.get_alerts(params=query_params)
-        alerts = results.get("alerts", [])
-
-        modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
+        # Page through the full set of modified alerts. Taking only the first page (the
+        # previous behavior) silently dropped changes on busy tenants, because the server
+        # advances lastUpdate after every cycle regardless of what was returned.
+        modified_incident_ids: list[str] = []
+        seen_ids: set[str] = set()
+        page = 0
+        while page < MAX_FETCH_PAGES_PER_RUN:
+            query_params = {
+                "last_activity_timestamp": last_update,
+                "page": page,
+                "page_size": DOPPEL_MAX_PAGE_SIZE,
+            }
+            results = client.get_alerts(params=query_params)
+            alerts = results.get("alerts", [])
+            if not alerts:
+                break
+            for alert in alerts:
+                alert_id = str(alert.get("id") or "")
+                if alert_id and alert_id not in seen_ids:
+                    seen_ids.add(alert_id)
+                    modified_incident_ids.append(alert_id)
+            if len(alerts) < DOPPEL_MAX_PAGE_SIZE:
+                break
+            page += 1
 
         demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents. Incidents: {modified_incident_ids}")
         return GetModifiedRemoteDataResponse(modified_incident_ids)

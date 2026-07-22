@@ -990,6 +990,104 @@ def test_get_remote_updated_incident_data_with_entry():
     assert updated_alert or updated_alert is None, "Updated alert should be either valid or None"
 
 
+def test_get_remote_updated_incident_data_never_synced_timestamp():
+    """
+    Given:
+        - A lastUpdate timestamp of a never-synced incident ("0001-01-01T00:00:00Z", no microseconds).
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The unparseable timestamp does not raise, and the updated alert is still returned
+          so the first incoming mirror sync completes.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [{"timestamp": "2024-11-27T06:51:50.357664", "type": "alert_create"}],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "0001-01-01T00:00:00Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert len(entries) == 1
+
+
+def test_get_remote_updated_incident_data_no_audit_logs():
+    """
+    Given:
+        - An updated alert whose payload has no audit logs.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The alert field updates are still returned (not discarded), with no note entries.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_remote_updated_incident_data_empty_audit_logs():
+    """
+    Given:
+        - An updated alert whose audit_logs list is empty.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - No exception is raised and the alert field updates are still returned.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_modified_remote_data_command_paginates(mocker):
+    """
+    Given:
+        - More modified alerts than fit in a single API page.
+    When:
+        - Running get_modified_remote_data_command.
+    Then:
+        - All pages are drained and every modified alert ID is returned exactly once.
+    """
+    mock_client = MagicMock()
+    first_page = [{"id": f"alert-{i:03d}"} for i in range(200)]
+    second_page = [{"id": f"alert-{i:03d}"} for i in range(200, 250)]
+    mock_client.get_alerts.side_effect = [{"alerts": first_page}, {"alerts": second_page}]
+
+    mocker.patch.object(demisto, "debug")
+
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    assert len(result.modified_incident_ids) == 250
+    assert result.modified_incident_ids[0] == "alert-000"
+    assert result.modified_incident_ids[-1] == "alert-249"
+    assert mock_client.get_alerts.call_count == 2
+    first_call_params = mock_client.get_alerts.call_args_list[0][1]["params"]
+    second_call_params = mock_client.get_alerts.call_args_list[1][1]["params"]
+    assert first_call_params["page"] == 0
+    assert second_call_params["page"] == 1
+    assert first_call_params["page_size"] == 200
+
+
 def test_client_initialization_with_proxy(mocker):
     """Test Client initialization with proxy enabled."""
     base_url = "https://api.doppel.com/v1"
