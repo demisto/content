@@ -19,3 +19,11 @@ This pack allows you to integrate HackerView & CyberBlindspot incidents with Cor
 ## How to use it?
 
 Install the pack and configure either one of the integration instances in Cortex XSOAR. For the configuration phase you will need an active API key which can be obtained in the respective platform. For any further support and questions, feel free to contact us via **xsoar@ctm360.com**
+
+### Pack Contributors
+
+---
+
+- Sayed A.
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
