@@ -1042,7 +1042,7 @@ def test_mdm_command_status_filter_from_individual_args(mocker):
     )
 
     request_mock.assert_called_once_with(
-        filter_query="clientManagementId==4810a46e-2941-414e-a6c0-c1bf303e2117;status==Pending;command==REMOVE_PROFILE",
+        filter_query='clientManagementId=="4810a46e-2941-414e-a6c0-c1bf303e2117";status=="Pending";command=="REMOVE_PROFILE"',
         limit=25,
         page=1,
     )
@@ -1069,7 +1069,7 @@ def test_mdm_command_status_management_id_filter_field(mocker):
     mdm_command_status_command(client, {"management_id": "4810a46e-2941-414e-a6c0-c1bf303e2117"})
 
     request_mock.assert_called_once_with(
-        filter_query="clientManagementId==4810a46e-2941-414e-a6c0-c1bf303e2117",
+        filter_query='clientManagementId=="4810a46e-2941-414e-a6c0-c1bf303e2117"',
         limit=50,
         page=0,
     )

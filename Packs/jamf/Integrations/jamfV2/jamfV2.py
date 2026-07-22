@@ -2138,7 +2138,7 @@ def build_mdm_command_filter(args: dict[str, Any]) -> str:
         "command_name": "command",
     }
 
-    conditions = [f"{rsql_field}=={args.get(arg_name)}" for arg_name, rsql_field in field_by_arg.items() if args.get(arg_name)]
+    conditions = [f'{rsql_field}=="{args.get(arg_name)}"' for arg_name, rsql_field in field_by_arg.items() if args.get(arg_name)]
 
     if not conditions:
         return_error(
