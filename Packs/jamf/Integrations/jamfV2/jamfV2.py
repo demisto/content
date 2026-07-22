@@ -2337,6 +2337,10 @@ def mobile_device_lost_command(client: Client, args: dict[str, Any]) -> CommandR
     lost_mode_phone = args.get("lost_mode_phone")
     lost_mode_footnote = args.get("lost_mode_footnote")
 
+    # Either the mobile device id or the management_id must be provided to target the device.
+    if not mobile_id and not management_id:
+        return_error("Either 'id' or 'management_id' must be provided.")
+
     # The MDM API requires at least one of lostModeMessage / lostModePhone.
     if not lost_mode_message and not lost_mode_phone:
         return_error("At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.")

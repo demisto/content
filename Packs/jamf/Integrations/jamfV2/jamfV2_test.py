@@ -849,6 +849,27 @@ def test_mobile_device_lost_command_missing_message_and_phone(mocker):
     return_error_mock.assert_called_once()
 
 
+def test_mobile_device_lost_command_missing_identifiers(mocker):
+    """
+    Given
+    - Mobile device lost-mode command without id and without management_id.
+    When
+    - Run mobile device lost command.
+    Then
+    - Ensure return_error is raised (validation requires either id or management_id).
+    """
+    from jamfV2 import Client, mobile_device_lost_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    return_error_mock = mocker.patch("jamfV2.return_error", side_effect=SystemExit)
+
+    with pytest.raises(SystemExit):
+        mobile_device_lost_command(client, {"lost_mode_message": "Lost"})
+
+    return_error_mock.assert_called_once()
+
+
 def test_mobile_device_erase_command(mocker):
     """
     Given
