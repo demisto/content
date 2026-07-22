@@ -1,0 +1,174 @@
+{
+    "description": "Maps incoming Vega alert and incident data to XSOAR incident fields.",
+    "feed": false,
+    "id": "Vega Mapper",
+    "mapping": {
+        "Vega Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Vega Alert ID": {
+                    "simple": "vegaAlertId"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Vega Detection ID": {
+                    "simple": "detectionId"
+                },
+                "Vega Verdict": {
+                    "simple": "verdict"
+                },
+                "Vega Verdict Reasoning": {
+                    "simple": "verdictReasoning"
+                },
+                "Vega Status": {
+                    "simple": "status"
+                },
+                "Vega Assignee": {
+                    "simple": "assignee.displayName"
+                },
+                "Vega Assignee Email": {
+                    "simple": "assignee.email"
+                },
+                "Vega Data Sources": {
+                    "simple": "dataSources"
+                },
+                "Vega Created At": {
+                    "simple": "createdAt"
+                },
+                "occurred": {
+                    "simple": "createdAt"
+                },
+                "Vega Detection Source": {
+                    "simple": "detectionSource"
+                },
+                "Vega Detection Description": {
+                    "simple": "detectionDescription"
+                },
+                "Vega Detection Query": {
+                    "simple": "detectionQuery"
+                },
+                "Vega Event Count": {
+                    "simple": "eventCount"
+                },
+                "Vega Is Test Mode": {
+                    "simple": "isTestMode"
+                },
+                "Vega MITRE Tactics": {
+                "simple": "mitre.mitreTactics"
+				},
+				"Vega MITRE Techniques": {
+					"simple": "mitre.mitreTechniques"
+				},
+                 "Vega MITRE ATT\u0026CK": {
+                "simple": "vegaMitreAttack"
+				},
+                "Vega Related Incidents": {
+                    "simple": "relatedIncidents"
+                },
+                "Vega Alert Link": {
+                    "simple": "link"
+                },
+                "External Link": {
+                    "simple": "link"
+                },
+                "Vega Alert Severity": {
+                    "simple": "severity"
+                },
+                "Vega Comments": {
+                    "simple": "vegaComments"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        },
+        "Vega Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Vega Incident ID": {
+                    "simple": "id"
+                },
+                "Vega Verdict": {
+                    "simple": "verdict"
+                },
+                "Vega Verdict Reasoning": {
+                    "simple": "verdictReasoning"
+                },
+                "Vega Incident Status": {
+                    "simple": "status"
+                },
+                "Vega Assignee": {
+                    "simple": "assignee.displayName"
+                },
+                "Vega Assignee Email": {
+                    "simple": "assignee.email"
+                },
+                "Vega Data Sources": {
+                    "simple": "dataSources"
+                },
+                "Vega Created By": {
+                    "simple": "createdBy"
+                },
+                "Vega Created At": {
+                    "simple": "createdAt"
+                },
+                "occurred": {
+                    "simple": "createdAt"
+                },
+                "Vega Last Updated": {
+                    "simple": "lastUpdated"
+                },
+                "Vega Incident Summary": {
+                    "simple": "incidentSummary"
+                },
+                "Vega Incident Findings": {
+                    "simple": "vegaIncidentFindings"
+                },
+                "Vega Assets": {
+                    "simple": "assets"
+                },
+                "Vega Observables": {
+                    "simple": "observables"
+                },
+                "Vega Alerts Count": {
+                    "simple": "alertsCount"
+                },
+                "Vega Incident Link": {
+                    "simple": "link"
+                },
+                "Vega Timeline Events": {
+                    "simple": "vegaTimelineEvents"
+                },
+                "Vega Comments": {
+                    "simple": "vegaComments"
+                },
+                "External Link": {
+                    "simple": "link"
+                },
+                "Vega Severity": {
+                    "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "Vega Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
